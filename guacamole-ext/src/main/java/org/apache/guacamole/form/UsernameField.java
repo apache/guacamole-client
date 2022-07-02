@@ -20,19 +20,17 @@
 package org.apache.guacamole.form;
 
 /**
- * Represents a text field which will contain the uniquely-identifying name of
- * a user.
+ * Represents a text field which will contain the uniquely-identifying name of a user.
  */
 public class UsernameField extends Field {
 
-    /**
-     * Creates a new UsernameField with the given name.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     */
-    public UsernameField(String name) {
-        super(name, Field.Type.USERNAME);
-    }
+  /**
+   * Creates a new UsernameField with the given name.
+   *
+   * @param name The unique name to associate with this field.
+   */
+  public UsernameField(String name) {
+    super(name, Field.Type.USERNAME);
+  }
 
 }

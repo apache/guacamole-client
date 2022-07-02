@@ -28,59 +28,49 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
 /**
- * GuacamoleProperties implementation which reads all properties from a
- * standard Java properties file. Whitespace at the end of property values is
- * automatically trimmed.
+ * GuacamoleProperties implementation which reads all properties from a standard Java properties
+ * file. Whitespace at the end of property values is automatically trimmed.
  */
 public class FileGuacamoleProperties extends PropertiesGuacamoleProperties {
 
-    /**
-     * Reads the given Java properties file, storing all property name/value
-     * pairs in a new {@link Properties} object.
-     *
-     * @param propertiesFile
-     *     The Java properties file to read.
-     *
-     * @return
-     *     A new Properties containing all property name/value pairs defined in
-     *     the given file.
-     *
-     * @throws GuacamoleException
-     *     If an error prevents reading the given Java properties file.
-     */
-    private static Properties read(File propertiesFile) throws GuacamoleException {
+  /**
+   * Creates a new FileGuacamoleProperties which reads all properties from the given standard Java
+   * properties file.
+   *
+   * @param propertiesFile The Java properties file to read.
+   * @throws GuacamoleException If an error prevents reading the given Java properties file.
+   */
+  public FileGuacamoleProperties(File propertiesFile) throws GuacamoleException {
+    super(read(propertiesFile));
+  }
 
-        // Fail early if file simply does not exist
-        if (!propertiesFile.exists())
-            throw new GuacamoleServerException(String.format("\"%s\" does not "
-                    + "exist.", propertiesFile));
+  /**
+   * Reads the given Java properties file, storing all property name/value pairs in a new
+   * {@link Properties} object.
+   *
+   * @param propertiesFile The Java properties file to read.
+   * @return A new Properties containing all property name/value pairs defined in the given file.
+   * @throws GuacamoleException If an error prevents reading the given Java properties file.
+   */
+  private static Properties read(File propertiesFile) throws GuacamoleException {
 
-        // Load properties from stream, if any, always closing stream when done
-        Properties properties = new Properties();
-        try (InputStream stream = new FileInputStream(propertiesFile)) {
-            properties.load(stream);
-        }
-        catch (IOException e) {
-            throw new GuacamoleServerException(String.format("\"%s\" cannot "
-                    + "be read: %s", propertiesFile, e.getMessage()), e);
-        }
-
-        return properties;
-        
+    // Fail early if file simply does not exist
+    if (!propertiesFile.exists()) {
+      throw new GuacamoleServerException(String.format("\"%s\" does not "
+          + "exist.", propertiesFile));
     }
 
-    /**
-     * Creates a new FileGuacamoleProperties which reads all properties from
-     * the given standard Java properties file.
-     *
-     * @param propertiesFile
-     *     The Java properties file to read.
-     *
-     * @throws GuacamoleException
-     *     If an error prevents reading the given Java properties file.
-     */
-    public FileGuacamoleProperties(File propertiesFile) throws GuacamoleException {
-        super(read(propertiesFile));
+    // Load properties from stream, if any, always closing stream when done
+    Properties properties = new Properties();
+    try (InputStream stream = new FileInputStream(propertiesFile)) {
+      properties.load(stream);
+    } catch (IOException e) {
+      throw new GuacamoleServerException(String.format("\"%s\" cannot "
+          + "be read: %s", propertiesFile, e.getMessage()), e);
     }
+
+    return properties;
+
+  }
 
 }

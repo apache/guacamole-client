@@ -20,20 +20,19 @@
 package org.apache.guacamole.form;
 
 /**
- * Represents a terminal color scheme field. The field may contain only valid
- * terminal color schemes as used by the Guacamole server terminal emulator
- * and protocols which leverage it (SSH, telnet, Kubernetes).
+ * Represents a terminal color scheme field. The field may contain only valid terminal color schemes
+ * as used by the Guacamole server terminal emulator and protocols which leverage it (SSH, telnet,
+ * Kubernetes).
  */
 public class TerminalColorSchemeField extends Field {
 
-    /**
-     * Creates a new TerminalColorSchemeField with the given name.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     */
-    public TerminalColorSchemeField(String name) {
-        super(name, Field.Type.TERMINAL_COLOR_SCHEME);
-    }
+  /**
+   * Creates a new TerminalColorSchemeField with the given name.
+   *
+   * @param name The unique name to associate with this field.
+   */
+  public TerminalColorSchemeField(String name) {
+    super(name, Field.Type.TERMINAL_COLOR_SCHEME);
+  }
 
 }

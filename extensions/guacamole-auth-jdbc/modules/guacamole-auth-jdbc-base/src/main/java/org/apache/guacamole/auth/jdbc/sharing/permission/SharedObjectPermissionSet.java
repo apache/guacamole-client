@@ -26,45 +26,37 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.simple.SimpleObjectPermissionSet;
 
 /**
- * An immutable ObjectPermissionSet which defines only READ permissions for a
- * fixed set of identifiers.
+ * An immutable ObjectPermissionSet which defines only READ permissions for a fixed set of
+ * identifiers.
  */
 public class SharedObjectPermissionSet extends SimpleObjectPermissionSet {
 
-    /**
-     * Returns a new Set of ObjectPermissions defining READ access for each of
-     * the given identifiers.
-     *
-     * @param identifiers
-     *     The identifiers of the objects for which READ permission should be
-     *     granted.
-     *
-     * @return
-     *     A new Set of ObjectPermissions granting READ access for each of the
-     *     given identifiers.
-     */
-    private static Set<ObjectPermission> getPermissions(Collection<String> identifiers) {
+  /**
+   * Creates a new SharedObjectPermissionSet which grants read-only access to the objects having the
+   * given identifiers. No other permissions are granted.
+   *
+   * @param identifiers The identifiers of the objects for which READ access should be granted.
+   */
+  public SharedObjectPermissionSet(Collection<String> identifiers) {
+    super(getPermissions(identifiers));
+  }
 
-        // Include one READ permission for each of the given identifiers
-        Set<ObjectPermission> permissions = new HashSet<ObjectPermission>();
-        for (String identifier : identifiers)
-            permissions.add(new ObjectPermission(ObjectPermission.Type.READ, identifier));
+  /**
+   * Returns a new Set of ObjectPermissions defining READ access for each of the given identifiers.
+   *
+   * @param identifiers The identifiers of the objects for which READ permission should be granted.
+   * @return A new Set of ObjectPermissions granting READ access for each of the given identifiers.
+   */
+  private static Set<ObjectPermission> getPermissions(Collection<String> identifiers) {
 
-        return permissions;
-
+    // Include one READ permission for each of the given identifiers
+    Set<ObjectPermission> permissions = new HashSet<ObjectPermission>();
+    for (String identifier : identifiers) {
+      permissions.add(new ObjectPermission(ObjectPermission.Type.READ, identifier));
     }
 
-    /**
-     * Creates a new SharedObjectPermissionSet which grants read-only access to
-     * the objects having the given identifiers. No other permissions are
-     * granted.
-     *
-     * @param identifiers
-     *     The identifiers of the objects for which READ access should be
-     *     granted.
-     */
-    public SharedObjectPermissionSet(Collection<String> identifiers) {
-        super(getPermissions(identifiers));
-    }
+    return permissions;
+
+  }
 
 }

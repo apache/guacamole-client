@@ -26,155 +26,157 @@ import java.util.Iterator;
 import java.util.Map;
 
 /**
- * Map of arbitrary attribute name/value pairs which can alternatively be
- * exposed as a collection of model objects.
+ * Map of arbitrary attribute name/value pairs which can alternatively be exposed as a collection of
+ * model objects.
  */
 public class ArbitraryAttributeMap extends HashMap<String, String> {
 
-    /**
-     * Creates a new ArbitraryAttributeMap containing the name/value pairs
-     * within the given collection of model objects.
-     *
-     * @param models
-     *     The model objects of all attributes which should be stored in the
-     *     new map as name/value pairs.
-     *
-     * @return
-     *     A new ArbitraryAttributeMap containing the name/value pairs within
-     *     the given collection of model objects.
-     */
-    public static ArbitraryAttributeMap fromModelCollection(Collection<ArbitraryAttributeModel> models) {
+  /**
+   * Creates a new ArbitraryAttributeMap containing the name/value pairs within the given collection
+   * of model objects.
+   *
+   * @param models The model objects of all attributes which should be stored in the new map as
+   *               name/value pairs.
+   * @return A new ArbitraryAttributeMap containing the name/value pairs within the given collection
+   * of model objects.
+   */
+  public static ArbitraryAttributeMap fromModelCollection(
+      Collection<ArbitraryAttributeModel> models) {
 
-        // Add all name/value pairs from the given collection to the map
-        ArbitraryAttributeMap map = new ArbitraryAttributeMap();
-        for (ArbitraryAttributeModel model : models)
-            map.put(model.getName(), model.getValue());
-
-        return map;
-
+    // Add all name/value pairs from the given collection to the map
+    ArbitraryAttributeMap map = new ArbitraryAttributeMap();
+    for (ArbitraryAttributeModel model : models) {
+      map.put(model.getName(), model.getValue());
     }
 
-    /**
-     * Returns a collection of model objects which mirrors the contents of this
-     * ArbitraryAttributeMap. Each name/value pair within the map is reflected
-     * by a corresponding model object within the returned collection. Removing
-     * a model object from the collection removes the corresponding name/value
-     * pair from the map. Adding a new model object to the collection adds a
-     * corresponding name/value pair to the map. Changes to a model object
-     * within the collection are NOT reflected on the map, however.
-     *
-     * @return
-     *     A collection of model objects which mirrors the contents of this
-     *     ArbitraryAttributeMap.
-     */
-    public Collection<ArbitraryAttributeModel> toModelCollection() {
-        return new AbstractCollection<ArbitraryAttributeModel>() {
+    return map;
 
-            @Override
-            public void clear() {
-                ArbitraryAttributeMap.this.clear();
-            }
+  }
 
-            @Override
-            public boolean remove(Object o) {
+  /**
+   * Returns a collection of model objects which mirrors the contents of this ArbitraryAttributeMap.
+   * Each name/value pair within the map is reflected by a corresponding model object within the
+   * returned collection. Removing a model object from the collection removes the corresponding
+   * name/value pair from the map. Adding a new model object to the collection adds a corresponding
+   * name/value pair to the map. Changes to a model object within the collection are NOT reflected
+   * on the map, however.
+   *
+   * @return A collection of model objects which mirrors the contents of this ArbitraryAttributeMap.
+   */
+  public Collection<ArbitraryAttributeModel> toModelCollection() {
+    return new AbstractCollection<ArbitraryAttributeModel>() {
 
-                // The Collection view of an ArbitraryAttributeMap can contain
-                // only ArbitraryAttributeModel objects
-                if (!(o instanceof ArbitraryAttributeModel))
-                    return false;
+      @Override
+      public void clear() {
+        ArbitraryAttributeMap.this.clear();
+      }
 
-                // Remove only if key is actually present
-                ArbitraryAttributeModel model = (ArbitraryAttributeModel) o;
-                if (!ArbitraryAttributeMap.this.containsKey(model.getName()))
-                    return false;
+      @Override
+      public boolean remove(Object o) {
 
-                // The attribute should be removed only if the value matches
-                String currentValue = ArbitraryAttributeMap.this.get(model.getName());
-                if (currentValue == null) {
-                    if (model.getValue() != null)
-                        return false;
-                }
-                else if (!currentValue.equals(model.getValue()))
-                    return false;
+        // The Collection view of an ArbitraryAttributeMap can contain
+        // only ArbitraryAttributeModel objects
+        if (!(o instanceof ArbitraryAttributeModel)) {
+          return false;
+        }
 
-                ArbitraryAttributeMap.this.remove(model.getName());
-                return true;
+        // Remove only if key is actually present
+        ArbitraryAttributeModel model = (ArbitraryAttributeModel) o;
+        if (!ArbitraryAttributeMap.this.containsKey(model.getName())) {
+          return false;
+        }
 
-            }
+        // The attribute should be removed only if the value matches
+        String currentValue = ArbitraryAttributeMap.this.get(model.getName());
+        if (currentValue == null) {
+          if (model.getValue() != null) {
+            return false;
+          }
+        } else if (!currentValue.equals(model.getValue())) {
+          return false;
+        }
 
-            @Override
-            public boolean add(ArbitraryAttributeModel e) {
+        ArbitraryAttributeMap.this.remove(model.getName());
+        return true;
 
-                String newValue = e.getValue();
-                String oldValue = put(e.getName(), newValue);
+      }
 
-                // If null value is being added, collection changed only if
-                // old value was non-null
-                if (newValue == null)
-                    return oldValue != null;
+      @Override
+      public boolean add(ArbitraryAttributeModel e) {
 
-                // Collection changed if value changed
-                return !newValue.equals(oldValue);
+        String newValue = e.getValue();
+        String oldValue = put(e.getName(), newValue);
 
-            }
+        // If null value is being added, collection changed only if
+        // old value was non-null
+        if (newValue == null) {
+          return oldValue != null;
+        }
 
-            @Override
-            public boolean contains(Object o) {
+        // Collection changed if value changed
+        return !newValue.equals(oldValue);
 
-                // The Collection view of an ArbitraryAttributeMap can contain
-                // only ArbitraryAttributeModel objects
-                if (!(o instanceof ArbitraryAttributeModel))
-                    return false;
+      }
 
-                // No need to check the value of the attribute if the attribute
-                // is not even present
-                ArbitraryAttributeModel model = (ArbitraryAttributeModel) o;
-                String value = get(model.getName());
-                if (value == null)
-                    return false;
+      @Override
+      public boolean contains(Object o) {
 
-                // The name/value pair is present only if the value matches
-                return value.equals(model.getValue());
+        // The Collection view of an ArbitraryAttributeMap can contain
+        // only ArbitraryAttributeModel objects
+        if (!(o instanceof ArbitraryAttributeModel)) {
+          return false;
+        }
 
-            }
+        // No need to check the value of the attribute if the attribute
+        // is not even present
+        ArbitraryAttributeModel model = (ArbitraryAttributeModel) o;
+        String value = get(model.getName());
+        if (value == null) {
+          return false;
+        }
 
-            @Override
-            public Iterator<ArbitraryAttributeModel> iterator() {
+        // The name/value pair is present only if the value matches
+        return value.equals(model.getValue());
 
-                // Get iterator over all string name/value entries
-                final Iterator<Map.Entry<String, String>> iterator = entrySet().iterator();
+      }
 
-                // Dynamically translate each string name/value entry into a
-                // corresponding attribute model object as iteration continues
-                return new Iterator<ArbitraryAttributeModel>() {
+      @Override
+      public Iterator<ArbitraryAttributeModel> iterator() {
 
-                    @Override
-                    public boolean hasNext() {
-                        return iterator.hasNext();
-                    }
+        // Get iterator over all string name/value entries
+        final Iterator<Map.Entry<String, String>> iterator = entrySet().iterator();
 
-                    @Override
-                    public ArbitraryAttributeModel next() {
-                        Map.Entry<String, String> entry = iterator.next();
-                        return new ArbitraryAttributeModel(entry.getKey(),
-                                entry.getValue());
-                    }
+        // Dynamically translate each string name/value entry into a
+        // corresponding attribute model object as iteration continues
+        return new Iterator<ArbitraryAttributeModel>() {
 
-                    @Override
-                    public void remove() {
-                        iterator.remove();
-                    }
+          @Override
+          public boolean hasNext() {
+            return iterator.hasNext();
+          }
 
-                };
+          @Override
+          public ArbitraryAttributeModel next() {
+            Map.Entry<String, String> entry = iterator.next();
+            return new ArbitraryAttributeModel(entry.getKey(),
+                entry.getValue());
+          }
 
-            }
-
-            @Override
-            public int size() {
-                return ArbitraryAttributeMap.this.size();
-            }
+          @Override
+          public void remove() {
+            iterator.remove();
+          }
 
         };
-    }
+
+      }
+
+      @Override
+      public int size() {
+        return ArbitraryAttributeMap.this.size();
+      }
+
+    };
+  }
 
 }

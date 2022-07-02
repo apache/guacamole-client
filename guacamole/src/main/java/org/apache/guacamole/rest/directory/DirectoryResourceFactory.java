@@ -24,34 +24,25 @@ import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * Factory which creates DirectoryResource instances exposing Directory
- * objects of a particular type.
+ * Factory which creates DirectoryResource instances exposing Directory objects of a particular
+ * type.
  *
- * @param <InternalType>
- *     The type of object contained within the Directory objects exposed by the
- *     DirectoryResource instances created by this DirectoryResourceFactory.
- *
- * @param <ExternalType>
- *     The type of object used in interchange (ie: serialized or deserialized
- *     as JSON) between REST clients and resources when representing the
- *     InternalType.
+ * @param <InternalType> The type of object contained within the Directory objects exposed by the
+ *                       DirectoryResource instances created by this DirectoryResourceFactory.
+ * @param <ExternalType> The type of object used in interchange (ie: serialized or deserialized as
+ *                       JSON) between REST clients and resources when representing the
+ *                       InternalType.
  */
 public interface DirectoryResourceFactory<InternalType extends Identifiable, ExternalType> {
 
-    /**
-     * Creates a new DirectoryResource which exposes the given Directory.
-     *
-     * @param userContext
-     *     The UserContext from which the given Directory was obtained.
-     *
-     * @param directory
-     *     The Directory which should be exposed by the created
-     *     DirectoryResource.
-     *
-     * @return
-     *     A new DirectoryResource which exposes the given Directory.
-     */
-    DirectoryResource<InternalType, ExternalType>
-        create(UserContext userContext, Directory<InternalType> directory);
+  /**
+   * Creates a new DirectoryResource which exposes the given Directory.
+   *
+   * @param userContext The UserContext from which the given Directory was obtained.
+   * @param directory   The Directory which should be exposed by the created DirectoryResource.
+   * @return A new DirectoryResource which exposes the given Directory.
+   */
+  DirectoryResource<InternalType, ExternalType>
+  create(UserContext userContext, Directory<InternalType> directory);
 
 }

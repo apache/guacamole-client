@@ -35,24 +35,20 @@ import org.apache.guacamole.extension.LanguageResourceService;
 @Produces(MediaType.APPLICATION_JSON)
 public class LanguageRESTService {
 
-    /**
-     * Service for retrieving information regarding available language
-     * resources.
-     */
-    @Inject
-    private LanguageResourceService languageResourceService;
+  /**
+   * Service for retrieving information regarding available language resources.
+   */
+  @Inject
+  private LanguageResourceService languageResourceService;
 
-    /**
-     * Returns a map of all available language keys to their corresponding
-     * human-readable names.
-     * 
-     * @return
-     *     A map of languages defined in the system, of language key to 
-     *     display name.
-     */
-    @GET
-    public Map<String, String> getLanguages() {
-        return languageResourceService.getLanguageNames();
-    }
+  /**
+   * Returns a map of all available language keys to their corresponding human-readable names.
+   *
+   * @return A map of languages defined in the system, of language key to display name.
+   */
+  @GET
+  public Map<String, String> getLanguages() {
+    return languageResourceService.getLanguageNames();
+  }
 
 }

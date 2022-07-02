@@ -20,18 +20,19 @@
 /**
  * Provides the ManagedArgument class used by ManagedClient.
  */
-angular.module('client').factory('ManagedArgument', ['$q', function defineManagedArgument($q) {
+angular.module('client').factory('ManagedArgument',
+    ['$q', function defineManagedArgument($q) {
 
-    /**
-     * Object which represents an argument (connection parameter) which may be
-     * changed by the user while the connection is open.
-     * 
-     * @constructor
-     * @param {ManagedArgument|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ManagedArgument.
-     */
-    var ManagedArgument = function ManagedArgument(template) {
+      /**
+       * Object which represents an argument (connection parameter) which may be
+       * changed by the user while the connection is open.
+       *
+       * @constructor
+       * @param {ManagedArgument|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     ManagedArgument.
+       */
+      var ManagedArgument = function ManagedArgument(template) {
 
         // Use empty object by default
         template = template || {};
@@ -58,29 +59,30 @@ angular.module('client').factory('ManagedArgument', ['$q', function defineManage
          */
         this.stream = template.stream;
 
-    };
+      };
 
-    /**
-     * Requests editable access to a given connection parameter, returning a
-     * promise which is resolved with a ManagedArgument instance that provides
-     * such access if the parameter is indeed editable.
-     *
-     * @param {ManagedClient} managedClient
-     *     The ManagedClient instance associated with the connection for which
-     *     an editable version of the connection parameter is being retrieved.
-     *
-     * @param {String} name
-     *     The name of the connection parameter.
-     *
-     * @param {String} value
-     *     The current value of the connection parameter, as received from a
-     *     prior, inbound "argv" stream.
-     *
-     * @returns {Promise.<ManagedArgument>}
-     *     A promise which is resolved with the new ManagedArgument instance
-     *     once the requested parameter has been verified as editable.
-     */
-    ManagedArgument.getInstance = function getInstance(managedClient, name, value) {
+      /**
+       * Requests editable access to a given connection parameter, returning a
+       * promise which is resolved with a ManagedArgument instance that provides
+       * such access if the parameter is indeed editable.
+       *
+       * @param {ManagedClient} managedClient
+       *     The ManagedClient instance associated with the connection for which
+       *     an editable version of the connection parameter is being retrieved.
+       *
+       * @param {String} name
+       *     The name of the connection parameter.
+       *
+       * @param {String} value
+       *     The current value of the connection parameter, as received from a
+       *     prior, inbound "argv" stream.
+       *
+       * @returns {Promise.<ManagedArgument>}
+       *     A promise which is resolved with the new ManagedArgument instance
+       *     once the requested parameter has been verified as editable.
+       */
+      ManagedArgument.getInstance = function getInstance(managedClient, name,
+          value) {
 
         var deferred = $q.defer();
 
@@ -88,56 +90,58 @@ angular.module('client').factory('ManagedArgument', ['$q', function defineManage
         // returned only once mutability of the associated connection parameter
         // has been verified
         var managedArgument = new ManagedArgument({
-            name   : name,
-            value  : value,
-            stream : managedClient.client.createArgumentValueStream('text/plain', name)
+          name: name,
+          value: value,
+          stream: managedClient.client.createArgumentValueStream('text/plain',
+              name)
         });
 
         // The connection parameter is editable only if a successful "ack" is
         // received
         managedArgument.stream.onack = function ackReceived(status) {
-            if (status.isError())
-                deferred.reject(status);
-            else
-                deferred.resolve(managedArgument);
+          if (status.isError()) {
+            deferred.reject(status);
+          } else {
+            deferred.resolve(managedArgument);
+          }
         };
 
         return deferred.promise;
 
-    };
+      };
 
-    /**
-     * Sets the given editable argument (connection parameter) to the given
-     * value, updating the behavior of the associated connection in real-time.
-     * If successful, the ManagedArgument provided cannot be used for future
-     * calls to setValue() and must be replaced with a new instance. This
-     * function only has an effect if the new parameter value is different from
-     * the current value.
-     *
-     * @param {ManagedArgument} managedArgument
-     *     The ManagedArgument instance associated with the connection
-     *     parameter being modified.
-     *
-     * @param {String} value
-     *     The new value to assign to the connection parameter.
-     *
-     * @returns {Boolean}
-     *     true if the connection parameter was sent and the provided
-     *     ManagedArgument instance may no longer be used for future setValue()
-     *     calls, false if the connection parameter was NOT sent as it has not
-     *     changed.
-     */
-    ManagedArgument.setValue = function setValue(managedArgument, value) {
+      /**
+       * Sets the given editable argument (connection parameter) to the given
+       * value, updating the behavior of the associated connection in real-time.
+       * If successful, the ManagedArgument provided cannot be used for future
+       * calls to setValue() and must be replaced with a new instance. This
+       * function only has an effect if the new parameter value is different from
+       * the current value.
+       *
+       * @param {ManagedArgument} managedArgument
+       *     The ManagedArgument instance associated with the connection
+       *     parameter being modified.
+       *
+       * @param {String} value
+       *     The new value to assign to the connection parameter.
+       *
+       * @returns {Boolean}
+       *     true if the connection parameter was sent and the provided
+       *     ManagedArgument instance may no longer be used for future setValue()
+       *     calls, false if the connection parameter was NOT sent as it has not
+       *     changed.
+       */
+      ManagedArgument.setValue = function setValue(managedArgument, value) {
 
         // Stream new value only if value has changed
         if (value !== managedArgument.value) {
 
-            var writer = new Guacamole.StringWriter(managedArgument.stream);
-            writer.sendText(value);
-            writer.sendEnd();
+          var writer = new Guacamole.StringWriter(managedArgument.stream);
+          writer.sendText(value);
+          writer.sendEnd();
 
-            // ManagedArgument instance is no longer usable
-            return true;
+          // ManagedArgument instance is no longer usable
+          return true;
 
         }
 
@@ -145,8 +149,8 @@ angular.module('client').factory('ManagedArgument', ['$q', function defineManage
         // instance may be reused
         return false;
 
-    };
+      };
 
-    return ManagedArgument;
+      return ManagedArgument;
 
-}]);
+    }]);

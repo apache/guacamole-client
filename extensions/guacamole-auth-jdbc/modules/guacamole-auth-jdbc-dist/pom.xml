@@ -17,56 +17,56 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-auth-jdbc-dist</artifactId>
+  <build>
+
+    <!-- Dist .tar.gz for guacamole-auth-jdbc should be named after the
+        parent guacamole-auth-jdbc project, not after guacamole-auth-jdbc-dist -->
+    <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
+
+  </build>
+  <dependencies>
+
+    <!-- MySQL Authentication Extension -->
+    <dependency>
+      <artifactId>guacamole-auth-jdbc-mysql</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+      <version>1.4.0</version>
+    </dependency>
+
+    <!-- PostgreSQL Authentication Extension -->
+    <dependency>
+      <artifactId>guacamole-auth-jdbc-postgresql</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+      <version>1.4.0</version>
+    </dependency>
+
+    <!-- SQL Server Authentication Extension -->
+    <dependency>
+      <artifactId>guacamole-auth-jdbc-sqlserver</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+      <version>1.4.0</version>
+    </dependency>
+
+  </dependencies>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-auth-jdbc-dist</name>
+
+  <packaging>pom</packaging>
+
+  <parent>
+    <artifactId>guacamole-auth-jdbc</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-jdbc-dist</artifactId>
-    <packaging>pom</packaging>
-    <name>guacamole-auth-jdbc-dist</name>
-    <url>http://guacamole.apache.org/</url>
+    <relativePath>../../</relativePath>
+    <version>1.4.0</version>
+  </parent>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>guacamole-auth-jdbc</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../../</relativePath>
-    </parent>
-
-    <dependencies>
-
-        <!-- MySQL Authentication Extension -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-auth-jdbc-mysql</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-
-        <!-- PostgreSQL Authentication Extension -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-auth-jdbc-postgresql</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-
-        <!-- SQL Server Authentication Extension -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-auth-jdbc-sqlserver</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-
-    </dependencies>
-
-    <build>
-
-        <!-- Dist .tar.gz for guacamole-auth-jdbc should be named after the
-            parent guacamole-auth-jdbc project, not after guacamole-auth-jdbc-dist -->
-        <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
-
-    </build>
+  <url>http://guacamole.apache.org/</url>
 
 </project>

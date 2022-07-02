@@ -32,51 +32,48 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
  */
 public class DuoAuthenticationProviderModule extends AbstractModule {
 
-    /**
-     * Guacamole server environment.
-     */
-    private final Environment environment;
+  /**
+   * Guacamole server environment.
+   */
+  private final Environment environment;
 
-    /**
-     * A reference to the DuoAuthenticationProvider on behalf of which this
-     * module has configured injection.
-     */
-    private final AuthenticationProvider authProvider;
+  /**
+   * A reference to the DuoAuthenticationProvider on behalf of which this module has configured
+   * injection.
+   */
+  private final AuthenticationProvider authProvider;
 
-    /**
-     * Creates a new Duo authentication provider module which configures
-     * injection for the DuoAuthenticationProvider.
-     *
-     * @param authProvider
-     *     The AuthenticationProvider for which injection is being configured.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the Guacamole server
-     *     environment.
-     */
-    public DuoAuthenticationProviderModule(AuthenticationProvider authProvider)
-            throws GuacamoleException {
+  /**
+   * Creates a new Duo authentication provider module which configures injection for the
+   * DuoAuthenticationProvider.
+   *
+   * @param authProvider The AuthenticationProvider for which injection is being configured.
+   * @throws GuacamoleException If an error occurs while retrieving the Guacamole server
+   *                            environment.
+   */
+  public DuoAuthenticationProviderModule(AuthenticationProvider authProvider)
+      throws GuacamoleException {
 
-        // Get local environment
-        this.environment = LocalEnvironment.getInstance();
+    // Get local environment
+    this.environment = LocalEnvironment.getInstance();
 
-        // Store associated auth provider
-        this.authProvider = authProvider;
+    // Store associated auth provider
+    this.authProvider = authProvider;
 
-    }
+  }
 
-    @Override
-    protected void configure() {
+  @Override
+  protected void configure() {
 
-        // Bind core implementations of guacamole-ext classes
-        bind(AuthenticationProvider.class).toInstance(authProvider);
-        bind(Environment.class).toInstance(environment);
+    // Bind core implementations of guacamole-ext classes
+    bind(AuthenticationProvider.class).toInstance(authProvider);
+    bind(Environment.class).toInstance(environment);
 
-        // Bind Duo-specific services
-        bind(ConfigurationService.class);
-        bind(DuoService.class);
-        bind(UserVerificationService.class);
+    // Bind Duo-specific services
+    bind(ConfigurationService.class);
+    bind(DuoService.class);
+    bind(UserVerificationService.class);
 
-    }
+  }
 
 }

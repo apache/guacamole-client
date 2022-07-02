@@ -22,26 +22,25 @@ package org.apache.guacamole.net.auth.simple;
 import org.apache.guacamole.net.auth.AbstractUserGroup;
 
 /**
- * A read-only UserGroup implementation which has no members and no
- * permissions. Implementations that need to define members or permissions
- * should extend this class and override the associated getters.
+ * A read-only UserGroup implementation which has no members and no permissions. Implementations
+ * that need to define members or permissions should extend this class and override the associated
+ * getters.
  */
 public class SimpleUserGroup extends AbstractUserGroup {
 
-    /**
-     * Creates a completely uninitialized SimpleUserGroup.
-     */
-    public SimpleUserGroup() {
-    }
+  /**
+   * Creates a completely uninitialized SimpleUserGroup.
+   */
+  public SimpleUserGroup() {
+  }
 
-    /**
-     * Creates a new SimpleUserGroup having the given identifier.
-     *
-     * @param identifier
-     *     The identifier to assign to this SimpleUserGroup.
-     */
-    public SimpleUserGroup(String identifier) {
-        super.setIdentifier(identifier);
-    }
+  /**
+   * Creates a new SimpleUserGroup having the given identifier.
+   *
+   * @param identifier The identifier to assign to this SimpleUserGroup.
+   */
+  public SimpleUserGroup(String identifier) {
+    super.setIdentifier(identifier);
+  }
 
 }

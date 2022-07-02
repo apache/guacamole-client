@@ -23,27 +23,26 @@ import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.ConnectionRecord;
 
 /**
- * A REST resource for retrieving and managing the history records of Guacamole
- * connections. Connection history records describe the start/end times of each
- * usage of a connection (when a user connects and disconnects), as well as the
- * specific user that connected/disconnected.
+ * A REST resource for retrieving and managing the history records of Guacamole connections.
+ * Connection history records describe the start/end times of each usage of a connection (when a
+ * user connects and disconnects), as well as the specific user that connected/disconnected.
  */
-public class ConnectionHistoryResource extends ActivityRecordSetResource<ConnectionRecord, APIConnectionRecord> {
+public class ConnectionHistoryResource extends
+    ActivityRecordSetResource<ConnectionRecord, APIConnectionRecord> {
 
-    /**
-     * Creates a new ConnectionHistoryResource which exposes the connection
-     * history records of the given ActivityRecordSet.
-     *
-     * @param history
-     *     The ActivityRecordSet whose records should be exposed.
-     */
-    public ConnectionHistoryResource(ActivityRecordSet<ConnectionRecord> history) {
-        super(history);
-    }
+  /**
+   * Creates a new ConnectionHistoryResource which exposes the connection history records of the
+   * given ActivityRecordSet.
+   *
+   * @param history The ActivityRecordSet whose records should be exposed.
+   */
+  public ConnectionHistoryResource(ActivityRecordSet<ConnectionRecord> history) {
+    super(history);
+  }
 
-    @Override
-    protected APIConnectionRecord toExternalRecord(ConnectionRecord record) {
-        return new APIConnectionRecord(record);
-    }
+  @Override
+  protected APIConnectionRecord toExternalRecord(ConnectionRecord record) {
+    return new APIConnectionRecord(record);
+  }
 
 }

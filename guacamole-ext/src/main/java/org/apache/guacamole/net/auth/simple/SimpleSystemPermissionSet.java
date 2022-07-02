@@ -27,85 +27,79 @@ import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * A read-only implementation of SystemPermissionSet which uses a backing Set
- * of Permissions to determine which permissions are present.
+ * A read-only implementation of SystemPermissionSet which uses a backing Set of Permissions to
+ * determine which permissions are present.
  */
 public class SimpleSystemPermissionSet implements SystemPermissionSet {
 
-    /**
-     * The set of all permissions currently granted.
-     */
-    private Set<SystemPermission> permissions = Collections.emptySet();
+  /**
+   * The set of all permissions currently granted.
+   */
+  private Set<SystemPermission> permissions = Collections.emptySet();
 
-    /**
-     * Creates a new empty SimpleSystemPermissionSet. If you are not extending
-     * SimpleSystemPermissionSet and only need an immutable, empty
-     * SystemPermissionSet, consider using {@link SystemPermissionSet#EMPTY_SET}
-     * instead.
-     */
-    public SimpleSystemPermissionSet() {
-    }
+  /**
+   * Creates a new empty SimpleSystemPermissionSet. If you are not extending
+   * SimpleSystemPermissionSet and only need an immutable, empty SystemPermissionSet, consider using
+   * {@link SystemPermissionSet#EMPTY_SET} instead.
+   */
+  public SimpleSystemPermissionSet() {
+  }
 
-    /**
-     * Creates a new SimpleSystemPermissionSet which contains the permissions
-     * within the given Set.
-     *
-     * @param permissions 
-     *     The Set of permissions this SimpleSystemPermissionSet should
-     *     contain.
-     */
-    public SimpleSystemPermissionSet(Set<SystemPermission> permissions) {
-        this.permissions = permissions;
-    }
+  /**
+   * Creates a new SimpleSystemPermissionSet which contains the permissions within the given Set.
+   *
+   * @param permissions The Set of permissions this SimpleSystemPermissionSet should contain.
+   */
+  public SimpleSystemPermissionSet(Set<SystemPermission> permissions) {
+    this.permissions = permissions;
+  }
 
-    /**
-     * Sets the Set which backs this SimpleSystemPermissionSet. Future function
-     * calls on this SimpleSystemPermissionSet will use the provided Set.
-     *
-     * @param permissions 
-     *     The Set of permissions this SimpleSystemPermissionSet should
-     *     contain.
-     */
-    protected void setPermissions(Set<SystemPermission> permissions) {
-        this.permissions = permissions;
-    }
+  @Override
+  public Set<SystemPermission> getPermissions() {
+    return permissions;
+  }
 
-    @Override
-    public Set<SystemPermission> getPermissions() {
-        return permissions;
-    }
+  /**
+   * Sets the Set which backs this SimpleSystemPermissionSet. Future function calls on this
+   * SimpleSystemPermissionSet will use the provided Set.
+   *
+   * @param permissions The Set of permissions this SimpleSystemPermissionSet should contain.
+   */
+  protected void setPermissions(Set<SystemPermission> permissions) {
+    this.permissions = permissions;
+  }
 
-    @Override
-    public boolean hasPermission(SystemPermission.Type permission)
-            throws GuacamoleException {
+  @Override
+  public boolean hasPermission(SystemPermission.Type permission)
+      throws GuacamoleException {
 
-        SystemPermission systemPermission = new SystemPermission(permission);
-        return permissions.contains(systemPermission);
+    SystemPermission systemPermission = new SystemPermission(permission);
+    return permissions.contains(systemPermission);
 
-    }
+  }
 
-    @Override
-    public void addPermission(SystemPermission.Type permission)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public void addPermission(SystemPermission.Type permission)
+      throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
 
-    @Override
-    public void removePermission(SystemPermission.Type permission)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public void removePermission(SystemPermission.Type permission)
+      throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
 
-    @Override
-    public void addPermissions(Set<SystemPermission> permissions)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public void addPermissions(Set<SystemPermission> permissions)
+      throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
 
-    @Override
-    public void removePermissions(Set<SystemPermission> permissions)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public void removePermissions(Set<SystemPermission> permissions)
+      throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
 
 }

@@ -20,7 +20,6 @@
 package org.apache.guacamole;
 
 import com.google.common.collect.Lists;
-import org.apache.guacamole.tunnel.TunnelModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
@@ -40,217 +39,207 @@ import org.apache.guacamole.properties.FileGuacamoleProperties;
 import org.apache.guacamole.rest.RESTServiceModule;
 import org.apache.guacamole.rest.auth.HashTokenSessionMap;
 import org.apache.guacamole.rest.auth.TokenSessionMap;
+import org.apache.guacamole.tunnel.TunnelModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A ServletContextListener to listen for initialization of the servlet context
- * in order to set up dependency injection.
- *
- * NOTE: Guacamole's REST API uses Jersey 2.x which does not natively support
- * dependency injection using Guice. It DOES support dependency injection using
- * HK2, which supports bi-directional bridging with Guice.
- *
+ * A ServletContextListener to listen for initialization of the servlet context in order to set up
+ * dependency injection.
+ * <p>
+ * NOTE: Guacamole's REST API uses Jersey 2.x which does not natively support dependency injection
+ * using Guice. It DOES support dependency injection using HK2, which supports bi-directional
+ * bridging with Guice.
+ * <p>
  * The overall process is thus:
- *
- * 1. Application initialization proceeds using GuacamoleServletContextListener,
- *    a subclass of GuiceServletContextListener, with all HTTP requests being
- *    routed through GuiceFilter which serves as the absolute root.
- *
- * 2. GuacamoleServletContextListener prepares the Guice injector, storing the
- *    injector within the ServletContext such that it can later be bridged with
- *    HK2.
- *
- * 3. Several of the modules used to prepare the Guice injector are
- *    ServletModule subclasses, which define HTTP request paths that GuiceFilter
- *    should route to specific servlets. One of these paths is "/api/*" (the
- *    root of the REST API) which is routed to Jersey's ServletContainer servlet
- *    (the root of Jersey's JAX-RS implementation).
- *
- * 4. Configuration information passed to Jersey's ServletContainer tells Jersey
- *    to use the GuacamoleApplication class (a subclass of ResourceConfig) to
- *    define the rest of the resources and any other configuration.
- *
- * 5. When Jersey creates its instance of GuacamoleApplication, the
- *    initialization process of GuacamoleApplication pulls the Guice injector
- *    from the ServletContext, completes the HK2 bridging, and configures Jersey
- *    to automatically locate and inject all REST services.
+ * <p>
+ * 1. Application initialization proceeds using GuacamoleServletContextListener, a subclass of
+ * GuiceServletContextListener, with all HTTP requests being routed through GuiceFilter which serves
+ * as the absolute root.
+ * <p>
+ * 2. GuacamoleServletContextListener prepares the Guice injector, storing the injector within the
+ * ServletContext such that it can later be bridged with HK2.
+ * <p>
+ * 3. Several of the modules used to prepare the Guice injector are ServletModule subclasses, which
+ * define HTTP request paths that GuiceFilter should route to specific servlets. One of these paths
+ * is "/api/*" (the root of the REST API) which is routed to Jersey's ServletContainer servlet (the
+ * root of Jersey's JAX-RS implementation).
+ * <p>
+ * 4. Configuration information passed to Jersey's ServletContainer tells Jersey to use the
+ * GuacamoleApplication class (a subclass of ResourceConfig) to define the rest of the resources and
+ * any other configuration.
+ * <p>
+ * 5. When Jersey creates its instance of GuacamoleApplication, the initialization process of
+ * GuacamoleApplication pulls the Guice injector from the ServletContext, completes the HK2
+ * bridging, and configures Jersey to automatically locate and inject all REST services.
  */
 public class GuacamoleServletContextListener extends GuiceServletContextListener {
 
-    /**
-     * The name of the ServletContext attribute which will contain a reference
-     * to the Guice injector once the contextInitialized() event has been
-     * handled.
-     */
-    public static final String GUICE_INJECTOR = "GUAC_GUICE_INJECTOR";
-
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(GuacamoleServletContextListener.class);
-
-    /**
-     * A property that determines whether environment variables are evaluated
-     * to override properties specified in guacamole.properties.
-     */
-    private static final BooleanGuacamoleProperty ENABLE_ENVIRONMENT_PROPERTIES =
-        new BooleanGuacamoleProperty() {
-            @Override
-            public String getName() {
-                return "enable-environment-properties";
-            }
-        };
-
-    /**
-     * The Guacamole server environment.
-     */
-    private Environment environment;
-
-    /**
-     * Singleton instance of a TokenSessionMap.
-     */
-    private TokenSessionMap sessionMap;
-
-    /**
-     * List of all authentication providers from all loaded extensions.
-     */
-    @Inject
-    private List<AuthenticationProvider> authProviders;
-
-    /**
-     * All temporary files that should be deleted upon application shutdown, in
-     * reverse order of desired deletion. This will typically simply be the
-     * order that each file was created.
-     */
-    @Inject
-    private List<File> temporaryFiles;
-    
-    /**
-     * Internal reference to the Guice injector that was lazily created when
-     * getInjector() was first invoked.
-     */
-    private final AtomicReference<Injector> guiceInjector = new AtomicReference<>();
-
-    @Override
-    public void contextInitialized(ServletContextEvent servletContextEvent) {
-
-        environment = LocalEnvironment.getInstance();
-
-        // Read configuration information from GUACAMOLE_HOME/guacamole.properties
-        try {
-            File guacProperties = new File(environment.getGuacamoleHome(), "guacamole.properties");
-            environment.addGuacamoleProperties(new FileGuacamoleProperties(guacProperties));
-            logger.info("Read configuration parameters from \"{}\".", guacProperties);
+  /**
+   * The name of the ServletContext attribute which will contain a reference to the Guice injector
+   * once the contextInitialized() event has been handled.
+   */
+  public static final String GUICE_INJECTOR = "GUAC_GUICE_INJECTOR";
+  /**
+   * A property that determines whether environment variables are evaluated to override properties
+   * specified in guacamole.properties.
+   */
+  private static final BooleanGuacamoleProperty ENABLE_ENVIRONMENT_PROPERTIES =
+      new BooleanGuacamoleProperty() {
+        @Override
+        public String getName() {
+          return "enable-environment-properties";
         }
-        catch (GuacamoleException e) {
-            logger.error("Unable to read guacamole.properties: {}", e.getMessage());
-            logger.debug("Error reading guacamole.properties.", e);
+      };
+  /**
+   * Logger for this class.
+   */
+  private final Logger logger = LoggerFactory.getLogger(GuacamoleServletContextListener.class);
+  /**
+   * Internal reference to the Guice injector that was lazily created when getInjector() was first
+   * invoked.
+   */
+  private final AtomicReference<Injector> guiceInjector = new AtomicReference<>();
+  /**
+   * The Guacamole server environment.
+   */
+  private Environment environment;
+  /**
+   * Singleton instance of a TokenSessionMap.
+   */
+  private TokenSessionMap sessionMap;
+  /**
+   * List of all authentication providers from all loaded extensions.
+   */
+  @Inject
+  private List<AuthenticationProvider> authProviders;
+  /**
+   * All temporary files that should be deleted upon application shutdown, in reverse order of
+   * desired deletion. This will typically simply be the order that each file was created.
+   */
+  @Inject
+  private List<File> temporaryFiles;
+
+  @Override
+  public void contextInitialized(ServletContextEvent servletContextEvent) {
+
+    environment = LocalEnvironment.getInstance();
+
+    // Read configuration information from GUACAMOLE_HOME/guacamole.properties
+    try {
+      File guacProperties = new File(environment.getGuacamoleHome(), "guacamole.properties");
+      environment.addGuacamoleProperties(new FileGuacamoleProperties(guacProperties));
+      logger.info("Read configuration parameters from \"{}\".", guacProperties);
+    } catch (GuacamoleException e) {
+      logger.error("Unable to read guacamole.properties: {}", e.getMessage());
+      logger.debug("Error reading guacamole.properties.", e);
+    }
+
+    // For any values not defined in GUACAMOLE_HOME/guacamole.properties,
+    // read from system environment if "enable-environment-properties" is
+    // set to "true"
+    try {
+      if (environment.getProperty(ENABLE_ENVIRONMENT_PROPERTIES, false)) {
+        environment.addGuacamoleProperties(new SystemEnvironmentGuacamoleProperties());
+        logger.info("Additional configuration parameters may be read "
+            + "from environment variables.");
+      }
+    } catch (GuacamoleException e) {
+      logger.error("Unable to configure support for environment properties: {}", e.getMessage());
+      logger.debug("Error reading \"{}\" property from guacamole.properties.",
+          ENABLE_ENVIRONMENT_PROPERTIES.getName(), e);
+    }
+
+    // Now that at least the main guacamole.properties source of
+    // configuration information is available, initialize the session map
+    sessionMap = new HashTokenSessionMap(environment);
+
+    // NOTE: The superclass implementation of contextInitialized() is
+    // expected to invoke getInjector(), hence the need to call AFTER
+    // setting up the environment and session map
+    super.contextInitialized(servletContextEvent);
+
+    // Inject any annotated members of this class
+    Injector injector = getInjector();
+    injector.injectMembers(this);
+
+    // Store reference to injector for use by Jersey and HK2 bridge
+    servletContextEvent.getServletContext().setAttribute(GUICE_INJECTOR, injector);
+
+  }
+
+  @Override
+  protected Injector getInjector() {
+    return guiceInjector.updateAndGet((current) -> {
+
+      // Use existing injector if already created
+      if (current != null) {
+        return current;
+      }
+
+      // Create new injector if necessary
+      Injector injector = Guice.createInjector(Stage.PRODUCTION,
+          new EnvironmentModule(environment),
+          new LogModule(environment),
+          new ExtensionModule(environment),
+          new RESTServiceModule(sessionMap),
+          new TunnelModule()
+      );
+
+      return injector;
+
+    });
+  }
+
+  /**
+   * Deletes the given temporary file/directory, if possible. If the deletion operation fails, a
+   * warning is logged noting the failure. If the given file is a directory, it will only be deleted
+   * if empty.
+   *
+   * @param temp The temporary file to delete.
+   */
+  private void deleteTemporaryFile(File temp) {
+    if (!temp.delete()) {
+      logger.warn("Temporary file/directory \"{}\" could not be "
+          + "deleted. The file may remain until the JVM exits, or "
+          + "may need to be manually deleted.", temp);
+    } else {
+      logger.debug("Deleted temporary file/directory \"{}\".", temp);
+    }
+  }
+
+  @Override
+  public void contextDestroyed(ServletContextEvent servletContextEvent) {
+    try {
+
+      // Clean up reference to Guice injector
+      servletContextEvent.getServletContext().removeAttribute(GUICE_INJECTOR);
+
+      // Shutdown TokenSessionMap
+      if (sessionMap != null) {
+        sessionMap.shutdown();
+      }
+
+      // Unload all extensions
+      if (authProviders != null) {
+        for (AuthenticationProvider authProvider : authProviders) {
+          authProvider.shutdown();
         }
+      }
 
-        // For any values not defined in GUACAMOLE_HOME/guacamole.properties,
-        // read from system environment if "enable-environment-properties" is
-        // set to "true"
-        try {
-            if (environment.getProperty(ENABLE_ENVIRONMENT_PROPERTIES, false)) {
-                environment.addGuacamoleProperties(new SystemEnvironmentGuacamoleProperties());
-                logger.info("Additional configuration parameters may be read "
-                        + "from environment variables.");
-            }
-        }
-        catch (GuacamoleException e) {
-            logger.error("Unable to configure support for environment properties: {}", e.getMessage());
-            logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_ENVIRONMENT_PROPERTIES.getName(), e);
-        }
+    } finally {
 
-        // Now that at least the main guacamole.properties source of
-        // configuration information is available, initialize the session map
-        sessionMap = new HashTokenSessionMap(environment);
-
-        // NOTE: The superclass implementation of contextInitialized() is
-        // expected to invoke getInjector(), hence the need to call AFTER
-        // setting up the environment and session map
-        super.contextInitialized(servletContextEvent);
-
-        // Inject any annotated members of this class
-        Injector injector = getInjector();
-        injector.injectMembers(this);
-
-        // Store reference to injector for use by Jersey and HK2 bridge
-        servletContextEvent.getServletContext().setAttribute(GUICE_INJECTOR, injector);
+      // Regardless of what may succeed/fail here, always attempt to
+      // clean up ALL temporary files
+      if (temporaryFiles != null) {
+        Lists.reverse(temporaryFiles).stream().forEachOrdered(this::deleteTemporaryFile);
+      }
 
     }
 
-    @Override
-    protected Injector getInjector() {
-        return guiceInjector.updateAndGet((current) -> {
+    // Continue any Guice-specific cleanup
+    super.contextDestroyed(servletContextEvent);
 
-            // Use existing injector if already created
-            if (current != null)
-                return current;
-
-            // Create new injector if necessary
-            Injector injector = Guice.createInjector(Stage.PRODUCTION,
-                new EnvironmentModule(environment),
-                new LogModule(environment),
-                new ExtensionModule(environment),
-                new RESTServiceModule(sessionMap),
-                new TunnelModule()
-            );
-
-            return injector;
-
-        });
-    }
-
-    /**
-     * Deletes the given temporary file/directory, if possible. If the deletion
-     * operation fails, a warning is logged noting the failure. If the given
-     * file is a directory, it will only be deleted if empty.
-     *
-     * @param temp
-     *     The temporary file to delete.
-     */
-    private void deleteTemporaryFile(File temp) {
-        if (!temp.delete()) {
-            logger.warn("Temporary file/directory \"{}\" could not be "
-                    + "deleted. The file may remain until the JVM exits, or "
-                    + "may need to be manually deleted.", temp);
-        }
-        else
-            logger.debug("Deleted temporary file/directory \"{}\".", temp);
-    }
-    
-    @Override
-    public void contextDestroyed(ServletContextEvent servletContextEvent) {
-        try {
-        
-            // Clean up reference to Guice injector
-            servletContextEvent.getServletContext().removeAttribute(GUICE_INJECTOR);
-
-            // Shutdown TokenSessionMap
-            if (sessionMap != null)
-                sessionMap.shutdown();
-
-            // Unload all extensions
-            if (authProviders != null) {
-                for (AuthenticationProvider authProvider : authProviders)
-                    authProvider.shutdown();
-            }
-
-        }
-        finally {
-
-            // Regardless of what may succeed/fail here, always attempt to
-            // clean up ALL temporary files
-            if (temporaryFiles != null)
-                Lists.reverse(temporaryFiles).stream().forEachOrdered(this::deleteTemporaryFile);
-
-        }
-
-        // Continue any Guice-specific cleanup
-        super.contextDestroyed(servletContextEvent);
-
-    }
+  }
 
 }

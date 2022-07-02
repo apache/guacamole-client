@@ -17,106 +17,106 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-auth-sso-cas</artifactId>
+  <dependencies>
+
+    <!-- Guacamole Extension API -->
+    <dependency>
+      <artifactId>guacamole-ext</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+    </dependency>
+
+    <!-- Core SSO support -->
+    <dependency>
+      <artifactId>guacamole-auth-sso-base</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+    </dependency>
+
+    <!-- Apereo CAS Client API -->
+    <dependency>
+      <artifactId>cas-client-core</artifactId>
+      <exclusions>
+
+        <!-- Resolve version conflict (see below - transitive
+            dependencies of cas-client-core disagree on 2.3.0 vs. 2.3.1) -->
+        <exclusion>
+          <artifactId>jaxb-api</artifactId>
+          <groupId>javax.xml.bind</groupId>
+        </exclusion>
+
+      </exclusions>
+      <groupId>org.jasig.cas.client</groupId>
+      <version>3.6.4</version>
+    </dependency>
+
+    <!-- Guava - Utility Library -->
+    <dependency>
+      <artifactId>guava</artifactId>
+      <groupId>com.google.guava</groupId>
+    </dependency>
+
+    <!-- Guice -->
+    <dependency>
+      <artifactId>guice</artifactId>
+      <groupId>com.google.inject</groupId>
+    </dependency>
+
+    <!-- Java servlet API -->
+    <dependency>
+      <artifactId>servlet-api</artifactId>
+      <groupId>javax.servlet</groupId>
+    </dependency>
+
+    <!-- JAX-RS Annotations -->
+    <dependency>
+      <artifactId>jsr311-api</artifactId>
+      <groupId>javax.ws.rs</groupId>
+    </dependency>
+
+    <!-- JUnit -->
+    <dependency>
+      <artifactId>junit-jupiter-api</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>junit-jupiter-params</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <groupId>org.junit.jupiter</groupId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Force use of version 2.3.1 (transitive dependencies of
+        cas-client-core disagree on 2.3.0. vs. 2.3.1) -->
+    <dependency>
+      <artifactId>jaxb-api</artifactId>
+      <groupId>javax.xml.bind</groupId>
+      <version>2.3.1</version>
+    </dependency>
+
+  </dependencies>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-auth-sso-cas</name>
+  <packaging>jar</packaging>
+  <parent>
+    <artifactId>guacamole-auth-sso</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-sso-cas</artifactId>
-    <packaging>jar</packaging>
+    <relativePath>../../</relativePath>
     <version>1.4.0</version>
-    <name>guacamole-auth-sso-cas</name>
-    <url>http://guacamole.apache.org/</url>
+  </parent>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>guacamole-auth-sso</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../../</relativePath>
-    </parent>
+  <url>http://guacamole.apache.org/</url>
 
-    <dependencies>
-
-        <!-- Guacamole Extension API -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-ext</artifactId>
-        </dependency>
-
-        <!-- Core SSO support -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-auth-sso-base</artifactId>
-        </dependency>
-
-        <!-- Apereo CAS Client API -->
-        <dependency>
-            <groupId>org.jasig.cas.client</groupId>
-            <artifactId>cas-client-core</artifactId>
-            <version>3.6.4</version>
-            <exclusions>
-
-                <!-- Resolve version conflict (see below - transitive
-                    dependencies of cas-client-core disagree on 2.3.0 vs. 2.3.1) -->
-                <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
-                </exclusion>
-
-            </exclusions>
-        </dependency>
-        
-        <!-- Guava - Utility Library -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-
-        <!-- Java servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-        </dependency>
-
-        <!-- JAX-RS Annotations -->
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-        </dependency>
-
-        <!-- JUnit -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Force use of version 2.3.1 (transitive dependencies of
-            cas-client-core disagree on 2.3.0. vs. 2.3.1) -->
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
-        </dependency>
-
-    </dependencies>
+  <version>1.4.0</version>
 
 </project>

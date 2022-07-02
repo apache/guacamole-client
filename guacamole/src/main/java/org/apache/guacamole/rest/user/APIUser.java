@@ -30,128 +30,128 @@ import org.apache.guacamole.net.auth.User;
  * A simple User to expose through the REST endpoints.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(value=Include.NON_NULL)
+@JsonInclude(value = Include.NON_NULL)
 public class APIUser {
-    
-    /**
-     * The username of this user.
-     */
-    private String username;
-    
-    /**
-     * The password of this user.
-     */
-    private String password;
-    
-    /**
-     * Map of all associated attributes by attribute identifier.
-     */
-    private Map<String, String> attributes;
 
-    /**
-     * The date and time that this user was last logged in, or null if this user
-     * has never logged in or this information is unavailable.
-     */
-    private Date lastActive;
+  /**
+   * The username of this user.
+   */
+  private String username;
 
-    /**
-     * Construct a new empty APIUser.
-     */
-    public APIUser() {}
-    
-    /**
-     * Construct a new APIUser from the provided User.
-     * @param user The User to construct the APIUser from.
-     */
-    public APIUser(User user) {
+  /**
+   * The password of this user.
+   */
+  private String password;
 
-        // Set user information
-        this.username = user.getIdentifier();
-        this.password = user.getPassword();
-        this.lastActive = user.getLastActive();
+  /**
+   * Map of all associated attributes by attribute identifier.
+   */
+  private Map<String, String> attributes;
 
-        // Associate any attributes
-        this.attributes = user.getAttributes();
+  /**
+   * The date and time that this user was last logged in, or null if this user has never logged in
+   * or this information is unavailable.
+   */
+  private Date lastActive;
 
-    }
+  /**
+   * Construct a new empty APIUser.
+   */
+  public APIUser() {
+  }
 
-    /**
-     * Returns the username for this user.
-     * @return The username for this user. 
-     */
-    public String getUsername() {
-        return username;
-    }
+  /**
+   * Construct a new APIUser from the provided User.
+   *
+   * @param user The User to construct the APIUser from.
+   */
+  public APIUser(User user) {
 
-    /**
-     * Set the username for this user.
-     * @param username The username for this user.
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    // Set user information
+    this.username = user.getIdentifier();
+    this.password = user.getPassword();
+    this.lastActive = user.getLastActive();
 
-    /**
-     * Returns the password for this user.
-     * @return The password for this user.
-     */
-    public String getPassword() {
-        return password;
-    }
+    // Associate any attributes
+    this.attributes = user.getAttributes();
 
-    /**
-     * Set the password for this user.
-     * @param password The password for this user.
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  }
 
-    /**
-     * Returns a map of all attributes associated with this user. Each entry
-     * key is the attribute identifier, while each value is the attribute
-     * value itself.
-     *
-     * @return
-     *     The attribute map for this user.
-     */
-    public Map<String, String> getAttributes() {
-        return attributes;
-    }
+  /**
+   * Returns the username for this user.
+   *
+   * @return The username for this user.
+   */
+  public String getUsername() {
+    return username;
+  }
 
-    /**
-     * Sets the map of all attributes associated with this user. Each entry key
-     * is the attribute identifier, while each value is the attribute value
-     * itself.
-     *
-     * @param attributes
-     *     The attribute map for this user.
-     */
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
-    }
+  /**
+   * Set the username for this user.
+   *
+   * @param username The username for this user.
+   */
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    /**
-     * Returns the date and time that this user was last logged in, or null if
-     * this user has never logged in or this information is unavailable.
-     *
-     * @return
-     *     The date and time that this user was last logged in, or null if this
-     *     user has never logged in or this information is unavailable.
-     */
-    public Date getLastActive() {
-        return lastActive;
-    }
+  /**
+   * Returns the password for this user.
+   *
+   * @return The password for this user.
+   */
+  public String getPassword() {
+    return password;
+  }
 
-    /**
-     * Sets the date and time that this user was last logged in.
-     *
-     * @param lastActive
-     *     The date and time that this user was last logged in, or null if this
-     *     user has never logged in or this information is unavailable.
-     */
-    public void setLastActive(Date lastActive) {
-        this.lastActive = lastActive;
-    }
+  /**
+   * Set the password for this user.
+   *
+   * @param password The password for this user.
+   */
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
+  /**
+   * Returns a map of all attributes associated with this user. Each entry key is the attribute
+   * identifier, while each value is the attribute value itself.
+   *
+   * @return The attribute map for this user.
+   */
+  public Map<String, String> getAttributes() {
+    return attributes;
+  }
+
+  /**
+   * Sets the map of all attributes associated with this user. Each entry key is the attribute
+   * identifier, while each value is the attribute value itself.
+   *
+   * @param attributes The attribute map for this user.
+   */
+  public void setAttributes(Map<String, String> attributes) {
+    this.attributes = attributes;
+  }
+
+  /**
+   * Returns the date and time that this user was last logged in, or null if this user has never
+   * logged in or this information is unavailable.
+   *
+   * @return The date and time that this user was last logged in, or null if this user has never
+   * logged in or this information is unavailable.
+   */
+  public Date getLastActive() {
+    return lastActive;
+  }
+
+  /**
+   * Sets the date and time that this user was last logged in.
+   *
+   * @param lastActive The date and time that this user was last logged in, or null if this user has
+   *                   never logged in or this information is unavailable.
+   */
+  public void setLastActive(Date lastActive) {
+    this.lastActive = lastActive;
+  }
 
 }

@@ -28,33 +28,35 @@ import org.apache.guacamole.GuacamoleServerException;
  * A GuacamoleProperty whose value is a TimeZone.
  */
 public abstract class TimeZoneGuacamoleProperty
-        implements GuacamoleProperty<TimeZone> {
-    
-    /**
-     * A regex that matches valid variants of GMT timezones.
-     */
-    public static final Pattern GMT_REGEX =
-            Pattern.compile("^GMT([+-](0|00)((:)?00)?)?$");
-    
-    @Override
-    public TimeZone parseValue(String value) throws GuacamoleException {
-        
-        // Nothing in, nothing out
-        if (value == null || value.isEmpty())
-            return null;
-        
-        // Attempt to return the TimeZone of the provided string value.
-        TimeZone tz = TimeZone.getTimeZone(value);
-        
-        // If the input is not GMT, but the output is GMT, the TimeZone is not
-        // valid and we throw an exception.
-        if (!GMT_REGEX.matcher(value).matches()
-                && GMT_REGEX.matcher(tz.getID()).matches())
-            throw new GuacamoleServerException("Property \"" + getName()
-                + "\" does not specify a valid time zone.");
+    implements GuacamoleProperty<TimeZone> {
 
-        return tz;
-        
+  /**
+   * A regex that matches valid variants of GMT timezones.
+   */
+  public static final Pattern GMT_REGEX =
+      Pattern.compile("^GMT([+-](0|00)((:)?00)?)?$");
+
+  @Override
+  public TimeZone parseValue(String value) throws GuacamoleException {
+
+    // Nothing in, nothing out
+    if (value == null || value.isEmpty()) {
+      return null;
     }
-    
+
+    // Attempt to return the TimeZone of the provided string value.
+    TimeZone tz = TimeZone.getTimeZone(value);
+
+    // If the input is not GMT, but the output is GMT, the TimeZone is not
+    // valid and we throw an exception.
+    if (!GMT_REGEX.matcher(value).matches()
+        && GMT_REGEX.matcher(tz.getID()).matches()) {
+      throw new GuacamoleServerException("Property \"" + getName()
+          + "\" does not specify a valid time zone.");
+    }
+
+    return tz;
+
+  }
+
 }

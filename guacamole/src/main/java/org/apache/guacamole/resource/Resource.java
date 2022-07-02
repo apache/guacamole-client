@@ -22,41 +22,36 @@ package org.apache.guacamole.resource;
 import java.io.InputStream;
 
 /**
- * An arbitrary resource that can be served to a user via HTTP. Resources are
- * anonymous but have a defined mimetype and corresponding input stream.
+ * An arbitrary resource that can be served to a user via HTTP. Resources are anonymous but have a
+ * defined mimetype and corresponding input stream.
  */
 public interface Resource {
 
-    /**
-     * Returns the mimetype of this resource. This function MUST always return
-     * a value. If the type is unknown, return "application/octet-stream".
-     *
-     * @return
-     *     The mimetype of this resource.
-     */
-    String getMimeType();
+  /**
+   * Returns the mimetype of this resource. This function MUST always return a value. If the type is
+   * unknown, return "application/octet-stream".
+   *
+   * @return The mimetype of this resource.
+   */
+  String getMimeType();
 
-    /**
-     * Returns the time the resource was last modified in milliseconds since
-     * midnight of January 1, 1970 UTC.
-     *
-     * @return
-     *      The time the resource was last modified, in milliseconds.
-     */
-    long getLastModified();
+  /**
+   * Returns the time the resource was last modified in milliseconds since midnight of January 1,
+   * 1970 UTC.
+   *
+   * @return The time the resource was last modified, in milliseconds.
+   */
+  long getLastModified();
 
-    /**
-     * Returns an InputStream which reads the contents of this resource,
-     * starting with the first byte. Reading from the returned InputStream will
-     * not affect reads from other InputStreams returned by other calls to
-     * asStream(). The returned InputStream must be manually closed when no
-     * longer needed. If the resource is unexpectedly unavailable, this will
-     * return null.
-     *
-     * @return
-     *     An InputStream which reads the contents of this resource, starting
-     *     with the first byte, or null if the resource is unavailable.
-     */
-    InputStream asStream();
+  /**
+   * Returns an InputStream which reads the contents of this resource, starting with the first byte.
+   * Reading from the returned InputStream will not affect reads from other InputStreams returned by
+   * other calls to asStream(). The returned InputStream must be manually closed when no longer
+   * needed. If the resource is unexpectedly unavailable, this will return null.
+   *
+   * @return An InputStream which reads the contents of this resource, starting with the first byte,
+   * or null if the resource is unavailable.
+   */
+  InputStream asStream();
 
 }

@@ -27,24 +27,23 @@ import org.apache.guacamole.auth.jdbc.JDBCInjectorProvider;
 import org.apache.guacamole.auth.sqlserver.conf.SQLServerEnvironment;
 
 /**
- * JDBCInjectorProvider implementation which configures Guice injections for
- * connecting to a SQLServer database based on SQLServer-specific options
- * provided via guacamole.properties.
+ * JDBCInjectorProvider implementation which configures Guice injections for connecting to a
+ * SQLServer database based on SQLServer-specific options provided via guacamole.properties.
  */
 public class SQLServerInjectorProvider extends JDBCInjectorProvider {
 
-    @Override
-    protected Injector create() throws GuacamoleException {
+  @Override
+  protected Injector create() throws GuacamoleException {
 
-        // Get local environment
-        SQLServerEnvironment environment = new SQLServerEnvironment();
+    // Get local environment
+    SQLServerEnvironment environment = new SQLServerEnvironment();
 
-        // Set up Guice injector
-        return Guice.createInjector(
-            new JDBCAuthenticationProviderModule(environment),
-            new SQLServerAuthenticationProviderModule(environment)
-        );
+    // Set up Guice injector
+    return Guice.createInjector(
+        new JDBCAuthenticationProviderModule(environment),
+        new SQLServerAuthenticationProviderModule(environment)
+    );
 
-    }
+  }
 
 }

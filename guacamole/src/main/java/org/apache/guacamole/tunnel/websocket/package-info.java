@@ -18,8 +18,8 @@
  */
 
 /**
- * Standard WebSocket tunnel implementation. The classes here require a recent
- * servlet container that supports JSR 356.
+ * Standard WebSocket tunnel implementation. The classes here require a recent servlet container
+ * that supports JSR 356.
  */
 package org.apache.guacamole.tunnel.websocket;
 

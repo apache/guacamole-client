@@ -18,38 +18,38 @@
     under the License.
 -->
 <assembly
-    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0
     http://maven.apache.org/xsd/assembly-1.1.0.xsd">
 
-    <id>project</id>
-    <formats>
-        <format>tar.gz</format>
-    </formats>
+  <fileSets>
 
-    <fileSets>
+    <!-- Include everything except generated files / VCS metadata  -->
+    <fileSet>
+      <directory>${project.basedir}</directory>
+      <excludes>
+        <exclude>**/*.log</exclude>
+        <exclude>**/node_modules/**</exclude>
+        <exclude>**/${project.build.directory}/**</exclude>
+      </excludes>
+      <useDefaultExcludes>true</useDefaultExcludes>
+    </fileSet>
 
-        <!-- Include everything except generated files / VCS metadata  -->
-        <fileSet>
-            <directory>${project.basedir}</directory>
-            <useDefaultExcludes>true</useDefaultExcludes>
-            <excludes>
-                <exclude>**/*.log</exclude>
-                <exclude>**/node_modules/**</exclude>
-                <exclude>**/${project.build.directory}/**</exclude>
-            </excludes>
-        </fileSet>
+    <!-- Explicitly include .gitignore (parsed by RAT) -->
+    <fileSet>
+      <directory>${project.basedir}</directory>
+      <includes>
+        <include>**/.gitignore</include>
+      </includes>
+      <useDefaultExcludes>false</useDefaultExcludes>
+    </fileSet>
 
-        <!-- Explicitly include .gitignore (parsed by RAT) -->
-        <fileSet>
-            <directory>${project.basedir}</directory>
-            <useDefaultExcludes>false</useDefaultExcludes>
-            <includes>
-                <include>**/.gitignore</include>
-            </includes>
-        </fileSet>
+  </fileSets>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
 
-    </fileSets>
+  <id>project</id>
 
 </assembly>

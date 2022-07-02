@@ -21,5 +21,5 @@
  * The module for code relating to connection history.
  */
 angular.module('history', [
-    'storage'
+  'storage'
 ]);

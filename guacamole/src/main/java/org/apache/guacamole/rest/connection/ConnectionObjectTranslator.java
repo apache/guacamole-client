@@ -26,48 +26,47 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
- * Translator which converts between Connection objects and APIConnection
- * objects.
+ * Translator which converts between Connection objects and APIConnection objects.
  */
 public class ConnectionObjectTranslator
-        extends DirectoryObjectTranslator<Connection, APIConnection> {
+    extends DirectoryObjectTranslator<Connection, APIConnection> {
 
-    @Override
-    public APIConnection toExternalObject(Connection object)
-            throws GuacamoleException {
-        return new APIConnection(object);
-    }
+  @Override
+  public APIConnection toExternalObject(Connection object)
+      throws GuacamoleException {
+    return new APIConnection(object);
+  }
 
-    @Override
-    public Connection toInternalObject(APIConnection object) {
-        return new APIConnectionWrapper(object);
-    }
+  @Override
+  public Connection toInternalObject(APIConnection object) {
+    return new APIConnectionWrapper(object);
+  }
 
-    @Override
-    public void applyExternalChanges(Connection existingObject,
-            APIConnection object) {
+  @Override
+  public void applyExternalChanges(Connection existingObject,
+      APIConnection object) {
 
-        // Build updated configuration
-        GuacamoleConfiguration config = new GuacamoleConfiguration();
-        config.setProtocol(object.getProtocol());
-        config.setParameters(object.getParameters());
+    // Build updated configuration
+    GuacamoleConfiguration config = new GuacamoleConfiguration();
+    config.setProtocol(object.getProtocol());
+    config.setParameters(object.getParameters());
 
-        // Update the connection
-        existingObject.setConfiguration(config);
-        existingObject.setParentIdentifier(object.getParentIdentifier());
-        existingObject.setName(object.getName());
-        existingObject.setAttributes(object.getAttributes());
+    // Update the connection
+    existingObject.setConfiguration(config);
+    existingObject.setParentIdentifier(object.getParentIdentifier());
+    existingObject.setName(object.getName());
+    existingObject.setAttributes(object.getAttributes());
 
-    }
+  }
 
-    @Override
-    public void filterExternalObject(UserContext userContext,
-            APIConnection object) throws GuacamoleException {
+  @Override
+  public void filterExternalObject(UserContext userContext,
+      APIConnection object) throws GuacamoleException {
 
-        // Filter object attributes by defined schema
-        object.setAttributes(filterAttributes(
-                userContext.getConnectionAttributes(), object.getAttributes()));
+    // Filter object attributes by defined schema
+    object.setAttributes(filterAttributes(
+        userContext.getConnectionAttributes(), object.getAttributes()));
 
-    }
+  }
 
 }

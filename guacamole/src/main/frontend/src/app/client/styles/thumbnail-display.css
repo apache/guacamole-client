@@ -18,13 +18,13 @@
  */
 
 div.thumbnail-main {
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    font-size: 0px;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  font-size: 0px;
 }
 
 .thumbnail-main .display {
-    pointer-events: none;
+  pointer-events: none;
 }

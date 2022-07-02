@@ -28,41 +28,42 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
  * Translator which converts between User objects and APIUser objects.
  */
 public class UserObjectTranslator
-        extends DirectoryObjectTranslator<User, APIUser> {
+    extends DirectoryObjectTranslator<User, APIUser> {
 
-    @Override
-    public APIUser toExternalObject(User object)
-            throws GuacamoleException {
-        return new APIUser(object);
+  @Override
+  public APIUser toExternalObject(User object)
+      throws GuacamoleException {
+    return new APIUser(object);
+  }
+
+  @Override
+  public User toInternalObject(APIUser object)
+      throws GuacamoleException {
+    return new APIUserWrapper(object);
+  }
+
+  @Override
+  public void applyExternalChanges(User existingObject,
+      APIUser object) throws GuacamoleException {
+
+    // Do not update the user password if no password was provided
+    if (object.getPassword() != null) {
+      existingObject.setPassword(object.getPassword());
     }
 
-    @Override
-    public User toInternalObject(APIUser object)
-            throws GuacamoleException {
-        return new APIUserWrapper(object);
-    }
+    // Update user attributes
+    existingObject.setAttributes(object.getAttributes());
 
-    @Override
-    public void applyExternalChanges(User existingObject,
-            APIUser object) throws GuacamoleException {
+  }
 
-        // Do not update the user password if no password was provided
-        if (object.getPassword() != null)
-            existingObject.setPassword(object.getPassword());
+  @Override
+  public void filterExternalObject(UserContext userContext, APIUser object)
+      throws GuacamoleException {
 
-        // Update user attributes
-        existingObject.setAttributes(object.getAttributes());
+    // Filter object attributes by defined schema
+    object.setAttributes(filterAttributes(userContext.getUserAttributes(),
+        object.getAttributes()));
 
-    }
-
-    @Override
-    public void filterExternalObject(UserContext userContext, APIUser object)
-            throws GuacamoleException {
-
-        // Filter object attributes by defined schema
-        object.setAttributes(filterAttributes(userContext.getUserAttributes(),
-                object.getAttributes()));
-
-    }
+  }
 
 }

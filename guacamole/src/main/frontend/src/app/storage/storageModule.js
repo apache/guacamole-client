@@ -21,5 +21,5 @@
  * Module which provides generic storage services.
  */
 angular.module('storage', [
-    'auth'
+  'auth'
 ]);

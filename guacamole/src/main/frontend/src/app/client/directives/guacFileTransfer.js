@@ -21,30 +21,33 @@
  * Directive which displays an active file transfer, providing links for
  * downloads, if applicable.
  */
-angular.module('client').directive('guacFileTransfer', [function guacFileTransfer() {
+angular.module('client').directive('guacFileTransfer',
+    [function guacFileTransfer() {
 
-    return {
+      return {
         restrict: 'E',
         replace: true,
         scope: {
 
-            /**
-             * The file transfer to display.
-             *
-             * @type ManagedFileUpload|ManagedFileDownload
-             */
-            transfer : '='
+          /**
+           * The file transfer to display.
+           *
+           * @type ManagedFileUpload|ManagedFileDownload
+           */
+          transfer: '='
 
         },
 
         templateUrl: 'app/client/templates/guacFileTransfer.html',
-        controller: ['$scope', '$injector', function guacFileTransferController($scope, $injector) {
+        controller: ['$scope', '$injector',
+          function guacFileTransferController($scope, $injector) {
 
             // Required services
             const guacTranslate = $injector.get('guacTranslate');
 
             // Required types
-            var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
+            var ManagedFileTransferState = $injector.get(
+                'ManagedFileTransferState');
 
             /**
              * Returns the unit string that is most appropriate for the
@@ -57,22 +60,25 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
              */
             $scope.getProgressUnit = function getProgressUnit() {
 
-                var bytes = $scope.transfer.progress;
+              var bytes = $scope.transfer.progress;
 
-                // Gigabytes
-                if (bytes > 1000000000)
-                    return 'gb';
+              // Gigabytes
+              if (bytes > 1000000000) {
+                return 'gb';
+              }
 
-                // Megabytes
-                if (bytes > 1000000)
-                    return 'mb';
+              // Megabytes
+              if (bytes > 1000000) {
+                return 'mb';
+              }
 
-                // Kilobytes
-                if (bytes > 1000)
-                    return 'kb';
+              // Kilobytes
+              if (bytes > 1000) {
+                return 'kb';
+              }
 
-                // Bytes
-                return 'b';
+              // Bytes
+              return 'b';
 
             };
 
@@ -86,31 +92,32 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
              */
             $scope.getProgressValue = function getProgressValue() {
 
-                var bytes = $scope.transfer.progress;
-                if (!bytes)
-                    return bytes;
+              var bytes = $scope.transfer.progress;
+              if (!bytes) {
+                return bytes;
+              }
 
-                // Convert bytes to necessary units
-                switch ($scope.getProgressUnit()) {
+              // Convert bytes to necessary units
+              switch ($scope.getProgressUnit()) {
 
-                    // Gigabytes
-                    case 'gb':
-                        return (bytes / 1000000000).toFixed(1);
+                  // Gigabytes
+                case 'gb':
+                  return (bytes / 1000000000).toFixed(1);
 
-                    // Megabytes
-                    case 'mb':
-                        return (bytes / 1000000).toFixed(1);
+                  // Megabytes
+                case 'mb':
+                  return (bytes / 1000000).toFixed(1);
 
-                    // Kilobytes
-                    case 'kb':
-                        return (bytes / 1000).toFixed(1);
+                  // Kilobytes
+                case 'kb':
+                  return (bytes / 1000).toFixed(1);
 
-                    // Bytes
-                    case 'b':
-                    default:
-                        return bytes;
+                  // Bytes
+                case 'b':
+                default:
+                  return bytes;
 
-                }
+              }
 
             };
 
@@ -123,7 +130,7 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
              *     overall length of the file is known.
              */
             $scope.getPercentDone = function getPercentDone() {
-                return $scope.transfer.progress / $scope.transfer.length * 100;
+              return $scope.transfer.progress / $scope.transfer.length * 100;
             };
 
             /**
@@ -134,23 +141,24 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
              */
             $scope.isInProgress = function isInProgress() {
 
-                // Not in progress if there is no transfer
-                if (!$scope.transfer)
-                    return false;
+              // Not in progress if there is no transfer
+              if (!$scope.transfer) {
+                return false;
+              }
 
-                // Determine in-progress status based on stream state
-                switch ($scope.transfer.transferState.streamState) {
+              // Determine in-progress status based on stream state
+              switch ($scope.transfer.transferState.streamState) {
 
-                    // IDLE or OPEN file transfers are active
-                    case ManagedFileTransferState.StreamState.IDLE:
-                    case ManagedFileTransferState.StreamState.OPEN:
-                        return true;
+                  // IDLE or OPEN file transfers are active
+                case ManagedFileTransferState.StreamState.IDLE:
+                case ManagedFileTransferState.StreamState.OPEN:
+                  return true;
 
-                    // All others are not active
-                    default:
-                        return false;
+                  // All others are not active
+                default:
+                  return false;
 
-                }
+              }
 
             };
 
@@ -163,7 +171,7 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
              *     saved, false otherwise.
              */
             $scope.isSavable = function isSavable() {
-                return !!$scope.transfer.blob;
+              return !!$scope.transfer.blob;
             };
 
             /**
@@ -173,12 +181,13 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
              */
             $scope.save = function save() {
 
-                // Ignore if no blob exists
-                if (!$scope.transfer.blob)
-                    return;
+              // Ignore if no blob exists
+              if (!$scope.transfer.blob) {
+                return;
+              }
 
-                // Save file
-                saveAs($scope.transfer.blob, $scope.transfer.filename);
+              // Save file
+              saveAs($scope.transfer.blob, $scope.transfer.filename);
 
             };
 
@@ -192,25 +201,28 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
              *     otherwise.
              */
             $scope.hasError = function hasError() {
-                return $scope.transfer.transferState.streamState === ManagedFileTransferState.StreamState.ERROR;
+              return $scope.transfer.transferState.streamState
+                  === ManagedFileTransferState.StreamState.ERROR;
             };
 
             // The translated error message for the current status code
             $scope.translatedErrorMessage = '';
 
-            $scope.$watch('transfer.transferState.statusCode', function statusCodeChanged(statusCode) {
+            $scope.$watch('transfer.transferState.statusCode',
+                function statusCodeChanged(statusCode) {
 
-                // Determine translation name of error
-                const errorName = 'CLIENT.ERROR_UPLOAD_' + statusCode.toString(16).toUpperCase();
+                  // Determine translation name of error
+                  const errorName = 'CLIENT.ERROR_UPLOAD_'
+                      + statusCode.toString(16).toUpperCase();
 
-                // Use translation string, or the default if no translation is found for this error code
-                guacTranslate(errorName, 'CLIENT.ERROR_UPLOAD_DEFAULT').then(
-                    translationResult => $scope.translatedErrorMessage = translationResult.message
-                );
+                  // Use translation string, or the default if no translation is found for this error code
+                  guacTranslate(errorName, 'CLIENT.ERROR_UPLOAD_DEFAULT').then(
+                      translationResult => $scope.translatedErrorMessage = translationResult.message
+                  );
 
-            });
+                });
 
-        }] // end file transfer controller
+          }] // end file transfer controller
 
-    };
-}]);
+      };
+    }]);

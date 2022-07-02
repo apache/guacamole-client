@@ -17,153 +17,158 @@
  * under the License.
  */
 
-
 /**
  * A directive for choosing the location of a connection or connection group.
  */
-angular.module('manage').directive('locationChooser', [function locationChooser() {
-    
-    return {
+angular.module('manage').directive('locationChooser',
+    [function locationChooser() {
+
+      return {
         // Element only
         restrict: 'E',
         replace: true,
 
         scope: {
 
-            /**
-             * The identifier of the data source from which the given root
-             * connection group was retrieved.
-             *
-             * @type String
-             */
-            dataSource : '=',
+          /**
+           * The identifier of the data source from which the given root
+           * connection group was retrieved.
+           *
+           * @type String
+           */
+          dataSource: '=',
 
-            /**
-             * The root connection group of the connection group hierarchy to
-             * display.
-             *
-             * @type ConnectionGroup
-             */
-            rootGroup : '=',
+          /**
+           * The root connection group of the connection group hierarchy to
+           * display.
+           *
+           * @type ConnectionGroup
+           */
+          rootGroup: '=',
 
-            /**
-             * The unique identifier of the currently-selected connection
-             * group. If not specified, the root group will be used.
-             *
-             * @type String
-             */
-            value : '='
+          /**
+           * The unique identifier of the currently-selected connection
+           * group. If not specified, the root group will be used.
+           *
+           * @type String
+           */
+          value: '='
 
         },
 
         templateUrl: 'app/manage/templates/locationChooser.html',
         controller: ['$scope', function locationChooserController($scope) {
 
-            /**
-             * Map of unique identifiers to their corresponding connection
-             * groups.
-             *
-             * @type Object.<String, GroupListItem>
-             */
-            var connectionGroups = {};
+          /**
+           * Map of unique identifiers to their corresponding connection
+           * groups.
+           *
+           * @type Object.<String, GroupListItem>
+           */
+          var connectionGroups = {};
 
-            /**
-             * Recursively traverses the given connection group and all
-             * children, storing each encountered connection group within the
-             * connectionGroups map by its identifier.
-             *
-             * @param {GroupListItem} group
-             *     The connection group to traverse.
-             */
-            var mapConnectionGroups = function mapConnectionGroups(group) {
+          /**
+           * Recursively traverses the given connection group and all
+           * children, storing each encountered connection group within the
+           * connectionGroups map by its identifier.
+           *
+           * @param {GroupListItem} group
+           *     The connection group to traverse.
+           */
+          var mapConnectionGroups = function mapConnectionGroups(group) {
 
-                // Map given group
-                connectionGroups[group.identifier] = group;
+            // Map given group
+            connectionGroups[group.identifier] = group;
 
-                // Map all child groups
-                if (group.childConnectionGroups)
-                    group.childConnectionGroups.forEach(mapConnectionGroups);
+            // Map all child groups
+            if (group.childConnectionGroups) {
+              group.childConnectionGroups.forEach(mapConnectionGroups);
+            }
 
-            };
+          };
 
-            /**
-             * Whether the group list menu is currently open.
-             * 
-             * @type Boolean
-             */
-            $scope.menuOpen = false;
-            
-            /**
-             * The human-readable name of the currently-chosen connection
-             * group.
-             * 
-             * @type String
-             */
-            $scope.chosenConnectionGroupName = null;
-            
-            /**
-             * Toggle the current state of the menu listing connection groups.
-             * If the menu is currently open, it will be closed. If currently
-             * closed, it will be opened.
-             */
-            $scope.toggleMenu = function toggleMenu() {
-                $scope.menuOpen = !$scope.menuOpen;
-            };
+          /**
+           * Whether the group list menu is currently open.
+           *
+           * @type Boolean
+           */
+          $scope.menuOpen = false;
 
-            // Update the root group map when data source or root group change
-            $scope.$watchGroup(['dataSource', 'rootGroup'], function updateRootGroups() {
+          /**
+           * The human-readable name of the currently-chosen connection
+           * group.
+           *
+           * @type String
+           */
+          $scope.chosenConnectionGroupName = null;
+
+          /**
+           * Toggle the current state of the menu listing connection groups.
+           * If the menu is currently open, it will be closed. If currently
+           * closed, it will be opened.
+           */
+          $scope.toggleMenu = function toggleMenu() {
+            $scope.menuOpen = !$scope.menuOpen;
+          };
+
+          // Update the root group map when data source or root group change
+          $scope.$watchGroup(['dataSource', 'rootGroup'],
+              function updateRootGroups() {
 
                 // Abort if the root group is not set
-                if (!$scope.dataSource || !$scope.rootGroup)
-                    return null;
+                if (!$scope.dataSource || !$scope.rootGroup) {
+                  return null;
+                }
 
                 // Wrap root group in map
                 $scope.rootGroups = {};
                 $scope.rootGroups[$scope.dataSource] = $scope.rootGroup;
 
-            });
+              });
 
-            // Expose selection function to group list template
-            $scope.groupListContext = {
-                
-                /**
-                 * Selects the given group item.
-                 *
-                 * @param {GroupListItem} item
-                 *     The chosen item.
-                 */
-                chooseGroup : function chooseGroup(item) {
+          // Expose selection function to group list template
+          $scope.groupListContext = {
 
-                    // Record new parent
-                    $scope.value = item.identifier;
-                    $scope.chosenConnectionGroupName = item.name;
+            /**
+             * Selects the given group item.
+             *
+             * @param {GroupListItem} item
+             *     The chosen item.
+             */
+            chooseGroup: function chooseGroup(item) {
 
-                    // Close menu
-                    $scope.menuOpen = false;
+              // Record new parent
+              $scope.value = item.identifier;
+              $scope.chosenConnectionGroupName = item.name;
 
-                }
+              // Close menu
+              $scope.menuOpen = false;
 
-            };
+            }
 
-            $scope.$watch('rootGroup', function setRootGroup(rootGroup) {
+          };
 
-                connectionGroups = {};
+          $scope.$watch('rootGroup', function setRootGroup(rootGroup) {
 
-                if (!rootGroup)
-                    return;
+            connectionGroups = {};
 
-                // Map all known groups
-                mapConnectionGroups(rootGroup);
+            if (!rootGroup) {
+              return;
+            }
 
-                // If no value is specified, default to the root identifier
-                if (!$scope.value || !($scope.value in connectionGroups))
-                    $scope.value = rootGroup.identifier;
+            // Map all known groups
+            mapConnectionGroups(rootGroup);
 
-                $scope.chosenConnectionGroupName = connectionGroups[$scope.value].name; 
+            // If no value is specified, default to the root identifier
+            if (!$scope.value || !($scope.value in connectionGroups)) {
+              $scope.value = rootGroup.identifier;
+            }
 
-            });
+            $scope.chosenConnectionGroupName = connectionGroups[$scope.value].name;
+
+          });
 
         }]
-    };
-    
-}]);
+      };
+
+    }]);

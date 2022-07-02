@@ -25,59 +25,59 @@ import org.apache.guacamole.net.DelegatingGuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleSocket;
 
 /**
- * Implementation of GuacamoleSocket which allows individual instructions to be
- * intercepted, overridden, etc.
+ * Implementation of GuacamoleSocket which allows individual instructions to be intercepted,
+ * overridden, etc.
  */
 public class FilteredGuacamoleSocket extends DelegatingGuacamoleSocket {
 
-    /**
-     * A reader for the wrapped GuacamoleSocket which may be filtered.
-     */
-    private final GuacamoleReader reader;
-    
-    /**
-     * A writer for the wrapped GuacamoleSocket which may be filtered.
-     */
-    private final GuacamoleWriter writer;
-    
-    /**
-     * Creates a new FilteredGuacamoleSocket which uses the given filters to
-     * determine whether instructions read/written are allowed through,
-     * modified, etc. If reads or writes should be unfiltered, simply specify
-     * null rather than a particular filter.
-     *
-     * @param socket The GuacamoleSocket to wrap.
-     * @param readFilter The GuacamoleFilter to apply to all read instructions,
-     *                   if any.
-     * @param writeFilter The GuacamoleFilter to apply to all written 
-     *                    instructions, if any.
-     */
-    public FilteredGuacamoleSocket(GuacamoleSocket socket, GuacamoleFilter readFilter, GuacamoleFilter writeFilter) {
+  /**
+   * A reader for the wrapped GuacamoleSocket which may be filtered.
+   */
+  private final GuacamoleReader reader;
 
-        super(socket);
+  /**
+   * A writer for the wrapped GuacamoleSocket which may be filtered.
+   */
+  private final GuacamoleWriter writer;
 
-        // Apply filter to reader
-        if (readFilter != null)
-            reader = new FilteredGuacamoleReader(socket.getReader(), readFilter);
-        else
-            reader = socket.getReader();
+  /**
+   * Creates a new FilteredGuacamoleSocket which uses the given filters to determine whether
+   * instructions read/written are allowed through, modified, etc. If reads or writes should be
+   * unfiltered, simply specify null rather than a particular filter.
+   *
+   * @param socket      The GuacamoleSocket to wrap.
+   * @param readFilter  The GuacamoleFilter to apply to all read instructions, if any.
+   * @param writeFilter The GuacamoleFilter to apply to all written instructions, if any.
+   */
+  public FilteredGuacamoleSocket(GuacamoleSocket socket, GuacamoleFilter readFilter,
+      GuacamoleFilter writeFilter) {
 
-        // Apply filter to writer
-        if (writeFilter != null)
-            writer = new FilteredGuacamoleWriter(socket.getWriter(), writeFilter);
-        else
-            writer = socket.getWriter();
+    super(socket);
 
-    }
-    
-    @Override
-    public GuacamoleReader getReader() {
-        return reader;
+    // Apply filter to reader
+    if (readFilter != null) {
+      reader = new FilteredGuacamoleReader(socket.getReader(), readFilter);
+    } else {
+      reader = socket.getReader();
     }
 
-    @Override
-    public GuacamoleWriter getWriter() {
-        return writer;
+    // Apply filter to writer
+    if (writeFilter != null) {
+      writer = new FilteredGuacamoleWriter(socket.getWriter(), writeFilter);
+    } else {
+      writer = socket.getWriter();
     }
+
+  }
+
+  @Override
+  public GuacamoleReader getReader() {
+    return reader;
+  }
+
+  @Override
+  public GuacamoleWriter getWriter() {
+    return writer;
+  }
 
 }

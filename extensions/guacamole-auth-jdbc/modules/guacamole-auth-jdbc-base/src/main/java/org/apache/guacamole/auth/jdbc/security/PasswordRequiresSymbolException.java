@@ -20,22 +20,20 @@
 package org.apache.guacamole.auth.jdbc.security;
 
 /**
- * Thrown when an attempt is made to set a user's password to a string which
- * contains no non-alphanumeric characters (symbols), in violation of the
- * defined password policy.
+ * Thrown when an attempt is made to set a user's password to a string which contains no
+ * non-alphanumeric characters (symbols), in violation of the defined password policy.
  */
 public class PasswordRequiresSymbolException extends PasswordPolicyException {
 
-    /**
-     * Creates a new PasswordRequiresSymbolException with the given
-     * human-readable message. The translatable message is already defined.
-     *
-     * @param message
-     *     A human-readable message describing the password policy violation
-     *     that occurred.
-     */
-    public PasswordRequiresSymbolException(String message) {
-        super(message, "PASSWORD_POLICY.ERROR_REQUIRES_NON_ALNUM");
-    }
+  /**
+   * Creates a new PasswordRequiresSymbolException with the given human-readable message. The
+   * translatable message is already defined.
+   *
+   * @param message A human-readable message describing the password policy violation that
+   *                occurred.
+   */
+  public PasswordRequiresSymbolException(String message) {
+    super(message, "PASSWORD_POLICY.ERROR_REQUIRES_NON_ALNUM");
+  }
 
 }

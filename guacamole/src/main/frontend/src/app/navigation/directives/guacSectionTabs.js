@@ -24,60 +24,61 @@
  * attribute. No navigation occurs as a result of selecting a tab.
  */
 angular.module('navigation').directive('guacSectionTabs', ['$injector',
-    function guacSectionTabs($injector) {
+  function guacSectionTabs($injector) {
 
     // Required services
     var translationStringService = $injector.get('translationStringService');
 
     var directive = {
 
-        restrict    : 'E',
-        replace     : true,
-        templateUrl : 'app/navigation/templates/guacSectionTabs.html',
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'app/navigation/templates/guacSectionTabs.html',
 
-        scope : {
+      scope: {
 
-            /**
-             * The translation namespace to use when producing translation
-             * strings for each tab. Tab translation strings will be of the
-             * form:
-             *
-             * <code>NAMESPACE.SECTION_HEADER_NAME<code>
-             *
-             * where <code>NAMESPACE</code> is the namespace provided to this
-             * attribute and <code>NAME</code> is one of the names within the
-             * array provided to the <code>tabs</code> attribute and
-             * transformed via translationStringService.canonicalize().
-             */
-            namespace : '@',
+        /**
+         * The translation namespace to use when producing translation
+         * strings for each tab. Tab translation strings will be of the
+         * form:
+         *
+         * <code>NAMESPACE.SECTION_HEADER_NAME<code>
+         *
+         * where <code>NAMESPACE</code> is the namespace provided to this
+         * attribute and <code>NAME</code> is one of the names within the
+         * array provided to the <code>tabs</code> attribute and
+         * transformed via translationStringService.canonicalize().
+         */
+        namespace: '@',
 
-            /**
-             * The name of the currently selected tab. This name MUST be one of
-             * the names present in the array given via the <code>tabs</code>
-             * attribute. This directive will not automatically choose an
-             * initially selected tab, and a default value should be manually
-             * assigned to <code>current</code> to ensure a tab is initially
-             * selected.
-             *
-             * @type String
-             */
-            current : '=',
+        /**
+         * The name of the currently selected tab. This name MUST be one of
+         * the names present in the array given via the <code>tabs</code>
+         * attribute. This directive will not automatically choose an
+         * initially selected tab, and a default value should be manually
+         * assigned to <code>current</code> to ensure a tab is initially
+         * selected.
+         *
+         * @type String
+         */
+        current: '=',
 
-            /**
-             * The unique names of all tabs which should be made available, in
-             * display order. These names will be assigned to the variable
-             * bound to the <code>current</code> attribute when the current
-             * tab changes.
-             *
-             * @type String[]
-             */
-            tabs : '='
+        /**
+         * The unique names of all tabs which should be made available, in
+         * display order. These names will be assigned to the variable
+         * bound to the <code>current</code> attribute when the current
+         * tab changes.
+         *
+         * @type String[]
+         */
+        tabs: '='
 
-        }
+      }
 
     };
 
-    directive.controller = ['$scope', function dataSourceTabsController($scope) {
+    directive.controller = ['$scope',
+      function dataSourceTabsController($scope) {
 
         /**
          * Produces the translation string for the section header representing
@@ -99,12 +100,15 @@ angular.module('navigation').directive('guacSectionTabs', ['$injector',
          */
         $scope.getSectionHeader = function getSectionHeader(name) {
 
-            // If no name, then no header
-            if (!name)
-                return '';
+          // If no name, then no header
+          if (!name) {
+            return '';
+          }
 
-            return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
-                    + '.SECTION_HEADER_' + translationStringService.canonicalize(name);
+          return translationStringService.canonicalize(
+                  $scope.namespace || 'MISSING_NAMESPACE')
+              + '.SECTION_HEADER_' + translationStringService.canonicalize(
+                  name);
 
         };
 
@@ -117,7 +121,7 @@ angular.module('navigation').directive('guacSectionTabs', ['$injector',
          *     The name of the tab to select.
          */
         $scope.selectTab = function selectTab(name) {
-            $scope.current = name;
+          $scope.current = name;
         };
 
         /**
@@ -133,11 +137,11 @@ angular.module('navigation').directive('guacSectionTabs', ['$injector',
          *     false otherwise.
          */
         $scope.isSelected = function isSelected(name) {
-            return $scope.current === name;
+          return $scope.current === name;
         };
 
-    }];
+      }];
 
     return directive;
 
-}]);
+  }]);

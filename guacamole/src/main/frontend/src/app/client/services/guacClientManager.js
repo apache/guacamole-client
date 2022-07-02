@@ -21,14 +21,14 @@
  * A service for managing several active Guacamole clients.
  */
 angular.module('client').factory('guacClientManager', ['$injector',
-        function guacClientManager($injector) {
+  function guacClientManager($injector) {
 
     // Required types
-    const ManagedClient      = $injector.get('ManagedClient');
+    const ManagedClient = $injector.get('ManagedClient');
     const ManagedClientGroup = $injector.get('ManagedClientGroup');
 
     // Required services
-    const $window               = $injector.get('$window');
+    const $window = $injector.get('$window');
     const sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     var service = {};
@@ -39,12 +39,13 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *
      * @type Function
      */
-    var storedManagedClients = sessionStorageFactory.create({}, function destroyClientStorage() {
+    var storedManagedClients = sessionStorageFactory.create({},
+        function destroyClientStorage() {
 
-        // Disconnect all clients when storage is destroyed
-        service.clear();
+          // Disconnect all clients when storage is destroyed
+          service.clear();
 
-    });
+        });
 
     /**
      * Returns a map of all active managed clients. Each key is the ID of the
@@ -54,7 +55,7 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *     A map of all active managed clients.
      */
     service.getManagedClients = function getManagedClients() {
-        return storedManagedClients();
+      return storedManagedClients();
     };
 
     /**
@@ -63,12 +64,13 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *
      * @type Function
      */
-    const storedManagedClientGroups = sessionStorageFactory.create([], function destroyClientGroupStorage() {
+    const storedManagedClientGroups = sessionStorageFactory.create([],
+        function destroyClientGroupStorage() {
 
-        // Disconnect all clients when storage is destroyed
-        service.clear();
+          // Disconnect all clients when storage is destroyed
+          service.clear();
 
-    });
+        });
 
     /**
      * Returns an array of all managed client groups.
@@ -77,7 +79,7 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *     An array of all active managed client groups.
      */
     service.getManagedClientGroups = function getManagedClientGroups() {
-        return storedManagedClientGroups();
+      return storedManagedClientGroups();
     };
 
     /**
@@ -91,28 +93,31 @@ angular.module('client').factory('guacClientManager', ['$injector',
      */
     const ungroupManagedClient = function ungroupManagedClient(id) {
 
-        const managedClientGroups = storedManagedClientGroups();
+      const managedClientGroups = storedManagedClientGroups();
 
-        // Remove client from all groups
-        managedClientGroups.forEach(group => {
-            const removed = _.remove(group.clients, client => (client.id === id));
-            if (removed.length) {
+      // Remove client from all groups
+      managedClientGroups.forEach(group => {
+        const removed = _.remove(group.clients, client => (client.id === id));
+        if (removed.length) {
 
-                // Reset focus state if client is being removed from a group
-                // that isn't currently attached (focus may otherwise be
-                // retained and result in a newly added connection unexpectedly
-                // sharing focus)
-                if (!group.attached)
-                    removed.forEach(client => { client.clientProperties.focused = false; });
+          // Reset focus state if client is being removed from a group
+          // that isn't currently attached (focus may otherwise be
+          // retained and result in a newly added connection unexpectedly
+          // sharing focus)
+          if (!group.attached) {
+            removed.forEach(client => {
+              client.clientProperties.focused = false;
+            });
+          }
 
-                // Recalculate group grid if number of clients is changing
-                ManagedClientGroup.recalculateTiles(group);
+          // Recalculate group grid if number of clients is changing
+          ManagedClientGroup.recalculateTiles(group);
 
-            }
-        });
+        }
+      });
 
-        // Remove any groups that are now empty
-        _.remove(managedClientGroups, group => !group.clients.length);
+      // Remove any groups that are now empty
+      _.remove(managedClientGroups, group => !group.clients.length);
 
     };
 
@@ -123,31 +128,31 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *
      * @param {String} id
      *     The ID of the connection whose ManagedClient should be removed.
-     * 
+     *
      * @returns {Boolean}
      *     true if an existing client was removed, false otherwise.
      */
     service.removeManagedClient = function removeManagedClient(id) {
-        
-        var managedClients = storedManagedClients();
 
-        // Remove client if it exists
-        if (id in managedClients) {
+      var managedClients = storedManagedClients();
 
-            // Pull client out of any containing groups
-            ungroupManagedClient(id);
+      // Remove client if it exists
+      if (id in managedClients) {
 
-            // Disconnect and remove
-            managedClients[id].client.disconnect();
-            delete managedClients[id];
+        // Pull client out of any containing groups
+        ungroupManagedClient(id);
 
-            // A client was removed
-            return true;
+        // Disconnect and remove
+        managedClients[id].client.disconnect();
+        delete managedClients[id];
 
-        }
+        // A client was removed
+        return true;
 
-        // No client was removed
-        return false;
+      }
+
+      // No client was removed
+      return false;
 
     };
 
@@ -158,38 +163,41 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *
      * @param {String} id
      *     The ID of the connection whose ManagedClient should be retrieved.
-     *     
+     *
      * @returns {ManagedClient}
      *     The ManagedClient associated with the connection having the given
      *     ID.
      */
     service.replaceManagedClient = function replaceManagedClient(id) {
 
-        const managedClients = storedManagedClients();
-        const managedClientGroups = storedManagedClientGroups();
+      const managedClients = storedManagedClients();
+      const managedClientGroups = storedManagedClientGroups();
 
-        // Remove client if it exists
-        if (id in managedClients) {
+      // Remove client if it exists
+      if (id in managedClients) {
 
-            const hadFocus = managedClients[id].clientProperties.focused;
-            managedClients[id].client.disconnect();
-            delete managedClients[id];
-            
-            // Remove client from all groups
-            managedClientGroups.forEach(group => {
+        const hadFocus = managedClients[id].clientProperties.focused;
+        managedClients[id].client.disconnect();
+        delete managedClients[id];
 
-                const index = _.findIndex(group.clients, client => (client.id === id));
-                if (index === -1)
-                    return;
+        // Remove client from all groups
+        managedClientGroups.forEach(group => {
 
-                group.clients[index] = managedClients[id] = ManagedClient.getInstance(id);
-                managedClients[id].clientProperties.focused = hadFocus;
+          const index = _.findIndex(group.clients,
+              client => (client.id === id));
+          if (index === -1) {
+            return;
+          }
 
-            });
+          group.clients[index] = managedClients[id] = ManagedClient.getInstance(
+              id);
+          managedClients[id].clientProperties.focused = hadFocus;
 
-        }
+        });
 
-        return managedClients[id];
+      }
+
+      return managedClients[id];
 
     };
 
@@ -200,25 +208,26 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *
      * @param {String} id
      *     The ID of the connection whose ManagedClient should be retrieved.
-     *     
+     *
      * @returns {ManagedClient}
      *     The ManagedClient associated with the connection having the given
      *     ID.
      */
     service.getManagedClient = function getManagedClient(id) {
 
-        var managedClients = storedManagedClients();
+      var managedClients = storedManagedClients();
 
-        // Ensure any existing client is removed from its containing group
-        // prior to being returned
-        ungroupManagedClient(id);
+      // Ensure any existing client is removed from its containing group
+      // prior to being returned
+      ungroupManagedClient(id);
 
-        // Create new managed client if it doesn't already exist
-        if (!(id in managedClients))
-            managedClients[id] = ManagedClient.getInstance(id);
+      // Create new managed client if it doesn't already exist
+      if (!(id in managedClients)) {
+        managedClients[id] = ManagedClient.getInstance(id);
+      }
 
-        // Return existing client
-        return managedClients[id];
+      // Return existing client
+      return managedClients[id];
 
     };
 
@@ -235,33 +244,34 @@ angular.module('client').factory('guacClientManager', ['$injector',
      */
     service.getManagedClientGroup = function getManagedClientGroup(id) {
 
-        const managedClientGroups = storedManagedClientGroups();
-        const existingGroup = _.find(managedClientGroups, (group) => {
-            return id === ManagedClientGroup.getIdentifier(group);
-        });
+      const managedClientGroups = storedManagedClientGroups();
+      const existingGroup = _.find(managedClientGroups, (group) => {
+        return id === ManagedClientGroup.getIdentifier(group);
+      });
 
-        // Prefer to return the existing group if it exactly matches
-        if (existingGroup)
-            return existingGroup;
+      // Prefer to return the existing group if it exactly matches
+      if (existingGroup) {
+        return existingGroup;
+      }
 
-        const clients = [];
-        const clientIds = ManagedClientGroup.getClientIdentifiers(id);
+      const clients = [];
+      const clientIds = ManagedClientGroup.getClientIdentifiers(id);
 
-        // Separate active clients by whether they should be displayed within
-        // the current view
-        clientIds.forEach(function groupClients(id) {
-            clients.push(service.getManagedClient(id));
-        });
+      // Separate active clients by whether they should be displayed within
+      // the current view
+      clientIds.forEach(function groupClients(id) {
+        clients.push(service.getManagedClient(id));
+      });
 
-        const group = new ManagedClientGroup({
-            clients : clients
-        });
+      const group = new ManagedClientGroup({
+        clients: clients
+      });
 
-        // Focus the first client if there are no clients focused
-        ManagedClientGroup.verifyFocus(group);
+      // Focus the first client if there are no clients focused
+      ManagedClientGroup.verifyFocus(group);
 
-        managedClientGroups.push(group);
-        return group;
+      managedClientGroups.push(group);
+      return group;
 
     };
 
@@ -273,32 +283,33 @@ angular.module('client').factory('guacClientManager', ['$injector',
      *
      * @param {String} id
      *     The ID of the ManagedClientGroup to remove.
-     * 
+     *
      * @returns {Boolean}
      *     true if a ManagedClientGroup was removed, false otherwise.
      */
     service.removeManagedClientGroup = function removeManagedClientGroup(id) {
 
-        const managedClients = storedManagedClients();
-        const managedClientGroups = storedManagedClientGroups();
+      const managedClients = storedManagedClients();
+      const managedClientGroups = storedManagedClientGroups();
 
-        // Remove all matching groups (there SHOULD only be one)
-        const removed = _.remove(managedClientGroups, (group) => ManagedClientGroup.getIdentifier(group) === id);
+      // Remove all matching groups (there SHOULD only be one)
+      const removed = _.remove(managedClientGroups,
+          (group) => ManagedClientGroup.getIdentifier(group) === id);
 
-        // Disconnect all clients associated with the removed group(s)
-        removed.forEach((group) => {
-            group.clients.forEach((client) => {
+      // Disconnect all clients associated with the removed group(s)
+      removed.forEach((group) => {
+        group.clients.forEach((client) => {
 
-                const id = client.id;
-                if (managedClients[id]) {
-                    managedClients[id].client.disconnect();
-                    delete managedClients[id];
-                }
+          const id = client.id;
+          if (managedClients[id]) {
+            managedClients[id].client.disconnect();
+            delete managedClients[id];
+          }
 
-            });
         });
+      });
 
-        return !!removed.length;
+      return !!removed.length;
 
     };
 
@@ -308,15 +319,16 @@ angular.module('client').factory('guacClientManager', ['$injector',
      */
     service.clear = function clear() {
 
-        var managedClients = storedManagedClients();
+      var managedClients = storedManagedClients();
 
-        // Disconnect each managed client
-        for (var id in managedClients)
-            managedClients[id].client.disconnect();
+      // Disconnect each managed client
+      for (var id in managedClients) {
+        managedClients[id].client.disconnect();
+      }
 
-        // Clear managed clients and client groups
-        storedManagedClients({});
-        storedManagedClientGroups([]);
+      // Clear managed clients and client groups
+      storedManagedClients({});
+      storedManagedClientGroups([]);
 
     };
 
@@ -325,4 +337,4 @@ angular.module('client').factory('guacClientManager', ['$injector',
 
     return service;
 
-}]);
+  }]);

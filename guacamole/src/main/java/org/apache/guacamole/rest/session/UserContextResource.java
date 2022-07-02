@@ -19,8 +19,6 @@
 
 package org.apache.guacamole.rest.session;
 
-import org.apache.guacamole.rest.directory.DirectoryResource;
-import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import javax.inject.Inject;
@@ -41,6 +39,8 @@ import org.apache.guacamole.rest.connection.APIConnection;
 import org.apache.guacamole.rest.connectiongroup.APIConnectionGroup;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
+import org.apache.guacamole.rest.directory.DirectoryResource;
+import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 import org.apache.guacamole.rest.history.HistoryResource;
 import org.apache.guacamole.rest.schema.SchemaResource;
 import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
@@ -54,230 +54,194 @@ import org.apache.guacamole.rest.usergroup.APIUserGroup;
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserContextResource {
 
-    /**
-     * The UserContext being exposed through this resource.
-     */
-    private final UserContext userContext;
+  /**
+   * The UserContext being exposed through this resource.
+   */
+  private final UserContext userContext;
 
-    /**
-     * Factory for creating DirectoryObjectResources which expose a given User.
-     */
-    @Inject
-    private DirectoryObjectResourceFactory<User, APIUser> userResourceFactory;
+  /**
+   * Factory for creating DirectoryObjectResources which expose a given User.
+   */
+  @Inject
+  private DirectoryObjectResourceFactory<User, APIUser> userResourceFactory;
 
-    /**
-     * Factory for creating DirectoryResources which expose a given
-     * ActiveConnection Directory.
-     */
-    @Inject
-    private DirectoryResourceFactory<ActiveConnection, APIActiveConnection>
-            activeConnectionDirectoryResourceFactory;
+  /**
+   * Factory for creating DirectoryResources which expose a given ActiveConnection Directory.
+   */
+  @Inject
+  private DirectoryResourceFactory<ActiveConnection, APIActiveConnection>
+      activeConnectionDirectoryResourceFactory;
 
-    /**
-     * Factory for creating DirectoryResources which expose a given
-     * Connection Directory.
-     */
-    @Inject
-    private DirectoryResourceFactory<Connection, APIConnection>
-            connectionDirectoryResourceFactory;
+  /**
+   * Factory for creating DirectoryResources which expose a given Connection Directory.
+   */
+  @Inject
+  private DirectoryResourceFactory<Connection, APIConnection>
+      connectionDirectoryResourceFactory;
 
-    /**
-     * Factory for creating DirectoryResources which expose a given
-     * ConnectionGroup Directory.
-     */
-    @Inject
-    private DirectoryResourceFactory<ConnectionGroup, APIConnectionGroup>
-            connectionGroupDirectoryResourceFactory;
+  /**
+   * Factory for creating DirectoryResources which expose a given ConnectionGroup Directory.
+   */
+  @Inject
+  private DirectoryResourceFactory<ConnectionGroup, APIConnectionGroup>
+      connectionGroupDirectoryResourceFactory;
 
-    /**
-     * Factory for creating DirectoryResources which expose a given
-     * SharingProfile Directory.
-     */
-    @Inject
-    private DirectoryResourceFactory<SharingProfile, APISharingProfile>
-            sharingProfileDirectoryResourceFactory;
+  /**
+   * Factory for creating DirectoryResources which expose a given SharingProfile Directory.
+   */
+  @Inject
+  private DirectoryResourceFactory<SharingProfile, APISharingProfile>
+      sharingProfileDirectoryResourceFactory;
 
-    /**
-     * Factory for creating DirectoryResources which expose a given
-     * User Directory.
-     */
-    @Inject
-    private DirectoryResourceFactory<User, APIUser> userDirectoryResourceFactory;
+  /**
+   * Factory for creating DirectoryResources which expose a given User Directory.
+   */
+  @Inject
+  private DirectoryResourceFactory<User, APIUser> userDirectoryResourceFactory;
 
-    /**
-     * Factory for creating DirectoryResources which expose a given
-     * UserGroup Directory.
-     */
-    @Inject
-    private DirectoryResourceFactory<UserGroup, APIUserGroup> userGroupDirectoryResourceFactory;
+  /**
+   * Factory for creating DirectoryResources which expose a given UserGroup Directory.
+   */
+  @Inject
+  private DirectoryResourceFactory<UserGroup, APIUserGroup> userGroupDirectoryResourceFactory;
 
-    /**
-     * Creates a new UserContextResource which exposes the data within the
-     * given UserContext.
-     *
-     * @param userContext
-     *     The UserContext which should be exposed through this
-     *     UserContextResource.
-     */
-    @AssistedInject
-    public UserContextResource(@Assisted UserContext userContext) {
-        this.userContext = userContext;
-    }
+  /**
+   * Creates a new UserContextResource which exposes the data within the given UserContext.
+   *
+   * @param userContext The UserContext which should be exposed through this UserContextResource.
+   */
+  @AssistedInject
+  public UserContextResource(@Assisted UserContext userContext) {
+    this.userContext = userContext;
+  }
 
-    /**
-     * Returns a new resource which represents the User whose access rights
-     * control the operations of the UserContext exposed by this
-     * UserContextResource.
-     *
-     * @return
-     *     A new resource which represents the User whose access rights
-     *     control the operations of the UserContext exposed by this
-     *     UserContextResource.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the User.
-     */
-    @Path("self")
-    public DirectoryObjectResource<User, APIUser> getSelfResource()
-            throws GuacamoleException {
-        return userResourceFactory.create(userContext,
-                userContext.getUserDirectory(), userContext.self());
-    }
+  /**
+   * Returns a new resource which represents the User whose access rights control the operations of
+   * the UserContext exposed by this UserContextResource.
+   *
+   * @return A new resource which represents the User whose access rights control the operations of
+   * the UserContext exposed by this UserContextResource.
+   * @throws GuacamoleException If an error occurs while retrieving the User.
+   */
+  @Path("self")
+  public DirectoryObjectResource<User, APIUser> getSelfResource()
+      throws GuacamoleException {
+    return userResourceFactory.create(userContext,
+        userContext.getUserDirectory(), userContext.self());
+  }
 
-    /**
-     * Returns a new resource which represents the ActiveConnection Directory
-     * contained within the UserContext exposed by this UserContextResource.
-     *
-     * @return
-     *     A new resource which represents the ActiveConnection Directory
-     *     contained within the UserContext exposed by this UserContextResource.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the ActiveConnection Directory.
-     */
-    @Path("activeConnections")
-    public DirectoryResource<ActiveConnection, APIActiveConnection>
-        getActiveConnectionDirectoryResource() throws GuacamoleException {
-        return activeConnectionDirectoryResourceFactory.create(userContext,
-                userContext.getActiveConnectionDirectory());
-    }
+  /**
+   * Returns a new resource which represents the ActiveConnection Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   *
+   * @return A new resource which represents the ActiveConnection Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   * @throws GuacamoleException If an error occurs while retrieving the ActiveConnection Directory.
+   */
+  @Path("activeConnections")
+  public DirectoryResource<ActiveConnection, APIActiveConnection>
+  getActiveConnectionDirectoryResource() throws GuacamoleException {
+    return activeConnectionDirectoryResourceFactory.create(userContext,
+        userContext.getActiveConnectionDirectory());
+  }
 
-    /**
-     * Returns a new resource which represents the Connection Directory
-     * contained within the UserContext exposed by this UserContextResource.
-     *
-     * @return
-     *     A new resource which represents the Connection Directory contained
-     *     within the UserContext exposed by this UserContextResource.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the Connection Directory.
-     */
-    @Path("connections")
-    public DirectoryResource<Connection, APIConnection> getConnectionDirectoryResource()
-            throws GuacamoleException {
-        return connectionDirectoryResourceFactory.create(userContext,
-                userContext.getConnectionDirectory());
-    }
+  /**
+   * Returns a new resource which represents the Connection Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   *
+   * @return A new resource which represents the Connection Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   * @throws GuacamoleException If an error occurs while retrieving the Connection Directory.
+   */
+  @Path("connections")
+  public DirectoryResource<Connection, APIConnection> getConnectionDirectoryResource()
+      throws GuacamoleException {
+    return connectionDirectoryResourceFactory.create(userContext,
+        userContext.getConnectionDirectory());
+  }
 
-    /**
-     * Returns a new resource which represents the ConnectionGroup Directory
-     * contained within the UserContext exposed by this UserContextResource.
-     *
-     * @return
-     *     A new resource which represents the ConnectionGroup Directory
-     *     contained within the UserContext exposed by this UserContextResource.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the ConnectionGroup Directory.
-     */
-    @Path("connectionGroups")
-    public DirectoryResource<ConnectionGroup, APIConnectionGroup> getConnectionGroupDirectoryResource()
-            throws GuacamoleException {
-        return connectionGroupDirectoryResourceFactory.create(userContext,
-                userContext.getConnectionGroupDirectory());
-    }
+  /**
+   * Returns a new resource which represents the ConnectionGroup Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   *
+   * @return A new resource which represents the ConnectionGroup Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   * @throws GuacamoleException If an error occurs while retrieving the ConnectionGroup Directory.
+   */
+  @Path("connectionGroups")
+  public DirectoryResource<ConnectionGroup, APIConnectionGroup> getConnectionGroupDirectoryResource()
+      throws GuacamoleException {
+    return connectionGroupDirectoryResourceFactory.create(userContext,
+        userContext.getConnectionGroupDirectory());
+  }
 
-    /**
-     * Returns a new resource which represents the SharingProfile Directory
-     * contained within the UserContext exposed by this UserContextResource.
-     *
-     * @return
-     *     A new resource which represents the SharingProfile Directory
-     *     contained within the UserContext exposed by this UserContextResource.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the SharingProfile Directory.
-     */
-    @Path("sharingProfiles")
-    public DirectoryResource<SharingProfile, APISharingProfile>
-        getSharingProfileDirectoryResource() throws GuacamoleException {
-        return sharingProfileDirectoryResourceFactory.create(userContext,
-                userContext.getSharingProfileDirectory());
-    }
+  /**
+   * Returns a new resource which represents the SharingProfile Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   *
+   * @return A new resource which represents the SharingProfile Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   * @throws GuacamoleException If an error occurs while retrieving the SharingProfile Directory.
+   */
+  @Path("sharingProfiles")
+  public DirectoryResource<SharingProfile, APISharingProfile>
+  getSharingProfileDirectoryResource() throws GuacamoleException {
+    return sharingProfileDirectoryResourceFactory.create(userContext,
+        userContext.getSharingProfileDirectory());
+  }
 
-    /**
-     * Returns a new resource which represents the User Directory contained
-     * within the UserContext exposed by this UserContextResource.
-     *
-     * @return
-     *     A new resource which represents the User Directory contained within
-     *     the UserContext exposed by this UserContextResource.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the User Directory.
-     */
-    @Path("users")
-    public DirectoryResource<User, APIUser> getUserDirectoryResource()
-            throws GuacamoleException {
-        return userDirectoryResourceFactory.create(userContext,
-                userContext.getUserDirectory());
-    }
+  /**
+   * Returns a new resource which represents the User Directory contained within the UserContext
+   * exposed by this UserContextResource.
+   *
+   * @return A new resource which represents the User Directory contained within the UserContext
+   * exposed by this UserContextResource.
+   * @throws GuacamoleException If an error occurs while retrieving the User Directory.
+   */
+  @Path("users")
+  public DirectoryResource<User, APIUser> getUserDirectoryResource()
+      throws GuacamoleException {
+    return userDirectoryResourceFactory.create(userContext,
+        userContext.getUserDirectory());
+  }
 
-    /**
-     * Returns a new resource which represents the UserGroup Directory contained
-     * within the UserContext exposed by this UserContextResource.
-     *
-     * @return
-     *     A new resource which represents the UserGroup Directory contained
-     *     within the UserContext exposed by this UserContextResource.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the UserGroup Directory.
-     */
-    @Path("userGroups")
-    public DirectoryResource<UserGroup, APIUserGroup> getUserGroupDirectoryResource()
-            throws GuacamoleException {
-        return userGroupDirectoryResourceFactory.create(userContext,
-                userContext.getUserGroupDirectory());
-    }
+  /**
+   * Returns a new resource which represents the UserGroup Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   *
+   * @return A new resource which represents the UserGroup Directory contained within the
+   * UserContext exposed by this UserContextResource.
+   * @throws GuacamoleException If an error occurs while retrieving the UserGroup Directory.
+   */
+  @Path("userGroups")
+  public DirectoryResource<UserGroup, APIUserGroup> getUserGroupDirectoryResource()
+      throws GuacamoleException {
+    return userGroupDirectoryResourceFactory.create(userContext,
+        userContext.getUserGroupDirectory());
+  }
 
-    /**
-     * Returns a new resource which represents historical data contained
-     * within the UserContext exposed by this UserContextResource.
-     *
-     * @return
-     *     A new resource which represents the historical data contained within
-     *     the UserContext exposed by this UserContextResource.
-     */
-    @Path("history")
-    public HistoryResource getHistoryResource() {
-        return new HistoryResource(userContext);
-    }
+  /**
+   * Returns a new resource which represents historical data contained within the UserContext
+   * exposed by this UserContextResource.
+   *
+   * @return A new resource which represents the historical data contained within the UserContext
+   * exposed by this UserContextResource.
+   */
+  @Path("history")
+  public HistoryResource getHistoryResource() {
+    return new HistoryResource(userContext);
+  }
 
-    /**
-     * Returns a new resource which represents meta information describing the
-     * kind of data which within the UserContext exposed by this
-     * UserContextResource.
-     *
-     * @return
-     *     A new resource which represents the meta information describing the
-     *     kind of data within the UserContext exposed by this
-     *     UserContextResource.
-     */
-    @Path("schema")
-    public SchemaResource getSchemaResource() {
-        return new SchemaResource(userContext);
-    }
+  /**
+   * Returns a new resource which represents meta information describing the kind of data which
+   * within the UserContext exposed by this UserContextResource.
+   *
+   * @return A new resource which represents the meta information describing the kind of data within
+   * the UserContext exposed by this UserContextResource.
+   */
+  @Path("schema")
+  public SchemaResource getSchemaResource() {
+    return new SchemaResource(userContext);
+  }
 
 }

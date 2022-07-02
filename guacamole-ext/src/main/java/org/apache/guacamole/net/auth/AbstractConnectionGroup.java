@@ -23,52 +23,51 @@ package org.apache.guacamole.net.auth;
  * Basic implementation of a Guacamole connection group.
  */
 public abstract class AbstractConnectionGroup extends AbstractIdentifiable
-        implements ConnectionGroup {
+    implements ConnectionGroup {
 
-    /**
-     * The name associated with this connection group.
-     */
-    private String name;
+  /**
+   * The name associated with this connection group.
+   */
+  private String name;
 
-    /**
-     * The unique identifier of the parent connection group for
-     * this connection group.
-     */
-    private String parentIdentifier;
-    
-    /**
-     * The type of this connection group.
-     */
-    private ConnectionGroup.Type type;
-    
-    @Override
-    public String getName() {
-        return name;
-    }
+  /**
+   * The unique identifier of the parent connection group for this connection group.
+   */
+  private String parentIdentifier;
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
+  /**
+   * The type of this connection group.
+   */
+  private ConnectionGroup.Type type;
 
-    @Override
-    public String getParentIdentifier() {
-        return parentIdentifier;
-    }
+  @Override
+  public String getName() {
+    return name;
+  }
 
-    @Override
-    public void setParentIdentifier(String parentIdentifier) {
-        this.parentIdentifier = parentIdentifier;
-    }
-    
-    @Override
-    public ConnectionGroup.Type getType() {
-        return type;
-    }
-    
-    @Override
-    public void setType(ConnectionGroup.Type type) {
-        this.type = type;
-    }
+  @Override
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public String getParentIdentifier() {
+    return parentIdentifier;
+  }
+
+  @Override
+  public void setParentIdentifier(String parentIdentifier) {
+    this.parentIdentifier = parentIdentifier;
+  }
+
+  @Override
+  public ConnectionGroup.Type getType() {
+    return type;
+  }
+
+  @Override
+  public void setType(ConnectionGroup.Type type) {
+    this.type = type;
+  }
 
 }

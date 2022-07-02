@@ -20,20 +20,21 @@
 /**
  * Service which defines the ConnectionHistoryEntry class.
  */
-angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnectionHistoryEntry() {
-            
-    /**
-     * The object returned by REST API calls when representing the data
-     * associated with an entry in a connection's usage history. Each history
-     * entry represents the time at which a particular started using a
-     * connection and, if applicable, the time that usage stopped.
-     * 
-     * @constructor
-     * @param {ConnectionHistoryEntry|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ConnectionHistoryEntry.
-     */
-    var ConnectionHistoryEntry = function ConnectionHistoryEntry(template) {
+angular.module('rest').factory('ConnectionHistoryEntry',
+    [function defineConnectionHistoryEntry() {
+
+      /**
+       * The object returned by REST API calls when representing the data
+       * associated with an entry in a connection's usage history. Each history
+       * entry represents the time at which a particular started using a
+       * connection and, if applicable, the time that usage stopped.
+       *
+       * @constructor
+       * @param {ConnectionHistoryEntry|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     ConnectionHistoryEntry.
+       */
+      var ConnectionHistoryEntry = function ConnectionHistoryEntry(template) {
 
         // Use empty object by default
         template = template || {};
@@ -79,7 +80,7 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
         /**
          * The time that usage began, in seconds since 1970-01-01 00:00:00 UTC.
          *
-         * @type Number 
+         * @type Number
          */
         this.startDate = template.startDate;
 
@@ -90,8 +91,8 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
          * or restarted before the history entry could be updated. To determine
          * whether a connection is still active, check the active property of
          * this history entry.
-         * 
-         * @type Number 
+         *
+         * @type Number
          */
         this.endDate = template.endDate;
 
@@ -105,7 +106,7 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
         /**
          * The username of the user associated with this particular usage of
          * the connection.
-         * 
+         *
          * @type String
          */
         this.username = template.username;
@@ -115,7 +116,7 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
          * is the only accurate way to check for connection activity; the
          * absence of endDate does not necessarily imply the connection is
          * active, as the history entry may simply be incomplete.
-         * 
+         *
          * @type Boolean
          */
         this.active = template.active;
@@ -137,34 +138,34 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
          */
         this.logs = template.logs;
 
-    };
+      };
 
-    /**
-     * All possible predicates for sorting ConnectionHistoryEntry objects using
-     * the REST API. By default, each predicate indicates ascending order. To
-     * indicate descending order, add "-" to the beginning of the predicate.
-     *
-     * @type Object.<String, String>
-     */
-    ConnectionHistoryEntry.SortPredicate = {
+      /**
+       * All possible predicates for sorting ConnectionHistoryEntry objects using
+       * the REST API. By default, each predicate indicates ascending order. To
+       * indicate descending order, add "-" to the beginning of the predicate.
+       *
+       * @type Object.<String, String>
+       */
+      ConnectionHistoryEntry.SortPredicate = {
 
         /**
          * The date and time that the connection associated with the history
          * entry began (connected).
          */
-        START_DATE : 'startDate'
+        START_DATE: 'startDate'
 
-    };
+      };
 
-    /**
-     * Value/unit pair representing the length of time that a connection was
-     * used.
-     * 
-     * @constructor
-     * @param {Number} milliseconds
-     *     The number of milliseconds that the associated connection was used.
-     */
-    ConnectionHistoryEntry.Duration = function Duration(milliseconds) {
+      /**
+       * Value/unit pair representing the length of time that a connection was
+       * used.
+       *
+       * @constructor
+       * @param {Number} milliseconds
+       *     The number of milliseconds that the associated connection was used.
+       */
+      ConnectionHistoryEntry.Duration = function Duration(milliseconds) {
 
         /**
          * The provided duration in seconds.
@@ -180,51 +181,51 @@ angular.module('rest').factory('ConnectionHistoryEntry', [function defineConnect
          * @returns {Number} The given value, rounded to the nearest tenth.
          */
         var round = function round(value) {
-            return Math.round(value * 10) / 10;
+          return Math.round(value * 10) / 10;
         };
 
         // Days
         if (seconds >= 86400) {
-            this.value = round(seconds / 86400);
-            this.unit  = 'day';
+          this.value = round(seconds / 86400);
+          this.unit = 'day';
         }
 
         // Hours
         else if (seconds >= 3600) {
-            this.value = round(seconds / 3600);
-            this.unit  = 'hour';
+          this.value = round(seconds / 3600);
+          this.unit = 'hour';
         }
 
         // Minutes
         else if (seconds >= 60) {
-            this.value = round(seconds / 60);
-            this.unit  = 'minute';
+          this.value = round(seconds / 60);
+          this.unit = 'minute';
         }
-        
+
         // Seconds
         else {
 
-            /**
-             * The number of seconds (or minutes, or hours, etc.) that the
-             * connection was used. The units associated with this value are
-             * represented by the unit property.
-             *
-             * @type Number
-             */
-            this.value = round(seconds);
+          /**
+           * The number of seconds (or minutes, or hours, etc.) that the
+           * connection was used. The units associated with this value are
+           * represented by the unit property.
+           *
+           * @type Number
+           */
+          this.value = round(seconds);
 
-            /**
-             * The units associated with the value of this duration. Valid
-             * units are 'second', 'minute', 'hour', and 'day'.
-             *
-             * @type String
-             */
-            this.unit = 'second';
+          /**
+           * The units associated with the value of this duration. Valid
+           * units are 'second', 'minute', 'hour', and 'day'.
+           *
+           * @type String
+           */
+          this.unit = 'second';
 
         }
 
-    };
+      };
 
-    return ConnectionHistoryEntry;
+      return ConnectionHistoryEntry;
 
-}]);
+    }]);

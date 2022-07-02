@@ -21,15 +21,16 @@
  * A directive for displaying a group of Guacamole clients as a non-interactive
  * thumbnail of tiled client displays.
  */
-angular.module('client').directive('guacTiledThumbnails', [function guacTiledThumbnails() {
+angular.module('client').directive('guacTiledThumbnails',
+    [function guacTiledThumbnails() {
 
-    const directive = {
+      const directive = {
         restrict: 'E',
         replace: true,
         templateUrl: 'app/client/templates/guacTiledThumbnails.html'
-    };
+      };
 
-    directive.scope = {
+      directive.scope = {
 
         /**
          * The group of clients to display as a thumbnail of tiled client
@@ -37,41 +38,41 @@ angular.module('client').directive('guacTiledThumbnails', [function guacTiledThu
          *
          * @type ManagedClientGroup
          */
-        clientGroup : '='
+        clientGroup: '='
 
-    };
+      };
 
-    directive.controller = ['$scope', '$injector', '$element',
-            function guacTiledThumbnailsController($scope, $injector, $element) {
+      directive.controller = ['$scope', '$injector', '$element',
+        function guacTiledThumbnailsController($scope, $injector, $element) {
 
-        // Required types
-        const ManagedClientGroup = $injector.get('ManagedClientGroup');
+          // Required types
+          const ManagedClientGroup = $injector.get('ManagedClientGroup');
 
-        /**
-         * The overall height of the thumbnail view of the tiled grid of
-         * clients within the client group, in pixels. This value is
-         * intentionally based off a snapshot of the current browser size at
-         * the time the directive comes into existence to ensure the contents
-         * of the thumbnail are familiar in appearance and aspect ratio.
-         */
-        $scope.height = Math.min(window.innerHeight, 128);
+          /**
+           * The overall height of the thumbnail view of the tiled grid of
+           * clients within the client group, in pixels. This value is
+           * intentionally based off a snapshot of the current browser size at
+           * the time the directive comes into existence to ensure the contents
+           * of the thumbnail are familiar in appearance and aspect ratio.
+           */
+          $scope.height = Math.min(window.innerHeight, 128);
 
-        /**
-         * The overall width of the thumbnail view of the tiled grid of
-         * clients within the client group, in pixels. This value is
-         * intentionally based off a snapshot of the current browser size at
-         * the time the directive comes into existence to ensure the contents
-         * of the thumbnail are familiar in appearance and aspect ratio.
-         */
-        $scope.width = window.innerWidth / window.innerHeight * $scope.height;
+          /**
+           * The overall width of the thumbnail view of the tiled grid of
+           * clients within the client group, in pixels. This value is
+           * intentionally based off a snapshot of the current browser size at
+           * the time the directive comes into existence to ensure the contents
+           * of the thumbnail are familiar in appearance and aspect ratio.
+           */
+          $scope.width = window.innerWidth / window.innerHeight * $scope.height;
 
-        /**
-         * @borrows ManagedClientGroup.getClientGrid
-         */
-        $scope.getClientGrid = ManagedClientGroup.getClientGrid;
+          /**
+           * @borrows ManagedClientGroup.getClientGrid
+           */
+          $scope.getClientGrid = ManagedClientGroup.getClientGrid;
 
-    }];
+        }];
 
-    return directive;
+      return directive;
 
-}]);
+    }]);

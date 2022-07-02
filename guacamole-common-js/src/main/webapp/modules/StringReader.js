@@ -23,67 +23,69 @@ var Guacamole = Guacamole || {};
  * A reader which automatically handles the given input stream, returning
  * strictly text data. Note that this object will overwrite any installed event
  * handlers on the given Guacamole.InputStream.
- * 
+ *
  * @constructor
  * @param {!Guacamole.InputStream} stream
  *     The stream that data will be read from.
  */
-Guacamole.StringReader = function(stream) {
+Guacamole.StringReader = function (stream) {
 
-    /**
-     * Reference to this Guacamole.InputStream.
-     *
-     * @private
-     * @type {!Guacamole.StringReader}
-     */
-    var guac_reader = this;
+  /**
+   * Reference to this Guacamole.InputStream.
+   *
+   * @private
+   * @type {!Guacamole.StringReader}
+   */
+  var guac_reader = this;
 
-    /**
-     * Parser for received UTF-8 data.
-     *
-     * @type {!Guacamole.UTF8Parser}
-     */
-    var utf8Parser = new Guacamole.UTF8Parser();
+  /**
+   * Parser for received UTF-8 data.
+   *
+   * @type {!Guacamole.UTF8Parser}
+   */
+  var utf8Parser = new Guacamole.UTF8Parser();
 
-    /**
-     * Wrapped Guacamole.ArrayBufferReader.
-     *
-     * @private
-     * @type {!Guacamole.ArrayBufferReader}
-     */
-    var array_reader = new Guacamole.ArrayBufferReader(stream);
+  /**
+   * Wrapped Guacamole.ArrayBufferReader.
+   *
+   * @private
+   * @type {!Guacamole.ArrayBufferReader}
+   */
+  var array_reader = new Guacamole.ArrayBufferReader(stream);
 
-    // Receive blobs as strings
-    array_reader.ondata = function(buffer) {
+  // Receive blobs as strings
+  array_reader.ondata = function (buffer) {
 
-        // Decode UTF-8
-        var text = utf8Parser.decode(buffer);
+    // Decode UTF-8
+    var text = utf8Parser.decode(buffer);
 
-        // Call handler, if present
-        if (guac_reader.ontext)
-            guac_reader.ontext(text);
+    // Call handler, if present
+    if (guac_reader.ontext) {
+      guac_reader.ontext(text);
+    }
 
-    };
+  };
 
-    // Simply call onend when end received
-    array_reader.onend = function() {
-        if (guac_reader.onend)
-            guac_reader.onend();
-    };
+  // Simply call onend when end received
+  array_reader.onend = function () {
+    if (guac_reader.onend) {
+      guac_reader.onend();
+    }
+  };
 
-    /**
-     * Fired once for every blob of text data received.
-     * 
-     * @event
-     * @param {!string} text
-     *     The data packet received.
-     */
-    this.ontext = null;
+  /**
+   * Fired once for every blob of text data received.
+   *
+   * @event
+   * @param {!string} text
+   *     The data packet received.
+   */
+  this.ontext = null;
 
-    /**
-     * Fired once this stream is finished and no further data will be written.
-     * @event
-     */
-    this.onend = null;
+  /**
+   * Fired once this stream is finished and no further data will be written.
+   * @event
+   */
+  this.onend = null;
 
 };

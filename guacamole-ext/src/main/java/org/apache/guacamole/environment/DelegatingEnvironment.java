@@ -28,65 +28,67 @@ import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.protocols.ProtocolInfo;
 
 /**
- * Environment implementation which simply delegates all function calls to a
- * wrapped Environment instance.
+ * Environment implementation which simply delegates all function calls to a wrapped Environment
+ * instance.
  */
 public class DelegatingEnvironment implements Environment {
 
-    /**
-     * The Environment instance that all function calls should be delegated to.
-     */
-    private final Environment environment;
+  /**
+   * The Environment instance that all function calls should be delegated to.
+   */
+  private final Environment environment;
 
-    /**
-     * Creates a new DelegatingEnvironment which delegates all function calls
-     * to the given Environment.
-     *
-     * @param environment
-     *     The Environment that all function calls should be delegated to.
-     */
-    public DelegatingEnvironment(Environment environment) {
-        this.environment = environment;
-    }
+  /**
+   * Creates a new DelegatingEnvironment which delegates all function calls to the given
+   * Environment.
+   *
+   * @param environment The Environment that all function calls should be delegated to.
+   */
+  public DelegatingEnvironment(Environment environment) {
+    this.environment = environment;
+  }
 
-    @Override
-    public File getGuacamoleHome() {
-        return environment.getGuacamoleHome();
-    }
+  @Override
+  public File getGuacamoleHome() {
+    return environment.getGuacamoleHome();
+  }
 
-    @Override
-    public Map<String, ProtocolInfo> getProtocols() {
-        return environment.getProtocols();
-    }
+  @Override
+  public Map<String, ProtocolInfo> getProtocols() {
+    return environment.getProtocols();
+  }
 
-    @Override
-    public ProtocolInfo getProtocol(String name) {
-        return environment.getProtocol(name);
-    }
+  @Override
+  public ProtocolInfo getProtocol(String name) {
+    return environment.getProtocol(name);
+  }
 
-    @Override
-    public <Type> Type getProperty(GuacamoleProperty<Type> property) throws GuacamoleException {
-        return environment.getProperty(property);
-    }
+  @Override
+  public <Type> Type getProperty(GuacamoleProperty<Type> property) throws GuacamoleException {
+    return environment.getProperty(property);
+  }
 
-    @Override
-    public <Type> Type getProperty(GuacamoleProperty<Type> property, Type defaultValue) throws GuacamoleException {
-        return environment.getProperty(property, defaultValue);
-    }
+  @Override
+  public <Type> Type getProperty(GuacamoleProperty<Type> property, Type defaultValue)
+      throws GuacamoleException {
+    return environment.getProperty(property, defaultValue);
+  }
 
-    @Override
-    public <Type> Type getRequiredProperty(GuacamoleProperty<Type> property) throws GuacamoleException {
-        return environment.getRequiredProperty(property);
-    }
+  @Override
+  public <Type> Type getRequiredProperty(GuacamoleProperty<Type> property)
+      throws GuacamoleException {
+    return environment.getRequiredProperty(property);
+  }
 
-    @Override
-    public GuacamoleProxyConfiguration getDefaultGuacamoleProxyConfiguration() throws GuacamoleException {
-        return environment.getDefaultGuacamoleProxyConfiguration();
-    }
+  @Override
+  public GuacamoleProxyConfiguration getDefaultGuacamoleProxyConfiguration()
+      throws GuacamoleException {
+    return environment.getDefaultGuacamoleProxyConfiguration();
+  }
 
-    @Override
-    public void addGuacamoleProperties(GuacamoleProperties properties) throws GuacamoleException {
-        environment.addGuacamoleProperties(properties);
-    }
+  @Override
+  public void addGuacamoleProperties(GuacamoleProperties properties) throws GuacamoleException {
+    environment.addGuacamoleProperties(properties);
+  }
 
 }

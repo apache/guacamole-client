@@ -21,17 +21,18 @@
  * Provides the ClipboardData class used for interchange between the
  * guacClipboard directive, clipboardService service, etc.
  */
-angular.module('clipboard').factory('ClipboardData', [function defineClipboardData() {
+angular.module('clipboard').factory('ClipboardData',
+    [function defineClipboardData() {
 
-    /**
-     * Arbitrary data which can be contained by the clipboard.
-     *
-     * @constructor
-     * @param {ClipboardData|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ClipboardData.
-     */
-    var ClipboardData = function ClipboardData(template) {
+      /**
+       * Arbitrary data which can be contained by the clipboard.
+       *
+       * @constructor
+       * @param {ClipboardData|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     ClipboardData.
+       */
+      var ClipboardData = function ClipboardData(template) {
 
         // Use empty object by default
         template = template || {};
@@ -61,8 +62,8 @@ angular.module('clipboard').factory('ClipboardData', [function defineClipboardDa
          */
         this.data = template.data || '';
 
-    };
+      };
 
-    return ClipboardData;
+      return ClipboardData;
 
-}]);
+    }]);

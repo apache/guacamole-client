@@ -23,25 +23,23 @@ import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
 import org.apache.guacamole.auth.sso.SSOResource;
 
 /**
- * Guacamole authentication backend which authenticates users using an
- * arbitrary external system implementing CAS. No storage for connections is
- * provided - only authentication. Storage must be provided by some other
- * extension.
+ * Guacamole authentication backend which authenticates users using an arbitrary external system
+ * implementing CAS. No storage for connections is provided - only authentication. Storage must be
+ * provided by some other extension.
  */
 public class CASAuthenticationProvider extends SSOAuthenticationProvider {
-    
-    /**
-     * Creates a new CASAuthenticationProvider that authenticates users
-     * against an CAS service
-     */
-    public CASAuthenticationProvider() {
-        super(AuthenticationProviderService.class,
-                SSOResource.class, new CASAuthenticationProviderModule());
-    }
-    
-    @Override
-    public String getIdentifier() {
-        return "cas";
-    }
+
+  /**
+   * Creates a new CASAuthenticationProvider that authenticates users against an CAS service
+   */
+  public CASAuthenticationProvider() {
+    super(AuthenticationProviderService.class,
+        SSOResource.class, new CASAuthenticationProviderModule());
+  }
+
+  @Override
+  public String getIdentifier() {
+    return "cas";
+  }
 
 }

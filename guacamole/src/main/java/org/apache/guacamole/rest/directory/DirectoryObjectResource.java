@@ -32,125 +32,106 @@ import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * A REST resource which abstracts the operations available on an existing
- * Guacamole object that is contained within a Directory, such as modification,
- * deletion, or individual retrieval.
+ * A REST resource which abstracts the operations available on an existing Guacamole object that is
+ * contained within a Directory, such as modification, deletion, or individual retrieval.
  *
- * @param <InternalType>
- *     The type of object that this DirectoryObjectResource represents. To
- *     avoid coupling the REST API too tightly to the extension API, these
- *     objects are not directly serialized or deserialized when handling REST
- *     requests.
- *
- * @param <ExternalType>
- *     The type of object used in interchange (ie: serialized/deserialized as
- *     JSON) between REST clients and this DirectoryObjectResource to
- *     represent the InternalType.
+ * @param <InternalType> The type of object that this DirectoryObjectResource represents. To avoid
+ *                       coupling the REST API too tightly to the extension API, these objects are
+ *                       not directly serialized or deserialized when handling REST requests.
+ * @param <ExternalType> The type of object used in interchange (ie: serialized/deserialized as
+ *                       JSON) between REST clients and this DirectoryObjectResource to represent
+ *                       the InternalType.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public abstract class DirectoryObjectResource<InternalType extends Identifiable, ExternalType> {
 
-    /**
-     * The UserContext associated with the Directory containing the object
-     * represented by this DirectoryObjectResource.
-     */
-    private final UserContext userContext;
+  /**
+   * The UserContext associated with the Directory containing the object represented by this
+   * DirectoryObjectResource.
+   */
+  private final UserContext userContext;
 
-    /**
-     * The Directory which contains the object represented by this
-     * DirectoryObjectResource.
-     */
-    private final Directory<InternalType> directory;
+  /**
+   * The Directory which contains the object represented by this DirectoryObjectResource.
+   */
+  private final Directory<InternalType> directory;
 
-    /**
-     * The object represented by this DirectoryObjectResource.
-     */
-    private final InternalType object;
+  /**
+   * The object represented by this DirectoryObjectResource.
+   */
+  private final InternalType object;
 
-    /**
-     * A DirectoryObjectTranslator implementation which handles the type of
-     * objects represented by this DirectoryObjectResource.
-     */
-    private final DirectoryObjectTranslator<InternalType, ExternalType> translator;
+  /**
+   * A DirectoryObjectTranslator implementation which handles the type of objects represented by
+   * this DirectoryObjectResource.
+   */
+  private final DirectoryObjectTranslator<InternalType, ExternalType> translator;
 
-    /**
-     * Creates a new DirectoryObjectResource which exposes the operations
-     * available for the given object.
-     *
-     * @param userContext
-     *     The UserContext associated with the given Directory.
-     *
-     * @param directory
-     *     The Directory which contains the given object.
-     *
-     * @param object
-     *     The object that this DirectoryObjectResource should represent.
-     *
-     * @param translator
-     *     A DirectoryObjectTranslator implementation which handles the type of
-     *     object given.
-     */
-    public DirectoryObjectResource(UserContext userContext,
-            Directory<InternalType> directory, InternalType object,
-            DirectoryObjectTranslator<InternalType, ExternalType> translator) {
-        this.userContext = userContext;
-        this.directory = directory;
-        this.object = object;
-        this.translator = translator;
+  /**
+   * Creates a new DirectoryObjectResource which exposes the operations available for the given
+   * object.
+   *
+   * @param userContext The UserContext associated with the given Directory.
+   * @param directory   The Directory which contains the given object.
+   * @param object      The object that this DirectoryObjectResource should represent.
+   * @param translator  A DirectoryObjectTranslator implementation which handles the type of object
+   *                    given.
+   */
+  public DirectoryObjectResource(UserContext userContext,
+      Directory<InternalType> directory, InternalType object,
+      DirectoryObjectTranslator<InternalType, ExternalType> translator) {
+    this.userContext = userContext;
+    this.directory = directory;
+    this.object = object;
+    this.translator = translator;
+  }
+
+  /**
+   * Returns the object represented by this DirectoryObjectResource, in a format intended for
+   * interchange.
+   *
+   * @return The object that this DirectoryObjectResource represents, in a format intended for
+   * interchange.
+   * @throws GuacamoleException If an error is encountered while retrieving the object.
+   */
+  @GET
+  public ExternalType getObject() throws GuacamoleException {
+    return translator.toExternalObject(object);
+  }
+
+  /**
+   * Updates an existing object. The changes to be made to the corresponding object within the
+   * directory indicated by the provided data.
+   *
+   * @param modifiedObject The data to update the corresponding object with.
+   * @throws GuacamoleException If an error occurs while updating the object.
+   */
+  @PUT
+  public void updateObject(ExternalType modifiedObject) throws GuacamoleException {
+
+    // Validate that data was provided
+    if (modifiedObject == null) {
+      throw new GuacamoleClientException("Data must be submitted when updating objects.");
     }
 
-    /**
-     * Returns the object represented by this DirectoryObjectResource, in a
-     * format intended for interchange.
-     *
-     * @return
-     *     The object that this DirectoryObjectResource represents, in a format
-     *     intended for interchange.
-     *
-     * @throws GuacamoleException
-     *     If an error is encountered while retrieving the object.
-     */
-    @GET
-    public ExternalType getObject() throws GuacamoleException {
-        return translator.toExternalObject(object);
-    }
+    // Filter/sanitize object contents
+    translator.filterExternalObject(userContext, modifiedObject);
 
-    /**
-     * Updates an existing object. The changes to be made to the corresponding
-     * object within the directory indicated by the provided data.
-     *
-     * @param modifiedObject
-     *     The data to update the corresponding object with.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while updating the object.
-     */
-    @PUT
-    public void updateObject(ExternalType modifiedObject) throws GuacamoleException {
+    // Perform update
+    translator.applyExternalChanges(object, modifiedObject);
+    directory.update(object);
 
-        // Validate that data was provided
-        if (modifiedObject == null)
-            throw new GuacamoleClientException("Data must be submitted when updating objects.");
+  }
 
-        // Filter/sanitize object contents
-        translator.filterExternalObject(userContext, modifiedObject);
-
-        // Perform update
-        translator.applyExternalChanges(object, modifiedObject);
-        directory.update(object);
-
-    }
-
-    /**
-     * Removes this object from the containing directory.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while removing the object.
-     */
-    @DELETE
-    public void deleteObject() throws GuacamoleException {
-        directory.remove(object.getIdentifier());
-    }
+  /**
+   * Removes this object from the containing directory.
+   *
+   * @throws GuacamoleException If an error occurs while removing the object.
+   */
+  @DELETE
+  public void deleteObject() throws GuacamoleException {
+    directory.remove(object.getIdentifier());
+  }
 
 }

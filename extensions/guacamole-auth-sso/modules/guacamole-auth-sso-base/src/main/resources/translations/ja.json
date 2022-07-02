@@ -1,7 +1,5 @@
 {
-
-    "LOGIN" : {
-        "INFO_IDP_REDIRECT_PENDING" : "IDプロバイダへリダイレクトしています。"
-    }
-
+  "LOGIN": {
+    "INFO_IDP_REDIRECT_PENDING": "IDプロバイダへリダイレクトしています。"
+  }
 }

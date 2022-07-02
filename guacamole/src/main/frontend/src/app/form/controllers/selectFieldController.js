@@ -17,17 +17,18 @@
  * under the License.
  */
 
-
 /**
  * Controller for select fields.
  */
-angular.module('form').controller('selectFieldController', ['$scope', '$injector',
-    function selectFieldController($scope, $injector) {
+angular.module('form').controller('selectFieldController',
+    ['$scope', '$injector',
+      function selectFieldController($scope, $injector) {
 
-    // Interpret undefined/null as empty string
-    $scope.$watch('model', function setModel(model) {
-        if (!model && model !== '')
+        // Interpret undefined/null as empty string
+        $scope.$watch('model', function setModel(model) {
+          if (!model && model !== '') {
             $scope.model = '';
-    });
+          }
+        });
 
-}]);
+      }]);

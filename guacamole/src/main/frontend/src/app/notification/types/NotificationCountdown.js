@@ -20,22 +20,24 @@
 /**
  * Provides the NotificationCountdown class definition.
  */
-angular.module('notification').factory('NotificationCountdown', [function defineNotificationCountdown() {
+angular.module('notification').factory('NotificationCountdown',
+    [function defineNotificationCountdown() {
 
-    /**
-     * Creates a new NotificationCountdown which describes an action that
-     * should be performed after a specific number of seconds has elapsed.
-     *
-     * @constructor
-     * @param {String} text The body text of the notification countdown.
-     *
-     * @param {Number} remaining
-     *     The number of seconds remaining in the countdown.
-     *
-     * @param {Function} [callback]
-     *     The callback to call when the countdown elapses.
-     */
-    var NotificationCountdown = function NotificationCountdown(text, remaining, callback) {
+      /**
+       * Creates a new NotificationCountdown which describes an action that
+       * should be performed after a specific number of seconds has elapsed.
+       *
+       * @constructor
+       * @param {String} text The body text of the notification countdown.
+       *
+       * @param {Number} remaining
+       *     The number of seconds remaining in the countdown.
+       *
+       * @param {Function} [callback]
+       *     The callback to call when the countdown elapses.
+       */
+      var NotificationCountdown = function NotificationCountdown(text,
+          remaining, callback) {
 
         /**
          * Reference to this NotificationCountdown.
@@ -69,8 +71,8 @@ angular.module('notification').factory('NotificationCountdown', [function define
          */
         this.callback = callback;
 
-    };
+      };
 
-    return NotificationCountdown;
+      return NotificationCountdown;
 
-}]);
+    }]);

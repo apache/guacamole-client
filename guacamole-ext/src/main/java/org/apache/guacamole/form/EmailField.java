@@ -24,14 +24,13 @@ package org.apache.guacamole.form;
  */
 public class EmailField extends Field {
 
-    /**
-     * Creates a new EmailField with the given name.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     */
-    public EmailField(String name) {
-        super(name, Field.Type.EMAIL);
-    }
+  /**
+   * Creates a new EmailField with the given name.
+   *
+   * @param name The unique name to associate with this field.
+   */
+  public EmailField(String name) {
+    super(name, Field.Type.EMAIL);
+  }
 
 }

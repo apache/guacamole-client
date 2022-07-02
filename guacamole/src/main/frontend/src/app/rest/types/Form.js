@@ -22,37 +22,37 @@
  */
 angular.module('rest').factory('Form', [function defineForm() {
 
+  /**
+   * The object returned by REST API calls when representing the data
+   * associated with a form or set of configuration parameters.
+   *
+   * @constructor
+   * @param {Form|Object} [template={}]
+   *     The object whose properties should be copied within the new
+   *     Form.
+   */
+  var Form = function Form(template) {
+
+    // Use empty object by default
+    template = template || {};
+
     /**
-     * The object returned by REST API calls when representing the data
-     * associated with a form or set of configuration parameters.
+     * The name which uniquely identifies this form, or null if this form
+     * has no name.
      *
-     * @constructor
-     * @param {Form|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     Form.
+     * @type String
      */
-    var Form = function Form(template) {
+    this.name = template.name;
 
-        // Use empty object by default
-        template = template || {};
+    /**
+     * All fields contained within this form.
+     *
+     * @type Field[]
+     */
+    this.fields = template.fields || [];
 
-        /**
-         * The name which uniquely identifies this form, or null if this form
-         * has no name.
-         *
-         * @type String
-         */
-        this.name = template.name;
+  };
 
-        /**
-         * All fields contained within this form.
-         *
-         * @type Field[]
-         */
-        this.fields = template.fields || [];
-
-    };
-
-    return Form;
+  return Form;
 
 }]);

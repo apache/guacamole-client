@@ -21,28 +21,30 @@
  * A directive which displays the contents of a filesystem received through the
  * Guacamole client.
  */
-angular.module('client').directive('guacFileBrowser', [function guacFileBrowser() {
+angular.module('client').directive('guacFileBrowser',
+    [function guacFileBrowser() {
 
-    return {
+      return {
         restrict: 'E',
         replace: true,
         scope: {
 
-            /**
-             * @type ManagedFilesystem
-             */
-            filesystem : '='
+          /**
+           * @type ManagedFilesystem
+           */
+          filesystem: '='
 
         },
 
         templateUrl: 'app/client/templates/guacFileBrowser.html',
-        controller: ['$scope', '$element', '$injector', function guacFileBrowserController($scope, $element, $injector) {
+        controller: ['$scope', '$element', '$injector',
+          function guacFileBrowserController($scope, $element, $injector) {
 
             // Required types
             var ManagedFilesystem = $injector.get('ManagedFilesystem');
 
             // Required services
-            var $interpolate     = $injector.get('$interpolate');
+            var $interpolate = $injector.get('$interpolate');
             var $templateRequest = $injector.get('$templateRequest');
 
             /**
@@ -51,7 +53,8 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              *
              * @type Element[]
              */
-            var currentDirectoryContents = $element.find('.current-directory-contents');
+            var currentDirectoryContents = $element.find(
+                '.current-directory-contents');
 
             /**
              * Statically-cached template HTML used to render each file within
@@ -73,7 +76,7 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              *     true if the given file is a normal file, false otherwise.
              */
             $scope.isNormalFile = function isNormalFile(file) {
-                return file.type === ManagedFilesystem.File.Type.NORMAL;
+              return file.type === ManagedFilesystem.File.Type.NORMAL;
             };
 
             /**
@@ -86,7 +89,7 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              *     true if the given file is a directory, false otherwise.
              */
             $scope.isDirectory = function isDirectory(file) {
-                return file.type === ManagedFilesystem.File.Type.DIRECTORY;
+              return file.type === ManagedFilesystem.File.Type.DIRECTORY;
             };
 
             /**
@@ -97,7 +100,7 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              *     The directory to change to.
              */
             $scope.changeDirectory = function changeDirectory(file) {
-                ManagedFilesystem.changeDirectory($scope.filesystem, file);
+              ManagedFilesystem.changeDirectory($scope.filesystem, file);
             };
 
             /**
@@ -108,7 +111,8 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              *     The file to download.
              */
             $scope.downloadFile = function downloadFile(file) {
-                ManagedFilesystem.downloadFile($scope.filesystem, file.streamName);
+              ManagedFilesystem.downloadFile($scope.filesystem,
+                  file.streamName);
             };
 
             /**
@@ -123,19 +127,22 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              *     The evaluation context to use when evaluating expressions
              *     embedded in text nodes within the provided element.
              */
-            var interpolateElement = function interpolateElement(element, context) {
+            var interpolateElement = function interpolateElement(element,
+                context) {
 
-                // Interpolate the contents of text nodes directly
-                if (element.nodeType === Node.TEXT_NODE)
-                    element.nodeValue = $interpolate(element.nodeValue)(context);
+              // Interpolate the contents of text nodes directly
+              if (element.nodeType === Node.TEXT_NODE) {
+                element.nodeValue = $interpolate(element.nodeValue)(context);
+              }
 
-                // Recursively interpolate the contents of all descendant text
-                // nodes
-                if (element.hasChildNodes()) {
-                    var children = element.childNodes;
-                    for (var i = 0; i < children.length; i++)
-                        interpolateElement(children[i], context);
+              // Recursively interpolate the contents of all descendant text
+              // nodes
+              if (element.hasChildNodes()) {
+                var children = element.childNodes;
+                for (var i = 0; i < children.length; i++) {
+                  interpolateElement(children[i], context);
                 }
+              }
 
             };
 
@@ -156,53 +163,54 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              */
             var createFileElement = function createFileElement(file) {
 
-                // Create from internal template
-                var element = angular.element(fileTemplate);
-                interpolateElement(element[0], file);
+              // Create from internal template
+              var element = angular.element(fileTemplate);
+              interpolateElement(element[0], file);
 
-                // Double-clicking on unknown file types will do nothing
-                var fileAction = function doNothing() {};
+              // Double-clicking on unknown file types will do nothing
+              var fileAction = function doNothing() {
+              };
 
-                // Change current directory when directories are clicked
-                if ($scope.isDirectory(file)) {
-                    element.addClass('directory');
-                    fileAction = function changeDirectory() {
-                        $scope.changeDirectory(file);
-                    };
+              // Change current directory when directories are clicked
+              if ($scope.isDirectory(file)) {
+                element.addClass('directory');
+                fileAction = function changeDirectory() {
+                  $scope.changeDirectory(file);
+                };
+              }
+
+              // Initiate downloads when normal files are clicked
+              else if ($scope.isNormalFile(file)) {
+                element.addClass('normal-file');
+                fileAction = function downloadFile() {
+                  $scope.downloadFile(file);
+                };
+              }
+
+              // Mark file as focused upon click
+              element.on('click', function handleFileClick() {
+
+                // Fire file-specific action if already focused
+                if (element.hasClass('focused')) {
+                  fileAction();
+                  element.removeClass('focused');
                 }
 
-                // Initiate downloads when normal files are clicked
-                else if ($scope.isNormalFile(file)) {
-                    element.addClass('normal-file');
-                    fileAction = function downloadFile() {
-                        $scope.downloadFile(file);
-                    };
+                // Otherwise mark as focused
+                else {
+                  element.parent().children().removeClass('focused');
+                  element.addClass('focused');
                 }
 
-                // Mark file as focused upon click
-                element.on('click', function handleFileClick() {
+              });
 
-                    // Fire file-specific action if already focused
-                    if (element.hasClass('focused')) {
-                        fileAction();
-                        element.removeClass('focused');
-                    }
+              // Prevent text selection during navigation
+              element.on('selectstart', function avoidSelect(e) {
+                e.preventDefault();
+                e.stopPropagation();
+              });
 
-                    // Otherwise mark as focused
-                    else {
-                        element.parent().children().removeClass('focused');
-                        element.addClass('focused');
-                    }
-
-                });
-
-                // Prevent text selection during navigation
-                element.on('selectstart', function avoidSelect(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
-
-                return element;
+              return element;
 
             };
 
@@ -221,61 +229,71 @@ angular.module('client').directive('guacFileBrowser', [function guacFileBrowser(
              */
             var sortFiles = function sortFiles(files) {
 
-                // Get all given files as an array
-                var unsortedFiles = [];
-                for (var name in files)
-                    unsortedFiles.push(files[name]);
+              // Get all given files as an array
+              var unsortedFiles = [];
+              for (var name in files) {
+                unsortedFiles.push(files[name]);
+              }
 
-                // Sort files - directories first, followed by all other files
-                // sorted by name
-                return unsortedFiles.sort(function fileComparator(a, b) {
+              // Sort files - directories first, followed by all other files
+              // sorted by name
+              return unsortedFiles.sort(function fileComparator(a, b) {
 
-                    // Directories come before non-directories
-                    if ($scope.isDirectory(a) && !$scope.isDirectory(b))
-                        return -1;
+                // Directories come before non-directories
+                if ($scope.isDirectory(a) && !$scope.isDirectory(b)) {
+                  return -1;
+                }
 
-                    // Non-directories come after directories
-                    if (!$scope.isDirectory(a) && $scope.isDirectory(b))
-                        return 1;
+                // Non-directories come after directories
+                if (!$scope.isDirectory(a) && $scope.isDirectory(b)) {
+                  return 1;
+                }
 
-                    // All other combinations are sorted by name
-                    return a.name.localeCompare(b.name);
+                // All other combinations are sorted by name
+                return a.name.localeCompare(b.name);
 
-                });
+              });
 
             };
 
             // Watch directory contents once file template is available
-            $templateRequest('app/client/templates/file.html').then(function fileTemplateRetrieved(html) {
+            $templateRequest('app/client/templates/file.html').then(
+                function fileTemplateRetrieved(html) {
 
-                // Store file template statically
-                fileTemplate = html;
+                  // Store file template statically
+                  fileTemplate = html;
 
-                // Update the contents of the file browser whenever the current directory (or its contents) changes
-                $scope.$watch('filesystem.currentDirectory.files', function currentDirectoryChanged(files) {
+                  // Update the contents of the file browser whenever the current directory (or its contents) changes
+                  $scope.$watch('filesystem.currentDirectory.files',
+                      function currentDirectoryChanged(files) {
 
-                    // Clear current content
-                    currentDirectoryContents.html('');
+                        // Clear current content
+                        currentDirectoryContents.html('');
 
-                    // Display all files within current directory, sorted
-                    angular.forEach(sortFiles(files), function displayFile(file) {
-                        currentDirectoryContents.append(createFileElement(file));
-                    });
+                        // Display all files within current directory, sorted
+                        angular.forEach(sortFiles(files),
+                            function displayFile(file) {
+                              currentDirectoryContents.append(
+                                  createFileElement(file));
+                            });
+
+                      });
+
+                }, angular.noop); // end retrieve file template
+
+            // Refresh file browser when any upload completes
+            $scope.$on('guacUploadComplete',
+                function uploadComplete(event, filename) {
+
+                  // Refresh filesystem, if it exists
+                  if ($scope.filesystem) {
+                    ManagedFilesystem.refresh($scope.filesystem,
+                        $scope.filesystem.currentDirectory);
+                  }
 
                 });
 
-            }, angular.noop); // end retrieve file template
+          }]
 
-            // Refresh file browser when any upload completes
-            $scope.$on('guacUploadComplete', function uploadComplete(event, filename) {
-
-                // Refresh filesystem, if it exists
-                if ($scope.filesystem)
-                    ManagedFilesystem.refresh($scope.filesystem, $scope.filesystem.currentDirectory);
-
-            });
-
-        }]
-
-    };
-}]);
+      };
+    }]);

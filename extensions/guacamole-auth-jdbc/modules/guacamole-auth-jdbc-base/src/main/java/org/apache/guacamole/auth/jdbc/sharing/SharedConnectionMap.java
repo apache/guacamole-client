@@ -22,50 +22,37 @@ package org.apache.guacamole.auth.jdbc.sharing;
 import org.apache.guacamole.auth.jdbc.sharing.connection.SharedConnectionDefinition;
 
 /**
- * Represents a mapping between share keys and the Guacamole connection being
- * shared.
+ * Represents a mapping between share keys and the Guacamole connection being shared.
  */
 public interface SharedConnectionMap {
 
-    /**
-     * Stores the given SharedConnectionDefinition by its associated share key,
-     * allowing the connection it describes to be accessed by users having the
-     * share key.
-     *
-     * @param definition
-     *     The SharedConnectionDefinition describing the connection being
-     *     shared.
-     */
-    public void add(SharedConnectionDefinition definition);
+  /**
+   * Stores the given SharedConnectionDefinition by its associated share key, allowing the
+   * connection it describes to be accessed by users having the share key.
+   *
+   * @param definition The SharedConnectionDefinition describing the connection being shared.
+   */
+  public void add(SharedConnectionDefinition definition);
 
-    /**
-     * Retrieves the connection definition associated with the given share key.
-     * If no such share key exists, null is returned.
-     *
-     * @param key
-     *     The share key associated with the connection definition to be
-     *     returned.
-     *
-     * @return
-     *     The connection definition associated with the given share key, or
-     *     null if no such share key exists.
-     */
-    public SharedConnectionDefinition get(String key);
+  /**
+   * Retrieves the connection definition associated with the given share key. If no such share key
+   * exists, null is returned.
+   *
+   * @param key The share key associated with the connection definition to be returned.
+   * @return The connection definition associated with the given share key, or null if no such share
+   * key exists.
+   */
+  public SharedConnectionDefinition get(String key);
 
-    /**
-     * Invalidates given share key, if it exists, returning the connection
-     * definition previously associated with that key. If no such share key
-     * exists, this function has no effect, and null is returned.
-     *
-     * @param key
-     *     The share key associated with the connection definition to be
-     *     removed.
-     *
-     * @return
-     *     The connection definition previously associated with the given
-     *     share key, or null if no such share key exists and no connection was
-     *     removed.
-     */
-    public SharedConnectionDefinition remove(String key);
+  /**
+   * Invalidates given share key, if it exists, returning the connection definition previously
+   * associated with that key. If no such share key exists, this function has no effect, and null is
+   * returned.
+   *
+   * @param key The share key associated with the connection definition to be removed.
+   * @return The connection definition previously associated with the given share key, or null if no
+   * such share key exists and no connection was removed.
+   */
+  public SharedConnectionDefinition remove(String key);
 
 }

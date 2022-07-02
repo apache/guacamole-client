@@ -22,25 +22,21 @@ package org.apache.guacamole.vault.user;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * Factory for creating UserContext instances which automatically inject tokens
- * containing the values of secrets retrieved from a vault.
+ * Factory for creating UserContext instances which automatically inject tokens containing the
+ * values of secrets retrieved from a vault.
  */
 public interface VaultUserContextFactory {
 
-    /**
-     * Returns a new instance of a UserContext implementation which
-     * automatically injects tokens containing values of secrets retrieved from
-     * a vault. The given UserContext is decorated such that connections and
-     * connection groups will receive additional tokens during the connection
-     * process.
-     *
-     * @param userContext
-     *     The UserContext instance to decorate.
-     *
-     * @return
-     *     A new UserContext instance which automatically injects tokens
-     *     containing values of secrets retrieved from a vault.
-     */
-    UserContext create(UserContext userContext);
+  /**
+   * Returns a new instance of a UserContext implementation which automatically injects tokens
+   * containing values of secrets retrieved from a vault. The given UserContext is decorated such
+   * that connections and connection groups will receive additional tokens during the connection
+   * process.
+   *
+   * @param userContext The UserContext instance to decorate.
+   * @return A new UserContext instance which automatically injects tokens containing values of
+   * secrets retrieved from a vault.
+   */
+  UserContext create(UserContext userContext);
 
 }

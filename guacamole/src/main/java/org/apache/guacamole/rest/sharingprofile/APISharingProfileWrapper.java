@@ -23,77 +23,75 @@ import java.util.Map;
 import org.apache.guacamole.net.auth.SharingProfile;
 
 /**
- * Wrapper for APISharingProfile which provides a SharingProfile interface.
- * Changes to the underlying APISharingProfile are reflected immediately in the
- * values exposed by the SharingProfile interface, and changes made through the
- * SharingProfile interface immediately affect the underlying APISharingProfile.
+ * Wrapper for APISharingProfile which provides a SharingProfile interface. Changes to the
+ * underlying APISharingProfile are reflected immediately in the values exposed by the
+ * SharingProfile interface, and changes made through the SharingProfile interface immediately
+ * affect the underlying APISharingProfile.
  */
 public class APISharingProfileWrapper implements SharingProfile {
 
-    /**
-     * The wrapped APISharingProfile.
-     */
-    private final APISharingProfile apiSharingProfile;
+  /**
+   * The wrapped APISharingProfile.
+   */
+  private final APISharingProfile apiSharingProfile;
 
-    /**
-     * Creates a new APISharingProfileWrapper which is backed by the given
-     * APISharingProfile.
-     *
-     * @param apiSharingProfile
-     *     The APISharingProfile to wrap.
-     */
-    public APISharingProfileWrapper(APISharingProfile apiSharingProfile) {
-        this.apiSharingProfile = apiSharingProfile;
-    }
+  /**
+   * Creates a new APISharingProfileWrapper which is backed by the given APISharingProfile.
+   *
+   * @param apiSharingProfile The APISharingProfile to wrap.
+   */
+  public APISharingProfileWrapper(APISharingProfile apiSharingProfile) {
+    this.apiSharingProfile = apiSharingProfile;
+  }
 
-    @Override
-    public String getName() {
-        return apiSharingProfile.getName();
-    }
+  @Override
+  public String getName() {
+    return apiSharingProfile.getName();
+  }
 
-    @Override
-    public void setName(String name) {
-        apiSharingProfile.setName(name);
-    }
+  @Override
+  public void setName(String name) {
+    apiSharingProfile.setName(name);
+  }
 
-    @Override
-    public String getIdentifier() {
-        return apiSharingProfile.getIdentifier();
-    }
+  @Override
+  public String getIdentifier() {
+    return apiSharingProfile.getIdentifier();
+  }
 
-    @Override
-    public void setIdentifier(String identifier) {
-        apiSharingProfile.setIdentifier(identifier);
-    }
+  @Override
+  public void setIdentifier(String identifier) {
+    apiSharingProfile.setIdentifier(identifier);
+  }
 
-    @Override
-    public String getPrimaryConnectionIdentifier() {
-        return apiSharingProfile.getPrimaryConnectionIdentifier();
-    }
+  @Override
+  public String getPrimaryConnectionIdentifier() {
+    return apiSharingProfile.getPrimaryConnectionIdentifier();
+  }
 
-    @Override
-    public void setPrimaryConnectionIdentifier(String primaryConnectionIdentifier) {
-        apiSharingProfile.setPrimaryConnectionIdentifier(primaryConnectionIdentifier);
-    }
+  @Override
+  public void setPrimaryConnectionIdentifier(String primaryConnectionIdentifier) {
+    apiSharingProfile.setPrimaryConnectionIdentifier(primaryConnectionIdentifier);
+  }
 
-    @Override
-    public Map<String, String> getParameters() {
-        return apiSharingProfile.getParameters();
-    }
+  @Override
+  public Map<String, String> getParameters() {
+    return apiSharingProfile.getParameters();
+  }
 
-    @Override
-    public void setParameters(Map<String, String> parameters) {
-        apiSharingProfile.setParameters(parameters);
-    }
+  @Override
+  public void setParameters(Map<String, String> parameters) {
+    apiSharingProfile.setParameters(parameters);
+  }
 
-    @Override
-    public Map<String, String> getAttributes() {
-        return apiSharingProfile.getAttributes();
-    }
+  @Override
+  public Map<String, String> getAttributes() {
+    return apiSharingProfile.getAttributes();
+  }
 
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        apiSharingProfile.setAttributes(attributes);
-    }
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    apiSharingProfile.setAttributes(attributes);
+  }
 
 }

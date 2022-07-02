@@ -21,82 +21,86 @@
  * A directive which provides a filtering text input field which automatically
  * produces a filtered subset of the given connection groups.
  */
-angular.module('groupList').directive('guacGroupListFilter', [function guacGroupListFilter() {
+angular.module('groupList').directive('guacGroupListFilter',
+    [function guacGroupListFilter() {
 
-    return {
+      return {
         restrict: 'E',
         replace: true,
         scope: {
 
-            /**
-             * The property to which a subset of the provided map of connection
-             * groups will be assigned. The type of each item within the
-             * original map is preserved within the filtered map.
-             *
-             * @type Object.<String, ConnectionGroup|GroupListItem>
-             */
-            filteredConnectionGroups : '=',
+          /**
+           * The property to which a subset of the provided map of connection
+           * groups will be assigned. The type of each item within the
+           * original map is preserved within the filtered map.
+           *
+           * @type Object.<String, ConnectionGroup|GroupListItem>
+           */
+          filteredConnectionGroups: '=',
 
-            /**
-             * The placeholder text to display within the filter input field
-             * when no filter has been provided.
-             * 
-             * @type String
-             */
-            placeholder : '&',
+          /**
+           * The placeholder text to display within the filter input field
+           * when no filter has been provided.
+           *
+           * @type String
+           */
+          placeholder: '&',
 
-            /**
-             * The connection groups to filter, as a map of data source
-             * identifier to corresponding root group. A subset of this map
-             * will be exposed as filteredConnectionGroups.
-             *
-             * @type Object.<String, ConnectionGroup|GroupListItem>
-             */
-            connectionGroups : '&',
+          /**
+           * The connection groups to filter, as a map of data source
+           * identifier to corresponding root group. A subset of this map
+           * will be exposed as filteredConnectionGroups.
+           *
+           * @type Object.<String, ConnectionGroup|GroupListItem>
+           */
+          connectionGroups: '&',
 
-            /**
-             * An array of expressions to filter against for each connection in
-             * the hierarchy of connections and groups in the provided map.
-             * These expressions must be Angular expressions which resolve to
-             * properties on the connections in the provided map.
-             *
-             * @type String[]
-             */
-            connectionProperties : '&',
+          /**
+           * An array of expressions to filter against for each connection in
+           * the hierarchy of connections and groups in the provided map.
+           * These expressions must be Angular expressions which resolve to
+           * properties on the connections in the provided map.
+           *
+           * @type String[]
+           */
+          connectionProperties: '&',
 
-            /**
-             * An array of expressions to filter against for each connection group
-             * in the hierarchy of connections and groups in the provided map.
-             * These expressions must be Angular expressions which resolve to
-             * properties on the connection groups in the provided map.
-             *
-             * @type String[]
-             */
-            connectionGroupProperties : '&'
+          /**
+           * An array of expressions to filter against for each connection group
+           * in the hierarchy of connections and groups in the provided map.
+           * These expressions must be Angular expressions which resolve to
+           * properties on the connection groups in the provided map.
+           *
+           * @type String[]
+           */
+          connectionGroupProperties: '&'
 
         },
 
         templateUrl: 'app/groupList/templates/guacGroupListFilter.html',
-        controller: ['$scope', '$injector', function guacGroupListFilterController($scope, $injector) {
+        controller: ['$scope', '$injector',
+          function guacGroupListFilterController($scope, $injector) {
 
             // Required types
             var ConnectionGroup = $injector.get('ConnectionGroup');
-            var FilterPattern   = $injector.get('FilterPattern');
-            var GroupListItem   = $injector.get('GroupListItem');
+            var FilterPattern = $injector.get('FilterPattern');
+            var GroupListItem = $injector.get('GroupListItem');
 
             /**
              * The pattern object to use when filtering connections.
              *
              * @type FilterPattern
              */
-            var connectionFilterPattern = new FilterPattern($scope.connectionProperties());
+            var connectionFilterPattern = new FilterPattern(
+                $scope.connectionProperties());
 
             /**
              * The pattern object to use when filtering connection groups.
              *
              * @type FilterPattern
              */
-            var connectionGroupFilterPattern = new FilterPattern($scope.connectionGroupProperties());
+            var connectionGroupFilterPattern = new FilterPattern(
+                $scope.connectionGroupProperties());
 
             /**
              * The filter search string to use to restrict the displayed
@@ -126,15 +130,18 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
              */
             var flattenConnectionGroup = function flattenConnectionGroup(connectionGroup) {
 
-                // Replace connection group with shallow copy
-                connectionGroup = new ConnectionGroup(connectionGroup);
+              // Replace connection group with shallow copy
+              connectionGroup = new ConnectionGroup(connectionGroup);
 
-                // Ensure child arrays are defined and independent copies
-                connectionGroup.childConnections = angular.copy(connectionGroup.childConnections) || [];
-                connectionGroup.childConnectionGroups = angular.copy(connectionGroup.childConnectionGroups) || [];
+              // Ensure child arrays are defined and independent copies
+              connectionGroup.childConnections = angular.copy(
+                  connectionGroup.childConnections) || [];
+              connectionGroup.childConnectionGroups = angular.copy(
+                  connectionGroup.childConnectionGroups) || [];
 
-                // Flatten all children to the top-level group
-                angular.forEach(connectionGroup.childConnectionGroups, function flattenChild(child) {
+              // Flatten all children to the top-level group
+              angular.forEach(connectionGroup.childConnectionGroups,
+                  function flattenChild(child) {
 
                     var flattenedChild = flattenConnectionGroup(child);
 
@@ -150,9 +157,9 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
                         flattenedChild.childConnectionGroups
                     );
 
-                });
+                  });
 
-                return connectionGroup;
+              return connectionGroup;
 
             };
 
@@ -176,28 +183,28 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
              */
             var flattenGroupListItem = function flattenGroupListItem(item) {
 
-                // Replace item with shallow copy
-                item = new GroupListItem(item);
+              // Replace item with shallow copy
+              item = new GroupListItem(item);
 
-                // Ensure children are defined and independent copies
-                item.children = angular.copy(item.children) || [];
+              // Ensure children are defined and independent copies
+              item.children = angular.copy(item.children) || [];
 
-                // Flatten all children to the top-level group
-                angular.forEach(item.children, function flattenChild(child) {
-                    if (child.type === GroupListItem.Type.CONNECTION_GROUP) {
+              // Flatten all children to the top-level group
+              angular.forEach(item.children, function flattenChild(child) {
+                if (child.type === GroupListItem.Type.CONNECTION_GROUP) {
 
-                        var flattenedChild = flattenGroupListItem(child);
+                  var flattenedChild = flattenGroupListItem(child);
 
-                        // Merge all children
-                        Array.prototype.push.apply(
-                            item.children,
-                            flattenedChild.children
-                        );
+                  // Merge all children
+                  Array.prototype.push.apply(
+                      item.children,
+                      flattenedChild.children
+                  );
 
-                    }
-                });
+                }
+              });
 
-                return item;
+              return item;
 
             };
 
@@ -210,24 +217,27 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
              *     The GroupListItem whose children should be filtered.
              */
             var filterGroupListItem = function filterGroupListItem(item) {
-                item.children = item.children.filter(function applyFilterPattern(child) {
+              item.children = item.children.filter(
+                  function applyFilterPattern(child) {
 
                     // Filter connections and connection groups by
                     // given pattern
                     switch (child.type) {
 
-                        case GroupListItem.Type.CONNECTION:
-                            return connectionFilterPattern.predicate(child.wrappedItem);
+                      case GroupListItem.Type.CONNECTION:
+                        return connectionFilterPattern.predicate(
+                            child.wrappedItem);
 
-                        case GroupListItem.Type.CONNECTION_GROUP:
-                            return connectionGroupFilterPattern.predicate(child.wrappedItem);
+                      case GroupListItem.Type.CONNECTION_GROUP:
+                        return connectionGroupFilterPattern.predicate(
+                            child.wrappedItem);
 
                     }
 
                     // Include all other children
                     return true;
 
-                });
+                  });
             };
 
             /**
@@ -240,8 +250,10 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
              *     The connection group whose children should be filtered.
              */
             var filterConnectionGroup = function filterConnectionGroup(connectionGroup) {
-                connectionGroup.childConnections = connectionGroup.childConnections.filter(connectionFilterPattern.predicate);
-                connectionGroup.childConnectionGroups = connectionGroup.childConnectionGroups.filter(connectionGroupFilterPattern.predicate);
+              connectionGroup.childConnections = connectionGroup.childConnections.filter(
+                  connectionFilterPattern.predicate);
+              connectionGroup.childConnectionGroups = connectionGroup.childConnectionGroups.filter(
+                  connectionGroupFilterPattern.predicate);
             };
 
             /**
@@ -251,54 +263,58 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
              */
             var updateFilteredConnectionGroups = function updateFilteredConnectionGroups() {
 
-                // Do not apply any filtering (and do not flatten) if no
-                // search string is provided
-                if (!$scope.searchString) {
-                    $scope.filteredConnectionGroups = $scope.connectionGroups() || {};
-                    return;
-                }
+              // Do not apply any filtering (and do not flatten) if no
+              // search string is provided
+              if (!$scope.searchString) {
+                $scope.filteredConnectionGroups = $scope.connectionGroups()
+                    || {};
+                return;
+              }
 
-                // Clear all current filtered groups
-                $scope.filteredConnectionGroups = {};
+              // Clear all current filtered groups
+              $scope.filteredConnectionGroups = {};
 
-                // Re-filter any provided groups
-                var connectionGroups = $scope.connectionGroups();
-                if (connectionGroups) {
-                    angular.forEach(connectionGroups, function updateFilteredConnectionGroup(connectionGroup, dataSource) {
+              // Re-filter any provided groups
+              var connectionGroups = $scope.connectionGroups();
+              if (connectionGroups) {
+                angular.forEach(connectionGroups,
+                    function updateFilteredConnectionGroup(connectionGroup,
+                        dataSource) {
 
-                        var filteredGroup;
+                      var filteredGroup;
 
-                        // Flatten and filter depending on type
-                        if (connectionGroup instanceof GroupListItem) {
-                            filteredGroup = flattenGroupListItem(connectionGroup);
-                            filterGroupListItem(filteredGroup);
-                        }
-                        else {
-                            filteredGroup = flattenConnectionGroup(connectionGroup);
-                            filterConnectionGroup(filteredGroup);
-                        }
+                      // Flatten and filter depending on type
+                      if (connectionGroup instanceof GroupListItem) {
+                        filteredGroup = flattenGroupListItem(connectionGroup);
+                        filterGroupListItem(filteredGroup);
+                      } else {
+                        filteredGroup = flattenConnectionGroup(connectionGroup);
+                        filterConnectionGroup(filteredGroup);
+                      }
 
-                        // Store now-filtered root
-                        $scope.filteredConnectionGroups[dataSource] = filteredGroup;
+                      // Store now-filtered root
+                      $scope.filteredConnectionGroups[dataSource] = filteredGroup;
 
                     });
-                }
+              }
 
             };
 
             // Recompile and refilter when pattern is changed
-            $scope.$watch('searchString', function searchStringChanged(searchString) {
-                connectionFilterPattern.compile(searchString);
-                connectionGroupFilterPattern.compile(searchString);
-                updateFilteredConnectionGroups();
-            });
+            $scope.$watch('searchString',
+                function searchStringChanged(searchString) {
+                  connectionFilterPattern.compile(searchString);
+                  connectionGroupFilterPattern.compile(searchString);
+                  updateFilteredConnectionGroups();
+                });
 
             // Refilter when items change
-            $scope.$watchCollection($scope.connectionGroups, function itemsChanged() {
-                updateFilteredConnectionGroups();
-            });
+            $scope.$watchCollection($scope.connectionGroups,
+                function itemsChanged() {
+                  updateFilteredConnectionGroups();
+                });
 
-        }]
+          }]
 
-    };
-}]);
+      };
+    }]);

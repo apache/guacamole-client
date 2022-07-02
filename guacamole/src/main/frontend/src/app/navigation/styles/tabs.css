@@ -19,45 +19,45 @@
 
 .page-tabs .page-list ul,
 .section-tabs ul {
-    margin: 0;
-    padding: 0;
-    background: rgba(0, 0, 0, 0.0125);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  margin: 0;
+  padding: 0;
+  background: rgba(0, 0, 0, 0.0125);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .page-tabs .page-list ul + ul,
 .section-tabs ul + ul {
-    font-size: 0.75em;
+  font-size: 0.75em;
 }
 
 .page-tabs .page-list li,
 .section-tabs li {
-    display: inline-block;
-    list-style: none;
+  display: inline-block;
+  list-style: none;
 }
 
 .page-tabs .page-list li a[href],
 .section-tabs li a {
-    display: block;
-    color: black;
-    text-decoration: none;
-    padding: 0.75em 1em;
+  display: block;
+  color: black;
+  text-decoration: none;
+  padding: 0.75em 1em;
 }
 
 .page-tabs .page-list li a[href]:visited {
-    color: black;
+  color: black;
 }
 
 .page-tabs .page-list li a[href]:hover,
 .section-tabs li a:hover {
-    background-color: #CDA;
-    cursor: pointer;
+  background-color: #CDA;
+  cursor: pointer;
 }
 
 .page-tabs .page-list li a[href].current,
 .page-tabs .page-list li a[href].current:hover,
 .section-tabs li a.current,
 .section-tabs li a.current:hover {
-    background: rgba(0,0,0,0.3);
-    cursor: default;
+  background: rgba(0, 0, 0, 0.3);
+  cursor: default;
 }

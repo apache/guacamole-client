@@ -22,19 +22,16 @@ package org.apache.guacamole.net.event;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 
 /**
- * Abstract basis for events which may have an associated AuthenticatedUser when
- * triggered.
+ * Abstract basis for events which may have an associated AuthenticatedUser when triggered.
  */
 public interface UserEvent {
 
-    /**
-     * Returns the AuthenticatedUser identifying the user triggering the event,
-     * if any.
-     *
-     * @return
-     *     The AuthenticatedUser identifying the user triggering the event, if
-     *     any, or null if no AuthenticatedUser is associated with the event.
-     */
-    AuthenticatedUser getAuthenticatedUser();
+  /**
+   * Returns the AuthenticatedUser identifying the user triggering the event, if any.
+   *
+   * @return The AuthenticatedUser identifying the user triggering the event, if any, or null if no
+   * AuthenticatedUser is associated with the event.
+   */
+  AuthenticatedUser getAuthenticatedUser();
 
 }

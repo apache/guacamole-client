@@ -23,22 +23,21 @@ import java.util.Collections;
 import org.apache.guacamole.net.auth.User;
 
 /**
- * An extremely simple read-only implementation of a Directory of Users which
- * provides access to a single pre-defined User.
+ * An extremely simple read-only implementation of a Directory of Users which provides access to a
+ * single pre-defined User.
  *
  * @deprecated Use {@link SimpleDirectory} instead.
  */
 @Deprecated
 public class SimpleUserDirectory extends SimpleDirectory<User> {
 
-    /**
-     * Creates a new SimpleUserDirectory which provides access to the single
-     * user provided.
-     *
-     * @param user The user to provide access to.
-     */
-    public SimpleUserDirectory(User user) {
-        super(Collections.singletonMap(user.getIdentifier(), user));
-    }
+  /**
+   * Creates a new SimpleUserDirectory which provides access to the single user provided.
+   *
+   * @param user The user to provide access to.
+   */
+  public SimpleUserDirectory(User user) {
+    super(Collections.singletonMap(user.getIdentifier(), user));
+  }
 
 }

@@ -21,11 +21,13 @@
 -- Add per-user disable flag
 --
 
-ALTER TABLE guacamole_user ADD COLUMN disabled boolean NOT NULL DEFAULT FALSE;
+ALTER TABLE guacamole_user
+    ADD COLUMN disabled boolean NOT NULL DEFAULT FALSE;
 
 --
 -- Add per-user password expiration flag
 --
 
-ALTER TABLE guacamole_user ADD COLUMN expired boolean NOT NULL DEFAULT FALSE;
+ALTER TABLE guacamole_user
+    ADD COLUMN expired boolean NOT NULL DEFAULT FALSE;
 

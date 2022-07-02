@@ -28,10 +28,10 @@ import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
  */
 public class CASAuthenticationProviderModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        bind(ConfigurationService.class);
-        bind(TicketValidationService.class);
-    }
+  @Override
+  protected void configure() {
+    bind(ConfigurationService.class);
+    bind(TicketValidationService.class);
+  }
 
 }

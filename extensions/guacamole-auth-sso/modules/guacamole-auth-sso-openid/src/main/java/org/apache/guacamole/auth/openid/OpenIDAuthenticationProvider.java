@@ -23,25 +23,23 @@ import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
 import org.apache.guacamole.auth.sso.SSOResource;
 
 /**
- * Guacamole authentication backend which authenticates users using an
- * arbitrary external system implementing OpenID. No storage for connections is
- * provided - only authentication. Storage must be provided by some other
- * extension.
+ * Guacamole authentication backend which authenticates users using an arbitrary external system
+ * implementing OpenID. No storage for connections is provided - only authentication. Storage must
+ * be provided by some other extension.
  */
 public class OpenIDAuthenticationProvider extends SSOAuthenticationProvider {
 
-    /**
-     * Creates a new OpenIDAuthenticationProvider that authenticates users
-     * against an OpenID service.
-     */
-    public OpenIDAuthenticationProvider() {
-        super(AuthenticationProviderService.class, SSOResource.class,
-                new OpenIDAuthenticationProviderModule());
-    }
+  /**
+   * Creates a new OpenIDAuthenticationProvider that authenticates users against an OpenID service.
+   */
+  public OpenIDAuthenticationProvider() {
+    super(AuthenticationProviderService.class, SSOResource.class,
+        new OpenIDAuthenticationProviderModule());
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "openid";
-    }
+  @Override
+  public String getIdentifier() {
+    return "openid";
+  }
 
 }

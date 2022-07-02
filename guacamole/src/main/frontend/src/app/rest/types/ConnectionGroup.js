@@ -20,18 +20,19 @@
 /**
  * Service which defines the ConnectionGroup class.
  */
-angular.module('rest').factory('ConnectionGroup', [function defineConnectionGroup() {
-            
-    /**
-     * The object returned by REST API calls when representing the data
-     * associated with a connection group.
-     * 
-     * @constructor
-     * @param {ConnectionGroup|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ConnectionGroup.
-     */
-    var ConnectionGroup = function ConnectionGroup(template) {
+angular.module('rest').factory('ConnectionGroup',
+    [function defineConnectionGroup() {
+
+      /**
+       * The object returned by REST API calls when representing the data
+       * associated with a connection group.
+       *
+       * @constructor
+       * @param {ConnectionGroup|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     ConnectionGroup.
+       */
+      var ConnectionGroup = function ConnectionGroup(template) {
 
         // Use empty object by default
         template = template || {};
@@ -46,16 +47,17 @@ angular.module('rest').factory('ConnectionGroup', [function defineConnectionGrou
         /**
          * The unique identifier of the connection group that contains this
          * connection group.
-         * 
+         *
          * @type String
          * @default ConnectionGroup.ROOT_IDENTIFIER
          */
-        this.parentIdentifier = template.parentIdentifier || ConnectionGroup.ROOT_IDENTIFIER;
+        this.parentIdentifier = template.parentIdentifier
+            || ConnectionGroup.ROOT_IDENTIFIER;
 
         /**
          * The human-readable name of this connection group, which is not
          * necessarily unique.
-         * 
+         *
          * @type String
          */
         this.name = template.name;
@@ -64,7 +66,7 @@ angular.module('rest').factory('ConnectionGroup', [function defineConnectionGrou
          * The type of this connection group, which may be either
          * ConnectionGroup.Type.ORGANIZATIONAL or
          * ConnectionGroup.Type.BALANCING.
-         * 
+         *
          * @type String
          * @default ConnectionGroup.Type.ORGANIZATIONAL
          */
@@ -101,42 +103,42 @@ angular.module('rest').factory('ConnectionGroup', [function defineConnectionGrou
          * The count of currently active connections using this connection
          * group. This field will be returned from the REST API during a get
          * operation, but manually setting this field will have no effect.
-         * 
+         *
          * @type Number
          */
         this.activeConnections = template.activeConnections;
 
-    };
+      };
 
-    /**
-     * The reserved identifier which always represents the root connection
-     * group.
-     * 
-     * @type String
-     */
-    ConnectionGroup.ROOT_IDENTIFIER = "ROOT";
+      /**
+       * The reserved identifier which always represents the root connection
+       * group.
+       *
+       * @type String
+       */
+      ConnectionGroup.ROOT_IDENTIFIER = "ROOT";
 
-    /**
-     * All valid connection group types.
-     */
-    ConnectionGroup.Type = {
+      /**
+       * All valid connection group types.
+       */
+      ConnectionGroup.Type = {
 
         /**
          * The type string associated with balancing connection groups.
          *
          * @type String
          */
-        BALANCING : "BALANCING",
+        BALANCING: "BALANCING",
 
         /**
          * The type string associated with organizational connection groups.
          *
          * @type String
          */
-        ORGANIZATIONAL : "ORGANIZATIONAL"
+        ORGANIZATIONAL: "ORGANIZATIONAL"
 
-    };
+      };
 
-    return ConnectionGroup;
+      return ConnectionGroup;
 
-}]);
+    }]);

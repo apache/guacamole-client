@@ -24,29 +24,29 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
 /**
- * A GuacamoleProperty whose value is a byte array. The bytes of the byte array
- * must be represented as a hexadecimal string within the property value. The
- * hexadecimal string is case-insensitive.
+ * A GuacamoleProperty whose value is a byte array. The bytes of the byte array must be represented
+ * as a hexadecimal string within the property value. The hexadecimal string is case-insensitive.
  */
 public abstract class ByteArrayProperty implements GuacamoleProperty<byte[]> {
 
-    @Override
-    public byte[] parseValue(String value) throws GuacamoleException {
+  @Override
+  public byte[] parseValue(String value) throws GuacamoleException {
 
-        // If no property provided, return null.
-        if (value == null)
-            return null;
-
-        // Return value parsed from hex
-        try {
-            return BaseEncoding.base16().decode(value.toUpperCase());
-        }
-
-        // Fail parse if hex invalid
-        catch (IllegalArgumentException e) {
-            throw new GuacamoleServerException("Invalid hexadecimal value.", e);
-        }
-
+    // If no property provided, return null.
+    if (value == null) {
+      return null;
     }
+
+    // Return value parsed from hex
+    try {
+      return BaseEncoding.base16().decode(value.toUpperCase());
+    }
+
+    // Fail parse if hex invalid
+    catch (IllegalArgumentException e) {
+      throw new GuacamoleServerException("Invalid hexadecimal value.", e);
+    }
+
+  }
 
 }

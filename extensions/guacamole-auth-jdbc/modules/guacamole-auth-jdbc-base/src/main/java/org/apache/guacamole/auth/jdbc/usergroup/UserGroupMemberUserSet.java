@@ -26,32 +26,32 @@ import org.apache.guacamole.auth.jdbc.base.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
 /**
- * RelatedObjectSet implementation which represents the one-to-many
- * relationship between a particular user group and its user members.
+ * RelatedObjectSet implementation which represents the one-to-many relationship between a
+ * particular user group and its user members.
  */
 public class UserGroupMemberUserSet extends RelatedObjectSet<ModeledUserGroup, UserGroupModel> {
 
-    /**
-     * Mapper for the relation between user groups and their user members.
-     */
-    @Inject
-    private UserGroupMemberUserMapper userGroupMemberUserMapper;
+  /**
+   * Mapper for the relation between user groups and their user members.
+   */
+  @Inject
+  private UserGroupMemberUserMapper userGroupMemberUserMapper;
 
-    @Override
-    protected ObjectRelationMapper<UserGroupModel> getObjectRelationMapper() {
-        return userGroupMemberUserMapper;
-    }
+  @Override
+  protected ObjectRelationMapper<UserGroupModel> getObjectRelationMapper() {
+    return userGroupMemberUserMapper;
+  }
 
-    @Override
-    protected ObjectPermissionSet
-        getParentObjectEffectivePermissionSet() throws GuacamoleException {
-        return getCurrentUser().getUser().getEffectivePermissions().getUserGroupPermissions();
-    }
+  @Override
+  protected ObjectPermissionSet
+  getParentObjectEffectivePermissionSet() throws GuacamoleException {
+    return getCurrentUser().getUser().getEffectivePermissions().getUserGroupPermissions();
+  }
 
-    @Override
-    protected ObjectPermissionSet getChildObjectEffectivePermissionSet()
-            throws GuacamoleException {
-        return getCurrentUser().getUser().getEffectivePermissions().getUserPermissions();
-    }
+  @Override
+  protected ObjectPermissionSet getChildObjectEffectivePermissionSet()
+      throws GuacamoleException {
+    return getCurrentUser().getUser().getEffectivePermissions().getUserPermissions();
+  }
 
 }

@@ -22,7 +22,7 @@
  * to select individual connections or groups.
  */
 angular.module('groupList', [
-    'navigation',
-    'list',
-    'rest'
+  'navigation',
+  'list',
+  'rest'
 ]);

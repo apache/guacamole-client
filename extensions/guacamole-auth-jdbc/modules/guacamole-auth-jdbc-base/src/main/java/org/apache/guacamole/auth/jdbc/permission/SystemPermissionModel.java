@@ -22,15 +22,14 @@ package org.apache.guacamole.auth.jdbc.permission;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 
 /**
- * Object representation of an system-level Guacamole permission, as
- * represented in the database.
+ * Object representation of an system-level Guacamole permission, as represented in the database.
  */
 public class SystemPermissionModel extends PermissionModel<SystemPermission.Type> {
 
-    /**
-     * Creates a new, empty System permission.
-     */
-    public SystemPermissionModel() {
-    }
+  /**
+   * Creates a new, empty System permission.
+   */
+  public SystemPermissionModel() {
+  }
 
 }

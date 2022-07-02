@@ -18,8 +18,7 @@
  */
 
 /**
- * Classes related to retrieval or maintenance of history records using the
- * Guacamole REST API.
+ * Classes related to retrieval or maintenance of history records using the Guacamole REST API.
  */
 package org.apache.guacamole.rest.history;
 

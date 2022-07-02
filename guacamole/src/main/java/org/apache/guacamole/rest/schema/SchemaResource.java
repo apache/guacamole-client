@@ -34,146 +34,123 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocols.ProtocolInfo;
 
 /**
- * A REST resource which provides access to descriptions of the properties,
- * attributes, etc. of objects within a particular UserContext.
+ * A REST resource which provides access to descriptions of the properties, attributes, etc. of
+ * objects within a particular UserContext.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SchemaResource {
 
-    /**
-     * The UserContext whose schema is exposed by this SchemaResource.
-     */
-    private final UserContext userContext;
+  /**
+   * The UserContext whose schema is exposed by this SchemaResource.
+   */
+  private final UserContext userContext;
 
-    /**
-     * Creates a new SchemaResource which exposes meta information describing
-     * the kind of data within the given UserContext.
-     *
-     * @param userContext
-     *     The UserContext whose schema should be exposed by this
-     *     SchemaResource.
-     */
-    public SchemaResource(UserContext userContext) {
-        this.userContext = userContext;
-    }
+  /**
+   * Creates a new SchemaResource which exposes meta information describing the kind of data within
+   * the given UserContext.
+   *
+   * @param userContext The UserContext whose schema should be exposed by this SchemaResource.
+   */
+  public SchemaResource(UserContext userContext) {
+    this.userContext = userContext;
+  }
 
-    /**
-     * Retrieves the possible attributes of a user object.
-     *
-     * @return
-     *     A collection of forms which describe the possible attributes of a
-     *     user object.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the possible attributes.
-     */
-    @GET
-    @Path("userAttributes")
-    public Collection<Form> getUserAttributes() throws GuacamoleException {
+  /**
+   * Retrieves the possible attributes of a user object.
+   *
+   * @return A collection of forms which describe the possible attributes of a user object.
+   * @throws GuacamoleException If an error occurs while retrieving the possible attributes.
+   */
+  @GET
+  @Path("userAttributes")
+  public Collection<Form> getUserAttributes() throws GuacamoleException {
 
-        // Retrieve all possible user attributes
-        return userContext.getUserAttributes();
+    // Retrieve all possible user attributes
+    return userContext.getUserAttributes();
 
-    }
+  }
 
-    /**
-     * Retrieves the possible attributes of a user group object.
-     *
-     * @return
-     *     A collection of forms which describe the possible attributes of a
-     *     user group object.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the possible attributes.
-     */
-    @GET
-    @Path("userGroupAttributes")
-    public Collection<Form> getUserGroupAttributes() throws GuacamoleException {
+  /**
+   * Retrieves the possible attributes of a user group object.
+   *
+   * @return A collection of forms which describe the possible attributes of a user group object.
+   * @throws GuacamoleException If an error occurs while retrieving the possible attributes.
+   */
+  @GET
+  @Path("userGroupAttributes")
+  public Collection<Form> getUserGroupAttributes() throws GuacamoleException {
 
-        // Retrieve all possible user group attributes
-        return userContext.getUserGroupAttributes();
+    // Retrieve all possible user group attributes
+    return userContext.getUserGroupAttributes();
 
-    }
+  }
 
-    /**
-     * Retrieves the possible attributes of a connection object.
-     *
-     * @return
-     *     A collection of forms which describe the possible attributes of a
-     *     connection object.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the possible attributes.
-     */
-    @GET
-    @Path("connectionAttributes")
-    public Collection<Form> getConnectionAttributes()
-            throws GuacamoleException {
+  /**
+   * Retrieves the possible attributes of a connection object.
+   *
+   * @return A collection of forms which describe the possible attributes of a connection object.
+   * @throws GuacamoleException If an error occurs while retrieving the possible attributes.
+   */
+  @GET
+  @Path("connectionAttributes")
+  public Collection<Form> getConnectionAttributes()
+      throws GuacamoleException {
 
-        // Retrieve all possible connection attributes
-        return userContext.getConnectionAttributes();
+    // Retrieve all possible connection attributes
+    return userContext.getConnectionAttributes();
 
-    }
+  }
 
-    /**
-     * Retrieves the possible attributes of a sharing profile object.
-     *
-     * @return
-     *     A collection of forms which describe the possible attributes of a
-     *     sharing profile object.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the possible attributes.
-     */
-    @GET
-    @Path("sharingProfileAttributes")
-    public Collection<Form> getSharingProfileAttributes()
-            throws GuacamoleException {
+  /**
+   * Retrieves the possible attributes of a sharing profile object.
+   *
+   * @return A collection of forms which describe the possible attributes of a sharing profile
+   * object.
+   * @throws GuacamoleException If an error occurs while retrieving the possible attributes.
+   */
+  @GET
+  @Path("sharingProfileAttributes")
+  public Collection<Form> getSharingProfileAttributes()
+      throws GuacamoleException {
 
-        // Retrieve all possible sharing profile attributes
-        return userContext.getSharingProfileAttributes();
+    // Retrieve all possible sharing profile attributes
+    return userContext.getSharingProfileAttributes();
 
-    }
+  }
 
-    /**
-     * Retrieves the possible attributes of a connection group object.
-     *
-     * @return
-     *     A collection of forms which describe the possible attributes of a
-     *     connection group object.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the possible attributes.
-     */
-    @GET
-    @Path("connectionGroupAttributes")
-    public Collection<Form> getConnectionGroupAttributes()
-            throws GuacamoleException {
+  /**
+   * Retrieves the possible attributes of a connection group object.
+   *
+   * @return A collection of forms which describe the possible attributes of a connection group
+   * object.
+   * @throws GuacamoleException If an error occurs while retrieving the possible attributes.
+   */
+  @GET
+  @Path("connectionGroupAttributes")
+  public Collection<Form> getConnectionGroupAttributes()
+      throws GuacamoleException {
 
-        // Retrieve all possible connection group attributes
-        return userContext.getConnectionGroupAttributes();
+    // Retrieve all possible connection group attributes
+    return userContext.getConnectionGroupAttributes();
 
-    }
+  }
 
-    /**
-     * Gets a map of protocols defined in the system - protocol name to protocol.
-     *
-     * @return
-     *     A map of protocol information, where each key is the unique name
-     *     associated with that protocol.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the available protocols.
-     */
-    @GET
-    @Path("protocols")
-    public Map<String, ProtocolInfo> getProtocols() throws GuacamoleException {
+  /**
+   * Gets a map of protocols defined in the system - protocol name to protocol.
+   *
+   * @return A map of protocol information, where each key is the unique name associated with that
+   * protocol.
+   * @throws GuacamoleException If an error occurs while retrieving the available protocols.
+   */
+  @GET
+  @Path("protocols")
+  public Map<String, ProtocolInfo> getProtocols() throws GuacamoleException {
 
-        // Get and return a map of all protocols.
-        Environment env = LocalEnvironment.getInstance();
-        return env.getProtocols();
+    // Get and return a map of all protocols.
+    Environment env = LocalEnvironment.getInstance();
+    return env.getProtocols();
 
-    }
+  }
 
 }

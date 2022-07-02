@@ -20,22 +20,20 @@
 package org.apache.guacamole.auth.jdbc.security;
 
 /**
- * Thrown when an attempt is made to set a user's password to a string which
- * does not contain both uppercase and lowercase characters, in violation of the
- * defined password policy.
+ * Thrown when an attempt is made to set a user's password to a string which does not contain both
+ * uppercase and lowercase characters, in violation of the defined password policy.
  */
 public class PasswordRequiresMultipleCaseException extends PasswordPolicyException {
 
-    /**
-     * Creates a new PasswordRequiresMultipleCaseException with the given
-     * human-readable message. The translatable message is already defined.
-     *
-     * @param message
-     *     A human-readable message describing the password policy violation
-     *     that occurred.
-     */
-    public PasswordRequiresMultipleCaseException(String message) {
-        super(message, "PASSWORD_POLICY.ERROR_REQUIRES_MULTIPLE_CASE");
-    }
+  /**
+   * Creates a new PasswordRequiresMultipleCaseException with the given human-readable message. The
+   * translatable message is already defined.
+   *
+   * @param message A human-readable message describing the password policy violation that
+   *                occurred.
+   */
+  public PasswordRequiresMultipleCaseException(String message) {
+    super(message, "PASSWORD_POLICY.ERROR_REQUIRES_MULTIPLE_CASE");
+  }
 
 }

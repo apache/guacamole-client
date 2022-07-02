@@ -20,17 +20,18 @@
 /**
  * A service for generating new guacClient properties objects.
  */
-angular.module('client').factory('ClientProperties', ['$injector', function defineClientProperties($injector) {
+angular.module('client').factory('ClientProperties',
+    ['$injector', function defineClientProperties($injector) {
 
-    /**
-     * Object used for interacting with a guacClient directive.
-     * 
-     * @constructor
-     * @param {ClientProperties|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ClientProperties.
-     */
-    var ClientProperties = function ClientProperties(template) {
+      /**
+       * Object used for interacting with a guacClient directive.
+       *
+       * @constructor
+       * @param {ClientProperties|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     ClientProperties.
+       */
+      var ClientProperties = function ClientProperties(template) {
 
         // Use empty object by default
         template = template || {};
@@ -38,7 +39,7 @@ angular.module('client').factory('ClientProperties', ['$injector', function defi
         /**
          * Whether the display should be scaled automatically to fit within the
          * available space.
-         * 
+         *
          * @type Boolean
          */
         this.autoFit = template.autoFit || true;
@@ -46,21 +47,21 @@ angular.module('client').factory('ClientProperties', ['$injector', function defi
         /**
          * The current scale. If autoFit is true, the effect of setting this
          * value is undefined.
-         * 
+         *
          * @type Number
          */
         this.scale = template.scale || 1;
 
         /**
          * The minimum scale value.
-         * 
+         *
          * @type Number
          */
         this.minScale = template.minScale || 1;
 
         /**
          * The maximum scale value.
-         * 
+         *
          * @type Number
          */
         this.maxScale = template.maxScale || 3;
@@ -75,7 +76,7 @@ angular.module('client').factory('ClientProperties', ['$injector', function defi
         /**
          * The relative Y coordinate of the scroll offset of the display within
          * the client element.
-         * 
+         *
          * @type Number
          */
         this.scrollTop = template.scrollTop || 0;
@@ -83,13 +84,13 @@ angular.module('client').factory('ClientProperties', ['$injector', function defi
         /**
          * The relative X coordinate of the scroll offset of the display within
          * the client element.
-         * 
+         *
          * @type Number
          */
         this.scrollLeft = template.scrollLeft || 0;
 
-    };
+      };
 
-    return ClientProperties;
+      return ClientProperties;
 
-}]);
+    }]);

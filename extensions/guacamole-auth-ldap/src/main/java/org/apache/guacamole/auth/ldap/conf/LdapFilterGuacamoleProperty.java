@@ -27,27 +27,26 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
- * A GuacamoleProperty with a value of an ExprNode query filter.  The string
- * provided is passed through the FilterParser returning the ExprNode object,
- * or an exception is thrown if the filter is invalid and cannot be correctly
- * parsed.
+ * A GuacamoleProperty with a value of an ExprNode query filter.  The string provided is passed
+ * through the FilterParser returning the ExprNode object, or an exception is thrown if the filter
+ * is invalid and cannot be correctly parsed.
  */
 public abstract class LdapFilterGuacamoleProperty implements GuacamoleProperty<ExprNode> {
 
-    @Override
-    public ExprNode parseValue(String value) throws GuacamoleException {
+  @Override
+  public ExprNode parseValue(String value) throws GuacamoleException {
 
-        // No value provided, so return null.
-        if (value == null)
-            return null;
-
-        try {
-            return FilterParser.parse(value);
-        }
-        catch (ParseException e) {
-            throw new GuacamoleServerException("\"" + value + "\" is not a valid LDAP filter.", e);
-        }
-
+    // No value provided, so return null.
+    if (value == null) {
+      return null;
     }
+
+    try {
+      return FilterParser.parse(value);
+    } catch (ParseException e) {
+      throw new GuacamoleServerException("\"" + value + "\" is not a valid LDAP filter.", e);
+    }
+
+  }
 
 }

@@ -22,7 +22,7 @@ var Guacamole = Guacamole || {};
 /**
  * An input stream abstraction used by the Guacamole client to facilitate
  * transfer of files or other binary data.
- * 
+ *
  * @constructor
  * @param {!Guacamole.Client} client
  *     The client owning this stream.
@@ -30,50 +30,50 @@ var Guacamole = Guacamole || {};
  * @param {!number} index
  *     The index of this stream.
  */
-Guacamole.InputStream = function(client, index) {
+Guacamole.InputStream = function (client, index) {
 
-    /**
-     * Reference to this stream.
-     *
-     * @private
-     * @type {!Guacamole.InputStream}
-     */
-    var guac_stream = this;
+  /**
+   * Reference to this stream.
+   *
+   * @private
+   * @type {!Guacamole.InputStream}
+   */
+  var guac_stream = this;
 
-    /**
-     * The index of this stream.
-     *
-     * @type {!number}
-     */
-    this.index = index;
+  /**
+   * The index of this stream.
+   *
+   * @type {!number}
+   */
+  this.index = index;
 
-    /**
-     * Called when a blob of data is received.
-     * 
-     * @event
-     * @param {!string} data
-     *     The received base64 data.
-     */
-    this.onblob = null;
+  /**
+   * Called when a blob of data is received.
+   *
+   * @event
+   * @param {!string} data
+   *     The received base64 data.
+   */
+  this.onblob = null;
 
-    /**
-     * Called when this stream is closed.
-     * 
-     * @event
-     */
-    this.onend = null;
+  /**
+   * Called when this stream is closed.
+   *
+   * @event
+   */
+  this.onend = null;
 
-    /**
-     * Acknowledges the receipt of a blob.
-     * 
-     * @param {!string} message
-     *     A human-readable message describing the error or status.
-     *
-     * @param {!number} code
-     *     The error code, if any, or 0 for success.
-     */
-    this.sendAck = function(message, code) {
-        client.sendAck(guac_stream.index, message, code);
-    };
+  /**
+   * Acknowledges the receipt of a blob.
+   *
+   * @param {!string} message
+   *     A human-readable message describing the error or status.
+   *
+   * @param {!number} code
+   *     The error code, if any, or 0 for success.
+   */
+  this.sendAck = function (message, code) {
+    client.sendAck(guac_stream.index, message, code);
+  };
 
 };

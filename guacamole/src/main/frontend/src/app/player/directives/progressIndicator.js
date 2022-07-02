@@ -48,14 +48,15 @@
  * Directive which displays an indicator showing the current progress of an
  * arbitrary operation.
  */
-angular.module('player').directive('guacPlayerProgressIndicator', [function guacPlayerProgressIndicator() {
+angular.module('player').directive('guacPlayerProgressIndicator',
+    [function guacPlayerProgressIndicator() {
 
-    const config = {
-        restrict : 'E',
-        templateUrl : 'app/player/templates/progressIndicator.html'
-    };
+      const config = {
+        restrict: 'E',
+        templateUrl: 'app/player/templates/progressIndicator.html'
+      };
 
-    config.scope = {
+      config.scope = {
 
         /**
          * A value between 0 and 1 inclusive which indicates current progress,
@@ -63,39 +64,40 @@ angular.module('player').directive('guacPlayerProgressIndicator', [function guac
          *
          * @type {Number}
          */
-        progress : '='
+        progress: '='
 
-    };
+      };
 
-    config.controller = ['$scope', function guacPlayerProgressIndicatorController($scope) {
+      config.controller = ['$scope',
+        function guacPlayerProgressIndicatorController($scope) {
 
-        /**
-         * The current progress of the operation as a percentage. This value is
-         * automatically updated as $scope.progress changes.
-         *
-         * @type {Number}
-         */
-        $scope.percentage = 0;
+          /**
+           * The current progress of the operation as a percentage. This value is
+           * automatically updated as $scope.progress changes.
+           *
+           * @type {Number}
+           */
+          $scope.percentage = 0;
 
-        /**
-         * The CSS transform which should be applied to the bar portion of the
-         * progress indicator. This value is automatically updated as
-         * $scope.progress changes.
-         *
-         * @type {String}
-         */
-        $scope.barTransform = null;
+          /**
+           * The CSS transform which should be applied to the bar portion of the
+           * progress indicator. This value is automatically updated as
+           * $scope.progress changes.
+           *
+           * @type {String}
+           */
+          $scope.barTransform = null;
 
-        // Keep percentage and bar transform up-to-date with changes to
-        // progress value
-        $scope.$watch('progress', function progressChanged(progress) {
+          // Keep percentage and bar transform up-to-date with changes to
+          // progress value
+          $scope.$watch('progress', function progressChanged(progress) {
             progress = progress || 0;
             $scope.percentage = Math.floor(progress * 100);
             $scope.barTransform = 'rotate(' + (360 * progress - 45) + 'deg)';
-        });
+          });
 
-    }];
+        }];
 
-    return config;
+      return config;
 
-}]);
+    }]);

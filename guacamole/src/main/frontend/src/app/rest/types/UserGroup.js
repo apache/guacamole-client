@@ -22,38 +22,38 @@
  */
 angular.module('rest').factory('UserGroup', [function defineUserGroup() {
 
+  /**
+   * The object returned by REST API calls when representing the data
+   * associated with a user group.
+   *
+   * @constructor
+   * @param {UserGroup|Object} [template={}]
+   *     The object whose properties should be copied within the new
+   *     UserGroup.
+   */
+  var UserGroup = function UserGroup(template) {
+
+    // Use empty object by default
+    template = template || {};
+
     /**
-     * The object returned by REST API calls when representing the data
-     * associated with a user group.
+     * The name which uniquely identifies this user group.
      *
-     * @constructor
-     * @param {UserGroup|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     UserGroup.
+     * @type String
      */
-    var UserGroup = function UserGroup(template) {
+    this.identifier = template.identifier;
 
-        // Use empty object by default
-        template = template || {};
+    /**
+     * Arbitrary name/value pairs which further describe this user group.
+     * The semantics and validity of these attributes are dictated by the
+     * extension which defines them.
+     *
+     * @type Object.<String, String>
+     */
+    this.attributes = template.attributes || {};
 
-        /**
-         * The name which uniquely identifies this user group.
-         *
-         * @type String
-         */
-        this.identifier = template.identifier;
+  };
 
-        /**
-         * Arbitrary name/value pairs which further describe this user group.
-         * The semantics and validity of these attributes are dictated by the
-         * extension which defines them.
-         *
-         * @type Object.<String, String>
-         */
-        this.attributes = template.attributes || {};
-
-    };
-
-    return UserGroup;
+  return UserGroup;
 
 }]);

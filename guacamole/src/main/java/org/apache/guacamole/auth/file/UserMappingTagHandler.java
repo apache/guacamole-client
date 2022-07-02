@@ -28,45 +28,44 @@ import org.xml.sax.SAXException;
  */
 public class UserMappingTagHandler implements TagHandler {
 
-    /**
-     * The UserMapping which will contain all data parsed by this tag handler.
-     */
-    private UserMapping user_mapping = new UserMapping();
+  /**
+   * The UserMapping which will contain all data parsed by this tag handler.
+   */
+  private UserMapping user_mapping = new UserMapping();
 
-    @Override
-    public void init(Attributes attributes) throws SAXException {
-        // Do nothing
+  @Override
+  public void init(Attributes attributes) throws SAXException {
+    // Do nothing
+  }
+
+  @Override
+  public TagHandler childElement(String localName) throws SAXException {
+
+    // Start parsing of authorize tags, add to list of all authorizations
+    if (localName.equals("authorize")) {
+      return new AuthorizeTagHandler(user_mapping);
     }
 
-    @Override
-    public TagHandler childElement(String localName) throws SAXException {
+    return null;
 
-        // Start parsing of authorize tags, add to list of all authorizations
-        if (localName.equals("authorize"))
-            return new AuthorizeTagHandler(user_mapping);
+  }
 
-        return null;
+  @Override
+  public void complete(String textContent) throws SAXException {
+    // Do nothing
+  }
 
-    }
-
-    @Override
-    public void complete(String textContent) throws SAXException {
-        // Do nothing
-    }
-
-    /**
-     * Returns a user mapping containing all authorizations and configurations
-     * parsed so far. This user mapping will be backed by the data being parsed,
-     * thus any additional authorizations or configurations will be available
-     * in the object returned by this function even after this function has
-     * returned, once the data corresponding to those authorizations or
-     * configurations has been parsed.
-     *
-     * @return A user mapping containing all authorizations and configurations
-     *         parsed so far.
-     */
-    public UserMapping asUserMapping() {
-        return user_mapping;
-    }
+  /**
+   * Returns a user mapping containing all authorizations and configurations parsed so far. This
+   * user mapping will be backed by the data being parsed, thus any additional authorizations or
+   * configurations will be available in the object returned by this function even after this
+   * function has returned, once the data corresponding to those authorizations or configurations
+   * has been parsed.
+   *
+   * @return A user mapping containing all authorizations and configurations parsed so far.
+   */
+  public UserMapping asUserMapping() {
+    return user_mapping;
+  }
 
 }

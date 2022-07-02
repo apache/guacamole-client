@@ -22,14 +22,15 @@
  * view. The number of rows and columns used for the arrangement of tiles is
  * automatically determined by the number of clients present.
  */
-angular.module('client').directive('guacTiledClients', [function guacTiledClients() {
+angular.module('client').directive('guacTiledClients',
+    [function guacTiledClients() {
 
-    const directive = {
+      const directive = {
         restrict: 'E',
         templateUrl: 'app/client/templates/guacTiledClients.html',
-    };
+      };
 
-    directive.scope = {
+      directive.scope = {
 
         /**
          * The function to invoke when the "close" button in the header of a
@@ -39,7 +40,7 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
          *
          * @type function
          */
-        onClose : '&',
+        onClose: '&',
 
         /**
          * The group of Guacamole clients that should be displayed in an
@@ -47,7 +48,7 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
          *
          * @type ManagedClientGroup
          */
-        clientGroup : '=',
+        clientGroup: '=',
 
         /**
          * Whether translation of touch to mouse events should emulate an
@@ -55,117 +56,122 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
          *
          * @type boolean
          */
-        emulateAbsoluteMouse : '='
+        emulateAbsoluteMouse: '='
 
-    };
+      };
 
-    directive.controller = ['$scope', '$injector', '$element',
-            function guacTiledClientsController($scope, $injector, $element) {
+      directive.controller = ['$scope', '$injector', '$element',
+        function guacTiledClientsController($scope, $injector, $element) {
 
-        // Required types
-        const ManagedClient      = $injector.get('ManagedClient');
-        const ManagedClientGroup = $injector.get('ManagedClientGroup');
+          // Required types
+          const ManagedClient = $injector.get('ManagedClient');
+          const ManagedClientGroup = $injector.get('ManagedClientGroup');
 
-        /**
-         * Returns the currently-focused ManagedClient. If there is no such
-         * client, or multiple clients are focused, null is returned.
-         *
-         * @returns {ManagedClient}
-         *     The currently-focused client, or null if there are no focused
-         *     clients or if multiple clients are focused.
-         */
-        $scope.getFocusedClient = function getFocusedClient() {
+          /**
+           * Returns the currently-focused ManagedClient. If there is no such
+           * client, or multiple clients are focused, null is returned.
+           *
+           * @returns {ManagedClient}
+           *     The currently-focused client, or null if there are no focused
+           *     clients or if multiple clients are focused.
+           */
+          $scope.getFocusedClient = function getFocusedClient() {
 
             const managedClientGroup = $scope.clientGroup;
             if (managedClientGroup) {
-                const focusedClients = _.filter(managedClientGroup.clients, client => client.clientProperties.focused);
-                if (focusedClients.length === 1)
-                    return focusedClients[0];
+              const focusedClients = _.filter(managedClientGroup.clients,
+                  client => client.clientProperties.focused);
+              if (focusedClients.length === 1) {
+                return focusedClients[0];
+              }
             }
 
             return null;
 
-        };
+          };
 
-        // Notify whenever identify of currently-focused client changes
-        $scope.$watch('getFocusedClient()', function focusedClientChanged(focusedClient) {
-            $scope.$emit('guacClientFocused', focusedClient);
-        });
+          // Notify whenever identify of currently-focused client changes
+          $scope.$watch('getFocusedClient()',
+              function focusedClientChanged(focusedClient) {
+                $scope.$emit('guacClientFocused', focusedClient);
+              });
 
-        /**
-         * Returns a callback for guacClick that assigns or updates keyboard
-         * focus to the given client, allowing that client to receive and
-         * handle keyboard events. Multiple clients may have keyboard focus
-         * simultaneously.
-         *
-         * @param {ManagedClient} client
-         *     The client that should receive keyboard focus.
-         *
-         * @return {guacClick~callback}
-         *     The callback that guacClient should invoke when the given client
-         *     has been clicked.
-         */
-        $scope.getFocusAssignmentCallback = function getFocusAssignmentCallback(client) {
+          /**
+           * Returns a callback for guacClick that assigns or updates keyboard
+           * focus to the given client, allowing that client to receive and
+           * handle keyboard events. Multiple clients may have keyboard focus
+           * simultaneously.
+           *
+           * @param {ManagedClient} client
+           *     The client that should receive keyboard focus.
+           *
+           * @return {guacClick~callback}
+           *     The callback that guacClient should invoke when the given client
+           *     has been clicked.
+           */
+          $scope.getFocusAssignmentCallback = function getFocusAssignmentCallback(client) {
             return (shift, ctrl) => {
 
-                // Clear focus of all other clients if not selecting multiple
-                if (!shift && !ctrl) {
-                    $scope.clientGroup.clients.forEach(client => {
-                        client.clientProperties.focused = false;
-                    });
-                }
+              // Clear focus of all other clients if not selecting multiple
+              if (!shift && !ctrl) {
+                $scope.clientGroup.clients.forEach(client => {
+                  client.clientProperties.focused = false;
+                });
+              }
 
-                client.clientProperties.focused = true;
+              client.clientProperties.focused = true;
 
-                // Fill in any gaps if performing rectangular multi-selection
-                // via shift-click
-                if (shift) {
+              // Fill in any gaps if performing rectangular multi-selection
+              // via shift-click
+              if (shift) {
 
-                    let minRow = $scope.clientGroup.rows - 1;
-                    let minColumn = $scope.clientGroup.columns - 1;
-                    let maxRow = 0;
-                    let maxColumn = 0;
+                let minRow = $scope.clientGroup.rows - 1;
+                let minColumn = $scope.clientGroup.columns - 1;
+                let maxRow = 0;
+                let maxColumn = 0;
 
-                    // Determine extents of selected area
-                    ManagedClientGroup.forEach($scope.clientGroup, (client, row, column) => {
-                        if (client.clientProperties.focused) {
-                            minRow = Math.min(minRow, row);
-                            minColumn = Math.min(minColumn, column);
-                            maxRow = Math.max(maxRow, row);
-                            maxColumn = Math.max(maxColumn, column);
-                        }
-                    });
-
-                    ManagedClientGroup.forEach($scope.clientGroup, (client, row, column) => {
-                        client.clientProperties.focused =
-                                row >= minRow
-                             && row <= maxRow
-                             && column >= minColumn
-                             && column <= maxColumn;
+                // Determine extents of selected area
+                ManagedClientGroup.forEach($scope.clientGroup,
+                    (client, row, column) => {
+                      if (client.clientProperties.focused) {
+                        minRow = Math.min(minRow, row);
+                        minColumn = Math.min(minColumn, column);
+                        maxRow = Math.max(maxRow, row);
+                        maxColumn = Math.max(maxColumn, column);
+                      }
                     });
 
-                }
+                ManagedClientGroup.forEach($scope.clientGroup,
+                    (client, row, column) => {
+                      client.clientProperties.focused =
+                          row >= minRow
+                          && row <= maxRow
+                          && column >= minColumn
+                          && column <= maxColumn;
+                    });
+
+              }
 
             };
-        };
+          };
 
-        /**
-         * @borrows ManagedClientGroup.hasMultipleClients
-         */
-        $scope.hasMultipleClients = ManagedClientGroup.hasMultipleClients;
+          /**
+           * @borrows ManagedClientGroup.hasMultipleClients
+           */
+          $scope.hasMultipleClients = ManagedClientGroup.hasMultipleClients;
 
-        /**
-         * @borrows ManagedClientGroup.getClientGrid
-         */
-        $scope.getClientGrid = ManagedClientGroup.getClientGrid;
+          /**
+           * @borrows ManagedClientGroup.getClientGrid
+           */
+          $scope.getClientGrid = ManagedClientGroup.getClientGrid;
 
-        /**
-         * @borrows ManagedClient.isShared
-         */
-        $scope.isShared = ManagedClient.isShared;
+          /**
+           * @borrows ManagedClient.isShared
+           */
+          $scope.isShared = ManagedClient.isShared;
 
-    }];
+        }];
 
-    return directive;
+      return directive;
 
-}]);
+    }]);

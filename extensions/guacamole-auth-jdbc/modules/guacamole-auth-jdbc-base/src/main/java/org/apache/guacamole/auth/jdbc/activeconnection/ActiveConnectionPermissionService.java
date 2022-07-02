@@ -38,141 +38,142 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
 /**
- * Service which provides convenience methods for creating, retrieving, and
- * manipulating active connections.
+ * Service which provides convenience methods for creating, retrieving, and manipulating active
+ * connections.
  */
 public class ActiveConnectionPermissionService
     extends AbstractPermissionService<ObjectPermissionSet, ObjectPermission>
     implements ObjectPermissionService {
 
-    /**
-     * Service for creating and tracking tunnels.
-     */
-    @Inject
-    private GuacamoleTunnelService tunnelService;
+  /**
+   * Service for creating and tracking tunnels.
+   */
+  @Inject
+  private GuacamoleTunnelService tunnelService;
 
-    /**
-     * Provider for active connection permission sets.
-     */
-    @Inject
-    private Provider<ActiveConnectionPermissionSet> activeConnectionPermissionSetProvider;
+  /**
+   * Provider for active connection permission sets.
+   */
+  @Inject
+  private Provider<ActiveConnectionPermissionSet> activeConnectionPermissionSetProvider;
 
-    @Override
-    public boolean hasPermission(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            ObjectPermission.Type type, String identifier,
-            Set<String> effectiveGroups) throws GuacamoleException {
+  @Override
+  public boolean hasPermission(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      ObjectPermission.Type type, String identifier,
+      Set<String> effectiveGroups) throws GuacamoleException {
 
-        // Retrieve permissions
-        Set<ObjectPermission> permissions = retrievePermissions(user,
-                targetEntity, effectiveGroups);
+    // Retrieve permissions
+    Set<ObjectPermission> permissions = retrievePermissions(user,
+        targetEntity, effectiveGroups);
 
-        // Permission is granted if retrieved permissions contains the
-        // requested permission
-        ObjectPermission permission = new ObjectPermission(type, identifier); 
-        return permissions.contains(permission);
+    // Permission is granted if retrieved permissions contains the
+    // requested permission
+    ObjectPermission permission = new ObjectPermission(type, identifier);
+    return permissions.contains(permission);
 
-    }
+  }
 
-    @Override
-    public Set<ObjectPermission> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException {
+  @Override
+  public Set<ObjectPermission> retrievePermissions(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Set<String> effectiveGroups) throws GuacamoleException {
 
-        // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetEntity)) {
+    // Retrieve permissions only if allowed
+    if (canReadPermissions(user, targetEntity)) {
 
-            // Privileged accounts (such as administrators or UserContexts
-            // returned by getPrivileged()) may always access active connections
-            boolean isPrivileged = targetEntity.isPrivileged();
+      // Privileged accounts (such as administrators or UserContexts
+      // returned by getPrivileged()) may always access active connections
+      boolean isPrivileged = targetEntity.isPrivileged();
 
-            // Get all active connections
-            Collection<ActiveConnectionRecord> records = tunnelService.getActiveConnections(user);
+      // Get all active connections
+      Collection<ActiveConnectionRecord> records = tunnelService.getActiveConnections(user);
 
-            // We have READ, and possibly DELETE, on all active connections
-            Set<ObjectPermission> permissions = new HashSet<>();
-            for (ActiveConnectionRecord record : records) {
+      // We have READ, and possibly DELETE, on all active connections
+      Set<ObjectPermission> permissions = new HashSet<>();
+      for (ActiveConnectionRecord record : records) {
 
-                // Add implicit READ
-                String identifier = record.getUUID().toString();
-                permissions.add(new ObjectPermission(ObjectPermission.Type.READ, identifier));
+        // Add implicit READ
+        String identifier = record.getUUID().toString();
+        permissions.add(new ObjectPermission(ObjectPermission.Type.READ, identifier));
 
-                // If the target user is privileged, or the connection belongs
-                // to the target user, then they can DELETE
-                if (isPrivileged || targetEntity.isUser(record.getUsername()))
-                    permissions.add(new ObjectPermission(ObjectPermission.Type.DELETE, identifier));
-
-            }
-
-            return permissions;
-            
+        // If the target user is privileged, or the connection belongs
+        // to the target user, then they can DELETE
+        if (isPrivileged || targetEntity.isUser(record.getUsername())) {
+          permissions.add(new ObjectPermission(ObjectPermission.Type.DELETE, identifier));
         }
 
-        throw new GuacamoleSecurityException("Permission denied.");
-        
+      }
+
+      return permissions;
+
     }
 
-    @Override
-    public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Collection<ObjectPermission.Type> permissionTypes,
-            Collection<String> identifiers, Set<String> effectiveGroups)
-            throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
 
-        Set<ObjectPermission> permissions = retrievePermissions(user, targetEntity, effectiveGroups);
-        Collection<String> accessibleObjects = new ArrayList<String>(permissions.size());
+  }
 
-        // For each identifier/permission combination
-        for (String identifier : identifiers) {
-            for (ObjectPermission.Type permissionType : permissionTypes) {
+  @Override
+  public Collection<String> retrieveAccessibleIdentifiers(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Collection<ObjectPermission.Type> permissionTypes,
+      Collection<String> identifiers, Set<String> effectiveGroups)
+      throws GuacamoleException {
 
-                // Add identifier if at least one requested permission is granted
-                ObjectPermission permission = new ObjectPermission(permissionType, identifier);
-                if (permissions.contains(permission)) {
-                    accessibleObjects.add(identifier);
-                    break;
-                }
+    Set<ObjectPermission> permissions = retrievePermissions(user, targetEntity, effectiveGroups);
+    Collection<String> accessibleObjects = new ArrayList<String>(permissions.size());
 
-            }
+    // For each identifier/permission combination
+    for (String identifier : identifiers) {
+      for (ObjectPermission.Type permissionType : permissionTypes) {
+
+        // Add identifier if at least one requested permission is granted
+        ObjectPermission permission = new ObjectPermission(permissionType, identifier);
+        if (permissions.contains(permission)) {
+          accessibleObjects.add(identifier);
+          break;
         }
 
-        return accessibleObjects;
-
+      }
     }
 
-    @Override
-    public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException {
-    
-        // Create permission set for requested entity
-        ActiveConnectionPermissionSet permissionSet = activeConnectionPermissionSetProvider.get();
-        permissionSet.init(user, targetEntity, effectiveGroups);
+    return accessibleObjects;
 
-        return permissionSet;
- 
-    }
+  }
 
-    @Override
-    public void createPermissions(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Collection<ObjectPermission> permissions)
-            throws GuacamoleException {
+  @Override
+  public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Set<String> effectiveGroups) throws GuacamoleException {
 
-        // Creating active connection permissions is not implemented
-        throw new GuacamoleSecurityException("Permission denied.");
+    // Create permission set for requested entity
+    ActiveConnectionPermissionSet permissionSet = activeConnectionPermissionSetProvider.get();
+    permissionSet.init(user, targetEntity, effectiveGroups);
 
-    }
+    return permissionSet;
 
-    @Override
-    public void deletePermissions(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Collection<ObjectPermission> permissions)
-            throws GuacamoleException {
+  }
 
-        // Deleting active connection permissions is not implemented
-        throw new GuacamoleSecurityException("Permission denied.");
+  @Override
+  public void createPermissions(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Collection<ObjectPermission> permissions)
+      throws GuacamoleException {
 
-    }
+    // Creating active connection permissions is not implemented
+    throw new GuacamoleSecurityException("Permission denied.");
+
+  }
+
+  @Override
+  public void deletePermissions(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Collection<ObjectPermission> permissions)
+      throws GuacamoleException {
+
+    // Deleting active connection permissions is not implemented
+    throw new GuacamoleSecurityException("Permission denied.");
+
+  }
 
 }

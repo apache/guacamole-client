@@ -22,22 +22,19 @@ package org.apache.guacamole.rest.tunnel;
 import org.apache.guacamole.GuacamoleSession;
 
 /**
- * Factory which creates resources that expose the collection of tunnels
- * contained within a given GuacamoleSession.
+ * Factory which creates resources that expose the collection of tunnels contained within a given
+ * GuacamoleSession.
  */
 public interface TunnelCollectionResourceFactory {
 
-    /**
-     * Creates a new TunnelCollectionResource which exposes the collection of
-     * tunnels stored within the given GuacamoleSession.
-     *
-     * @param session
-     *     The GuacamoleSession whose collection of tunnels should be exposed.
-     *
-     * @return
-     *     A new TunnelCollectionResource which exposes the collection of
-     *     tunnels stored within the given GuacamoleSession.
-     */
-    TunnelCollectionResource create(GuacamoleSession session);
+  /**
+   * Creates a new TunnelCollectionResource which exposes the collection of tunnels stored within
+   * the given GuacamoleSession.
+   *
+   * @param session The GuacamoleSession whose collection of tunnels should be exposed.
+   * @return A new TunnelCollectionResource which exposes the collection of tunnels stored within
+   * the given GuacamoleSession.
+   */
+  TunnelCollectionResource create(GuacamoleSession session);
 
 }

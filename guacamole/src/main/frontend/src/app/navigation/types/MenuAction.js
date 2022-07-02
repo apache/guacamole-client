@@ -20,24 +20,25 @@
 /**
  * Provides the MenuAction class definition.
  */
-angular.module('navigation').factory('MenuAction', [function defineMenuAction() {
+angular.module('navigation').factory('MenuAction',
+    [function defineMenuAction() {
 
-    /**
-     * Creates a new MenuAction, which pairs an arbitrary callback with
-     * an action name. The name of this action will ultimately be presented to
-     * the user when the user when this action's associated menu is open.
-     *
-     * @constructor
-     * @param {String} name
-     *     The name of this action.
-     *
-     * @param {Function} callback
-     *     The callback to call when the user elects to perform this action.
-     * 
-     * @param {String} className
-     *     The CSS class to associate with this action, if any.
-     */
-    var MenuAction = function MenuAction(name, callback, className) {
+      /**
+       * Creates a new MenuAction, which pairs an arbitrary callback with
+       * an action name. The name of this action will ultimately be presented to
+       * the user when the user when this action's associated menu is open.
+       *
+       * @constructor
+       * @param {String} name
+       *     The name of this action.
+       *
+       * @param {Function} callback
+       *     The callback to call when the user elects to perform this action.
+       *
+       * @param {String} className
+       *     The CSS class to associate with this action, if any.
+       */
+      var MenuAction = function MenuAction(name, callback, className) {
 
         /**
          * Reference to this MenuAction.
@@ -48,7 +49,7 @@ angular.module('navigation').factory('MenuAction', [function defineMenuAction() 
 
         /**
          * The CSS class associated with this action.
-         * 
+         *
          * @type String
          */
         this.className = className;
@@ -67,8 +68,8 @@ angular.module('navigation').factory('MenuAction', [function defineMenuAction() 
          */
         this.callback = callback;
 
-    };
+      };
 
-    return MenuAction;
+      return MenuAction;
 
-}]);
+    }]);

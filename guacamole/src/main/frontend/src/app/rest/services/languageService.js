@@ -21,35 +21,35 @@
  * Service for operating on language metadata via the REST API.
  */
 angular.module('rest').factory('languageService', ['$injector',
-        function languageService($injector) {
+  function languageService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
-    var cacheService          = $injector.get('cacheService');
+    var cacheService = $injector.get('cacheService');
 
     var service = {};
-    
+
     /**
      * Makes a request to the REST API to get the list of languages, returning
-     * a promise that provides a map of language names by language key if 
+     * a promise that provides a map of language names by language key if
      * successful.
-     *                          
+     *
      * @returns {Promise.<Object.<String, String>>}
      *     A promise which will resolve with a map of language names by
      *     language key upon success.
      */
     service.getLanguages = function getLanguages() {
 
-        // Retrieve available languages
-        return authenticationService.request({
-            cache   : cacheService.languages,
-            method  : 'GET',
-            url     : 'api/languages'
-        });
+      // Retrieve available languages
+      return authenticationService.request({
+        cache: cacheService.languages,
+        method: 'GET',
+        url: 'api/languages'
+      });
 
     };
-    
+
     return service;
 
-}]);
+  }]);

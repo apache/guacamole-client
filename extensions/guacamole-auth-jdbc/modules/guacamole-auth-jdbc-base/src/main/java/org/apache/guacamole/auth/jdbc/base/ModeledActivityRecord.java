@@ -29,102 +29,97 @@ import org.apache.guacamole.net.auth.ActivityRecord;
  */
 public class ModeledActivityRecord implements ActivityRecord {
 
-    /**
-     * The model object backing this activity record.
-     */
-    private final ActivityRecordModel model;
+  /**
+   * The model object backing this activity record.
+   */
+  private final ActivityRecordModel model;
 
-    /**
-     * The UUID namespace of the type 3 name UUID to generate for the record.
-     * This namespace should correspond to the source of IDs for the model such
-     * that the combination of this namespace with the numeric record ID will
-     * always be unique and deterministic across all activity records,
-     * regardless of record type.
-     */
-    private final UUID namespace;
+  /**
+   * The UUID namespace of the type 3 name UUID to generate for the record. This namespace should
+   * correspond to the source of IDs for the model such that the combination of this namespace with
+   * the numeric record ID will always be unique and deterministic across all activity records,
+   * regardless of record type.
+   */
+  private final UUID namespace;
 
-    /**
-     * Creates a new ModeledActivityRecord backed by the given model object.
-     * Changes to this record will affect the backing model object, and changes
-     * to the backing model object will affect this record.
-     *
-     * @param namespace
-     *     The UUID namespace of the type 3 name UUID to generate for the
-     *     record. This namespace should correspond to the source of IDs for
-     *     the model such that the combination of this namespace with the
-     *     numeric record ID will always be unique and deterministic across all
-     *     activity records, regardless of record type.
-     *
-     * @param model
-     *     The model object to use to back this activity record.
-     */
-    public ModeledActivityRecord(UUID namespace, ActivityRecordModel model) {
-        this.model = model;
-        this.namespace = namespace;
+  /**
+   * Creates a new ModeledActivityRecord backed by the given model object. Changes to this record
+   * will affect the backing model object, and changes to the backing model object will affect this
+   * record.
+   *
+   * @param namespace The UUID namespace of the type 3 name UUID to generate for the record. This
+   *                  namespace should correspond to the source of IDs for the model such that the
+   *                  combination of this namespace with the numeric record ID will always be unique
+   *                  and deterministic across all activity records, regardless of record type.
+   * @param model     The model object to use to back this activity record.
+   */
+  public ModeledActivityRecord(UUID namespace, ActivityRecordModel model) {
+    this.model = model;
+    this.namespace = namespace;
+  }
+
+  /**
+   * Returns the backing model object. Changes to this record will affect the backing model object,
+   * and changes to the backing model object will affect this record.
+   *
+   * @return The backing model object.
+   */
+  public ActivityRecordModel getModel() {
+    return model;
+  }
+
+  @Override
+  public Date getStartDate() {
+    return model.getStartDate();
+  }
+
+  @Override
+  public Date getEndDate() {
+    return model.getEndDate();
+  }
+
+  @Override
+  public String getRemoteHost() {
+    return model.getRemoteHost();
+  }
+
+  @Override
+  public String getUsername() {
+    return model.getUsername();
+  }
+
+  @Override
+  public boolean isActive() {
+    return false;
+  }
+
+  @Override
+  public String getIdentifier() {
+
+    Integer id = model.getRecordID();
+    if (id == null) {
+      return null;
     }
 
-    /**
-     * Returns the backing model object. Changes to this record will affect the
-     * backing model object, and changes to the backing model object will
-     * affect this record.
-     *
-     * @return
-     *     The backing model object.
-     */
-    public ActivityRecordModel getModel() {
-        return model;
+    return id.toString();
+
+  }
+
+  @Override
+  public UUID getUUID() {
+
+    Integer id = model.getRecordID();
+    if (id == null) {
+      return null;
     }
 
-    @Override
-    public Date getStartDate() {
-        return model.getStartDate();
-    }
+    // Convert record ID to a name UUID in the given namespace
+    return UUID.nameUUIDFromBytes(ByteBuffer.allocate(24)
+        .putLong(namespace.getMostSignificantBits())
+        .putLong(namespace.getLeastSignificantBits())
+        .putLong(id)
+        .array());
 
-    @Override
-    public Date getEndDate() {
-        return model.getEndDate();
-    }
-
-    @Override
-    public String getRemoteHost() {
-        return model.getRemoteHost();
-    }
-
-    @Override
-    public String getUsername() {
-        return model.getUsername();
-    }
-
-    @Override
-    public boolean isActive() {
-        return false;
-    }
-
-    @Override
-    public String getIdentifier() {
-
-        Integer id = model.getRecordID();
-        if (id == null)
-            return null;
-
-        return id.toString();
-
-    }
-
-    @Override
-    public UUID getUUID() {
-
-        Integer id = model.getRecordID();
-        if (id == null)
-            return null;
-
-        // Convert record ID to a name UUID in the given namespace
-        return UUID.nameUUIDFromBytes(ByteBuffer.allocate(24)
-                .putLong(namespace.getMostSignificantBits())
-                .putLong(namespace.getLeastSignificantBits())
-                .putLong(id)
-                .array());
-
-    }
+  }
 
 }

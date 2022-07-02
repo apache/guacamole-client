@@ -1,14 +1,14 @@
 {
-    "source" : {
-        "include" : "src"
-    },
-    "opts" : {
-        "recurse" : true,
-        "destination" : "target/site/jsdoc"
-    },
-    "templates" : {
-        "default" : {
-            "useLongnameInNav" : true
-        }
+  "source": {
+    "include": "src"
+  },
+  "opts": {
+    "recurse": true,
+    "destination": "target/site/jsdoc"
+  },
+  "templates": {
+    "default": {
+      "useLongnameInNav": true
     }
+  }
 }

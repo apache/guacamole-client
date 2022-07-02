@@ -21,11 +21,11 @@
  * Service for operating on HTML patches via the REST API.
  */
 angular.module('rest').factory('patchService', ['$injector',
-        function patchService($injector) {
+  function patchService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
-    var cacheService          = $injector.get('cacheService');
+    var requestService = $injector.get('requestService');
+    var cacheService = $injector.get('cacheService');
 
     var service = {};
 
@@ -41,15 +41,15 @@ angular.module('rest').factory('patchService', ['$injector',
      */
     service.getPatches = function getPatches() {
 
-        // Retrieve all applicable HTML patches
-        return requestService({
-            cache   : cacheService.patches,
-            method  : 'GET',
-            url     : 'api/patches'
-        });
+      // Retrieve all applicable HTML patches
+      return requestService({
+        cache: cacheService.patches,
+        method: 'GET',
+        url: 'api/patches'
+      });
 
     };
 
     return service;
 
-}]);
+  }]);

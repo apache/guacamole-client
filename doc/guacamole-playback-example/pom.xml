@@ -17,82 +17,82 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-playback-example</artifactId>
-    <packaging>war</packaging>
-    <version>1.4.0</version>
-    <name>guacamole-playback-example</name>
-    <url>http://guacamole.apache.org/</url>
+  <artifactId>guacamole-playback-example</artifactId>
+  <build>
+    <plugins>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+      <!-- Overlay guacamole-common-js (zip) -->
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <overlays>
+            <overlay>
+              <artifactId>guacamole-common-js</artifactId>
+              <groupId>org.apache.guacamole</groupId>
+              <type>zip</type>
+            </overlay>
+          </overlays>
+        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.3.1</version>
+      </plugin>
 
-    <build>
-        <plugins>
+      <!-- Verify format using Apache RAT -->
+      <plugin>
+        <artifactId>apache-rat-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/main/webapp/recording.guac</exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+            </goals>
+            <id>validate</id>
+            <phase>validate</phase>
+          </execution>
+        </executions>
 
-            <!-- Overlay guacamole-common-js (zip) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.1</version>
-                <configuration>
-                    <overlays>
-                        <overlay>
-                            <groupId>org.apache.guacamole</groupId>
-                            <artifactId>guacamole-common-js</artifactId>
-                            <type>zip</type>
-                        </overlay>
-                    </overlays>
-                </configuration>
-            </plugin>
+        <groupId>org.apache.rat</groupId>
 
-            <!-- Verify format using Apache RAT -->
-            <plugin>
-                <groupId>org.apache.rat</groupId>
-                <artifactId>apache-rat-plugin</artifactId>
-                <version>0.13</version>
+        <!-- Bind RAT to validate phase -->
+        <version>0.13</version>
 
-                <configuration>
-                    <excludes>
-                        <exclude>src/main/webapp/recording.guac</exclude>
-                    </excludes>
-                </configuration>
+      </plugin>
 
-                <!-- Bind RAT to validate phase -->
-                <executions>
-                    <execution>
-                        <id>validate</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
+    </plugins>
 
-            </plugin>
+  </build>
+  <dependencies>
 
-        </plugins>
+    <!-- Guacamole JavaScript library -->
+    <dependency>
+      <artifactId>guacamole-common-js</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+      <scope>runtime</scope>
+      <type>zip</type>
+      <version>1.4.0</version>
+    </dependency>
 
-    </build>
+  </dependencies>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-playback-example</name>
+  <packaging>war</packaging>
 
-    <dependencies>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-        <!-- Guacamole JavaScript library -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-common-js</artifactId>
-            <version>1.4.0</version>
-            <type>zip</type>
-            <scope>runtime</scope>
-        </dependency>
+  <url>http://guacamole.apache.org/</url>
 
-    </dependencies>
+  <version>1.4.0</version>
 
 </project>

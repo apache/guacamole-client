@@ -23,45 +23,42 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 
 
 /**
- * An exception which is thrown when too many requests have been received
- * by the current client, and further requests are being rejected, either
- * temporarily or permanently.
+ * An exception which is thrown when too many requests have been received by the current client, and
+ * further requests are being rejected, either temporarily or permanently.
  */
 public class GuacamoleClientTooManyException extends GuacamoleClientException {
 
-    /**
-     * Creates a new GuacamoleClientTooManyException with the given message and cause.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleClientTooManyException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Creates a new GuacamoleClientTooManyException with the given message and cause.
+   *
+   * @param message A human readable description of the exception that occurred.
+   * @param cause   The cause of this exception.
+   */
+  public GuacamoleClientTooManyException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * Creates a new GuacamoleClientTooManyException with the given message.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     */
-    public GuacamoleClientTooManyException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new GuacamoleClientTooManyException with the given message.
+   *
+   * @param message A human readable description of the exception that occurred.
+   */
+  public GuacamoleClientTooManyException(String message) {
+    super(message);
+  }
 
-    /**
-     * Creates a new GuacamoleClientTooManyException with the given cause.
-     *
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleClientTooManyException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Creates a new GuacamoleClientTooManyException with the given cause.
+   *
+   * @param cause The cause of this exception.
+   */
+  public GuacamoleClientTooManyException(Throwable cause) {
+    super(cause);
+  }
 
-    @Override
-    public GuacamoleStatus getStatus() {
-        return GuacamoleStatus.CLIENT_TOO_MANY;
-    }
+  @Override
+  public GuacamoleStatus getStatus() {
+    return GuacamoleStatus.CLIENT_TOO_MANY;
+  }
 
 }

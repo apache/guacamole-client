@@ -23,44 +23,41 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 
 
 /**
- * An exception which is thrown when data has been submitted with an unsupported
- * mimetype.
+ * An exception which is thrown when data has been submitted with an unsupported mimetype.
  */
 public class GuacamoleClientBadTypeException extends GuacamoleClientException {
 
-    /**
-     * Creates a new GuacamoleClientBadTypeException with the given message and cause.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleClientBadTypeException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Creates a new GuacamoleClientBadTypeException with the given message and cause.
+   *
+   * @param message A human readable description of the exception that occurred.
+   * @param cause   The cause of this exception.
+   */
+  public GuacamoleClientBadTypeException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * Creates a new GuacamoleClientBadTypeException with the given message.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     */
-    public GuacamoleClientBadTypeException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new GuacamoleClientBadTypeException with the given message.
+   *
+   * @param message A human readable description of the exception that occurred.
+   */
+  public GuacamoleClientBadTypeException(String message) {
+    super(message);
+  }
 
-    /**
-     * Creates a new GuacamoleClientBadTypeException with the given cause.
-     *
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleClientBadTypeException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Creates a new GuacamoleClientBadTypeException with the given cause.
+   *
+   * @param cause The cause of this exception.
+   */
+  public GuacamoleClientBadTypeException(Throwable cause) {
+    super(cause);
+  }
 
-    @Override
-    public GuacamoleStatus getStatus() {
-        return GuacamoleStatus.CLIENT_BAD_TYPE;
-    }
+  @Override
+  public GuacamoleStatus getStatus() {
+    return GuacamoleStatus.CLIENT_BAD_TYPE;
+  }
 
 }

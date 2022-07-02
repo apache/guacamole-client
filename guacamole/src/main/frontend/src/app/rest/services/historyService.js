@@ -21,10 +21,10 @@
  * Service for operating on history records via the REST API.
  */
 angular.module('rest').factory('historyService', ['$injector',
-        function historyService($injector) {
+  function historyService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
 
     var service = {};
@@ -60,25 +60,28 @@ angular.module('rest').factory('historyService', ['$injector',
     service.getConnectionHistory = function getConnectionHistory(dataSource,
         requiredContents, sortPredicates) {
 
-        var httpParameters = {};
+      var httpParameters = {};
 
-        // Filter according to contents if restrictions are specified
-        if (requiredContents)
-            httpParameters.contains = requiredContents;
+      // Filter according to contents if restrictions are specified
+      if (requiredContents) {
+        httpParameters.contains = requiredContents;
+      }
 
-        // Sort according to provided predicates, if any
-        if (sortPredicates)
-            httpParameters.order = sortPredicates;
+      // Sort according to provided predicates, if any
+      if (sortPredicates) {
+        httpParameters.order = sortPredicates;
+      }
 
-        // Retrieve connection history
-        return authenticationService.request({
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/history/connections',
-            params  : httpParameters
-        });
+      // Retrieve connection history
+      return authenticationService.request({
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/history/connections',
+        params: httpParameters
+      });
 
     };
 
     return service;
 
-}]);
+  }]);

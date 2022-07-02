@@ -22,55 +22,48 @@ package org.apache.guacamole.form;
 import java.util.Collection;
 
 /**
- * Represents a basic text field. The field may generally contain any data, but
- * may not contain multiple lines.
+ * Represents a basic text field. The field may generally contain any data, but may not contain
+ * multiple lines.
  */
 public class TextField extends Field {
 
-    /**
-     * Creates a new TextField with the given name.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     */
-    public TextField(String name) {
-        super(name, Field.Type.TEXT);
+  /**
+   * Creates a new TextField with the given name.
+   *
+   * @param name The unique name to associate with this field.
+   */
+  public TextField(String name) {
+    super(name, Field.Type.TEXT);
+  }
+
+  /**
+   * Creates a new TextField with the given name and possible values. As a text field may contain
+   * any data by definition, any provided options are simply known-good values.
+   *
+   * @param name    The unique name to associate with this field.
+   * @param options A set of known legal options for this field.
+   */
+  public TextField(String name, Collection<String> options) {
+    super(name, Field.Type.TEXT, options);
+  }
+
+  /**
+   * Parses the given string, interpreting empty strings as equivalent to null. For all other cases,
+   * the given string is returned verbatim.
+   *
+   * @param str The string to parse, which may be null.
+   * @return The given string, or null if the given string was null or empty.
+   */
+  public static String parse(String str) {
+
+    // Return null if no value provided
+    if (str == null || str.isEmpty()) {
+      return null;
     }
 
-    /**
-     * Creates a new TextField with the given name and possible values. As a
-     * text field may contain any data by definition, any provided options are
-     * simply known-good values.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     *
-     * @param options
-     *     A set of known legal options for this field.
-     */
-    public TextField(String name, Collection<String> options) {
-        super(name, Field.Type.TEXT, options);
-    }
+    // Otherwise, return string unmodified
+    return str;
 
-    /**
-     * Parses the given string, interpreting empty strings as equivalent to
-     * null. For all other cases, the given string is returned verbatim.
-     *
-     * @param str
-     *     The string to parse, which may be null.
-     *
-     * @return
-     *     The given string, or null if the given string was null or empty.
-     */
-    public static String parse(String str) {
-
-        // Return null if no value provided
-        if (str == null || str.isEmpty())
-            return null;
-
-        // Otherwise, return string unmodified
-        return str;
-
-    }
+  }
 
 }

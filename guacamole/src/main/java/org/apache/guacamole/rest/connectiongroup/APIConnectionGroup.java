@@ -32,237 +32,228 @@ import org.apache.guacamole.rest.connection.APIConnection;
  * A simple connection group to expose through the REST endpoints.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(value=Include.NON_NULL)
+@JsonInclude(value = Include.NON_NULL)
 public class APIConnectionGroup {
 
-    /**
-     * The identifier of the root connection group.
-     */
-    public static final String ROOT_IDENTIFIER = "ROOT";
- 
-    /**
-     * The name of this connection group.
-     */
-    private String name;
-    
-    /**
-     * The identifier of this connection group.
-     */
-    private String identifier;
-    
-    /**
-     * The identifier of the parent connection group for this connection group.
-     */
-    private String parentIdentifier;
-    
-    /**
-     * The type of this connection group.
-     */
-    private Type type;
+  /**
+   * The identifier of the root connection group.
+   */
+  public static final String ROOT_IDENTIFIER = "ROOT";
 
-    /**
-     * The count of currently active connections using this connection group.
-     */
-    private int activeConnections;
+  /**
+   * The name of this connection group.
+   */
+  private String name;
 
-    /**
-     * All child connection groups. If children are not being queried, this may
-     * be omitted.
-     */
-    private Collection<APIConnectionGroup> childConnectionGroups;
+  /**
+   * The identifier of this connection group.
+   */
+  private String identifier;
 
-    /**
-     * All child connections. If children are not being queried, this may be
-     * omitted.
-     */
-    private Collection<APIConnection> childConnections;
-    
-    /**
-     * Map of all associated attributes by attribute identifier.
-     */
-    private Map<String, String> attributes;
+  /**
+   * The identifier of the parent connection group for this connection group.
+   */
+  private String parentIdentifier;
 
-    /**
-     * Create an empty APIConnectionGroup.
-     */
-    public APIConnectionGroup() {}
-    
-    /**
-     * Create a new APIConnectionGroup from the given ConnectionGroup record.
-     * 
-     * @param connectionGroup The ConnectionGroup record to initialize this 
-     *                        APIConnectionGroup from.
-     */
-    public APIConnectionGroup(ConnectionGroup connectionGroup) {
+  /**
+   * The type of this connection group.
+   */
+  private Type type;
 
-        // Set connection group information
-        this.identifier = connectionGroup.getIdentifier();
-        this.parentIdentifier = connectionGroup.getParentIdentifier();
-        this.name = connectionGroup.getName();
-        this.type = connectionGroup.getType();
-        this.activeConnections = connectionGroup.getActiveConnections();
+  /**
+   * The count of currently active connections using this connection group.
+   */
+  private int activeConnections;
 
-        // Associate any attributes
-        this.attributes = connectionGroup.getAttributes();
+  /**
+   * All child connection groups. If children are not being queried, this may be omitted.
+   */
+  private Collection<APIConnectionGroup> childConnectionGroups;
 
-    }
+  /**
+   * All child connections. If children are not being queried, this may be omitted.
+   */
+  private Collection<APIConnection> childConnections;
 
-    /**
-     * Returns the name of this connection group.
-     * @return The name of this connection group.
-     */
-    public String getName() {
-        return name;
-    }
+  /**
+   * Map of all associated attributes by attribute identifier.
+   */
+  private Map<String, String> attributes;
 
-    /**
-     * Set the name of this connection group.
-     * @param name The name of this connection group.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+  /**
+   * Create an empty APIConnectionGroup.
+   */
+  public APIConnectionGroup() {
+  }
 
-    /**
-     * Returns the identifier of this connection group.
-     * @return The identifier of this connection group.
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
+  /**
+   * Create a new APIConnectionGroup from the given ConnectionGroup record.
+   *
+   * @param connectionGroup The ConnectionGroup record to initialize this APIConnectionGroup from.
+   */
+  public APIConnectionGroup(ConnectionGroup connectionGroup) {
 
-    /**
-     * Set the identifier of this connection group.
-     * @param identifier The identifier of this connection group.
-     */
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-    
-    /**
-     * Returns the unique identifier for this connection group.
-     * @return The unique identifier for this connection group.
-     */
-    public String getParentIdentifier() {
-        return parentIdentifier;
-    }
-    /**
-     * Sets the parent connection group identifier for this connection group.
-     * @param parentIdentifier The parent connection group identifier 
-     *                         for this connection group.
-     */
-    public void setParentIdentifier(String parentIdentifier) {
-        this.parentIdentifier = parentIdentifier;
-    }
+    // Set connection group information
+    this.identifier = connectionGroup.getIdentifier();
+    this.parentIdentifier = connectionGroup.getParentIdentifier();
+    this.name = connectionGroup.getName();
+    this.type = connectionGroup.getType();
+    this.activeConnections = connectionGroup.getActiveConnections();
 
-    /**
-     * Returns the type of this connection group.
-     * @return The type of this connection group.
-     */
-    public Type getType() {
-        return type;
-    }
+    // Associate any attributes
+    this.attributes = connectionGroup.getAttributes();
 
-    /**
-     * Set the type of this connection group.
-     * @param type The Type of this connection group.
-     */
-    public void setType(Type type) {
-        this.type = type;
-    }
+  }
 
-    /**
-     * Returns a collection of all child connection groups, or null if children
-     * have not been queried.
-     *
-     * @return
-     *     A collection of all child connection groups, or null if children
-     *     have not been queried.
-     */
-    public Collection<APIConnectionGroup> getChildConnectionGroups() {
-        return childConnectionGroups;
-    }
+  /**
+   * Returns the name of this connection group.
+   *
+   * @return The name of this connection group.
+   */
+  public String getName() {
+    return name;
+  }
 
-    /**
-     * Sets the collection of all child connection groups to the given
-     * collection, which may be null if children have not been queried.
-     *
-     * @param childConnectionGroups
-     *     The collection containing all child connection groups of this
-     *     connection group, or null if children have not been queried.
-     */
-    public void setChildConnectionGroups(Collection<APIConnectionGroup> childConnectionGroups) {
-        this.childConnectionGroups = childConnectionGroups;
-    }
+  /**
+   * Set the name of this connection group.
+   *
+   * @param name The name of this connection group.
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    /**
-     * Returns a collection of all child connections, or null if children have
-     * not been queried.
-     *
-     * @return
-     *     A collection of all child connections, or null if children have not
-     *     been queried.
-     */
-    public Collection<APIConnection> getChildConnections() {
-        return childConnections;
-    }
+  /**
+   * Returns the identifier of this connection group.
+   *
+   * @return The identifier of this connection group.
+   */
+  public String getIdentifier() {
+    return identifier;
+  }
 
-    /**
-     * Sets the collection of all child connections to the given collection,
-     * which may be null if children have not been queried.
-     *
-     * @param childConnections
-     *     The collection containing all child connections of this connection
-     *     group, or null if children have not been queried.
-     */
-    public void setChildConnections(Collection<APIConnection> childConnections) {
-        this.childConnections = childConnections;
-    }
+  /**
+   * Set the identifier of this connection group.
+   *
+   * @param identifier The identifier of this connection group.
+   */
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
 
-    /**
-     * Returns the number of currently active connections using this
-     * connection group.
-     *
-     * @return
-     *     The number of currently active usages of this connection group.
-     */
-    public int getActiveConnections() {
-        return activeConnections;
-    }
+  /**
+   * Returns the unique identifier for this connection group.
+   *
+   * @return The unique identifier for this connection group.
+   */
+  public String getParentIdentifier() {
+    return parentIdentifier;
+  }
 
-    /**
-     * Set the number of currently active connections using this connection
-     * group.
-     *
-     * @param activeConnections
-     *     The number of currently active usages of this connection group.
-     */
-    public void setActiveUsers(int activeConnections) {
-        this.activeConnections = activeConnections;
-    }
+  /**
+   * Sets the parent connection group identifier for this connection group.
+   *
+   * @param parentIdentifier The parent connection group identifier for this connection group.
+   */
+  public void setParentIdentifier(String parentIdentifier) {
+    this.parentIdentifier = parentIdentifier;
+  }
 
-    /**
-     * Returns a map of all attributes associated with this connection group.
-     * Each entry key is the attribute identifier, while each value is the
-     * attribute value itself.
-     *
-     * @return
-     *     The attribute map for this connection group.
-     */
-    public Map<String, String> getAttributes() {
-        return attributes;
-    }
+  /**
+   * Returns the type of this connection group.
+   *
+   * @return The type of this connection group.
+   */
+  public Type getType() {
+    return type;
+  }
 
-    /**
-     * Sets the map of all attributes associated with this connection group.
-     * Each entry key is the attribute identifier, while each value is the
-     * attribute value itself.
-     *
-     * @param attributes
-     *     The attribute map for this connection group.
-     */
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
-    }
+  /**
+   * Set the type of this connection group.
+   *
+   * @param type The Type of this connection group.
+   */
+  public void setType(Type type) {
+    this.type = type;
+  }
+
+  /**
+   * Returns a collection of all child connection groups, or null if children have not been
+   * queried.
+   *
+   * @return A collection of all child connection groups, or null if children have not been queried.
+   */
+  public Collection<APIConnectionGroup> getChildConnectionGroups() {
+    return childConnectionGroups;
+  }
+
+  /**
+   * Sets the collection of all child connection groups to the given collection, which may be null
+   * if children have not been queried.
+   *
+   * @param childConnectionGroups The collection containing all child connection groups of this
+   *                              connection group, or null if children have not been queried.
+   */
+  public void setChildConnectionGroups(Collection<APIConnectionGroup> childConnectionGroups) {
+    this.childConnectionGroups = childConnectionGroups;
+  }
+
+  /**
+   * Returns a collection of all child connections, or null if children have not been queried.
+   *
+   * @return A collection of all child connections, or null if children have not been queried.
+   */
+  public Collection<APIConnection> getChildConnections() {
+    return childConnections;
+  }
+
+  /**
+   * Sets the collection of all child connections to the given collection, which may be null if
+   * children have not been queried.
+   *
+   * @param childConnections The collection containing all child connections of this connection
+   *                         group, or null if children have not been queried.
+   */
+  public void setChildConnections(Collection<APIConnection> childConnections) {
+    this.childConnections = childConnections;
+  }
+
+  /**
+   * Returns the number of currently active connections using this connection group.
+   *
+   * @return The number of currently active usages of this connection group.
+   */
+  public int getActiveConnections() {
+    return activeConnections;
+  }
+
+  /**
+   * Set the number of currently active connections using this connection group.
+   *
+   * @param activeConnections The number of currently active usages of this connection group.
+   */
+  public void setActiveUsers(int activeConnections) {
+    this.activeConnections = activeConnections;
+  }
+
+  /**
+   * Returns a map of all attributes associated with this connection group. Each entry key is the
+   * attribute identifier, while each value is the attribute value itself.
+   *
+   * @return The attribute map for this connection group.
+   */
+  public Map<String, String> getAttributes() {
+    return attributes;
+  }
+
+  /**
+   * Sets the map of all attributes associated with this connection group. Each entry key is the
+   * attribute identifier, while each value is the attribute value itself.
+   *
+   * @param attributes The attribute map for this connection group.
+   */
+  public void setAttributes(Map<String, String> attributes) {
+    this.attributes = attributes;
+  }
 
 }

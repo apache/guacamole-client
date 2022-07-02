@@ -23,46 +23,43 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 
 
 /**
- * An exception which is thrown when the client has sent too much data. This
- * usually indicates that a server-side buffer is not large enough to
- * accommodate the data, or protocol specifications prohibit data of the size
- * received.
+ * An exception which is thrown when the client has sent too much data. This usually indicates that
+ * a server-side buffer is not large enough to accommodate the data, or protocol specifications
+ * prohibit data of the size received.
  */
 public class GuacamoleClientOverrunException extends GuacamoleClientException {
 
-    /**
-     * Creates a new GuacamoleClientOverrunException with the given message and cause.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleClientOverrunException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Creates a new GuacamoleClientOverrunException with the given message and cause.
+   *
+   * @param message A human readable description of the exception that occurred.
+   * @param cause   The cause of this exception.
+   */
+  public GuacamoleClientOverrunException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * Creates a new GuacamoleClientOverrunException with the given message.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     */
-    public GuacamoleClientOverrunException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new GuacamoleClientOverrunException with the given message.
+   *
+   * @param message A human readable description of the exception that occurred.
+   */
+  public GuacamoleClientOverrunException(String message) {
+    super(message);
+  }
 
-    /**
-     * Creates a new GuacamoleClientOverrunException with the given cause.
-     *
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleClientOverrunException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Creates a new GuacamoleClientOverrunException with the given cause.
+   *
+   * @param cause The cause of this exception.
+   */
+  public GuacamoleClientOverrunException(Throwable cause) {
+    super(cause);
+  }
 
-    @Override
-    public GuacamoleStatus getStatus() {
-        return GuacamoleStatus.CLIENT_OVERRUN;
-    }
+  @Override
+  public GuacamoleStatus getStatus() {
+    return GuacamoleStatus.CLIENT_OVERRUN;
+  }
 
 }

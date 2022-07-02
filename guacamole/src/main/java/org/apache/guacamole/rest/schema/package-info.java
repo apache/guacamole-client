@@ -18,7 +18,7 @@
  */
 
 /**
- * Classes related to the self-description of the Guacamole REST API, such as
- * the attributes or parameters applicable to specific objects.
+ * Classes related to the self-description of the Guacamole REST API, such as the attributes or
+ * parameters applicable to specific objects.
  */
 package org.apache.guacamole.rest.schema;

@@ -34,30 +34,30 @@ import org.apache.guacamole.servlet.GuacamoleHTTPTunnelServlet;
  */
 public class DummyGuacamoleTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
-    @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
+  @Override
+  protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
 
-        // guacd connection information
-        String hostname = "localhost";
-        int port = 4822;
+    // guacd connection information
+    String hostname = "localhost";
+    int port = 4822;
 
-        // VNC connection information
-        GuacamoleConfiguration config = new GuacamoleConfiguration();
-        config.setProtocol("vnc");
-        config.setParameter("hostname", "localhost");
-        config.setParameter("port", "5901");
-        config.setParameter("password", "potato");
+    // VNC connection information
+    GuacamoleConfiguration config = new GuacamoleConfiguration();
+    config.setProtocol("vnc");
+    config.setParameter("hostname", "localhost");
+    config.setParameter("port", "5901");
+    config.setParameter("password", "potato");
 
-        // Connect to guacd, proxying a connection to the VNC server above
-        GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-                new InetGuacamoleSocket(hostname, port),
-                config
-        );
+    // Connect to guacd, proxying a connection to the VNC server above
+    GuacamoleSocket socket = new ConfiguredGuacamoleSocket(
+        new InetGuacamoleSocket(hostname, port),
+        config
+    );
 
-        // Create tunnel from now-configured socket
-        GuacamoleTunnel tunnel = new SimpleGuacamoleTunnel(socket);
-        return tunnel;
+    // Create tunnel from now-configured socket
+    GuacamoleTunnel tunnel = new SimpleGuacamoleTunnel(socket);
+    return tunnel;
 
-    }
+  }
 
 }

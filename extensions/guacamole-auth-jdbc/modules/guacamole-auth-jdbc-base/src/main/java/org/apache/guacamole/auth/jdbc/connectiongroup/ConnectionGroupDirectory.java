@@ -31,53 +31,55 @@ import org.apache.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
- * Implementation of the ConnectionGroup Directory which is driven by an
- * underlying, arbitrary database.
+ * Implementation of the ConnectionGroup Directory which is driven by an underlying, arbitrary
+ * database.
  */
 public class ConnectionGroupDirectory extends RestrictedObject
     implements Directory<ConnectionGroup> {
 
-    /**
-     * Service for managing connection group objects.
-     */
-    @Inject
-    private ConnectionGroupService connectionGroupService;
+  /**
+   * Service for managing connection group objects.
+   */
+  @Inject
+  private ConnectionGroupService connectionGroupService;
 
-    @Override
-    public ConnectionGroup get(String identifier) throws GuacamoleException {
-        return connectionGroupService.retrieveObject(getCurrentUser(), identifier);
-    }
+  @Override
+  public ConnectionGroup get(String identifier) throws GuacamoleException {
+    return connectionGroupService.retrieveObject(getCurrentUser(), identifier);
+  }
 
-    @Override
-    @Transactional
-    public Collection<ConnectionGroup> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledConnectionGroup> objects = connectionGroupService.retrieveObjects(getCurrentUser(), identifiers);
-        return Collections.<ConnectionGroup>unmodifiableCollection(objects);
-    }
+  @Override
+  @Transactional
+  public Collection<ConnectionGroup> getAll(Collection<String> identifiers)
+      throws GuacamoleException {
+    Collection<ModeledConnectionGroup> objects = connectionGroupService.retrieveObjects(
+        getCurrentUser(), identifiers);
+    return Collections.<ConnectionGroup>unmodifiableCollection(objects);
+  }
 
-    @Override
-    @Transactional
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return connectionGroupService.getIdentifiers(getCurrentUser());
-    }
+  @Override
+  @Transactional
+  public Set<String> getIdentifiers() throws GuacamoleException {
+    return connectionGroupService.getIdentifiers(getCurrentUser());
+  }
 
-    @Override
-    @Transactional
-    public void add(ConnectionGroup object) throws GuacamoleException {
-        connectionGroupService.createObject(getCurrentUser(), object);
-    }
+  @Override
+  @Transactional
+  public void add(ConnectionGroup object) throws GuacamoleException {
+    connectionGroupService.createObject(getCurrentUser(), object);
+  }
 
-    @Override
-    @Transactional
-    public void update(ConnectionGroup object) throws GuacamoleException {
-        ModeledConnectionGroup connectionGroup = (ModeledConnectionGroup) object;
-        connectionGroupService.updateObject(getCurrentUser(), connectionGroup);
-    }
+  @Override
+  @Transactional
+  public void update(ConnectionGroup object) throws GuacamoleException {
+    ModeledConnectionGroup connectionGroup = (ModeledConnectionGroup) object;
+    connectionGroupService.updateObject(getCurrentUser(), connectionGroup);
+  }
 
-    @Override
-    @Transactional
-    public void remove(String identifier) throws GuacamoleException {
-        connectionGroupService.deleteObject(getCurrentUser(), identifier);
-    }
+  @Override
+  @Transactional
+  public void remove(String identifier) throws GuacamoleException {
+    connectionGroupService.deleteObject(getCurrentUser(), identifier);
+  }
 
 }

@@ -22,18 +22,19 @@
  * both the translated message and the translation ID that generated the message, in the case
  * where it's unknown whether a translation is defined or not.
  */
- angular.module('client').factory('TranslationResult', [function defineTranslationResult() {
+angular.module('client').factory('TranslationResult',
+    [function defineTranslationResult() {
 
-    /**
-     * Object which represents the result of a translation as returned from
-     * the guacTranslate service.
-     *
-     * @constructor
-     * @param {TranslationResult|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     TranslationResult.
-     */
-    const TranslationResult = function TranslationResult(template) {
+      /**
+       * Object which represents the result of a translation as returned from
+       * the guacTranslate service.
+       *
+       * @constructor
+       * @param {TranslationResult|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     TranslationResult.
+       */
+      const TranslationResult = function TranslationResult(template) {
 
         // Use empty object by default
         template = template || {};
@@ -52,8 +53,8 @@
          */
         this.message = template.message;
 
-    };
+      };
 
-    return TranslationResult;
+      return TranslationResult;
 
-}]);
+    }]);

@@ -22,17 +22,16 @@ package org.apache.guacamole.net.event;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * Abstract basis for events which may have associated user credentials when
- * triggered.
+ * Abstract basis for events which may have associated user credentials when triggered.
  */
 public interface CredentialEvent {
 
-    /**
-     * Returns the current credentials of the user triggering the event, if any.
-     *
-     * @return The current credentials of the user triggering the event, if
-     *         any, or null if no credentials are associated with the event.
-     */
-    Credentials getCredentials();
+  /**
+   * Returns the current credentials of the user triggering the event, if any.
+   *
+   * @return The current credentials of the user triggering the event, if any, or null if no
+   * credentials are associated with the event.
+   */
+  Credentials getCredentials();
 
 }

@@ -20,18 +20,19 @@
 /**
  * Service which defines the SharingProfile class.
  */
-angular.module('rest').factory('SharingProfile', [function defineSharingProfile() {
-            
-    /**
-     * The object returned by REST API calls when representing the data
-     * associated with a sharing profile.
-     * 
-     * @constructor
-     * @param {SharingProfile|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     SharingProfile.
-     */
-    var SharingProfile = function SharingProfile(template) {
+angular.module('rest').factory('SharingProfile',
+    [function defineSharingProfile() {
+
+      /**
+       * The object returned by REST API calls when representing the data
+       * associated with a sharing profile.
+       *
+       * @constructor
+       * @param {SharingProfile|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     SharingProfile.
+       */
+      var SharingProfile = function SharingProfile(template) {
 
         // Use empty object by default
         template = template || {};
@@ -46,7 +47,7 @@ angular.module('rest').factory('SharingProfile', [function defineSharingProfile(
         /**
          * The unique identifier of the connection that this sharing profile
          * can be used to share.
-         * 
+         *
          * @type String
          */
         this.primaryConnectionIdentifier = template.primaryConnectionIdentifier;
@@ -54,7 +55,7 @@ angular.module('rest').factory('SharingProfile', [function defineSharingProfile(
         /**
          * The human-readable name of this sharing profile, which is not
          * necessarily unique.
-         * 
+         *
          * @type String
          */
         this.name = template.name;
@@ -78,8 +79,8 @@ angular.module('rest').factory('SharingProfile', [function defineSharingProfile(
          */
         this.attributes = template.attributes || {};
 
-    };
+      };
 
-    return SharingProfile;
+      return SharingProfile;
 
-}]);
+    }]);

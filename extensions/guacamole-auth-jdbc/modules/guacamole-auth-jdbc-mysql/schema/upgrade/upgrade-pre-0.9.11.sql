@@ -24,7 +24,8 @@
 ALTER TABLE guacamole_user
     ADD COLUMN password_date DATETIME;
 
-UPDATE guacamole_user SET password_date = NOW();
+UPDATE guacamole_user
+SET password_date = NOW();
 
 ALTER TABLE guacamole_user
     MODIFY COLUMN password_date DATETIME NOT NULL;
@@ -33,21 +34,22 @@ ALTER TABLE guacamole_user
 -- User password history
 --
 
-CREATE TABLE guacamole_user_password_history (
+CREATE TABLE guacamole_user_password_history
+(
 
-  `password_history_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id`             int(11) NOT NULL,
+    `password_history_id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id`             int(11) NOT NULL,
 
-  -- Salted password
-  `password_hash` binary(32) NOT NULL,
-  `password_salt` binary(32),
-  `password_date` datetime   NOT NULL,
+    -- Salted password
+    `password_hash`       binary(32) NOT NULL,
+    `password_salt`       binary(32),
+    `password_date`       datetime NOT NULL,
 
-  PRIMARY KEY (`password_history_id`),
-  KEY `user_id` (`user_id`),
+    PRIMARY KEY (`password_history_id`),
+    KEY                   `user_id` (`user_id`),
 
-  CONSTRAINT `guacamole_user_password_history_ibfk_1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_user_password_history_ibfk_1`
+        FOREIGN KEY (`user_id`)
+            REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

@@ -22,59 +22,49 @@ package org.apache.guacamole.resource;
 import java.io.InputStream;
 
 /**
- * A resource which is located within the classpath of an arbitrary
- * ClassLoader.
+ * A resource which is located within the classpath of an arbitrary ClassLoader.
  */
 public class ClassPathResource extends AbstractResource {
 
-    /**
-     * The classloader to use when reading this resource.
-     */
-    private final ClassLoader classLoader;
+  /**
+   * The classloader to use when reading this resource.
+   */
+  private final ClassLoader classLoader;
 
-    /**
-     * The path of this resource relative to the classloader.
-     */
-    private final String path;
+  /**
+   * The path of this resource relative to the classloader.
+   */
+  private final String path;
 
-    /**
-     * Creates a new ClassPathResource which uses the given ClassLoader to
-     * read the resource having the given path.
-     *
-     * @param classLoader
-     *     The ClassLoader to use when reading the resource.
-     *
-     * @param mimetype
-     *     The mimetype of the resource.
-     *
-     * @param path
-     *     The path of the resource relative to the given ClassLoader.
-     */
-    public ClassPathResource(ClassLoader classLoader, String mimetype, String path) {
-        super(mimetype);
-        this.classLoader = classLoader;
-        this.path = path;
-    }
+  /**
+   * Creates a new ClassPathResource which uses the given ClassLoader to read the resource having
+   * the given path.
+   *
+   * @param classLoader The ClassLoader to use when reading the resource.
+   * @param mimetype    The mimetype of the resource.
+   * @param path        The path of the resource relative to the given ClassLoader.
+   */
+  public ClassPathResource(ClassLoader classLoader, String mimetype, String path) {
+    super(mimetype);
+    this.classLoader = classLoader;
+    this.path = path;
+  }
 
-    /**
-     * Creates a new ClassPathResource which uses the ClassLoader associated
-     * with the ClassPathResource class to read the resource having the given
-     * path.
-     *
-     * @param mimetype
-     *     The mimetype of the resource.
-     *
-     * @param path
-     *     The path of the resource relative to the ClassLoader associated
-     *     with the ClassPathResource class.
-     */
-    public ClassPathResource(String mimetype, String path) {
-        this(ClassPathResource.class.getClassLoader(), mimetype, path);
-    }
+  /**
+   * Creates a new ClassPathResource which uses the ClassLoader associated with the
+   * ClassPathResource class to read the resource having the given path.
+   *
+   * @param mimetype The mimetype of the resource.
+   * @param path     The path of the resource relative to the ClassLoader associated with the
+   *                 ClassPathResource class.
+   */
+  public ClassPathResource(String mimetype, String path) {
+    this(ClassPathResource.class.getClassLoader(), mimetype, path);
+  }
 
-    @Override
-    public InputStream asStream() {
-        return classLoader.getResourceAsStream(path);
-    }
+  @Override
+  public InputStream asStream() {
+    return classLoader.getResourceAsStream(path);
+  }
 
 }

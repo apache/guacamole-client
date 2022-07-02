@@ -27,17 +27,17 @@ import java.security.SecureRandom;
  */
 public class SecureRandomAuthTokenGenerator implements AuthTokenGenerator {
 
-    /**
-     * Instance of SecureRandom for generating the auth token.
-     */
-    private final SecureRandom secureRandom = new SecureRandom();
+  /**
+   * Instance of SecureRandom for generating the auth token.
+   */
+  private final SecureRandom secureRandom = new SecureRandom();
 
-    @Override
-    public String getToken() {
-        byte[] bytes = new byte[32];
-        secureRandom.nextBytes(bytes);
-        
-        return BaseEncoding.base16().encode(bytes);
-    }
-    
+  @Override
+  public String getToken() {
+    byte[] bytes = new byte[32];
+    secureRandom.nextBytes(bytes);
+
+    return BaseEncoding.base16().encode(bytes);
+  }
+
 }

@@ -22,57 +22,48 @@ package org.apache.guacamole.auth.jdbc.base;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 
 /**
- * Common base class for objects have an underlying model. For the purposes of
- * JDBC-driven authentication providers, all modeled objects are also
- * restricted.
+ * Common base class for objects have an underlying model. For the purposes of JDBC-driven
+ * authentication providers, all modeled objects are also restricted.
  *
- * @param <ModelType>
- *     The type of model object which corresponds to this object.
+ * @param <ModelType> The type of model object which corresponds to this object.
  */
 public abstract class ModeledObject<ModelType> extends RestrictedObject {
 
-    /**
-     * The internal model object containing the values which represent this
-     * object in the database.
-     */
-    private ModelType model;
+  /**
+   * The internal model object containing the values which represent this object in the database.
+   */
+  private ModelType model;
 
-    /**
-     * Initializes this object, associating it with the current authenticated
-     * user and populating it with data from the given model object
-     *
-     * @param currentUser
-     *     The user that created or retrieved this object.
-     *
-     * @param model 
-     *     The backing model object.
-     */
-    public void init(ModeledAuthenticatedUser currentUser, ModelType model) {
-        super.init(currentUser);
-        setModel(model);
-    }
+  /**
+   * Initializes this object, associating it with the current authenticated user and populating it
+   * with data from the given model object
+   *
+   * @param currentUser The user that created or retrieved this object.
+   * @param model       The backing model object.
+   */
+  public void init(ModeledAuthenticatedUser currentUser, ModelType model) {
+    super.init(currentUser);
+    setModel(model);
+  }
 
-    /**
-     * Returns the backing model object. Changes to the model object will
-     * affect this object, and changes to this object will affect the model
-     * object.
-     *
-     * @return
-     *     The backing model object.
-     */
-    public ModelType getModel() {
-        return model;
-    }
+  /**
+   * Returns the backing model object. Changes to the model object will affect this object, and
+   * changes to this object will affect the model object.
+   *
+   * @return The backing model object.
+   */
+  public ModelType getModel() {
+    return model;
+  }
 
-    /**
-     * Sets the backing model object. This will effectively replace all data
-     * contained within this object.
-     *
-     * @param model
-     *     The backing model object.
-     */
-    public void setModel(ModelType model) {
-        this.model = model;
-    }
+  /**
+   * Sets the backing model object. This will effectively replace all data contained within this
+   * object.
+   *
+   * @param model The backing model object.
+   */
+  public void setModel(ModelType model) {
+    this.model = model;
+  }
 
 }

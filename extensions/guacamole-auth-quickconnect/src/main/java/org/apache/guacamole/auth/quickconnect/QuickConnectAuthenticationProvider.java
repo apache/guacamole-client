@@ -22,47 +22,45 @@ package org.apache.guacamole.auth.quickconnect;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * This class provides the necessary hooks into the Guacamole Client authentication
- * process so that the QuickConnect functionality can be initialized and used
- * throughout the web client.
+ * This class provides the necessary hooks into the Guacamole Client authentication process so that
+ * the QuickConnect functionality can be initialized and used throughout the web client.
  */
 public class QuickConnectAuthenticationProvider extends AbstractAuthenticationProvider {
 
-    /**
-     * Injector which will manage the object graph of this authentication
-     * provider.
-     */
-    private final Injector injector;
-    
-    public QuickConnectAuthenticationProvider() throws GuacamoleException {
+  /**
+   * Injector which will manage the object graph of this authentication provider.
+   */
+  private final Injector injector;
 
-        // Set up Guice injector.
-        injector = Guice.createInjector(
-            new QuickConnectAuthenticationProviderModule(this)
-        );
-    }
-    
-    @Override
-    public String getIdentifier() {
-        return "quickconnect";
-    }
+  public QuickConnectAuthenticationProvider() throws GuacamoleException {
 
-    @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
+    // Set up Guice injector.
+    injector = Guice.createInjector(
+        new QuickConnectAuthenticationProviderModule(this)
+    );
+  }
 
-        QuickConnectUserContext userContext = 
-                injector.getInstance(QuickConnectUserContext.class);
-        
-        userContext.init(authenticatedUser.getIdentifier());
-        
-        return userContext;
-        
-    }
+  @Override
+  public String getIdentifier() {
+    return "quickconnect";
+  }
+
+  @Override
+  public UserContext getUserContext(AuthenticatedUser authenticatedUser)
+      throws GuacamoleException {
+
+    QuickConnectUserContext userContext =
+        injector.getInstance(QuickConnectUserContext.class);
+
+    userContext.init(authenticatedUser.getIdentifier());
+
+    return userContext;
+
+  }
 
 }

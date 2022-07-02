@@ -40,167 +40,156 @@ import org.apache.guacamole.net.auth.UserGroup;
  * An implementation of the UserGroup object which is backed by a database model.
  */
 public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
-        implements UserGroup {
+    implements UserGroup {
 
-    /**
-     * The name of the attribute which controls whether a user group is
-     * disabled.
-     */
-    public static final String DISABLED_ATTRIBUTE_NAME = "disabled";
+  /**
+   * The name of the attribute which controls whether a user group is disabled.
+   */
+  public static final String DISABLED_ATTRIBUTE_NAME = "disabled";
 
-    /**
-     * All attributes related to restricting user groups, within a logical
-     * form.
-     */
-    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
-        new BooleanField(DISABLED_ATTRIBUTE_NAME, "true")
-    ));
+  /**
+   * All attributes related to restricting user groups, within a logical form.
+   */
+  public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
+      new BooleanField(DISABLED_ATTRIBUTE_NAME, "true")
+  ));
 
-    /**
-     * All possible attributes of user groups organized as individual,
-     * logical forms.
-     */
-    public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
-        ACCOUNT_RESTRICTIONS
-    ));
+  /**
+   * All possible attributes of user groups organized as individual, logical forms.
+   */
+  public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(
+      Arrays.asList(
+          ACCOUNT_RESTRICTIONS
+      ));
 
-    /**
-     * The names of all attributes which are explicitly supported by this
-     * extension's UserGroup objects.
-     */
-    public static final Set<String> ATTRIBUTE_NAMES =
-            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-                DISABLED_ATTRIBUTE_NAME
-            )));
+  /**
+   * The names of all attributes which are explicitly supported by this extension's UserGroup
+   * objects.
+   */
+  public static final Set<String> ATTRIBUTE_NAMES =
+      Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
+          DISABLED_ATTRIBUTE_NAME
+      )));
 
-    /**
-     * Provider for RelatedObjectSets containing the user groups of which this
-     * user group is a member.
-     */
-    @Inject
-    private Provider<UserGroupParentUserGroupSet> parentUserGroupSetProvider;
+  /**
+   * Provider for RelatedObjectSets containing the user groups of which this user group is a
+   * member.
+   */
+  @Inject
+  private Provider<UserGroupParentUserGroupSet> parentUserGroupSetProvider;
 
-    /**
-     * Provider for RelatedObjectSets containing the users that are members of
-     * this user group.
-     */
-    @Inject
-    private Provider<UserGroupMemberUserSet> memberUserSetProvider;
+  /**
+   * Provider for RelatedObjectSets containing the users that are members of this user group.
+   */
+  @Inject
+  private Provider<UserGroupMemberUserSet> memberUserSetProvider;
 
-    /**
-     * Provider for RelatedObjectSets containing the user groups that are
-     * members of this user group.
-     */
-    @Inject
-    private Provider<UserGroupMemberUserGroupSet> memberUserGroupSetProvider;
+  /**
+   * Provider for RelatedObjectSets containing the user groups that are members of this user group.
+   */
+  @Inject
+  private Provider<UserGroupMemberUserGroupSet> memberUserGroupSetProvider;
 
-    /**
-     * Whether attributes which control access restrictions should be exposed
-     * via getAttributes() or allowed to be set via setAttributes().
-     */
-    private boolean exposeRestrictedAttributes = false;
+  /**
+   * Whether attributes which control access restrictions should be exposed via getAttributes() or
+   * allowed to be set via setAttributes().
+   */
+  private boolean exposeRestrictedAttributes = false;
 
-    /**
-     * Initializes this ModeledUserGroup, associating it with the current
-     * authenticated user and populating it with data from the given user group
-     * model.
-     *
-     * @param currentUser
-     *     The user that created or retrieved this object.
-     *
-     * @param model
-     *     The backing model object.
-     *
-     * @param exposeRestrictedAttributes
-     *     Whether attributes which control access restrictions should be
-     *     exposed via getAttributes() or allowed to be set via
-     *     setAttributes().
-     */
-    public void init(ModeledAuthenticatedUser currentUser, UserGroupModel model,
-            boolean exposeRestrictedAttributes) {
-        super.init(currentUser, model);
-        this.exposeRestrictedAttributes = exposeRestrictedAttributes;
+  /**
+   * Initializes this ModeledUserGroup, associating it with the current authenticated user and
+   * populating it with data from the given user group model.
+   *
+   * @param currentUser                The user that created or retrieved this object.
+   * @param model                      The backing model object.
+   * @param exposeRestrictedAttributes Whether attributes which control access restrictions should
+   *                                   be exposed via getAttributes() or allowed to be set via
+   *                                   setAttributes().
+   */
+  public void init(ModeledAuthenticatedUser currentUser, UserGroupModel model,
+      boolean exposeRestrictedAttributes) {
+    super.init(currentUser, model);
+    this.exposeRestrictedAttributes = exposeRestrictedAttributes;
+  }
+
+  /**
+   * Stores all restricted (privileged) attributes within the given Map, pulling the values of those
+   * attributes from the underlying user group model. If no value is yet defined for an attribute,
+   * that attribute will be set to null.
+   *
+   * @param attributes The Map to store all restricted attributes within.
+   */
+  private void putRestrictedAttributes(Map<String, String> attributes) {
+
+    // Set disabled attribute
+    attributes.put(DISABLED_ATTRIBUTE_NAME, getModel().isDisabled() ? "true" : null);
+
+  }
+
+  /**
+   * Stores all restricted (privileged) attributes within the underlying user group model, pulling
+   * the values of those attributes from the given Map.
+   *
+   * @param attributes The Map to pull all restricted attributes from.
+   */
+  private void setRestrictedAttributes(Map<String, String> attributes) {
+
+    // Translate disabled attribute
+    getModel().setDisabled("true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
+
+  }
+
+  @Override
+  public Set<String> getSupportedAttributeNames() {
+    return ATTRIBUTE_NAMES;
+  }
+
+  @Override
+  public Map<String, String> getAttributes() {
+
+    // Include any defined arbitrary attributes
+    Map<String, String> attributes = super.getAttributes();
+
+    // Include restricted attributes only if they should be exposed
+    if (exposeRestrictedAttributes) {
+      putRestrictedAttributes(attributes);
     }
 
-    /**
-     * Stores all restricted (privileged) attributes within the given Map,
-     * pulling the values of those attributes from the underlying user group
-     * model. If no value is yet defined for an attribute, that attribute will
-     * be set to null.
-     *
-     * @param attributes
-     *     The Map to store all restricted attributes within.
-     */
-    private void putRestrictedAttributes(Map<String, String> attributes) {
+    return attributes;
+  }
 
-        // Set disabled attribute
-        attributes.put(DISABLED_ATTRIBUTE_NAME, getModel().isDisabled() ? "true" : null);
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
 
+    // Set arbitrary attributes
+    super.setAttributes(attributes);
+
+    // Assign restricted attributes only if they are exposed
+    if (exposeRestrictedAttributes) {
+      setRestrictedAttributes(attributes);
     }
 
-    /**
-     * Stores all restricted (privileged) attributes within the underlying user
-     * group model, pulling the values of those attributes from the given Map.
-     *
-     * @param attributes
-     *     The Map to pull all restricted attributes from.
-     */
-    private void setRestrictedAttributes(Map<String, String> attributes) {
+  }
 
-        // Translate disabled attribute
-        getModel().setDisabled("true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
+  @Override
+  public RelatedObjectSet getUserGroups() throws GuacamoleException {
+    UserGroupParentUserGroupSet parentUserGroupSet = parentUserGroupSetProvider.get();
+    parentUserGroupSet.init(getCurrentUser(), this);
+    return parentUserGroupSet;
+  }
 
-    }
+  @Override
+  public RelatedObjectSet getMemberUsers() throws GuacamoleException {
+    UserGroupMemberUserSet memberUserSet = memberUserSetProvider.get();
+    memberUserSet.init(getCurrentUser(), this);
+    return memberUserSet;
+  }
 
-    @Override
-    public Set<String> getSupportedAttributeNames() {
-        return ATTRIBUTE_NAMES;
-    }
-
-    @Override
-    public Map<String, String> getAttributes() {
-
-        // Include any defined arbitrary attributes
-        Map<String, String> attributes = super.getAttributes();
-
-        // Include restricted attributes only if they should be exposed
-        if (exposeRestrictedAttributes)
-            putRestrictedAttributes(attributes);
-
-        return attributes;
-    }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-
-        // Set arbitrary attributes
-        super.setAttributes(attributes);
-
-        // Assign restricted attributes only if they are exposed
-        if (exposeRestrictedAttributes)
-            setRestrictedAttributes(attributes);
-
-    }
-
-    @Override
-    public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        UserGroupParentUserGroupSet parentUserGroupSet = parentUserGroupSetProvider.get();
-        parentUserGroupSet.init(getCurrentUser(), this);
-        return parentUserGroupSet;
-    }
-
-    @Override
-    public RelatedObjectSet getMemberUsers() throws GuacamoleException {
-        UserGroupMemberUserSet memberUserSet = memberUserSetProvider.get();
-        memberUserSet.init(getCurrentUser(), this);
-        return memberUserSet;
-    }
-
-    @Override
-    public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
-        UserGroupMemberUserGroupSet memberUserGroupSet = memberUserGroupSetProvider.get();
-        memberUserGroupSet.init(getCurrentUser(), this);
-        return memberUserGroupSet;
-    }
+  @Override
+  public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
+    UserGroupMemberUserGroupSet memberUserGroupSet = memberUserGroupSetProvider.get();
+    memberUserGroupSet.init(getCurrentUser(), this);
+    return memberUserGroupSet;
+  }
 
 }

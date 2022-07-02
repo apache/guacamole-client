@@ -25,75 +25,74 @@ import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;
 
 /**
- * GuacamoleTunnel implementation which simply delegates all function calls to
- * an underlying GuacamoleTunnel.
+ * GuacamoleTunnel implementation which simply delegates all function calls to an underlying
+ * GuacamoleTunnel.
  */
 public class DelegatingGuacamoleTunnel implements GuacamoleTunnel {
 
-    /**
-     * The wrapped GuacamoleTunnel.
-     */
-    private final GuacamoleTunnel tunnel;
+  /**
+   * The wrapped GuacamoleTunnel.
+   */
+  private final GuacamoleTunnel tunnel;
 
-    /**
-     * Wraps the given tunnel such that all function calls against this tunnel
-     * will be delegated to it.
-     *
-     * @param tunnel
-     *     The GuacamoleTunnel to wrap.
-     */
-    public DelegatingGuacamoleTunnel(GuacamoleTunnel tunnel) {
-        this.tunnel = tunnel;
-    }
+  /**
+   * Wraps the given tunnel such that all function calls against this tunnel will be delegated to
+   * it.
+   *
+   * @param tunnel The GuacamoleTunnel to wrap.
+   */
+  public DelegatingGuacamoleTunnel(GuacamoleTunnel tunnel) {
+    this.tunnel = tunnel;
+  }
 
-    @Override
-    public GuacamoleReader acquireReader() {
-        return tunnel.acquireReader();
-    }
+  @Override
+  public GuacamoleReader acquireReader() {
+    return tunnel.acquireReader();
+  }
 
-    @Override
-    public void releaseReader() {
-        tunnel.releaseReader();
-    }
+  @Override
+  public void releaseReader() {
+    tunnel.releaseReader();
+  }
 
-    @Override
-    public boolean hasQueuedReaderThreads() {
-        return tunnel.hasQueuedReaderThreads();
-    }
+  @Override
+  public boolean hasQueuedReaderThreads() {
+    return tunnel.hasQueuedReaderThreads();
+  }
 
-    @Override
-    public GuacamoleWriter acquireWriter() {
-        return tunnel.acquireWriter();
-    }
+  @Override
+  public GuacamoleWriter acquireWriter() {
+    return tunnel.acquireWriter();
+  }
 
-    @Override
-    public void releaseWriter() {
-        tunnel.releaseWriter();
-    }
+  @Override
+  public void releaseWriter() {
+    tunnel.releaseWriter();
+  }
 
-    @Override
-    public boolean hasQueuedWriterThreads() {
-        return tunnel.hasQueuedWriterThreads();
-    }
+  @Override
+  public boolean hasQueuedWriterThreads() {
+    return tunnel.hasQueuedWriterThreads();
+  }
 
-    @Override
-    public UUID getUUID() {
-        return tunnel.getUUID();
-    }
+  @Override
+  public UUID getUUID() {
+    return tunnel.getUUID();
+  }
 
-    @Override
-    public GuacamoleSocket getSocket() {
-        return tunnel.getSocket();
-    }
+  @Override
+  public GuacamoleSocket getSocket() {
+    return tunnel.getSocket();
+  }
 
-    @Override
-    public void close() throws GuacamoleException {
-        tunnel.close();
-    }
+  @Override
+  public void close() throws GuacamoleException {
+    tunnel.close();
+  }
 
-    @Override
-    public boolean isOpen() {
-        return tunnel.isOpen();
-    }
+  @Override
+  public boolean isOpen() {
+    return tunnel.isOpen();
+  }
 
 }

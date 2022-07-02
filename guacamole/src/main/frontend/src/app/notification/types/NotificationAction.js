@@ -20,23 +20,25 @@
 /**
  * Provides the NotificationAction class definition.
  */
-angular.module('notification').factory('NotificationAction', [function defineNotificationAction() {
+angular.module('notification').factory('NotificationAction',
+    [function defineNotificationAction() {
 
-    /**
-     * Creates a new NotificationAction, which pairs an arbitrary callback with
-     * an action name. The name of this action will ultimately be presented to
-     * the user when the user is prompted to choose among available actions.
-     *
-     * @constructor
-     * @param {String} name The name of this action.
-     *
-     * @param {Function} callback
-     *     The callback to call when the user elects to perform this action.
-     * 
-     * @param {String} className
-     *     The CSS class to associate with this action, if any.
-     */
-    var NotificationAction = function NotificationAction(name, callback, className) {
+      /**
+       * Creates a new NotificationAction, which pairs an arbitrary callback with
+       * an action name. The name of this action will ultimately be presented to
+       * the user when the user is prompted to choose among available actions.
+       *
+       * @constructor
+       * @param {String} name The name of this action.
+       *
+       * @param {Function} callback
+       *     The callback to call when the user elects to perform this action.
+       *
+       * @param {String} className
+       *     The CSS class to associate with this action, if any.
+       */
+      var NotificationAction = function NotificationAction(name, callback,
+          className) {
 
         /**
          * Reference to this NotificationAction.
@@ -47,7 +49,7 @@ angular.module('notification').factory('NotificationAction', [function defineNot
 
         /**
          * The CSS class associated with this action.
-         * 
+         *
          * @type String
          */
         this.className = className;
@@ -66,8 +68,8 @@ angular.module('notification').factory('NotificationAction', [function defineNot
          */
         this.callback = callback;
 
-    };
+      };
 
-    return NotificationAction;
+      return NotificationAction;
 
-}]);
+    }]);

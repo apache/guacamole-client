@@ -22,26 +22,26 @@
  */
 angular.module('element').factory('Marker', [function defineMarker() {
 
+  /**
+   * Creates a new Marker which allows its associated element to be scolled
+   * into view as desired.
+   *
+   * @constructor
+   * @param {Element} element
+   *     The element to associate with this marker.
+   */
+  var Marker = function Marker(element) {
+
     /**
-     * Creates a new Marker which allows its associated element to be scolled
-     * into view as desired.
-     *
-     * @constructor
-     * @param {Element} element
-     *     The element to associate with this marker.
+     * Scrolls scrollable elements, or the window, as needed to bring the
+     * element associated with this marker into view.
      */
-    var Marker = function Marker(element) {
-
-        /**
-         * Scrolls scrollable elements, or the window, as needed to bring the
-         * element associated with this marker into view.
-         */
-        this.scrollIntoView = function scrollIntoView() {
-            element.scrollIntoView();
-        };
-
+    this.scrollIntoView = function scrollIntoView() {
+      element.scrollIntoView();
     };
 
-    return Marker;
+  };
+
+  return Marker;
 
 }]);

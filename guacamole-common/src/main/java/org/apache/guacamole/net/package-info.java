@@ -18,8 +18,7 @@
  */
 
 /**
- * Classes which apply to network-specific concepts, such as low-level sockets
- * and tunnels.
+ * Classes which apply to network-specific concepts, such as low-level sockets and tunnels.
  */
 package org.apache.guacamole.net;
 

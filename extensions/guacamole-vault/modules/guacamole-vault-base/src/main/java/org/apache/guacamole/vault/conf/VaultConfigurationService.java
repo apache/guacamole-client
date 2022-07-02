@@ -39,171 +39,151 @@ import org.apache.guacamole.vault.VaultAuthenticationProviderModule;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 
 /**
- * Base class for services which retrieve key vault configuration information.
- * A concrete implementation of this class must be defined and bound for key
- * vault support to work.
+ * Base class for services which retrieve key vault configuration information. A concrete
+ * implementation of this class must be defined and bound for key vault support to work.
  *
  * @see VaultAuthenticationProviderModule
  */
 public abstract class VaultConfigurationService {
 
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
+  /**
+   * ObjectMapper for deserializing YAML.
+   */
+  private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+  /**
+   * The name of the file containing a YAML mapping of Guacamole parameter token to vault secret
+   * name.
+   */
+  private final String tokenMappingFilename;
+  /**
+   * The name of the properties file containing Guacamole configuration properties. Unlike
+   * guacamole.properties, the values of these properties are read from the vault. Each property is
+   * expected to contain a secret name instead of a property value.
+   */
+  private final String propertiesFilename;
+  /**
+   * The Guacamole server environment.
+   */
+  @Inject
+  private Environment environment;
+  @Inject
+  private VaultSecretService secretService;
 
-    @Inject
-    private VaultSecretService secretService;
+  /**
+   * Creates a new VaultConfigurationService which retrieves the token/secret mappings and Guacamole
+   * configuration properties from the files with the given names.
+   *
+   * @param tokenMappingFilename The name of the YAML file containing the token/secret mapping.
+   * @param propertiesFilename   The name of the properties file containing Guacamole configuration
+   *                             properties whose values are the names of corresponding secrets.
+   */
+  protected VaultConfigurationService(String tokenMappingFilename,
+      String propertiesFilename) {
+    this.tokenMappingFilename = tokenMappingFilename;
+    this.propertiesFilename = propertiesFilename;
+  }
 
-    /**
-     * ObjectMapper for deserializing YAML.
-     */
-    private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+  /**
+   * Returns a mapping dictating the name of the secret which maps to each parameter token. In the
+   * returned mapping, the value of each entry is the name of the secret to use to populate the
+   * value of the parameter token, and the key of each entry is the name of the parameter token
+   * which should receive the value of the secret.
+   * <p>
+   * The name of the secret may contain its own tokens, which will be substituted using values from
+   * the given filter. See the definition of VaultUserContext for the names of these tokens and the
+   * contexts in which they can be applied to secret names.
+   *
+   * @return A mapping dictating the name of the secret which maps to each parameter token.
+   * @throws GuacamoleException If the YAML file defining the token/secret mapping cannot be read.
+   */
+  public Map<String, String> getTokenMapping() throws GuacamoleException {
 
-    /**
-     * The name of the file containing a YAML mapping of Guacamole parameter
-     * token to vault secret name.
-     */
-    private final String tokenMappingFilename;
-
-    /**
-     * The name of the properties file containing Guacamole configuration
-     * properties. Unlike guacamole.properties, the values of these properties
-     * are read from the vault. Each property is expected to contain a secret
-     * name instead of a property value.
-     */
-    private final String propertiesFilename;
-
-    /**
-     * Creates a new VaultConfigurationService which retrieves the token/secret
-     * mappings and Guacamole configuration properties from the files with the
-     * given names.
-     *
-     * @param tokenMappingFilename
-     *     The name of the YAML file containing the token/secret mapping.
-     *
-     * @param propertiesFilename
-     *     The name of the properties file containing Guacamole configuration
-     *     properties whose values are the names of corresponding secrets.
-     */
-    protected VaultConfigurationService(String tokenMappingFilename,
-            String propertiesFilename) {
-        this.tokenMappingFilename = tokenMappingFilename;
-        this.propertiesFilename = propertiesFilename;
+    // Get configuration file from GUACAMOLE_HOME
+    File confFile = new File(environment.getGuacamoleHome(), tokenMappingFilename);
+    if (!confFile.exists()) {
+      return Collections.emptyMap();
     }
 
-    /**
-     * Returns a mapping dictating the name of the secret which maps to each
-     * parameter token. In the returned mapping, the value of each entry is the
-     * name of the secret to use to populate the value of the parameter token,
-     * and the key of each entry is the name of the parameter token which
-     * should receive the value of the secret.
-     *
-     * The name of the secret may contain its own tokens, which will be
-     * substituted using values from the given filter. See the definition of
-     * VaultUserContext for the names of these tokens and the contexts in which
-     * they can be applied to secret names.
-     *
-     * @return
-     *     A mapping dictating the name of the secret which maps to each
-     *     parameter token.
-     *
-     * @throws GuacamoleException
-     *     If the YAML file defining the token/secret mapping cannot be read.
-     */
-    public Map<String, String> getTokenMapping() throws GuacamoleException {
+    // Deserialize token mapping from YAML
+    try {
 
-        // Get configuration file from GUACAMOLE_HOME
-        File confFile = new File(environment.getGuacamoleHome(), tokenMappingFilename);
-        if (!confFile.exists())
-            return Collections.emptyMap();
+      Map<String, String> mapping = mapper.readValue(confFile,
+          new TypeReference<Map<String, String>>() {
+          });
+      if (mapping == null) {
+        return Collections.emptyMap();
+      }
 
-        // Deserialize token mapping from YAML
+      return mapping;
+
+    }
+
+    // Fail if YAML is invalid/unreadable
+    catch (IOException e) {
+      throw new GuacamoleServerException("Unable to read token mapping "
+          + "configuration file \"" + tokenMappingFilename + "\".", e);
+    }
+
+  }
+
+  /**
+   * Returns a GuacamoleProperties instance which automatically reads the values of requested
+   * properties from the vault. The name of the secret corresponding to a property stored in the
+   * vault is defined via the properties filename supplied at construction time.
+   *
+   * @return A GuacamoleProperties instance which automatically reads property values from the
+   * vault.
+   * @throws GuacamoleException If the properties file containing the property/secret mappings
+   *                            exists but cannot be read.
+   */
+  public GuacamoleProperties getProperties() throws GuacamoleException {
+
+    // Use empty properties if file cannot be found
+    File propFile = new File(environment.getGuacamoleHome(), propertiesFilename);
+    if (!propFile.exists()) {
+      return new PropertiesGuacamoleProperties(new Properties());
+    }
+
+    // Automatically pull properties from vault
+    return new FileGuacamoleProperties(propFile) {
+
+      @Override
+      public String getProperty(String name) throws GuacamoleException {
         try {
 
-            Map<String, String> mapping = mapper.readValue(confFile, new TypeReference<Map<String, String>>() {});
-            if (mapping == null)
-                return Collections.emptyMap();
+          String secretName = super.getProperty(name);
+          if (secretName == null) {
+            return null;
+          }
 
-            return mapping;
+          return secretService.getValue(secretName).get();
 
+        } catch (InterruptedException | ExecutionException e) {
+
+          if (e.getCause() instanceof GuacamoleException) {
+            throw (GuacamoleException) e;
+          }
+
+          throw new GuacamoleServerException(String.format("Property "
+              + "\"%s\" could not be retrieved from the vault.", name), e);
         }
+      }
 
-        // Fail if YAML is invalid/unreadable
-        catch (IOException e) {
-            throw new GuacamoleServerException("Unable to read token mapping "
-                    + "configuration file \"" + tokenMappingFilename + "\".", e);
-        }
+    };
 
-    }
+  }
 
-    /**
-     * Returns a GuacamoleProperties instance which automatically reads the
-     * values of requested properties from the vault. The name of the secret
-     * corresponding to a property stored in the vault is defined via the
-     * properties filename supplied at construction time.
-     *
-     * @return
-     *     A GuacamoleProperties instance which automatically reads property
-     *     values from the vault.
-     *
-     * @throws GuacamoleException
-     *     If the properties file containing the property/secret mappings
-     *     exists but cannot be read.
-     */
-    public GuacamoleProperties getProperties() throws GuacamoleException {
-
-        // Use empty properties if file cannot be found
-        File propFile = new File(environment.getGuacamoleHome(), propertiesFilename);
-        if (!propFile.exists())
-            return new PropertiesGuacamoleProperties(new Properties());
-
-        // Automatically pull properties from vault
-        return new FileGuacamoleProperties(propFile) {
-
-            @Override
-            public String getProperty(String name) throws GuacamoleException {
-                try {
-
-                    String secretName = super.getProperty(name);
-                    if (secretName == null)
-                        return null;
-
-                    return secretService.getValue(secretName).get();
-
-                }
-                catch (InterruptedException | ExecutionException e) {
-
-                    if (e.getCause() instanceof GuacamoleException)
-                        throw (GuacamoleException) e;
-
-                    throw new GuacamoleServerException(String.format("Property "
-                            + "\"%s\" could not be retrieved from the vault.", name), e);
-                }
-            }
-
-        };
-
-    }
-
-    /**
-     * Return whether Windows domains should be split out from usernames when
-     * fetched from the vault.
-     *
-     * For example: "DOMAIN\\user" or "user@DOMAIN" should both
-     * be split into seperate username and domain tokens if this configuration
-     * is true. If false, no domain token should be created and the above values
-     * should be stored directly in the username token.
-     *
-     * @return
-     *     true if windows domains should be split out from usernames, false
-     *     otherwise.
-     *
-     * @throws GuacamoleException
-     *     If the value specified within guacamole.properties cannot be
-     *     parsed.
-     */
-    public abstract boolean getSplitWindowsUsernames() throws GuacamoleException;
+  /**
+   * Return whether Windows domains should be split out from usernames when fetched from the vault.
+   * <p>
+   * For example: "DOMAIN\\user" or "user@DOMAIN" should both be split into seperate username and
+   * domain tokens if this configuration is true. If false, no domain token should be created and
+   * the above values should be stored directly in the username token.
+   *
+   * @return true if windows domains should be split out from usernames, false otherwise.
+   * @throws GuacamoleException If the value specified within guacamole.properties cannot be
+   *                            parsed.
+   */
+  public abstract boolean getSplitWindowsUsernames() throws GuacamoleException;
 
 }

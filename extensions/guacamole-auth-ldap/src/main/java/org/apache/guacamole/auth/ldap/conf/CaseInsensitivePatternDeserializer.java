@@ -32,50 +32,50 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 /**
- * Custom JSON (or YAML) deserializer for Jackson that deserializes string
- * values as Patterns with the case insensitive flag set by default. Jackson
- * will actually handle deserialization of Patterns automatically, but does not
- * provide for setting the default flags.
+ * Custom JSON (or YAML) deserializer for Jackson that deserializes string values as Patterns with
+ * the case insensitive flag set by default. Jackson will actually handle deserialization of
+ * Patterns automatically, but does not provide for setting the default flags.
  */
 public class CaseInsensitivePatternDeserializer extends StdScalarDeserializer<Pattern> {
 
-    /**
-     * Unique version identifier of this {@link Serializable} class.
-     */
-    private static final long serialVersionUID = 1L;
+  /**
+   * Unique version identifier of this {@link Serializable} class.
+   */
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * Creates a new CaseInsensitivePatternDeserializer which deserializes
-     * string values to Pattern objects with the case insensitive flag set.
-     */
-    public CaseInsensitivePatternDeserializer() {
-        super(Pattern.class);
+  /**
+   * Creates a new CaseInsensitivePatternDeserializer which deserializes string values to Pattern
+   * objects with the case insensitive flag set.
+   */
+  public CaseInsensitivePatternDeserializer() {
+    super(Pattern.class);
+  }
+
+  @Override
+  public LogicalType logicalType() {
+    return LogicalType.Textual;
+  }
+
+  @Override
+  public boolean isCachable() {
+    return true;
+  }
+
+  @Override
+  public Pattern deserialize(JsonParser parser, DeserializationContext context)
+      throws IOException, JsonProcessingException {
+
+    if (!parser.hasToken(JsonToken.VALUE_STRING)) {
+      throw new JsonParseException(parser,
+          "Regular expressions may only be represented as strings.");
     }
 
-    @Override
-    public LogicalType logicalType() {
-        return LogicalType.Textual;
+    try {
+      return Pattern.compile(parser.getText(), Pattern.CASE_INSENSITIVE);
+    } catch (PatternSyntaxException e) {
+      throw new JsonParseException(parser, "Invalid regular expression.", e);
     }
 
-    @Override
-    public boolean isCachable() {
-        return true;
-    }
-
-    @Override
-    public Pattern deserialize(JsonParser parser, DeserializationContext context)
-            throws IOException, JsonProcessingException {
-
-        if (!parser.hasToken(JsonToken.VALUE_STRING))
-            throw new JsonParseException(parser, "Regular expressions may only be represented as strings.");
-
-        try {
-            return Pattern.compile(parser.getText(), Pattern.CASE_INSENSITIVE);
-        }
-        catch (PatternSyntaxException e) {
-            throw new JsonParseException(parser, "Invalid regular expression.", e);
-        }
-
-    }
+  }
 
 }

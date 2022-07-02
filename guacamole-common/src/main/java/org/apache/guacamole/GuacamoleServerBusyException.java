@@ -23,44 +23,41 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 
 
 /**
- * An exception which is thrown when the server is too busy to service the
- * request.
+ * An exception which is thrown when the server is too busy to service the request.
  */
 public class GuacamoleServerBusyException extends GuacamoleServerException {
 
-    /**
-     * Creates a new GuacamoleServerBusyException with the given message and cause.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleServerBusyException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Creates a new GuacamoleServerBusyException with the given message and cause.
+   *
+   * @param message A human readable description of the exception that occurred.
+   * @param cause   The cause of this exception.
+   */
+  public GuacamoleServerBusyException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * Creates a new GuacamoleServerBusyException with the given message.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     */
-    public GuacamoleServerBusyException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new GuacamoleServerBusyException with the given message.
+   *
+   * @param message A human readable description of the exception that occurred.
+   */
+  public GuacamoleServerBusyException(String message) {
+    super(message);
+  }
 
-    /**
-     * Creates a new GuacamoleServerBusyException with the given cause.
-     *
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleServerBusyException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Creates a new GuacamoleServerBusyException with the given cause.
+   *
+   * @param cause The cause of this exception.
+   */
+  public GuacamoleServerBusyException(Throwable cause) {
+    super(cause);
+  }
 
-    @Override
-    public GuacamoleStatus getStatus() {
-        return GuacamoleStatus.SERVER_BUSY;
-    }
+  @Override
+  public GuacamoleStatus getStatus() {
+    return GuacamoleStatus.SERVER_BUSY;
+  }
 
 }

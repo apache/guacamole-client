@@ -19,33 +19,33 @@
 
 .login-ui .sso-providers {
 
-    padding: 0.25em 0.5em;
-    position: absolute;
-    bottom: 0;
-    left: 0;
+  padding: 0.25em 0.5em;
+  position: absolute;
+  bottom: 0;
+  left: 0;
 
-    display: none;
+  display: none;
 
 }
 
 .login-ui .sso-providers:last-child {
-    display: block;
+  display: block;
 }
 
 .sso-providers ul {
-    list-style: none;
+  list-style: none;
 }
 
 .sso-providers ul, .sso-providers li {
-    display: inline-block;
-    margin: 0;
-    padding: 0;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
 }
 
 .sso-providers li::before {
-    content: ' / ';
+  content: ' / ';
 }
 
 .sso-providers li:first-child::before {
-    display: none;
+  display: none;
 }

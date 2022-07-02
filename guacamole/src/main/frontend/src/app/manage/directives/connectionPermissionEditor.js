@@ -23,66 +23,67 @@
  * removed within a separate pair of {@link PermissionSet} objects.
  */
 angular.module('manage').directive('connectionPermissionEditor', ['$injector',
-    function connectionPermissionEditor($injector) {
+  function connectionPermissionEditor($injector) {
 
     // Required types
-    var ConnectionGroup   = $injector.get('ConnectionGroup');
-    var GroupListItem     = $injector.get('GroupListItem');
-    var PermissionSet     = $injector.get('PermissionSet');
+    var ConnectionGroup = $injector.get('ConnectionGroup');
+    var GroupListItem = $injector.get('GroupListItem');
+    var PermissionSet = $injector.get('PermissionSet');
 
     // Required services
     var connectionGroupService = $injector.get('connectionGroupService');
-    var dataSourceService      = $injector.get('dataSourceService');
-    var requestService         = $injector.get('requestService');
+    var dataSourceService = $injector.get('dataSourceService');
+    var requestService = $injector.get('requestService');
 
     var directive = {
 
-        // Element only
-        restrict: 'E',
-        replace: true,
+      // Element only
+      restrict: 'E',
+      replace: true,
 
-        scope: {
+      scope: {
 
-            /**
-             * The unique identifier of the data source associated with the
-             * permissions being manipulated.
-             *
-             * @type String
-             */
-            dataSource : '=',
+        /**
+         * The unique identifier of the data source associated with the
+         * permissions being manipulated.
+         *
+         * @type String
+         */
+        dataSource: '=',
 
-            /**
-             * The current state of the permissions being manipulated. This
-             * {@link PemissionFlagSet} will be modified as changes are made
-             * through this permission editor.
-             *
-             * @type PermissionFlagSet
-             */
-            permissionFlags : '=',
+        /**
+         * The current state of the permissions being manipulated. This
+         * {@link PemissionFlagSet} will be modified as changes are made
+         * through this permission editor.
+         *
+         * @type PermissionFlagSet
+         */
+        permissionFlags: '=',
 
-            /**
-             * The set of permissions that have been added, relative to the
-             * initial state of the permissions being manipulated.
-             *
-             * @type PermissionSet
-             */
-            permissionsAdded : '=',
+        /**
+         * The set of permissions that have been added, relative to the
+         * initial state of the permissions being manipulated.
+         *
+         * @type PermissionSet
+         */
+        permissionsAdded: '=',
 
-            /**
-             * The set of permissions that have been removed, relative to the
-             * initial state of the permissions being manipulated.
-             *
-             * @type PermissionSet
-             */
-            permissionsRemoved : '='
+        /**
+         * The set of permissions that have been removed, relative to the
+         * initial state of the permissions being manipulated.
+         *
+         * @type PermissionSet
+         */
+        permissionsRemoved: '='
 
-        },
+      },
 
-        templateUrl: 'app/manage/templates/connectionPermissionEditor.html'
+      templateUrl: 'app/manage/templates/connectionPermissionEditor.html'
 
     };
 
-    directive.controller = ['$scope', function connectionPermissionEditorController($scope) {
+    directive.controller = ['$scope',
+      function connectionPermissionEditorController($scope) {
 
         /**
          * A map of data source identifiers to all root connection groups
@@ -134,8 +135,8 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * @type String[]
          */
         $scope.tabs = [
-            CURRENT_CONNECTIONS,
-            ALL_CONNECTIONS
+          CURRENT_CONNECTIONS,
+          ALL_CONNECTIONS
         ];
 
         /**
@@ -151,8 +152,8 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * @type String[]
          */
         $scope.filteredConnectionProperties = [
-            'name',
-            'protocol'
+          'name',
+          'protocol'
         ];
 
         /**
@@ -161,7 +162,7 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * @type String[]
          */
         $scope.filteredConnectionGroupProperties = [
-            'name'
+          'name'
         ];
 
         /**
@@ -174,7 +175,8 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          *     root connection groups within those data sources.
          */
         $scope.getRootGroups = function getRootGroups() {
-            return $scope.currentTab === CURRENT_CONNECTIONS ? readableRootGroups : allRootGroups;
+          return $scope.currentTab === CURRENT_CONNECTIONS ? readableRootGroups
+              : allRootGroups;
         };
 
         /**
@@ -196,20 +198,20 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          */
         var isReadable = function isReadable(item, flags) {
 
-            switch (item.type) {
+          switch (item.type) {
 
-                case GroupListItem.Type.CONNECTION:
-                    return flags.connectionPermissions.READ[item.identifier];
+            case GroupListItem.Type.CONNECTION:
+              return flags.connectionPermissions.READ[item.identifier];
 
-                case GroupListItem.Type.CONNECTION_GROUP:
-                    return flags.connectionGroupPermissions.READ[item.identifier];
+            case GroupListItem.Type.CONNECTION_GROUP:
+              return flags.connectionGroupPermissions.READ[item.identifier];
 
-                case GroupListItem.Type.SHARING_PROFILE:
-                    return flags.sharingProfilePermissions.READ[item.identifier];
+            case GroupListItem.Type.SHARING_PROFILE:
+              return flags.sharingProfilePermissions.READ[item.identifier];
 
-            }
+          }
 
-            return false;
+          return false;
 
         };
 
@@ -233,20 +235,21 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          */
         var expandReadable = function expandReadable(item, flags) {
 
-            // If the current item is expandable and has defined children,
-            // determine whether it should be expanded
-            if (item.expandable && item.children) {
-                angular.forEach(item.children, function expandReadableChild(child) {
+          // If the current item is expandable and has defined children,
+          // determine whether it should be expanded
+          if (item.expandable && item.children) {
+            angular.forEach(item.children, function expandReadableChild(child) {
 
-                    // The parent should be expanded by default if the child is
-                    // expanded by default OR the permission set contains READ
-                    // permission on the child
-                    item.expanded |= expandReadable(child, flags) || isReadable(child, flags);
+              // The parent should be expanded by default if the child is
+              // expanded by default OR the permission set contains READ
+              // permission on the child
+              item.expanded |= expandReadable(child, flags) || isReadable(child,
+                  flags);
 
-                });
-            }
+            });
+          }
 
-            return item.expanded;
+          return item.expanded;
 
         };
 
@@ -274,36 +277,38 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          */
         var copyReadable = function copyReadable(item, flags) {
 
-            // Produce initial shallow copy of given item
-            item = new GroupListItem(item);
+          // Produce initial shallow copy of given item
+          item = new GroupListItem(item);
 
-            // Replace children array with an array containing only readable
-            // children (or children with at least one readable descendant),
-            // flagging the current item for copying if any such children exist
-            if (item.children) {
+          // Replace children array with an array containing only readable
+          // children (or children with at least one readable descendant),
+          // flagging the current item for copying if any such children exist
+          if (item.children) {
 
-                var children = [];
-                angular.forEach(item.children, function copyReadableChildren(child) {
+            var children = [];
+            angular.forEach(item.children,
+                function copyReadableChildren(child) {
 
-                    // Reduce child tree to only explicitly readable items and
-                    // their parents
-                    child = copyReadable(child, flags);
+                  // Reduce child tree to only explicitly readable items and
+                  // their parents
+                  child = copyReadable(child, flags);
 
-                    // Include child only if they are explicitly readable, they
-                    // have explicitly readable descendants, or their parent is
-                    // readable (and thus all children are relevant)
-                    if ((child.children && child.children.length)
-                            || isReadable(item, flags)
-                            || isReadable(child, flags))
-                        children.push(child);
+                  // Include child only if they are explicitly readable, they
+                  // have explicitly readable descendants, or their parent is
+                  // readable (and thus all children are relevant)
+                  if ((child.children && child.children.length)
+                      || isReadable(item, flags)
+                      || isReadable(child, flags)) {
+                    children.push(child);
+                  }
 
                 });
 
-                item.children = children;
+            item.children = children;
 
-            }
+          }
 
-            return item;
+          return item;
 
         };
 
@@ -316,37 +321,43 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
         )
         .then(function connectionGroupReceived(rootGroups) {
 
-            // Update default expanded state and the all / readable-only views
-            // when associated permissions change
-            $scope.$watchGroup(['permissionFlags'], function updateDefaultExpandedStates() {
+          // Update default expanded state and the all / readable-only views
+          // when associated permissions change
+          $scope.$watchGroup(['permissionFlags'],
+              function updateDefaultExpandedStates() {
 
-                if (!$scope.permissionFlags)
-                    return;
+                if (!$scope.permissionFlags) {
+                  return;
+                }
 
                 allRootGroups = {};
                 readableRootGroups = {};
 
-                angular.forEach(rootGroups, function addGroupListItem(rootGroup, dataSource) {
+                angular.forEach(rootGroups,
+                    function addGroupListItem(rootGroup, dataSource) {
 
-                    // Convert all received ConnectionGroup objects into GroupListItems
-                    var item = GroupListItem.fromConnectionGroup(dataSource, rootGroup);
-                    allRootGroups[dataSource] = item;
+                      // Convert all received ConnectionGroup objects into GroupListItems
+                      var item = GroupListItem.fromConnectionGroup(dataSource,
+                          rootGroup);
+                      allRootGroups[dataSource] = item;
 
-                    // Automatically expand all objects with any descendants for
-                    // which the permission set contains READ permission
-                    expandReadable(item, $scope.permissionFlags);
+                      // Automatically expand all objects with any descendants for
+                      // which the permission set contains READ permission
+                      expandReadable(item, $scope.permissionFlags);
 
-                    // Create a duplicate view which contains only readable
-                    // items
-                    readableRootGroups[dataSource] = copyReadable(item, $scope.permissionFlags);
+                      // Create a duplicate view which contains only readable
+                      // items
+                      readableRootGroups[dataSource] = copyReadable(item,
+                          $scope.permissionFlags);
 
-                });
+                    });
 
                 // Display only readable connections by default if at least one
                 // readable connection exists
-                $scope.currentTab = !!readableRootGroups[$scope.dataSource].children.length ? CURRENT_CONNECTIONS : ALL_CONNECTIONS;
+                $scope.currentTab = !!readableRootGroups[$scope.dataSource].children.length
+                    ? CURRENT_CONNECTIONS : ALL_CONNECTIONS;
 
-            });
+              });
 
         }, requestService.DIE);
 
@@ -359,13 +370,16 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          */
         var addConnectionPermission = function addConnectionPermission(identifier) {
 
-            // If permission was previously removed, simply un-remove it
-            if (PermissionSet.hasConnectionPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeConnectionPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
-
-            // Otherwise, explicitly add the permission
-            else
-                PermissionSet.addConnectionPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+          // If permission was previously removed, simply un-remove it
+          if (PermissionSet.hasConnectionPermission($scope.permissionsRemoved,
+              PermissionSet.ObjectPermissionType.READ, identifier)) {
+            PermissionSet.removeConnectionPermission($scope.permissionsRemoved,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }// Otherwise, explicitly add the permission
+          else {
+            PermissionSet.addConnectionPermission($scope.permissionsAdded,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }
 
         };
 
@@ -378,13 +392,16 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          */
         var removeConnectionPermission = function removeConnectionPermission(identifier) {
 
-            // If permission was previously added, simply un-add it
-            if (PermissionSet.hasConnectionPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeConnectionPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
-
-            // Otherwise, explicitly remove the permission
-            else
-                PermissionSet.addConnectionPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+          // If permission was previously added, simply un-add it
+          if (PermissionSet.hasConnectionPermission($scope.permissionsAdded,
+              PermissionSet.ObjectPermissionType.READ, identifier)) {
+            PermissionSet.removeConnectionPermission($scope.permissionsAdded,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }// Otherwise, explicitly remove the permission
+          else {
+            PermissionSet.addConnectionPermission($scope.permissionsRemoved,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }
 
         };
 
@@ -398,13 +415,18 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          */
         var addConnectionGroupPermission = function addConnectionGroupPermission(identifier) {
 
-            // If permission was previously removed, simply un-remove it
-            if (PermissionSet.hasConnectionGroupPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeConnectionGroupPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
-
-            // Otherwise, explicitly add the permission
-            else
-                PermissionSet.addConnectionGroupPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+          // If permission was previously removed, simply un-remove it
+          if (PermissionSet.hasConnectionGroupPermission(
+              $scope.permissionsRemoved,
+              PermissionSet.ObjectPermissionType.READ, identifier)) {
+            PermissionSet.removeConnectionGroupPermission(
+                $scope.permissionsRemoved,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }// Otherwise, explicitly add the permission
+          else {
+            PermissionSet.addConnectionGroupPermission($scope.permissionsAdded,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }
 
         };
 
@@ -418,13 +440,19 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          */
         var removeConnectionGroupPermission = function removeConnectionGroupPermission(identifier) {
 
-            // If permission was previously added, simply un-add it
-            if (PermissionSet.hasConnectionGroupPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeConnectionGroupPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
-
-            // Otherwise, explicitly remove the permission
-            else
-                PermissionSet.addConnectionGroupPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+          // If permission was previously added, simply un-add it
+          if (PermissionSet.hasConnectionGroupPermission(
+              $scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ,
+              identifier)) {
+            PermissionSet.removeConnectionGroupPermission(
+                $scope.permissionsAdded,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }// Otherwise, explicitly remove the permission
+          else {
+            PermissionSet.addConnectionGroupPermission(
+                $scope.permissionsRemoved,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }
 
         };
 
@@ -437,13 +465,18 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          */
         var addSharingProfilePermission = function addSharingProfilePermission(identifier) {
 
-            // If permission was previously removed, simply un-remove it
-            if (PermissionSet.hasSharingProfilePermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeSharingProfilePermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
-
-            // Otherwise, explicitly add the permission
-            else
-                PermissionSet.addSharingProfilePermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+          // If permission was previously removed, simply un-remove it
+          if (PermissionSet.hasSharingProfilePermission(
+              $scope.permissionsRemoved,
+              PermissionSet.ObjectPermissionType.READ, identifier)) {
+            PermissionSet.removeSharingProfilePermission(
+                $scope.permissionsRemoved,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }// Otherwise, explicitly add the permission
+          else {
+            PermissionSet.addSharingProfilePermission($scope.permissionsAdded,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }
 
         };
 
@@ -457,101 +490,108 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          */
         var removeSharingProfilePermission = function removeSharingProfilePermission(identifier) {
 
-            // If permission was previously added, simply un-add it
-            if (PermissionSet.hasSharingProfilePermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeSharingProfilePermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
-
-            // Otherwise, explicitly remove the permission
-            else
-                PermissionSet.addSharingProfilePermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+          // If permission was previously added, simply un-add it
+          if (PermissionSet.hasSharingProfilePermission($scope.permissionsAdded,
+              PermissionSet.ObjectPermissionType.READ, identifier)) {
+            PermissionSet.removeSharingProfilePermission(
+                $scope.permissionsAdded,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }// Otherwise, explicitly remove the permission
+          else {
+            PermissionSet.addSharingProfilePermission($scope.permissionsRemoved,
+                PermissionSet.ObjectPermissionType.READ, identifier);
+          }
 
         };
 
         // Expose permission query and modification functions to group list template
         $scope.groupListContext = {
 
-            /**
-             * Returns the PermissionFlagSet that contains the current state of
-             * granted permissions.
-             *
-             * @returns {PermissionFlagSet}
-             *     The PermissionFlagSet describing the current state of granted
-             *     permissions for the permission set being edited.
-             */
-            getPermissionFlags : function getPermissionFlags() {
-                return $scope.permissionFlags;
-            },
+          /**
+           * Returns the PermissionFlagSet that contains the current state of
+           * granted permissions.
+           *
+           * @returns {PermissionFlagSet}
+           *     The PermissionFlagSet describing the current state of granted
+           *     permissions for the permission set being edited.
+           */
+          getPermissionFlags: function getPermissionFlags() {
+            return $scope.permissionFlags;
+          },
 
-            /**
-             * Notifies the controller that a change has been made to the given
-             * connection permission for the permission set being edited. This
-             * only applies to READ permissions.
-             *
-             * @param {String} identifier
-             *     The identifier of the connection affected by the changed
-             *     permission.
-             */
-            connectionPermissionChanged : function connectionPermissionChanged(identifier) {
+          /**
+           * Notifies the controller that a change has been made to the given
+           * connection permission for the permission set being edited. This
+           * only applies to READ permissions.
+           *
+           * @param {String} identifier
+           *     The identifier of the connection affected by the changed
+           *     permission.
+           */
+          connectionPermissionChanged: function connectionPermissionChanged(identifier) {
 
-                // Determine current permission setting
-                var granted = $scope.permissionFlags.connectionPermissions.READ[identifier];
+            // Determine current permission setting
+            var granted = $scope.permissionFlags.connectionPermissions.READ[identifier];
 
-                // Add/remove permission depending on flag state
-                if (granted)
-                    addConnectionPermission(identifier);
-                else
-                    removeConnectionPermission(identifier);
-
-            },
-
-            /**
-             * Notifies the controller that a change has been made to the given
-             * connection group permission for the permission set being edited.
-             * This only applies to READ permissions.
-             *
-             * @param {String} identifier
-             *     The identifier of the connection group affected by the
-             *     changed permission.
-             */
-            connectionGroupPermissionChanged : function connectionGroupPermissionChanged(identifier) {
-
-                // Determine current permission setting
-                var granted = $scope.permissionFlags.connectionGroupPermissions.READ[identifier];
-
-                // Add/remove permission depending on flag state
-                if (granted)
-                    addConnectionGroupPermission(identifier);
-                else
-                    removeConnectionGroupPermission(identifier);
-
-            },
-
-            /**
-             * Notifies the controller that a change has been made to the given
-             * sharing profile permission for the permission set being edited.
-             * This only applies to READ permissions.
-             *
-             * @param {String} identifier
-             *     The identifier of the sharing profile affected by the changed
-             *     permission.
-             */
-            sharingProfilePermissionChanged : function sharingProfilePermissionChanged(identifier) {
-
-                // Determine current permission setting
-                var granted = $scope.permissionFlags.sharingProfilePermissions.READ[identifier];
-
-                // Add/remove permission depending on flag state
-                if (granted)
-                    addSharingProfilePermission(identifier);
-                else
-                    removeSharingProfilePermission(identifier);
-
+            // Add/remove permission depending on flag state
+            if (granted) {
+              addConnectionPermission(identifier);
+            } else {
+              removeConnectionPermission(identifier);
             }
+
+          },
+
+          /**
+           * Notifies the controller that a change has been made to the given
+           * connection group permission for the permission set being edited.
+           * This only applies to READ permissions.
+           *
+           * @param {String} identifier
+           *     The identifier of the connection group affected by the
+           *     changed permission.
+           */
+          connectionGroupPermissionChanged: function connectionGroupPermissionChanged(identifier) {
+
+            // Determine current permission setting
+            var granted = $scope.permissionFlags.connectionGroupPermissions.READ[identifier];
+
+            // Add/remove permission depending on flag state
+            if (granted) {
+              addConnectionGroupPermission(identifier);
+            } else {
+              removeConnectionGroupPermission(identifier);
+            }
+
+          },
+
+          /**
+           * Notifies the controller that a change has been made to the given
+           * sharing profile permission for the permission set being edited.
+           * This only applies to READ permissions.
+           *
+           * @param {String} identifier
+           *     The identifier of the sharing profile affected by the changed
+           *     permission.
+           */
+          sharingProfilePermissionChanged: function sharingProfilePermissionChanged(identifier) {
+
+            // Determine current permission setting
+            var granted = $scope.permissionFlags.sharingProfilePermissions.READ[identifier];
+
+            // Add/remove permission depending on flag state
+            if (granted) {
+              addSharingProfilePermission(identifier);
+            } else {
+              removeSharingProfilePermission(identifier);
+            }
+
+          }
 
         };
 
-    }];
+      }];
 
     return directive;
 
-}]);
+  }]);

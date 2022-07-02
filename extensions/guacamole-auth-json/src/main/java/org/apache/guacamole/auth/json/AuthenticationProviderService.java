@@ -35,82 +35,71 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsExce
  */
 public class AuthenticationProviderService {
 
-    /**
-     * Service for deriving Guacamole extension API data from UserData objects.
-     */
-    @Inject
-    private UserDataService userDataService;
+  /**
+   * Service for deriving Guacamole extension API data from UserData objects.
+   */
+  @Inject
+  private UserDataService userDataService;
 
-    /**
-     * Provider for AuthenticatedUser objects.
-     */
-    @Inject
-    private Provider<AuthenticatedUser> authenticatedUserProvider;
+  /**
+   * Provider for AuthenticatedUser objects.
+   */
+  @Inject
+  private Provider<AuthenticatedUser> authenticatedUserProvider;
 
-    /**
-     * Provider for UserContext objects.
-     */
-    @Inject
-    private Provider<UserContext> userContextProvider;
+  /**
+   * Provider for UserContext objects.
+   */
+  @Inject
+  private Provider<UserContext> userContextProvider;
 
-    /**
-     * Returns an AuthenticatedUser representing the user authenticated by the
-     * given credentials.
-     *
-     * @param credentials
-     *     The credentials to use for authentication.
-     *
-     * @return
-     *     An AuthenticatedUser representing the user authenticated by the
-     *     given credentials.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while authenticating the user, or if access is
-     *     denied.
-     */
-    public AuthenticatedUser authenticateUser(Credentials credentials)
-            throws GuacamoleException {
+  /**
+   * Returns an AuthenticatedUser representing the user authenticated by the given credentials.
+   *
+   * @param credentials The credentials to use for authentication.
+   * @return An AuthenticatedUser representing the user authenticated by the given credentials.
+   * @throws GuacamoleException If an error occurs while authenticating the user, or if access is
+   *                            denied.
+   */
+  public AuthenticatedUser authenticateUser(Credentials credentials)
+      throws GuacamoleException {
 
-        // Pull UserData from credentials, if possible
-        UserData userData = userDataService.fromCredentials(credentials);
-        if (userData == null)
-            throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.EMPTY);
-
-        // Produce AuthenticatedUser associated with derived UserData
-        AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-        authenticatedUser.init(credentials, userData);
-        return authenticatedUser;
-
+    // Pull UserData from credentials, if possible
+    UserData userData = userDataService.fromCredentials(credentials);
+    if (userData == null) {
+      throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.EMPTY);
     }
 
-    /**
-     * Returns a UserContext object initialized with data accessible to the
-     * given AuthenticatedUser.
-     *
-     * @param authenticatedUser
-     *     The AuthenticatedUser to retrieve data for.
-     *
-     * @return
-     *     A UserContext object initialized with data accessible to the given
-     *     AuthenticatedUser.
-     *
-     * @throws GuacamoleException
-     *     If the UserContext cannot be created due to an error.
-     */
-    public UserContext getUserContext(org.apache.guacamole.net.auth.AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
+    // Produce AuthenticatedUser associated with derived UserData
+    AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+    authenticatedUser.init(credentials, userData);
+    return authenticatedUser;
 
-        // The JSONAuthenticationProvider only provides data for users it has
-        // authenticated itself
-        if (!(authenticatedUser instanceof AuthenticatedUser))
-            return null;
+  }
 
-        // Return UserContext containing data from the authenticated user's
-        // associated UserData object
-        UserContext userContext = userContextProvider.get();
-        userContext.init(((AuthenticatedUser) authenticatedUser).getUserData());
-        return userContext;
+  /**
+   * Returns a UserContext object initialized with data accessible to the given AuthenticatedUser.
+   *
+   * @param authenticatedUser The AuthenticatedUser to retrieve data for.
+   * @return A UserContext object initialized with data accessible to the given AuthenticatedUser.
+   * @throws GuacamoleException If the UserContext cannot be created due to an error.
+   */
+  public UserContext getUserContext(
+      org.apache.guacamole.net.auth.AuthenticatedUser authenticatedUser)
+      throws GuacamoleException {
 
+    // The JSONAuthenticationProvider only provides data for users it has
+    // authenticated itself
+    if (!(authenticatedUser instanceof AuthenticatedUser)) {
+      return null;
     }
+
+    // Return UserContext containing data from the authenticated user's
+    // associated UserData object
+    UserContext userContext = userContextProvider.get();
+    userContext.init(((AuthenticatedUser) authenticatedUser).getUserData());
+    return userContext;
+
+  }
 
 }

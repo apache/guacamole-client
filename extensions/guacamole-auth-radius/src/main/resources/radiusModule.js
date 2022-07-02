@@ -18,11 +18,11 @@
  */
 
 /**
- * Module which provides handling for RADIUS challenge-response 
+ * Module which provides handling for RADIUS challenge-response
  * authentication.
  */
 angular.module('guacRadius', [
-    'form'
+  'form'
 ]);
 
 // Ensure the guacRadius module is loaded along with the rest of the app

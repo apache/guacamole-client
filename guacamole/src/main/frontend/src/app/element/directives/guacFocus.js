@@ -20,44 +20,46 @@
 /**
  * A directive which allows elements to be manually focused / blurred.
  */
-angular.module('element').directive('guacFocus', ['$injector', function guacFocus($injector) {
+angular.module('element').directive('guacFocus',
+    ['$injector', function guacFocus($injector) {
 
-    // Required services
-    var $parse   = $injector.get('$parse');
-    var $timeout = $injector.get('$timeout');
+      // Required services
+      var $parse = $injector.get('$parse');
+      var $timeout = $injector.get('$timeout');
 
-    return {
+      return {
         restrict: 'A',
 
         link: function linkGuacFocus($scope, $element, $attrs) {
 
-            /**
-             * Whether the element associated with this directive should be
-             * focussed.
-             *
-             * @type Boolean
-             */
-            var guacFocus = $parse($attrs.guacFocus);
+          /**
+           * Whether the element associated with this directive should be
+           * focussed.
+           *
+           * @type Boolean
+           */
+          var guacFocus = $parse($attrs.guacFocus);
 
-            /**
-             * The element which will be focused / blurred.
-             *
-             * @type Element
-             */
-            var element = $element[0];
+          /**
+           * The element which will be focused / blurred.
+           *
+           * @type Element
+           */
+          var element = $element[0];
 
-            // Set/unset focus depending on value of guacFocus
-            $scope.$watch(guacFocus, function updateFocus(value) {
-                $timeout(function updateFocusAfterRender() {
-                    if (value)
-                        element.focus();
-                    else
-                        element.blur();
-                });
+          // Set/unset focus depending on value of guacFocus
+          $scope.$watch(guacFocus, function updateFocus(value) {
+            $timeout(function updateFocusAfterRender() {
+              if (value) {
+                element.focus();
+              } else {
+                element.blur();
+              }
             });
+          });
 
         } // end guacFocus link function
 
-    };
+      };
 
-}]);
+    }]);

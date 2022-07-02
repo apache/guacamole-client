@@ -27,24 +27,23 @@ import org.apache.guacamole.auth.jdbc.JDBCInjectorProvider;
 import org.apache.guacamole.auth.postgresql.conf.PostgreSQLEnvironment;
 
 /**
- * JDBCInjectorProvider implementation which configures Guice injections for
- * connecting to a PostgreSQL database based on PostgreSQL-specific options
- * provided via guacamole.properties.
+ * JDBCInjectorProvider implementation which configures Guice injections for connecting to a
+ * PostgreSQL database based on PostgreSQL-specific options provided via guacamole.properties.
  */
 public class PostgreSQLInjectorProvider extends JDBCInjectorProvider {
 
-    @Override
-    protected Injector create() throws GuacamoleException {
+  @Override
+  protected Injector create() throws GuacamoleException {
 
-        // Get local environment
-        PostgreSQLEnvironment environment = new PostgreSQLEnvironment();
+    // Get local environment
+    PostgreSQLEnvironment environment = new PostgreSQLEnvironment();
 
-        // Set up Guice injector
-        return Guice.createInjector(
-            new JDBCAuthenticationProviderModule(environment),
-            new PostgreSQLAuthenticationProviderModule(environment)
-        );
+    // Set up Guice injector
+    return Guice.createInjector(
+        new JDBCAuthenticationProviderModule(environment),
+        new PostgreSQLAuthenticationProviderModule(environment)
+    );
 
-    }
+  }
 
 }

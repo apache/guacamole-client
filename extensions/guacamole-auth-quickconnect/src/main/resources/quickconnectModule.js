@@ -21,7 +21,7 @@
  * Module which provides QuickConnect capability
  */
 angular.module('guacQuickConnect', [
-    'form'
+  'form'
 ]);
 
 // Ensure the guacQuickConnect module is loaded along with the rest of the app

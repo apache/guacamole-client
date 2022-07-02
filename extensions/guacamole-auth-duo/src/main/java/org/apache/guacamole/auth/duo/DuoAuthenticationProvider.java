@@ -27,54 +27,51 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * AuthenticationProvider implementation which uses Duo as an additional
- * authentication factor for users which have already been authenticated by
- * some other AuthenticationProvider.
+ * AuthenticationProvider implementation which uses Duo as an additional authentication factor for
+ * users which have already been authenticated by some other AuthenticationProvider.
  */
 public class DuoAuthenticationProvider extends AbstractAuthenticationProvider {
 
-    /**
-     * Injector which will manage the object graph of this authentication
-     * provider.
-     */
-    private final Injector injector;
+  /**
+   * Injector which will manage the object graph of this authentication provider.
+   */
+  private final Injector injector;
 
-    /**
-     * Creates a new DuoAuthenticationProvider that verifies users
-     * using the Duo authentication service
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public DuoAuthenticationProvider() throws GuacamoleException {
+  /**
+   * Creates a new DuoAuthenticationProvider that verifies users using the Duo authentication
+   * service
+   *
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public DuoAuthenticationProvider() throws GuacamoleException {
 
-        // Set up Guice injector.
-        injector = Guice.createInjector(
-            new DuoAuthenticationProviderModule(this)
-        );
+    // Set up Guice injector.
+    injector = Guice.createInjector(
+        new DuoAuthenticationProviderModule(this)
+    );
 
-    }
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "duo";
-    }
+  @Override
+  public String getIdentifier() {
+    return "duo";
+  }
 
-    @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
+  @Override
+  public UserContext getUserContext(AuthenticatedUser authenticatedUser)
+      throws GuacamoleException {
 
-        UserVerificationService verificationService =
-                injector.getInstance(UserVerificationService.class);
+    UserVerificationService verificationService =
+        injector.getInstance(UserVerificationService.class);
 
-        // Verify user against Duo service
-        verificationService.verifyAuthenticatedUser(authenticatedUser);
+    // Verify user against Duo service
+    verificationService.verifyAuthenticatedUser(authenticatedUser);
 
-        // User has been verified, and authentication should be allowed to
-        // continue
-        return null;
+    // User has been verified, and authentication should be allowed to
+    // continue
+    return null;
 
-    }
+  }
 
 }

@@ -31,53 +31,52 @@ import org.apache.guacamole.net.auth.User;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
- * Implementation of the User Directory which is driven by an underlying,
- * arbitrary database.
+ * Implementation of the User Directory which is driven by an underlying, arbitrary database.
  */
 public class UserDirectory extends RestrictedObject
     implements Directory<User> {
 
-    /**
-     * Service for managing user objects.
-     */
-    @Inject
-    private UserService userService;
+  /**
+   * Service for managing user objects.
+   */
+  @Inject
+  private UserService userService;
 
-    @Override
-    public User get(String identifier) throws GuacamoleException {
-        return userService.retrieveObject(getCurrentUser(), identifier);
-    }
+  @Override
+  public User get(String identifier) throws GuacamoleException {
+    return userService.retrieveObject(getCurrentUser(), identifier);
+  }
 
-    @Override
-    @Transactional
-    public Collection<User> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledUser> objects = userService.retrieveObjects(getCurrentUser(), identifiers);
-        return Collections.<User>unmodifiableCollection(objects);
-    }
+  @Override
+  @Transactional
+  public Collection<User> getAll(Collection<String> identifiers) throws GuacamoleException {
+    Collection<ModeledUser> objects = userService.retrieveObjects(getCurrentUser(), identifiers);
+    return Collections.<User>unmodifiableCollection(objects);
+  }
 
-    @Override
-    @Transactional
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return userService.getIdentifiers(getCurrentUser());
-    }
+  @Override
+  @Transactional
+  public Set<String> getIdentifiers() throws GuacamoleException {
+    return userService.getIdentifiers(getCurrentUser());
+  }
 
-    @Override
-    @Transactional
-    public void add(User object) throws GuacamoleException {
-        userService.createObject(getCurrentUser(), object);
-    }
+  @Override
+  @Transactional
+  public void add(User object) throws GuacamoleException {
+    userService.createObject(getCurrentUser(), object);
+  }
 
-    @Override
-    @Transactional
-    public void update(User object) throws GuacamoleException {
-        ModeledUser user = (ModeledUser) object;
-        userService.updateObject(getCurrentUser(), user);
-    }
+  @Override
+  @Transactional
+  public void update(User object) throws GuacamoleException {
+    ModeledUser user = (ModeledUser) object;
+    userService.updateObject(getCurrentUser(), user);
+  }
 
-    @Override
-    @Transactional
-    public void remove(String identifier) throws GuacamoleException {
-        userService.deleteObject(getCurrentUser(), identifier);
-    }
+  @Override
+  @Transactional
+  public void remove(String identifier) throws GuacamoleException {
+    userService.deleteObject(getCurrentUser(), identifier);
+  }
 
 }

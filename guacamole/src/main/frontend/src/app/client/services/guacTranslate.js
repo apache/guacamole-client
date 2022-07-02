@@ -22,61 +22,61 @@
  * convenient way to fall back to a default translation if the requested
  * translation is not available.
  */
- angular.module('client').factory('guacTranslate', ['$injector', function guacTranslate($injector) {
+angular.module('client').factory('guacTranslate',
+    ['$injector', function guacTranslate($injector) {
 
-    // Required services
-    const $q = $injector.get('$q');
-    const $translate = $injector.get('$translate');
+      // Required services
+      const $q = $injector.get('$q');
+      const $translate = $injector.get('$translate');
 
-    // Required types
-    const TranslationResult = $injector.get('TranslationResult');
+      // Required types
+      const TranslationResult = $injector.get('TranslationResult');
 
-    /**
-     * Returns a promise that will be resolved with a TranslationResult containg either the
-     * requested ID and message (if translated), or the default ID and message if translated,
-     * or the literal value of `defaultTranslationId` for both the ID and message if neither
-     * is translated.
-     *
-     * @param {String} translationId
-     *     The requested translation ID, which may or may not be translated.
-     *
-     * @param {Sting} defaultTranslationId
-     *     The translation ID that will be used if no translation is found for `translationId`.
-     *
-     * @returns {Promise.<TranslationResult>}
-     *     A promise which resolves with a TranslationResult containing the results from
-     *     the translation attempt.
-     */
-    var translateWithFallback = function translateWithFallback(translationId, defaultTranslationId) {
+      /**
+       * Returns a promise that will be resolved with a TranslationResult containg either the
+       * requested ID and message (if translated), or the default ID and message if translated,
+       * or the literal value of `defaultTranslationId` for both the ID and message if neither
+       * is translated.
+       *
+       * @param {String} translationId
+       *     The requested translation ID, which may or may not be translated.
+       *
+       * @param {Sting} defaultTranslationId
+       *     The translation ID that will be used if no translation is found for `translationId`.
+       *
+       * @returns {Promise.<TranslationResult>}
+       *     A promise which resolves with a TranslationResult containing the results from
+       *     the translation attempt.
+       */
+      var translateWithFallback = function translateWithFallback(translationId,
+          defaultTranslationId) {
         const deferredTranslation = $q.defer();
 
         // Attempt to translate the requested translation ID
         $translate(translationId).then(
-
             // If the requested translation is available, use that
             translation => deferredTranslation.resolve(new TranslationResult({
-                id: translationId, message: translation
+              id: translationId, message: translation
             })),
 
             // Otherwise, try the default translation ID
             () => $translate(defaultTranslationId).then(
-
                 // Default translation worked, so use that
                 defaultTranslation =>
                     deferredTranslation.resolve(new TranslationResult({
-                        id: defaultTranslationId, message: defaultTranslation
+                      id: defaultTranslationId, message: defaultTranslation
                     })),
 
                 // Neither translation is available; as a fallback, return default ID for both
                 () => deferredTranslation.resolve(new TranslationResult({
-                    id: defaultTranslationId, message: defaultTranslationId
+                  id: defaultTranslationId, message: defaultTranslationId
                 })),
             )
         );
 
         return deferredTranslation.promise;
-    };
+      };
 
-    return translateWithFallback;
+      return translateWithFallback;
 
-}]);
+    }]);

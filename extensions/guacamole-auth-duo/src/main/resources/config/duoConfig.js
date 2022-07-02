@@ -21,13 +21,13 @@
  * Config block which registers Duo-specific field types.
  */
 angular.module('guacDuo').config(['formServiceProvider',
-    function guacDuoConfig(formServiceProvider) {
+  function guacDuoConfig(formServiceProvider) {
 
     // Define field for the signed response from the Duo service
     formServiceProvider.registerFieldType('GUAC_DUO_SIGNED_RESPONSE', {
-        module      : 'guacDuo',
-        controller  : 'duoSignedResponseController',
-        templateUrl : 'app/ext/duo/templates/duoSignedResponseField.html'
+      module: 'guacDuo',
+      controller: 'duoSignedResponseController',
+      templateUrl: 'app/ext/duo/templates/duoSignedResponseField.html'
     });
 
-}]);
+  }]);

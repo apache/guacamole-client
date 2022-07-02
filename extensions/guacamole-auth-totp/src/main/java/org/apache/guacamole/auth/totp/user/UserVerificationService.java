@@ -49,256 +49,233 @@ import org.slf4j.LoggerFactory;
  */
 public class UserVerificationService {
 
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(UserVerificationService.class);
+  /**
+   * BaseEncoding instance which decoded/encodes base32.
+   */
+  private static final BaseEncoding BASE32 = BaseEncoding.base32();
+  /**
+   * Logger for this class.
+   */
+  private final Logger logger = LoggerFactory.getLogger(UserVerificationService.class);
+  /**
+   * Service for retrieving configuration information.
+   */
+  @Inject
+  private ConfigurationService confService;
 
-    /**
-     * BaseEncoding instance which decoded/encodes base32.
-     */
-    private static final BaseEncoding BASE32 = BaseEncoding.base32();
+  /**
+   * Service for tracking whether TOTP codes have been used.
+   */
+  @Inject
+  private CodeUsageTrackingService codeService;
 
-    /**
-     * Service for retrieving configuration information.
-     */
-    @Inject
-    private ConfigurationService confService;
+  /**
+   * Provider for AuthenticationCodeField instances.
+   */
+  @Inject
+  private Provider<AuthenticationCodeField> codeFieldProvider;
 
-    /**
-     * Service for tracking whether TOTP codes have been used.
-     */
-    @Inject
-    private CodeUsageTrackingService codeService;
+  /**
+   * Retrieves and decodes the base32-encoded TOTP key associated with user having the given
+   * UserContext. If no TOTP key is associated with the user, a random key is generated and
+   * associated with the user. If the extension storing the user does not support storage of the
+   * TOTP key, null is returned.
+   *
+   * @param context  The UserContext of the user whose TOTP key should be retrieved.
+   * @param username The username of the user associated with the given UserContext.
+   * @return The TOTP key associated with the user having the given UserContext, or null if the
+   * extension storing the user does not support storage of the TOTP key.
+   * @throws GuacamoleException If a new key is generated, but the extension storing the associated
+   *                            user fails while updating the user account.
+   */
+  private UserTOTPKey getKey(UserContext context,
+      String username) throws GuacamoleException {
 
-    /**
-     * Provider for AuthenticationCodeField instances.
-     */
-    @Inject
-    private Provider<AuthenticationCodeField> codeFieldProvider;
+    // Retrieve attributes from current user
+    User self = context.self();
+    Map<String, String> attributes = context.self().getAttributes();
 
-    /**
-     * Retrieves and decodes the base32-encoded TOTP key associated with user
-     * having the given UserContext. If no TOTP key is associated with the user,
-     * a random key is generated and associated with the user. If the extension
-     * storing the user does not support storage of the TOTP key, null is
-     * returned.
-     *
-     * @param context
-     *     The UserContext of the user whose TOTP key should be retrieved.
-     *
-     * @param username
-     *     The username of the user associated with the given UserContext.
-     *
-     * @return
-     *     The TOTP key associated with the user having the given UserContext,
-     *     or null if the extension storing the user does not support storage
-     *     of the TOTP key.
-     *
-     * @throws GuacamoleException
-     *     If a new key is generated, but the extension storing the associated
-     *     user fails while updating the user account.
-     */
-    private UserTOTPKey getKey(UserContext context,
-            String username) throws GuacamoleException {
+    // If no key is defined, attempt to generate a new key
+    String secret = attributes.get(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME);
+    if (secret == null || secret.isEmpty()) {
 
-        // Retrieve attributes from current user
-        User self = context.self();
-        Map<String, String> attributes = context.self().getAttributes();
+      // Generate random key for user
+      TOTPGenerator.Mode mode = confService.getMode();
+      UserTOTPKey generated = new UserTOTPKey(username, mode.getRecommendedKeyLength());
+      if (setKey(context, generated)) {
+        return generated;
+      }
 
-        // If no key is defined, attempt to generate a new key
-        String secret = attributes.get(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME);
-        if (secret == null || secret.isEmpty()) {
-
-            // Generate random key for user
-            TOTPGenerator.Mode mode = confService.getMode();
-            UserTOTPKey generated = new UserTOTPKey(username,mode.getRecommendedKeyLength());
-            if (setKey(context, generated))
-                return generated;
-
-            // Fail if key cannot be set
-            return null;
-
-        }
-
-        // Parse retrieved base32 key value
-        byte[] key;
-        try {
-            key = BASE32.decode(secret);
-        }
-
-        // If key is not valid base32, warn but otherwise pretend the key does
-        // not exist
-        catch (IllegalArgumentException e) {
-            logger.warn("TOTP key of user \"{}\" is not valid base32.", self.getIdentifier());
-            logger.debug("TOTP key is not valid base32.", e);
-            return null;
-        }
-
-        // Otherwise, parse value from attributes
-        boolean confirmed = "true".equals(attributes.get(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME));
-        return new UserTOTPKey(username, key, confirmed);
+      // Fail if key cannot be set
+      return null;
 
     }
 
-    /**
-     * Attempts to store the given TOTP key within the user account of the user
-     * having the given UserContext. As not all extensions will support storage
-     * of arbitrary attributes, this operation may fail.
-     *
-     * @param context
-     *     The UserContext associated with the user whose TOTP key is to be
-     *     stored.
-     *
-     * @param key
-     *     The TOTP key to store.
-     *
-     * @return
-     *     true if the TOTP key was successfully stored, false if the extension
-     *     handling storage does not support storage of the key.
-     *
-     * @throws GuacamoleException
-     *     If the extension handling storage fails internally while attempting
-     *     to update the user.
-     */
-    private boolean setKey(UserContext context, UserTOTPKey key)
-            throws GuacamoleException {
+    // Parse retrieved base32 key value
+    byte[] key;
+    try {
+      key = BASE32.decode(secret);
+    }
 
-        // Get mutable set of attributes
-        User self = context.self();
-        Map<String, String> attributes = new HashMap<>();
+    // If key is not valid base32, warn but otherwise pretend the key does
+    // not exist
+    catch (IllegalArgumentException e) {
+      logger.warn("TOTP key of user \"{}\" is not valid base32.", self.getIdentifier());
+      logger.debug("TOTP key is not valid base32.", e);
+      return null;
+    }
 
-        // Set/overwrite current TOTP key state
-        attributes.put(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME, BASE32.encode(key.getSecret()));
-        attributes.put(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, key.isConfirmed() ? "true" : "false");
-        self.setAttributes(attributes);
+    // Otherwise, parse value from attributes
+    boolean confirmed = "true".equals(attributes.get(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME));
+    return new UserTOTPKey(username, key, confirmed);
 
-        // Confirm that attributes have actually been set
-        Map<String, String> setAttributes = self.getAttributes();
-        if (!setAttributes.containsKey(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME)
-                || !setAttributes.containsKey(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME))
-            return false;
+  }
 
-        // Update user object
-        try {
-            context.getPrivileged().getUserDirectory().update(self);
-        }
-        catch (GuacamoleSecurityException e) {
-            logger.info("User \"{}\" cannot store their TOTP key as they "
-                    + "lack permission to update their own account and the "
-                    + "TOTP extension was unable to obtain privileged access. "
-                    + "TOTP will be disabled for this user.",
-                    self.getIdentifier());
-            logger.debug("Permission denied to set TOTP key of user "
-                    + "account.", e);
-            return false;
-        }
-        catch (GuacamoleUnsupportedException e) {
-            logger.debug("Extension storage for user is explicitly read-only. "
-                    + "Cannot update attributes to store TOTP key.", e);
-            return false;
-        }
+  /**
+   * Attempts to store the given TOTP key within the user account of the user having the given
+   * UserContext. As not all extensions will support storage of arbitrary attributes, this operation
+   * may fail.
+   *
+   * @param context The UserContext associated with the user whose TOTP key is to be stored.
+   * @param key     The TOTP key to store.
+   * @return true if the TOTP key was successfully stored, false if the extension handling storage
+   * does not support storage of the key.
+   * @throws GuacamoleException If the extension handling storage fails internally while attempting
+   *                            to update the user.
+   */
+  private boolean setKey(UserContext context, UserTOTPKey key)
+      throws GuacamoleException {
 
-        // TOTP key successfully stored/updated
-        return true;
+    // Get mutable set of attributes
+    User self = context.self();
+    Map<String, String> attributes = new HashMap<>();
+
+    // Set/overwrite current TOTP key state
+    attributes.put(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME, BASE32.encode(key.getSecret()));
+    attributes.put(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME,
+        key.isConfirmed() ? "true" : "false");
+    self.setAttributes(attributes);
+
+    // Confirm that attributes have actually been set
+    Map<String, String> setAttributes = self.getAttributes();
+    if (!setAttributes.containsKey(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME)
+        || !setAttributes.containsKey(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME)) {
+      return false;
+    }
+
+    // Update user object
+    try {
+      context.getPrivileged().getUserDirectory().update(self);
+    } catch (GuacamoleSecurityException e) {
+      logger.info("User \"{}\" cannot store their TOTP key as they "
+              + "lack permission to update their own account and the "
+              + "TOTP extension was unable to obtain privileged access. "
+              + "TOTP will be disabled for this user.",
+          self.getIdentifier());
+      logger.debug("Permission denied to set TOTP key of user "
+          + "account.", e);
+      return false;
+    } catch (GuacamoleUnsupportedException e) {
+      logger.debug("Extension storage for user is explicitly read-only. "
+          + "Cannot update attributes to store TOTP key.", e);
+      return false;
+    }
+
+    // TOTP key successfully stored/updated
+    return true;
+
+  }
+
+  /**
+   * Verifies the identity of the given user using TOTP. If a authentication code from the user's
+   * TOTP device has not already been provided, a code is requested in the form of additional
+   * expected credentials. Any provided code is cryptographically verified. If no code is present,
+   * or the received code is invalid, an exception is thrown.
+   *
+   * @param context           The UserContext provided for the user by another authentication
+   *                          extension.
+   * @param authenticatedUser The user whose identity should be verified using TOTP.
+   * @throws GuacamoleException If required TOTP-specific configuration options are missing or
+   *                            malformed, or if the user's identity cannot be verified.
+   */
+  public void verifyIdentity(UserContext context,
+      AuthenticatedUser authenticatedUser) throws GuacamoleException {
+
+    // Ignore anonymous users
+    String username = authenticatedUser.getIdentifier();
+    if (username.equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER)) {
+      return;
+    }
+
+    // Ignore users which do not have an associated key
+    UserTOTPKey key = getKey(context, username);
+    if (key == null) {
+      return;
+    }
+
+    // Pull the original HTTP request used to authenticate
+    Credentials credentials = authenticatedUser.getCredentials();
+    HttpServletRequest request = credentials.getRequest();
+
+    // Retrieve TOTP from request
+    String code = request.getParameter(AuthenticationCodeField.PARAMETER_NAME);
+
+    // If no TOTP provided, request one
+    if (code == null) {
+
+      AuthenticationCodeField field = codeFieldProvider.get();
+
+      // If the user hasn't completed enrollment, request that they do
+      if (!key.isConfirmed()) {
+        field.exposeKey(key);
+        throw new TranslatableGuacamoleInsufficientCredentialsException(
+            "TOTP enrollment must be completed before "
+                + "authentication can continue",
+            "TOTP.INFO_ENROLL_REQUIRED", new CredentialsInfo(
+            Collections.<Field>singletonList(field)
+        ));
+      }
+
+      // Otherwise simply request the user's authentication code
+      throw new TranslatableGuacamoleInsufficientCredentialsException(
+          "A TOTP authentication code is required before login can "
+              + "continue", "TOTP.INFO_CODE_REQUIRED", new CredentialsInfo(
+          Collections.<Field>singletonList(field)
+      ));
 
     }
 
-    /**
-     * Verifies the identity of the given user using TOTP. If a authentication
-     * code from the user's TOTP device has not already been provided, a code is
-     * requested in the form of additional expected credentials. Any provided
-     * code is cryptographically verified. If no code is present, or the
-     * received code is invalid, an exception is thrown.
-     *
-     * @param context
-     *     The UserContext provided for the user by another authentication
-     *     extension.
-     *
-     * @param authenticatedUser
-     *     The user whose identity should be verified using TOTP.
-     *
-     * @throws GuacamoleException
-     *     If required TOTP-specific configuration options are missing or
-     *     malformed, or if the user's identity cannot be verified.
-     */
-    public void verifyIdentity(UserContext context,
-            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+    try {
 
-        // Ignore anonymous users
-        String username = authenticatedUser.getIdentifier();
-        if (username.equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
-            return;
+      // Get generator based on user's key and provided configuration
+      TOTPGenerator totp = new TOTPGenerator(key.getSecret(),
+          confService.getMode(), confService.getDigits(),
+          TOTPGenerator.DEFAULT_START_TIME, confService.getPeriod());
 
-        // Ignore users which do not have an associated key
-        UserTOTPKey key = getKey(context, username);
-        if (key == null)
-            return;
+      // Verify provided TOTP against value produced by generator
+      if ((code.equals(totp.generate()) || code.equals(totp.previous()))
+          && codeService.useCode(username, code)) {
 
-        // Pull the original HTTP request used to authenticate
-        Credentials credentials = authenticatedUser.getCredentials();
-        HttpServletRequest request = credentials.getRequest();
-
-        // Retrieve TOTP from request
-        String code = request.getParameter(AuthenticationCodeField.PARAMETER_NAME);
-
-        // If no TOTP provided, request one
-        if (code == null) {
-
-            AuthenticationCodeField field = codeFieldProvider.get();
-
-            // If the user hasn't completed enrollment, request that they do
-            if (!key.isConfirmed()) {
-                field.exposeKey(key);
-                throw new TranslatableGuacamoleInsufficientCredentialsException(
-                        "TOTP enrollment must be completed before "
-                        + "authentication can continue",
-                        "TOTP.INFO_ENROLL_REQUIRED", new CredentialsInfo(
-                            Collections.<Field>singletonList(field)
-                        ));
-            }
-
-            // Otherwise simply request the user's authentication code
-            throw new TranslatableGuacamoleInsufficientCredentialsException(
-                    "A TOTP authentication code is required before login can "
-                    + "continue", "TOTP.INFO_CODE_REQUIRED", new CredentialsInfo(
-                        Collections.<Field>singletonList(field)
-                    ));
-
+        // Record key as confirmed, if it hasn't already been so recorded
+        if (!key.isConfirmed()) {
+          key.setConfirmed(true);
+          setKey(context, key);
         }
 
-        try {
+        // User has been verified
+        return;
 
-            // Get generator based on user's key and provided configuration
-            TOTPGenerator totp = new TOTPGenerator(key.getSecret(),
-                    confService.getMode(), confService.getDigits(),
-                    TOTPGenerator.DEFAULT_START_TIME, confService.getPeriod());
+      }
 
-            // Verify provided TOTP against value produced by generator
-            if ((code.equals(totp.generate()) || code.equals(totp.previous()))
-                    && codeService.useCode(username, code)) {
-
-                // Record key as confirmed, if it hasn't already been so recorded
-                if (!key.isConfirmed()) {
-                    key.setConfirmed(true);
-                    setKey(context, key);
-                }
-
-                // User has been verified
-                return;
-
-            }
-
-        }
-        catch (InvalidKeyException e) {
-            logger.warn("User \"{}\" is associated with an invalid TOTP key.", username);
-            logger.debug("TOTP key is not valid.", e);
-        }
-
-        // Provided code is not valid
-        throw new TranslatableGuacamoleClientException("Provided TOTP code "
-                + "is not valid.", "TOTP.INFO_VERIFICATION_FAILED");
-
+    } catch (InvalidKeyException e) {
+      logger.warn("User \"{}\" is associated with an invalid TOTP key.", username);
+      logger.debug("TOTP key is not valid.", e);
     }
+
+    // Provided code is not valid
+    throw new TranslatableGuacamoleClientException("Provided TOTP code "
+        + "is not valid.", "TOTP.INFO_VERIFICATION_FAILED");
+
+  }
 
 }

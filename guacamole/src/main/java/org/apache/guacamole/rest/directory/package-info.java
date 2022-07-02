@@ -18,7 +18,7 @@
  */
 
 /**
- * Base classes providing support for exposing and manipulating Directory
- * objects and their contents via the Guacamole REST API.
+ * Base classes providing support for exposing and manipulating Directory objects and their contents
+ * via the Guacamole REST API.
  */
 package org.apache.guacamole.rest.directory;

@@ -18,46 +18,46 @@
  */
 
 .fatal-page-error-modal guac-modal {
-    z-index: 30;
+  z-index: 30;
 }
 
 .fatal-page-error {
-    display: inline-block;
-    width: 100%;
-    max-width: 5in;
-    padding: 1em;
-    text-align: left;
+  display: inline-block;
+  width: 100%;
+  max-width: 5in;
+  padding: 1em;
+  text-align: left;
 }
 
 .fatal-page-error h1 {
-    text-transform: uppercase;
-    padding: 0;
-    padding-right: 1em;
+  text-transform: uppercase;
+  padding: 0;
+  padding-right: 1em;
 }
 
 .fatal-page-error h1::before {
-    content: ' ';
-    display: inline-block;
-    background: url('images/warning.svg');
-    background-repeat: no-repeat;
-    height: 1em;
-    width: 1em;
-    background-size: contain;
-    margin: 0 0.25em;
-    margin-bottom: -0.2em;
+  content: ' ';
+  display: inline-block;
+  background: url('images/warning.svg');
+  background-repeat: no-repeat;
+  height: 1em;
+  width: 1em;
+  background-size: contain;
+  margin: 0 0.25em;
+  margin-bottom: -0.2em;
 }
 
 /* Ensure fatal error is initially hidden, fading the error message in when
  * needed */
 
 .fatal-page-error-outer {
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity, visibility;
-    transition-duration: 0.25s;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity, visibility;
+  transition-duration: 0.25s;
 }
 
 .shown.fatal-page-error-outer {
-    visibility: visible;
-    opacity: 1;
+  visibility: visible;
+  opacity: 1;
 }

@@ -21,13 +21,13 @@
  * Service which contains all REST API response caches.
  */
 angular.module('rest').factory('dataSourceService', ['$injector',
-        function dataSourceService($injector) {
+  function dataSourceService($injector) {
 
     // Required types
     var Error = $injector.get('Error');
 
     // Required services
-    var $q             = $injector.get('$q');
+    var $q = $injector.get('$q');
     var requestService = $injector.get('requestService');
 
     // Service containing all caches
@@ -66,18 +66,20 @@ angular.module('rest').factory('dataSourceService', ['$injector',
      */
     service.apply = function apply(fn, dataSources) {
 
-        var deferred = $q.defer();
+      var deferred = $q.defer();
 
-        var requests = [];
-        var results = {};
+      var requests = [];
+      var results = {};
 
-        // Build array of arguments to pass to the given function
-        var args = [];
-        for (var i = 2; i < arguments.length; i++)
-            args.push(arguments[i]);
+      // Build array of arguments to pass to the given function
+      var args = [];
+      for (var i = 2; i < arguments.length; i++) {
+        args.push(arguments[i]);
+      }
 
-        // Retrieve the root group from all data sources
-        angular.forEach(dataSources, function invokeAgainstDataSource(dataSource) {
+      // Retrieve the root group from all data sources
+      angular.forEach(dataSources,
+          function invokeAgainstDataSource(dataSource) {
 
             // Add promise to list of pending requests
             var deferredRequest = $q.defer();
@@ -88,38 +90,39 @@ angular.module('rest').factory('dataSourceService', ['$injector',
 
             // Store result on success
             .then(function immediateRequestSucceeded(data) {
-                results[dataSource] = data;
-                deferredRequest.resolve();
-            },
+                  results[dataSource] = data;
+                  deferredRequest.resolve();
+                },
 
-            // Fail on any errors (except "NOT FOUND")
-            requestService.createErrorCallback(function immediateRequestFailed(error) {
+                // Fail on any errors (except "NOT FOUND")
+                requestService.createErrorCallback(
+                    function immediateRequestFailed(error) {
 
-                if (error.type === Error.Type.NOT_FOUND)
-                    deferredRequest.resolve();
+                      if (error.type === Error.Type.NOT_FOUND) {
+                        deferredRequest.resolve();
+                      }// Explicitly abort for all other errors
+                      else {
+                        deferredRequest.reject(error);
+                      }
 
-                // Explicitly abort for all other errors
-                else
-                    deferredRequest.reject(error);
+                    }));
 
-            }));
+          });
 
-        });
-
-        // Resolve if all requests succeed
-        $q.all(requests).then(function requestsSucceeded() {
+      // Resolve if all requests succeed
+      $q.all(requests).then(function requestsSucceeded() {
             deferred.resolve(results);
-        },
+          },
 
-        // Reject if at least one request fails
-        requestService.createErrorCallback(function requestFailed(error) {
+          // Reject if at least one request fails
+          requestService.createErrorCallback(function requestFailed(error) {
             deferred.reject(error);
-        }));
+          }));
 
-        return deferred.promise;
+      return deferred.promise;
 
     };
 
     return service;
 
-}]);
+  }]);

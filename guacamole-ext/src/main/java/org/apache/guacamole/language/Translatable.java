@@ -20,20 +20,17 @@
 package org.apache.guacamole.language;
 
 /**
- * An object which is associated with a translatable message that can be passed
- * through an arbitrary translation service, producing a human-readable message
- * in the user's native language.
+ * An object which is associated with a translatable message that can be passed through an arbitrary
+ * translation service, producing a human-readable message in the user's native language.
  */
 public interface Translatable {
 
-    /**
-     * Returns a message which can be translated using a translation service,
-     * consisting of a translation key and optional set of substitution
-     * variables.
-     *
-     * @return
-     *     A message which can be translated using a translation service.
-     */
-    TranslatableMessage getTranslatableMessage();
+  /**
+   * Returns a message which can be translated using a translation service, consisting of a
+   * translation key and optional set of substitution variables.
+   *
+   * @return A message which can be translated using a translation service.
+   */
+  TranslatableMessage getTranslatableMessage();
 
 }

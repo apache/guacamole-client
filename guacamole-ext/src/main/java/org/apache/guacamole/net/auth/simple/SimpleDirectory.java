@@ -32,151 +32,140 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Identifiable;
 
 /**
- * An extremely simple read-only implementation of a Directory which provides
- * access to a pre-defined Map of arbitrary objects. Any changes to the Map
- * will affect the available contents of this SimpleDirectory.
+ * An extremely simple read-only implementation of a Directory which provides access to a
+ * pre-defined Map of arbitrary objects. Any changes to the Map will affect the available contents
+ * of this SimpleDirectory.
  *
- * @param <ObjectType>
- *     The type of objects stored within this SimpleDirectory.
+ * @param <ObjectType> The type of objects stored within this SimpleDirectory.
  */
 public class SimpleDirectory<ObjectType extends Identifiable>
-        implements Directory<ObjectType> {
+    implements Directory<ObjectType> {
 
-    /**
-     * The Map of objects to provide access to.
-     */
-    private Map<String, ObjectType> objects = Collections.<String, ObjectType>emptyMap();
+  /**
+   * The Map of objects to provide access to.
+   */
+  private Map<String, ObjectType> objects = Collections.<String, ObjectType>emptyMap();
 
-    /**
-     * Creates a new empty SimpleDirectory which does not provide access to
-     * any objects.
-     */
-    public SimpleDirectory() {
+  /**
+   * Creates a new empty SimpleDirectory which does not provide access to any objects.
+   */
+  public SimpleDirectory() {
+  }
+
+  /**
+   * Creates a new SimpleDirectory which provides access to the objects contained within the given
+   * Map. The given Map will be used to back all operations on the SimpleDirectory.
+   *
+   * @param objects The Map of objects to provide access to.
+   */
+  public SimpleDirectory(Map<String, ObjectType> objects) {
+    this.objects = objects;
+  }
+
+  /**
+   * Creates a new SimpleDirectory which provides access to the given object.
+   *
+   * @param object The object to provide access to.
+   */
+  public SimpleDirectory(ObjectType object) {
+    this(Collections.singletonMap(object.getIdentifier(), object));
+  }
+
+  /**
+   * Creates a new SimpleDirectory which provides access to the given objects. Note that a new Map
+   * will be created to store the given objects. If the objects are already available in Map form,
+   * it is more efficient to use the {@link #SimpleDirectory(java.util.Map)} constructor.
+   *
+   * @param objects The objects that should be present in this directory.
+   */
+  @SafeVarargs
+  public SimpleDirectory(ObjectType... objects) {
+    this(Arrays.asList(objects));
+  }
+
+  /**
+   * Creates a new SimpleDirectory which provides access to the objects contained within the
+   * Collection. Note that a new Map will be created to store the given objects. If the objects are
+   * already available in Map form, it is more efficient to use the
+   * {@link #SimpleDirectory(java.util.Map)} constructor.
+   *
+   * @param objects A Collection of all objects that should be present in this directory.
+   */
+  public SimpleDirectory(Collection<ObjectType> objects) {
+    this.objects = new HashMap<String, ObjectType>(objects.size());
+    for (ObjectType object : objects) {
+      this.objects.put(object.getIdentifier(), object);
     }
+  }
 
-    /**
-     * Creates a new SimpleDirectory which provides access to the objects
-     * contained within the given Map. The given Map will be used to back all
-     * operations on the SimpleDirectory.
-     *
-     * @param objects
-     *     The Map of objects to provide access to.
-     */
-    public SimpleDirectory(Map<String, ObjectType> objects) {
-        this.objects = objects;
-    }
+  /**
+   * Returns the Map which currently backs this SimpleDirectory. Changes to this Map will affect
+   * future function calls that retrieve objects from this SimpleDirectory.
+   *
+   * @return The Map of objects which currently backs this SimpleDirectory.
+   */
+  protected Map<String, ObjectType> getObjects() {
+    return objects;
+  }
 
-    /**
-     * Creates a new SimpleDirectory which provides access to the given object.
-     *
-     * @param object
-     *     The object to provide access to.
-     */
-    public SimpleDirectory(ObjectType object) {
-        this(Collections.singletonMap(object.getIdentifier(), object));
-    }
+  /**
+   * Sets the Map which backs this SimpleDirectory. Future function calls which retrieve objects
+   * from this SimpleDirectory will use the provided Map.
+   *
+   * @param objects The Map of objects to provide access to.
+   */
+  protected void setObjects(Map<String, ObjectType> objects) {
+    this.objects = objects;
+  }
 
-    /**
-     * Creates a new SimpleDirectory which provides access to the given
-     * objects. Note that a new Map will be created to store the given objects.
-     * If the objects are already available in Map form, it is more efficient
-     * to use the {@link #SimpleDirectory(java.util.Map)} constructor.
-     *
-     * @param objects
-     *     The objects that should be present in this directory.
-     */
-    @SafeVarargs
-    public SimpleDirectory(ObjectType... objects) {
-        this(Arrays.asList(objects));
-    }
+  @Override
+  public ObjectType get(String identifier)
+      throws GuacamoleException {
+    return objects.get(identifier);
+  }
 
-    /**
-     * Creates a new SimpleDirectory which provides access to the
-     * objects contained within the Collection. Note that a new Map will be
-     * created to store the given objects. If the objects are already available
-     * in Map form, it is more efficient to use the
-     * {@link #SimpleDirectory(java.util.Map)} constructor.
-     *
-     * @param objects
-     *     A Collection of all objects that should be present in this directory.
-     */
-    public SimpleDirectory(Collection<ObjectType> objects) {
-        this.objects = new HashMap<String, ObjectType>(objects.size());
-        for (ObjectType object : objects)
-            this.objects.put(object.getIdentifier(), object);
-    }
+  @Override
+  public Collection<ObjectType> getAll(Collection<String> identifiers)
+      throws GuacamoleException {
 
-    /**
-     * Sets the Map which backs this SimpleDirectory. Future function calls
-     * which retrieve objects from this SimpleDirectory will use the provided
-     * Map.
-     *
-     * @param objects
-     *     The Map of objects to provide access to.
-     */
-    protected void setObjects(Map<String, ObjectType> objects) {
-        this.objects = objects;
-    }
+    // Create collection which has an appropriate initial size
+    Collection<ObjectType> foundObjects = new ArrayList<ObjectType>(identifiers.size());
 
-    /**
-     * Returns the Map which currently backs this SimpleDirectory. Changes to
-     * this Map will affect future function calls that retrieve objects from
-     * this SimpleDirectory.
-     *
-     * @return
-     *     The Map of objects which currently backs this SimpleDirectory.
-     */
-    protected Map<String, ObjectType> getObjects() {
-        return objects;
-    }
+    // Populate collection with matching objects
+    for (String identifier : identifiers) {
 
-    @Override
-    public ObjectType get(String identifier)
-            throws GuacamoleException {
-        return objects.get(identifier);
-    }
-
-    @Override
-    public Collection<ObjectType> getAll(Collection<String> identifiers)
-            throws GuacamoleException {
-
-        // Create collection which has an appropriate initial size
-        Collection<ObjectType> foundObjects = new ArrayList<ObjectType>(identifiers.size());
-
-        // Populate collection with matching objects
-        for (String identifier : identifiers) {
-
-            // Add the object which has the current identifier, if any
-            ObjectType object = objects.get(identifier);
-            if (object != null)
-                foundObjects.add(object);
-
-        }
-
-        return foundObjects;
+      // Add the object which has the current identifier, if any
+      ObjectType object = objects.get(identifier);
+      if (object != null) {
+        foundObjects.add(object);
+      }
 
     }
 
-    @Override
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return objects.keySet();
-    }
+    return foundObjects;
 
-    @Override
-    public void add(ObjectType connection)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  }
 
-    @Override
-    public void update(ObjectType connection)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public Set<String> getIdentifiers() throws GuacamoleException {
+    return objects.keySet();
+  }
 
-    @Override
-    public void remove(String identifier) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public void add(ObjectType connection)
+      throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
+
+  @Override
+  public void update(ObjectType connection)
+      throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
+
+  @Override
+  public void remove(String identifier) throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
 
 }

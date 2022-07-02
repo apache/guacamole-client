@@ -30,49 +30,49 @@ import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.Directory;
 
 /**
- * Implementation of a Directory which contains all currently-active
- * connections.
+ * Implementation of a Directory which contains all currently-active connections.
  */
 public class ActiveConnectionDirectory extends RestrictedObject
     implements Directory<ActiveConnection> {
 
-    /**
-     * Service for retrieving and manipulating active connections.
-     */
-    @Inject
-    private ActiveConnectionService activeConnectionService;
+  /**
+   * Service for retrieving and manipulating active connections.
+   */
+  @Inject
+  private ActiveConnectionService activeConnectionService;
 
-    @Override
-    public ActiveConnection get(String identifier) throws GuacamoleException {
-        return activeConnectionService.retrieveObject(getCurrentUser(), identifier);
-    }
+  @Override
+  public ActiveConnection get(String identifier) throws GuacamoleException {
+    return activeConnectionService.retrieveObject(getCurrentUser(), identifier);
+  }
 
-    @Override
-    public Collection<ActiveConnection> getAll(Collection<String> identifiers)
-            throws GuacamoleException {
-        Collection<TrackedActiveConnection> objects = activeConnectionService.retrieveObjects(getCurrentUser(), identifiers);
-        return Collections.<ActiveConnection>unmodifiableCollection(objects);
-    }
+  @Override
+  public Collection<ActiveConnection> getAll(Collection<String> identifiers)
+      throws GuacamoleException {
+    Collection<TrackedActiveConnection> objects = activeConnectionService.retrieveObjects(
+        getCurrentUser(), identifiers);
+    return Collections.<ActiveConnection>unmodifiableCollection(objects);
+  }
 
-    @Override
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return activeConnectionService.getIdentifiers(getCurrentUser());
-    }
+  @Override
+  public Set<String> getIdentifiers() throws GuacamoleException {
+    return activeConnectionService.getIdentifiers(getCurrentUser());
+  }
 
-    @Override
-    public void add(ActiveConnection object) throws GuacamoleException {
-        activeConnectionService.createObject(getCurrentUser(), object);
-    }
+  @Override
+  public void add(ActiveConnection object) throws GuacamoleException {
+    activeConnectionService.createObject(getCurrentUser(), object);
+  }
 
-    @Override
-    public void update(ActiveConnection object) throws GuacamoleException {
-        TrackedActiveConnection connection = (TrackedActiveConnection) object;
-        activeConnectionService.updateObject(getCurrentUser(), connection);
-    }
+  @Override
+  public void update(ActiveConnection object) throws GuacamoleException {
+    TrackedActiveConnection connection = (TrackedActiveConnection) object;
+    activeConnectionService.updateObject(getCurrentUser(), connection);
+  }
 
-    @Override
-    public void remove(String identifier) throws GuacamoleException {
-        activeConnectionService.deleteObject(getCurrentUser(), identifier);
-    }
+  @Override
+  public void remove(String identifier) throws GuacamoleException {
+    activeConnectionService.deleteObject(getCurrentUser(), identifier);
+  }
 
 }

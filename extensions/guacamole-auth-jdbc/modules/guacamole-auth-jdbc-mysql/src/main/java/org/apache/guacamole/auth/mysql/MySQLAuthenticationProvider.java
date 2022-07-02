@@ -24,27 +24,24 @@ import org.apache.guacamole.auth.jdbc.InjectedAuthenticationProvider;
 import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderService;
 
 /**
- * Provides a MySQL based implementation of the AuthenticationProvider
- * functionality.
+ * Provides a MySQL based implementation of the AuthenticationProvider functionality.
  */
 public class MySQLAuthenticationProvider extends InjectedAuthenticationProvider {
 
-    /**
-     * Creates a new MySQLAuthenticationProvider that reads and writes
-     * authentication data to a MySQL database defined by properties in
-     * guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public MySQLAuthenticationProvider() throws GuacamoleException {
-        super(new MySQLInjectorProvider(), JDBCAuthenticationProviderService.class);
-    }
+  /**
+   * Creates a new MySQLAuthenticationProvider that reads and writes authentication data to a MySQL
+   * database defined by properties in guacamole.properties.
+   *
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public MySQLAuthenticationProvider() throws GuacamoleException {
+    super(new MySQLInjectorProvider(), JDBCAuthenticationProviderService.class);
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "mysql";
-    }
+  @Override
+  public String getIdentifier() {
+    return "mysql";
+  }
 
 }

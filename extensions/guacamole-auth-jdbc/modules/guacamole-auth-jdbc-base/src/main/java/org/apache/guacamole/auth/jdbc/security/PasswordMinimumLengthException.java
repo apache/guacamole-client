@@ -23,28 +23,25 @@ import java.util.Collections;
 import org.apache.guacamole.language.TranslatableMessage;
 
 /**
- * Thrown when an attempt is made to set a user's password to a string which is
- * too short, in violation of the defined password policy.
+ * Thrown when an attempt is made to set a user's password to a string which is too short, in
+ * violation of the defined password policy.
  */
 public class PasswordMinimumLengthException extends PasswordPolicyException {
 
-    /**
-     * Creates a new PasswordMinimumLengthException with the given
-     * human-readable message. The translatable message is already defined.
-     *
-     * @param message
-     *     A human-readable message describing the password policy violation
-     *     that occurred.
-     *
-     * @param length
-     *     The minimum length that passwords must have to avoid violating
-     *     policy, in characters.
-     */
-    public PasswordMinimumLengthException(String message, int length) {
-        super(message, new TranslatableMessage(
-            "PASSWORD_POLICY.ERROR_TOO_SHORT",
-            Collections.singletonMap("LENGTH", length)
-        ));
-    }
+  /**
+   * Creates a new PasswordMinimumLengthException with the given human-readable message. The
+   * translatable message is already defined.
+   *
+   * @param message A human-readable message describing the password policy violation that
+   *                occurred.
+   * @param length  The minimum length that passwords must have to avoid violating policy, in
+   *                characters.
+   */
+  public PasswordMinimumLengthException(String message, int length) {
+    super(message, new TranslatableMessage(
+        "PASSWORD_POLICY.ERROR_TOO_SHORT",
+        Collections.singletonMap("LENGTH", length)
+    ));
+  }
 
 }

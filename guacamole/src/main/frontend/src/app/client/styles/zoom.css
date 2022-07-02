@@ -20,56 +20,56 @@
 .client-zoom .client-zoom-out,
 .client-zoom .client-zoom-in,
 .client-zoom .client-zoom-state {
-    display: inline-block;
-    vertical-align: middle;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .client-zoom .client-zoom-out,
 .client-zoom .client-zoom-in {
-    max-width: 3em;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 2em;
-    margin: 0.5em;
-    cursor: pointer;
+  max-width: 3em;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2em;
+  margin: 0.5em;
+  cursor: pointer;
 }
 
 .client-zoom .client-zoom-out img,
 .client-zoom .client-zoom-in img {
-    width: 100%;
-    opacity: 0.5;
+  width: 100%;
+  opacity: 0.5;
 }
 
 .client-zoom .client-zoom-out:hover,
 .client-zoom .client-zoom-in:hover {
-    border: 1px solid rgba(0, 0, 0, 1);
-    background: #CDA;
+  border: 1px solid rgba(0, 0, 0, 1);
+  background: #CDA;
 }
 
 .client-zoom .client-zoom-out:hover img,
 .client-zoom .client-zoom-in:hover img {
-    opacity: 1;
+  opacity: 1;
 }
 
 .client-zoom .client-zoom-state {
-    font-size: 1.5em;
+  font-size: 1.5em;
 }
 
 .client-zoom .client-zoom-autofit {
-    text-align: left;
-    margin-top: 1em;
+  text-align: left;
+  margin-top: 1em;
 }
 
 .client-zoom .client-zoom-state input {
-    width: 2em;
-    font-size: 1em;
-    padding: 0;
-    background: transparent;
-    border-color: rgba(0, 0, 0, 0.125);
+  width: 2em;
+  font-size: 1em;
+  padding: 0;
+  background: transparent;
+  border-color: rgba(0, 0, 0, 0.125);
 }
 
 .client-zoom .client-zoom-state input::-webkit-inner-spin-button,
 .client-zoom .client-zoom-state input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }

@@ -18,6 +18,6 @@
  */
 
 .user-item.anonymous {
-    font-style: italic;
-    opacity: 0.5;
+  font-style: italic;
+  opacity: 0.5;
 }

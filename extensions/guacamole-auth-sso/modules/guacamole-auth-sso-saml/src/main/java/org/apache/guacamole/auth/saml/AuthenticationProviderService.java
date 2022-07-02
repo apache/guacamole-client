@@ -25,11 +25,11 @@ import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
 import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
+import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.RedirectField;
@@ -39,79 +39,81 @@ import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
 /**
- * Service that authenticates Guacamole users by processing the responses of
- * SAML identity providers.
+ * Service that authenticates Guacamole users by processing the responses of SAML identity
+ * providers.
  */
 @Singleton
 public class AuthenticationProviderService implements SSOAuthenticationProviderService {
 
-    /**
-     * The name of the query parameter that identifies an active authentication
-     * session (in-progress SAML authentication attempt).
-     */
-    public static final String AUTH_SESSION_QUERY_PARAM = "state";
+  /**
+   * The name of the query parameter that identifies an active authentication session (in-progress
+   * SAML authentication attempt).
+   */
+  public static final String AUTH_SESSION_QUERY_PARAM = "state";
 
-    /**
-     * Provider for AuthenticatedUser objects.
-     */
-    @Inject
-    private Provider<SAMLAuthenticatedUser> authenticatedUserProvider;
+  /**
+   * Provider for AuthenticatedUser objects.
+   */
+  @Inject
+  private Provider<SAMLAuthenticatedUser> authenticatedUserProvider;
 
-    /**
-     * Manager of active SAML authentication attempts.
-     */
-    @Inject
-    private AuthenticationSessionManager sessionManager;
+  /**
+   * Manager of active SAML authentication attempts.
+   */
+  @Inject
+  private AuthenticationSessionManager sessionManager;
 
-    /**
-     * Service for processing SAML requests/responses.
-     */
-    @Inject
-    private SAMLService saml;
+  /**
+   * Service for processing SAML requests/responses.
+   */
+  @Inject
+  private SAMLService saml;
 
-    @Override
-    public SAMLAuthenticatedUser authenticateUser(Credentials credentials)
-            throws GuacamoleException {
+  @Override
+  public SAMLAuthenticatedUser authenticateUser(Credentials credentials)
+      throws GuacamoleException {
 
-        // No authentication can be attempted without a corresponding HTTP
-        // request
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
+    // No authentication can be attempted without a corresponding HTTP
+    // request
+    HttpServletRequest request = credentials.getRequest();
+    if (request == null) {
+      return null;
+    }
 
-        // Use established SAML identity if already provided by the SAML IdP
-        AssertedIdentity identity = sessionManager.getIdentity(request.getParameter(AUTH_SESSION_QUERY_PARAM));
-        if (identity != null) {
+    // Use established SAML identity if already provided by the SAML IdP
+    AssertedIdentity identity = sessionManager.getIdentity(
+        request.getParameter(AUTH_SESSION_QUERY_PARAM));
+    if (identity != null) {
 
-            // Back-port the username to the credentials
-            credentials.setUsername(identity.getUsername());
+      // Back-port the username to the credentials
+      credentials.setUsername(identity.getUsername());
 
-            // Configure the AuthenticatedUser and return it
-            SAMLAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(identity, credentials);
-            return authenticatedUser;
-
-        }
-
-        // Redirect to SAML IdP if no SAML identity is associated with the
-        // Guacamole authentication request
-        throw new GuacamoleInvalidCredentialsException("Redirecting to SAML IdP.",
-                new CredentialsInfo(Arrays.asList(new Field[] {
-                    new RedirectField(AUTH_SESSION_QUERY_PARAM, getLoginURI(),
-                            new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
-                }))
-        );
+      // Configure the AuthenticatedUser and return it
+      SAMLAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+      authenticatedUser.init(identity, credentials);
+      return authenticatedUser;
 
     }
 
-    @Override
-    public URI getLoginURI() throws GuacamoleException {
-        return saml.createRequest();
-    }
+    // Redirect to SAML IdP if no SAML identity is associated with the
+    // Guacamole authentication request
+    throw new GuacamoleInvalidCredentialsException("Redirecting to SAML IdP.",
+        new CredentialsInfo(Arrays.asList(new Field[]{
+            new RedirectField(AUTH_SESSION_QUERY_PARAM, getLoginURI(),
+                new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
+        }))
+    );
 
-    @Override
-    public void shutdown() {
-        sessionManager.shutdown();
-    }
-    
+  }
+
+  @Override
+  public URI getLoginURI() throws GuacamoleException {
+    return saml.createRequest();
+  }
+
+  @Override
+  public void shutdown() {
+    sessionManager.shutdown();
+  }
+
 }

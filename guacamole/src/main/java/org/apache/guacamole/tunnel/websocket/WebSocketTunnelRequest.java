@@ -29,37 +29,38 @@ import org.apache.guacamole.tunnel.TunnelRequest;
  */
 public class WebSocketTunnelRequest extends TunnelRequest {
 
-    /**
-     * All parameters passed via HTTP to the WebSocket handshake.
-     */
-    private final Map<String, List<String>> handshakeParameters;
-    
-    /**
-     * Creates a TunnelRequest implementation which delegates parameter and
-     * session retrieval to the given HandshakeRequest.
-     *
-     * @param request The HandshakeRequest to wrap.
-     */
-    public WebSocketTunnelRequest(HandshakeRequest request) {
-        this.handshakeParameters = request.getParameterMap();
+  /**
+   * All parameters passed via HTTP to the WebSocket handshake.
+   */
+  private final Map<String, List<String>> handshakeParameters;
+
+  /**
+   * Creates a TunnelRequest implementation which delegates parameter and session retrieval to the
+   * given HandshakeRequest.
+   *
+   * @param request The HandshakeRequest to wrap.
+   */
+  public WebSocketTunnelRequest(HandshakeRequest request) {
+    this.handshakeParameters = request.getParameterMap();
+  }
+
+  @Override
+  public String getParameter(String name) {
+
+    // Pull list of values, if present
+    List<String> values = getParameterValues(name);
+    if (values == null || values.isEmpty()) {
+      return null;
     }
 
-    @Override
-    public String getParameter(String name) {
+    // Return first parameter value arbitrarily
+    return values.get(0);
 
-        // Pull list of values, if present
-        List<String> values = getParameterValues(name);
-        if (values == null || values.isEmpty())
-            return null;
+  }
 
-        // Return first parameter value arbitrarily
-        return values.get(0);
+  @Override
+  public List<String> getParameterValues(String name) {
+    return handshakeParameters.get(name);
+  }
 
-    }
-
-    @Override
-    public List<String> getParameterValues(String name) {
-        return handshakeParameters.get(name);
-    }
-    
 }

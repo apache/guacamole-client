@@ -1,7 +1,5 @@
 {
-
-    "DATA_SOURCE_RADIUS" : {
-        "NAME" : "Бэкенд RADIUS"
-    }
-
+  "DATA_SOURCE_RADIUS": {
+    "NAME": "Бэкенд RADIUS"
+  }
 }

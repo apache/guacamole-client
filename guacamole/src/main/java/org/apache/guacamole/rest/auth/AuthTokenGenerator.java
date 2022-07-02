@@ -23,12 +23,12 @@ package org.apache.guacamole.rest.auth;
  * Generates an auth token for an authenticated user.
  */
 public interface AuthTokenGenerator {
-    
-    /**
-     * Get a new auth token.
-     * 
-     * @return A new auth token.
-     */
-    public String getToken();
+
+  /**
+   * Get a new auth token.
+   *
+   * @return A new auth token.
+   */
+  public String getToken();
 
 }

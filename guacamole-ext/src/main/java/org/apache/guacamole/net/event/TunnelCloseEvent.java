@@ -24,70 +24,62 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * An event which is triggered whenever a tunnel is being closed. The tunnel
- * being closed can be accessed through getTunnel(), and the UserContext
- * associated with the request which is closing the tunnel can be retrieved
- * with getUserContext().
+ * An event which is triggered whenever a tunnel is being closed. The tunnel being closed can be
+ * accessed through getTunnel(), and the UserContext associated with the request which is closing
+ * the tunnel can be retrieved with getUserContext().
  * <p>
- * If a {@link org.apache.guacamole.net.event.listener.Listener} throws
- * a GuacamoleException when handling an event of this type, the request to close
- * the tunnel is effectively <em>vetoed</em> and will remain connected.
+ * If a {@link org.apache.guacamole.net.event.listener.Listener} throws a GuacamoleException when
+ * handling an event of this type, the request to close the tunnel is effectively <em>vetoed</em>
+ * and will remain connected.
  */
 public class TunnelCloseEvent implements UserEvent, CredentialEvent, TunnelEvent {
 
-    /**
-     * The AuthenticatedUser associated with the user that is closing the
-     * tunnel, if any.
-     */
-    private final AuthenticatedUser authenticatedUser;
+  /**
+   * The AuthenticatedUser associated with the user that is closing the tunnel, if any.
+   */
+  private final AuthenticatedUser authenticatedUser;
 
-    /**
-     * The credentials associated with the request that closed the tunnel, if
-     * any.
-     */
-    private final Credentials credentials;
+  /**
+   * The credentials associated with the request that closed the tunnel, if any.
+   */
+  private final Credentials credentials;
 
-    /**
-     * The tunnel being closed.
-     */
-    private final GuacamoleTunnel tunnel;
+  /**
+   * The tunnel being closed.
+   */
+  private final GuacamoleTunnel tunnel;
 
-    /**
-     * Creates a new TunnelCloseEvent which represents the closing of the
-     * given tunnel via a request associated with the given credentials.
-     *
-     * @param authenticatedUser
-     *     The AuthenticatedUser associated with the user that is closing the
-     *     tunnel, if any.
-     *
-     * @param credentials
-     *     The credentials associated with the request that closed the
-     *     tunnel. Note that these credentials are not necessarily the same as
-     *     the credentials provided when the user authenticated.
-     *
-     * @param tunnel
-     *     The tunnel being closed.
-     */
-    public TunnelCloseEvent(AuthenticatedUser authenticatedUser,
-            Credentials credentials, GuacamoleTunnel tunnel) {
-        this.authenticatedUser = authenticatedUser;
-        this.credentials = credentials;
-        this.tunnel = tunnel;
-    }
+  /**
+   * Creates a new TunnelCloseEvent which represents the closing of the given tunnel via a request
+   * associated with the given credentials.
+   *
+   * @param authenticatedUser The AuthenticatedUser associated with the user that is closing the
+   *                          tunnel, if any.
+   * @param credentials       The credentials associated with the request that closed the tunnel.
+   *                          Note that these credentials are not necessarily the same as the
+   *                          credentials provided when the user authenticated.
+   * @param tunnel            The tunnel being closed.
+   */
+  public TunnelCloseEvent(AuthenticatedUser authenticatedUser,
+      Credentials credentials, GuacamoleTunnel tunnel) {
+    this.authenticatedUser = authenticatedUser;
+    this.credentials = credentials;
+    this.tunnel = tunnel;
+  }
 
-    @Override
-    public AuthenticatedUser getAuthenticatedUser() {
-        return authenticatedUser;
-    }
+  @Override
+  public AuthenticatedUser getAuthenticatedUser() {
+    return authenticatedUser;
+  }
 
-    @Override
-    public Credentials getCredentials() {
-        return credentials;
-    }
+  @Override
+  public Credentials getCredentials() {
+    return credentials;
+  }
 
-    @Override
-    public GuacamoleTunnel getTunnel() {
-        return tunnel;
-    }
+  @Override
+  public GuacamoleTunnel getTunnel() {
+    return tunnel;
+  }
 
 }

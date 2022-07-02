@@ -21,12 +21,12 @@
  * Service for operating on user groups via the REST API.
  */
 angular.module('rest').factory('userGroupService', ['$injector',
-        function userGroupService($injector) {
+  function userGroupService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
-    var cacheService          = $injector.get('cacheService');
+    var cacheService = $injector.get('cacheService');
 
     var service = {};
 
@@ -50,20 +50,23 @@ angular.module('rest').factory('userGroupService', ['$injector',
      *     A promise which will resolve with a map of @link{UserGroup} objects
      *     where each key is the identifier of the corresponding user group.
      */
-    service.getUserGroups = function getUserGroups(dataSource, permissionTypes) {
+    service.getUserGroups = function getUserGroups(dataSource,
+        permissionTypes) {
 
-        // Add permission filter if specified
-        var httpParameters = {};
-        if (permissionTypes)
-            httpParameters.permission = permissionTypes;
+      // Add permission filter if specified
+      var httpParameters = {};
+      if (permissionTypes) {
+        httpParameters.permission = permissionTypes;
+      }
 
-        // Retrieve user groups
-        return authenticationService.request({
-            cache   : cacheService.users,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups',
-            params  : httpParameters
-        });
+      // Retrieve user groups
+      return authenticationService.request({
+        cache: cacheService.users,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/userGroups',
+        params: httpParameters
+      });
 
     };
 
@@ -85,12 +88,13 @@ angular.module('rest').factory('userGroupService', ['$injector',
      */
     service.getUserGroup = function getUserGroup(dataSource, identifier) {
 
-        // Retrieve user group
-        return authenticationService.request({
-            cache   : cacheService.users,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier)
-        });
+      // Retrieve user group
+      return authenticationService.request({
+        cache: cacheService.users,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/userGroups/' + encodeURIComponent(identifier)
+      });
 
     };
 
@@ -112,17 +116,17 @@ angular.module('rest').factory('userGroupService', ['$injector',
      */
     service.deleteUserGroup = function deleteUserGroup(dataSource, userGroup) {
 
-        // Delete user group
-        return authenticationService.request({
-            method  : 'DELETE',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(userGroup.identifier)
-        })
+      // Delete user group
+      return authenticationService.request({
+        method: 'DELETE',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/userGroups/' + encodeURIComponent(userGroup.identifier)
+      })
 
-        // Clear the cache
-        .then(function userGroupDeleted(){
-            cacheService.users.removeAll();
-        });
-
+      // Clear the cache
+      .then(function userGroupDeleted() {
+        cacheService.users.removeAll();
+      });
 
     };
 
@@ -144,17 +148,18 @@ angular.module('rest').factory('userGroupService', ['$injector',
      */
     service.createUserGroup = function createUserGroup(dataSource, userGroup) {
 
-        // Create user group
-        return authenticationService.request({
-            method  : 'POST',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups',
-            data    : userGroup
-        })
+      // Create user group
+      return authenticationService.request({
+        method: 'POST',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/userGroups',
+        data: userGroup
+      })
 
-        // Clear the cache
-        .then(function userGroupCreated(){
-            cacheService.users.removeAll();
-        });
+      // Clear the cache
+      .then(function userGroupCreated() {
+        cacheService.users.removeAll();
+      });
 
     };
 
@@ -176,20 +181,21 @@ angular.module('rest').factory('userGroupService', ['$injector',
      */
     service.saveUserGroup = function saveUserGroup(dataSource, userGroup) {
 
-        // Update user group
-        return authenticationService.request({
-            method  : 'PUT',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(userGroup.identifier),
-            data    : userGroup
-        })
+      // Update user group
+      return authenticationService.request({
+        method: 'PUT',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/userGroups/' + encodeURIComponent(userGroup.identifier),
+        data: userGroup
+      })
 
-        // Clear the cache
-        .then(function userGroupUpdated(){
-            cacheService.users.removeAll();
-        });
+      // Clear the cache
+      .then(function userGroupUpdated() {
+        cacheService.users.removeAll();
+      });
 
     };
 
     return service;
 
-}]);
+  }]);

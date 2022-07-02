@@ -39,148 +39,159 @@ import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
 /**
- * AuthenticationProviderService implementation which authenticates users with
- * a username/password pair, producing new UserContext objects which are backed
- * by an underlying, arbitrary database.
+ * AuthenticationProviderService implementation which authenticates users with a username/password
+ * pair, producing new UserContext objects which are backed by an underlying, arbitrary database.
  */
-public class JDBCAuthenticationProviderService implements AuthenticationProviderService  {
+public class JDBCAuthenticationProviderService implements AuthenticationProviderService {
 
-    /**
-     * The environment of the Guacamole server.
-     */
-    @Inject
-    private JDBCEnvironment environment;
+  /**
+   * The environment of the Guacamole server.
+   */
+  @Inject
+  private JDBCEnvironment environment;
 
-    /**
-     * Service for accessing users.
-     */
-    @Inject
-    private UserService userService;
+  /**
+   * Service for accessing users.
+   */
+  @Inject
+  private UserService userService;
 
-    /**
-     * Service for enforcing password complexity policies.
-     */
-    @Inject
-    private PasswordPolicyService passwordPolicyService;
+  /**
+   * Service for enforcing password complexity policies.
+   */
+  @Inject
+  private PasswordPolicyService passwordPolicyService;
 
-    /**
-     * Provider for retrieving UserContext instances.
-     */
-    @Inject
-    private Provider<ModeledUserContext> userContextProvider;
+  /**
+   * Provider for retrieving UserContext instances.
+   */
+  @Inject
+  private Provider<ModeledUserContext> userContextProvider;
 
-    /**
-     * Mapper for writing connection history.
-     */
-    @Inject
-    private ConnectionRecordMapper connectionRecordMapper;
+  /**
+   * Mapper for writing connection history.
+   */
+  @Inject
+  private ConnectionRecordMapper connectionRecordMapper;
 
-    @Override
-    public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
-            Credentials credentials) throws GuacamoleException {
+  @Override
+  public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
+      Credentials credentials) throws GuacamoleException {
 
-        // Authenticate user
-        AuthenticatedUser user = userService.retrieveAuthenticatedUser(authenticationProvider, credentials);
-        if (user != null)
-            return user;
-
-        // Otherwise, unauthorized
-        throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
-
+    // Authenticate user
+    AuthenticatedUser user = userService.retrieveAuthenticatedUser(authenticationProvider,
+        credentials);
+    if (user != null) {
+      return user;
     }
 
-    @Override
-    public ModeledUserContext getUserContext(AuthenticationProvider authenticationProvider,
-            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+    // Otherwise, unauthorized
+    throw new GuacamoleInvalidCredentialsException("Invalid login",
+        CredentialsInfo.USERNAME_PASSWORD);
 
-        // Always allow but provide no data for users authenticated via our own
-        // connection sharing links
-        if (authenticatedUser instanceof SharedAuthenticatedUser)
-            return null;
+  }
 
-        // Set semantic flags based on context
-        boolean databaseCredentialsUsed = (authenticatedUser instanceof ModeledAuthenticatedUser);
-        boolean databaseRestrictionsApplicable = (databaseCredentialsUsed || environment.isUserRequired());
+  @Override
+  public ModeledUserContext getUserContext(AuthenticationProvider authenticationProvider,
+      AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
-        // Retrieve user account for already-authenticated user
-        ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
-        ModeledUserContext context = userContextProvider.get();
-        if (user != null && !user.isDisabled()) {
+    // Always allow but provide no data for users authenticated via our own
+    // connection sharing links
+    if (authenticatedUser instanceof SharedAuthenticatedUser) {
+      return null;
+    }
 
-            // Enforce applicable account restrictions
-            if (databaseRestrictionsApplicable) {
+    // Set semantic flags based on context
+    boolean databaseCredentialsUsed = (authenticatedUser instanceof ModeledAuthenticatedUser);
+    boolean databaseRestrictionsApplicable = (databaseCredentialsUsed
+        || environment.isUserRequired());
 
-                // Verify user account is still valid as of today
-                if (!user.isAccountValid())
-                    throw new TranslatableGuacamoleClientException("User "
-                            + "account is no longer valid.",
-                            "LOGIN.ERROR_NOT_VALID");
+    // Retrieve user account for already-authenticated user
+    ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
+    ModeledUserContext context = userContextProvider.get();
+    if (user != null && !user.isDisabled()) {
 
-                // Verify user account is allowed to be used at the current time
-                if (!user.isAccountAccessible())
-                    throw new TranslatableGuacamoleClientException("User "
-                            + "account may not be used at this time.",
-                            "LOGIN.ERROR_NOT_ACCESSIBLE");
+      // Enforce applicable account restrictions
+      if (databaseRestrictionsApplicable) {
 
-            }
-
-            // Update password if password is expired AND the password was
-            // actually involved in the authentication process
-            if (databaseCredentialsUsed) {
-                if (user.isExpired() || passwordPolicyService.isPasswordExpired(user))
-                    userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
-            }
-
+        // Verify user account is still valid as of today
+        if (!user.isAccountValid()) {
+          throw new TranslatableGuacamoleClientException("User "
+              + "account is no longer valid.",
+              "LOGIN.ERROR_NOT_VALID");
         }
 
-        // If no user account is found, and database-specific account
-        // restrictions do not apply, get a skeleton user.
-        else if (!databaseRestrictionsApplicable) {
-            user = userService.retrieveSkeletonUser(authenticationProvider, authenticatedUser);
-
-            // If auto account creation is enabled, add user to DB.
-            if (environment.autoCreateAbsentAccounts()) {
-                ModeledUser createdUser = userService.createObject(new PrivilegedModeledAuthenticatedUser(user.getCurrentUser()), user);
-                user.setModel(createdUser.getModel());
-            }
-
+        // Verify user account is allowed to be used at the current time
+        if (!user.isAccountAccessible()) {
+          throw new TranslatableGuacamoleClientException("User "
+              + "account may not be used at this time.",
+              "LOGIN.ERROR_NOT_ACCESSIBLE");
         }
 
-        // Veto authentication result only if database-specific account
-        // restrictions apply in this situation
-        else
-            throw new GuacamoleInvalidCredentialsException("Invalid login",
-                    CredentialsInfo.USERNAME_PASSWORD);
+      }
 
-        // Initialize the UserContext with the user account and return it.
-        context.init(user.getCurrentUser());
-        context.recordUserLogin();
-        return context;
-
-    }
-
-    @Override
-    public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
-            UserContext context, AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-
-        // No need to update the context
-        return context;
-
-    }
-
-    @Override
-    public UserContext decorateUserContext(AuthenticationProvider authenticationProvider,
-            UserContext context, AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
-
-        // Track connection history only for external connections, and only if enabled in the config
-        if (environment.trackExternalConnectionHistory() && context.getAuthenticationProvider() != authenticationProvider) {
-            return new HistoryTrackingUserContext(context, credentials.getRemoteHostname(), connectionRecordMapper);
+      // Update password if password is expired AND the password was
+      // actually involved in the authentication process
+      if (databaseCredentialsUsed) {
+        if (user.isExpired() || passwordPolicyService.isPasswordExpired(user)) {
+          userService.resetExpiredPassword(user, authenticatedUser.getCredentials());
         }
-
-        return context;
+      }
 
     }
+
+    // If no user account is found, and database-specific account
+    // restrictions do not apply, get a skeleton user.
+    else if (!databaseRestrictionsApplicable) {
+      user = userService.retrieveSkeletonUser(authenticationProvider, authenticatedUser);
+
+      // If auto account creation is enabled, add user to DB.
+      if (environment.autoCreateAbsentAccounts()) {
+        ModeledUser createdUser = userService.createObject(
+            new PrivilegedModeledAuthenticatedUser(user.getCurrentUser()), user);
+        user.setModel(createdUser.getModel());
+      }
+
+    }
+
+    // Veto authentication result only if database-specific account
+    // restrictions apply in this situation
+    else {
+      throw new GuacamoleInvalidCredentialsException("Invalid login",
+          CredentialsInfo.USERNAME_PASSWORD);
+    }
+
+    // Initialize the UserContext with the user account and return it.
+    context.init(user.getCurrentUser());
+    context.recordUserLogin();
+    return context;
+
+  }
+
+  @Override
+  public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
+      UserContext context, AuthenticatedUser authenticatedUser,
+      Credentials credentials) throws GuacamoleException {
+
+    // No need to update the context
+    return context;
+
+  }
+
+  @Override
+  public UserContext decorateUserContext(AuthenticationProvider authenticationProvider,
+      UserContext context, AuthenticatedUser authenticatedUser,
+      Credentials credentials) throws GuacamoleException {
+
+    // Track connection history only for external connections, and only if enabled in the config
+    if (environment.trackExternalConnectionHistory()
+        && context.getAuthenticationProvider() != authenticationProvider) {
+      return new HistoryTrackingUserContext(context, credentials.getRemoteHostname(),
+          connectionRecordMapper);
+    }
+
+    return context;
+
+  }
 
 }

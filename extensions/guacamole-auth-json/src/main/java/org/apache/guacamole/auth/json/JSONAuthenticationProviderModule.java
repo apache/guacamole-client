@@ -28,58 +28,54 @@ import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 
 /**
- * Guice module which configures injections specific to the JSON authentication
- * provider.
+ * Guice module which configures injections specific to the JSON authentication provider.
  */
 public class JSONAuthenticationProviderModule extends AbstractModule {
 
-    /**
-     * Guacamole server environment.
-     */
-    private final Environment environment;
+  /**
+   * Guacamole server environment.
+   */
+  private final Environment environment;
 
-    /**
-     * A reference to the JSONAuthenticationProvider on behalf of which this
-     * module has configured injection.
-     */
-    private final AuthenticationProvider authProvider;
+  /**
+   * A reference to the JSONAuthenticationProvider on behalf of which this module has configured
+   * injection.
+   */
+  private final AuthenticationProvider authProvider;
 
-    /**
-     * Creates a new JSON authentication provider module which configures
-     * injection for the JSONAuthenticationProvider.
-     *
-     * @param authProvider
-     *     The AuthenticationProvider for which injection is being configured.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the Guacamole server
-     *     environment.
-     */
-    public JSONAuthenticationProviderModule(AuthenticationProvider authProvider)
-            throws GuacamoleException {
+  /**
+   * Creates a new JSON authentication provider module which configures injection for the
+   * JSONAuthenticationProvider.
+   *
+   * @param authProvider The AuthenticationProvider for which injection is being configured.
+   * @throws GuacamoleException If an error occurs while retrieving the Guacamole server
+   *                            environment.
+   */
+  public JSONAuthenticationProviderModule(AuthenticationProvider authProvider)
+      throws GuacamoleException {
 
-        // Get local environment
-        this.environment = LocalEnvironment.getInstance();
+    // Get local environment
+    this.environment = LocalEnvironment.getInstance();
 
-        // Store associated auth provider
-        this.authProvider = authProvider;
+    // Store associated auth provider
+    this.authProvider = authProvider;
 
-    }
+  }
 
-    @Override
-    protected void configure() {
+  @Override
+  protected void configure() {
 
-        // Bind core implementations of guacamole-ext classes
-        bind(AuthenticationProvider.class).toInstance(authProvider);
-        bind(Environment.class).toInstance(environment);
+    // Bind core implementations of guacamole-ext classes
+    bind(AuthenticationProvider.class).toInstance(authProvider);
+    bind(Environment.class).toInstance(environment);
 
-        // Bind JSON-specific services
-        bind(ConfigurationService.class);
-        bind(ConnectionService.class);
-        bind(CryptoService.class);
-        bind(RequestValidationService.class);
-        bind(UserDataService.class);
+    // Bind JSON-specific services
+    bind(ConfigurationService.class);
+    bind(ConnectionService.class);
+    bind(CryptoService.class);
+    bind(RequestValidationService.class);
+    bind(UserDataService.class);
 
-    }
+  }
 
 }

@@ -23,136 +23,111 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.permission.Permission;
 import org.apache.guacamole.net.auth.permission.PermissionSet;
 
 /**
- * Service which provides convenience methods for creating, retrieving, and
- * deleting permissions within a backend database model, and for obtaining the
- * permission sets that contain these permissions. This service will
- * automatically enforce the permissions of the current user.
+ * Service which provides convenience methods for creating, retrieving, and deleting permissions
+ * within a backend database model, and for obtaining the permission sets that contain these
+ * permissions. This service will automatically enforce the permissions of the current user.
  *
- * @param <PermissionSetType>
- *     The type of permission sets this service provides access to.
- *
- * @param <PermissionType>
- *     The type of permission this service provides access to.
- *
- * @param <ModelType>
- *     The underlying model object used to represent PermissionType in the
- *     database.
+ * @param <PermissionSetType> The type of permission sets this service provides access to.
+ * @param <PermissionType>    The type of permission this service provides access to.
+ * @param <ModelType>         The underlying model object used to represent PermissionType in the
+ *                            database.
  */
 public abstract class ModeledPermissionService<PermissionSetType extends PermissionSet<PermissionType>,
-        PermissionType extends Permission, ModelType>
+    PermissionType extends Permission, ModelType>
     extends AbstractPermissionService<PermissionSetType, PermissionType> {
 
-    /**
-     * Returns an instance of a mapper for the type of permission used by this
-     * service.
-     *
-     * @return
-     *     A mapper which provides access to the model objects associated with
-     *     the permissions used by this service.
-     */
-    protected abstract PermissionMapper<ModelType> getPermissionMapper();
+  /**
+   * Returns an instance of a mapper for the type of permission used by this service.
+   *
+   * @return A mapper which provides access to the model objects associated with the permissions
+   * used by this service.
+   */
+  protected abstract PermissionMapper<ModelType> getPermissionMapper();
 
-    /**
-     * Returns an instance of a permission which is based on the given model
-     * object.
-     *
-     * @param model
-     *     The model object to use to produce the returned permission.
-     *
-     * @return
-     *     A permission which is based on the given model object.
-     */
-    protected abstract PermissionType getPermissionInstance(ModelType model);
+  /**
+   * Returns an instance of a permission which is based on the given model object.
+   *
+   * @param model The model object to use to produce the returned permission.
+   * @return A permission which is based on the given model object.
+   */
+  protected abstract PermissionType getPermissionInstance(ModelType model);
 
-    /**
-     * Returns a collection of permissions which are based on the models in
-     * the given collection.
-     *
-     * @param models
-     *     The model objects to use to produce the permissions within the
-     *     returned set.
-     *
-     * @return
-     *     A set of permissions which are based on the models in the given
-     *     collection.
-     */
-    protected Set<PermissionType> getPermissionInstances(Collection<ModelType> models) {
+  /**
+   * Returns a collection of permissions which are based on the models in the given collection.
+   *
+   * @param models The model objects to use to produce the permissions within the returned set.
+   * @return A set of permissions which are based on the models in the given collection.
+   */
+  protected Set<PermissionType> getPermissionInstances(Collection<ModelType> models) {
 
-        // Create new collection of permissions by manually converting each model
-        Set<PermissionType> permissions = new HashSet<PermissionType>(models.size());
-        for (ModelType model : models)
-            permissions.add(getPermissionInstance(model));
-
-        return permissions;
-
+    // Create new collection of permissions by manually converting each model
+    Set<PermissionType> permissions = new HashSet<PermissionType>(models.size());
+    for (ModelType model : models) {
+      permissions.add(getPermissionInstance(model));
     }
 
-    /**
-     * Returns an instance of a model object which is based on the given
-     * permission and target entity.
-     *
-     * @param targetEntity
-     *     The entity to whom this permission is granted.
-     *
-     * @param permission
-     *     The permission to use to produce the returned model object.
-     *
-     * @return
-     *     A model object which is based on the given permission and target
-     *     entity.
-     */
-    protected abstract ModelType getModelInstance(
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            PermissionType permission);
+    return permissions;
 
-    /**
-     * Returns a collection of model objects which are based on the given
-     * permissions and target entity.
-     *
-     * @param targetEntity
-     *     The entity to whom this permission is granted.
-     *
-     * @param permissions
-     *     The permissions to use to produce the returned model objects.
-     *
-     * @return
-     *     A collection of model objects which are based on the given
-     *     permissions and target entity.
-     */
-    protected Collection<ModelType> getModelInstances(
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Collection<PermissionType> permissions) {
+  }
 
-        // Create new collection of models by manually converting each permission
-        Collection<ModelType> models = new ArrayList<ModelType>(permissions.size());
-        for (PermissionType permission : permissions)
-            models.add(getModelInstance(targetEntity, permission));
+  /**
+   * Returns an instance of a model object which is based on the given permission and target
+   * entity.
+   *
+   * @param targetEntity The entity to whom this permission is granted.
+   * @param permission   The permission to use to produce the returned model object.
+   * @return A model object which is based on the given permission and target entity.
+   */
+  protected abstract ModelType getModelInstance(
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      PermissionType permission);
 
-        return models;
+  /**
+   * Returns a collection of model objects which are based on the given permissions and target
+   * entity.
+   *
+   * @param targetEntity The entity to whom this permission is granted.
+   * @param permissions  The permissions to use to produce the returned model objects.
+   * @return A collection of model objects which are based on the given permissions and target
+   * entity.
+   */
+  protected Collection<ModelType> getModelInstances(
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Collection<PermissionType> permissions) {
 
+    // Create new collection of models by manually converting each permission
+    Collection<ModelType> models = new ArrayList<ModelType>(permissions.size());
+    for (PermissionType permission : permissions) {
+      models.add(getModelInstance(targetEntity, permission));
     }
 
-    @Override
-    public Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException {
+    return models;
 
-        // Retrieve permissions only if allowed
-        if (canReadPermissions(user, targetEntity))
-            return getPermissionInstances(getPermissionMapper().select(targetEntity.getModel(), effectiveGroups));
+  }
 
-        // User cannot read this entity's permissions
-        throw new GuacamoleSecurityException("Permission denied.");
+  @Override
+  public Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Set<String> effectiveGroups) throws GuacamoleException {
 
+    // Retrieve permissions only if allowed
+    if (canReadPermissions(user, targetEntity)) {
+      return getPermissionInstances(
+          getPermissionMapper().select(targetEntity.getModel(), effectiveGroups));
     }
+
+    // User cannot read this entity's permissions
+    throw new GuacamoleSecurityException("Permission denied.");
+
+  }
 
 }

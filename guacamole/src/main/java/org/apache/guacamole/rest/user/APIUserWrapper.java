@@ -30,110 +30,110 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * A wrapper to make an APIUser look like a User. Useful where an
- * org.apache.guacamole.net.auth.User is required. As a simple wrapper for
- * APIUser, access to permissions is not provided. Any attempt to access or
- * manipulate permissions on an APIUserWrapper will result in an exception.
+ * A wrapper to make an APIUser look like a User. Useful where an org.apache.guacamole.net.auth.User
+ * is required. As a simple wrapper for APIUser, access to permissions is not provided. Any attempt
+ * to access or manipulate permissions on an APIUserWrapper will result in an exception.
  */
 public class APIUserWrapper implements User {
-    
-    /**
-     * The wrapped APIUser.
-     */
-    private final APIUser apiUser;
-    
-    /**
-     * Wrap a given APIUser to expose as a User.
-     * @param apiUser The APIUser to wrap.
-     */
-    public APIUserWrapper(APIUser apiUser) {
-        this.apiUser = apiUser;
-    }
-    
-    @Override
-    public String getIdentifier() {
-        return apiUser.getUsername();
-    }
 
-    @Override
-    public void setIdentifier(String username) {
-        apiUser.setUsername(username);
-    }
+  /**
+   * The wrapped APIUser.
+   */
+  private final APIUser apiUser;
 
-    @Override
-    public String getPassword() {
-        return apiUser.getPassword();
-    }
+  /**
+   * Wrap a given APIUser to expose as a User.
+   *
+   * @param apiUser The APIUser to wrap.
+   */
+  public APIUserWrapper(APIUser apiUser) {
+    this.apiUser = apiUser;
+  }
 
-    @Override
-    public void setPassword(String password) {
-        apiUser.setPassword(password);
-    }
+  @Override
+  public String getIdentifier() {
+    return apiUser.getUsername();
+  }
 
-    @Override
-    public Map<String, String> getAttributes() {
-        return apiUser.getAttributes();
-    }
+  @Override
+  public void setIdentifier(String username) {
+    apiUser.setUsername(username);
+  }
 
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        apiUser.setAttributes(attributes);
-    }
+  @Override
+  public String getPassword() {
+    return apiUser.getPassword();
+  }
 
-    @Override
-    public SystemPermissionSet getSystemPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
-    }
+  @Override
+  public void setPassword(String password) {
+    apiUser.setPassword(password);
+  }
 
-    @Override
-    public ObjectPermissionSet getConnectionPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
-    }
+  @Override
+  public Map<String, String> getAttributes() {
+    return apiUser.getAttributes();
+  }
 
-    @Override
-    public ObjectPermissionSet getConnectionGroupPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
-    }
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    apiUser.setAttributes(attributes);
+  }
 
-    @Override
-    public ObjectPermissionSet getSharingProfilePermissions() throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
-    }
+  @Override
+  public SystemPermissionSet getSystemPermissions()
+      throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+  }
 
-    @Override
-    public ObjectPermissionSet getUserPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
-    }
+  @Override
+  public ObjectPermissionSet getConnectionPermissions()
+      throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+  }
 
-    @Override
-    public ObjectPermissionSet getUserGroupPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
-    }
+  @Override
+  public ObjectPermissionSet getConnectionGroupPermissions()
+      throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+  }
 
-    @Override
-    public ObjectPermissionSet getActiveConnectionPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
-    }
+  @Override
+  public ObjectPermissionSet getSharingProfilePermissions() throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+  }
 
-    @Override
-    public Permissions getEffectivePermissions() throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
-    }
+  @Override
+  public ObjectPermissionSet getUserPermissions()
+      throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+  }
 
-    @Override
-    public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserWrapper does not provide group access.");
-    }
+  @Override
+  public ObjectPermissionSet getUserGroupPermissions()
+      throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+  }
 
-    @Override
-    public Date getLastActive() {
-        return null;
-    }
+  @Override
+  public ObjectPermissionSet getActiveConnectionPermissions()
+      throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+  }
+
+  @Override
+  public Permissions getEffectivePermissions() throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("APIUserWrapper does not provide permission access.");
+  }
+
+  @Override
+  public RelatedObjectSet getUserGroups() throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("APIUserWrapper does not provide group access.");
+  }
+
+  @Override
+  public Date getLastActive() {
+    return null;
+  }
 
 }

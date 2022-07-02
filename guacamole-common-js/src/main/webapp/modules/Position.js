@@ -29,65 +29,68 @@ var Guacamole = Guacamole || {};
  */
 Guacamole.Position = function Position(template) {
 
-    template = template || {};
+  template = template || {};
 
-    /**
-     * The current X position, in pixels.
-     *
-     * @type {!number}
-     * @default 0
-     */
-    this.x = template.x || 0;
+  /**
+   * The current X position, in pixels.
+   *
+   * @type {!number}
+   * @default 0
+   */
+  this.x = template.x || 0;
 
-    /**
-     * The current Y position, in pixels.
-     *
-     * @type {!number}
-     * @default 0
-     */
-    this.y = template.y || 0;
+  /**
+   * The current Y position, in pixels.
+   *
+   * @type {!number}
+   * @default 0
+   */
+  this.y = template.y || 0;
 
-    /**
-     * Assigns the position represented by the given element and
-     * clientX/clientY coordinates. The clientX and clientY coordinates are
-     * relative to the browser viewport and are commonly available within
-     * JavaScript event objects. The final position is translated to
-     * coordinates that are relative the given element.
-     *
-     * @param {!Element} element
-     *     The element the coordinates should be relative to.
-     *
-     * @param {!number} clientX
-     *     The viewport-relative X coordinate to translate.
-     *
-     * @param {!number} clientY
-     *     The viewport-relative Y coordinate to translate.
-     */
-    this.fromClientPosition = function fromClientPosition(element, clientX, clientY) {
+  /**
+   * Assigns the position represented by the given element and
+   * clientX/clientY coordinates. The clientX and clientY coordinates are
+   * relative to the browser viewport and are commonly available within
+   * JavaScript event objects. The final position is translated to
+   * coordinates that are relative the given element.
+   *
+   * @param {!Element} element
+   *     The element the coordinates should be relative to.
+   *
+   * @param {!number} clientX
+   *     The viewport-relative X coordinate to translate.
+   *
+   * @param {!number} clientY
+   *     The viewport-relative Y coordinate to translate.
+   */
+  this.fromClientPosition = function fromClientPosition(element, clientX,
+      clientY) {
 
-        this.x = clientX - element.offsetLeft;
-        this.y = clientY - element.offsetTop;
+    this.x = clientX - element.offsetLeft;
+    this.y = clientY - element.offsetTop;
 
-        // This is all JUST so we can get the position within the element
-        var parent = element.offsetParent;
-        while (parent && !(parent === document.body)) {
-            this.x -= parent.offsetLeft - parent.scrollLeft;
-            this.y -= parent.offsetTop  - parent.scrollTop;
+    // This is all JUST so we can get the position within the element
+    var parent = element.offsetParent;
+    while (parent && !(parent === document.body)) {
+      this.x -= parent.offsetLeft - parent.scrollLeft;
+      this.y -= parent.offsetTop - parent.scrollTop;
 
-            parent = parent.offsetParent;
-        }
+      parent = parent.offsetParent;
+    }
 
-        // Element ultimately depends on positioning within document body,
-        // take document scroll into account.
-        if (parent) {
-            var documentScrollLeft = document.body.scrollLeft || document.documentElement.scrollLeft;
-            var documentScrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+    // Element ultimately depends on positioning within document body,
+    // take document scroll into account.
+    if (parent) {
+      var documentScrollLeft = document.body.scrollLeft
+          || document.documentElement.scrollLeft;
+      var documentScrollTop = document.body.scrollTop
+          || document.documentElement.scrollTop;
 
-            this.x -= parent.offsetLeft - documentScrollLeft;
-            this.y -= parent.offsetTop  - documentScrollTop;
-        }
+      this.x -= parent.offsetLeft - documentScrollLeft;
+      this.y -= parent.offsetTop - documentScrollTop;
+    }
 
-    };
+  };
 
 };
 
@@ -111,8 +114,9 @@ Guacamole.Position = function Position(template) {
  *     A new Guacamole.Position representing the relative position of the given
  *     client coordinates.
  */
-Guacamole.Position.fromClientPosition = function fromClientPosition(element, clientX, clientY) {
-    var position = new Guacamole.Position();
-    position.fromClientPosition(element, clientX, clientY);
-    return position;
+Guacamole.Position.fromClientPosition = function fromClientPosition(element,
+    clientX, clientY) {
+  var position = new Guacamole.Position();
+  position.fromClientPosition(element, clientX, clientY);
+  return position;
 };

@@ -20,183 +20,194 @@
 /**
  * Provides the ManagedFileUpload class used by the guacClientManager service.
  */
-angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector',
-    function defineManagedFileUpload($rootScope, $injector) {
+angular.module('client').factory('ManagedFileUpload',
+    ['$rootScope', '$injector',
+      function defineManagedFileUpload($rootScope, $injector) {
 
-    // Required types
-    var Error                    = $injector.get('Error');
-    var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
+        // Required types
+        var Error = $injector.get('Error');
+        var ManagedFileTransferState = $injector.get(
+            'ManagedFileTransferState');
 
-    // Required services
-    var requestService = $injector.get('requestService');
-    var tunnelService  = $injector.get('tunnelService');
-
-    /**
-     * Object which serves as a surrogate interface, encapsulating a Guacamole
-     * file upload while it is active, allowing it to be detached and
-     * reattached from different client views.
-     * 
-     * @constructor
-     * @param {ManagedFileUpload|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ManagedFileUpload.
-     */
-    var ManagedFileUpload = function ManagedFileUpload(template) {
-
-        // Use empty object by default
-        template = template || {};
+        // Required services
+        var requestService = $injector.get('requestService');
+        var tunnelService = $injector.get('tunnelService');
 
         /**
-         * The current state of the file transfer stream.
+         * Object which serves as a surrogate interface, encapsulating a Guacamole
+         * file upload while it is active, allowing it to be detached and
+         * reattached from different client views.
          *
-         * @type ManagedFileTransferState
+         * @constructor
+         * @param {ManagedFileUpload|Object} [template={}]
+         *     The object whose properties should be copied within the new
+         *     ManagedFileUpload.
          */
-        this.transferState = template.transferState || new ManagedFileTransferState();
+        var ManagedFileUpload = function ManagedFileUpload(template) {
+
+          // Use empty object by default
+          template = template || {};
+
+          /**
+           * The current state of the file transfer stream.
+           *
+           * @type ManagedFileTransferState
+           */
+          this.transferState = template.transferState
+              || new ManagedFileTransferState();
+
+          /**
+           * The mimetype of the file being transferred.
+           *
+           * @type String
+           */
+          this.mimetype = template.mimetype;
+
+          /**
+           * The filename of the file being transferred.
+           *
+           * @type String
+           */
+          this.filename = template.filename;
+
+          /**
+           * The number of bytes transferred so far.
+           *
+           * @type Number
+           */
+          this.progress = template.progress;
+
+          /**
+           * The total number of bytes in the file.
+           *
+           * @type Number
+           */
+          this.length = template.length;
+
+        };
 
         /**
-         * The mimetype of the file being transferred.
+         * Creates a new ManagedFileUpload which uploads the given file to the
+         * server through the given Guacamole client.
          *
-         * @type String
-         */
-        this.mimetype = template.mimetype;
-
-        /**
-         * The filename of the file being transferred.
+         * @param {ManagedClient} managedClient
+         *     The ManagedClient through which the file is to be uploaded.
          *
-         * @type String
-         */
-        this.filename = template.filename;
-
-        /**
-         * The number of bytes transferred so far.
+         * @param {File} file
+         *     The file to upload.
          *
-         * @type Number
-         */
-        this.progress = template.progress;
-
-        /**
-         * The total number of bytes in the file.
+         * @param {Object} [object]
+         *     The object to upload the file to, if any, such as a filesystem
+         *     object.
          *
-         * @type Number
+         * @param {String} [streamName]
+         *     The name of the stream to upload the file to. If an object is given,
+         *     this must be specified.
+         *
+         * @return {ManagedFileUpload}
+         *     A new ManagedFileUpload object which can be used to track the
+         *     progress of the upload.
          */
-        this.length = template.length;
+        ManagedFileUpload.getInstance = function getInstance(managedClient,
+            file, object, streamName) {
 
-    };
+          var managedFileUpload = new ManagedFileUpload();
 
-    /**
-     * Creates a new ManagedFileUpload which uploads the given file to the
-     * server through the given Guacamole client.
-     * 
-     * @param {ManagedClient} managedClient
-     *     The ManagedClient through which the file is to be uploaded.
-     * 
-     * @param {File} file
-     *     The file to upload.
-     *     
-     * @param {Object} [object]
-     *     The object to upload the file to, if any, such as a filesystem
-     *     object.
-     *
-     * @param {String} [streamName]
-     *     The name of the stream to upload the file to. If an object is given,
-     *     this must be specified.
-     *
-     * @return {ManagedFileUpload}
-     *     A new ManagedFileUpload object which can be used to track the
-     *     progress of the upload.
-     */
-    ManagedFileUpload.getInstance = function getInstance(managedClient, file, object, streamName) {
+          // Pull Guacamole.Tunnel and Guacamole.Client from given ManagedClient
+          var client = managedClient.client;
+          var tunnel = managedClient.tunnel;
 
-        var managedFileUpload = new ManagedFileUpload();
-
-        // Pull Guacamole.Tunnel and Guacamole.Client from given ManagedClient
-        var client = managedClient.client;
-        var tunnel = managedClient.tunnel;
-
-        // Open file for writing
-        var stream;
-        if (!object)
+          // Open file for writing
+          var stream;
+          if (!object) {
             stream = client.createFileStream(file.type, file.name);
-
-        // If object/streamName specified, upload to that instead of a file
-        // stream
-        else
+          }// If object/streamName specified, upload to that instead of a file
+          // stream
+          else {
             stream = object.createOutputStream(file.type, streamName);
+          }
 
-        // Notify that the file transfer is pending
-        $rootScope.$evalAsync(function uploadStreamOpen() {
+          // Notify that the file transfer is pending
+          $rootScope.$evalAsync(function uploadStreamOpen() {
 
             // Init managed upload
             managedFileUpload.filename = file.name;
             managedFileUpload.mimetype = file.type;
             managedFileUpload.progress = 0;
-            managedFileUpload.length   = file.size;
+            managedFileUpload.length = file.size;
 
             // Notify that stream is open
-            ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
+            ManagedFileTransferState.setStreamState(
+                managedFileUpload.transferState,
                 ManagedFileTransferState.StreamState.OPEN);
 
-        });
+          });
 
-        // Upload file once stream is acknowledged
-        stream.onack = function beginUpload(status) {
+          // Upload file once stream is acknowledged
+          stream.onack = function beginUpload(status) {
 
             // Notify of any errors from the Guacamole server
             if (status.isError()) {
-                $rootScope.$apply(function uploadStreamError() {
-                    ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
-                        ManagedFileTransferState.StreamState.ERROR,
-                        status.code);
-                });
-                return;
+              $rootScope.$apply(function uploadStreamError() {
+                ManagedFileTransferState.setStreamState(
+                    managedFileUpload.transferState,
+                    ManagedFileTransferState.StreamState.ERROR,
+                    status.code);
+              });
+              return;
             }
 
             // Begin upload
-            tunnelService.uploadToStream(tunnel.uuid, stream, file, function uploadContinuing(length) {
-                $rootScope.$apply(function uploadStreamProgress() {
+            tunnelService.uploadToStream(tunnel.uuid, stream, file,
+                function uploadContinuing(length) {
+                  $rootScope.$apply(function uploadStreamProgress() {
                     managedFileUpload.progress = length;
-                });
-            })
+                  });
+                })
 
             // Notify if upload succeeds
             .then(function uploadSuccessful() {
 
-                // Upload complete
-                managedFileUpload.progress = file.size;
-                ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
-                    ManagedFileTransferState.StreamState.CLOSED);
+                  // Upload complete
+                  managedFileUpload.progress = file.size;
+                  ManagedFileTransferState.setStreamState(
+                      managedFileUpload.transferState,
+                      ManagedFileTransferState.StreamState.CLOSED);
 
-                // Notify of upload completion
-                $rootScope.$broadcast('guacUploadComplete', file.name);
+                  // Notify of upload completion
+                  $rootScope.$broadcast('guacUploadComplete', file.name);
 
-            },
+                },
 
-            // Notify if upload fails
-            requestService.createErrorCallback(function uploadFailed(error) {
+                // Notify if upload fails
+                requestService.createErrorCallback(
+                    function uploadFailed(error) {
 
-                // Use provide status code if the error is coming from the stream
-                if (error.type === Error.Type.STREAM_ERROR)
-                    ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
-                        ManagedFileTransferState.StreamState.ERROR,
-                        error.statusCode);
+                      // Use provide status code if the error is coming from the stream
+                      if (error.type === Error.Type.STREAM_ERROR) {
+                        ManagedFileTransferState.setStreamState(
+                            managedFileUpload.transferState,
+                            ManagedFileTransferState.StreamState.ERROR,
+                            error.statusCode);
+                      }// Fail with internal error for all other causes
+                      else {
+                        ManagedFileTransferState.setStreamState(
+                            managedFileUpload.transferState,
+                            ManagedFileTransferState.StreamState.ERROR,
+                            Guacamole.Status.Code.INTERNAL_ERROR);
+                      }
 
-                // Fail with internal error for all other causes
-                else
-                    ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
-                        ManagedFileTransferState.StreamState.ERROR,
-                        Guacamole.Status.Code.INTERNAL_ERROR);
-
-            }));
+                    }));
 
             // Ignore all further acks
             stream.onack = null;
 
+          };
+
+          return managedFileUpload;
+
         };
 
-        return managedFileUpload;
+        return ManagedFileUpload;
 
-    };
-
-    return ManagedFileUpload;
-
-}]);
+      }]);

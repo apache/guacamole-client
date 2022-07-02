@@ -31,51 +31,48 @@ import org.apache.guacamole.GuacamoleUpstreamTimeoutException;
 import org.apache.guacamole.protocol.GuacamoleInstruction;
 
 /**
- * A GuacamoleWriter which wraps a standard Java Writer, using that Writer as
- * the Guacamole instruction stream.
+ * A GuacamoleWriter which wraps a standard Java Writer, using that Writer as the Guacamole
+ * instruction stream.
  */
 public class WriterGuacamoleWriter implements GuacamoleWriter {
 
-    /**
-     * Wrapped Writer to be used for all output.
-     */
-    private Writer output;
+  /**
+   * Wrapped Writer to be used for all output.
+   */
+  private Writer output;
 
-    /**
-     * Creates a new WriterGuacamoleWriter which will use the given Writer as
-     * the Guacamole instruction stream.
-     *
-     * @param output The Writer to use as the Guacamole instruction stream.
-     */
-    public WriterGuacamoleWriter(Writer output) {
-        this.output = output;
-    }
+  /**
+   * Creates a new WriterGuacamoleWriter which will use the given Writer as the Guacamole
+   * instruction stream.
+   *
+   * @param output The Writer to use as the Guacamole instruction stream.
+   */
+  public WriterGuacamoleWriter(Writer output) {
+    this.output = output;
+  }
 
-    @Override
-    public void write(char[] chunk, int off, int len) throws GuacamoleException {
-        try {
-            output.write(chunk, off, len);
-            output.flush();
-        }
-        catch (SocketTimeoutException e) {
-            throw new GuacamoleUpstreamTimeoutException("Connection to guacd timed out.", e);
-        }
-        catch (SocketException e) {
-            throw new GuacamoleConnectionClosedException("Connection to guacd is closed.", e);
-        }
-        catch (IOException e) {
-            throw new GuacamoleServerException(e);
-        }
+  @Override
+  public void write(char[] chunk, int off, int len) throws GuacamoleException {
+    try {
+      output.write(chunk, off, len);
+      output.flush();
+    } catch (SocketTimeoutException e) {
+      throw new GuacamoleUpstreamTimeoutException("Connection to guacd timed out.", e);
+    } catch (SocketException e) {
+      throw new GuacamoleConnectionClosedException("Connection to guacd is closed.", e);
+    } catch (IOException e) {
+      throw new GuacamoleServerException(e);
     }
+  }
 
-    @Override
-    public void write(char[] chunk) throws GuacamoleException {
-        write(chunk, 0, chunk.length);
-    }
+  @Override
+  public void write(char[] chunk) throws GuacamoleException {
+    write(chunk, 0, chunk.length);
+  }
 
-    @Override
-    public void writeInstruction(GuacamoleInstruction instruction) throws GuacamoleException {
-        write(instruction.toString().toCharArray());
-    }
+  @Override
+  public void writeInstruction(GuacamoleInstruction instruction) throws GuacamoleException {
+    write(instruction.toString().toCharArray());
+  }
 
 }

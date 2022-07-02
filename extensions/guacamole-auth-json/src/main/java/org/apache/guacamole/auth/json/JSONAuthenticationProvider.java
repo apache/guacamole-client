@@ -28,55 +28,54 @@ import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * Allows users to be authenticated using encrypted blobs of JSON data. The
- * username of the user, all available connections, and the parameters
- * associated with those connections are all determined by the contents of the
- * provided JSON. The JSON itself is authorized by virtue of being properly
- * encrypted with a shared key.
+ * Allows users to be authenticated using encrypted blobs of JSON data. The username of the user,
+ * all available connections, and the parameters associated with those connections are all
+ * determined by the contents of the provided JSON. The JSON itself is authorized by virtue of being
+ * properly encrypted with a shared key.
  */
 public class JSONAuthenticationProvider extends AbstractAuthenticationProvider {
 
-    /**
-     * Injector which will manage the object graph of this authentication
-     * provider.
-     */
-    private final Injector injector;
+  /**
+   * Injector which will manage the object graph of this authentication provider.
+   */
+  private final Injector injector;
 
-    /**
-     * Creates a new JSON AuthenticationProvider that authenticates users
-     * using encrypted blobs of JSON data.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public JSONAuthenticationProvider() throws GuacamoleException {
+  /**
+   * Creates a new JSON AuthenticationProvider that authenticates users using encrypted blobs of
+   * JSON data.
+   *
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public JSONAuthenticationProvider() throws GuacamoleException {
 
-        // Set up Guice injector.
-        injector = Guice.createInjector(new JSONAuthenticationProviderModule(this));
+    // Set up Guice injector.
+    injector = Guice.createInjector(new JSONAuthenticationProviderModule(this));
 
-    }
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "json";
-    }
+  @Override
+  public String getIdentifier() {
+    return "json";
+  }
 
-    @Override
-    public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
+  @Override
+  public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
 
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
-        return authProviderService.authenticateUser(credentials);
+    AuthenticationProviderService authProviderService = injector.getInstance(
+        AuthenticationProviderService.class);
+    return authProviderService.authenticateUser(credentials);
 
-    }
+  }
 
-    @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
+  @Override
+  public UserContext getUserContext(AuthenticatedUser authenticatedUser)
+      throws GuacamoleException {
 
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
-        return authProviderService.getUserContext(authenticatedUser);
+    AuthenticationProviderService authProviderService = injector.getInstance(
+        AuthenticationProviderService.class);
+    return authProviderService.getUserContext(authenticatedUser);
 
-    }
+  }
 
 }

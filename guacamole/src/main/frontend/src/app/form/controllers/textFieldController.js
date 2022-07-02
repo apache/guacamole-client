@@ -17,12 +17,11 @@
  * under the License.
  */
 
-
 /**
  * Controller for text fields.
  */
 angular.module('form').controller('textFieldController', ['$scope', '$injector',
-    function textFieldController($scope, $injector) {
+  function textFieldController($scope, $injector) {
 
     /**
      * The ID of the datalist element that should be associated with the text
@@ -34,7 +33,8 @@ angular.module('form').controller('textFieldController', ['$scope', '$injector',
     $scope.dataListId = null;
 
     // Generate unique ID for datalist, if applicable
-    if ($scope.field.options && $scope.field.options.length)
-        $scope.dataListId = $scope.fieldId + '-datalist';
+    if ($scope.field.options && $scope.field.options.length) {
+      $scope.dataListId = $scope.fieldId + '-datalist';
+    }
 
-}]);
+  }]);

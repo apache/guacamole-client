@@ -26,27 +26,27 @@ import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
  */
 public enum SQLServerDriver {
 
-    /**
-     * The open source jTDS driver.
-     */
-    @PropertyValue("jtds")
-    JTDS,
+  /**
+   * The open source jTDS driver.
+   */
+  @PropertyValue("jtds")
+  JTDS,
 
-    /**
-     * The Progress DataDirect driver.
-     */
-    @PropertyValue("datadirect")
-    DATA_DIRECT,
+  /**
+   * The Progress DataDirect driver.
+   */
+  @PropertyValue("datadirect")
+  DATA_DIRECT,
 
-    /**
-     * The Microsoft Legacy SQL Server driver.
-     */
-    @PropertyValue("microsoft")
-    MICROSOFT_LEGACY,
+  /**
+   * The Microsoft Legacy SQL Server driver.
+   */
+  @PropertyValue("microsoft")
+  MICROSOFT_LEGACY,
 
-    /**
-     * The Microsoft 2005 SQL Server driver.
-     */
-    @PropertyValue("microsoft2005")
-    MICROSOFT_2005;
+  /**
+   * The Microsoft 2005 SQL Server driver.
+   */
+  @PropertyValue("microsoft2005")
+  MICROSOFT_2005;
 }

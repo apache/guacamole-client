@@ -20,16 +20,16 @@
 /* Label/tag denoting the user that shared a connection */
 .jdbc-share-tag {
 
-    background: #0095ff;
-    padding: 0.25em;
+  background: #0095ff;
+  padding: 0.25em;
 
-    -moz-border-radius:    0.25em;
-    -webkit-border-radius: 0.25em;
-    -khtml-border-radius:  0.25em;
-    border-radius:         0.25em;
+  -moz-border-radius: 0.25em;
+  -webkit-border-radius: 0.25em;
+  -khtml-border-radius: 0.25em;
+  border-radius: 0.25em;
 
-    color: white;
-    font-size: 0.75em;
-    font-weight: bold;
+  color: white;
+  font-size: 0.75em;
+  font-weight: bold;
 
 }

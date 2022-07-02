@@ -22,21 +22,20 @@ package org.apache.guacamole.auth.jdbc.permission;
 import com.google.inject.Inject;
 
 /**
- * A database implementation of ObjectPermissionSet which uses an injected
- * service to query and manipulate the sharing profile permissions associated
- * with a particular user.
+ * A database implementation of ObjectPermissionSet which uses an injected service to query and
+ * manipulate the sharing profile permissions associated with a particular user.
  */
 public class SharingProfilePermissionSet extends ObjectPermissionSet {
 
-    /**
-     * Service for querying and manipulating sharing profile permissions.
-     */
-    @Inject
-    private SharingProfilePermissionService sharingProfilePermissionService;
-    
-    @Override
-    protected ObjectPermissionService getObjectPermissionService() {
-        return sharingProfilePermissionService;
-    }
- 
+  /**
+   * Service for querying and manipulating sharing profile permissions.
+   */
+  @Inject
+  private SharingProfilePermissionService sharingProfilePermissionService;
+
+  @Override
+  protected ObjectPermissionService getObjectPermissionService() {
+    return sharingProfilePermissionService;
+  }
+
 }

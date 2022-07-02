@@ -20,17 +20,18 @@
 /**
  * Defaults for the AngularJS $http service.
  */
-angular.module('index').config(['$httpProvider', function httpDefaults($httpProvider) {
+angular.module('index').config(
+    ['$httpProvider', function httpDefaults($httpProvider) {
 
-    // Do not cache the responses of GET requests
-    $httpProvider.defaults.headers.get = {
-        'Cache-Control' : 'no-cache',
-        'Pragma' : 'no-cache'
-    };
+      // Do not cache the responses of GET requests
+      $httpProvider.defaults.headers.get = {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      };
 
-    // Use "application/json" content type by default for PATCH requests
-    $httpProvider.defaults.headers.patch = {
-        'Content-Type' : 'application/json'
-    };
+      // Use "application/json" content type by default for PATCH requests
+      $httpProvider.defaults.headers.patch = {
+        'Content-Type': 'application/json'
+      };
 
-}]);
+    }]);

@@ -26,16 +26,16 @@ import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
  */
 public enum GroupFormat {
 
-    /**
-     * Simple, plain-text group names.
-     */
-    @PropertyValue("plain")
-    PLAIN,
+  /**
+   * Simple, plain-text group names.
+   */
+  @PropertyValue("plain")
+  PLAIN,
 
-    /**
-     * Group names formatted as LDAP DNs.
-     */
-    @PropertyValue("ldap")
-    LDAP
+  /**
+   * Group names formatted as LDAP DNs.
+   */
+  @PropertyValue("ldap")
+  LDAP
 
 }

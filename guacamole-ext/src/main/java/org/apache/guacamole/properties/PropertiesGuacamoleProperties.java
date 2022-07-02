@@ -23,40 +23,38 @@ import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
 
 /**
- * GuacamoleProperties implementation which reads all properties from a
- * {@link Properties} object. Whitespace at the end of property values is
- * automatically trimmed.
+ * GuacamoleProperties implementation which reads all properties from a {@link Properties} object.
+ * Whitespace at the end of property values is automatically trimmed.
  */
 public class PropertiesGuacamoleProperties implements GuacamoleProperties {
 
-    /**
-     * The Properties from which all property values should be read.
-     */
-    private final Properties properties;
+  /**
+   * The Properties from which all property values should be read.
+   */
+  private final Properties properties;
 
-    /**
-     * Creates a new PropertiesGuacamoleProperties which wraps the given
-     * {@link Properties}, providing access to the values of any properties
-     * defined therein.
-     *
-     * @param properties
-     *     The Properties that should be used as the source of all property
-     *     values exposed by this instance of PropertiesGuacamoleProperties.
-     */
-    public PropertiesGuacamoleProperties(Properties properties) {
-        this.properties = properties;
+  /**
+   * Creates a new PropertiesGuacamoleProperties which wraps the given {@link Properties}, providing
+   * access to the values of any properties defined therein.
+   *
+   * @param properties The Properties that should be used as the source of all property values
+   *                   exposed by this instance of PropertiesGuacamoleProperties.
+   */
+  public PropertiesGuacamoleProperties(Properties properties) {
+    this.properties = properties;
+  }
+
+
+  @Override
+  public String getProperty(String name) throws GuacamoleException {
+
+    String value = properties.getProperty(name);
+    if (value == null) {
+      return null;
     }
 
+    return value.trim();
 
-    @Override
-    public String getProperty(String name) throws GuacamoleException {
-
-        String value = properties.getProperty(name);
-        if (value == null)
-            return null;
-
-        return value.trim();
-
-    }
+  }
 
 }

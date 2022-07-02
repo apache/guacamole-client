@@ -21,7 +21,7 @@
  * The module for the login functionality.
  */
 angular.module('login', [
-    'element',
-    'form',
-    'navigation'
+  'element',
+  'form',
+  'navigation'
 ]);

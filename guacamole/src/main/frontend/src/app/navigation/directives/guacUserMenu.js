@@ -21,38 +21,39 @@
  * A directive which provides a user-oriented menu containing options for
  * navigation and configuration.
  */
-angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() {
+angular.module('navigation').directive('guacUserMenu',
+    [function guacUserMenu() {
 
-    return {
+      return {
         restrict: 'E',
         replace: true,
         scope: {
 
-            /**
-             * Optional array of actions which are specific to this particular
-             * location, as these actions may not be appropriate for other
-             * locations which contain the user menu.
-             *
-             * @type MenuAction[]
-             */
-            localActions : '='
+          /**
+           * Optional array of actions which are specific to this particular
+           * location, as these actions may not be appropriate for other
+           * locations which contain the user menu.
+           *
+           * @type MenuAction[]
+           */
+          localActions: '='
 
         },
 
         templateUrl: 'app/navigation/templates/guacUserMenu.html',
         controller: ['$scope', '$injector',
-            function guacUserMenuController($scope, $injector) {
+          function guacUserMenuController($scope, $injector) {
 
             // Required types
             var User = $injector.get('User');
 
             // Get required services
-            var $location             = $injector.get('$location');
-            var $route                = $injector.get('$route');
+            var $location = $injector.get('$location');
+            var $route = $injector.get('$route');
             var authenticationService = $injector.get('authenticationService');
-            var requestService        = $injector.get('requestService');
-            var userService           = $injector.get('userService');
-            var userPageService       = $injector.get('userPageService');
+            var requestService = $injector.get('requestService');
+            var userService = $injector.get('userService');
+            var userPageService = $injector.get('userPageService');
 
             /**
              * The username of the current user.
@@ -96,23 +97,24 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             $scope.role = null;
 
             // Display user profile attributes if available
-            userService.getUser(authenticationService.getDataSource(), $scope.username)
-                    .then(function userRetrieved(user) {
+            userService.getUser(authenticationService.getDataSource(),
+                $scope.username)
+            .then(function userRetrieved(user) {
 
-                // Pull basic profile information
-                $scope.fullName = user.attributes[User.Attributes.FULL_NAME];
-                $scope.organization = user.attributes[User.Attributes.ORGANIZATION];
-                $scope.role = user.attributes[User.Attributes.ORGANIZATIONAL_ROLE];
+              // Pull basic profile information
+              $scope.fullName = user.attributes[User.Attributes.FULL_NAME];
+              $scope.organization = user.attributes[User.Attributes.ORGANIZATION];
+              $scope.role = user.attributes[User.Attributes.ORGANIZATIONAL_ROLE];
 
-                // Link to email address if available
-                var email = user.attributes[User.Attributes.EMAIL_ADDRESS];
-                $scope.userURL = email ? 'mailto:' + email : null;
+              // Link to email address if available
+              var email = user.attributes[User.Attributes.EMAIL_ADDRESS];
+              $scope.userURL = email ? 'mailto:' + email : null;
 
             }, requestService.IGNORE);
 
             /**
              * The available main pages for the current user.
-             * 
+             *
              * @type Page[]
              */
             $scope.pages = null;
@@ -120,7 +122,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
             // Retrieve the main pages from the user page service
             userPageService.getMainPages()
             .then(function retrievedMainPages(pages) {
-                $scope.pages = pages;
+              $scope.pages = pages;
             });
 
             /**
@@ -131,7 +133,7 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              *     otherwise.
              */
             $scope.isAnonymous = function isAnonymous() {
-                return authenticationService.isAnonymous();
+              return authenticationService.isAnonymous();
             };
 
             /**
@@ -139,8 +141,8 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              * after logout completes.
              */
             $scope.logout = function logout() {
-                authenticationService.logout()
-                ['catch'](requestService.IGNORE);
+              authenticationService.logout()
+                  ['catch'](requestService.IGNORE);
             };
 
             /**
@@ -148,17 +150,17 @@ angular.module('navigation').directive('guacUserMenu', [function guacUserMenu() 
              * to the login screen after logout completes.
              */
             var LOGOUT_ACTION = {
-                name      : 'USER_MENU.ACTION_LOGOUT',
-                className : 'logout',
-                callback  : $scope.logout
+              name: 'USER_MENU.ACTION_LOGOUT',
+              className: 'logout',
+              callback: $scope.logout
             };
 
             /**
              * All available actions for the current user.
              */
-            $scope.actions = [ LOGOUT_ACTION ];
+            $scope.actions = [LOGOUT_ACTION];
 
-        }] // end controller
+          }] // end controller
 
-    };
-}]);
+      };
+    }]);

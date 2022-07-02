@@ -19,40 +19,40 @@
 
 .share-menu {
 
-    /* IE10 */
-    display: -ms-flexbox;
-    -ms-flex-align: stretch;
-    -ms-flex-direction: row;
+  /* IE10 */
+  display: -ms-flexbox;
+  -ms-flex-align: stretch;
+  -ms-flex-direction: row;
 
-    /* Ancient Mozilla */
-    display: -moz-box;
-    -moz-box-align: stretch;
-    -moz-box-orient: horizontal;
+  /* Ancient Mozilla */
+  display: -moz-box;
+  -moz-box-align: stretch;
+  -moz-box-orient: horizontal;
 
-    /* Ancient WebKit */
-    display: -webkit-box;
-    -webkit-box-align: stretch;
-    -webkit-box-orient: horizontal;
+  /* Ancient WebKit */
+  display: -webkit-box;
+  -webkit-box-align: stretch;
+  -webkit-box-orient: horizontal;
 
-    /* Old WebKit */
-    display: -webkit-flex;
-    -webkit-align-items: stretch;
-    -webkit-flex-direction: row;
+  /* Old WebKit */
+  display: -webkit-flex;
+  -webkit-align-items: stretch;
+  -webkit-flex-direction: row;
 
-    /* W3C */
-    display: flex;
-    align-items: stretch;
-    flex-direction: row;
+  /* W3C */
+  display: flex;
+  align-items: stretch;
+  flex-direction: row;
 
 }
 
 .share-menu .menu-dropdown .menu-title {
 
-    padding-left: 2em;
+  padding-left: 2em;
 
-    background-repeat: no-repeat;
-    background-size: 1em;
-    background-position: 0.5em center;
-    background-image: url('images/share.svg');
+  background-repeat: no-repeat;
+  background-size: 1em;
+  background-position: 0.5em center;
+  background-image: url('images/share.svg');
 
 }

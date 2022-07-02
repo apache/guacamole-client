@@ -23,51 +23,46 @@ import org.apache.guacamole.net.DelegatingGuacamoleTunnel;
 import org.apache.guacamole.net.GuacamoleTunnel;
 
 /**
- * Tracks the last time a particular GuacamoleTunnel was accessed. This
- * information is not necessary for tunnels associated with WebSocket
- * connections, as each WebSocket connection has its own read thread which
- * continuously checks the state of the tunnel and which will automatically
- * timeout when the underlying socket times out, but the HTTP tunnel has no
- * such thread. Because the HTTP tunnel requires the stream to be split across
- * multiple requests, tracking of activity on the tunnel must be performed
- * independently of the HTTP requests.
+ * Tracks the last time a particular GuacamoleTunnel was accessed. This information is not necessary
+ * for tunnels associated with WebSocket connections, as each WebSocket connection has its own read
+ * thread which continuously checks the state of the tunnel and which will automatically timeout
+ * when the underlying socket times out, but the HTTP tunnel has no such thread. Because the HTTP
+ * tunnel requires the stream to be split across multiple requests, tracking of activity on the
+ * tunnel must be performed independently of the HTTP requests.
  */
 class GuacamoleHTTPTunnel extends DelegatingGuacamoleTunnel {
 
-    /**
-     * The last time this tunnel was accessed.
-     */
-    private long lastAccessedTime;
+  /**
+   * The last time this tunnel was accessed.
+   */
+  private long lastAccessedTime;
 
-    /**
-     * Creates a new GuacamoleHTTPTunnel which wraps the given tunnel.
-     * Absolutely all function calls on this new GuacamoleHTTPTunnel will be
-     * delegated to the underlying GuacamoleTunnel.
-     *
-     * @param wrappedTunnel
-     *     The GuacamoleTunnel to wrap within this GuacamoleHTTPTunnel.
-     */
-    public GuacamoleHTTPTunnel(GuacamoleTunnel wrappedTunnel) {
-        super(wrappedTunnel);
-    }
+  /**
+   * Creates a new GuacamoleHTTPTunnel which wraps the given tunnel. Absolutely all function calls
+   * on this new GuacamoleHTTPTunnel will be delegated to the underlying GuacamoleTunnel.
+   *
+   * @param wrappedTunnel The GuacamoleTunnel to wrap within this GuacamoleHTTPTunnel.
+   */
+  public GuacamoleHTTPTunnel(GuacamoleTunnel wrappedTunnel) {
+    super(wrappedTunnel);
+  }
 
-    /**
-     * Updates this tunnel, marking it as recently accessed.
-     */
-    public void access() {
-        lastAccessedTime = System.currentTimeMillis();
-    }
+  /**
+   * Updates this tunnel, marking it as recently accessed.
+   */
+  public void access() {
+    lastAccessedTime = System.currentTimeMillis();
+  }
 
-    /**
-     * Returns the time this tunnel was last accessed, as the number of
-     * milliseconds since midnight January 1, 1970 GMT. Tunnel access must
-     * be explicitly marked through calls to the access() function.
-     *
-     * @return
-     *     The time this tunnel was last accessed.
-     */
-    public long getLastAccessedTime() {
-        return lastAccessedTime;
-    }
+  /**
+   * Returns the time this tunnel was last accessed, as the number of milliseconds since midnight
+   * January 1, 1970 GMT. Tunnel access must be explicitly marked through calls to the access()
+   * function.
+   *
+   * @return The time this tunnel was last accessed.
+   */
+  public long getLastAccessedTime() {
+    return lastAccessedTime;
+  }
 
 }

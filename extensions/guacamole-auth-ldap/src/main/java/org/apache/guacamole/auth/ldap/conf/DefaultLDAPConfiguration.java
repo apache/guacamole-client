@@ -29,121 +29,121 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
 /**
- * LDAPConfiguration implementation that returns the default values for all
- * configuration parameters. For any configuration parameters that are
- * required (such as {@link #getUserBaseDN()}), an exception is thrown.
+ * LDAPConfiguration implementation that returns the default values for all configuration
+ * parameters. For any configuration parameters that are required (such as
+ * {@link #getUserBaseDN()}), an exception is thrown.
  */
 public class DefaultLDAPConfiguration implements LDAPConfiguration {
 
-    @Override
-    public String appliesTo(String username) {
-        return null;
-    }
+  @Override
+  public String appliesTo(String username) {
+    return null;
+  }
 
-    @Override
-    public String getServerHostname() {
-        return "localhost";
-    }
+  @Override
+  public String getServerHostname() {
+    return "localhost";
+  }
 
-    @Override
-    public int getServerPort() {
-        return getEncryptionMethod().DEFAULT_PORT;
-    }
+  @Override
+  public int getServerPort() {
+    return getEncryptionMethod().DEFAULT_PORT;
+  }
 
-    @Override
-    public List<String> getUsernameAttributes() {
-        return Collections.singletonList("uid");
-    }
+  @Override
+  public List<String> getUsernameAttributes() {
+    return Collections.singletonList("uid");
+  }
 
-    @Override
-    public Dn getUserBaseDN() throws GuacamoleException {
-        throw new GuacamoleServerException("All LDAP servers must have a defined user base DN.");
-    }
+  @Override
+  public Dn getUserBaseDN() throws GuacamoleException {
+    throw new GuacamoleServerException("All LDAP servers must have a defined user base DN.");
+  }
 
-    @Override
-    public Dn getConfigurationBaseDN() {
-        return null;
-    }
+  @Override
+  public Dn getConfigurationBaseDN() {
+    return null;
+  }
 
-    @Override
-    public List<String> getGroupNameAttributes() {
-        return Collections.singletonList("cn");
-    }
+  @Override
+  public List<String> getGroupNameAttributes() {
+    return Collections.singletonList("cn");
+  }
 
-    @Override
-    public Dn getGroupBaseDN() {
-        return null;
-    }
+  @Override
+  public Dn getGroupBaseDN() {
+    return null;
+  }
 
-    @Override
-    public String getSearchBindDN() {
-        return null;
-    }
+  @Override
+  public String getSearchBindDN() {
+    return null;
+  }
 
-    @Override
-    public String getSearchBindPassword() {
-        return null;
-    }
+  @Override
+  public String getSearchBindPassword() {
+    return null;
+  }
 
-    @Override
-    public EncryptionMethod getEncryptionMethod() {
-        return EncryptionMethod.NONE;
-    }
+  @Override
+  public EncryptionMethod getEncryptionMethod() {
+    return EncryptionMethod.NONE;
+  }
 
-    @Override
-    public int getMaxResults() {
-        return 1000;
-    }
+  @Override
+  public int getMaxResults() {
+    return 1000;
+  }
 
-    @Override
-    public AliasDerefMode getDereferenceAliases() {
-        return AliasDerefMode.NEVER_DEREF_ALIASES;
-    }
+  @Override
+  public AliasDerefMode getDereferenceAliases() {
+    return AliasDerefMode.NEVER_DEREF_ALIASES;
+  }
 
-    @Override
-    public boolean getFollowReferrals() {
-        return false;
-    }
+  @Override
+  public boolean getFollowReferrals() {
+    return false;
+  }
 
-    @Override
-    public int getMaxReferralHops() {
-        return 5;
-    }
+  @Override
+  public int getMaxReferralHops() {
+    return 5;
+  }
 
-    @Override
-    public ExprNode getUserSearchFilter() {
-        return new PresenceNode("objectClass");
-    }
+  @Override
+  public ExprNode getUserSearchFilter() {
+    return new PresenceNode("objectClass");
+  }
 
-    @Override
-    public ExprNode getGroupSearchFilter() {
-        return new PresenceNode("objectClass");
-    }
+  @Override
+  public ExprNode getGroupSearchFilter() {
+    return new PresenceNode("objectClass");
+  }
 
-    @Override
-    public int getOperationTimeout() {
-        return 30;
-    }
+  @Override
+  public int getOperationTimeout() {
+    return 30;
+  }
 
-    @Override
-    public int getNetworkTimeout() {
-        return 30000;
-    }
+  @Override
+  public int getNetworkTimeout() {
+    return 30000;
+  }
 
-    @Override
-    public List<String> getAttributes() {
-        return Collections.<String>emptyList();
-    }
-    
-    @Override
-    public String getMemberAttribute() {
-        return "member";
-    }
+  @Override
+  public List<String> getAttributes() {
+    return Collections.<String>emptyList();
+  }
 
-    @Override
-    public MemberAttributeType getMemberAttributeType()
-            throws GuacamoleException {
-        return MemberAttributeType.DN;
-    }
+  @Override
+  public String getMemberAttribute() {
+    return "member";
+  }
+
+  @Override
+  public MemberAttributeType getMemberAttributeType()
+      throws GuacamoleException {
+    return MemberAttributeType.DN;
+  }
 
 }

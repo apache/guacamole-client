@@ -18,8 +18,8 @@
  */
 
 /**
- * Provides classes which can be used to extend or replace the authentication
- * functionality of the Guacamole web application.
+ * Provides classes which can be used to extend or replace the authentication functionality of the
+ * Guacamole web application.
  */
 package org.apache.guacamole.net.auth;
 

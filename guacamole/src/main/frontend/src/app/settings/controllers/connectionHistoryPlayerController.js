@@ -20,31 +20,34 @@
 /**
  * The controller for the session recording player page.
  */
-angular.module('manage').controller('connectionHistoryPlayerController', ['$scope', '$injector', 
-        function connectionHistoryPlayerController($scope, $injector) {
+angular.module('manage').controller('connectionHistoryPlayerController',
+    ['$scope', '$injector',
+      function connectionHistoryPlayerController($scope, $injector) {
 
-    // Required services
-    const authenticationService = $injector.get('authenticationService');
-    const $routeParams          = $injector.get('$routeParams');
+        // Required services
+        const authenticationService = $injector.get('authenticationService');
+        const $routeParams = $injector.get('$routeParams');
 
-    /**
-     * The URL of the REST API resource exposing the requested session
-     * recording.
-     *
-     * @type {!string}
-     */
-    const recordingURL = 'api/session/data/' + encodeURIComponent($routeParams.dataSource)
-            + '/history/connections/' + encodeURIComponent($routeParams.identifier)
+        /**
+         * The URL of the REST API resource exposing the requested session
+         * recording.
+         *
+         * @type {!string}
+         */
+        const recordingURL = 'api/session/data/' + encodeURIComponent(
+                $routeParams.dataSource)
+            + '/history/connections/' + encodeURIComponent(
+                $routeParams.identifier)
             + '/logs/' + encodeURIComponent($routeParams.name);
 
-    /**
-     * The tunnel which should be used to download the Guacamole session
-     * recording.
-     *
-     * @type Guacamole.Tunnel
-     */
-    $scope.tunnel = new Guacamole.StaticHTTPTunnel(recordingURL, false, {
-        'Guacamole-Token' : authenticationService.getCurrentToken()
-    });
+        /**
+         * The tunnel which should be used to download the Guacamole session
+         * recording.
+         *
+         * @type Guacamole.Tunnel
+         */
+        $scope.tunnel = new Guacamole.StaticHTTPTunnel(recordingURL, false, {
+          'Guacamole-Token': authenticationService.getCurrentToken()
+        });
 
-}]);
+      }]);

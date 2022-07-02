@@ -18,37 +18,37 @@
     under the License.
 -->
 <assembly
-    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
 
-    <id>dist</id>
-    <baseDirectory>${project.parent.artifactId}-${project.parent.version}</baseDirectory>
+  <baseDirectory>${project.parent.artifactId}-${project.parent.version}</baseDirectory>
+  <dependencySets>
 
-    <!-- Output .tar.gz -->
-    <formats>
-        <format>tar.gz</format>
-    </formats>
+    <!-- Keeper Secrets Manager extension .jar -->
+    <dependencySet>
+      <includes>
+        <include>org.apache.guacamole:guacamole-vault-ksm</include>
+      </includes>
+      <outputDirectory>ksm</outputDirectory>
+    </dependencySet>
 
-    <!-- Include extension .jars -->
-    <dependencySets>
+  </dependencySets>
 
-        <!-- Keeper Secrets Manager extension .jar -->
-        <dependencySet>
-            <outputDirectory>ksm</outputDirectory>
-            <includes>
-                <include>org.apache.guacamole:guacamole-vault-ksm</include>
-            </includes>
-        </dependencySet>
+  <!-- Output .tar.gz -->
+  <fileSets>
+    <fileSet>
+      <directory>target/licenses</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
 
-    </dependencySets>
+  <!-- Include extension .jars -->
+  <formats>
+    <format>tar.gz</format>
+  </formats>
 
-    <!-- Licenses -->
-    <fileSets>
-        <fileSet>
-            <outputDirectory></outputDirectory>
-            <directory>target/licenses</directory>
-        </fileSet>
-    </fileSets>
+  <!-- Licenses -->
+  <id>dist</id>
 
 </assembly>

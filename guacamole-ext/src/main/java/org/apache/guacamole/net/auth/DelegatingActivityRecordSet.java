@@ -23,66 +23,62 @@ import java.util.Collection;
 import org.apache.guacamole.GuacamoleException;
 
 /**
- * ActivityRecordSet implementation which simply delegates all function calls
- * to an underlying ActivityRecordSet.
+ * ActivityRecordSet implementation which simply delegates all function calls to an underlying
+ * ActivityRecordSet.
  *
- * @param <RecordType>
- *     The type of ActivityRecord contained within this set.
+ * @param <RecordType> The type of ActivityRecord contained within this set.
  */
 public class DelegatingActivityRecordSet<RecordType extends ActivityRecord>
-        implements ActivityRecordSet<RecordType> {
+    implements ActivityRecordSet<RecordType> {
 
-    /**
-     * The wrapped ActivityRecordSet.
-     */
-    private final ActivityRecordSet<RecordType> recordSet;
+  /**
+   * The wrapped ActivityRecordSet.
+   */
+  private final ActivityRecordSet<RecordType> recordSet;
 
-    /**
-     * Wraps the given ActivityRecordSet such that all function calls against this
-     * DelegatingActivityRecordSet will be delegated to it.
-     *
-     * @param recordSet
-     *     The ActivityRecordSet to wrap.
-     */
-    public DelegatingActivityRecordSet(ActivityRecordSet<RecordType> recordSet) {
-        this.recordSet = recordSet;
-    }
+  /**
+   * Wraps the given ActivityRecordSet such that all function calls against this
+   * DelegatingActivityRecordSet will be delegated to it.
+   *
+   * @param recordSet The ActivityRecordSet to wrap.
+   */
+  public DelegatingActivityRecordSet(ActivityRecordSet<RecordType> recordSet) {
+    this.recordSet = recordSet;
+  }
 
-    /**
-     * Returns the underlying ActivityRecordSet wrapped by this
-     * DelegatingActivityRecordSet.
-     *
-     * @return
-     *     The ActivityRecordSet wrapped by this DelegatingActivityRecordSet.
-     */
-    protected ActivityRecordSet<RecordType> getDelegateActivityRecordSet() {
-        return recordSet;
-    }
+  /**
+   * Returns the underlying ActivityRecordSet wrapped by this DelegatingActivityRecordSet.
+   *
+   * @return The ActivityRecordSet wrapped by this DelegatingActivityRecordSet.
+   */
+  protected ActivityRecordSet<RecordType> getDelegateActivityRecordSet() {
+    return recordSet;
+  }
 
-    @Override
-    public RecordType get(String identifier) throws GuacamoleException {
-        return recordSet.get(identifier);
-    }
+  @Override
+  public RecordType get(String identifier) throws GuacamoleException {
+    return recordSet.get(identifier);
+  }
 
-    @Override
-    public Collection<RecordType> asCollection() throws GuacamoleException {
-        return recordSet.asCollection();
-    }
+  @Override
+  public Collection<RecordType> asCollection() throws GuacamoleException {
+    return recordSet.asCollection();
+  }
 
-    @Override
-    public ActivityRecordSet<RecordType> contains(String value) throws GuacamoleException {
-        return recordSet.contains(value);
-    }
+  @Override
+  public ActivityRecordSet<RecordType> contains(String value) throws GuacamoleException {
+    return recordSet.contains(value);
+  }
 
-    @Override
-    public ActivityRecordSet<RecordType> limit(int limit) throws GuacamoleException {
-        return recordSet.limit(limit);
-    }
+  @Override
+  public ActivityRecordSet<RecordType> limit(int limit) throws GuacamoleException {
+    return recordSet.limit(limit);
+  }
 
-    @Override
-    public ActivityRecordSet<RecordType> sort(SortableProperty property,
-            boolean desc) throws GuacamoleException {
-        return recordSet.sort(property, desc);
-    }
+  @Override
+  public ActivityRecordSet<RecordType> sort(SortableProperty property,
+      boolean desc) throws GuacamoleException {
+    return recordSet.sort(property, desc);
+  }
 
 }

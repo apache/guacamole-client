@@ -24,27 +24,24 @@ import org.apache.guacamole.auth.jdbc.InjectedAuthenticationProvider;
 import org.apache.guacamole.auth.jdbc.JDBCAuthenticationProviderService;
 
 /**
- * Provides a SQLServer-based implementation of the AuthenticationProvider
- * functionality.
+ * Provides a SQLServer-based implementation of the AuthenticationProvider functionality.
  */
 public class SQLServerAuthenticationProvider extends InjectedAuthenticationProvider {
 
-    /**
-     * Creates a new SQLServerAuthenticationProvider that reads and writes
-     * authentication data to a SQLServer database defined by properties in
-     * guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public SQLServerAuthenticationProvider() throws GuacamoleException {
-        super(new SQLServerInjectorProvider(), JDBCAuthenticationProviderService.class);
-    }
+  /**
+   * Creates a new SQLServerAuthenticationProvider that reads and writes authentication data to a
+   * SQLServer database defined by properties in guacamole.properties.
+   *
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public SQLServerAuthenticationProvider() throws GuacamoleException {
+    super(new SQLServerInjectorProvider(), JDBCAuthenticationProviderService.class);
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "sqlserver";
-    }
+  @Override
+  public String getIdentifier() {
+    return "sqlserver";
+  }
 
 }

@@ -21,11 +21,11 @@
  * Service which contains all REST API response caches.
  */
 angular.module('rest').factory('cacheService', ['$injector',
-        function cacheService($injector) {
+  function cacheService($injector) {
 
     // Required services
     var $cacheFactory = $injector.get('$cacheFactory');
-    var $rootScope    = $injector.get('$rootScope');
+    var $rootScope = $injector.get('$rootScope');
 
     // Service containing all caches
     var service = {};
@@ -71,17 +71,17 @@ angular.module('rest').factory('cacheService', ['$injector',
      * Clear all caches defined in this service.
      */
     service.clearCaches = function clearCaches() {
-        service.connections.removeAll();
-        service.languages.removeAll();
-        service.schema.removeAll();
-        service.users.removeAll();
+      service.connections.removeAll();
+      service.languages.removeAll();
+      service.schema.removeAll();
+      service.users.removeAll();
     };
 
     // Clear caches on logout
     $rootScope.$on('guacLogout', function handleLogout() {
-        service.clearCaches();
+      service.clearCaches();
     });
 
     return service;
 
-}]);
+  }]);

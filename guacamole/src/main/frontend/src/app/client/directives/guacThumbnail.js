@@ -23,98 +23,103 @@
  */
 angular.module('client').directive('guacThumbnail', [function guacThumbnail() {
 
-    return {
-        // Element only
-        restrict: 'E',
-        replace: true,
-        scope: {
+  return {
+    // Element only
+    restrict: 'E',
+    replace: true,
+    scope: {
 
-            /**
-             * The client to display within this guacThumbnail directive.
-             * 
-             * @type ManagedClient
-             */
-            client : '='
-            
-        },
-        templateUrl: 'app/client/templates/guacThumbnail.html',
-        controller: ['$scope', '$injector', '$element', function guacThumbnailController($scope, $injector, $element) {
-   
-            // Required services
-            var $window = $injector.get('$window');
+      /**
+       * The client to display within this guacThumbnail directive.
+       *
+       * @type ManagedClient
+       */
+      client: '='
 
-            /**
-             * The display of the current Guacamole client instance.
-             * 
-             * @type Guacamole.Display
-             */
-            var display = null;
+    },
+    templateUrl: 'app/client/templates/guacThumbnail.html',
+    controller: ['$scope', '$injector', '$element',
+      function guacThumbnailController($scope, $injector, $element) {
 
-            /**
-             * The element associated with the display of the current
-             * Guacamole client instance.
-             *
-             * @type Element
-             */
-            var displayElement = null;
+        // Required services
+        var $window = $injector.get('$window');
 
-            /**
-             * The element which must contain the Guacamole display element.
-             *
-             * @type Element
-             */
-            var displayContainer = $element.find('.display')[0];
+        /**
+         * The display of the current Guacamole client instance.
+         *
+         * @type Guacamole.Display
+         */
+        var display = null;
 
-            /**
-             * The main containing element for the entire directive.
-             * 
-             * @type Element
-             */
-            var main = $element[0];
+        /**
+         * The element associated with the display of the current
+         * Guacamole client instance.
+         *
+         * @type Element
+         */
+        var displayElement = null;
 
-            /**
-             * Updates the scale of the attached Guacamole.Client based on current window
-             * size and "auto-fit" setting.
-             */
-            $scope.updateDisplayScale = function updateDisplayScale() {
+        /**
+         * The element which must contain the Guacamole display element.
+         *
+         * @type Element
+         */
+        var displayContainer = $element.find('.display')[0];
 
-                if (!display) return;
+        /**
+         * The main containing element for the entire directive.
+         *
+         * @type Element
+         */
+        var main = $element[0];
 
-                // Fit within available area
-                display.scale(Math.min(
-                    main.offsetWidth  / Math.max(display.getWidth(),  1),
-                    main.offsetHeight / Math.max(display.getHeight(), 1)
-                ));
+        /**
+         * Updates the scale of the attached Guacamole.Client based on current window
+         * size and "auto-fit" setting.
+         */
+        $scope.updateDisplayScale = function updateDisplayScale() {
 
-            };
+          if (!display) {
+            return;
+          }
 
-            // Attach any given managed client
-            $scope.$watch('client', function attachManagedClient(managedClient) {
+          // Fit within available area
+          display.scale(Math.min(
+              main.offsetWidth / Math.max(display.getWidth(), 1),
+              main.offsetHeight / Math.max(display.getHeight(), 1)
+          ));
 
-                // Remove any existing display
-                displayContainer.innerHTML = "";
+        };
 
-                // Only proceed if a client is given 
-                if (!managedClient)
-                    return;
+        // Attach any given managed client
+        $scope.$watch('client', function attachManagedClient(managedClient) {
 
-                // Get Guacamole client instance
-                var client = managedClient.client;
+          // Remove any existing display
+          displayContainer.innerHTML = "";
 
-                // Attach possibly new display
-                display = client.getDisplay();
+          // Only proceed if a client is given
+          if (!managedClient) {
+            return;
+          }
 
-                // Add display element
-                displayElement = display.getElement();
-                displayContainer.appendChild(displayElement);
+          // Get Guacamole client instance
+          var client = managedClient.client;
 
+          // Attach possibly new display
+          display = client.getDisplay();
+
+          // Add display element
+          displayElement = display.getElement();
+          displayContainer.appendChild(displayElement);
+
+        });
+
+        // Update scale when display is resized
+        $scope.$watch('client.managedDisplay.size',
+            function setDisplaySize(size) {
+              $scope.$evalAsync($scope.updateDisplayScale);
             });
 
-            // Update scale when display is resized
-            $scope.$watch('client.managedDisplay.size', function setDisplaySize(size) {
-                $scope.$evalAsync($scope.updateDisplayScale);
-            });
-
-        }]
-    };
+      }]
+  };
 }]);

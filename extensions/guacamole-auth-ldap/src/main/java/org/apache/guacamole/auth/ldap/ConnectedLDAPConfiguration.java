@@ -30,191 +30,179 @@ import org.apache.guacamole.auth.ldap.conf.LDAPConfiguration;
 import org.apache.guacamole.auth.ldap.conf.MemberAttributeType;
 
 /**
- * LDAPConfiguration implementation that is associated with an
- * LdapNetworkConnection to the configured LDAP server.
+ * LDAPConfiguration implementation that is associated with an LdapNetworkConnection to the
+ * configured LDAP server.
  */
 public class ConnectedLDAPConfiguration implements LDAPConfiguration, AutoCloseable {
 
-    /**
-     * The wrapped LDAPConfiguration.
-     */
-    private final LDAPConfiguration config;
+  /**
+   * The wrapped LDAPConfiguration.
+   */
+  private final LDAPConfiguration config;
 
-    /**
-     * The connection to the LDAP server represented by this configuration.
-     */
-    private final LdapNetworkConnection connection;
+  /**
+   * The connection to the LDAP server represented by this configuration.
+   */
+  private final LdapNetworkConnection connection;
 
-    /**
-     * The LDAP DN that was used to bind with the LDAP server to produce
-     * {@link #connection}.
-     */
-    private final Dn bindDn;
+  /**
+   * The LDAP DN that was used to bind with the LDAP server to produce {@link #connection}.
+   */
+  private final Dn bindDn;
 
-    /**
-     * Creates a new ConnectedLDAPConfiguration that associates the given
-     * LdapNetworkConnection with the given LDAPConfiguration. All functions
-     * inherited from the LDAPConfiguration interface are delegated to the
-     * given LDAPConfiguration. It is the responsibility of the caller to
-     * ensure the provided LdapNetworkConnection is closed after it is no
-     * longer needed.
-     *
-     * @param config
-     *      The LDAPConfiguration to wrap.
-     *
-     * @param bindDn
-     *      The LDAP DN that was used to bind with the LDAP server to produce
-     *      the given LdapNetworkConnection.
-     *
-     * @param connection
-     *      The connection to the LDAP server represented by the given
-     *      configuration.
-     */
-    public ConnectedLDAPConfiguration(LDAPConfiguration config, Dn bindDn, LdapNetworkConnection connection) {
-        this.config = config;
-        this.bindDn = bindDn;
-        this.connection = connection;
-    }
+  /**
+   * Creates a new ConnectedLDAPConfiguration that associates the given LdapNetworkConnection with
+   * the given LDAPConfiguration. All functions inherited from the LDAPConfiguration interface are
+   * delegated to the given LDAPConfiguration. It is the responsibility of the caller to ensure the
+   * provided LdapNetworkConnection is closed after it is no longer needed.
+   *
+   * @param config     The LDAPConfiguration to wrap.
+   * @param bindDn     The LDAP DN that was used to bind with the LDAP server to produce the given
+   *                   LdapNetworkConnection.
+   * @param connection The connection to the LDAP server represented by the given configuration.
+   */
+  public ConnectedLDAPConfiguration(LDAPConfiguration config, Dn bindDn,
+      LdapNetworkConnection connection) {
+    this.config = config;
+    this.bindDn = bindDn;
+    this.connection = connection;
+  }
 
-    /**
-     * Returns the LdapNetworkConnection for the connection to the LDAP server
-     * represented by this configuration. The lifecycle of this connection is
-     * managed externally. The connection is not guaranteed to still be
-     * connected.
-     *
-     * @return
-     *     The LdapNetworkConnection for the connection to the LDAP server
-     *     represented by this configuration.
-     */
-    public LdapNetworkConnection getLDAPConnection() {
-        return connection;
-    }
+  /**
+   * Returns the LdapNetworkConnection for the connection to the LDAP server represented by this
+   * configuration. The lifecycle of this connection is managed externally. The connection is not
+   * guaranteed to still be connected.
+   *
+   * @return The LdapNetworkConnection for the connection to the LDAP server represented by this
+   * configuration.
+   */
+  public LdapNetworkConnection getLDAPConnection() {
+    return connection;
+  }
 
-    /**
-     * Returns the LDAP DN that was used to bind with the LDAP server to
-     * produce the LdapNetworkConnection associated with this
-     * ConnectedLDAPConfiguration.
-     *
-     * @return
-     *     The LDAP DN that was used to bind with the LDAP server.
-     */
-    public Dn getBindDN() {
-        return bindDn;
-    }
+  /**
+   * Returns the LDAP DN that was used to bind with the LDAP server to produce the
+   * LdapNetworkConnection associated with this ConnectedLDAPConfiguration.
+   *
+   * @return The LDAP DN that was used to bind with the LDAP server.
+   */
+  public Dn getBindDN() {
+    return bindDn;
+  }
 
-    @Override
-    public void close() {
-        connection.close();
-    }
+  @Override
+  public void close() {
+    connection.close();
+  }
 
-    @Override
-    public String appliesTo(String username) throws GuacamoleException {
-        return config.appliesTo(username);
-    }
+  @Override
+  public String appliesTo(String username) throws GuacamoleException {
+    return config.appliesTo(username);
+  }
 
-    @Override
-    public String getServerHostname() throws GuacamoleException {
-        return config.getServerHostname();
-    }
+  @Override
+  public String getServerHostname() throws GuacamoleException {
+    return config.getServerHostname();
+  }
 
-    @Override
-    public int getServerPort() throws GuacamoleException {
-        return config.getServerPort();
-    }
+  @Override
+  public int getServerPort() throws GuacamoleException {
+    return config.getServerPort();
+  }
 
-    @Override
-    public List<String> getUsernameAttributes() throws GuacamoleException {
-        return config.getUsernameAttributes();
-    }
+  @Override
+  public List<String> getUsernameAttributes() throws GuacamoleException {
+    return config.getUsernameAttributes();
+  }
 
-    @Override
-    public Dn getUserBaseDN() throws GuacamoleException {
-        return config.getUserBaseDN();
-    }
+  @Override
+  public Dn getUserBaseDN() throws GuacamoleException {
+    return config.getUserBaseDN();
+  }
 
-    @Override
-    public Dn getConfigurationBaseDN() throws GuacamoleException {
-        return config.getConfigurationBaseDN();
-    }
+  @Override
+  public Dn getConfigurationBaseDN() throws GuacamoleException {
+    return config.getConfigurationBaseDN();
+  }
 
-    @Override
-    public List<String> getGroupNameAttributes() throws GuacamoleException {
-        return config.getGroupNameAttributes();
-    }
+  @Override
+  public List<String> getGroupNameAttributes() throws GuacamoleException {
+    return config.getGroupNameAttributes();
+  }
 
-    @Override
-    public Dn getGroupBaseDN() throws GuacamoleException {
-        return config.getGroupBaseDN();
-    }
+  @Override
+  public Dn getGroupBaseDN() throws GuacamoleException {
+    return config.getGroupBaseDN();
+  }
 
-    @Override
-    public String getSearchBindDN() throws GuacamoleException {
-        return config.getSearchBindDN();
-    }
+  @Override
+  public String getSearchBindDN() throws GuacamoleException {
+    return config.getSearchBindDN();
+  }
 
-    @Override
-    public String getSearchBindPassword() throws GuacamoleException {
-        return config.getSearchBindPassword();
-    }
+  @Override
+  public String getSearchBindPassword() throws GuacamoleException {
+    return config.getSearchBindPassword();
+  }
 
-    @Override
-    public EncryptionMethod getEncryptionMethod() throws GuacamoleException {
-        return config.getEncryptionMethod();
-    }
+  @Override
+  public EncryptionMethod getEncryptionMethod() throws GuacamoleException {
+    return config.getEncryptionMethod();
+  }
 
-    @Override
-    public int getMaxResults() throws GuacamoleException {
-        return config.getMaxResults();
-    }
+  @Override
+  public int getMaxResults() throws GuacamoleException {
+    return config.getMaxResults();
+  }
 
-    @Override
-    public AliasDerefMode getDereferenceAliases() throws GuacamoleException {
-        return config.getDereferenceAliases();
-    }
+  @Override
+  public AliasDerefMode getDereferenceAliases() throws GuacamoleException {
+    return config.getDereferenceAliases();
+  }
 
-    @Override
-    public boolean getFollowReferrals() throws GuacamoleException {
-        return config.getFollowReferrals();
-    }
+  @Override
+  public boolean getFollowReferrals() throws GuacamoleException {
+    return config.getFollowReferrals();
+  }
 
-    @Override
-    public int getMaxReferralHops() throws GuacamoleException {
-        return config.getMaxReferralHops();
-    }
+  @Override
+  public int getMaxReferralHops() throws GuacamoleException {
+    return config.getMaxReferralHops();
+  }
 
-    @Override
-    public ExprNode getUserSearchFilter() throws GuacamoleException {
-        return config.getUserSearchFilter();
-    }
+  @Override
+  public ExprNode getUserSearchFilter() throws GuacamoleException {
+    return config.getUserSearchFilter();
+  }
 
-    @Override
-    public ExprNode getGroupSearchFilter() throws GuacamoleException {
-        return config.getGroupSearchFilter();
-    }
+  @Override
+  public ExprNode getGroupSearchFilter() throws GuacamoleException {
+    return config.getGroupSearchFilter();
+  }
 
-    @Override
-    public int getOperationTimeout() throws GuacamoleException {
-        return config.getOperationTimeout();
-    }
+  @Override
+  public int getOperationTimeout() throws GuacamoleException {
+    return config.getOperationTimeout();
+  }
 
-    @Override
-    public int getNetworkTimeout() throws GuacamoleException {
-        return config.getNetworkTimeout();
-    }
+  @Override
+  public int getNetworkTimeout() throws GuacamoleException {
+    return config.getNetworkTimeout();
+  }
 
-    @Override
-    public List<String> getAttributes() throws GuacamoleException {
-        return config.getAttributes();
-    }
+  @Override
+  public List<String> getAttributes() throws GuacamoleException {
+    return config.getAttributes();
+  }
 
-    @Override
-    public String getMemberAttribute() throws GuacamoleException {
-        return config.getMemberAttribute();
-    }
+  @Override
+  public String getMemberAttribute() throws GuacamoleException {
+    return config.getMemberAttribute();
+  }
 
-    @Override
-    public MemberAttributeType getMemberAttributeType() throws GuacamoleException {
-        return config.getMemberAttributeType();
-    }
+  @Override
+  public MemberAttributeType getMemberAttributeType() throws GuacamoleException {
+    return config.getMemberAttributeType();
+  }
 
 }

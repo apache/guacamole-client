@@ -33,89 +33,94 @@ import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
 /**
- * Service which authenticates users based on share keys and provides for the
- * creation of corresponding UserContexts. The created UserContext objects are
- * restricted to the connections associated with those share keys via a common
- * ConnectionSharingService.
+ * Service which authenticates users based on share keys and provides for the creation of
+ * corresponding UserContexts. The created UserContext objects are restricted to the connections
+ * associated with those share keys via a common ConnectionSharingService.
  */
 public class SharedAuthenticationProviderService implements AuthenticationProviderService {
 
-    /**
-     * Provider for retrieving SharedUserContext instances.
-     */
-    @Inject
-    private Provider<SharedUserContext> sharedUserContextProvider;
+  /**
+   * Provider for retrieving SharedUserContext instances.
+   */
+  @Inject
+  private Provider<SharedUserContext> sharedUserContextProvider;
 
-    /**
-     * Service for sharing active connections.
-     */
-    @Inject
-    private ConnectionSharingService sharingService;
+  /**
+   * Service for sharing active connections.
+   */
+  @Inject
+  private ConnectionSharingService sharingService;
 
-    @Override
-    public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
-            Credentials credentials) throws GuacamoleException {
+  @Override
+  public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
+      Credentials credentials) throws GuacamoleException {
 
-        // Check whether user is authenticating with a valid sharing key
-        AuthenticatedUser user = sharingService.retrieveSharedConnectionUser(authenticationProvider, credentials);
-        if (user != null)
-            return user;
-
-        // Otherwise, unauthorized
-        throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
-
+    // Check whether user is authenticating with a valid sharing key
+    AuthenticatedUser user = sharingService.retrieveSharedConnectionUser(authenticationProvider,
+        credentials);
+    if (user != null) {
+      return user;
     }
 
-    @Override
-    public SharedUserContext getUserContext(
-            AuthenticationProvider authenticationProvider,
-            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+    // Otherwise, unauthorized
+    throw new GuacamoleInvalidCredentialsException("Invalid login",
+        CredentialsInfo.USERNAME_PASSWORD);
 
-        // Obtain a reference to a correct AuthenticatedUser which can be used
-        // for accessing shared connections
-        SharedAuthenticatedUser sharedAuthenticatedUser;
-        if (authenticatedUser instanceof SharedAuthenticatedUser)
-            sharedAuthenticatedUser = (SharedAuthenticatedUser) authenticatedUser;
-        else
-            sharedAuthenticatedUser = new SharedAuthenticatedUser(authenticatedUser);
+  }
 
-        // Produce empty user context for known-authenticated user
-        SharedUserContext context = sharedUserContextProvider.get();
-        context.init(authenticationProvider, sharedAuthenticatedUser);
+  @Override
+  public SharedUserContext getUserContext(
+      AuthenticationProvider authenticationProvider,
+      AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
-        // Add the shared connection associated with the originally-provided
-        // share key (if any)
-        String shareKey = sharedAuthenticatedUser.getShareKey();
-        if (shareKey != null)
-            context.registerShareKey(shareKey);
-
-        return context;
-
+    // Obtain a reference to a correct AuthenticatedUser which can be used
+    // for accessing shared connections
+    SharedAuthenticatedUser sharedAuthenticatedUser;
+    if (authenticatedUser instanceof SharedAuthenticatedUser) {
+      sharedAuthenticatedUser = (SharedAuthenticatedUser) authenticatedUser;
+    } else {
+      sharedAuthenticatedUser = new SharedAuthenticatedUser(authenticatedUser);
     }
 
-    @Override
-    public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
-            UserContext context, AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
+    // Produce empty user context for known-authenticated user
+    SharedUserContext context = sharedUserContextProvider.get();
+    context.init(authenticationProvider, sharedAuthenticatedUser);
 
-        // Retrieve the share key from the request
-        String shareKey = sharingService.getShareKey(credentials);
-
-        // Update the user context with the share key, if given
-        if (shareKey != null)
-            ((SharedUserContext) context).registerShareKey(shareKey);
-
-        return context;
-
+    // Add the shared connection associated with the originally-provided
+    // share key (if any)
+    String shareKey = sharedAuthenticatedUser.getShareKey();
+    if (shareKey != null) {
+      context.registerShareKey(shareKey);
     }
 
-    @Override
-    public UserContext decorateUserContext(AuthenticationProvider authenticationProvider,
-            UserContext context, AuthenticatedUser authenticatedUser,
-            Credentials credentials) {
+    return context;
 
-        // There's no need to decorate the user context here
-        return context;
+  }
+
+  @Override
+  public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
+      UserContext context, AuthenticatedUser authenticatedUser,
+      Credentials credentials) throws GuacamoleException {
+
+    // Retrieve the share key from the request
+    String shareKey = sharingService.getShareKey(credentials);
+
+    // Update the user context with the share key, if given
+    if (shareKey != null) {
+      ((SharedUserContext) context).registerShareKey(shareKey);
     }
+
+    return context;
+
+  }
+
+  @Override
+  public UserContext decorateUserContext(AuthenticationProvider authenticationProvider,
+      UserContext context, AuthenticatedUser authenticatedUser,
+      Credentials credentials) {
+
+    // There's no need to decorate the user context here
+    return context;
+  }
 
 }

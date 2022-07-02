@@ -23,25 +23,23 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.VaultAuthenticationProvider;
 
 /**
- * VaultAuthenticationProvider implementation which reads secrets from Keeper
- * Secrets Manager
+ * VaultAuthenticationProvider implementation which reads secrets from Keeper Secrets Manager
  */
 public class KsmAuthenticationProvider extends VaultAuthenticationProvider {
 
-    /**
-     * Creates a new KsmKeyVaultAuthenticationProvider which reads secrets
-     * from a configured Keeper Secrets Manager.
-     *
-     * @throws GuacamoleException
-     *     If configuration details cannot be read from guacamole.properties.
-     */
-    public KsmAuthenticationProvider() throws GuacamoleException {
-        super(new KsmAuthenticationProviderModule());
-    }
+  /**
+   * Creates a new KsmKeyVaultAuthenticationProvider which reads secrets from a configured Keeper
+   * Secrets Manager.
+   *
+   * @throws GuacamoleException If configuration details cannot be read from guacamole.properties.
+   */
+  public KsmAuthenticationProvider() throws GuacamoleException {
+    super(new KsmAuthenticationProviderModule());
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "keeper-secrets-manager";
-    }
+  @Override
+  public String getIdentifier() {
+    return "keeper-secrets-manager";
+  }
 
 }

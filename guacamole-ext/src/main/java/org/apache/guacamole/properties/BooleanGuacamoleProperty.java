@@ -23,30 +23,33 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
 /**
- * A GuacamoleProperty whose value is an boolean. Legal true values are "true",
- * or "false". Case does not matter.
+ * A GuacamoleProperty whose value is an boolean. Legal true values are "true", or "false". Case
+ * does not matter.
  */
 public abstract class BooleanGuacamoleProperty implements GuacamoleProperty<Boolean> {
 
-    @Override
-    public Boolean parseValue(String value) throws GuacamoleException {
+  @Override
+  public Boolean parseValue(String value) throws GuacamoleException {
 
-        // If no property provided, return null.
-        if (value == null)
-            return null;
-
-        // If "true", return true
-        if (value.equalsIgnoreCase("true"))
-            return true;
-
-        // If "false", return false
-        if (value.equalsIgnoreCase("false"))
-            return false;
-
-        // Otherwise, fail
-        throw new GuacamoleServerException("Property \"" + getName()
-                + "\" must be either \"true\" or \"false\".");
-
+    // If no property provided, return null.
+    if (value == null) {
+      return null;
     }
+
+    // If "true", return true
+    if (value.equalsIgnoreCase("true")) {
+      return true;
+    }
+
+    // If "false", return false
+    if (value.equalsIgnoreCase("false")) {
+      return false;
+    }
+
+    // Otherwise, fail
+    throw new GuacamoleServerException("Property \"" + getName()
+        + "\" must be either \"true\" or \"false\".");
+
+  }
 
 }

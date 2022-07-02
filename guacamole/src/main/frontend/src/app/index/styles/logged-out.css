@@ -18,12 +18,12 @@
  */
 
 .logged-out-modal guac-modal {
-    background: white;
-    z-index: 20;
+  background: white;
+  z-index: 20;
 }
 
 .logged-out-modal .notification {
-    display: inline-block;
-    max-width: 3in;
-    width: 100%;
+  display: inline-block;
+  max-width: 3in;
+  width: 100%;
 }

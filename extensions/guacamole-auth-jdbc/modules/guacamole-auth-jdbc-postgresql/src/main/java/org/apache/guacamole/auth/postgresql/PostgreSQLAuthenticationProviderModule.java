@@ -34,111 +34,114 @@ import org.mybatis.guice.datasource.helper.JdbcHelper;
  */
 public class PostgreSQLAuthenticationProviderModule implements Module {
 
-    /**
-     * MyBatis-specific configuration properties.
-     */
-    private final Properties myBatisProperties = new Properties();
+  /**
+   * MyBatis-specific configuration properties.
+   */
+  private final Properties myBatisProperties = new Properties();
+
+  /**
+   * PostgreSQL-specific driver configuration properties.
+   */
+  private final Properties driverProperties = new Properties();
+
+  /**
+   * Creates a new PostgreSQL authentication provider module that configures driver and MyBatis
+   * properties using the given environment.
+   *
+   * @param environment The environment to use when configuring MyBatis and the underlying JDBC
+   *                    driver.
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public PostgreSQLAuthenticationProviderModule(PostgreSQLEnvironment environment)
+      throws GuacamoleException {
+
+    // Set the PostgreSQL-specific properties for MyBatis.
+    myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
+    myBatisProperties.setProperty("JDBC.host", environment.getPostgreSQLHostname());
+    myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getPostgreSQLPort()));
+    myBatisProperties.setProperty("JDBC.schema", environment.getPostgreSQLDatabase());
+    myBatisProperties.setProperty("JDBC.autoCommit", "false");
+    myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
+    myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
+
+    // Only set if > 0. Underlying backend does not take 0 as not-set.
+    int defaultStatementTimeout = environment.getPostgreSQLDefaultStatementTimeout();
+    if (defaultStatementTimeout > 0) {
+      myBatisProperties.setProperty(
+          "mybatis.configuration.defaultStatementTimeout",
+          String.valueOf(defaultStatementTimeout)
+      );
+    }
+
+    // Use UTF-8 in database
+    driverProperties.setProperty("characterEncoding", "UTF-8");
+
+    // Check the SSL mode and set if configured.
+    PostgreSQLSSLMode sslMode = environment.getPostgreSQLSSLMode();
 
     /**
-     * PostgreSQL-specific driver configuration properties.
+     * Older versions of the PostgreSQL JDBC driver do not support directly
+     * setting the "prefer" mode; however, the behavior defined by this
+     * mode is the default if nothing is set, so if that mode is requested
+     * in guacamole.properties we just don't set sslmode in the driver.
      */
-    private final Properties driverProperties = new Properties();
-    
-    /**
-     * Creates a new PostgreSQL authentication provider module that configures
-     * driver and MyBatis properties using the given environment.
-     *
-     * @param environment
-     *     The environment to use when configuring MyBatis and the underlying
-     *     JDBC driver.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public PostgreSQLAuthenticationProviderModule(PostgreSQLEnvironment environment)
-            throws GuacamoleException {
+    if (sslMode != PostgreSQLSSLMode.PREFER) {
+      driverProperties.setProperty("sslmode", sslMode.getDriverValue());
+    }
 
-        // Set the PostgreSQL-specific properties for MyBatis.
-        myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
-        myBatisProperties.setProperty("JDBC.host", environment.getPostgreSQLHostname());
-        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getPostgreSQLPort()));
-        myBatisProperties.setProperty("JDBC.schema", environment.getPostgreSQLDatabase());
-        myBatisProperties.setProperty("JDBC.autoCommit", "false");
-        myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
-        myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
+    // If SSL is requested disabled, also set the legacy property.
+    if (sslMode == PostgreSQLSSLMode.DISABLE) {
+      driverProperties.setProperty("ssl", "false");
+    }
 
-        // Only set if > 0. Underlying backend does not take 0 as not-set.
-        int defaultStatementTimeout = environment.getPostgreSQLDefaultStatementTimeout();
-        if (defaultStatementTimeout > 0) {
-            myBatisProperties.setProperty(
-                "mybatis.configuration.defaultStatementTimeout",
-                String.valueOf(defaultStatementTimeout)
-            );
-        }
+    // If SSL is enabled, check for and set other SSL properties.
+    else {
 
-        // Use UTF-8 in database
-        driverProperties.setProperty("characterEncoding", "UTF-8");
-        
-        // Check the SSL mode and set if configured.
-        PostgreSQLSSLMode sslMode = environment.getPostgreSQLSSLMode();
-        
-        /**
-         * Older versions of the PostgreSQL JDBC driver do not support directly
-         * setting the "prefer" mode; however, the behavior defined by this
-         * mode is the default if nothing is set, so if that mode is requested
-         * in guacamole.properties we just don't set sslmode in the driver.
-         */
-        if (sslMode != PostgreSQLSSLMode.PREFER)
-            driverProperties.setProperty("sslmode", sslMode.getDriverValue());
-        
-        // If SSL is requested disabled, also set the legacy property.
-        if (sslMode == PostgreSQLSSLMode.DISABLE)
-            driverProperties.setProperty("ssl", "false");
-        
-        // If SSL is enabled, check for and set other SSL properties.
-        else {
-            
-            File sslClientCert = environment.getPostgreSQLSSLClientCertFile();
-            if (sslClientCert != null)
-                driverProperties.setProperty("sslcert", sslClientCert.getAbsolutePath());
-            
-            File sslClientKey = environment.getPostgreSQLSSLClientKeyFile();
-            if (sslClientKey != null)
-                driverProperties.setProperty("sslkey", sslClientKey.getAbsolutePath());
-            
-            File sslRootCert = environment.getPostgreSQLSSLClientRootCertFile();
-            if (sslRootCert != null)
-                driverProperties.setProperty("sslrootcert", sslRootCert.getAbsolutePath());
-            
-            String sslClientKeyPassword = environment.getPostgreSQLSSLClientKeyPassword();
-            if (sslClientKeyPassword != null)
-                driverProperties.setProperty("sslpassword", sslClientKeyPassword);
-            
-        }
+      File sslClientCert = environment.getPostgreSQLSSLClientCertFile();
+      if (sslClientCert != null) {
+        driverProperties.setProperty("sslcert", sslClientCert.getAbsolutePath());
+      }
 
-        // Handle case where TCP connection to database is silently dropped
-        driverProperties.setProperty(
-            "socketTimeout",
-            String.valueOf(environment.getPostgreSQLSocketTimeout())
-        );
+      File sslClientKey = environment.getPostgreSQLSSLClientKeyFile();
+      if (sslClientKey != null) {
+        driverProperties.setProperty("sslkey", sslClientKey.getAbsolutePath());
+      }
+
+      File sslRootCert = environment.getPostgreSQLSSLClientRootCertFile();
+      if (sslRootCert != null) {
+        driverProperties.setProperty("sslrootcert", sslRootCert.getAbsolutePath());
+      }
+
+      String sslClientKeyPassword = environment.getPostgreSQLSSLClientKeyPassword();
+      if (sslClientKeyPassword != null) {
+        driverProperties.setProperty("sslpassword", sslClientKeyPassword);
+      }
 
     }
 
-    @Override
-    public void configure(Binder binder) {
+    // Handle case where TCP connection to database is silently dropped
+    driverProperties.setProperty(
+        "socketTimeout",
+        String.valueOf(environment.getPostgreSQLSocketTimeout())
+    );
 
-        // Bind PostgreSQL-specific properties
-        JdbcHelper.PostgreSQL.configure(binder);
-        
-        // Bind MyBatis properties
-        Names.bindProperties(binder, myBatisProperties);
+  }
 
-        // Bind JDBC driver properties
-        binder.bind(Properties.class)
-            .annotatedWith(Names.named("JDBC.driverProperties"))
-            .toInstance(driverProperties);
+  @Override
+  public void configure(Binder binder) {
 
-    }
+    // Bind PostgreSQL-specific properties
+    JdbcHelper.PostgreSQL.configure(binder);
+
+    // Bind MyBatis properties
+    Names.bindProperties(binder, myBatisProperties);
+
+    // Bind JDBC driver properties
+    binder.bind(Properties.class)
+        .annotatedWith(Names.named("JDBC.driverProperties"))
+        .toInstance(driverProperties);
+
+  }
 
 }

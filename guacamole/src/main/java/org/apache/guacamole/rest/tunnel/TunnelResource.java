@@ -42,140 +42,121 @@ import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
 import org.apache.guacamole.tunnel.UserTunnel;
 
 /**
- * A REST resource which abstracts the operations available for an individual
- * tunnel.
+ * A REST resource which abstracts the operations available for an individual tunnel.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class TunnelResource {
 
-    /**
-     * The media type to send as the content type of stream contents if no
-     * other media type is specified.
-     */
-    private static final String DEFAULT_MEDIA_TYPE = MediaType.APPLICATION_OCTET_STREAM;
+  /**
+   * The media type to send as the content type of stream contents if no other media type is
+   * specified.
+   */
+  private static final String DEFAULT_MEDIA_TYPE = MediaType.APPLICATION_OCTET_STREAM;
 
-    /**
-     * The tunnel that this TunnelResource represents.
-     */
-    private final UserTunnel tunnel;
+  /**
+   * The tunnel that this TunnelResource represents.
+   */
+  private final UserTunnel tunnel;
 
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
+  /**
+   * The Guacamole server environment.
+   */
+  @Inject
+  private Environment environment;
 
-    /**
-     * A factory which can be used to create instances of resources representing
-     * ActiveConnections.
-     */
-    @Inject
-    private DirectoryObjectResourceFactory<ActiveConnection, APIActiveConnection>
-            activeConnectionResourceFactory;
+  /**
+   * A factory which can be used to create instances of resources representing ActiveConnections.
+   */
+  @Inject
+  private DirectoryObjectResourceFactory<ActiveConnection, APIActiveConnection>
+      activeConnectionResourceFactory;
 
-    /**
-     * Creates a new TunnelResource which exposes the operations and
-     * subresources available for the given tunnel.
-     *
-     * @param tunnel
-     *     The tunnel that this TunnelResource should represent.
-     */
-    @AssistedInject
-    public TunnelResource(@Assisted UserTunnel tunnel) {
-        this.tunnel = tunnel;
+  /**
+   * Creates a new TunnelResource which exposes the operations and subresources available for the
+   * given tunnel.
+   *
+   * @param tunnel The tunnel that this TunnelResource should represent.
+   */
+  @AssistedInject
+  public TunnelResource(@Assisted UserTunnel tunnel) {
+    this.tunnel = tunnel;
+  }
+
+  /**
+   * Retrieves a resource representing the ActiveConnection object associated with this tunnel.
+   *
+   * @return A resource representing the ActiveConnection object associated with this tunnel.
+   * @throws GuacamoleException If an error occurs while retrieving the ActiveConnection.
+   */
+  @Path("activeConnection")
+  public DirectoryObjectResource<ActiveConnection, APIActiveConnection>
+  getActiveConnection() throws GuacamoleException {
+
+    // Pull the UserContext from the tunnel
+    UserContext userContext = tunnel.getUserContext();
+
+    // Fail if the active connection cannot be found
+    ActiveConnection activeConnection = tunnel.getActiveConnection();
+    if (activeConnection == null) {
+      throw new GuacamoleResourceNotFoundException("No readable active connection for tunnel.");
     }
 
-    /**
-     * Retrieves a resource representing the ActiveConnection object associated
-     * with this tunnel.
-     *
-     * @return
-     *     A resource representing the ActiveConnection object associated with
-     *     this tunnel.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the ActiveConnection.
-     */
-    @Path("activeConnection")
-    public DirectoryObjectResource<ActiveConnection, APIActiveConnection>
-        getActiveConnection() throws GuacamoleException {
+    // Return the associated ActiveConnection as a resource
+    return activeConnectionResourceFactory.create(userContext,
+        userContext.getActiveConnectionDirectory(), activeConnection);
 
-        // Pull the UserContext from the tunnel
-        UserContext userContext = tunnel.getUserContext();
+  }
 
-        // Fail if the active connection cannot be found
-        ActiveConnection activeConnection = tunnel.getActiveConnection();
-        if (activeConnection == null)
-            throw new GuacamoleResourceNotFoundException("No readable active connection for tunnel.");
+  /**
+   * Retrieves the underlying protocol used by the connection associated with this tunnel. If
+   * possible, the parameters available for that protocol are retrieved, as well.
+   *
+   * @return A ProtocolInfo object describing the protocol used by the connection associated with
+   * this tunnel.
+   * @throws GuacamoleException If the protocol used by the connection associated with this tunnel
+   *                            cannot be determined.
+   */
+  @GET
+  @Path("protocol")
+  public ProtocolInfo getProtocol() throws GuacamoleException {
 
-        // Return the associated ActiveConnection as a resource
-        return activeConnectionResourceFactory.create(userContext,
-                userContext.getActiveConnectionDirectory(), activeConnection);
-
+    // Pull protocol name from underlying socket
+    String protocol = tunnel.getSocket().getProtocol();
+    if (protocol == null) {
+      throw new GuacamoleResourceNotFoundException("Protocol of tunnel is not known/exposed.");
     }
 
-    /**
-     * Retrieves the underlying protocol used by the connection associated with
-     * this tunnel. If possible, the parameters available for that protocol are
-     * retrieved, as well.
-     *
-     * @return
-     *     A ProtocolInfo object describing the protocol used by the connection
-     *     associated with this tunnel.
-     *
-     * @throws GuacamoleException
-     *     If the protocol used by the connection associated with this tunnel
-     *     cannot be determined.
-     */
-    @GET
-    @Path("protocol")
-    public ProtocolInfo getProtocol() throws GuacamoleException {
-
-        // Pull protocol name from underlying socket
-        String protocol = tunnel.getSocket().getProtocol();
-        if (protocol == null)
-            throw new GuacamoleResourceNotFoundException("Protocol of tunnel is not known/exposed.");
-
-        // If there is no such protocol defined, provide as much info as is
-        // known (just the name)
-        ProtocolInfo info = environment.getProtocol(protocol);
-        if (info == null)
-            return new ProtocolInfo(protocol);
-
-        // All protocol information for this tunnel is known
-        return info;
-
+    // If there is no such protocol defined, provide as much info as is
+    // known (just the name)
+    ProtocolInfo info = environment.getProtocol(protocol);
+    if (info == null) {
+      return new ProtocolInfo(protocol);
     }
 
-    /**
-     * Intercepts and returns the entire contents of a specific stream.
-     *
-     * @param streamIndex
-     *     The index of the stream to intercept.
-     *
-     * @param mediaType
-     *     The media type (mimetype) of the data within the stream.
-     *
-     * @param filename
-     *     The filename to use for the sake of identifying the data returned.
-     *
-     * @return
-     *     A response through which the entire contents of the intercepted
-     *     stream will be sent.
-     *
-     * @throws GuacamoleException
-     *     If the session associated with the given auth token cannot be
-     *     retrieved, or if no such tunnel exists.
-     */
-    @Path("streams/{index}/{filename}")
-    public StreamResource getStream(@PathParam("index") final int streamIndex,
-            @QueryParam("type") @DefaultValue(DEFAULT_MEDIA_TYPE) String mediaType,
-            @PathParam("filename") String filename)
-            throws GuacamoleException {
+    // All protocol information for this tunnel is known
+    return info;
 
-        return new StreamResource(tunnel, streamIndex, mediaType);
+  }
 
-    }
+  /**
+   * Intercepts and returns the entire contents of a specific stream.
+   *
+   * @param streamIndex The index of the stream to intercept.
+   * @param mediaType   The media type (mimetype) of the data within the stream.
+   * @param filename    The filename to use for the sake of identifying the data returned.
+   * @return A response through which the entire contents of the intercepted stream will be sent.
+   * @throws GuacamoleException If the session associated with the given auth token cannot be
+   *                            retrieved, or if no such tunnel exists.
+   */
+  @Path("streams/{index}/{filename}")
+  public StreamResource getStream(@PathParam("index") final int streamIndex,
+      @QueryParam("type") @DefaultValue(DEFAULT_MEDIA_TYPE) String mediaType,
+      @PathParam("filename") String filename)
+      throws GuacamoleException {
+
+    return new StreamResource(tunnel, streamIndex, mediaType);
+
+  }
 
 }

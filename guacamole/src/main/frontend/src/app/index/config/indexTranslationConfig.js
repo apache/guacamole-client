@@ -20,25 +20,26 @@
 /**
  * The configuration block for setting up everything having to do with i18n.
  */
-angular.module('index').config(['$injector', function($injector) {
+angular.module('index').config(['$injector', function ($injector) {
 
-    // Required providers
-    var $translateProvider        = $injector.get('$translateProvider');
-    var preferenceServiceProvider = $injector.get('preferenceServiceProvider');
+  // Required providers
+  var $translateProvider = $injector.get('$translateProvider');
+  var preferenceServiceProvider = $injector.get('preferenceServiceProvider');
 
-    // Fallback to US English
-    $translateProvider.fallbackLanguage('en');
+  // Fallback to US English
+  $translateProvider.fallbackLanguage('en');
 
-    // Prefer chosen language
-    $translateProvider.preferredLanguage(preferenceServiceProvider.preferences.language);
+  // Prefer chosen language
+  $translateProvider.preferredLanguage(
+      preferenceServiceProvider.preferences.language);
 
-    // Escape any HTML in translation strings
-    $translateProvider.useSanitizeValueStrategy('escape');
+  // Escape any HTML in translation strings
+  $translateProvider.useSanitizeValueStrategy('escape');
 
-    // Load translations via translationLoader service
-    $translateProvider.useLoader('translationLoader');
+  // Load translations via translationLoader service
+  $translateProvider.useLoader('translationLoader');
 
-    // Provide pluralization, etc. via messageformat.js
-    $translateProvider.useMessageFormatInterpolation();
+  // Provide pluralization, etc. via messageformat.js
+  $translateProvider.useMessageFormatInterpolation();
 
 }]);

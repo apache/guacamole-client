@@ -28,59 +28,58 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * Basic implementation of a Guacamole connection.
  */
 public abstract class AbstractConnection extends AbstractIdentifiable
-        implements Connection {
+    implements Connection {
 
-    /**
-     * The name associated with this connection.
-     */
-    private String name;
+  /**
+   * The name associated with this connection.
+   */
+  private String name;
 
 
-    /**
-     * The unique identifier of the parent ConnectionGroup for
-     * this Connection.
-     */
-    private String parentIdentifier;
+  /**
+   * The unique identifier of the parent ConnectionGroup for this Connection.
+   */
+  private String parentIdentifier;
 
-    /**
-     * The GuacamoleConfiguration associated with this connection.
-     */
-    private GuacamoleConfiguration configuration;
+  /**
+   * The GuacamoleConfiguration associated with this connection.
+   */
+  private GuacamoleConfiguration configuration;
 
-    @Override
-    public String getName() {
-        return name;
-    }
+  @Override
+  public String getName() {
+    return name;
+  }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
-    }
+  @Override
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    @Override
-    public String getParentIdentifier() {
-        return parentIdentifier;
-    }
+  @Override
+  public String getParentIdentifier() {
+    return parentIdentifier;
+  }
 
-    @Override
-    public void setParentIdentifier(String parentIdentifier) {
-        this.parentIdentifier = parentIdentifier;
-    }
+  @Override
+  public void setParentIdentifier(String parentIdentifier) {
+    this.parentIdentifier = parentIdentifier;
+  }
 
-    @Override
-    public GuacamoleConfiguration getConfiguration() {
-        return configuration;
-    }
+  @Override
+  public GuacamoleConfiguration getConfiguration() {
+    return configuration;
+  }
 
-    @Override
-    public void setConfiguration(GuacamoleConfiguration configuration) {
-        this.configuration = configuration;
-    }
+  @Override
+  public void setConfiguration(GuacamoleConfiguration configuration) {
+    this.configuration = configuration;
+  }
 
-    @Override
-    public Set<String> getSharingProfileIdentifiers()
-            throws GuacamoleException {
-        return Collections.<String>emptySet();
-    }
+  @Override
+  public Set<String> getSharingProfileIdentifiers()
+      throws GuacamoleException {
+    return Collections.<String>emptySet();
+  }
 
 }

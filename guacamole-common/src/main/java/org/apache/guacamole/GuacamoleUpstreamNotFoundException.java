@@ -22,48 +22,42 @@ package org.apache.guacamole;
 import org.apache.guacamole.protocol.GuacamoleStatus;
 
 /**
- * An exception which indicates that an upstream server (such as the remote
- * desktop) does not appear to exist.
+ * An exception which indicates that an upstream server (such as the remote desktop) does not appear
+ * to exist.
  */
 public class GuacamoleUpstreamNotFoundException extends GuacamoleUpstreamException {
 
-    /**
-     * Creates a new GuacamoleUpstreamNotFoundException with the given message
-     * and cause.
-     *
-     * @param message
-     *     A human readable description of the exception that occurred.
-     *
-     * @param cause
-     *     The cause of this exception.
-     */
-    public GuacamoleUpstreamNotFoundException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Creates a new GuacamoleUpstreamNotFoundException with the given message and cause.
+   *
+   * @param message A human readable description of the exception that occurred.
+   * @param cause   The cause of this exception.
+   */
+  public GuacamoleUpstreamNotFoundException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * Creates a new GuacamoleUpstreamNotFoundException with the given message.
-     *
-     * @param message
-     *     A human readable description of the exception that occurred.
-     */
-    public GuacamoleUpstreamNotFoundException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new GuacamoleUpstreamNotFoundException with the given message.
+   *
+   * @param message A human readable description of the exception that occurred.
+   */
+  public GuacamoleUpstreamNotFoundException(String message) {
+    super(message);
+  }
 
-    /**
-     * Creates a new GuacamoleUpstreamNotFoundException with the given cause.
-     *
-     * @param cause
-     *     The cause of this exception.
-     */
-    public GuacamoleUpstreamNotFoundException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Creates a new GuacamoleUpstreamNotFoundException with the given cause.
+   *
+   * @param cause The cause of this exception.
+   */
+  public GuacamoleUpstreamNotFoundException(Throwable cause) {
+    super(cause);
+  }
 
-    @Override
-    public GuacamoleStatus getStatus() {
-        return GuacamoleStatus.UPSTREAM_NOT_FOUND;
-    }
+  @Override
+  public GuacamoleStatus getStatus() {
+    return GuacamoleStatus.UPSTREAM_NOT_FOUND;
+  }
 
 }

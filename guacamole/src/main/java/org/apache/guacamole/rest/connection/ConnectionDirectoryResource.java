@@ -35,44 +35,35 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
 
 /**
- * A REST resource which abstracts the operations available on a Directory of
- * Connections.
+ * A REST resource which abstracts the operations available on a Directory of Connections.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConnectionDirectoryResource
-        extends DirectoryResource<Connection, APIConnection> {
+    extends DirectoryResource<Connection, APIConnection> {
 
-    /**
-     * Creates a new ConnectionDirectoryResource which exposes the operations
-     * and subresources available for the given Connection Directory.
-     *
-     * @param userContext
-     *     The UserContext associated with the given Directory.
-     *
-     * @param directory
-     *     The Directory being exposed.
-     *
-     * @param translator
-     *     A DirectoryObjectTranslator implementation which handles
-     *     Connections.
-     *
-     * @param resourceFactory
-     *     A factory which can be used to create instances of resources
-     *     representing Connections.
-     */
-    @AssistedInject
-    public ConnectionDirectoryResource(@Assisted UserContext userContext,
-            @Assisted Directory<Connection> directory,
-            DirectoryObjectTranslator<Connection, APIConnection> translator,
-            DirectoryObjectResourceFactory<Connection, APIConnection> resourceFactory) {
-        super(userContext, directory, translator, resourceFactory);
-    }
+  /**
+   * Creates a new ConnectionDirectoryResource which exposes the operations and subresources
+   * available for the given Connection Directory.
+   *
+   * @param userContext     The UserContext associated with the given Directory.
+   * @param directory       The Directory being exposed.
+   * @param translator      A DirectoryObjectTranslator implementation which handles Connections.
+   * @param resourceFactory A factory which can be used to create instances of resources
+   *                        representing Connections.
+   */
+  @AssistedInject
+  public ConnectionDirectoryResource(@Assisted UserContext userContext,
+      @Assisted Directory<Connection> directory,
+      DirectoryObjectTranslator<Connection, APIConnection> translator,
+      DirectoryObjectResourceFactory<Connection, APIConnection> resourceFactory) {
+    super(userContext, directory, translator, resourceFactory);
+  }
 
-    @Override
-    protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
-            throws GuacamoleException {
-        return permissions.getConnectionPermissions();
-    }
+  @Override
+  protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
+      throws GuacamoleException {
+    return permissions.getConnectionPermissions();
+  }
 
 }

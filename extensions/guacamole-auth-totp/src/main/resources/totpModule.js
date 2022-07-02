@@ -21,7 +21,7 @@
  * Module which provides handling for TOTP multi-factor authentication.
  */
 angular.module('guacTOTP', [
-    'form'
+  'form'
 ]);
 
 // Ensure the guacTOTP module is loaded along with the rest of the app

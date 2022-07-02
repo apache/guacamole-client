@@ -21,17 +21,17 @@
  * Provides the ClientIdentifier class definition.
  */
 angular.module('navigation').factory('ClientIdentifier', ['$injector',
-    function defineClientIdentifier($injector) {
+  function defineClientIdentifier($injector) {
 
     // Required services
     var authenticationService = $injector.get('authenticationService');
-    var $window               = $injector.get('$window');
+    var $window = $injector.get('$window');
 
     /**
      * Object which uniquely identifies a particular connection or connection
      * group within Guacamole. This object can be converted to/from a string to
      * generate a guaranteed-unique, deterministic identifier for client URLs.
-     * 
+     *
      * @constructor
      * @param {ClientIdentifier|Object} [template={}]
      *     The object whose properties should be copied within the new
@@ -39,34 +39,34 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
      */
     var ClientIdentifier = function ClientIdentifier(template) {
 
-        // Use empty object by default
-        template = template || {};
+      // Use empty object by default
+      template = template || {};
 
-        /**
-         * The identifier of the data source associated with the object to
-         * which the client will connect. This identifier will be the
-         * identifier of an AuthenticationProvider within the Guacamole web
-         * application.
-         *
-         * @type String
-         */
-        this.dataSource = template.dataSource;
+      /**
+       * The identifier of the data source associated with the object to
+       * which the client will connect. This identifier will be the
+       * identifier of an AuthenticationProvider within the Guacamole web
+       * application.
+       *
+       * @type String
+       */
+      this.dataSource = template.dataSource;
 
-        /**
-         * The type of object to which the client will connect. Possible values
-         * are defined within ClientIdentifier.Types.
-         *
-         * @type String
-         */
-        this.type = template.type;
+      /**
+       * The type of object to which the client will connect. Possible values
+       * are defined within ClientIdentifier.Types.
+       *
+       * @type String
+       */
+      this.type = template.type;
 
-        /**
-         * The unique identifier of the object to which the client will
-         * connect.
-         *
-         * @type String
-         */
-        this.id = template.id;
+      /**
+       * The unique identifier of the object to which the client will
+       * connect.
+       *
+       * @type String
+       */
+      this.id = template.id;
 
     };
 
@@ -77,26 +77,26 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
      */
     ClientIdentifier.Types = {
 
-        /**
-         * The type string for a Guacamole connection.
-         *
-         * @type String
-         */
-        CONNECTION : 'c',
+      /**
+       * The type string for a Guacamole connection.
+       *
+       * @type String
+       */
+      CONNECTION: 'c',
 
-        /**
-         * The type string for a Guacamole connection group.
-         *
-         * @type String
-         */
-        CONNECTION_GROUP : 'g',
+      /**
+       * The type string for a Guacamole connection group.
+       *
+       * @type String
+       */
+      CONNECTION_GROUP: 'g',
 
-        /**
-         * The type string for an active Guacamole connection.
-         *
-         * @type String
-         */
-        ACTIVE_CONNECTION : 'a'
+      /**
+       * The type string for an active Guacamole connection.
+       *
+       * @type String
+       */
+      ACTIVE_CONNECTION: 'a'
 
     };
 
@@ -107,7 +107,7 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
      * The "base64url" variant is identical to standard base64 except that it
      * uses "-" instead of "+", "_" instead of "/", and padding with "=" is
      * optional.
-     * 
+     *
      * @param {string} value
      *     The string value to encode.
      *
@@ -116,14 +116,14 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
      */
     var base64urlEncode = function base64urlEncode(value) {
 
-        // Translate padded standard base64 to unpadded base64url
-        return $window.btoa(value).replace(/[+/=]/g,
-            (str) => ({
-                '+' : '-',
-                '/' : '_',
-                '=' : ''
-            })[str]
-        );
+      // Translate padded standard base64 to unpadded base64url
+      return $window.btoa(value).replace(/[+/=]/g,
+          (str) => ({
+            '+': '-',
+            '/': '_',
+            '=': ''
+          })[str]
+      );
 
     };
 
@@ -139,22 +139,22 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
      */
     var base64urlDecode = function base64urlDecode(value) {
 
-        // Add any missing padding (standard base64 requires input strings to
-        // be multiples of 4 in length, padded using '=')
-        value += ([
-            '',
-            '===',
-            '==',
-            '='
-        ])[value.length % 4];
+      // Add any missing padding (standard base64 requires input strings to
+      // be multiples of 4 in length, padded using '=')
+      value += ([
+        '',
+        '===',
+        '==',
+        '='
+      ])[value.length % 4];
 
-        // Translate padded base64url to padded standard base64
-        return $window.atob(value.replace(/[-_]/g,
-            (str) => ({
-                '-' : '+',
-                '_' : '/'
-            })[str]
-        ));
+      // Translate padded base64url to padded standard base64
+      return $window.atob(value.replace(/[-_]/g,
+          (str) => ({
+            '-': '+',
+            '_': '/'
+          })[str]
+      ));
     };
 
     /**
@@ -172,11 +172,11 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
      *     or ClientIdentifier-like object.
      */
     ClientIdentifier.toString = function toString(id) {
-        return base64urlEncode([
-            id.id,
-            id.type,
-            id.dataSource
-        ].join('\0'));
+      return base64urlEncode([
+        id.id,
+        id.type,
+        id.dataSource
+      ].join('\0'));
     };
 
     /**
@@ -193,26 +193,26 @@ angular.module('navigation').factory('ClientIdentifier', ['$injector',
      */
     ClientIdentifier.fromString = function fromString(str) {
 
-        try {
-            var values = base64urlDecode(str).split('\0');
-            return new ClientIdentifier({
-                id         : values[0],
-                type       : values[1],
-                dataSource : values[2]
-            });
-        }
+      try {
+        var values = base64urlDecode(str).split('\0');
+        return new ClientIdentifier({
+          id: values[0],
+          type: values[1],
+          dataSource: values[2]
+        });
+      }
 
-        // If the provided string is invalid, transform into a reasonable guess
-        catch (e) {
-            return new ClientIdentifier({
-                id         : str,
-                type       : ClientIdentifier.Types.CONNECTION,
-                dataSource : authenticationService.getDataSource() || 'default'
-            });
-        }
+          // If the provided string is invalid, transform into a reasonable guess
+      catch (e) {
+        return new ClientIdentifier({
+          id: str,
+          type: ClientIdentifier.Types.CONNECTION,
+          dataSource: authenticationService.getDataSource() || 'default'
+        });
+      }
 
     };
 
     return ClientIdentifier;
 
-}]);
+  }]);

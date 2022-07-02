@@ -22,44 +22,40 @@ package org.apache.guacamole.net.auth;
 import org.apache.guacamole.language.TranslatableMessage;
 
 /**
- * Base implementation of an ActivityLog, providing storage and simple
- * getters/setters for its main properties.
+ * Base implementation of an ActivityLog, providing storage and simple getters/setters for its main
+ * properties.
  */
 public abstract class AbstractActivityLog implements ActivityLog {
 
-    /**
-     * The type of this ActivityLog.
-     */
-    private final Type type;
+  /**
+   * The type of this ActivityLog.
+   */
+  private final Type type;
 
-    /**
-     * A human-readable description of this log.
-     */
-    private final TranslatableMessage description;
+  /**
+   * A human-readable description of this log.
+   */
+  private final TranslatableMessage description;
 
-    /**
-     * Creates a new AbstractActivityLog having the given type and
-     * human-readable description.
-     *
-     * @param type
-     *     The type of this ActivityLog.
-     *
-     * @param description
-     *     A human-readable message that describes this log.
-     */
-    public AbstractActivityLog(Type type, TranslatableMessage description) {
-        this.type = type;
-        this.description = description;
-    }
+  /**
+   * Creates a new AbstractActivityLog having the given type and human-readable description.
+   *
+   * @param type        The type of this ActivityLog.
+   * @param description A human-readable message that describes this log.
+   */
+  public AbstractActivityLog(Type type, TranslatableMessage description) {
+    this.type = type;
+    this.description = description;
+  }
 
-    @Override
-    public Type getType() {
-        return type;
-    }
+  @Override
+  public Type getType() {
+    return type;
+  }
 
-    @Override
-    public TranslatableMessage getDescription() {
-        return description;
-    }
+  @Override
+  public TranslatableMessage getDescription() {
+    return description;
+  }
 
 }

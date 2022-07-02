@@ -27,44 +27,31 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface SharingProfileParameterMapper {
 
-    /**
-     * Returns a collection of all parameters associated with the sharing
-     * profile having the given identifier.
-     *
-     * @param identifier
-     *     The identifier of the sharing profile whose parameters are to be
-     *     retrieved.
-     *
-     * @return
-     *     A collection of all parameters associated with the sharing profile
-     *     having the given identifier. This collection will be empty if no
-     *     such sharing profile exists.
-     */
-    Collection<SharingProfileParameterModel> select(@Param("identifier") String identifier);
+  /**
+   * Returns a collection of all parameters associated with the sharing profile having the given
+   * identifier.
+   *
+   * @param identifier The identifier of the sharing profile whose parameters are to be retrieved.
+   * @return A collection of all parameters associated with the sharing profile having the given
+   * identifier. This collection will be empty if no such sharing profile exists.
+   */
+  Collection<SharingProfileParameterModel> select(@Param("identifier") String identifier);
 
-    /**
-     * Inserts each of the parameter model objects in the given collection as
-     * new sharing profile parameters.
-     *
-     * @param parameters
-     *     The sharing profile parameters to insert.
-     *
-     * @return
-     *     The number of rows inserted.
-     */
-    int insert(@Param("parameters") Collection<SharingProfileParameterModel> parameters);
+  /**
+   * Inserts each of the parameter model objects in the given collection as new sharing profile
+   * parameters.
+   *
+   * @param parameters The sharing profile parameters to insert.
+   * @return The number of rows inserted.
+   */
+  int insert(@Param("parameters") Collection<SharingProfileParameterModel> parameters);
 
-    /**
-     * Deletes all parameters associated with the sharing profile having the
-     * given identifier.
-     *
-     * @param identifier
-     *     The identifier of the sharing profile whose parameters should be
-     *     deleted.
-     *
-     * @return
-     *     The number of rows deleted.
-     */
-    int delete(@Param("identifier") String identifier);
-    
+  /**
+   * Deletes all parameters associated with the sharing profile having the given identifier.
+   *
+   * @param identifier The identifier of the sharing profile whose parameters should be deleted.
+   * @return The number of rows deleted.
+   */
+  int delete(@Param("identifier") String identifier);
+
 }

@@ -20,25 +20,21 @@
 package org.apache.guacamole.auth.cas.group;
 
 /**
- * Parser which converts the group names returned by CAS into names usable by
- * Guacamole. The format of a CAS group name may vary by the underlying
- * authentication backend. For example, a CAS deployment backed by LDAP may
- * provide group names as LDAP DNs, which must be transformed into normal group
- * names to be usable within Guacamole.
+ * Parser which converts the group names returned by CAS into names usable by Guacamole. The format
+ * of a CAS group name may vary by the underlying authentication backend. For example, a CAS
+ * deployment backed by LDAP may provide group names as LDAP DNs, which must be transformed into
+ * normal group names to be usable within Guacamole.
  *
  * @see LDAPGroupParser
  */
 public interface GroupParser {
 
-    /**
-     * Parses the given CAS group name into a group name usable by Guacamole.
-     *
-     * @param casGroup
-     *     The group name retrieved from CAS.
-     *
-     * @return
-     *     A group name usable by Guacamole, or null if the group is not valid.
-     */
-    String parse(String casGroup);
+  /**
+   * Parses the given CAS group name into a group name usable by Guacamole.
+   *
+   * @param casGroup The group name retrieved from CAS.
+   * @return A group name usable by Guacamole, or null if the group is not valid.
+   */
+  String parse(String casGroup);
 
 }

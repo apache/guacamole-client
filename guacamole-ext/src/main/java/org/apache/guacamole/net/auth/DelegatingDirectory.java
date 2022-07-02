@@ -24,70 +24,66 @@ import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 
 /**
- * Directory implementation which simply delegates all function calls to an
- * underlying Directory.
+ * Directory implementation which simply delegates all function calls to an underlying Directory.
  *
- * @param <ObjectType>
- *     The type of objects stored within this Directory.
+ * @param <ObjectType> The type of objects stored within this Directory.
  */
 public class DelegatingDirectory<ObjectType extends Identifiable>
-        implements Directory<ObjectType> {
+    implements Directory<ObjectType> {
 
-    /**
-     * The wrapped Directory.
-     */
-    private final Directory<ObjectType> directory;
+  /**
+   * The wrapped Directory.
+   */
+  private final Directory<ObjectType> directory;
 
-    /**
-     * Wraps the given Directory such that all function calls against this
-     * DelegatingDirectory will be delegated to it.
-     *
-     * @param directory
-     *     The directory to wrap.
-     */
-    public DelegatingDirectory(Directory<ObjectType> directory) {
-        this.directory = directory;
-    }
+  /**
+   * Wraps the given Directory such that all function calls against this DelegatingDirectory will be
+   * delegated to it.
+   *
+   * @param directory The directory to wrap.
+   */
+  public DelegatingDirectory(Directory<ObjectType> directory) {
+    this.directory = directory;
+  }
 
-    /**
-     * Returns the underlying Directory wrapped by this DelegatingDirectory.
-     *
-     * @return
-     *     The Directory wrapped by this DelegatingDirectory.
-     */
-    protected Directory<ObjectType> getDelegateDirectory() {
-        return directory;
-    }
+  /**
+   * Returns the underlying Directory wrapped by this DelegatingDirectory.
+   *
+   * @return The Directory wrapped by this DelegatingDirectory.
+   */
+  protected Directory<ObjectType> getDelegateDirectory() {
+    return directory;
+  }
 
-    @Override
-    public ObjectType get(String identifier) throws GuacamoleException {
-        return directory.get(identifier);
-    }
+  @Override
+  public ObjectType get(String identifier) throws GuacamoleException {
+    return directory.get(identifier);
+  }
 
-    @Override
-    public Collection<ObjectType> getAll(Collection<String> identifiers)
-            throws GuacamoleException {
-        return directory.getAll(identifiers);
-    }
+  @Override
+  public Collection<ObjectType> getAll(Collection<String> identifiers)
+      throws GuacamoleException {
+    return directory.getAll(identifiers);
+  }
 
-    @Override
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return directory.getIdentifiers();
-    }
+  @Override
+  public Set<String> getIdentifiers() throws GuacamoleException {
+    return directory.getIdentifiers();
+  }
 
-    @Override
-    public void add(ObjectType object) throws GuacamoleException {
-        directory.add(object);
-    }
+  @Override
+  public void add(ObjectType object) throws GuacamoleException {
+    directory.add(object);
+  }
 
-    @Override
-    public void update(ObjectType object) throws GuacamoleException {
-        directory.update(object);
-    }
+  @Override
+  public void update(ObjectType object) throws GuacamoleException {
+    directory.update(object);
+  }
 
-    @Override
-    public void remove(String identifier) throws GuacamoleException {
-        directory.remove(identifier);
-    }
+  @Override
+  public void remove(String identifier) throws GuacamoleException {
+    directory.remove(identifier);
+  }
 
 }

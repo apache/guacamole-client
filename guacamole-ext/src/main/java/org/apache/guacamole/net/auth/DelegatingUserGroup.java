@@ -25,111 +25,108 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * UserGroup implementation which simply delegates all function calls to an
- * underlying UserGroup.
+ * UserGroup implementation which simply delegates all function calls to an underlying UserGroup.
  */
 public class DelegatingUserGroup implements UserGroup {
 
-    /**
-     * The wrapped UserGroup.
-     */
-    private final UserGroup userGroup;
+  /**
+   * The wrapped UserGroup.
+   */
+  private final UserGroup userGroup;
 
-    /**
-     * Wraps the given UserGroup such that all function calls against this
-     * DelegatingUserGroup will be delegated to it.
-     *
-     * @param userGroup
-     *     The UserGroup to wrap.
-     */
-    public DelegatingUserGroup(UserGroup userGroup) {
-        this.userGroup = userGroup;
-    }
+  /**
+   * Wraps the given UserGroup such that all function calls against this DelegatingUserGroup will be
+   * delegated to it.
+   *
+   * @param userGroup The UserGroup to wrap.
+   */
+  public DelegatingUserGroup(UserGroup userGroup) {
+    this.userGroup = userGroup;
+  }
 
-    /**
-     * Returns the underlying UserGroup wrapped by this DelegatingUserGroup.
-     *
-     * @return
-     *     The UserGroup wrapped by this DelegatingUserGroup.
-     */
-    protected UserGroup getDelegateUserGroupGroup() {
-        return userGroup;
-    }
+  /**
+   * Returns the underlying UserGroup wrapped by this DelegatingUserGroup.
+   *
+   * @return The UserGroup wrapped by this DelegatingUserGroup.
+   */
+  protected UserGroup getDelegateUserGroupGroup() {
+    return userGroup;
+  }
 
-    @Override
-    public String getIdentifier() {
-        return userGroup.getIdentifier();
-    }
+  @Override
+  public String getIdentifier() {
+    return userGroup.getIdentifier();
+  }
 
-    @Override
-    public void setIdentifier(String identifier) {
-        userGroup.setIdentifier(identifier);
-    }
+  @Override
+  public void setIdentifier(String identifier) {
+    userGroup.setIdentifier(identifier);
+  }
 
-    @Override
-    public Map<String, String> getAttributes() {
-        return userGroup.getAttributes();
-    }
+  @Override
+  public Map<String, String> getAttributes() {
+    return userGroup.getAttributes();
+  }
 
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        userGroup.setAttributes(attributes);
-    }
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    userGroup.setAttributes(attributes);
+  }
 
-    @Override
-    public SystemPermissionSet getSystemPermissions()
-            throws GuacamoleException {
-        return userGroup.getSystemPermissions();
-    }
+  @Override
+  public SystemPermissionSet getSystemPermissions()
+      throws GuacamoleException {
+    return userGroup.getSystemPermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getConnectionPermissions()
-            throws GuacamoleException {
-        return userGroup.getConnectionPermissions();
-    }
+  @Override
+  public ObjectPermissionSet getConnectionPermissions()
+      throws GuacamoleException {
+    return userGroup.getConnectionPermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getConnectionGroupPermissions()
-            throws GuacamoleException {
-        return userGroup.getConnectionGroupPermissions();
-    }
+  @Override
+  public ObjectPermissionSet getConnectionGroupPermissions()
+      throws GuacamoleException {
+    return userGroup.getConnectionGroupPermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getSharingProfilePermissions()
-            throws GuacamoleException {
-        return userGroup.getSharingProfilePermissions();
-    }
+  @Override
+  public ObjectPermissionSet getSharingProfilePermissions()
+      throws GuacamoleException {
+    return userGroup.getSharingProfilePermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getActiveConnectionPermissions()
-            throws GuacamoleException {
-        return userGroup.getActiveConnectionPermissions();
-    }
+  @Override
+  public ObjectPermissionSet getActiveConnectionPermissions()
+      throws GuacamoleException {
+    return userGroup.getActiveConnectionPermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getUserPermissions() throws GuacamoleException {
-        return userGroup.getUserPermissions();
-    }
+  @Override
+  public ObjectPermissionSet getUserPermissions() throws GuacamoleException {
+    return userGroup.getUserPermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getUserGroupPermissions()
-            throws GuacamoleException {
-        return userGroup.getUserGroupPermissions();
-    }
+  @Override
+  public ObjectPermissionSet getUserGroupPermissions()
+      throws GuacamoleException {
+    return userGroup.getUserGroupPermissions();
+  }
 
-    @Override
-    public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return userGroup.getUserGroups();
-    }
+  @Override
+  public RelatedObjectSet getUserGroups() throws GuacamoleException {
+    return userGroup.getUserGroups();
+  }
 
-    @Override
-    public RelatedObjectSet getMemberUsers() throws GuacamoleException {
-        return userGroup.getMemberUsers();
-    }
+  @Override
+  public RelatedObjectSet getMemberUsers() throws GuacamoleException {
+    return userGroup.getMemberUsers();
+  }
 
-    @Override
-    public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
-        return userGroup.getMemberUserGroups();
-    }
+  @Override
+  public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
+    return userGroup.getMemberUserGroups();
+  }
 
 }

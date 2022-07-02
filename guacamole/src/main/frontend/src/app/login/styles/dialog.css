@@ -18,111 +18,111 @@
  */
 
 .login-ui {
-    animation: fadein 0.125s linear;
-    -moz-animation: fadein 0.125s linear;
-    -webkit-animation: fadein 0.125s linear;
+  animation: fadein 0.125s linear;
+  -moz-animation: fadein 0.125s linear;
+  -webkit-animation: fadein 0.125s linear;
 }
 
 .login-ui .login-dialog-middle {
-    width: 100%;
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
+  width: 100%;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
 }
 
 .login-ui .login-dialog {
 
-    width: 100%;
-    max-width: 3in;
-    text-align: left;
-    padding: 1em;
-    font-size: 1.25em;
+  width: 100%;
+  max-width: 3in;
+  text-align: left;
+  padding: 1em;
+  font-size: 1.25em;
 
-    display: inline-block;
+  display: inline-block;
 }
 
 .login-ui .login-dialog h1 {
-    margin-top: 0;
-    margin-bottom: 0em;
-    text-align: center;
+  margin-top: 0;
+  margin-bottom: 0em;
+  text-align: center;
 }
 
 .login-ui .login-dialog .buttons {
-    text-align: right;
-    margin: 0;
-    margin-top: 1em;
+  text-align: right;
+  margin: 0;
+  margin-top: 1em;
 }
 
 .login-ui .login-dialog .login-fields {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 .login-ui .login-dialog th {
-    text-shadow: 1px 1px white;
+  text-shadow: 1px 1px white;
 }
 
 .login-ui .login-dialog .version {
-    padding: 0.5em 0;
+  padding: 0.5em 0;
 }
 
 .login-ui .login-dialog .version .app-name {
-    font-weight: bold;
-    text-transform: uppercase;
-    text-align: center;
-    font-size: 1.25em;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-align: center;
+  font-size: 1.25em;
 }
 
 .login-ui .login-dialog .version .version-number {
 
-    position: absolute;
-    right: 0;
-    bottom: 0;
+  position: absolute;
+  right: 0;
+  bottom: 0;
 
-    padding: 0.25em 0.75em;
-    margin: 0.25em;
+  padding: 0.25em 0.75em;
+  margin: 0.25em;
 
-    -moz-border-radius: 0.5em;
-    -webkit-border-radius: 0.5em;
-    -khtml-border-radius: 0.5em;
-    border-radius: 0.5em;
+  -moz-border-radius: 0.5em;
+  -webkit-border-radius: 0.5em;
+  -khtml-border-radius: 0.5em;
+  border-radius: 0.5em;
 
-    color: white;
-    background: green;
-    font-size: 0.5em;
-    font-style: italic;
-    opacity: 0.5;
+  color: white;
+  background: green;
+  font-size: 0.5em;
+  font-style: italic;
+  opacity: 0.5;
 
 }
 
 .login-ui .login-dialog .logo {
-    display: block;
-    margin: 0.5em auto;
-    width: 3em;
-    height: 3em;
-    background-size:         3em 3em;
-    -moz-background-size:    3em 3em;
-    -webkit-background-size: 3em 3em;
-    -khtml-background-size:  3em 3em;
-    background-image: url("images/guac-tricolor.svg");
+  display: block;
+  margin: 0.5em auto;
+  width: 3em;
+  height: 3em;
+  background-size: 3em 3em;
+  -moz-background-size: 3em 3em;
+  -webkit-background-size: 3em 3em;
+  -khtml-background-size: 3em 3em;
+  background-image: url("images/guac-tricolor.svg");
 }
 
 .login-ui.continuation .login-dialog {
-    border-right: none;
-    border-left: none;
-    box-shadow: none;
-    max-width: 6in;
+  border-right: none;
+  border-left: none;
+  box-shadow: none;
+  max-width: 6in;
 }
 
 .login-ui.continuation .login-dialog .logo,
 .login-ui.continuation .login-dialog .version {
-    display: none;
+  display: none;
 }
 
 .login-ui.error .login-dialog {
-    animation-name: shake-head;
-    animation-duration: 0.25s;
-    animation-timing-function: linear;
-    -webkit-animation-name: shake-head;
-    -webkit-animation-duration: 0.25s;
-    -webkit-animation-timing-function: linear;
+  animation-name: shake-head;
+  animation-duration: 0.25s;
+  animation-timing-function: linear;
+  -webkit-animation-name: shake-head;
+  -webkit-animation-duration: 0.25s;
+  -webkit-animation-timing-function: linear;
 }

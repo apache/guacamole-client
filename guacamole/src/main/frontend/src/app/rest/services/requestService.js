@@ -22,11 +22,11 @@
  * promises that pass only the data from that response.
  */
 angular.module('rest').factory('requestService', ['$injector',
-        function requestService($injector) {
+  function requestService($injector) {
 
     // Required services
-    var $http      = $injector.get('$http');
-    var $log       = $injector.get('$log');
+    var $http = $injector.get('$http');
+    var $log = $injector.get('$log');
     var $rootScope = $injector.get('$rootScope');
 
     // Required types
@@ -48,25 +48,28 @@ angular.module('rest').factory('requestService', ['$injector',
      *   describing the failure.
      */
     var service = function wrapHttpServiceCall(object) {
-        return $http(object).then(
-            function success(response) { return response.data; },
-            function failure(response) {
+      return $http(object).then(
+          function success(response) {
+            return response.data;
+          },
+          function failure(response) {
 
-                // Wrap true error responses from $http within REST Error objects
-                if (response.data)
-                    throw new Error(response.data);
-
-                // Fall back to a generic internal error if the request couldn't
-                // even be issued (webapp is down, etc.)
-                else if ('data' in response)
-                    throw new Error({ message : 'Unknown failure sending HTTP request' });
-
-                // The value provided is not actually a response object from
-                // the $http service
-                throw response;
-
+            // Wrap true error responses from $http within REST Error objects
+            if (response.data) {
+              throw new Error(response.data);
+            }// Fall back to a generic internal error if the request couldn't
+            // even be issued (webapp is down, etc.)
+            else if ('data' in response) {
+              throw new Error(
+                  {message: 'Unknown failure sending HTTP request'});
             }
-        );
+
+            // The value provided is not actually a response object from
+            // the $http service
+            throw response;
+
+          }
+      );
     };
 
     /**
@@ -85,16 +88,17 @@ angular.module('rest').factory('requestService', ['$injector',
      *     promise.
      */
     service.createErrorCallback = function createErrorCallback(callback) {
-        return (function generatedErrorCallback(error) {
+      return (function generatedErrorCallback(error) {
 
-            // Invoke given callback ONLY if due to a legitimate REST error
-            if (error instanceof Error)
-                return callback(error);
+        // Invoke given callback ONLY if due to a legitimate REST error
+        if (error instanceof Error) {
+          return callback(error);
+        }
 
-            // Log all other errors
-            $log.error(error);
+        // Log all other errors
+        $log.error(error);
 
-        });
+      });
     };
 
     /**
@@ -112,16 +116,17 @@ angular.module('rest').factory('requestService', ['$injector',
      *     promise.
      */
     service.defaultValue = function defaultValue(value) {
-        return service.createErrorCallback(function resolveIfNotFound(error) {
+      return service.createErrorCallback(function resolveIfNotFound(error) {
 
-            // Return default value only if not found
-            if (error.type === Error.Type.NOT_FOUND)
-                return value;
+        // Return default value only if not found
+        if (error.type === Error.Type.NOT_FOUND) {
+          return value;
+        }
 
-            // Reject promise with original error otherwise
-            throw error;
+        // Reject promise with original error otherwise
+        throw error;
 
-        });
+      });
     };
 
     /**
@@ -144,9 +149,10 @@ angular.module('rest').factory('requestService', ['$injector',
      * @constant
      * @type Function
      */
-    service.WARN = service.createErrorCallback(function warnRequestFailed(error) {
-        $log.warn(error.type, error.message || error.translatableMessage);
-    });
+    service.WARN = service.createErrorCallback(
+        function warnRequestFailed(error) {
+          $log.warn(error.type, error.message || error.translatableMessage);
+        });
 
     /**
      * Promise error callback which replaces the content of the page with a
@@ -159,10 +165,10 @@ angular.module('rest').factory('requestService', ['$injector',
      * @type Function
      */
     service.DIE = service.createErrorCallback(function fatalPageError(error) {
-        $rootScope.$broadcast('guacFatalPageError', error);
-        $log.error(error.type, error.message || error.translatableMessage);
+      $rootScope.$broadcast('guacFatalPageError', error);
+      $log.error(error.type, error.message || error.translatableMessage);
     });
 
     return service;
 
-}]);
+  }]);

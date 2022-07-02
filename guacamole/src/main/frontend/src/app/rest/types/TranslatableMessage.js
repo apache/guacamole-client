@@ -20,20 +20,21 @@
 /**
  * Service which defines the TranslatableMessage class.
  */
-angular.module('rest').factory('TranslatableMessage', [function defineTranslatableMessage() {
+angular.module('rest').factory('TranslatableMessage',
+    [function defineTranslatableMessage() {
 
-    /**
-     * The object returned by REST API calls when representing a message which
-     * can be translated using the translation service, providing a translation
-     * key and optional set of values to be substituted into the translation
-     * string associated with that key.
-     *
-     * @constructor
-     * @param {TranslatableMessage|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     TranslatableMessage.
-     */
-    var TranslatableMessage = function TranslatableMessage(template) {
+      /**
+       * The object returned by REST API calls when representing a message which
+       * can be translated using the translation service, providing a translation
+       * key and optional set of values to be substituted into the translation
+       * string associated with that key.
+       *
+       * @constructor
+       * @param {TranslatableMessage|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     TranslatableMessage.
+       */
+      var TranslatableMessage = function TranslatableMessage(template) {
 
         // Use empty object by default
         template = template || {};
@@ -56,8 +57,8 @@ angular.module('rest').factory('TranslatableMessage', [function defineTranslatab
          */
         this.variables = template.variables;
 
-    };
+      };
 
-    return TranslatableMessage;
+      return TranslatableMessage;
 
-}]);
+    }]);

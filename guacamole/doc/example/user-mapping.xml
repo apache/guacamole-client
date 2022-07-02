@@ -19,52 +19,52 @@
 -->
 <user-mapping>
 
-    <!-- Per-user authentication and config information -->
-    <authorize username="USERNAME" password="PASSWORD">
-        <protocol>vnc</protocol>
-        <param name="hostname">localhost</param>
-        <param name="port">5900</param>
-        <param name="password">VNCPASS</param>
-    </authorize>
+  <!-- Per-user authentication and config information -->
+  <authorize password="PASSWORD" username="USERNAME">
+    <param name="hostname">localhost</param>
+    <param name="port">5900</param>
+    <param name="password">VNCPASS</param>
+    <protocol>vnc</protocol>
+  </authorize>
 
-    <!-- Another user, but using md5 to hash the password
-         (example below uses the md5 hash of "PASSWORD") -->
-    <authorize 
-            username="USERNAME2"
-            password="319f4d26e3c536b5dd871bb2c52e3178"
-            encoding="md5">
+  <!-- Another user, but using md5 to hash the password
+       (example below uses the md5 hash of "PASSWORD") -->
+  <authorize
+    encoding="md5"
+    password="319f4d26e3c536b5dd871bb2c52e3178"
+    username="USERNAME2">
 
-        <!-- First authorized connection -->
-        <connection name="localhost">
-            <protocol>vnc</protocol>
-            <param name="hostname">localhost</param>
-            <param name="port">5901</param>
-            <param name="password">VNCPASS</param>
-        </connection>
+    <!-- First authorized connection -->
+    <connection name="localhost">
+      <param name="hostname">localhost</param>
+      <param name="port">5901</param>
+      <param name="password">VNCPASS</param>
+      <protocol>vnc</protocol>
+    </connection>
 
-        <!-- Second authorized connection -->
-        <connection name="otherhost">
-            <protocol>vnc</protocol>
-            <param name="hostname">otherhost</param>
-            <param name="port">5900</param>
-            <param name="password">VNCPASS</param>
-        </connection>
+    <!-- Second authorized connection -->
+    <connection name="otherhost">
+      <param name="hostname">otherhost</param>
+      <param name="port">5900</param>
+      <param name="password">VNCPASS</param>
+      <protocol>vnc</protocol>
+    </connection>
 
-     </authorize>
+  </authorize>
 
-     <!-- Another user, but using SHA-256 to hash the password -->
-     <authorize
-            username="USERNAME3"
-            password="5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
-            encoding="sha256">
+  <!-- Another user, but using SHA-256 to hash the password -->
+  <authorize
+    encoding="sha256"
+    password="5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8"
+    username="USERNAME3">
 
-        <connection name="localhost">
-            <protocol>vnc</protocol>
-            <param name="hostname">localhost</param>
-            <param name="port">5900</param>
-            <param name="password">VNCPASS</param>
-        </connection>
+    <connection name="localhost">
+      <param name="hostname">localhost</param>
+      <param name="port">5900</param>
+      <param name="password">VNCPASS</param>
+      <protocol>vnc</protocol>
+    </connection>
 
-    </authorize>
+  </authorize>
 
 </user-mapping>

@@ -22,164 +22,168 @@
  */
 angular.module('touch').directive('guacTouchDrag', [function guacTouchDrag() {
 
-    return {
-        restrict: 'A',
+  return {
+    restrict: 'A',
 
-        link: function linkGuacTouchDrag($scope, $element, $attrs) {
+    link: function linkGuacTouchDrag($scope, $element, $attrs) {
 
-            /**
-             * Called during a drag gesture as the user's finger is placed upon
-             * the element, moves, and is lifted from the element.
-             *
-             * @event
-             * @param {Boolean} inProgress
-             *     Whether the gesture is currently in progress. This will
-             *     always be true except when the gesture has ended, at which
-             *     point one final call will occur with this parameter set to
-             *     false.
-             *
-             * @param {Number} startX
-             *     The X location at which the drag gesture began.
-             *     
-             * @param {Number} startY
-             *     The Y location at which the drag gesture began.
-             *     
-             * @param {Number} currentX
-             *     The current X location of the user's finger.
-             *     
-             * @param {Number} currentY
-             *     The current Y location of the user's finger.
-             *     
-             * @param {Number} deltaX
-             *     The difference in X location relative to the start of the
-             *     gesture.
-             * 
-             * @param {Number} deltaY
-             *     The difference in Y location relative to the start of the
-             *     gesture.
-             * 
-             * @return {Boolean}
-             *     false if the default action of the touch event should be
-             *     prevented, any other value otherwise.
-             */
-            var guacTouchDrag = $scope.$eval($attrs.guacTouchDrag);
+      /**
+       * Called during a drag gesture as the user's finger is placed upon
+       * the element, moves, and is lifted from the element.
+       *
+       * @event
+       * @param {Boolean} inProgress
+       *     Whether the gesture is currently in progress. This will
+       *     always be true except when the gesture has ended, at which
+       *     point one final call will occur with this parameter set to
+       *     false.
+       *
+       * @param {Number} startX
+       *     The X location at which the drag gesture began.
+       *
+       * @param {Number} startY
+       *     The Y location at which the drag gesture began.
+       *
+       * @param {Number} currentX
+       *     The current X location of the user's finger.
+       *
+       * @param {Number} currentY
+       *     The current Y location of the user's finger.
+       *
+       * @param {Number} deltaX
+       *     The difference in X location relative to the start of the
+       *     gesture.
+       *
+       * @param {Number} deltaY
+       *     The difference in Y location relative to the start of the
+       *     gesture.
+       *
+       * @return {Boolean}
+       *     false if the default action of the touch event should be
+       *     prevented, any other value otherwise.
+       */
+      var guacTouchDrag = $scope.$eval($attrs.guacTouchDrag);
 
-            /**
-             * The element which will register the drag gesture.
-             *
-             * @type Element
-             */
-            var element = $element[0];
+      /**
+       * The element which will register the drag gesture.
+       *
+       * @type Element
+       */
+      var element = $element[0];
 
-            /**
-             * Whether a drag gesture is in progress.
-             * 
-             * @type Boolean
-             */
-            var inProgress = false;
-            
-            /**
-             * The starting X location of the drag gesture.
-             * 
-             * @type Number
-             */
-            var startX = null;
+      /**
+       * Whether a drag gesture is in progress.
+       *
+       * @type Boolean
+       */
+      var inProgress = false;
 
-            /**
-             * The starting Y location of the drag gesture.
-             * 
-             * @type Number
-             */
-            var startY = null;
+      /**
+       * The starting X location of the drag gesture.
+       *
+       * @type Number
+       */
+      var startX = null;
 
-            /**
-             * The current X location of the drag gesture.
-             * 
-             * @type Number
-             */
-            var currentX = null;
+      /**
+       * The starting Y location of the drag gesture.
+       *
+       * @type Number
+       */
+      var startY = null;
 
-            /**
-             * The current Y location of the drag gesture.
-             * 
-             * @type Number
-             */
-            var currentY = null;
+      /**
+       * The current X location of the drag gesture.
+       *
+       * @type Number
+       */
+      var currentX = null;
 
-            /**
-             * The change in X relative to drag start.
-             * 
-             * @type Number
-             */
-            var deltaX = 0;
+      /**
+       * The current Y location of the drag gesture.
+       *
+       * @type Number
+       */
+      var currentY = null;
 
-            /**
-             * The change in X relative to drag start.
-             * 
-             * @type Number
-             */
-            var deltaY = 0;
+      /**
+       * The change in X relative to drag start.
+       *
+       * @type Number
+       */
+      var deltaX = 0;
 
-            // When there is exactly one touch, monitor the change in location
-            element.addEventListener("touchmove", function dragTouchMove(e) {
-                if (e.touches.length === 1) {
+      /**
+       * The change in X relative to drag start.
+       *
+       * @type Number
+       */
+      var deltaY = 0;
 
-                    // Get touch location
-                    var x = e.touches[0].clientX;
-                    var y = e.touches[0].clientY;
+      // When there is exactly one touch, monitor the change in location
+      element.addEventListener("touchmove", function dragTouchMove(e) {
+        if (e.touches.length === 1) {
 
-                    // Init start location and deltas if gesture is starting
-                    if (!startX || !startY) {
-                        startX = currentX = x;
-                        startY = currentY = y;
-                        deltaX = 0;
-                        deltaY = 0;
-                        inProgress = true;
-                    }
+          // Get touch location
+          var x = e.touches[0].clientX;
+          var y = e.touches[0].clientY;
 
-                    // Update deltas if gesture is in progress
-                    else if (inProgress) {
-                        deltaX = x - currentX;
-                        deltaY = y - currentY;
-                        currentX = x;
-                        currentY = y;
-                    }
+          // Init start location and deltas if gesture is starting
+          if (!startX || !startY) {
+            startX = currentX = x;
+            startY = currentY = y;
+            deltaX = 0;
+            deltaY = 0;
+            inProgress = true;
+          }
 
-                    // Signal start/change in drag gesture
-                    if (inProgress && guacTouchDrag) {
-                        $scope.$apply(function dragChanged() {
-                            if (guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY) === false)
-                                e.preventDefault();
-                        });
-                    }
+          // Update deltas if gesture is in progress
+          else if (inProgress) {
+            deltaX = x - currentX;
+            deltaY = y - currentY;
+            currentX = x;
+            currentY = y;
+          }
 
-                }
-            }, false);
+          // Signal start/change in drag gesture
+          if (inProgress && guacTouchDrag) {
+            $scope.$apply(function dragChanged() {
+              if (guacTouchDrag(true, startX, startY, currentX, currentY,
+                  deltaX, deltaY) === false) {
+                e.preventDefault();
+              }
+            });
+          }
 
-            // Reset monitoring and fire end event when done
-            element.addEventListener("touchend", function dragTouchEnd(e) {
+        }
+      }, false);
 
-                if (startX && startY && e.touches.length === 0) {
+      // Reset monitoring and fire end event when done
+      element.addEventListener("touchend", function dragTouchEnd(e) {
 
-                    // Signal end of drag gesture
-                    if (inProgress && guacTouchDrag) {
-                        $scope.$apply(function dragComplete() {
-                            if (guacTouchDrag(true, startX, startY, currentX, currentY, deltaX, deltaY) === false)
-                                e.preventDefault();
-                        });
-                    }
+        if (startX && startY && e.touches.length === 0) {
 
-                    startX = currentX = null;
-                    startY = currentY = null;
-                    deltaX = 0;
-                    deltaY = 0;
-                    inProgress = false;
+          // Signal end of drag gesture
+          if (inProgress && guacTouchDrag) {
+            $scope.$apply(function dragComplete() {
+              if (guacTouchDrag(true, startX, startY, currentX, currentY,
+                  deltaX, deltaY) === false) {
+                e.preventDefault();
+              }
+            });
+          }
 
-                }
-
-            }, false);
+          startX = currentX = null;
+          startY = currentY = null;
+          deltaX = 0;
+          deltaY = 0;
+          inProgress = false;
 
         }
 
-    };
+      }, false);
+
+    }
+
+  };
 }]);

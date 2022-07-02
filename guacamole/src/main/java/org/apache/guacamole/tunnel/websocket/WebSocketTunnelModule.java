@@ -35,65 +35,70 @@ import org.slf4j.LoggerFactory;
  */
 public class WebSocketTunnelModule extends ServletModule implements TunnelLoader {
 
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(WebSocketTunnelModule.class);
+  /**
+   * Logger for this class.
+   */
+  private final Logger logger = LoggerFactory.getLogger(WebSocketTunnelModule.class);
 
-    @Override
-    public boolean isSupported() {
+  @Override
+  public boolean isSupported() {
 
-        try {
+    try {
 
-            // Attempt to find WebSocket servlet
-            Class.forName("javax.websocket.Endpoint");
+      // Attempt to find WebSocket servlet
+      Class.forName("javax.websocket.Endpoint");
 
-            // Support found
-            return true;
-
-        }
-
-        // If no such servlet class, this particular WebSocket support
-        // is not present
-        catch (ClassNotFoundException e) {}
-        catch (NoClassDefFoundError e) {}
-
-        // Support not found
-        return false;
-        
-    }
-    
-    @Override
-    public void configureServlets() {
-
-        logger.info("Loading JSR-356 WebSocket support...");
-
-        // Get container
-        ServerContainer container = (ServerContainer) getServletContext().getAttribute("javax.websocket.server.ServerContainer"); 
-        if (container == null) {
-            logger.warn("ServerContainer attribute required by JSR-356 is missing. Cannot load JSR-356 WebSocket support.");
-            return;
-        }
-
-        Provider<TunnelRequestService> tunnelRequestServiceProvider = getProvider(TunnelRequestService.class);
-
-        // Build configuration for WebSocket tunnel
-        ServerEndpointConfig config =
-                ServerEndpointConfig.Builder.create(RestrictedGuacamoleWebSocketTunnelEndpoint.class, "/websocket-tunnel")
-                                            .configurator(new RestrictedGuacamoleWebSocketTunnelEndpoint.Configurator(tunnelRequestServiceProvider))
-                                            .subprotocols(Arrays.asList(new String[]{"guacamole"}))
-                                            .build();
-
-        try {
-
-            // Add configuration to container
-            container.addEndpoint(config);
-
-        }
-        catch (DeploymentException e) {
-            logger.error("Unable to deploy WebSocket tunnel.", e);
-        }
+      // Support found
+      return true;
 
     }
+
+    // If no such servlet class, this particular WebSocket support
+    // is not present
+    catch (ClassNotFoundException e) {
+    } catch (NoClassDefFoundError e) {
+    }
+
+    // Support not found
+    return false;
+
+  }
+
+  @Override
+  public void configureServlets() {
+
+    logger.info("Loading JSR-356 WebSocket support...");
+
+    // Get container
+    ServerContainer container = (ServerContainer) getServletContext().getAttribute(
+        "javax.websocket.server.ServerContainer");
+    if (container == null) {
+      logger.warn(
+          "ServerContainer attribute required by JSR-356 is missing. Cannot load JSR-356 WebSocket support.");
+      return;
+    }
+
+    Provider<TunnelRequestService> tunnelRequestServiceProvider = getProvider(
+        TunnelRequestService.class);
+
+    // Build configuration for WebSocket tunnel
+    ServerEndpointConfig config =
+        ServerEndpointConfig.Builder.create(RestrictedGuacamoleWebSocketTunnelEndpoint.class,
+                "/websocket-tunnel")
+            .configurator(new RestrictedGuacamoleWebSocketTunnelEndpoint.Configurator(
+                tunnelRequestServiceProvider))
+            .subprotocols(Arrays.asList(new String[]{"guacamole"}))
+            .build();
+
+    try {
+
+      // Add configuration to container
+      container.addEndpoint(config);
+
+    } catch (DeploymentException e) {
+      logger.error("Unable to deploy WebSocket tunnel.", e);
+    }
+
+  }
 
 }

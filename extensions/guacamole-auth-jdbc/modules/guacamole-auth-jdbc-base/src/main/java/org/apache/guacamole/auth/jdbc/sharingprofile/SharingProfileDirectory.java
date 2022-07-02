@@ -30,54 +30,55 @@ import org.apache.guacamole.net.auth.SharingProfile;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
- * Implementation of the SharingProfile Directory which is driven by an
- * underlying, arbitrary database.
+ * Implementation of the SharingProfile Directory which is driven by an underlying, arbitrary
+ * database.
  */
 public class SharingProfileDirectory extends RestrictedObject
     implements Directory<SharingProfile> {
 
-    /**
-     * Service for managing sharing profile objects.
-     */
-    @Inject
-    private SharingProfileService sharingProfileService;
+  /**
+   * Service for managing sharing profile objects.
+   */
+  @Inject
+  private SharingProfileService sharingProfileService;
 
-    @Override
-    public SharingProfile get(String identifier) throws GuacamoleException {
-        return sharingProfileService.retrieveObject(getCurrentUser(), identifier);
-    }
+  @Override
+  public SharingProfile get(String identifier) throws GuacamoleException {
+    return sharingProfileService.retrieveObject(getCurrentUser(), identifier);
+  }
 
-    @Override
-    @Transactional
-    public Collection<SharingProfile> getAll(Collection<String> identifiers) throws GuacamoleException {
-        return Collections.<SharingProfile>unmodifiableCollection(
-            sharingProfileService.retrieveObjects(getCurrentUser(), identifiers)
-        );
-    }
+  @Override
+  @Transactional
+  public Collection<SharingProfile> getAll(Collection<String> identifiers)
+      throws GuacamoleException {
+    return Collections.<SharingProfile>unmodifiableCollection(
+        sharingProfileService.retrieveObjects(getCurrentUser(), identifiers)
+    );
+  }
 
-    @Override
-    @Transactional
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return sharingProfileService.getIdentifiers(getCurrentUser());
-    }
+  @Override
+  @Transactional
+  public Set<String> getIdentifiers() throws GuacamoleException {
+    return sharingProfileService.getIdentifiers(getCurrentUser());
+  }
 
-    @Override
-    @Transactional
-    public void add(SharingProfile object) throws GuacamoleException {
-        sharingProfileService.createObject(getCurrentUser(), object);
-    }
+  @Override
+  @Transactional
+  public void add(SharingProfile object) throws GuacamoleException {
+    sharingProfileService.createObject(getCurrentUser(), object);
+  }
 
-    @Override
-    @Transactional
-    public void update(SharingProfile object) throws GuacamoleException {
-        ModeledSharingProfile sharingProfile = (ModeledSharingProfile) object;
-        sharingProfileService.updateObject(getCurrentUser(), sharingProfile);
-    }
+  @Override
+  @Transactional
+  public void update(SharingProfile object) throws GuacamoleException {
+    ModeledSharingProfile sharingProfile = (ModeledSharingProfile) object;
+    sharingProfileService.updateObject(getCurrentUser(), sharingProfile);
+  }
 
-    @Override
-    @Transactional
-    public void remove(String identifier) throws GuacamoleException {
-        sharingProfileService.deleteObject(getCurrentUser(), identifier);
-    }
+  @Override
+  @Transactional
+  public void remove(String identifier) throws GuacamoleException {
+    sharingProfileService.deleteObject(getCurrentUser(), identifier);
+  }
 
 }

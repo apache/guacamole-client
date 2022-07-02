@@ -18,34 +18,34 @@
  */
 
 .transfer-manager {
-    background: white;
+  background: white;
 }
 
 .transfer-manager .header h2 {
-    font-size: 1em;
-    padding-top: 0;
-    padding-bottom: 0;
+  font-size: 1em;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .transfer-manager .header {
-    margin: 0;
-    -ms-flex-align:      center;
-    -moz-box-align:      center;
-    -webkit-box-align:   center;
-    -webkit-align-items: center;
-    align-items:         center;
+  margin: 0;
+  -ms-flex-align: center;
+  -moz-box-align: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
 }
 
 .transfer-manager h3 {
-    margin: 0.25em;
-    font-size: 1em;
-    margin-bottom: 0;
-    opacity: 0.5;
-    text-align: center;
+  margin: 0.25em;
+  font-size: 1em;
+  margin-bottom: 0;
+  opacity: 0.5;
+  text-align: center;
 }
 
 .transfer-manager .transfers {
-    display: table;
-    padding: 0.25em;
-    width: 100%;
+  display: table;
+  padding: 0.25em;
+  width: 100%;
 }

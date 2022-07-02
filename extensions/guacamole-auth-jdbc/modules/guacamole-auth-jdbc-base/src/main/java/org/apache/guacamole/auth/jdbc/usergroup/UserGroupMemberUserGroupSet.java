@@ -26,32 +26,33 @@ import org.apache.guacamole.auth.jdbc.base.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
 /**
- * RelatedObjectSet implementation which represents the one-to-many
- * relationship between a particular user group and its user group members.
+ * RelatedObjectSet implementation which represents the one-to-many relationship between a
+ * particular user group and its user group members.
  */
-public class UserGroupMemberUserGroupSet extends RelatedObjectSet<ModeledUserGroup, UserGroupModel> {
+public class UserGroupMemberUserGroupSet extends
+    RelatedObjectSet<ModeledUserGroup, UserGroupModel> {
 
-    /**
-     * Mapper for the relation between user groups and their user group members.
-     */
-    @Inject
-    private UserGroupMemberUserGroupMapper userGroupMemberUserGroupMapper;
+  /**
+   * Mapper for the relation between user groups and their user group members.
+   */
+  @Inject
+  private UserGroupMemberUserGroupMapper userGroupMemberUserGroupMapper;
 
-    @Override
-    protected ObjectRelationMapper<UserGroupModel> getObjectRelationMapper() {
-        return userGroupMemberUserGroupMapper;
-    }
+  @Override
+  protected ObjectRelationMapper<UserGroupModel> getObjectRelationMapper() {
+    return userGroupMemberUserGroupMapper;
+  }
 
-    @Override
-    protected ObjectPermissionSet
-        getParentObjectEffectivePermissionSet() throws GuacamoleException {
-        return getCurrentUser().getUser().getEffectivePermissions().getUserGroupPermissions();
-    }
+  @Override
+  protected ObjectPermissionSet
+  getParentObjectEffectivePermissionSet() throws GuacamoleException {
+    return getCurrentUser().getUser().getEffectivePermissions().getUserGroupPermissions();
+  }
 
-    @Override
-    protected ObjectPermissionSet getChildObjectEffectivePermissionSet()
-            throws GuacamoleException {
-        return getCurrentUser().getUser().getEffectivePermissions().getUserGroupPermissions();
-    }
+  @Override
+  protected ObjectPermissionSet getChildObjectEffectivePermissionSet()
+      throws GuacamoleException {
+    return getCurrentUser().getUser().getEffectivePermissions().getUserGroupPermissions();
+  }
 
 }

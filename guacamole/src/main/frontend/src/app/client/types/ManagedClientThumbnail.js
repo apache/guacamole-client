@@ -20,18 +20,19 @@
 /**
  * Provides the ManagedClientThumbnail class used by ManagedClient.
  */
-angular.module('client').factory('ManagedClientThumbnail', [function defineManagedClientThumbnail() {
+angular.module('client').factory('ManagedClientThumbnail',
+    [function defineManagedClientThumbnail() {
 
-    /**
-     * Object which represents a thumbnail of the Guacamole client display,
-     * along with the time that the thumbnail was generated.
-     *
-     * @constructor
-     * @param {ManagedClientThumbnail|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ManagedClientThumbnail.
-     */
-    var ManagedClientThumbnail = function ManagedClientThumbnail(template) {
+      /**
+       * Object which represents a thumbnail of the Guacamole client display,
+       * along with the time that the thumbnail was generated.
+       *
+       * @constructor
+       * @param {ManagedClientThumbnail|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     ManagedClientThumbnail.
+       */
+      var ManagedClientThumbnail = function ManagedClientThumbnail(template) {
 
         // Use empty object by default
         template = template || {};
@@ -51,8 +52,8 @@ angular.module('client').factory('ManagedClientThumbnail', [function defineManag
          */
         this.canvas = template.canvas;
 
-    };
+      };
 
-    return ManagedClientThumbnail;
+      return ManagedClientThumbnail;
 
-}]);
+    }]);

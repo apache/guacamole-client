@@ -18,7 +18,7 @@
  */
 
 /**
- * Classes related to obtaining/configuring Guacamole tunnels, and restricting
- * access to those tunnels.
+ * Classes related to obtaining/configuring Guacamole tunnels, and restricting access to those
+ * tunnels.
  */
 package org.apache.guacamole.auth.jdbc.tunnel;

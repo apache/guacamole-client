@@ -21,12 +21,12 @@
  * Service for operating on metadata via the REST API.
  */
 angular.module('rest').factory('schemaService', ['$injector',
-        function schemaService($injector) {
+  function schemaService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
-    var cacheService          = $injector.get('cacheService');
+    var cacheService = $injector.get('cacheService');
 
     var service = {};
 
@@ -49,12 +49,13 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getUserAttributes = function getUserAttributes(dataSource) {
 
-        // Retrieve available user attributes
-        return authenticationService.request({
-            cache   : cacheService.schema,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userAttributes'
-        });
+      // Retrieve available user attributes
+      return authenticationService.request({
+        cache: cacheService.schema,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/schema/userAttributes'
+      });
 
     };
 
@@ -77,12 +78,13 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getUserGroupAttributes = function getUserGroupAttributes(dataSource) {
 
-        // Retrieve available user group attributes
-        return authenticationService.request({
-            cache   : cacheService.schema,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userGroupAttributes'
-        });
+      // Retrieve available user group attributes
+      return authenticationService.request({
+        cache: cacheService.schema,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/schema/userGroupAttributes'
+      });
 
     };
 
@@ -105,12 +107,13 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getConnectionAttributes = function getConnectionAttributes(dataSource) {
 
-        // Retrieve available connection attributes
-        return authenticationService.request({
-            cache   : cacheService.schema,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionAttributes'
-        });
+      // Retrieve available connection attributes
+      return authenticationService.request({
+        cache: cacheService.schema,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/schema/connectionAttributes'
+      });
 
     };
 
@@ -133,12 +136,13 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getSharingProfileAttributes = function getSharingProfileAttributes(dataSource) {
 
-        // Retrieve available sharing profile attributes
-        return authenticationService.request({
-            cache   : cacheService.schema,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/sharingProfileAttributes'
-        });
+      // Retrieve available sharing profile attributes
+      return authenticationService.request({
+        cache: cacheService.schema,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/schema/sharingProfileAttributes'
+      });
 
     };
 
@@ -161,12 +165,13 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getConnectionGroupAttributes = function getConnectionGroupAttributes(dataSource) {
 
-        // Retrieve available connection group attributes
-        return authenticationService.request({
-            cache   : cacheService.schema,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionGroupAttributes'
-        });
+      // Retrieve available connection group attributes
+      return authenticationService.request({
+        cache: cacheService.schema,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/schema/connectionGroupAttributes'
+      });
 
     };
 
@@ -186,15 +191,16 @@ angular.module('rest').factory('schemaService', ['$injector',
      */
     service.getProtocols = function getProtocols(dataSource) {
 
-        // Retrieve available protocols
-        return authenticationService.request({
-            cache   : cacheService.schema,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/protocols'
-        });
+      // Retrieve available protocols
+      return authenticationService.request({
+        cache: cacheService.schema,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/schema/protocols'
+      });
 
     };
 
     return service;
 
-}]);
+  }]);

@@ -22,44 +22,46 @@
  * panel is fixed to the bottom-right corner of its container and can be
  * manually hidden/exposed by the user.
  */
-angular.module('client').directive('guacClientPanel', ['$injector', function guacClientPanel($injector) {
+angular.module('client').directive('guacClientPanel',
+    ['$injector', function guacClientPanel($injector) {
 
-    // Required services
-    const guacClientManager     = $injector.get('guacClientManager');
-    const sessionStorageFactory = $injector.get('sessionStorageFactory');
+      // Required services
+      const guacClientManager = $injector.get('guacClientManager');
+      const sessionStorageFactory = $injector.get('sessionStorageFactory');
 
-    // Required types
-    const ManagedClientGroup = $injector.get('ManagedClientGroup');
-    const ManagedClientState = $injector.get('ManagedClientState');
+      // Required types
+      const ManagedClientGroup = $injector.get('ManagedClientGroup');
+      const ManagedClientState = $injector.get('ManagedClientState');
 
-    /**
-     * Getter/setter for the boolean flag controlling whether the client panel
-     * is currently hidden. This flag is maintained in session-local storage to
-     * allow the state of the panel to persist despite navigation within the
-     * same tab. When hidden, the panel will be collapsed against the right
-     * side of the container. By default, the panel is visible.
-     *
-     * @type Function
-     */
-    var panelHidden = sessionStorageFactory.create(false);
+      /**
+       * Getter/setter for the boolean flag controlling whether the client panel
+       * is currently hidden. This flag is maintained in session-local storage to
+       * allow the state of the panel to persist despite navigation within the
+       * same tab. When hidden, the panel will be collapsed against the right
+       * side of the container. By default, the panel is visible.
+       *
+       * @type Function
+       */
+      var panelHidden = sessionStorageFactory.create(false);
 
-    return {
+      return {
         // Element only
         restrict: 'E',
         replace: true,
         scope: {
 
-            /**
-             * The ManagedClientGroup instances associated with the active
-             * connections to be displayed within this panel.
-             * 
-             * @type ManagedClientGroup[]
-             */
-            clientGroups : '='
+          /**
+           * The ManagedClientGroup instances associated with the active
+           * connections to be displayed within this panel.
+           *
+           * @type ManagedClientGroup[]
+           */
+          clientGroups: '='
 
         },
         templateUrl: 'app/client/templates/guacClientPanel.html',
-        controller: ['$scope', '$element', function guacClientPanelController($scope, $element) {
+        controller: ['$scope', '$element',
+          function guacClientPanelController($scope, $element) {
 
             /**
              * The DOM element containing the scrollable portion of the client
@@ -67,7 +69,8 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
              *
              * @type Element
              */
-            var scrollableArea = $element.find('.client-panel-connection-list')[0];
+            var scrollableArea = $element.find(
+                '.client-panel-connection-list')[0];
 
             /**
              * On-scope reference to session-local storage of the flag
@@ -84,7 +87,7 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
              *     panel, false otherwise.
              */
             $scope.hasClientGroups = function hasClientGroups() {
-                return $scope.clientGroups && $scope.clientGroups.length;
+              return $scope.clientGroups && $scope.clientGroups.length;
             };
 
             /**
@@ -111,19 +114,19 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
              *     false otherwise.
              */
             $scope.hasStatusUpdate = function hasStatusUpdate(clientGroup) {
-                return _.findIndex(clientGroup.clients, (client) => {
+              return _.findIndex(clientGroup.clients, (client) => {
 
-                    // Test whether the client has encountered an error
-                    switch (client.clientState.connectionState) {
-                        case ManagedClientState.ConnectionState.CONNECTION_ERROR:
-                        case ManagedClientState.ConnectionState.TUNNEL_ERROR:
-                        case ManagedClientState.ConnectionState.DISCONNECTED:
-                            return true;
-                    }
+                // Test whether the client has encountered an error
+                switch (client.clientState.connectionState) {
+                  case ManagedClientState.ConnectionState.CONNECTION_ERROR:
+                  case ManagedClientState.ConnectionState.TUNNEL_ERROR:
+                  case ManagedClientState.ConnectionState.DISCONNECTED:
+                    return true;
+                }
 
-                    return false;
+                return false;
 
-                }) !== -1;
+              }) !== -1;
             };
 
             /**
@@ -137,32 +140,35 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
              *     The group of clients to disconnect.
              */
             $scope.disconnect = function disconnect(clientGroup) {
-                guacClientManager.removeManagedClientGroup(ManagedClientGroup.getIdentifier(clientGroup));
+              guacClientManager.removeManagedClientGroup(
+                  ManagedClientGroup.getIdentifier(clientGroup));
             };
 
             /**
              * Toggles whether the client panel is currently hidden.
              */
             $scope.togglePanel = function togglePanel() {
-                panelHidden(!panelHidden());
+              panelHidden(!panelHidden());
             };
 
             // Override vertical scrolling, scrolling horizontally instead
-            scrollableArea.addEventListener('wheel', function reorientVerticalScroll(e) {
+            scrollableArea.addEventListener('wheel',
+                function reorientVerticalScroll(e) {
 
-                var deltaMultiplier = {
+                  var deltaMultiplier = {
                     /* DOM_DELTA_PIXEL */ 0x00: 1,
                     /* DOM_DELTA_LINE  */ 0x01: 15,
                     /* DOM_DELTA_PAGE  */ 0x02: scrollableArea.offsetWidth
-                };
+                  };
 
-                if (e.deltaY) {
-                    this.scrollLeft += e.deltaY * (deltaMultiplier[e.deltaMode] || deltaMultiplier(0x01));
+                  if (e.deltaY) {
+                    this.scrollLeft += e.deltaY * (deltaMultiplier[e.deltaMode]
+                        || deltaMultiplier(0x01));
                     e.preventDefault();
-                }
+                  }
 
-            });
+                });
 
-        }]
-    };
-}]);
+          }]
+      };
+    }]);

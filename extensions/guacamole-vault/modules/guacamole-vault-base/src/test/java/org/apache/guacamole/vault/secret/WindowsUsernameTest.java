@@ -19,64 +19,64 @@
 
 package org.apache.guacamole.vault.secret;
 
-import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
+import org.junit.Test;
 
 /**
  * Class to test the parsing functionality of the WindowsUsername class.
  */
 public class WindowsUsernameTest {
 
-    /**
-     * Verify that the splitWindowsUsernameFromDomain() method correctly strips Windows
-     * domains from provided usernames that include them, and does not modify
-     * usernames that do not have Windows domains.
-     */
-    @Test
-    public void testSplitWindowsUsernameFromDomain() {
+  /**
+   * Verify that the splitWindowsUsernameFromDomain() method correctly strips Windows domains from
+   * provided usernames that include them, and does not modify usernames that do not have Windows
+   * domains.
+   */
+  @Test
+  public void testSplitWindowsUsernameFromDomain() {
 
-        WindowsUsername usernameAndDomain;
+    WindowsUsername usernameAndDomain;
 
-        // If no Windows domain is present in the provided field, the username should
-        // contain the entire field, and no domain should be returned
-        usernameAndDomain = WindowsUsername.splitWindowsUsernameFromDomain("bob");
-        assertEquals(usernameAndDomain.getUsername(), "bob");
-        assertFalse(usernameAndDomain.hasDomain());
+    // If no Windows domain is present in the provided field, the username should
+    // contain the entire field, and no domain should be returned
+    usernameAndDomain = WindowsUsername.splitWindowsUsernameFromDomain("bob");
+    assertEquals(usernameAndDomain.getUsername(), "bob");
+    assertFalse(usernameAndDomain.hasDomain());
 
-        // It should parse down-level logon name style domains
-        usernameAndDomain = WindowsUsername.splitWindowsUsernameFromDomain("localhost\\bob");
-        assertEquals("bob", usernameAndDomain.getUsername(), "bob");
-        assertTrue(usernameAndDomain.hasDomain());
-        assertEquals("localhost", usernameAndDomain.getDomain());
+    // It should parse down-level logon name style domains
+    usernameAndDomain = WindowsUsername.splitWindowsUsernameFromDomain("localhost\\bob");
+    assertEquals("bob", usernameAndDomain.getUsername(), "bob");
+    assertTrue(usernameAndDomain.hasDomain());
+    assertEquals("localhost", usernameAndDomain.getDomain());
 
-        // It should parse user principal name style domains
-        usernameAndDomain = WindowsUsername.splitWindowsUsernameFromDomain("bob@localhost");
-        assertEquals("bob", usernameAndDomain.getUsername(), "bob");
-        assertTrue(usernameAndDomain.hasDomain());
-        assertEquals("localhost", usernameAndDomain.getDomain());
+    // It should parse user principal name style domains
+    usernameAndDomain = WindowsUsername.splitWindowsUsernameFromDomain("bob@localhost");
+    assertEquals("bob", usernameAndDomain.getUsername(), "bob");
+    assertTrue(usernameAndDomain.hasDomain());
+    assertEquals("localhost", usernameAndDomain.getDomain());
 
-        // It should not match if there are an invalid number of separators
-        List<String> invalidSeparators = Arrays.asList(
-                "bob@local@host", "local\\host\\bob",
-                "bob\\local@host", "local@host\\bob");
-        invalidSeparators.stream().forEach(
-            invalidSeparator -> {
+    // It should not match if there are an invalid number of separators
+    List<String> invalidSeparators = Arrays.asList(
+        "bob@local@host", "local\\host\\bob",
+        "bob\\local@host", "local@host\\bob");
+    invalidSeparators.stream().forEach(
+        invalidSeparator -> {
 
-                // An invalid number of separators means that the parse failed -
-                // there should be no detected domain, and the entire field value
-                // should be returned as the username
-                WindowsUsername parseOutput =
-                        WindowsUsername.splitWindowsUsernameFromDomain(invalidSeparator);
-                assertFalse(parseOutput.hasDomain());
-                assertEquals(invalidSeparator, parseOutput.getUsername());
+          // An invalid number of separators means that the parse failed -
+          // there should be no detected domain, and the entire field value
+          // should be returned as the username
+          WindowsUsername parseOutput =
+              WindowsUsername.splitWindowsUsernameFromDomain(invalidSeparator);
+          assertFalse(parseOutput.hasDomain());
+          assertEquals(invalidSeparator, parseOutput.getUsername());
 
-            });
+        });
 
-    }
+  }
 
 }

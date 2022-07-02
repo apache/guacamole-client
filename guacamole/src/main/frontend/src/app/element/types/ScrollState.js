@@ -22,39 +22,39 @@
  */
 angular.module('element').factory('ScrollState', [function defineScrollState() {
 
+  /**
+   * Creates a new ScrollState, representing the current scroll position of
+   * an arbitrary element. This constructor initializes the properties of the
+   * new ScrollState with the corresponding properties of the given template.
+   *
+   * @constructor
+   * @param {ScrollState|Object} [template={}]
+   *     The object whose properties should be copied within the new
+   *     ScrollState.
+   */
+  var ScrollState = function ScrollState(template) {
+
+    // Use empty object by default
+    template = template || {};
+
     /**
-     * Creates a new ScrollState, representing the current scroll position of
-     * an arbitrary element. This constructor initializes the properties of the
-     * new ScrollState with the corresponding properties of the given template.
+     * The left edge of the view rectangle within the scrollable area. This
+     * value naturally increases as the user scrolls right.
      *
-     * @constructor
-     * @param {ScrollState|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ScrollState.
+     * @type Number
      */
-    var ScrollState = function ScrollState(template) {
+    this.left = template.left || 0;
 
-        // Use empty object by default
-        template = template || {};
+    /**
+     * The top edge of the view rectangle within the scrollable area. This
+     * value naturally increases as the user scrolls down.
+     *
+     * @type Number
+     */
+    this.top = template.top || 0;
 
-        /**
-         * The left edge of the view rectangle within the scrollable area. This
-         * value naturally increases as the user scrolls right.
-         *
-         * @type Number
-         */
-        this.left = template.left || 0;
+  };
 
-        /**
-         * The top edge of the view rectangle within the scrollable area. This
-         * value naturally increases as the user scrolls down.
-         *
-         * @type Number
-         */
-        this.top = template.top || 0;
-
-    };
-
-    return ScrollState;
+  return ScrollState;
 
 }]);

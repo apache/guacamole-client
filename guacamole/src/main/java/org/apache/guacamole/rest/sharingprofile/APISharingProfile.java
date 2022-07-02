@@ -29,180 +29,163 @@ import org.apache.guacamole.net.auth.SharingProfile;
  * The external representation used by the REST API for sharing profiles.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-@JsonInclude(value=Include.NON_NULL)
+@JsonInclude(value = Include.NON_NULL)
 public class APISharingProfile {
 
-    /**
-     * The human-readable name of this sharing profile.
-     */
-    private String name;
-    
-    /**
-     * The unique string which identifies this sharing profile within its
-     * containing directory.
-     */
-    private String identifier;
-    
-    /**
-     * The identifier of the primary connection that this sharing profile
-     * can be used to share.
-     */
-    private String primaryConnectionIdentifier;
+  /**
+   * The human-readable name of this sharing profile.
+   */
+  private String name;
 
-    /**
-     * Map of all associated connection parameter values which apply when the
-     * sharing profile is used, indexed by parameter name.
-     */
-    private Map<String, String> parameters;
-    
-    /**
-     * Map of all associated attributes by attribute identifier.
-     */
-    private Map<String, String> attributes;
+  /**
+   * The unique string which identifies this sharing profile within its containing directory.
+   */
+  private String identifier;
 
-    /**
-     * Creates an empty, uninitialized APISharingProfile. The properties of the
-     * created APISharingProfile will need to be set individually as necessary
-     * via their corresponding setters.
-     */
-    public APISharingProfile() {}
-    
-    /**
-     * Creates a new APISharingProfile with its data populated from that of an
-     * existing SharingProfile. As the connection parameters of the
-     * SharingProfile are potentially sensitive, they will not be included in
-     * the new APISharingProfile.
-     *
-     * @param sharingProfile
-     *     The sharing profile to use to populate the data of the new
-     *     APISharingProfile.
-     */
-    public APISharingProfile(SharingProfile sharingProfile) {
+  /**
+   * The identifier of the primary connection that this sharing profile can be used to share.
+   */
+  private String primaryConnectionIdentifier;
 
-        // Set main information
-        this.name = sharingProfile.getName();
-        this.identifier = sharingProfile.getIdentifier();
-        this.primaryConnectionIdentifier = sharingProfile.getPrimaryConnectionIdentifier();
-        
-        // Associate any attributes
-        this.attributes = sharingProfile.getAttributes();
+  /**
+   * Map of all associated connection parameter values which apply when the sharing profile is used,
+   * indexed by parameter name.
+   */
+  private Map<String, String> parameters;
 
-    }
+  /**
+   * Map of all associated attributes by attribute identifier.
+   */
+  private Map<String, String> attributes;
 
-    /**
-     * Returns the human-readable name of this sharing profile.
-     *
-     * @return
-     *     The human-readable name of this sharing profile.
-     */
-    public String getName() {
-        return name;
-    }
+  /**
+   * Creates an empty, uninitialized APISharingProfile. The properties of the created
+   * APISharingProfile will need to be set individually as necessary via their corresponding
+   * setters.
+   */
+  public APISharingProfile() {
+  }
 
-    /**
-     * Set the human-readable name of this sharing profile.
-     *
-     * @param name
-     *     The human-readable name of this sharing profile.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-    
-    /**
-     * Returns the unique string which identifies this sharing profile within
-     * its containing directory.
-     *
-     * @return
-     *     The unique string which identifies this sharing profile within its
-     *     containing directory.
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
+  /**
+   * Creates a new APISharingProfile with its data populated from that of an existing
+   * SharingProfile. As the connection parameters of the SharingProfile are potentially sensitive,
+   * they will not be included in the new APISharingProfile.
+   *
+   * @param sharingProfile The sharing profile to use to populate the data of the new
+   *                       APISharingProfile.
+   */
+  public APISharingProfile(SharingProfile sharingProfile) {
 
-    /**
-     * Sets the unique string which identifies this sharing profile within
-     * its containing directory.
-     *
-     * @param identifier
-     *     The unique string which identifies this sharing profile within its
-     *     containing directory.
-     */
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-    
-    /**
-     * Returns the identifier of the primary connection that this sharing
-     * profile can be used to share.
-     *
-     * @return
-     *     The identifier of the primary connection that this sharing profile
-     *     can be used to share.
-     */
-    public String getPrimaryConnectionIdentifier() {
-        return primaryConnectionIdentifier;
-    }
+    // Set main information
+    this.name = sharingProfile.getName();
+    this.identifier = sharingProfile.getIdentifier();
+    this.primaryConnectionIdentifier = sharingProfile.getPrimaryConnectionIdentifier();
 
-    /**
-     * Sets the identifier of the primary connection that this sharing profile
-     * can be used to share.
-     *
-     * @param primaryConnectionIdentifier
-     *     The identifier of the primary connection that this sharing profile
-     *     can be used to share.
-     */
-    public void setPrimaryConnectionIdentifier(String primaryConnectionIdentifier) {
-        this.primaryConnectionIdentifier = primaryConnectionIdentifier;
-    }
+    // Associate any attributes
+    this.attributes = sharingProfile.getAttributes();
 
-    /**
-     * Returns a map of all associated connection parameter values which apply
-     * when the sharing profile is used, indexed by parameter name.
-     *
-     * @return
-     *     A map of all associated connection parameter values which apply when
-     *     the sharing profile is used, indexed by parameter name.
-     */
-    public Map<String, String> getParameters() {
-        return parameters;
-    }
+  }
 
-    /**
-     * Sets the map of all associated connection parameter values which apply
-     * when the sharing profile is used, indexed by parameter name.
-     *
-     * @param parameters
-     *     The map of all associated connection parameter values which apply
-     *     when the sharing profile is used, indexed by parameter name.
-     */
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
+  /**
+   * Returns the human-readable name of this sharing profile.
+   *
+   * @return The human-readable name of this sharing profile.
+   */
+  public String getName() {
+    return name;
+  }
 
-    /**
-     * Returns a map of all attributes associated with this sharing profile.
-     * Each entry key is the attribute identifier, while each value is the
-     * attribute value itself.
-     *
-     * @return
-     *     The attribute map for this sharing profile.
-     */
-    public Map<String, String> getAttributes() {
-        return attributes;
-    }
+  /**
+   * Set the human-readable name of this sharing profile.
+   *
+   * @param name The human-readable name of this sharing profile.
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    /**
-     * Sets the map of all attributes associated with this sharing profile. Each
-     * entry key is the attribute identifier, while each value is the attribute
-     * value itself.
-     *
-     * @param attributes
-     *     The attribute map for this sharing profile.
-     */
-    public void setAttributes(Map<String, String> attributes) {
-        this.attributes = attributes;
-    }
+  /**
+   * Returns the unique string which identifies this sharing profile within its containing
+   * directory.
+   *
+   * @return The unique string which identifies this sharing profile within its containing
+   * directory.
+   */
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  /**
+   * Sets the unique string which identifies this sharing profile within its containing directory.
+   *
+   * @param identifier The unique string which identifies this sharing profile within its containing
+   *                   directory.
+   */
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
+  /**
+   * Returns the identifier of the primary connection that this sharing profile can be used to
+   * share.
+   *
+   * @return The identifier of the primary connection that this sharing profile can be used to
+   * share.
+   */
+  public String getPrimaryConnectionIdentifier() {
+    return primaryConnectionIdentifier;
+  }
+
+  /**
+   * Sets the identifier of the primary connection that this sharing profile can be used to share.
+   *
+   * @param primaryConnectionIdentifier The identifier of the primary connection that this sharing
+   *                                    profile can be used to share.
+   */
+  public void setPrimaryConnectionIdentifier(String primaryConnectionIdentifier) {
+    this.primaryConnectionIdentifier = primaryConnectionIdentifier;
+  }
+
+  /**
+   * Returns a map of all associated connection parameter values which apply when the sharing
+   * profile is used, indexed by parameter name.
+   *
+   * @return A map of all associated connection parameter values which apply when the sharing
+   * profile is used, indexed by parameter name.
+   */
+  public Map<String, String> getParameters() {
+    return parameters;
+  }
+
+  /**
+   * Sets the map of all associated connection parameter values which apply when the sharing profile
+   * is used, indexed by parameter name.
+   *
+   * @param parameters The map of all associated connection parameter values which apply when the
+   *                   sharing profile is used, indexed by parameter name.
+   */
+  public void setParameters(Map<String, String> parameters) {
+    this.parameters = parameters;
+  }
+
+  /**
+   * Returns a map of all attributes associated with this sharing profile. Each entry key is the
+   * attribute identifier, while each value is the attribute value itself.
+   *
+   * @return The attribute map for this sharing profile.
+   */
+  public Map<String, String> getAttributes() {
+    return attributes;
+  }
+
+  /**
+   * Sets the map of all attributes associated with this sharing profile. Each entry key is the
+   * attribute identifier, while each value is the attribute value itself.
+   *
+   * @param attributes The attribute map for this sharing profile.
+   */
+  public void setAttributes(Map<String, String> attributes) {
+    this.attributes = attributes;
+  }
 
 }

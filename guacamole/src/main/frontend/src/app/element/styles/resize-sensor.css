@@ -18,13 +18,13 @@
  */
 
 .resize-sensor {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    overflow: hidden;
-    border: none;
-    opacity: 0;
-    z-index: -1;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: hidden;
+  border: none;
+  opacity: 0;
+  z-index: -1;
 }

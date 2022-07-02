@@ -32,98 +32,89 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 
 /**
- * The user context of a SharedUser, providing access ONLY to the user
- * themselves, the any SharedConnections associated with that user via share
- * keys, and an internal root connection group containing only those
- * connections.
+ * The user context of a SharedUser, providing access ONLY to the user themselves, the any
+ * SharedConnections associated with that user via share keys, and an internal root connection group
+ * containing only those connections.
  */
 public class SharedUserContext extends AbstractUserContext {
 
-    /**
-     * The AuthenticationProvider that created this SharedUserContext.
-     */
-    private AuthenticationProvider authProvider;
+  /**
+   * The AuthenticationProvider that created this SharedUserContext.
+   */
+  private AuthenticationProvider authProvider;
 
-    /**
-     * The user whose level of access is represented by this user context.
-     */
-    private User self;
+  /**
+   * The user whose level of access is represented by this user context.
+   */
+  private User self;
 
-    /**
-     * A directory of all connections visible to the user for whom this user
-     * context was created.
-     */
-    @Inject
-    private SharedConnectionDirectory connectionDirectory;
+  /**
+   * A directory of all connections visible to the user for whom this user context was created.
+   */
+  @Inject
+  private SharedConnectionDirectory connectionDirectory;
 
-    /**
-     * The root connection group of the hierarchy containing all connections
-     * and connection groups visible to the user for whom this user context was
-     * created.
-     */
-    private ConnectionGroup rootGroup;
+  /**
+   * The root connection group of the hierarchy containing all connections and connection groups
+   * visible to the user for whom this user context was created.
+   */
+  private ConnectionGroup rootGroup;
 
-    /**
-     * Creates a new SharedUserContext which provides access ONLY to the given
-     * user, the SharedConnections associated with the share keys used by that
-     * user, and an internal root connection group containing only those
-     * SharedConnections.
-     *
-     * @param authProvider
-     *     The AuthenticationProvider that created this
-     *     SharedUserContext;
-     *
-     * @param user
-     *     The RemoteAuthenticatedUser for whom this SharedUserContext is being
-     *     created.
-     */
-    public void init(AuthenticationProvider authProvider, RemoteAuthenticatedUser user) {
+  /**
+   * Creates a new SharedUserContext which provides access ONLY to the given user, the
+   * SharedConnections associated with the share keys used by that user, and an internal root
+   * connection group containing only those SharedConnections.
+   *
+   * @param authProvider The AuthenticationProvider that created this SharedUserContext;
+   * @param user         The RemoteAuthenticatedUser for whom this SharedUserContext is being
+   *                     created.
+   */
+  public void init(AuthenticationProvider authProvider, RemoteAuthenticatedUser user) {
 
-        // Associate the originating authentication provider
-        this.authProvider = authProvider;
+    // Associate the originating authentication provider
+    this.authProvider = authProvider;
 
-        // Provide access to all connections shared with the given user
-        this.connectionDirectory.init(user);
+    // Provide access to all connections shared with the given user
+    this.connectionDirectory.init(user);
 
-        // The connection group directory contains only the root group
-        this.rootGroup = new SharedRootConnectionGroup(this);
+    // The connection group directory contains only the root group
+    this.rootGroup = new SharedRootConnectionGroup(this);
 
-        // Create internal pseudo-account representing the authenticated user
-        this.self = new SharedUser(user, this);
+    // Create internal pseudo-account representing the authenticated user
+    this.self = new SharedUser(user, this);
 
-    }
+  }
 
-    /**
-     * Registers a new share key with this SharedUserContext such that the user
-     * will have access to the connection associated with that share key. The
-     * share key will be automatically de-registered when it is no longer valid.
-     *
-     * @param shareKey
-     *     The share key to register.
-     */
-    public void registerShareKey(String shareKey) {
-        connectionDirectory.registerShareKey(shareKey);
-    }
+  /**
+   * Registers a new share key with this SharedUserContext such that the user will have access to
+   * the connection associated with that share key. The share key will be automatically
+   * de-registered when it is no longer valid.
+   *
+   * @param shareKey The share key to register.
+   */
+  public void registerShareKey(String shareKey) {
+    connectionDirectory.registerShareKey(shareKey);
+  }
 
-    @Override
-    public User self() {
-        return self;
-    }
+  @Override
+  public User self() {
+    return self;
+  }
 
-    @Override
-    public AuthenticationProvider getAuthenticationProvider() {
-        return authProvider;
-    }
+  @Override
+  public AuthenticationProvider getAuthenticationProvider() {
+    return authProvider;
+  }
 
-    @Override
-    public Directory<Connection> getConnectionDirectory()
-            throws GuacamoleException {
-        return connectionDirectory;
-    }
+  @Override
+  public Directory<Connection> getConnectionDirectory()
+      throws GuacamoleException {
+    return connectionDirectory;
+  }
 
-    @Override
-    public ConnectionGroup getRootConnectionGroup() {
-        return rootGroup;
-    }
+  @Override
+  public ConnectionGroup getRootConnectionGroup() {
+    return rootGroup;
+  }
 
 }

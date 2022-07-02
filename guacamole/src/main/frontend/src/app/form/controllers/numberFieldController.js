@@ -17,21 +17,21 @@
  * under the License.
  */
 
-
 /**
  * Controller for number fields.
  */
 angular.module('form').controller('numberFieldController', ['$scope',
-    function numberFieldController($scope) {
+  function numberFieldController($scope) {
 
     // Update typed value when model is changed
     $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model ? Number(model) : null);
+      $scope.typedValue = (model ? Number(model) : null);
     });
 
     // Update string value in model when typed value is changed
     $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-        $scope.model = ((typedValue || typedValue === 0) ? typedValue.toString() : '');
+      $scope.model = ((typedValue || typedValue === 0) ? typedValue.toString()
+          : '');
     });
 
-}]);
+  }]);

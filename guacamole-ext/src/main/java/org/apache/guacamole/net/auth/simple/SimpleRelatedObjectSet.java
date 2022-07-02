@@ -26,66 +26,61 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 
 /**
- * A read-only implementation of RelatedObjectSet which uses a backing Set
- * of identifiers to determine which objects are present.
+ * A read-only implementation of RelatedObjectSet which uses a backing Set of identifiers to
+ * determine which objects are present.
  */
 public class SimpleRelatedObjectSet implements RelatedObjectSet {
 
-    /**
-     * A set containing the identifiers of all objects currently present.
-     */
-    private Set<String> identifiers = Collections.emptySet();
+  /**
+   * A set containing the identifiers of all objects currently present.
+   */
+  private Set<String> identifiers = Collections.emptySet();
 
-    /**
-     * Creates a new empty SimpleRelatedObjectSet. If you are not extending
-     * SimpleRelatedObjectSet and only need an immutable, empty
-     * RelatedObjectSet, consider using {@link RelatedObjectSet#EMPTY_SET}
-     * instead.
-     */
-    public SimpleRelatedObjectSet() {
-    }
+  /**
+   * Creates a new empty SimpleRelatedObjectSet. If you are not extending SimpleRelatedObjectSet and
+   * only need an immutable, empty RelatedObjectSet, consider using
+   * {@link RelatedObjectSet#EMPTY_SET} instead.
+   */
+  public SimpleRelatedObjectSet() {
+  }
 
-    /**
-     * Creates a new SimpleRelatedObjectSet which contains the objects having
-     * the identifiers within the given Set. The given Set backs the contents
-     * of the new SimpleRelatedObjectSet. While the SimpleRelatedObjectSet is
-     * read-only, any changes to the underlying Set will be reflected in the
-     * SimpleRelatedObjectSet.
-     *
-     * @param identifiers
-     *     The Set containing the identifiers of all objects which should be
-     *     present within the new SimpleRelatedObjectSet.
-     */
-    public SimpleRelatedObjectSet(Set<String> identifiers) {
-        this.identifiers = identifiers;
-    }
+  /**
+   * Creates a new SimpleRelatedObjectSet which contains the objects having the identifiers within
+   * the given Set. The given Set backs the contents of the new SimpleRelatedObjectSet. While the
+   * SimpleRelatedObjectSet is read-only, any changes to the underlying Set will be reflected in the
+   * SimpleRelatedObjectSet.
+   *
+   * @param identifiers The Set containing the identifiers of all objects which should be present
+   *                    within the new SimpleRelatedObjectSet.
+   */
+  public SimpleRelatedObjectSet(Set<String> identifiers) {
+    this.identifiers = identifiers;
+  }
 
-    /**
-     * Replaces the Set of object identifiers which backs this
-     * SimpleRelatedObjectSet. Future function calls on this
-     * SimpleRelatedObjectSet will instead use the provided Set.
-     *
-     * @param identifiers
-     *     The Set containing the identifiers of all objects which should be
-     *     present within this SimpleRelatedObjectSet.
-     */
-    protected void setObjects(Set<String> identifiers) {
-        this.identifiers = identifiers;
-    }
+  @Override
+  public Set<String> getObjects() {
+    return identifiers;
+  }
 
-    @Override
-    public Set<String> getObjects() {
-        return identifiers;
-    }
+  /**
+   * Replaces the Set of object identifiers which backs this SimpleRelatedObjectSet. Future function
+   * calls on this SimpleRelatedObjectSet will instead use the provided Set.
+   *
+   * @param identifiers The Set containing the identifiers of all objects which should be present
+   *                    within this SimpleRelatedObjectSet.
+   */
+  protected void setObjects(Set<String> identifiers) {
+    this.identifiers = identifiers;
+  }
 
-    @Override
-    public void addObjects(Set<String> identifiers) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public void addObjects(Set<String> identifiers) throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
 
-    @Override
-    public void removeObjects(Set<String> identifiers) throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public void removeObjects(Set<String> identifiers) throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
 
 }

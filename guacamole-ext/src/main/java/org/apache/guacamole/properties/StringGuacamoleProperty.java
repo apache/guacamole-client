@@ -26,9 +26,9 @@ import org.apache.guacamole.GuacamoleException;
  */
 public abstract class StringGuacamoleProperty implements GuacamoleProperty<String> {
 
-    @Override
-    public String parseValue(String value) throws GuacamoleException {
-        return value;
-    }
+  @Override
+  public String parseValue(String value) throws GuacamoleException {
+    return value;
+  }
 
 }

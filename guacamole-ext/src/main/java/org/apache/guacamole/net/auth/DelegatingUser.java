@@ -27,134 +27,131 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * User implementation which simply delegates all function calls to an
- * underlying User.
+ * User implementation which simply delegates all function calls to an underlying User.
  */
 public class DelegatingUser implements User {
 
-    /**
-     * The wrapped User.
-     */
-    private final User user;
+  /**
+   * The wrapped User.
+   */
+  private final User user;
 
-    /**
-     * Wraps the given User such that all function calls against this
-     * DelegatingUser will be delegated to it.
-     *
-     * @param user
-     *     The User to wrap.
-     */
-    public DelegatingUser(User user) {
-        this.user = user;
-    }
+  /**
+   * Wraps the given User such that all function calls against this DelegatingUser will be delegated
+   * to it.
+   *
+   * @param user The User to wrap.
+   */
+  public DelegatingUser(User user) {
+    this.user = user;
+  }
 
-    /**
-     * Returns the underlying User wrapped by this DelegatingUser.
-     *
-     * @return
-     *     The User wrapped by this DelegatingUser.
-     */
-    protected User getDelegateUser() {
-        return user;
-    }
+  /**
+   * Returns the underlying User wrapped by this DelegatingUser.
+   *
+   * @return The User wrapped by this DelegatingUser.
+   */
+  protected User getDelegateUser() {
+    return user;
+  }
 
-    @Override
-    public String getIdentifier() {
-        return user.getIdentifier();
-    }
+  @Override
+  public String getIdentifier() {
+    return user.getIdentifier();
+  }
 
-    @Override
-    public void setIdentifier(String identifier) {
-        user.setIdentifier(identifier);
-    }
+  @Override
+  public void setIdentifier(String identifier) {
+    user.setIdentifier(identifier);
+  }
 
-    @Override
-    public String getPassword() {
-        return user.getPassword();
-    }
+  @Override
+  public String getPassword() {
+    return user.getPassword();
+  }
 
-    @Override
-    public void setPassword(String password) {
-        user.setPassword(password);
-    }
+  @Override
+  public void setPassword(String password) {
+    user.setPassword(password);
+  }
 
-    @Override
-    public Map<String, String> getAttributes() {
-        return user.getAttributes();
-    }
+  @Override
+  public Map<String, String> getAttributes() {
+    return user.getAttributes();
+  }
 
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        user.setAttributes(attributes);
-    }
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    user.setAttributes(attributes);
+  }
 
-    @Override
-    public Date getLastActive() {
-        return user.getLastActive();
-    }
+  @Override
+  public Date getLastActive() {
+    return user.getLastActive();
+  }
 
-    @Deprecated
-    @Override
-    public List<? extends ActivityRecord> getHistory()
-            throws GuacamoleException {
-        return user.getHistory();
-    }
-    
-    @Override
-    public ActivityRecordSet<ActivityRecord> getUserHistory()
-            throws GuacamoleException {
-        return user.getUserHistory();
-    }
+  @Deprecated
+  @Override
+  public List<? extends ActivityRecord> getHistory()
+      throws GuacamoleException {
+    return user.getHistory();
+  }
 
-    @Override
-    public SystemPermissionSet getSystemPermissions()
-            throws GuacamoleException {
-        return user.getSystemPermissions();
-    }
+  @Override
+  public ActivityRecordSet<ActivityRecord> getUserHistory()
+      throws GuacamoleException {
+    return user.getUserHistory();
+  }
 
-    @Override
-    public ObjectPermissionSet getConnectionPermissions()
-            throws GuacamoleException {
-        return user.getConnectionPermissions();
-    }
+  @Override
+  public SystemPermissionSet getSystemPermissions()
+      throws GuacamoleException {
+    return user.getSystemPermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getConnectionGroupPermissions()
-            throws GuacamoleException {
-        return user.getConnectionGroupPermissions();
-    }
+  @Override
+  public ObjectPermissionSet getConnectionPermissions()
+      throws GuacamoleException {
+    return user.getConnectionPermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getSharingProfilePermissions()
-            throws GuacamoleException {
-        return user.getSharingProfilePermissions();
-    }
+  @Override
+  public ObjectPermissionSet getConnectionGroupPermissions()
+      throws GuacamoleException {
+    return user.getConnectionGroupPermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getActiveConnectionPermissions()
-            throws GuacamoleException {
-        return user.getActiveConnectionPermissions();
-    }
+  @Override
+  public ObjectPermissionSet getSharingProfilePermissions()
+      throws GuacamoleException {
+    return user.getSharingProfilePermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getUserPermissions() throws GuacamoleException {
-        return user.getUserPermissions();
-    }
+  @Override
+  public ObjectPermissionSet getActiveConnectionPermissions()
+      throws GuacamoleException {
+    return user.getActiveConnectionPermissions();
+  }
 
-    @Override
-    public ObjectPermissionSet getUserGroupPermissions()
-            throws GuacamoleException {
-        return user.getUserGroupPermissions();
-    }
+  @Override
+  public ObjectPermissionSet getUserPermissions() throws GuacamoleException {
+    return user.getUserPermissions();
+  }
 
-    @Override
-    public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return user.getUserGroups();
-    }
+  @Override
+  public ObjectPermissionSet getUserGroupPermissions()
+      throws GuacamoleException {
+    return user.getUserGroupPermissions();
+  }
 
-    @Override
-    public Permissions getEffectivePermissions() throws GuacamoleException {
-        return user.getEffectivePermissions();
-    }
+  @Override
+  public RelatedObjectSet getUserGroups() throws GuacamoleException {
+    return user.getUserGroups();
+  }
+
+  @Override
+  public Permissions getEffectivePermissions() throws GuacamoleException {
+    return user.getEffectivePermissions();
+  }
 
 }

@@ -21,38 +21,36 @@ package org.apache.guacamole.vault.ksm;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.VaultAuthenticationProviderModule;
-import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
-import org.apache.guacamole.vault.ksm.secret.KsmSecretService;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
+import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.apache.guacamole.vault.ksm.secret.KsmClient;
 import org.apache.guacamole.vault.ksm.secret.KsmRecordService;
+import org.apache.guacamole.vault.ksm.secret.KsmSecretService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 
 /**
- * Guice module which configures injections specific to Keeper Secrets
- * Manager support.
+ * Guice module which configures injections specific to Keeper Secrets Manager support.
  */
 public class KsmAuthenticationProviderModule
-        extends VaultAuthenticationProviderModule {
+    extends VaultAuthenticationProviderModule {
 
-    /**
-     * Creates a new KsmAuthenticationProviderModule which
-     * configures dependency injection for the Keeper Secrets Manager
-     * authentication provider and related services.
-     *
-     * @throws GuacamoleException
-     *     If configuration details in guacamole.properties cannot be parsed.
-     */
-    public KsmAuthenticationProviderModule() throws GuacamoleException {}
+  /**
+   * Creates a new KsmAuthenticationProviderModule which configures dependency injection for the
+   * Keeper Secrets Manager authentication provider and related services.
+   *
+   * @throws GuacamoleException If configuration details in guacamole.properties cannot be parsed.
+   */
+  public KsmAuthenticationProviderModule() throws GuacamoleException {
+  }
 
-    @Override
-    protected void configureVault() {
+  @Override
+  protected void configureVault() {
 
-        // Bind services specific to Keeper Secrets Manager
-        bind(KsmClient.class);
-        bind(KsmRecordService.class);
-        bind(VaultConfigurationService.class).to(KsmConfigurationService.class);
-        bind(VaultSecretService.class).to(KsmSecretService.class);
-    }
+    // Bind services specific to Keeper Secrets Manager
+    bind(KsmClient.class);
+    bind(KsmRecordService.class);
+    bind(VaultConfigurationService.class).to(KsmConfigurationService.class);
+    bind(VaultSecretService.class).to(KsmSecretService.class);
+  }
 
 }

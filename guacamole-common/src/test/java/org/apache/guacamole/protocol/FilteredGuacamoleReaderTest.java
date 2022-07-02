@@ -19,72 +19,76 @@
 
 package org.apache.guacamole.protocol;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.StringReader;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.ReaderGuacamoleReader;
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Test which validates filtering of Guacamole instructions with
- * FilteredGuacamoleReader.
+ * Test which validates filtering of Guacamole instructions with FilteredGuacamoleReader.
  */
 public class FilteredGuacamoleReaderTest {
 
-    /**
-     * Filter which allows through "yes" instructions but drops all others.
-     */
-    private static class TestFilter implements GuacamoleFilter {
+  @Test
+  public void testFilter() throws Exception {
 
-        @Override
-        public GuacamoleInstruction filter(GuacamoleInstruction instruction) throws GuacamoleException {
+    // Test string
+    final String test = "3.yes,1.A;2.no,1.B;3.yes,1.C;3.yes,1.D;4.nope,1.E;";
 
-            if (instruction.getOpcode().equals("yes"))
-                return instruction;
+    GuacamoleReader reader = new FilteredGuacamoleReader(
+        new ReaderGuacamoleReader(new StringReader(test)),
+        new TestFilter());
 
-            return null;
-            
-        }
+    GuacamoleInstruction instruction;
+
+    // Validate first instruction
+    instruction = reader.readInstruction();
+    assertNotNull(instruction);
+    assertEquals("yes", instruction.getOpcode());
+    assertEquals(1, instruction.getArgs().size());
+    assertEquals("A", instruction.getArgs().get(0));
+
+    // Validate second instruction
+    instruction = reader.readInstruction();
+    assertNotNull(instruction);
+    assertEquals("yes", instruction.getOpcode());
+    assertEquals(1, instruction.getArgs().size());
+    assertEquals("C", instruction.getArgs().get(0));
+
+    // Validate third instruction
+    instruction = reader.readInstruction();
+    assertNotNull(instruction);
+    assertEquals("yes", instruction.getOpcode());
+    assertEquals(1, instruction.getArgs().size());
+    assertEquals("D", instruction.getArgs().get(0));
+
+    // Should be done now
+    instruction = reader.readInstruction();
+    assertNull(instruction);
+
+  }
+
+  /**
+   * Filter which allows through "yes" instructions but drops all others.
+   */
+  private static class TestFilter implements GuacamoleFilter {
+
+    @Override
+    public GuacamoleInstruction filter(GuacamoleInstruction instruction) throws GuacamoleException {
+
+      if (instruction.getOpcode().equals("yes")) {
+        return instruction;
+      }
+
+      return null;
 
     }
-    
-    @Test
-    public void testFilter() throws Exception {
 
-        // Test string
-        final String test = "3.yes,1.A;2.no,1.B;3.yes,1.C;3.yes,1.D;4.nope,1.E;";
+  }
 
-        GuacamoleReader reader = new FilteredGuacamoleReader(new ReaderGuacamoleReader(new StringReader(test)),
-                                                             new TestFilter());
-
-        GuacamoleInstruction instruction;
-
-        // Validate first instruction
-        instruction = reader.readInstruction();
-        assertNotNull(instruction);
-        assertEquals("yes", instruction.getOpcode());
-        assertEquals(1, instruction.getArgs().size());
-        assertEquals("A", instruction.getArgs().get(0));
-
-        // Validate second instruction
-        instruction = reader.readInstruction();
-        assertNotNull(instruction);
-        assertEquals("yes", instruction.getOpcode());
-        assertEquals(1, instruction.getArgs().size());
-        assertEquals("C", instruction.getArgs().get(0));
-
-        // Validate third instruction
-        instruction = reader.readInstruction();
-        assertNotNull(instruction);
-        assertEquals("yes", instruction.getOpcode());
-        assertEquals(1, instruction.getArgs().size());
-        assertEquals("D", instruction.getArgs().get(0));
-
-        // Should be done now
-        instruction = reader.readInstruction();
-        assertNull(instruction);
-
-    }
-    
 }

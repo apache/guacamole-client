@@ -27,176 +27,166 @@ import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 /**
- * Base implementation of User which provides default implementations of
- * most functions.
+ * Base implementation of User which provides default implementations of most functions.
  */
 public abstract class AbstractUser extends AbstractIdentifiable
-        implements User {
+    implements User {
 
-    /**
-     * This user's password. Note that while this provides a means for the
-     * password to be set, the data stored in this String is not necessarily
-     * the user's actual password. It may be hashed, it may be arbitrary.
-     */
-    private String password;
+  /**
+   * This user's password. Note that while this provides a means for the password to be set, the
+   * data stored in this String is not necessarily the user's actual password. It may be hashed, it
+   * may be arbitrary.
+   */
+  private String password;
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
+  @Override
+  public String getPassword() {
+    return password;
+  }
 
-    @Override
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  @Override
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty map. Implementations
-     * that wish to expose custom attributes should override this function.
-     */
-    @Override
-    public Map<String, String> getAttributes() {
-        return Collections.emptyMap();
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply an immutable, empty map. Implementations
+   * that wish to expose custom attributes should override this function.
+   */
+  @Override
+  public Map<String, String> getAttributes() {
+    return Collections.emptyMap();
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply ignores all attributes given.
-     * Implementations that wish to support modification of custom attributes
-     * should override this function.
-     */
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        // Ignore all attributes by default
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply ignores all attributes given.
+   * Implementations that wish to support modification of custom attributes should override this
+   * function.
+   */
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    // Ignore all attributes by default
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply returns {@code null}. Implementations that
-     * wish to expose the date and time that a user was last active should
-     * override this function.
-     */
-    @Override
-    public Date getLastActive() {
-        return null;
-    }
-    
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty permission set.
-     * Implementations that wish to expose permissions should override this
-     * function.
-     */
-    @Override
-    public SystemPermissionSet getSystemPermissions()
-            throws GuacamoleException {
-        return SystemPermissionSet.EMPTY_SET;
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply returns {@code null}. Implementations that
+   * wish to expose the date and time that a user was last active should override this function.
+   */
+  @Override
+  public Date getLastActive() {
+    return null;
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty permission set.
-     * Implementations that wish to expose permissions should override this
-     * function.
-     */
-    @Override
-    public ObjectPermissionSet getConnectionPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply an immutable, empty permission set.
+   * Implementations that wish to expose permissions should override this function.
+   */
+  @Override
+  public SystemPermissionSet getSystemPermissions()
+      throws GuacamoleException {
+    return SystemPermissionSet.EMPTY_SET;
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty permission set.
-     * Implementations that wish to expose permissions should override this
-     * function.
-     */
-    @Override
-    public ObjectPermissionSet getConnectionGroupPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply an immutable, empty permission set.
+   * Implementations that wish to expose permissions should override this function.
+   */
+  @Override
+  public ObjectPermissionSet getConnectionPermissions()
+      throws GuacamoleException {
+    return ObjectPermissionSet.EMPTY_SET;
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty permission set.
-     * Implementations that wish to expose permissions should override this
-     * function.
-     */
-    @Override
-    public ObjectPermissionSet getUserPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply an immutable, empty permission set.
+   * Implementations that wish to expose permissions should override this function.
+   */
+  @Override
+  public ObjectPermissionSet getConnectionGroupPermissions()
+      throws GuacamoleException {
+    return ObjectPermissionSet.EMPTY_SET;
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty permission set.
-     * Implementations that wish to expose permissions should override this
-     * function.
-     */
-    @Override
-    public ObjectPermissionSet getUserGroupPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply an immutable, empty permission set.
+   * Implementations that wish to expose permissions should override this function.
+   */
+  @Override
+  public ObjectPermissionSet getUserPermissions()
+      throws GuacamoleException {
+    return ObjectPermissionSet.EMPTY_SET;
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty permission set.
-     * Implementations that wish to expose permissions should override this
-     * function.
-     */
-    @Override
-    public ObjectPermissionSet getActiveConnectionPermissions()
-            throws GuacamoleException {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply an immutable, empty permission set.
+   * Implementations that wish to expose permissions should override this function.
+   */
+  @Override
+  public ObjectPermissionSet getUserGroupPermissions()
+      throws GuacamoleException {
+    return ObjectPermissionSet.EMPTY_SET;
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty permission set.
-     * Implementations that wish to expose permissions should override this
-     * function.
-     */
-    @Override
-    public ObjectPermissionSet getSharingProfilePermissions() {
-        return ObjectPermissionSet.EMPTY_SET;
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply an immutable, empty permission set.
+   * Implementations that wish to expose permissions should override this function.
+   */
+  @Override
+  public ObjectPermissionSet getActiveConnectionPermissions()
+      throws GuacamoleException {
+    return ObjectPermissionSet.EMPTY_SET;
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply an immutable, empty related object set.
-     * Implementations that wish to expose group membership should override
-     * this function.
-     */
-    @Override
-    public RelatedObjectSet getUserGroups() throws GuacamoleException {
-        return RelatedObjectSet.EMPTY_SET;
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply an immutable, empty permission set.
+   * Implementations that wish to expose permissions should override this function.
+   */
+  @Override
+  public ObjectPermissionSet getSharingProfilePermissions() {
+    return ObjectPermissionSet.EMPTY_SET;
+  }
 
-    /**
-     * {@inheritDoc}
-     *
-     * <p>This implementation simply returns {@code this}. Implementations that
-     * wish to expose permissions which apply indirectly (such as through
-     * group inheritance) should override this function.
-     */
-    @Override
-    public Permissions getEffectivePermissions() throws GuacamoleException {
-        return this;
-    }
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply an immutable, empty related object set.
+   * Implementations that wish to expose group membership should override this function.
+   */
+  @Override
+  public RelatedObjectSet getUserGroups() throws GuacamoleException {
+    return RelatedObjectSet.EMPTY_SET;
+  }
+
+  /**
+   * {@inheritDoc}
+   *
+   * <p>This implementation simply returns {@code this}. Implementations that
+   * wish to expose permissions which apply indirectly (such as through group inheritance) should
+   * override this function.
+   */
+  @Override
+  public Permissions getEffectivePermissions() throws GuacamoleException {
+    return this;
+  }
 
 }

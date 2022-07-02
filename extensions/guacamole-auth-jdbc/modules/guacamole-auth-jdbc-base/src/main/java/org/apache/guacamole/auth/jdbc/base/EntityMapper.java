@@ -24,57 +24,44 @@ import java.util.Set;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * Mapper for entities. An entity is the base concept behind a user or user
- * group, and serves as a common point for granting permissions and defining
- * group membership.
+ * Mapper for entities. An entity is the base concept behind a user or user group, and serves as a
+ * common point for granting permissions and defining group membership.
  */
 public interface EntityMapper {
 
-    /**
-     * Inserts the given entity into the database. If the entity already
-     * exists, this will result in an error.
-     *
-     * @param entity
-     *     The entity to insert.
-     *
-     * @return
-     *     The number of rows inserted.
-     */
-    int insert(@Param("entity") EntityModel entity);
+  /**
+   * Inserts the given entity into the database. If the entity already exists, this will result in
+   * an error.
+   *
+   * @param entity The entity to insert.
+   * @return The number of rows inserted.
+   */
+  int insert(@Param("entity") EntityModel entity);
 
-    /**
-     * Returns the set of all group identifiers of which the given entity is a
-     * member, taking into account the given collection of known group
-     * memberships which are not necessarily defined within the database.
-     *
-     * NOTE: This query is expected to handle recursion through the membership
-     * graph on its own. If the database engine does not support recursive
-     * queries (isRecursiveQuerySupported() of JDBCEnvironment returns false),
-     * then this query will only return one level of depth past the effective
-     * groups given and will need to be invoked multiple times.
-     *
-     * @param entity
-     *     The entity whose effective groups should be returned.
-     *
-     * @param effectiveGroups
-     *     The identifiers of any known effective groups that should be taken
-     *     into account, such as those defined externally to the database.
-     *
-     * @param recursive
-     *     Whether the query should leverage database engine features to return
-     *     absolutely all effective groups, including those inherited through
-     *     group membership. If false, this query will return only one level of
-     *     depth and may need to be executed multiple times. If it is known
-     *     that the database engine in question will always support (or always
-     *     not support) recursive queries, this parameter may be ignored.
-     *
-     * @return
-     *     The set of identifiers of all groups that the given entity is a
-     *     member of, including those where membership is inherited through
-     *     membership in other groups.
-     */
-    Set<String> selectEffectiveGroupIdentifiers(@Param("entity") EntityModel entity,
-            @Param("effectiveGroups") Collection<String> effectiveGroups,
-            @Param("recursive") boolean recursive);
+  /**
+   * Returns the set of all group identifiers of which the given entity is a member, taking into
+   * account the given collection of known group memberships which are not necessarily defined
+   * within the database.
+   * <p>
+   * NOTE: This query is expected to handle recursion through the membership graph on its own. If
+   * the database engine does not support recursive queries (isRecursiveQuerySupported() of
+   * JDBCEnvironment returns false), then this query will only return one level of depth past the
+   * effective groups given and will need to be invoked multiple times.
+   *
+   * @param entity          The entity whose effective groups should be returned.
+   * @param effectiveGroups The identifiers of any known effective groups that should be taken into
+   *                        account, such as those defined externally to the database.
+   * @param recursive       Whether the query should leverage database engine features to return
+   *                        absolutely all effective groups, including those inherited through group
+   *                        membership. If false, this query will return only one level of depth and
+   *                        may need to be executed multiple times. If it is known that the database
+   *                        engine in question will always support (or always not support) recursive
+   *                        queries, this parameter may be ignored.
+   * @return The set of identifiers of all groups that the given entity is a member of, including
+   * those where membership is inherited through membership in other groups.
+   */
+  Set<String> selectEffectiveGroupIdentifiers(@Param("entity") EntityModel entity,
+      @Param("effectiveGroups") Collection<String> effectiveGroups,
+      @Param("recursive") boolean recursive);
 
 }

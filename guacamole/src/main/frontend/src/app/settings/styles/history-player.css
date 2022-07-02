@@ -46,69 +46,69 @@
 
 .settings.connectionHistoryPlayer {
 
-    background: black;
-    color: white;
+  background: black;
+  color: white;
 
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    padding: 0;
-    margin: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  margin: 0;
 
 }
 
 .settings.connectionHistoryPlayer guac-player {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .settings.connectionHistoryPlayer .guac-player-help-no-recording,
 .settings.connectionHistoryPlayer .guac-player-help-recording-error {
-    margin: 8px;
-    max-width: 480px;
+  margin: 8px;
+  max-width: 480px;
 }
 
 .settings.connectionHistoryPlayer .guac-player-button {
 
-    display: inline-block;
+  display: inline-block;
 
-    border: 2px solid white;
-    border-radius: 0;
-    background: black;
-    color: white;
-    font-weight: bold;
+  border: 2px solid white;
+  border-radius: 0;
+  background: black;
+  color: white;
+  font-weight: bold;
 
-    padding: 0.5em 1em;
-    margin: 8px;
+  padding: 0.5em 1em;
+  margin: 8px;
 
 }
 
 .settings.connectionHistoryPlayer .guac-player-controls {
-    padding: 0.25em;
+  padding: 0.25em;
 }
 
 .settings.connectionHistoryPlayer .guac-player-controls {
-    background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .settings.connectionHistoryPlayer.playing .guac-player-controls {
-    opacity: 0;
-    -webkit-transition: opacity 0.25s linear 0.25s;
-    -moz-transition: opacity 0.25s linear 0.25s;
-    -o-transition: opacity 0.25s linear 0.25s;
-    transition: opacity 0.25s linear 0.25s;
+  opacity: 0;
+  -webkit-transition: opacity 0.25s linear 0.25s;
+  -moz-transition: opacity 0.25s linear 0.25s;
+  -o-transition: opacity 0.25s linear 0.25s;
+  transition: opacity 0.25s linear 0.25s;
 }
 
 .settings.connectionHistoryPlayer.paused .guac-player-controls,
 .settings.connectionHistoryPlayer.playing:hover .guac-player-controls {
-    opacity: 1;
-    -webkit-transition-delay: 0s;
-    -moz-transition-delay: 0s;
-    -o-transition-delay: 0s;
-    transition-delay: 0s;
+  opacity: 1;
+  -webkit-transition-delay: 0s;
+  -moz-transition-delay: 0s;
+  -o-transition-delay: 0s;
+  transition-delay: 0s;
 }

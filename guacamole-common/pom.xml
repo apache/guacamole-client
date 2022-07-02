@@ -17,93 +17,93 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-common</artifactId>
+  <build>
+    <plugins>
+
+      <!-- Attach source and JavaDoc .jars -->
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+      </plugin>
+
+    </plugins>
+  </build>
+  <dependencies>
+
+    <!-- Java servlet API -->
+    <dependency>
+      <artifactId>servlet-api</artifactId>
+      <groupId>javax.servlet</groupId>
+      <scope>provided</scope>
+      <version>2.5</version>
+    </dependency>
+
+    <!-- JSR 356 WebSocket API -->
+    <dependency>
+      <artifactId>javax.websocket-api</artifactId>
+      <groupId>javax.websocket</groupId>
+      <scope>provided</scope>
+      <version>1.0</version>
+    </dependency>
+
+    <!-- SLF4J - logging -->
+    <dependency>
+      <artifactId>slf4j-api</artifactId>
+      <groupId>org.slf4j</groupId>
+    </dependency>
+
+    <!-- JUnit -->
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
+      <scope>test</scope>
+    </dependency>
+
+  </dependencies>
+  <description>
+    The base Java API of the Guacamole project, providing Java support for
+    the Guacamole stack.
+  </description>
+  <groupId>org.apache.guacamole</groupId>
+  <licenses>
+    <license>
+      <distribution>repo</distribution>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>guacamole-common</name>
+
+  <packaging>jar</packaging>
+
+  <!-- All applicable licenses -->
+  <parent>
+    <artifactId>guacamole-client</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-common</artifactId>
-    <packaging>jar</packaging>
+    <relativePath>../</relativePath>
     <version>1.4.0</version>
-    <name>guacamole-common</name>
-    <url>http://guacamole.apache.org/</url>
+  </parent>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>guacamole-client</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../</relativePath>
-    </parent>
+  <!-- Git repository -->
+  <scm>
+    <connection>scm:git:https://git.wip-us.apache.org/repos/asf/guacamole-client.git</connection>
+    <url>https://github.com/apache/guacamole-client</url>
+  </scm>
 
-    <description>
-        The base Java API of the Guacamole project, providing Java support for
-        the Guacamole stack.
-    </description>
+  <url>http://guacamole.apache.org/</url>
 
-    <!-- All applicable licenses -->
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <!-- Git repository -->
-    <scm>
-        <url>https://github.com/apache/guacamole-client</url>
-        <connection>scm:git:https://git.wip-us.apache.org/repos/asf/guacamole-client.git</connection>
-    </scm>
-
-    <build>
-        <plugins>
-
-            <!-- Attach source and JavaDoc .jars -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-            </plugin>
-
-        </plugins>
-    </build>
-
-    <dependencies>
-
-        <!-- Java servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- JSR 356 WebSocket API -->
-        <dependency>
-            <groupId>javax.websocket</groupId>
-            <artifactId>javax.websocket-api</artifactId>
-            <version>1.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- SLF4J - logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-
-        <!-- JUnit -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-    </dependencies>
+  <version>1.4.0</version>
 
 </project>

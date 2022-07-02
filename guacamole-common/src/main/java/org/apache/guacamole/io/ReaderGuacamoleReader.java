@@ -33,235 +33,235 @@ import org.apache.guacamole.GuacamoleUpstreamTimeoutException;
 import org.apache.guacamole.protocol.GuacamoleInstruction;
 
 /**
- * A GuacamoleReader which wraps a standard Java Reader, using that Reader as
- * the Guacamole instruction stream.
+ * A GuacamoleReader which wraps a standard Java Reader, using that Reader as the Guacamole
+ * instruction stream.
  */
 public class ReaderGuacamoleReader implements GuacamoleReader {
 
-    /**
-     * Wrapped Reader to be used for all input.
-     */
-    private Reader input;
+  /**
+   * Wrapped Reader to be used for all input.
+   */
+  private Reader input;
+  /**
+   * The location within the received data buffer that parsing should begin when more data is read.
+   */
+  private int parseStart;
+  /**
+   * The buffer holding all received, unparsed data.
+   */
+  private char[] buffer = new char[20480];
+  /**
+   * The number of characters currently used within the data buffer. All other characters within the
+   * buffer are free space available for future reads.
+   */
+  private int usedLength = 0;
 
-    /**
-     * Creates a new ReaderGuacamoleReader which will use the given Reader as
-     * the Guacamole instruction stream.
-     *
-     * @param input The Reader to use as the Guacamole instruction stream.
-     */
-    public ReaderGuacamoleReader(Reader input) {
-        this.input = input;
+  /**
+   * Creates a new ReaderGuacamoleReader which will use the given Reader as the Guacamole
+   * instruction stream.
+   *
+   * @param input The Reader to use as the Guacamole instruction stream.
+   */
+  public ReaderGuacamoleReader(Reader input) {
+    this.input = input;
+  }
+
+  @Override
+  public boolean available() throws GuacamoleException {
+    try {
+      return input.ready() || usedLength != 0;
+    } catch (IOException e) {
+      throw new GuacamoleServerException(e);
     }
+  }
 
-    /**
-     * The location within the received data buffer that parsing should begin
-     * when more data is read.
-     */
-    private int parseStart;
+  @Override
+  public char[] read() throws GuacamoleException {
 
-    /**
-     * The buffer holding all received, unparsed data.
-     */
-    private char[] buffer = new char[20480];
+    try {
 
-    /**
-     * The number of characters currently used within the data buffer. All
-     * other characters within the buffer are free space available for
-     * future reads.
-     */
-    private int usedLength = 0;
+      // While we're blocking, or input is available
+      for (; ; ) {
 
-    @Override
-    public boolean available() throws GuacamoleException {
-        try {
-            return input.ready() || usedLength != 0;
-        }
-        catch (IOException e) {
-            throw new GuacamoleServerException(e);
-        }
-    }
+        // Length of element
+        int elementLength = 0;
 
-    @Override
-    public char[] read() throws GuacamoleException {
+        // Resume where we left off
+        int i = parseStart;
 
-        try {
+        // Parse instruction in buffer
+        while (i < usedLength) {
 
-            // While we're blocking, or input is available
-            for (;;) {
+          // Read character
+          char readChar = buffer[i++];
 
-                // Length of element
-                int elementLength = 0;
+          // If digit, update length
+          if (readChar >= '0' && readChar <= '9') {
+            elementLength = elementLength * 10 + readChar - '0';
+          }
 
-                // Resume where we left off
-                int i = parseStart;
+          // If not digit, check for end-of-length character
+          else if (readChar == '.') {
 
-                // Parse instruction in buffer
-                while (i < usedLength) {
+            // Check if element present in buffer
+            if (i + elementLength < usedLength) {
 
-                    // Read character
-                    char readChar = buffer[i++];
+              // Get terminator
+              char terminator = buffer[i + elementLength];
 
-                    // If digit, update length
-                    if (readChar >= '0' && readChar <= '9')
-                        elementLength = elementLength * 10 + readChar - '0';
+              // Move to character after terminator
+              i += elementLength + 1;
 
-                    // If not digit, check for end-of-length character
-                    else if (readChar == '.') {
+              // Reset length
+              elementLength = 0;
 
-                        // Check if element present in buffer
-                        if (i + elementLength < usedLength) {
+              // Continue here if necessary
+              parseStart = i;
 
-                            // Get terminator
-                            char terminator = buffer[i + elementLength];
+              // If terminator is semicolon, we have a full
+              // instruction.
+              if (terminator == ';') {
 
-                            // Move to character after terminator
-                            i += elementLength + 1;
+                // Copy instruction data
+                char[] instruction = new char[i];
+                System.arraycopy(buffer, 0, instruction, 0, i);
 
-                            // Reset length
-                            elementLength = 0;
+                // Update buffer
+                usedLength -= i;
+                parseStart = 0;
+                System.arraycopy(buffer, i, buffer, 0, usedLength);
 
-                            // Continue here if necessary
-                            parseStart = i;
+                return instruction;
 
-                            // If terminator is semicolon, we have a full
-                            // instruction.
-                            if (terminator == ';') {
+              }
 
-                                // Copy instruction data
-                                char[] instruction = new char[i];
-                                System.arraycopy(buffer, 0, instruction, 0, i);
+              // Handle invalid terminator characters
+              else if (terminator != ',') {
+                throw new GuacamoleServerException(
+                    "Element terminator of instruction was not ';' nor ','");
+              }
 
-                                // Update buffer
-                                usedLength -= i;
-                                parseStart = 0;
-                                System.arraycopy(buffer, i, buffer, 0, usedLength);
-
-                                return instruction;
-
-                            }
-
-                            // Handle invalid terminator characters
-                            else if (terminator != ',')
-                                throw new GuacamoleServerException("Element terminator of instruction was not ';' nor ','");
-
-                        }
-
-                        // Otherwise, read more data
-                        else
-                            break;
-
-                    }
-
-                    // Otherwise, parse error
-                    else
-                        throw new GuacamoleServerException("Non-numeric character in element length.");
-
-                }
-
-                // If past threshold, resize buffer before reading
-                if (usedLength > buffer.length/2) {
-                    char[] biggerBuffer = new char[buffer.length*2];
-                    System.arraycopy(buffer, 0, biggerBuffer, 0, usedLength);
-                    buffer = biggerBuffer;
-                }
-
-                // Attempt to fill buffer
-                int numRead = input.read(buffer, usedLength, buffer.length - usedLength);
-                if (numRead == -1)
-                    return null;
-
-                // Update used length
-                usedLength += numRead;
-
-            } // End read loop
-
-        }
-        catch (SocketTimeoutException e) {
-            throw new GuacamoleUpstreamTimeoutException("Connection to guacd timed out.", e);
-        }
-        catch (SocketException e) {
-            throw new GuacamoleConnectionClosedException("Connection to guacd is closed.", e);
-        }
-        catch (IOException e) {
-            throw new GuacamoleServerException(e);
-        }
-
-    }
-
-    @Override
-    public GuacamoleInstruction readInstruction() throws GuacamoleException {
-
-        // Get instruction
-        char[] instructionBuffer = read();
-
-        // If EOF, return EOF
-        if (instructionBuffer == null)
-            return null;
-
-        // Start of element
-        int elementStart = 0;
-
-        // Build list of elements
-        Deque<String> elements = new LinkedList<String>();
-        while (elementStart < instructionBuffer.length) {
-
-            // Find end of length
-            int lengthEnd = -1;
-            for (int i=elementStart; i<instructionBuffer.length; i++) {
-                if (instructionBuffer[i] == '.') {
-                    lengthEnd = i;
-                    break;
-                }
             }
 
-            // read() is required to return a complete instruction. If it does
-            // not, this is a severe internal error.
-            if (lengthEnd == -1)
-                throw new GuacamoleServerException("Read returned incomplete instruction.");
+            // Otherwise, read more data
+            else {
+              break;
+            }
 
-            // Parse length
-            int length = Integer.parseInt(new String(
-                    instructionBuffer,
-                    elementStart,
-                    lengthEnd - elementStart
-            ));
+          }
 
-            // Parse element from just after period
-            elementStart = lengthEnd + 1;
-            String element = new String(
-                    instructionBuffer,
-                    elementStart,
-                    length
-            );
-
-            // Append element to list of elements
-            elements.addLast(element);
-
-            // Read terminator after element
-            elementStart += length;
-            char terminator = instructionBuffer[elementStart];
-
-            // Continue reading instructions after terminator
-            elementStart++;
-
-            // If we've reached the end of the instruction
-            if (terminator == ';')
-                break;
+          // Otherwise, parse error
+          else {
+            throw new GuacamoleServerException("Non-numeric character in element length.");
+          }
 
         }
 
-        // Pull opcode off elements list
-        String opcode = elements.removeFirst();
+        // If past threshold, resize buffer before reading
+        if (usedLength > buffer.length / 2) {
+          char[] biggerBuffer = new char[buffer.length * 2];
+          System.arraycopy(buffer, 0, biggerBuffer, 0, usedLength);
+          buffer = biggerBuffer;
+        }
 
-        // Create instruction
-        GuacamoleInstruction instruction = new GuacamoleInstruction(
-                opcode,
-                elements.toArray(new String[elements.size()])
-        );
+        // Attempt to fill buffer
+        int numRead = input.read(buffer, usedLength, buffer.length - usedLength);
+        if (numRead == -1) {
+          return null;
+        }
 
-        // Return parsed instruction
-        return instruction;
+        // Update used length
+        usedLength += numRead;
+
+      } // End read loop
+
+    } catch (SocketTimeoutException e) {
+      throw new GuacamoleUpstreamTimeoutException("Connection to guacd timed out.", e);
+    } catch (SocketException e) {
+      throw new GuacamoleConnectionClosedException("Connection to guacd is closed.", e);
+    } catch (IOException e) {
+      throw new GuacamoleServerException(e);
+    }
+
+  }
+
+  @Override
+  public GuacamoleInstruction readInstruction() throws GuacamoleException {
+
+    // Get instruction
+    char[] instructionBuffer = read();
+
+    // If EOF, return EOF
+    if (instructionBuffer == null) {
+      return null;
+    }
+
+    // Start of element
+    int elementStart = 0;
+
+    // Build list of elements
+    Deque<String> elements = new LinkedList<String>();
+    while (elementStart < instructionBuffer.length) {
+
+      // Find end of length
+      int lengthEnd = -1;
+      for (int i = elementStart; i < instructionBuffer.length; i++) {
+        if (instructionBuffer[i] == '.') {
+          lengthEnd = i;
+          break;
+        }
+      }
+
+      // read() is required to return a complete instruction. If it does
+      // not, this is a severe internal error.
+      if (lengthEnd == -1) {
+        throw new GuacamoleServerException("Read returned incomplete instruction.");
+      }
+
+      // Parse length
+      int length = Integer.parseInt(new String(
+          instructionBuffer,
+          elementStart,
+          lengthEnd - elementStart
+      ));
+
+      // Parse element from just after period
+      elementStart = lengthEnd + 1;
+      String element = new String(
+          instructionBuffer,
+          elementStart,
+          length
+      );
+
+      // Append element to list of elements
+      elements.addLast(element);
+
+      // Read terminator after element
+      elementStart += length;
+      char terminator = instructionBuffer[elementStart];
+
+      // Continue reading instructions after terminator
+      elementStart++;
+
+      // If we've reached the end of the instruction
+      if (terminator == ';') {
+        break;
+      }
 
     }
+
+    // Pull opcode off elements list
+    String opcode = elements.removeFirst();
+
+    // Create instruction
+    GuacamoleInstruction instruction = new GuacamoleInstruction(
+        opcode,
+        elements.toArray(new String[elements.size()])
+    );
+
+    // Return parsed instruction
+    return instruction;
+
+  }
 
 }

@@ -26,53 +26,40 @@ import org.apache.guacamole.GuacamoleException;
 /**
  * An arbitrary set of permissions.
  *
- * @param <PermissionType>
- *     The type of permission stored within this PermissionSet.
+ * @param <PermissionType> The type of permission stored within this PermissionSet.
  */
 public interface PermissionSet<PermissionType extends Permission> {
 
-    /**
-     * Returns a Set which contains all permissions granted within this
-     * permission set.
-     *
-     * @return
-     *     A Set containing all permissions granted within this permission set.
-     *
-     * @throws GuacamoleException 
-     *     If an error occurs while retrieving permissions, or if permissions
-     *     cannot be retrieved due to lack of permissions to do so.
-     */
-    Set<PermissionType> getPermissions() throws GuacamoleException;
+  /**
+   * Returns a Set which contains all permissions granted within this permission set.
+   *
+   * @return A Set containing all permissions granted within this permission set.
+   * @throws GuacamoleException If an error occurs while retrieving permissions, or if permissions
+   *                            cannot be retrieved due to lack of permissions to do so.
+   */
+  Set<PermissionType> getPermissions() throws GuacamoleException;
 
-    /**
-     * Adds the specified permissions, if not already granted. If a specified
-     * permission is already granted, no operation is performed regarding that
-     * permission.
-     *
-     * @param permissions
-     *     The permissions to add.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while adding the permissions, or if permission to
-     *     add permissions is denied.
-     */
-    void addPermissions(Set<PermissionType> permissions)
-            throws GuacamoleException;
+  /**
+   * Adds the specified permissions, if not already granted. If a specified permission is already
+   * granted, no operation is performed regarding that permission.
+   *
+   * @param permissions The permissions to add.
+   * @throws GuacamoleException If an error occurs while adding the permissions, or if permission to
+   *                            add permissions is denied.
+   */
+  void addPermissions(Set<PermissionType> permissions)
+      throws GuacamoleException;
 
-    /**
-     * Removes each of the specified permissions, if granted. If a specified
-     * permission is not granted, no operation is performed regarding that
-     * permission.
-     *
-     * @param permissions
-     *     The permissions to remove.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while removing the permissions, or if permission
-     *     to remove permissions is denied.
-     */
-    void removePermissions(Set<PermissionType> permissions)
-            throws GuacamoleException;
+  /**
+   * Removes each of the specified permissions, if granted. If a specified permission is not
+   * granted, no operation is performed regarding that permission.
+   *
+   * @param permissions The permissions to remove.
+   * @throws GuacamoleException If an error occurs while removing the permissions, or if permission
+   *                            to remove permissions is denied.
+   */
+  void removePermissions(Set<PermissionType> permissions)
+      throws GuacamoleException;
 
 
 }

@@ -36,78 +36,69 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
 
 /**
- * A REST resource which abstracts the operations available on a Directory of
- * ConnectionGroups.
+ * A REST resource which abstracts the operations available on a Directory of ConnectionGroups.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConnectionGroupDirectoryResource
-        extends DirectoryResource<ConnectionGroup, APIConnectionGroup> {
+    extends DirectoryResource<ConnectionGroup, APIConnectionGroup> {
 
-    /**
-     * The UserContext associated with the Directory which contains the
-     * ConnectionGroup exposed by this resource.
-     */
-    private final UserContext userContext;
+  /**
+   * The UserContext associated with the Directory which contains the ConnectionGroup exposed by
+   * this resource.
+   */
+  private final UserContext userContext;
 
-    /**
-     * The Directory exposed by this resource.
-     */
-    private final Directory<ConnectionGroup> directory;
+  /**
+   * The Directory exposed by this resource.
+   */
+  private final Directory<ConnectionGroup> directory;
 
-    /**
-     * A factory which can be used to create instances of resources representing
-     * ConnectionGroups.
-     */
-    private final DirectoryObjectResourceFactory<ConnectionGroup, APIConnectionGroup> resourceFactory;
+  /**
+   * A factory which can be used to create instances of resources representing ConnectionGroups.
+   */
+  private final DirectoryObjectResourceFactory<ConnectionGroup, APIConnectionGroup> resourceFactory;
 
-    /**
-     * Creates a new ConnectionGroupDirectoryResource which exposes the
-     * operations and subresources available for the given ConnectionGroup
-     * Directory.
-     *
-     * @param userContext
-     *     The UserContext associated with the given Directory.
-     *
-     * @param directory
-     *     The Directory being exposed.
-     *
-     * @param translator
-     *     A DirectoryObjectTranslator implementation which handles
-     *     ConnectionGroups.
-     *
-     * @param resourceFactory
-     *     A factory which can be used to create instances of resources
-     *     representing ConnectionGroups.
-     */
-    @AssistedInject
-    public ConnectionGroupDirectoryResource(@Assisted UserContext userContext,
-            @Assisted Directory<ConnectionGroup> directory,
-            DirectoryObjectTranslator<ConnectionGroup, APIConnectionGroup> translator,
-            DirectoryObjectResourceFactory<ConnectionGroup, APIConnectionGroup> resourceFactory) {
-        super(userContext, directory, translator, resourceFactory);
-        this.userContext = userContext;
-        this.directory = directory;
-        this.resourceFactory = resourceFactory;
+  /**
+   * Creates a new ConnectionGroupDirectoryResource which exposes the operations and subresources
+   * available for the given ConnectionGroup Directory.
+   *
+   * @param userContext     The UserContext associated with the given Directory.
+   * @param directory       The Directory being exposed.
+   * @param translator      A DirectoryObjectTranslator implementation which handles
+   *                        ConnectionGroups.
+   * @param resourceFactory A factory which can be used to create instances of resources
+   *                        representing ConnectionGroups.
+   */
+  @AssistedInject
+  public ConnectionGroupDirectoryResource(@Assisted UserContext userContext,
+      @Assisted Directory<ConnectionGroup> directory,
+      DirectoryObjectTranslator<ConnectionGroup, APIConnectionGroup> translator,
+      DirectoryObjectResourceFactory<ConnectionGroup, APIConnectionGroup> resourceFactory) {
+    super(userContext, directory, translator, resourceFactory);
+    this.userContext = userContext;
+    this.directory = directory;
+    this.resourceFactory = resourceFactory;
+  }
+
+  @Override
+  public DirectoryObjectResource<ConnectionGroup, APIConnectionGroup>
+  getObjectResource(String identifier) throws GuacamoleException {
+
+    // Use root group if identifier is the standard root identifier
+    if (identifier != null && identifier.equals(APIConnectionGroup.ROOT_IDENTIFIER)) {
+      return resourceFactory.create(userContext, directory,
+          userContext.getRootConnectionGroup());
     }
 
-    @Override
-    public DirectoryObjectResource<ConnectionGroup, APIConnectionGroup>
-        getObjectResource(String identifier) throws GuacamoleException {
+    return super.getObjectResource(identifier);
 
-        // Use root group if identifier is the standard root identifier
-        if (identifier != null && identifier.equals(APIConnectionGroup.ROOT_IDENTIFIER))
-            return resourceFactory.create(userContext, directory,
-                    userContext.getRootConnectionGroup());
+  }
 
-        return super.getObjectResource(identifier);
-
-    }
-
-    @Override
-    protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
-            throws GuacamoleException {
-        return permissions.getConnectionGroupPermissions();
-    }
+  @Override
+  protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
+      throws GuacamoleException {
+    return permissions.getConnectionGroupPermissions();
+  }
 
 }

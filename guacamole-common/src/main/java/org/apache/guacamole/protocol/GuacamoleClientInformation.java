@@ -24,156 +24,145 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An abstract representation of Guacamole client information, including all
- * information required by the Guacamole protocol during the preamble.
+ * An abstract representation of Guacamole client information, including all information required by
+ * the Guacamole protocol during the preamble.
  */
 public class GuacamoleClientInformation {
 
-    /**
-     * The optimal screen width requested by the client, in pixels.
-     */
-    private int optimalScreenWidth  = 1024;
+  /**
+   * The list of audio mimetypes reported by the client to be supported.
+   */
+  private final List<String> audioMimetypes = new ArrayList<String>();
+  /**
+   * The list of video mimetypes reported by the client to be supported.
+   */
+  private final List<String> videoMimetypes = new ArrayList<String>();
+  /**
+   * The list of image mimetypes reported by the client to be supported.
+   */
+  private final List<String> imageMimetypes = new ArrayList<String>();
+  /**
+   * The optimal screen width requested by the client, in pixels.
+   */
+  private int optimalScreenWidth = 1024;
+  /**
+   * The optimal screen height requested by the client, in pixels.
+   */
+  private int optimalScreenHeight = 768;
+  /**
+   * The resolution of the optimal dimensions given, in DPI.
+   */
+  private int optimalResolution = 96;
+  /**
+   * The timezone reported by the client.
+   */
+  private String timezone;
 
-    /**
-     * The optimal screen height requested by the client, in pixels.
-     */
-    private int optimalScreenHeight = 768;
+  /**
+   * Returns the optimal screen width requested by the client, in pixels.
+   *
+   * @return The optimal screen width requested by the client, in pixels.
+   */
+  public int getOptimalScreenWidth() {
+    return optimalScreenWidth;
+  }
 
-    /**
-     * The resolution of the optimal dimensions given, in DPI.
-     */
-    private int optimalResolution = 96;
+  /**
+   * Sets the client's optimal screen width.
+   *
+   * @param optimalScreenWidth The optimal screen width of the client.
+   */
+  public void setOptimalScreenWidth(int optimalScreenWidth) {
+    this.optimalScreenWidth = optimalScreenWidth;
+  }
 
-    /**
-     * The list of audio mimetypes reported by the client to be supported.
-     */
-    private final List<String> audioMimetypes = new ArrayList<String>();
+  /**
+   * Returns the optimal screen height requested by the client, in pixels.
+   *
+   * @return The optimal screen height requested by the client, in pixels.
+   */
+  public int getOptimalScreenHeight() {
+    return optimalScreenHeight;
+  }
 
-    /**
-     * The list of video mimetypes reported by the client to be supported.
-     */
-    private final List<String> videoMimetypes = new ArrayList<String>();
+  /**
+   * Sets the client's optimal screen height.
+   *
+   * @param optimalScreenHeight The optimal screen height of the client.
+   */
+  public void setOptimalScreenHeight(int optimalScreenHeight) {
+    this.optimalScreenHeight = optimalScreenHeight;
+  }
 
-    /**
-     * The list of image mimetypes reported by the client to be supported.
-     */
-    private final List<String> imageMimetypes = new ArrayList<String>();
-    
-    /**
-     * The timezone reported by the client.
-     */
-    private String timezone;
+  /**
+   * Returns the resolution of the screen if the optimal width and height are used, in DPI.
+   *
+   * @return The optimal screen resolution.
+   */
+  public int getOptimalResolution() {
+    return optimalResolution;
+  }
 
-    /**
-     * Returns the optimal screen width requested by the client, in pixels.
-     * @return The optimal screen width requested by the client, in pixels.
-     */
-    public int getOptimalScreenWidth() {
-        return optimalScreenWidth;
-    }
+  /**
+   * Sets the resolution of the screen if the optimal width and height are used, in DPI.
+   *
+   * @param optimalResolution The optimal screen resolution in DPI.
+   */
+  public void setOptimalResolution(int optimalResolution) {
+    this.optimalResolution = optimalResolution;
+  }
 
-    /**
-     * Sets the client's optimal screen width.
-     * @param optimalScreenWidth The optimal screen width of the client.
-     */
-    public void setOptimalScreenWidth(int optimalScreenWidth) {
-        this.optimalScreenWidth = optimalScreenWidth;
-    }
+  /**
+   * Returns the list of audio mimetypes supported by the client. To add or removed supported
+   * mimetypes, the list returned by this function can be modified.
+   *
+   * @return The set of audio mimetypes supported by the client.
+   */
+  public List<String> getAudioMimetypes() {
+    return audioMimetypes;
+  }
 
-    /**
-     * Returns the optimal screen height requested by the client, in pixels.
-     * @return The optimal screen height requested by the client, in pixels.
-     */
-    public int getOptimalScreenHeight() {
-        return optimalScreenHeight;
-    }
+  /**
+   * Returns the list of video mimetypes supported by the client. To add or removed supported
+   * mimetypes, the list returned by this function can be modified.
+   *
+   * @return The set of video mimetypes supported by the client.
+   */
+  public List<String> getVideoMimetypes() {
+    return videoMimetypes;
+  }
 
-    /**
-     * Sets the client's optimal screen height.
-     * @param optimalScreenHeight The optimal screen height of the client.
-     */
-    public void setOptimalScreenHeight(int optimalScreenHeight) {
-        this.optimalScreenHeight = optimalScreenHeight;
-    }
+  /**
+   * Returns the list of image mimetypes supported by the client. To add or removed supported
+   * mimetypes, the list returned by this function can be modified.
+   *
+   * @return The set of image mimetypes supported by the client.
+   */
+  public List<String> getImageMimetypes() {
+    return imageMimetypes;
+  }
 
-    /**
-     * Returns the resolution of the screen if the optimal width and height are
-     * used, in DPI.
-     * 
-     * @return The optimal screen resolution.
-     */
-    public int getOptimalResolution() {
-        return optimalResolution;
-    }
+  /**
+   * Return the timezone as reported by the client, or null if the timezone is not set.  Valid
+   * timezones are specified in IANA zone key format, also known as Olson time zone database or TZ
+   * Database.
+   *
+   * @return A string value of the timezone reported by the client.
+   */
+  public String getTimezone() {
+    return timezone;
+  }
 
-    /**
-     * Sets the resolution of the screen if the optimal width and height are
-     * used, in DPI.
-     * 
-     * @param optimalResolution The optimal screen resolution in DPI.
-     */
-    public void setOptimalResolution(int optimalResolution) {
-        this.optimalResolution = optimalResolution;
-    }
-
-    /**
-     * Returns the list of audio mimetypes supported by the client. To add or
-     * removed supported mimetypes, the list returned by this function can be
-     * modified.
-     *
-     * @return The set of audio mimetypes supported by the client.
-     */
-    public List<String> getAudioMimetypes() {
-        return audioMimetypes;
-    }
-
-    /**
-     * Returns the list of video mimetypes supported by the client. To add or
-     * removed supported mimetypes, the list returned by this function can be
-     * modified.
-     *
-     * @return The set of video mimetypes supported by the client.
-     */
-    public List<String> getVideoMimetypes() {
-        return videoMimetypes;
-    }
-
-    /**
-     * Returns the list of image mimetypes supported by the client. To add or
-     * removed supported mimetypes, the list returned by this function can be
-     * modified.
-     *
-     * @return
-     *     The set of image mimetypes supported by the client.
-     */
-    public List<String> getImageMimetypes() {
-        return imageMimetypes;
-    }
-    
-    /**
-     * Return the timezone as reported by the client, or null if the timezone
-     * is not set.  Valid timezones are specified in IANA zone key format,
-     * also known as Olson time zone database or TZ Database.
-     * 
-     * @return
-     *     A string value of the timezone reported by the client.
-     */
-    public String getTimezone() {
-        return timezone;
-    }
-    
-    /**
-     * Set the string value of the timezone, or null if the timezone will not
-     * be provided by the client.  Valid timezones are specified in IANA zone
-     * key format (aka Olson time zone database or tz database).
-     * 
-     * @param timezone
-     *     The string value of the timezone reported by the client, in tz
-     *     database format, or null if the timezone is not provided by the
-     *     client.
-     */
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-    }
+  /**
+   * Set the string value of the timezone, or null if the timezone will not be provided by the
+   * client.  Valid timezones are specified in IANA zone key format (aka Olson time zone database or
+   * tz database).
+   *
+   * @param timezone The string value of the timezone reported by the client, in tz database format,
+   *                 or null if the timezone is not provided by the client.
+   */
+  public void setTimezone(String timezone) {
+    this.timezone = timezone;
+  }
 
 }

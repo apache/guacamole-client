@@ -25,26 +25,23 @@ import javax.ws.rs.core.Response;
 import org.apache.guacamole.GuacamoleException;
 
 /**
- * An exception which exposes a given error within the API layer. When thrown
- * within the context of the REST API, an appropriate HTTP status code will be
- * set for the failing response, and the details of the error will be exposed in
- * the body of the response as an APIError structure.
+ * An exception which exposes a given error within the API layer. When thrown within the context of
+ * the REST API, an appropriate HTTP status code will be set for the failing response, and the
+ * details of the error will be exposed in the body of the response as an APIError structure.
  */
 public class APIException extends WebApplicationException {
 
-    /**
-     * Construct a new APIException based on the given GuacamoleException. The
-     * details of the GuacamoleException relevant to the REST API will be
-     * exposed via an APIError.
-     *
-     * @param exception
-     *     The GuacamoleException that occurred.
-     */
-    public APIException(GuacamoleException exception) {
-        super(Response.status(exception.getHttpStatusCode())
-                .type(MediaType.APPLICATION_JSON)
-                .entity(new APIError(exception))
-                .build());
-    }
+  /**
+   * Construct a new APIException based on the given GuacamoleException. The details of the
+   * GuacamoleException relevant to the REST API will be exposed via an APIError.
+   *
+   * @param exception The GuacamoleException that occurred.
+   */
+  public APIException(GuacamoleException exception) {
+    super(Response.status(exception.getHttpStatusCode())
+        .type(MediaType.APPLICATION_JSON)
+        .entity(new APIError(exception))
+        .build());
+  }
 
 }

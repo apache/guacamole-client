@@ -21,90 +21,92 @@ package org.apache.guacamole.net.auth.permission;
 
 
 /**
- * A permission which affects the system as a whole, rather than an individual
- * object.
+ * A permission which affects the system as a whole, rather than an individual object.
  */
 public class SystemPermission implements Permission<SystemPermission.Type> {
 
+  /**
+   * The type of operation affected by this permission.
+   */
+  private Type type;
+
+  /**
+   * Creates a new SystemPermission with the given type.
+   *
+   * @param type The type of operation controlled by this permission.
+   */
+  public SystemPermission(Type type) {
+    this.type = type;
+  }
+
+  @Override
+  public Type getType() {
+    return type;
+  }
+
+  @Override
+  public int hashCode() {
+    return type.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+
+    // Not equal if null or wrong type
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+
+    final SystemPermission other = (SystemPermission) obj;
+
+    // Compare types
+    if (type != other.type) {
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Specific types of system-level permissions. Each permission type is related to a specific class
+   * of system-level operation.
+   */
+  public enum Type {
+
     /**
-     * Specific types of system-level permissions. Each permission type is
-     * related to a specific class of system-level operation.
+     * Create users.
      */
-    public enum Type {
-
-        /**
-         * Create users.
-         */
-        CREATE_USER,
-
-        /**
-         * Create user groups.
-         */
-        CREATE_USER_GROUP,
-
-        /**
-         * Create connections.
-         */
-        CREATE_CONNECTION,
-
-        /**
-         * Create connection groups.
-         */
-        CREATE_CONNECTION_GROUP,
-
-        /**
-         * Create sharing profiles.
-         */
-        CREATE_SHARING_PROFILE,
-
-        /**
-         * Administer the system in general, including adding permissions
-         * which affect the system (like user creation, connection creation,
-         * and system administration).
-         */
-        ADMINISTER
-
-    }
+    CREATE_USER,
 
     /**
-     * The type of operation affected by this permission.
+     * Create user groups.
      */
-    private Type type;
+    CREATE_USER_GROUP,
 
     /**
-     * Creates a new SystemPermission with the given
-     * type.
-     *
-     * @param type The type of operation controlled by this permission.
+     * Create connections.
      */
-    public SystemPermission(Type type) {
-        this.type = type;
-    }
+    CREATE_CONNECTION,
 
-    @Override
-    public Type getType() {
-        return type;
-    }
+    /**
+     * Create connection groups.
+     */
+    CREATE_CONNECTION_GROUP,
 
-    @Override
-    public int hashCode() {
-        return type.hashCode();
-    }
+    /**
+     * Create sharing profiles.
+     */
+    CREATE_SHARING_PROFILE,
 
-    @Override
-    public boolean equals(Object obj) {
+    /**
+     * Administer the system in general, including adding permissions which affect the system (like
+     * user creation, connection creation, and system administration).
+     */
+    ADMINISTER
 
-        // Not equal if null or wrong type
-        if (obj == null) return false;
-        if (getClass() != obj.getClass()) return false;
-
-        final SystemPermission other = (SystemPermission) obj;
-
-        // Compare types
-        if (type != other.type)
-            return false;
-
-        return true;
-    }
+  }
 
 }

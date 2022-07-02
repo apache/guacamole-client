@@ -46,80 +46,80 @@
 
 guac-player-progress-indicator {
 
-    width: 128px;
-    height: 128px;
+  width: 128px;
+  height: 128px;
 
-    position: relative;
+  position: relative;
 
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: flex;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
 
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    -moz-box-align: center;
-    -ms-flex-align: center;
-    align-items: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
 
-    -webkit-box-pack: center;
-    -webkit-justify-content: center;
-    -moz-box-pack: center;
-    -ms-flex-pack: center;
-    justify-content: center;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  justify-content: center;
 
 }
 
 guac-player-progress-indicator .guac-player-progress-text {
-    font-size: 2em;
-    font-weight: bold;
+  font-size: 2em;
+  font-weight: bold;
 }
 
 guac-player-progress-indicator .guac-player-progress-bar-container {
 
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 50%;
-    height: 100%;
-    overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
 
 }
 
 guac-player-progress-indicator .guac-player-progress-bar-container.past-halfway {
-    overflow: visible;
+  overflow: visible;
 }
 
 guac-player-progress-indicator .guac-player-progress-bar-container.past-halfway::before,
 guac-player-progress-indicator .guac-player-progress-bar {
 
-    position: absolute;
-    left: -64px;
-    top: 0;
-    width: 128px;
-    height: 128px;
+  position: absolute;
+  left: -64px;
+  top: 0;
+  width: 128px;
+  height: 128px;
 
-    -webkit-border-radius: 128px;
-    -moz-border-radius: 128px;
-    border-radius: 128px;
+  -webkit-border-radius: 128px;
+  -moz-border-radius: 128px;
+  border-radius: 128px;
 
-    border: 12px solid #5AF;
-    border-bottom-color: transparent;
-    border-right-color: transparent;
+  border: 12px solid #5AF;
+  border-bottom-color: transparent;
+  border-right-color: transparent;
 
 }
 
 guac-player-progress-indicator .guac-player-progress-bar-container.past-halfway::before {
 
-    content: ' ';
-    display:  block;
-    box-sizing: border-box;
+  content: ' ';
+  display: block;
+  box-sizing: border-box;
 
-    -webkit-transform: rotate(135deg);
-    -moz-transform: rotate(135deg);
-    -ms-transform: rotate(135deg);
-    -o-transform: rotate(135deg);
-    transform: rotate(135deg);
+  -webkit-transform: rotate(135deg);
+  -moz-transform: rotate(135deg);
+  -ms-transform: rotate(135deg);
+  -o-transform: rotate(135deg);
+  transform: rotate(135deg);
 
 }

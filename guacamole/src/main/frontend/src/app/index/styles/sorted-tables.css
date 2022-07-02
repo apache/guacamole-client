@@ -18,44 +18,44 @@
  */
 
 table.sorted {
-    border-collapse: collapse;
+  border-collapse: collapse;
 }
 
 table.sorted th {
-    background: rgba(0, 0, 0, 0.125);
-    font-weight: normal;
+  background: rgba(0, 0, 0, 0.125);
+  font-weight: normal;
 }
 
 table.sorted th,
 table.sorted td {
-    border: 1px solid #AAA;
-    padding: 0.5em 1em;
+  border: 1px solid #AAA;
+  padding: 0.5em 1em;
 }
 
 table.sorted th.sortable {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 table.sorted th.sort-primary {
-    font-weight: bold;
-    padding-right: 0;
+  font-weight: bold;
+  padding-right: 0;
 }
 
 table.sorted th.sort-primary:after {
 
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    vertical-align: middle;
-    content: ' ';
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  content: ' ';
 
-    background-size: 1em 1em;
-    background-position: right center;
-    background-repeat: no-repeat;
-    background-image: url('images/arrows/down.svg');
+  background-size: 1em 1em;
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-image: url('images/arrows/down.svg');
 
 }
 
 table.sorted th.sort-primary.sort-descending:after {
-    background-image: url('images/arrows/up.svg');
+  background-image: url('images/arrows/up.svg');
 }

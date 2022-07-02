@@ -28,126 +28,115 @@ import java.util.regex.Pattern;
  */
 public class MySQLVersion {
 
-    /**
-     * Pattern which matches the version string returned by a MariaDB server,
-     * extracting the major, minor, and patch numbers.
-     */
-    private final Pattern MARIADB_VERSION = Pattern.compile("^.*-([0-9]+)\\.([0-9]+)\\.([0-9]+)-MariaDB$");
+  /**
+   * Pattern which matches the version string returned by a MariaDB server, extracting the major,
+   * minor, and patch numbers.
+   */
+  private final Pattern MARIADB_VERSION = Pattern.compile(
+      "^.*-([0-9]+)\\.([0-9]+)\\.([0-9]+)-MariaDB$");
 
-    /**
-     * Pattern which matches the version string returned by a non-MariaDB
-     * server (including MySQL and Aurora), extracting the major, minor, and
-     * patch numbers. All non-MariaDB servers use normal MySQL version numbers.
-     */
-    private final Pattern MYSQL_VERSION = Pattern.compile("^([0-9]+)\\.([0-9]+)\\.([0-9]+).*$");
+  /**
+   * Pattern which matches the version string returned by a non-MariaDB server (including MySQL and
+   * Aurora), extracting the major, minor, and patch numbers. All non-MariaDB servers use normal
+   * MySQL version numbers.
+   */
+  private final Pattern MYSQL_VERSION = Pattern.compile("^([0-9]+)\\.([0-9]+)\\.([0-9]+).*$");
 
-    /**
-     * Whether the associated server is a MariaDB server. All non-MariaDB
-     * servers use normal MySQL version numbers and are comparable against each
-     * other.
-     */
-    private final boolean isMariaDB;
+  /**
+   * Whether the associated server is a MariaDB server. All non-MariaDB servers use normal MySQL
+   * version numbers and are comparable against each other.
+   */
+  private final boolean isMariaDB;
 
-    /**
-     * The major component of the MAJOR.MINOR.PATCH version number.
-     */
-    private final int major;
+  /**
+   * The major component of the MAJOR.MINOR.PATCH version number.
+   */
+  private final int major;
 
-    /**
-     * The minor component of the MAJOR.MINOR.PATCH version number.
-     */
-    private final int minor;
+  /**
+   * The minor component of the MAJOR.MINOR.PATCH version number.
+   */
+  private final int minor;
 
-    /**
-     * The patch component of the MAJOR.MINOR.PATCH version number.
-     */
-    private final int patch;
+  /**
+   * The patch component of the MAJOR.MINOR.PATCH version number.
+   */
+  private final int patch;
 
-    /**
-     * Creates a new MySQLVersion having the specified major, minor, and patch
-     * components.
-     *
-     * @param major
-     *     The major component of the MAJOR.MINOR.PATCH version number of the
-     *     MariaDB / MySQL server.
-     *
-     * @param minor
-     *     The minor component of the MAJOR.MINOR.PATCH version number of the
-     *     MariaDB / MySQL server.
-     *
-     * @param patch
-     *     The patch component of the MAJOR.MINOR.PATCH version number of the
-     *     MariaDB / MySQL server.
-     *
-     * @param isMariaDB
-     *     Whether the associated server is a MariaDB server.
-     */
-    public MySQLVersion(int major, int minor, int patch, boolean isMariaDB) {
-        this.major = major;
-        this.minor = minor;
-        this.patch = patch;
-        this.isMariaDB = isMariaDB;
+  /**
+   * Creates a new MySQLVersion having the specified major, minor, and patch components.
+   *
+   * @param major     The major component of the MAJOR.MINOR.PATCH version number of the MariaDB /
+   *                  MySQL server.
+   * @param minor     The minor component of the MAJOR.MINOR.PATCH version number of the MariaDB /
+   *                  MySQL server.
+   * @param patch     The patch component of the MAJOR.MINOR.PATCH version number of the MariaDB /
+   *                  MySQL server.
+   * @param isMariaDB Whether the associated server is a MariaDB server.
+   */
+  public MySQLVersion(int major, int minor, int patch, boolean isMariaDB) {
+    this.major = major;
+    this.minor = minor;
+    this.patch = patch;
+    this.isMariaDB = isMariaDB;
+  }
+
+  public MySQLVersion(String version) throws IllegalArgumentException {
+
+    // Extract MariaDB version number if version string appears to be
+    // a MariaDB version string
+    Matcher mariadb = MARIADB_VERSION.matcher(version);
+    if (mariadb.matches()) {
+      this.major = Integer.parseInt(mariadb.group(1));
+      this.minor = Integer.parseInt(mariadb.group(2));
+      this.patch = Integer.parseInt(mariadb.group(3));
+      this.isMariaDB = true;
+      return;
     }
 
-    public MySQLVersion(String version) throws IllegalArgumentException {
-
-        // Extract MariaDB version number if version string appears to be
-        // a MariaDB version string
-        Matcher mariadb = MARIADB_VERSION.matcher(version);
-        if (mariadb.matches()) {
-            this.major = Integer.parseInt(mariadb.group(1));
-            this.minor = Integer.parseInt(mariadb.group(2));
-            this.patch = Integer.parseInt(mariadb.group(3));
-            this.isMariaDB = true;
-            return;
-        }
-
-        // If not MariaDB, assume version string is a MySQL version string
-        // and attempt to extract the version number
-        Matcher mysql = MYSQL_VERSION.matcher(version);
-        if (mysql.matches()) {
-            this.major = Integer.parseInt(mysql.group(1));
-            this.minor = Integer.parseInt(mysql.group(2));
-            this.patch = Integer.parseInt(mysql.group(3));
-            this.isMariaDB = false;
-            return;
-        }
-
-        throw new IllegalArgumentException("Unrecognized MySQL / MariaDB version string.");
-
+    // If not MariaDB, assume version string is a MySQL version string
+    // and attempt to extract the version number
+    Matcher mysql = MYSQL_VERSION.matcher(version);
+    if (mysql.matches()) {
+      this.major = Integer.parseInt(mysql.group(1));
+      this.minor = Integer.parseInt(mysql.group(2));
+      this.patch = Integer.parseInt(mysql.group(3));
+      this.isMariaDB = false;
+      return;
     }
 
-    /**
-     * Returns whether this version is at least as recent as the given version.
-     *
-     * @param version
-     *     The version to compare against.
-     *
-     * @return
-     *     true if the versions are associated with the same database server
-     *     type (MariaDB vs. MySQL) and this version is at least as recent as
-     *     the given version, false otherwise.
-     */
-    public boolean isAtLeast(MySQLVersion version) {
+    throw new IllegalArgumentException("Unrecognized MySQL / MariaDB version string.");
 
-        // If the databases use different version numbering schemes, the
-        // version numbers are not comparable
-        if (isMariaDB != version.isMariaDB)
-            return false;
+  }
 
-        // Compare major, minor, and patch number in order of precedence
-        return ComparisonChain.start()
-                .compare(major, version.major)
-                .compare(minor, version.minor)
-                .compare(patch, version.patch)
-                .result() >= 0;
+  /**
+   * Returns whether this version is at least as recent as the given version.
+   *
+   * @param version The version to compare against.
+   * @return true if the versions are associated with the same database server type (MariaDB vs.
+   * MySQL) and this version is at least as recent as the given version, false otherwise.
+   */
+  public boolean isAtLeast(MySQLVersion version) {
 
+    // If the databases use different version numbering schemes, the
+    // version numbers are not comparable
+    if (isMariaDB != version.isMariaDB) {
+      return false;
     }
 
-    @Override
-    public String toString() {
-        return String.format("%s %d.%d.%d", isMariaDB ? "MariaDB" : "MySQL",
-                major, minor, patch);
-    }
+    // Compare major, minor, and patch number in order of precedence
+    return ComparisonChain.start()
+        .compare(major, version.major)
+        .compare(minor, version.minor)
+        .compare(patch, version.patch)
+        .result() >= 0;
+
+  }
+
+  @Override
+  public String toString() {
+    return String.format("%s %d.%d.%d", isMariaDB ? "MariaDB" : "MySQL",
+        major, minor, patch);
+  }
 
 }

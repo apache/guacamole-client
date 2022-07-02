@@ -17,51 +17,51 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-vault</artifactId>
-    <packaging>pom</packaging>
-    <version>1.4.0</version>
-    <name>guacamole-vault</name>
-    <url>http://guacamole.apache.org/</url>
+  <artifactId>guacamole-vault</artifactId>
+  <dependencyManagement>
+    <dependencies>
 
-    <parent>
+      <!-- Guacamole Extension API -->
+      <dependency>
+        <artifactId>guacamole-ext</artifactId>
         <groupId>org.apache.guacamole</groupId>
-        <artifactId>extensions</artifactId>
+        <scope>provided</scope>
         <version>1.4.0</version>
-        <relativePath>../</relativePath>
-    </parent>
+      </dependency>
 
-    <modules>
+    </dependencies>
+  </dependencyManagement>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <modules>
 
-        <!-- Distribution .tar.gz -->
-        <module>modules/guacamole-vault-dist</module>
+    <!-- Distribution .tar.gz -->
+    <module>modules/guacamole-vault-dist</module>
 
-        <!-- Base key vault classes -->
-        <module>modules/guacamole-vault-base</module>
+    <!-- Base key vault classes -->
+    <module>modules/guacamole-vault-base</module>
 
-        <!-- Provider-specific implementations -->
-        <module>modules/guacamole-vault-ksm</module>
+    <!-- Provider-specific implementations -->
+    <module>modules/guacamole-vault-ksm</module>
 
-    </modules>
+  </modules>
+  <name>guacamole-vault</name>
+  <packaging>pom</packaging>
 
-    <dependencyManagement>
-        <dependencies>
+  <parent>
+    <artifactId>extensions</artifactId>
+    <groupId>org.apache.guacamole</groupId>
+    <relativePath>../</relativePath>
+    <version>1.4.0</version>
+  </parent>
 
-            <!-- Guacamole Extension API -->
-            <dependency>
-                <groupId>org.apache.guacamole</groupId>
-                <artifactId>guacamole-ext</artifactId>
-                <version>1.4.0</version>
-                <scope>provided</scope>
-            </dependency>
+  <url>http://guacamole.apache.org/</url>
 
-        </dependencies>
-    </dependencyManagement>
+  <version>1.4.0</version>
 
 </project>

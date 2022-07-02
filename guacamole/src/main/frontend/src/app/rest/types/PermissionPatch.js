@@ -20,18 +20,19 @@
 /**
  * Service which defines the PermissionPatch class.
  */
-angular.module('rest').factory('PermissionPatch', [function definePermissionPatch() {
-            
-    /**
-     * The object returned by REST API calls when representing changes to the
-     * permissions granted to a specific user.
-     * 
-     * @constructor
-     * @param {PermissionPatch|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     PermissionPatch.
-     */
-    var PermissionPatch = function PermissionPatch(template) {
+angular.module('rest').factory('PermissionPatch',
+    [function definePermissionPatch() {
+
+      /**
+       * The object returned by REST API calls when representing changes to the
+       * permissions granted to a specific user.
+       *
+       * @constructor
+       * @param {PermissionPatch|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     PermissionPatch.
+       */
+      var PermissionPatch = function PermissionPatch(template) {
 
         // Use empty object by default
         template = template || {};
@@ -66,26 +67,26 @@ angular.module('rest').factory('PermissionPatch', [function definePermissionPatc
          */
         this.value = template.value;
 
-    };
+      };
 
-    /**
-     * All valid patch operations for permissions. Currently, only add and
-     * remove are supported.
-     */
-    PermissionPatch.Operation = {
+      /**
+       * All valid patch operations for permissions. Currently, only add and
+       * remove are supported.
+       */
+      PermissionPatch.Operation = {
 
         /**
          * Adds (grants) the specified permission.
          */
-        ADD : "add",
+        ADD: "add",
 
         /**
          * Removes (revokes) the specified permission.
          */
-        REMOVE : "remove"
+        REMOVE: "remove"
 
-    };
+      };
 
-    return PermissionPatch;
+      return PermissionPatch;
 
-}]);
+    }]);

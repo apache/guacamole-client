@@ -26,28 +26,28 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
- * A GuacamoleProperty whose value is Keeper Secrets Manager {@link KeyValueStorage}
- * object. The value of this property must be base64-encoded JSON, as output by
- * the Keeper Commander CLI tool via the "sm client add" command.
+ * A GuacamoleProperty whose value is Keeper Secrets Manager {@link KeyValueStorage} object. The
+ * value of this property must be base64-encoded JSON, as output by the Keeper Commander CLI tool
+ * via the "sm client add" command.
  */
 public abstract class KsmConfigProperty implements GuacamoleProperty<KeyValueStorage> {
 
-    @Override
-    public KeyValueStorage parseValue(String value) throws GuacamoleException {
+  @Override
+  public KeyValueStorage parseValue(String value) throws GuacamoleException {
 
-        // If no property provided, return null.
-        if (value == null)
-            return null;
-
-        // Parse base64 value as KSM config storage
-        try {
-            return new InMemoryStorage(value);
-        }
-        catch (IllegalArgumentException e) {
-            throw new GuacamoleServerException("Invalid base64 configuration "
-                    + "for Keeper Secrets Manager.", e);
-        }
-
+    // If no property provided, return null.
+    if (value == null) {
+      return null;
     }
+
+    // Parse base64 value as KSM config storage
+    try {
+      return new InMemoryStorage(value);
+    } catch (IllegalArgumentException e) {
+      throw new GuacamoleServerException("Invalid base64 configuration "
+          + "for Keeper Secrets Manager.", e);
+    }
+
+  }
 
 }

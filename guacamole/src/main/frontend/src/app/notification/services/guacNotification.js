@@ -21,11 +21,11 @@
  * Service for displaying notifications and modal status dialogs.
  */
 angular.module('notification').factory('guacNotification', ['$injector',
-        function guacNotification($injector) {
+  function guacNotification($injector) {
 
     // Required services
-    var $rootScope            = $injector.get('$rootScope');
-    var requestService        = $injector.get('requestService');
+    var $rootScope = $injector.get('$rootScope');
+    var requestService = $injector.get('requestService');
     var sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     var service = {};
@@ -33,7 +33,7 @@ angular.module('notification').factory('guacNotification', ['$injector',
     /**
      * Getter/setter which retrieves or sets the current status notification,
      * which may simply be false if no status is currently shown.
-     * 
+     *
      * @type Function
      */
     var storedStatus = sessionStorageFactory.create(false);
@@ -45,20 +45,20 @@ angular.module('notification').factory('guacNotification', ['$injector',
      * @type NotificationAction
      */
     service.ACKNOWLEDGE_ACTION = {
-        name        : 'APP.ACTION_ACKNOWLEDGE',
-        callback    : function acknowledgeCallback() {
-            service.showStatus(false);
-        }
+      name: 'APP.ACTION_ACKNOWLEDGE',
+      callback: function acknowledgeCallback() {
+        service.showStatus(false);
+      }
     };
 
     /**
      * Retrieves the current status notification, which may simply be false if
      * no status is currently shown.
-     * 
+     *
      * @type Notification|Boolean
      */
     service.getStatus = function getStatus() {
-        return storedStatus();
+      return storedStatus();
     };
 
     /**
@@ -70,7 +70,7 @@ angular.module('notification').factory('guacNotification', ['$injector',
      *     The status notification to show.
      *
      * @example
-     * 
+     *
      * // To show a status message with actions
      * guacNotification.showStatus({
      *     'title'      : 'Disconnected',
@@ -84,13 +84,14 @@ angular.module('notification').factory('guacNotification', ['$injector',
      *         }
      *     }]
      * });
-     * 
+     *
      * // To hide the status message
      * guacNotification.showStatus(false);
      */
     service.showStatus = function showStatus(status) {
-        if (!storedStatus() || !status)
-            storedStatus(status);
+      if (!storedStatus() || !status) {
+        storedStatus(status);
+      }
     };
 
     /**
@@ -104,20 +105,21 @@ angular.module('notification').factory('guacNotification', ['$injector',
      * @constant
      * @type Function
      */
-    service.SHOW_REQUEST_ERROR = requestService.createErrorCallback(function showRequestError(error) {
-        service.showStatus({
-            className  : 'error',
-            title      : 'APP.DIALOG_HEADER_ERROR',
-            text       : error.translatableMessage,
-            actions    : [ service.ACKNOWLEDGE_ACTION ]
+    service.SHOW_REQUEST_ERROR = requestService.createErrorCallback(
+        function showRequestError(error) {
+          service.showStatus({
+            className: 'error',
+            title: 'APP.DIALOG_HEADER_ERROR',
+            text: error.translatableMessage,
+            actions: [service.ACKNOWLEDGE_ACTION]
+          });
         });
-    });
 
     // Hide status upon navigation
-    $rootScope.$on('$routeChangeSuccess', function() {
-        service.showStatus(false);
+    $rootScope.$on('$routeChangeSuccess', function () {
+      service.showStatus(false);
     });
 
     return service;
 
-}]);
+  }]);

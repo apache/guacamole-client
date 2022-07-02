@@ -28,46 +28,43 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * Allows users to be authenticated against an RADIUS server. Each user may have
- * any number of authorized configurations. Authorized configurations may be
- * shared.
+ * Allows users to be authenticated against an RADIUS server. Each user may have any number of
+ * authorized configurations. Authorized configurations may be shared.
  */
 public class RadiusAuthenticationProvider extends AbstractAuthenticationProvider {
 
-    /**
-     * Injector which will manage the object graph of this authentication
-     * provider.
-     */
-    private final Injector injector;
+  /**
+   * Injector which will manage the object graph of this authentication provider.
+   */
+  private final Injector injector;
 
-    /**
-     * Creates a new RadiusAuthenticationProvider that authenticates users
-     * against an RADIUS service.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public RadiusAuthenticationProvider() throws GuacamoleException {
+  /**
+   * Creates a new RadiusAuthenticationProvider that authenticates users against an RADIUS service.
+   *
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public RadiusAuthenticationProvider() throws GuacamoleException {
 
-        // Set up Guice injector.
-        injector = Guice.createInjector(
-            new RadiusAuthenticationProviderModule(this)
-        );
+    // Set up Guice injector.
+    injector = Guice.createInjector(
+        new RadiusAuthenticationProviderModule(this)
+    );
 
-    }
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "radius";
-    }
+  @Override
+  public String getIdentifier() {
+    return "radius";
+  }
 
-    @Override
-    public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
+  @Override
+  public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
 
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
-        return authProviderService.authenticateUser(credentials);
+    AuthenticationProviderService authProviderService = injector.getInstance(
+        AuthenticationProviderService.class);
+    return authProviderService.authenticateUser(credentials);
 
-    }
+  }
 
 }

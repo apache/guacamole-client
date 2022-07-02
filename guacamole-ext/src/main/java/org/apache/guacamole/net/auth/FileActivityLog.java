@@ -32,43 +32,37 @@ import org.apache.guacamole.language.TranslatableMessage;
  */
 public class FileActivityLog extends AbstractActivityLog {
 
-    /**
-     * The File providing the content of this log.
-     */
-    private final File content;
+  /**
+   * The File providing the content of this log.
+   */
+  private final File content;
 
-    /**
-     * Creates a new FileActivityLog that exposes the content of the given
-     * local file as an {@link ActivityLog}.
-     *
-     * @param type
-     *     The type of this ActivityLog.
-     *
-     * @param description
-     *     A human-readable message that describes this log.
-     *
-     * @param content
-     *     The File that should be used to provide the content of this log.
-     */
-    public FileActivityLog(Type type, TranslatableMessage description, File content) {
-        super(type, description);
-        this.content = content;
-    }
+  /**
+   * Creates a new FileActivityLog that exposes the content of the given local file as an
+   * {@link ActivityLog}.
+   *
+   * @param type        The type of this ActivityLog.
+   * @param description A human-readable message that describes this log.
+   * @param content     The File that should be used to provide the content of this log.
+   */
+  public FileActivityLog(Type type, TranslatableMessage description, File content) {
+    super(type, description);
+    this.content = content;
+  }
 
-    @Override
-    public long getSize() throws GuacamoleException {
-        return content.length();
-    }
+  @Override
+  public long getSize() throws GuacamoleException {
+    return content.length();
+  }
 
-    @Override
-    public InputStream getContent() throws GuacamoleException {
-        try {
-            return new FileInputStream(content);
-        }
-        catch (FileNotFoundException e) {
-            throw new GuacamoleResourceNotFoundException("Associated file "
-                    + "does not exist or cannot be read.", e);
-        }
+  @Override
+  public InputStream getContent() throws GuacamoleException {
+    try {
+      return new FileInputStream(content);
+    } catch (FileNotFoundException e) {
+      throw new GuacamoleResourceNotFoundException("Associated file "
+          + "does not exist or cannot be read.", e);
     }
+  }
 
 }

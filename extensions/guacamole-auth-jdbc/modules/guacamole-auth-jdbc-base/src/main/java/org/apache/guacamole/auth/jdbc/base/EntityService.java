@@ -27,72 +27,66 @@ import org.apache.ibatis.session.SqlSession;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
- * Service which provides convenience methods for creating, retrieving, and
- * manipulating entities.
+ * Service which provides convenience methods for creating, retrieving, and manipulating entities.
  */
 public class EntityService {
 
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private JDBCEnvironment environment;
+  /**
+   * The Guacamole server environment.
+   */
+  @Inject
+  private JDBCEnvironment environment;
 
-    /**
-     * Mapper for Entity model objects.
-     */
-    @Inject
-    private EntityMapper entityMapper;
+  /**
+   * Mapper for Entity model objects.
+   */
+  @Inject
+  private EntityMapper entityMapper;
 
-    /**
-     * The current SQL session used by MyBatis.
-     */
-    @Inject
-    private SqlSession sqlSession;
+  /**
+   * The current SQL session used by MyBatis.
+   */
+  @Inject
+  private SqlSession sqlSession;
 
-    /**
-     * Returns the set of all group identifiers of which the given entity is a
-     * member, taking into account the given collection of known group
-     * memberships which are not necessarily defined within the database.
-     * 
-     * Note that group visibility with respect to the queried entity is NOT
-     * taken into account. If the entity is a member of a group, the identifier
-     * of that group will be included in the returned set even if the current
-     * user lacks "READ" permission for that group.
-     *
-     * @param entity
-     *     The entity whose effective groups should be returned.
-     *
-     * @param effectiveGroups
-     *     The identifiers of any known effective groups that should be taken
-     *     into account, such as those defined externally to the database.
-     *
-     * @return
-     *     The set of identifiers of all groups that the given entity is a
-     *     member of, including those where membership is inherited through
-     *     membership in other groups.
-     */
-    @Transactional
-    public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModel> entity,
-            Collection<String> effectiveGroups) {
+  /**
+   * Returns the set of all group identifiers of which the given entity is a member, taking into
+   * account the given collection of known group memberships which are not necessarily defined
+   * within the database.
+   * <p>
+   * Note that group visibility with respect to the queried entity is NOT taken into account. If the
+   * entity is a member of a group, the identifier of that group will be included in the returned
+   * set even if the current user lacks "READ" permission for that group.
+   *
+   * @param entity          The entity whose effective groups should be returned.
+   * @param effectiveGroups The identifiers of any known effective groups that should be taken into
+   *                        account, such as those defined externally to the database.
+   * @return The set of identifiers of all groups that the given entity is a member of, including
+   * those where membership is inherited through membership in other groups.
+   */
+  @Transactional
+  public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModel> entity,
+      Collection<String> effectiveGroups) {
 
-        // Retrieve the effective user groups of the given entity, recursively if possible
-        boolean recursive = environment.isRecursiveQuerySupported(sqlSession);
-        Set<String> identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), effectiveGroups, recursive);
+    // Retrieve the effective user groups of the given entity, recursively if possible
+    boolean recursive = environment.isRecursiveQuerySupported(sqlSession);
+    Set<String> identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(),
+        effectiveGroups, recursive);
 
-        // If the set of user groups retrieved was not produced recursively,
-        // manually repeat the query to expand the set until all effective
-        // groups have been found
-        if (!recursive && !identifiers.isEmpty()) {
-            Set<String> previousIdentifiers;
-            do {
-                previousIdentifiers = identifiers;
-                identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), previousIdentifiers, false);
-            } while (identifiers.size() > previousIdentifiers.size());
-        }
-
-        return identifiers;
-
+    // If the set of user groups retrieved was not produced recursively,
+    // manually repeat the query to expand the set until all effective
+    // groups have been found
+    if (!recursive && !identifiers.isEmpty()) {
+      Set<String> previousIdentifiers;
+      do {
+        previousIdentifiers = identifiers;
+        identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(),
+            previousIdentifiers, false);
+      } while (identifiers.size() > previousIdentifiers.size());
     }
+
+    return identifiers;
+
+  }
 
 }

@@ -21,7 +21,7 @@
  * Module which provides handling for Duo multi-factor authentication.
  */
 angular.module('guacDuo', [
-    'form'
+  'form'
 ]);
 
 // Ensure the guacDuo module is loaded along with the rest of the app

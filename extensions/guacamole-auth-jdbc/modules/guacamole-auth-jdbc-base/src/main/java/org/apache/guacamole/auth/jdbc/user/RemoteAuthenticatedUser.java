@@ -30,77 +30,72 @@ import org.apache.guacamole.net.auth.Credentials;
  */
 public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
 
-    /**
-     * The credentials given when this user authenticated.
-     */
-    private final Credentials credentials;
+  /**
+   * The credentials given when this user authenticated.
+   */
+  private final Credentials credentials;
 
-    /**
-     * The AuthenticationProvider that authenticated this user.
-     */
-    private final AuthenticationProvider authenticationProvider;
+  /**
+   * The AuthenticationProvider that authenticated this user.
+   */
+  private final AuthenticationProvider authenticationProvider;
 
-    /**
-     * The host from which this user authenticated.
-     */
-    private final String remoteHost;
+  /**
+   * The host from which this user authenticated.
+   */
+  private final String remoteHost;
 
-    /**
-     * The identifiers of any groups of which this user is a member, including
-     * groups inherited through membership in other groups.
-     */
-    private final Set<String> effectiveGroups;
+  /**
+   * The identifiers of any groups of which this user is a member, including groups inherited
+   * through membership in other groups.
+   */
+  private final Set<String> effectiveGroups;
 
-    /**
-     * Creates a new RemoteAuthenticatedUser, deriving the associated remote
-     * host from the given credentials.
-     *
-     * @param authenticationProvider
-     *     The AuthenticationProvider that has authenticated the given user.
-     *
-     * @param credentials
-     *     The credentials given by the user when they authenticated.
-     *
-     * @param effectiveGroups
-     *     The identifiers of any groups of which this user is a member,
-     *     including groups inherited through membership in other groups.
-     */
-    public RemoteAuthenticatedUser(AuthenticationProvider authenticationProvider,
-            Credentials credentials, Set<String> effectiveGroups) {
-        this.authenticationProvider = authenticationProvider;
-        this.credentials = credentials;
-        this.remoteHost = credentials.getRemoteAddress();
-        this.effectiveGroups = Collections.unmodifiableSet(effectiveGroups);
-    }
+  /**
+   * Creates a new RemoteAuthenticatedUser, deriving the associated remote host from the given
+   * credentials.
+   *
+   * @param authenticationProvider The AuthenticationProvider that has authenticated the given
+   *                               user.
+   * @param credentials            The credentials given by the user when they authenticated.
+   * @param effectiveGroups        The identifiers of any groups of which this user is a member,
+   *                               including groups inherited through membership in other groups.
+   */
+  public RemoteAuthenticatedUser(AuthenticationProvider authenticationProvider,
+      Credentials credentials, Set<String> effectiveGroups) {
+    this.authenticationProvider = authenticationProvider;
+    this.credentials = credentials;
+    this.remoteHost = credentials.getRemoteAddress();
+    this.effectiveGroups = Collections.unmodifiableSet(effectiveGroups);
+  }
 
-    @Override
-    public Credentials getCredentials() {
-        return credentials;
-    }
+  @Override
+  public Credentials getCredentials() {
+    return credentials;
+  }
 
-    /**
-     * Returns the host from which this user authenticated.
-     *
-     * @return
-     *     The host from which this user authenticated.
-     */
-    public String getRemoteHost() {
-        return remoteHost;
-    }
+  /**
+   * Returns the host from which this user authenticated.
+   *
+   * @return The host from which this user authenticated.
+   */
+  public String getRemoteHost() {
+    return remoteHost;
+  }
 
-    @Override
-    public Set<String> getEffectiveUserGroups() {
-        return effectiveGroups;
-    }
+  @Override
+  public Set<String> getEffectiveUserGroups() {
+    return effectiveGroups;
+  }
 
-    @Override
-    public AuthenticationProvider getAuthenticationProvider() {
-        return authenticationProvider;
-    }
+  @Override
+  public AuthenticationProvider getAuthenticationProvider() {
+    return authenticationProvider;
+  }
 
-    @Override
-    public void invalidate() {
-        // Nothing to invalidate
-    }
+  @Override
+  public void invalidate() {
+    // Nothing to invalidate
+  }
 
 }

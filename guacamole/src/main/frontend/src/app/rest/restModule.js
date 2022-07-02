@@ -22,6 +22,6 @@
  * Guacamole web application.
  */
 angular.module('rest', [
-    'auth',
-    'locale'
+  'auth',
+  'locale'
 ]);

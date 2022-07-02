@@ -20,18 +20,18 @@
 /**
  * The controller for the home page.
  */
-angular.module('home').controller('homeController', ['$scope', '$injector', 
-        function homeController($scope, $injector) {
+angular.module('home').controller('homeController', ['$scope', '$injector',
+  function homeController($scope, $injector) {
 
     // Get required types
-    var ConnectionGroup  = $injector.get('ConnectionGroup');
-    var GroupListItem    = $injector.get('GroupListItem');
-            
+    var ConnectionGroup = $injector.get('ConnectionGroup');
+    var GroupListItem = $injector.get('GroupListItem');
+
     // Get required services
-    var authenticationService  = $injector.get('authenticationService');
+    var authenticationService = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
-    var dataSourceService      = $injector.get('dataSourceService');
-    var requestService         = $injector.get('requestService');
+    var dataSourceService = $injector.get('dataSourceService');
+    var requestService = $injector.get('requestService');
 
     /**
      * Map of data source identifier to the root connection group of that data
@@ -48,7 +48,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
      * @type String[]
      */
     $scope.filteredConnectionProperties = [
-        'name'
+      'name'
     ];
 
     /**
@@ -57,7 +57,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
      * @type String[]
      */
     $scope.filteredConnectionGroupProperties = [
-        'name'
+      'name'
     ];
 
     /**
@@ -69,7 +69,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
      */
     $scope.isLoaded = function isLoaded() {
 
-        return $scope.rootConnectionGroups !== null;
+      return $scope.rootConnectionGroups !== null;
 
     };
 
@@ -80,7 +80,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
         ConnectionGroup.ROOT_IDENTIFIER
     )
     .then(function rootGroupsRetrieved(rootConnectionGroups) {
-        $scope.rootConnectionGroups = rootConnectionGroups;
+      $scope.rootConnectionGroups = rootConnectionGroups;
     }, requestService.DIE);
 
-}]);
+  }]);

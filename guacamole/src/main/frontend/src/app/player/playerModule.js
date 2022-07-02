@@ -48,5 +48,5 @@
  * Module providing in-browser playback of session recordings.
  */
 angular.module('player', [
-    'element'
+  'element'
 ]);

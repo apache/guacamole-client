@@ -48,14 +48,15 @@
  * Directive which contains a given Guacamole.Display, automatically scaling
  * the display to fit available space.
  */
-angular.module('player').directive('guacPlayerDisplay', [function guacPlayerDisplay() {
+angular.module('player').directive('guacPlayerDisplay',
+    [function guacPlayerDisplay() {
 
-    const config = {
-        restrict : 'E',
-        templateUrl : 'app/player/templates/playerDisplay.html'
-    };
+      const config = {
+        restrict: 'E',
+        templateUrl: 'app/player/templates/playerDisplay.html'
+      };
 
-    config.scope = {
+      config.scope = {
 
         /**
          * The Guacamole.Display instance which should be displayed within the
@@ -63,76 +64,80 @@ angular.module('player').directive('guacPlayerDisplay', [function guacPlayerDisp
          *
          * @type {Guacamole.Display}
          */
-        display : '='
+        display: '='
 
-    };
+      };
 
-    config.controller = ['$scope', '$element', function guacPlayerDisplayController($scope, $element) {
+      config.controller = ['$scope', '$element',
+        function guacPlayerDisplayController($scope, $element) {
 
-        /**
-         * The root element of this instance of the guacPlayerDisplay
-         * directive.
-         *
-         * @type {Element}
-         */
-        const element = $element.find('.guac-player-display')[0];
+          /**
+           * The root element of this instance of the guacPlayerDisplay
+           * directive.
+           *
+           * @type {Element}
+           */
+          const element = $element.find('.guac-player-display')[0];
 
-        /**
-         * The element which serves as a container for the root element of the
-         * Guacamole.Display assigned to $scope.display.
-         *
-         * @type {HTMLDivElement}
-         */
-        const container = $element.find('.guac-player-display-container')[0];
+          /**
+           * The element which serves as a container for the root element of the
+           * Guacamole.Display assigned to $scope.display.
+           *
+           * @type {HTMLDivElement}
+           */
+          const container = $element.find('.guac-player-display-container')[0];
 
-        /**
-         * Rescales the Guacamole.Display currently assigned to $scope.display
-         * such that it exactly fits within this directive's available space.
-         * If no display is currently assigned or the assigned display is not
-         * at least 1x1 pixels in size, this function has no effect.
-         */
-        $scope.fitDisplay = function fitDisplay() {
+          /**
+           * Rescales the Guacamole.Display currently assigned to $scope.display
+           * such that it exactly fits within this directive's available space.
+           * If no display is currently assigned or the assigned display is not
+           * at least 1x1 pixels in size, this function has no effect.
+           */
+          $scope.fitDisplay = function fitDisplay() {
 
             // Ignore if no display is yet present
-            if (!$scope.display)
-                return;
+            if (!$scope.display) {
+              return;
+            }
 
             var displayWidth = $scope.display.getWidth();
             var displayHeight = $scope.display.getHeight();
 
             // Ignore if the provided display is not at least 1x1 pixels
-            if (!displayWidth || !displayHeight)
-                return;
+            if (!displayWidth || !displayHeight) {
+              return;
+            }
 
             // Fit display within available space
             $scope.display.scale(Math.min(element.offsetWidth / displayWidth,
                 element.offsetHeight / displayHeight));
 
-        };
+          };
 
-        // Automatically add/remove the Guacamole.Display as $scope.display is
-        // updated
-        $scope.$watch('display', function displayChanged(display, oldDisplay) {
+          // Automatically add/remove the Guacamole.Display as $scope.display is
+          // updated
+          $scope.$watch('display',
+              function displayChanged(display, oldDisplay) {
 
-            // Clear out old display, if any
-            if (oldDisplay) {
-                container.innerHTML = '';
-                oldDisplay.onresize = null;
-            }
+                // Clear out old display, if any
+                if (oldDisplay) {
+                  container.innerHTML = '';
+                  oldDisplay.onresize = null;
+                }
 
-            // If a new display is provided, add it to the container, keeping
-            // its scale in sync with changes to available space and display
-            // size
-            if (display) {
-                container.appendChild(display.getElement());
-                display.onresize = $scope.fitDisplay;
-                $scope.fitDisplay();
-            }
+                // If a new display is provided, add it to the container, keeping
+                // its scale in sync with changes to available space and display
+                // size
+                if (display) {
+                  container.appendChild(display.getElement());
+                  display.onresize = $scope.fitDisplay;
+                  $scope.fitDisplay();
+                }
 
-        });
+              });
 
-    }];
+        }];
 
-    return config;
+      return config;
 
-}]);
+    }]);

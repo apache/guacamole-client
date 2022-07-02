@@ -21,6 +21,6 @@
  * Module for displaying dynamic forms.
  */
 angular.module('form', [
-    'locale',
-    'rest'
+  'locale',
+  'rest'
 ]);

@@ -26,12 +26,12 @@ import org.apache.guacamole.net.GuacamoleTunnel;
  */
 public interface TunnelEvent {
 
-    /**
-     * Returns the tunnel associated with this event, if any.
-     *
-     * @return The tunnel associated with this event, if any, or null if no
-     *         tunnel is associated with this event.
-     */
-    GuacamoleTunnel getTunnel();
+  /**
+   * Returns the tunnel associated with this event, if any.
+   *
+   * @return The tunnel associated with this event, if any, or null if no tunnel is associated with
+   * this event.
+   */
+  GuacamoleTunnel getTunnel();
 
 }

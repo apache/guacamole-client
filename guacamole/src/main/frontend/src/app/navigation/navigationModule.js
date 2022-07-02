@@ -21,8 +21,8 @@
  * Module for generating and implementing user navigation options.
  */
 angular.module('navigation', [
-    'auth',
-    'form',
-    'notification',
-    'rest'
+  'auth',
+  'form',
+  'notification',
+  'rest'
 ]);

@@ -41,84 +41,74 @@ import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
- * A REST resource which abstracts the operations available on an existing
- * SharingProfile.
+ * A REST resource which abstracts the operations available on an existing SharingProfile.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SharingProfileResource
-        extends DirectoryObjectResource<SharingProfile, APISharingProfile> {
+    extends DirectoryObjectResource<SharingProfile, APISharingProfile> {
 
-    /**
-     * The UserContext associated with the Directory which contains the
-     * SharingProfile exposed by this resource.
-     */
-    private final UserContext userContext;
+  /**
+   * The UserContext associated with the Directory which contains the SharingProfile exposed by this
+   * resource.
+   */
+  private final UserContext userContext;
 
-    /**
-     * The SharingProfile object represented by this SharingProfileResource.
-     */
-    private final SharingProfile sharingProfile;
+  /**
+   * The SharingProfile object represented by this SharingProfileResource.
+   */
+  private final SharingProfile sharingProfile;
 
-    /**
-     * Creates a new SharingProfileResource which exposes the operations and
-     * subresources available for the given SharingProfile.
-     *
-     * @param userContext
-     *     The UserContext associated with the given Directory.
-     *
-     * @param directory
-     *     The Directory which contains the given SharingProfile.
-     *
-     * @param sharingProfile
-     *     The SharingProfile that this SharingProfileResource should represent.
-     *
-     * @param translator
-     *     A DirectoryObjectTranslator implementation which handles the type of
-     *     object given.
-     */
-    @AssistedInject
-    public SharingProfileResource(@Assisted UserContext userContext,
-            @Assisted Directory<SharingProfile> directory,
-            @Assisted SharingProfile sharingProfile,
-            DirectoryObjectTranslator<SharingProfile, APISharingProfile> translator) {
-        super(userContext, directory, sharingProfile, translator);
-        this.userContext = userContext;
-        this.sharingProfile = sharingProfile;
+  /**
+   * Creates a new SharingProfileResource which exposes the operations and subresources available
+   * for the given SharingProfile.
+   *
+   * @param userContext    The UserContext associated with the given Directory.
+   * @param directory      The Directory which contains the given SharingProfile.
+   * @param sharingProfile The SharingProfile that this SharingProfileResource should represent.
+   * @param translator     A DirectoryObjectTranslator implementation which handles the type of
+   *                       object given.
+   */
+  @AssistedInject
+  public SharingProfileResource(@Assisted UserContext userContext,
+      @Assisted Directory<SharingProfile> directory,
+      @Assisted SharingProfile sharingProfile,
+      DirectoryObjectTranslator<SharingProfile, APISharingProfile> translator) {
+    super(userContext, directory, sharingProfile, translator);
+    this.userContext = userContext;
+    this.sharingProfile = sharingProfile;
+  }
+
+  /**
+   * Retrieves the connection parameters associated with the SharingProfile exposed by this
+   * SharingProfile resource.
+   *
+   * @return A map of parameter name/value pairs.
+   * @throws GuacamoleException If an error occurs while retrieving the connection parameters of the
+   *                            SharingProfile.
+   */
+  @GET
+  @Path("parameters")
+  public Map<String, String> getParameters()
+      throws GuacamoleException {
+
+    // Pull effective permissions
+    Permissions effective = userContext.self().getEffectivePermissions();
+
+    // Retrieve permission sets
+    SystemPermissionSet systemPermissions = effective.getSystemPermissions();
+    ObjectPermissionSet sharingProfilePermissions = effective.getSharingProfilePermissions();
+
+    // Deny access if adminstrative or update permission is missing
+    String identifier = sharingProfile.getIdentifier();
+    if (!systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER)
+        && !sharingProfilePermissions.hasPermission(ObjectPermission.Type.UPDATE, identifier)) {
+      throw new GuacamoleSecurityException("Permission to read sharing profile parameters denied.");
     }
 
-    /**
-     * Retrieves the connection parameters associated with the SharingProfile
-     * exposed by this SharingProfile resource.
-       *
-     * @return
-     *     A map of parameter name/value pairs.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the connection parameters of the
-     *     SharingProfile.
-     */
-    @GET
-    @Path("parameters")
-    public Map<String, String> getParameters()
-            throws GuacamoleException {
+    // Return parameter map
+    return sharingProfile.getParameters();
 
-        // Pull effective permissions
-        Permissions effective = userContext.self().getEffectivePermissions();
-
-        // Retrieve permission sets
-        SystemPermissionSet systemPermissions = effective.getSystemPermissions();
-        ObjectPermissionSet sharingProfilePermissions = effective.getSharingProfilePermissions();
-
-        // Deny access if adminstrative or update permission is missing
-        String identifier = sharingProfile.getIdentifier();
-        if (!systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER)
-         && !sharingProfilePermissions.hasPermission(ObjectPermission.Type.UPDATE, identifier))
-            throw new GuacamoleSecurityException("Permission to read sharing profile parameters denied.");
-
-        // Return parameter map
-        return sharingProfile.getParameters();
-
-    }
+  }
 
 }

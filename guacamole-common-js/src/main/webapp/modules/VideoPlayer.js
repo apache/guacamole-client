@@ -30,15 +30,15 @@ var Guacamole = Guacamole || {};
  */
 Guacamole.VideoPlayer = function VideoPlayer() {
 
-    /**
-     * Notifies this Guacamole.VideoPlayer that all video up to the current
-     * point in time has been given via the underlying stream, and that any
-     * difference in time between queued video data and the current time can be
-     * considered latency.
-     */
-    this.sync = function sync() {
-        // Default implementation - do nothing
-    };
+  /**
+   * Notifies this Guacamole.VideoPlayer that all video up to the current
+   * point in time has been given via the underlying stream, and that any
+   * difference in time between queued video data and the current time can be
+   * considered latency.
+   */
+  this.sync = function sync() {
+    // Default implementation - do nothing
+  };
 
 };
 
@@ -56,9 +56,9 @@ Guacamole.VideoPlayer = function VideoPlayer() {
  */
 Guacamole.VideoPlayer.isSupportedType = function isSupportedType(mimetype) {
 
-    // There are currently no built-in video players (and therefore no
-    // supported types)
-    return false;
+  // There are currently no built-in video players (and therefore no
+  // supported types)
+  return false;
 
 };
 
@@ -74,9 +74,9 @@ Guacamole.VideoPlayer.isSupportedType = function isSupportedType(mimetype) {
  */
 Guacamole.VideoPlayer.getSupportedTypes = function getSupportedTypes() {
 
-    // There are currently no built-in video players (and therefore no
-    // supported types)
-    return [];
+  // There are currently no built-in video players (and therefore no
+  // supported types)
+  return [];
 
 };
 
@@ -100,9 +100,10 @@ Guacamole.VideoPlayer.getSupportedTypes = function getSupportedTypes() {
  *     reading from the given stream, or null if support for the given mimetype
  *     is absent.
  */
-Guacamole.VideoPlayer.getInstance = function getInstance(stream, layer, mimetype) {
+Guacamole.VideoPlayer.getInstance = function getInstance(stream, layer,
+    mimetype) {
 
-    // There are currently no built-in video players
-    return null;
+  // There are currently no built-in video players
+  return null;
 
 };

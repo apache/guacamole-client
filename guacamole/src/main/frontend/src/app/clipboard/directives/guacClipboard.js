@@ -24,7 +24,7 @@
  * automatically be reflected in the clipboard by clipboardService.
  */
 angular.module('clipboard').directive('guacClipboard', ['$injector',
-    function guacClipboard($injector) {
+  function guacClipboard($injector) {
 
     // Required types
     const ClipboardData = $injector.get('ClipboardData');
@@ -38,14 +38,14 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
      * @type Object.<String, Object>
      */
     var config = {
-        restrict    : 'E',
-        replace     : true,
-        templateUrl : 'app/clipboard/templates/guacClipboard.html'
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'app/clipboard/templates/guacClipboard.html'
     };
 
     // guacClipboard directive controller
     config.controller = ['$scope', '$injector', '$element',
-            function guacClipboardController($scope, $injector, $element) {
+      function guacClipboardController($scope, $injector, $element) {
 
         /**
          * The DOM element which will contain the clipboard contents within the
@@ -63,11 +63,11 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
          */
         var updateClipboardData = function updateClipboardData() {
 
-            // Read contents of clipboard textarea
-            clipboardService.setClipboard(new ClipboardData({
-                type : 'text/plain',
-                data : element.value
-            }));
+          // Read contents of clipboard textarea
+          clipboardService.setClipboard(new ClipboardData({
+            type: 'text/plain',
+            data: element.value
+          }));
 
         };
 
@@ -80,11 +80,12 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
          */
         const updateClipboardEditor = function updateClipboardEditor(data) {
 
-            // If the clipboard data is a string, render it as text
-            if (typeof data.data === 'string')
-                element.value = data.data;
+          // If the clipboard data is a string, render it as text
+          if (typeof data.data === 'string') {
+            element.value = data.data;
+          }
 
-            // Ignore other data types for now
+          // Ignore other data types for now
 
         };
 
@@ -95,16 +96,16 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
 
         // Update remote clipboard if local clipboard changes
         $scope.$on('guacClipboard', function clipboardChanged(event, data) {
-            updateClipboardEditor(data);
+          updateClipboardEditor(data);
         });
 
         // Init clipboard editor with current clipboard contents
         clipboardService.getClipboard().then((data) => {
-            updateClipboardEditor(data);
+          updateClipboardEditor(data);
         }, angular.noop);
 
-    }];
+      }];
 
     return config;
 
-}]);
+  }]);

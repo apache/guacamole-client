@@ -20,18 +20,19 @@
 /**
  * Service which defines the UserPasswordUpdate class.
  */
-angular.module('rest').factory('UserPasswordUpdate', [function defineUserPasswordUpdate() {
-            
-    /**
-     * The object sent to the REST API when representing the data
-     * associated with a user password update.
-     * 
-     * @constructor
-     * @param {UserPasswordUpdate|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     UserPasswordUpdate.
-     */
-    var UserPasswordUpdate = function UserPasswordUpdate(template) {
+angular.module('rest').factory('UserPasswordUpdate',
+    [function defineUserPasswordUpdate() {
+
+      /**
+       * The object sent to the REST API when representing the data
+       * associated with a user password update.
+       *
+       * @constructor
+       * @param {UserPasswordUpdate|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     UserPasswordUpdate.
+       */
+      var UserPasswordUpdate = function UserPasswordUpdate(template) {
 
         // Use empty object by default
         template = template || {};
@@ -39,20 +40,20 @@ angular.module('rest').factory('UserPasswordUpdate', [function defineUserPasswor
         /**
          * This user's current password. Required for authenticating the user
          * as part of to the password update operation.
-         * 
+         *
          * @type String
          */
         this.oldPassword = template.oldPassword;
 
         /**
          * The new password to set for the user.
-         * 
+         *
          * @type String
          */
         this.newPassword = template.newPassword;
 
-    };
+      };
 
-    return UserPasswordUpdate;
+      return UserPasswordUpdate;
 
-}]);
+    }]);

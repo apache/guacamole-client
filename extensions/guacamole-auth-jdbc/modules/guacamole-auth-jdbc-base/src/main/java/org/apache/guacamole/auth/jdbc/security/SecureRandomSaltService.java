@@ -27,16 +27,16 @@ import java.security.SecureRandom;
  */
 public class SecureRandomSaltService implements SaltService {
 
-    /**
-     * Instance of SecureRandom for generating the salt.
-     */
-    private SecureRandom secureRandom = new SecureRandom();
+  /**
+   * Instance of SecureRandom for generating the salt.
+   */
+  private SecureRandom secureRandom = new SecureRandom();
 
-    @Override
-    public byte[] generateSalt() {
-        byte[] salt = new byte[32];
-        secureRandom.nextBytes(salt);
-        return salt;
-    }
+  @Override
+  public byte[] generateSalt() {
+    byte[] salt = new byte[32];
+    secureRandom.nextBytes(salt);
+    return salt;
+  }
 
 }

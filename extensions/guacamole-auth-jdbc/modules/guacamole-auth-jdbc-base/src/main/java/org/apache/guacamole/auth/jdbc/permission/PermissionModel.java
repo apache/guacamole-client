@@ -20,63 +20,57 @@
 package org.apache.guacamole.auth.jdbc.permission;
 
 /**
- * Generic base permission model which grants a permission of a particular type
- * to a specific entity (user or user group).
+ * Generic base permission model which grants a permission of a particular type to a specific entity
+ * (user or user group).
  *
- * @param <PermissionType>
- *     The type of permissions allowed within this model.
+ * @param <PermissionType> The type of permissions allowed within this model.
  */
 public abstract class PermissionModel<PermissionType> {
 
-    /**
-     * The database ID of the entity to whom this permission is granted.
-     */
-    private Integer entityID;
+  /**
+   * The database ID of the entity to whom this permission is granted.
+   */
+  private Integer entityID;
 
-    /**
-     * The type of action granted by this permission.
-     */
-    private PermissionType type;
-    
-    /**
-     * Returns the database ID of the entity to whom this permission is
-     * granted.
-     * 
-     * @return
-     *     The database ID of the entity to whom this permission is granted.
-     */
-    public Integer getEntityID() {
-        return entityID;
-    }
+  /**
+   * The type of action granted by this permission.
+   */
+  private PermissionType type;
 
-    /**
-     * Sets the database ID of the entity to whom this permission is granted.
-     *
-     * @param entityID
-     *     The database ID of the entity to whom this permission is granted.
-     */
-    public void setEntityID(Integer entityID) {
-        this.entityID = entityID;
-    }
+  /**
+   * Returns the database ID of the entity to whom this permission is granted.
+   *
+   * @return The database ID of the entity to whom this permission is granted.
+   */
+  public Integer getEntityID() {
+    return entityID;
+  }
 
-    /**
-     * Returns the type of action granted by this permission.
-     *
-     * @return
-     *     The type of action granted by this permission.
-     */
-    public PermissionType getType() {
-        return type;
-    }
+  /**
+   * Sets the database ID of the entity to whom this permission is granted.
+   *
+   * @param entityID The database ID of the entity to whom this permission is granted.
+   */
+  public void setEntityID(Integer entityID) {
+    this.entityID = entityID;
+  }
 
-    /**
-     * Sets the type of action granted by this permission.
-     *
-     * @param type
-     *     The type of action granted by this permission.
-     */
-    public void setType(PermissionType type) {
-        this.type = type;
-    }
+  /**
+   * Returns the type of action granted by this permission.
+   *
+   * @return The type of action granted by this permission.
+   */
+  public PermissionType getType() {
+    return type;
+  }
+
+  /**
+   * Sets the type of action granted by this permission.
+   *
+   * @param type The type of action granted by this permission.
+   */
+  public void setType(PermissionType type) {
+    this.type = type;
+  }
 
 }

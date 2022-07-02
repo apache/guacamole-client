@@ -20,24 +20,24 @@
 package org.apache.guacamole.auth.saml;
 
 import com.google.inject.AbstractModule;
-import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 import org.apache.guacamole.auth.saml.acs.AssertionConsumerServiceResource;
 import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.IdentifierGenerator;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
+import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 
 /**
  * Guice module which configures SAML-specific injections.
  */
 public class SAMLAuthenticationProviderModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        bind(AssertionConsumerServiceResource.class);
-        bind(AuthenticationSessionManager.class);
-        bind(ConfigurationService.class);
-        bind(IdentifierGenerator.class);
-        bind(SAMLService.class);
-    }
+  @Override
+  protected void configure() {
+    bind(AssertionConsumerServiceResource.class);
+    bind(AuthenticationSessionManager.class);
+    bind(ConfigurationService.class);
+    bind(IdentifierGenerator.class);
+    bind(SAMLService.class);
+  }
 
 }

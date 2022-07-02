@@ -27,31 +27,27 @@ import java.io.InputStream;
  */
 public class ByteArrayResource extends AbstractResource {
 
-    /**
-     * The bytes contained by this resource.
-     */
-    private final byte[] bytes;
+  /**
+   * The bytes contained by this resource.
+   */
+  private final byte[] bytes;
 
-    /**
-     * Creates a new ByteArrayResource which provides access to the given byte
-     * array. Changes to the given byte array will affect this resource even
-     * after the resource is created. Changing the byte array while an input
-     * stream from this resource is in use has undefined behavior.
-     *
-     * @param mimetype
-     *     The mimetype of the resource.
-     *
-     * @param bytes
-     *     The bytes that this resource should contain.
-     */
-    public ByteArrayResource(String mimetype, byte[] bytes) {
-        super(mimetype);
-        this.bytes = bytes;
-    }
+  /**
+   * Creates a new ByteArrayResource which provides access to the given byte array. Changes to the
+   * given byte array will affect this resource even after the resource is created. Changing the
+   * byte array while an input stream from this resource is in use has undefined behavior.
+   *
+   * @param mimetype The mimetype of the resource.
+   * @param bytes    The bytes that this resource should contain.
+   */
+  public ByteArrayResource(String mimetype, byte[] bytes) {
+    super(mimetype);
+    this.bytes = bytes;
+  }
 
-    @Override
-    public InputStream asStream() {
-        return new ByteArrayInputStream(bytes);
-    }
+  @Override
+  public InputStream asStream() {
+    return new ByteArrayInputStream(bytes);
+  }
 
 }

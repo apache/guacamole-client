@@ -20,56 +20,45 @@
 package org.apache.guacamole.net.auth.credentials;
 
 /**
- * A security-related exception thrown when access is denied to a user because
- * the provided credentials are invalid. Additional information describing
- * the form of valid credentials is provided.
+ * A security-related exception thrown when access is denied to a user because the provided
+ * credentials are invalid. Additional information describing the form of valid credentials is
+ * provided.
  */
 public class GuacamoleInvalidCredentialsException extends GuacamoleCredentialsException {
 
-    /**
-     * Creates a new GuacamoleInvalidCredentialsException with the given
-     * message, cause, and associated credential information.
-     *
-     * @param message
-     *     A human readable description of the exception that occurred.
-     *
-     * @param cause
-     *     The cause of this exception.
-     *
-     * @param credentialsInfo
-     *     Information describing the form of valid credentials.
-     */
-    public GuacamoleInvalidCredentialsException(String message, Throwable cause,
-            CredentialsInfo credentialsInfo) {
-        super(message, cause, credentialsInfo);
-    }
+  /**
+   * Creates a new GuacamoleInvalidCredentialsException with the given message, cause, and
+   * associated credential information.
+   *
+   * @param message         A human readable description of the exception that occurred.
+   * @param cause           The cause of this exception.
+   * @param credentialsInfo Information describing the form of valid credentials.
+   */
+  public GuacamoleInvalidCredentialsException(String message, Throwable cause,
+      CredentialsInfo credentialsInfo) {
+    super(message, cause, credentialsInfo);
+  }
 
-    /**
-     * Creates a new GuacamoleInvalidCredentialsException with the given
-     * message and associated credential information.
-     *
-     * @param message
-     *     A human readable description of the exception that occurred.
-     *
-     * @param credentialsInfo
-     *     Information describing the form of valid credentials.
-     */
-    public GuacamoleInvalidCredentialsException(String message, CredentialsInfo credentialsInfo) {
-        super(message, credentialsInfo);
-    }
+  /**
+   * Creates a new GuacamoleInvalidCredentialsException with the given message and associated
+   * credential information.
+   *
+   * @param message         A human readable description of the exception that occurred.
+   * @param credentialsInfo Information describing the form of valid credentials.
+   */
+  public GuacamoleInvalidCredentialsException(String message, CredentialsInfo credentialsInfo) {
+    super(message, credentialsInfo);
+  }
 
-    /**
-     * Creates a new GuacamoleInvalidCredentialsException with the given cause
-     * and associated credential information.
-     *
-     * @param cause
-     *     The cause of this exception.
-     *
-     * @param credentialsInfo
-     *     Information describing the form of valid credentials.
-     */
-    public GuacamoleInvalidCredentialsException(Throwable cause, CredentialsInfo credentialsInfo) {
-        super(cause, credentialsInfo);
-    }
+  /**
+   * Creates a new GuacamoleInvalidCredentialsException with the given cause and associated
+   * credential information.
+   *
+   * @param cause           The cause of this exception.
+   * @param credentialsInfo Information describing the form of valid credentials.
+   */
+  public GuacamoleInvalidCredentialsException(Throwable cause, CredentialsInfo credentialsInfo) {
+    super(cause, credentialsInfo);
+  }
 
 }

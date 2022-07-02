@@ -21,39 +21,40 @@
  * A directive which stores a marker which refers to a specific element,
  * allowing that element to be scrolled into view when desired.
  */
-angular.module('element').directive('guacMarker', ['$injector', function guacMarker($injector) {
+angular.module('element').directive('guacMarker',
+    ['$injector', function guacMarker($injector) {
 
-    // Required types
-    var Marker = $injector.get('Marker');
+      // Required types
+      var Marker = $injector.get('Marker');
 
-    // Required services
-    var $parse = $injector.get('$parse');
+      // Required services
+      var $parse = $injector.get('$parse');
 
-    return {
+      return {
         restrict: 'A',
 
         link: function linkGuacMarker($scope, $element, $attrs) {
 
-            /**
-             * The property in which a new Marker should be stored. The new
-             * Marker will refer to the element associated with this directive.
-             *
-             * @type Marker
-             */
-            var guacMarker = $parse($attrs.guacMarker);
+          /**
+           * The property in which a new Marker should be stored. The new
+           * Marker will refer to the element associated with this directive.
+           *
+           * @type Marker
+           */
+          var guacMarker = $parse($attrs.guacMarker);
 
-            /**
-             * The element to associate with the new Marker.
-             *
-             * @type Element
-             */
-            var element = $element[0];
+          /**
+           * The element to associate with the new Marker.
+           *
+           * @type Element
+           */
+          var element = $element[0];
 
-            // Assign new marker
-            guacMarker.assign($scope, new Marker(element));
+          // Assign new marker
+          guacMarker.assign($scope, new Marker(element));
 
         }
 
-    };
+      };
 
-}]);
+    }]);

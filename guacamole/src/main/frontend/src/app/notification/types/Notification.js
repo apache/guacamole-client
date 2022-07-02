@@ -20,18 +20,19 @@
 /**
  * Provides the Notification class definition.
  */
-angular.module('notification').factory('Notification', [function defineNotification() {
+angular.module('notification').factory('Notification',
+    [function defineNotification() {
 
-    /**
-     * Creates a new Notification, initializing the properties of that
-     * Notification with the corresponding properties of the given template.
-     *
-     * @constructor
-     * @param {Notification|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     Notification.
-     */
-    var Notification = function Notification(template) {
+      /**
+       * Creates a new Notification, initializing the properties of that
+       * Notification with the corresponding properties of the given template.
+       *
+       * @constructor
+       * @param {Notification|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     Notification.
+       */
+      var Notification = function Notification(template) {
 
         // Use empty object by default
         template = template || {};
@@ -116,8 +117,8 @@ angular.module('notification').factory('Notification', [function defineNotificat
          */
         this.countdown = template.countdown;
 
-    };
+      };
 
-    return Notification;
+      return Notification;
 
-}]);
+    }]);

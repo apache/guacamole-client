@@ -31,87 +31,80 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 
 /**
- * Provides a simple, single-level connection group used for
- * temporarily storing the Connection objects created by users.
+ * Provides a simple, single-level connection group used for temporarily storing the Connection
+ * objects created by users.
  */
 public class QuickConnectionGroup extends AbstractConnectionGroup {
 
-    /**
-     * A set that will store the Connection identifiers for this group.
-     */
-    private final Set<String> connectionIdentifiers =
-            new HashSet<String>(Collections.<String>emptyList());
+  /**
+   * A set that will store the Connection identifiers for this group.
+   */
+  private final Set<String> connectionIdentifiers =
+      new HashSet<String>(Collections.<String>emptyList());
 
-    /**
-     * Set up a QuickConnectionGroup with the provided name and
-     * identifier.
-     *
-     * @param name
-     *     The name of the QuickConnectionGroup.
-     *
-     * @param identifier
-     *     The identifier of the QuickConnectionGroup.
-     */
-    public QuickConnectionGroup(String name, String identifier) {
+  /**
+   * Set up a QuickConnectionGroup with the provided name and identifier.
+   *
+   * @param name       The name of the QuickConnectionGroup.
+   * @param identifier The identifier of the QuickConnectionGroup.
+   */
+  public QuickConnectionGroup(String name, String identifier) {
 
-        super();
-        super.setName(name);
-        super.setIdentifier(identifier);
-        super.setType(ConnectionGroup.Type.ORGANIZATIONAL);
+    super();
+    super.setName(name);
+    super.setIdentifier(identifier);
+    super.setType(ConnectionGroup.Type.ORGANIZATIONAL);
 
+  }
+
+  /**
+   * Add a connection identifier to this connection group, and return the identifier if the add
+   * succeeds, otherwise return null.
+   *
+   * @param identifier The identifier of the connection to add to the group.
+   * @return The String identifier of the connection if the add operation was successful; otherwise
+   * null.
+   */
+  public String addConnectionIdentifier(String identifier) {
+    if (connectionIdentifiers.add(identifier)) {
+      return identifier;
     }
+    return null;
+  }
 
-    /**
-     * Add a connection identifier to this connection group, and
-     * return the identifier if the add succeeds, otherwise
-     * return null.
-     *
-     * @param identifier
-     *     The identifier of the connection to add to the group.
-     *
-     * @return
-     *     The String identifier of the connection if the add
-     *     operation was successful; otherwise null.
-     */
-    public String addConnectionIdentifier(String identifier) {
-        if (connectionIdentifiers.add(identifier))
-            return identifier;
-        return null;
-    }
+  @Override
+  public int getActiveConnections() {
+    // This group does not track active connections.
+    return 0;
+  }
 
-    @Override
-    public int getActiveConnections() {
-        // This group does not track active connections.
-        return 0;
-    }
+  @Override
+  public Set<String> getConnectionIdentifiers() {
+    return connectionIdentifiers;
+  }
 
-    @Override
-    public Set<String> getConnectionIdentifiers() {
-        return connectionIdentifiers;
-    }
+  @Override
+  public Set<String> getConnectionGroupIdentifiers() {
+    // This group contains only connections, not other groups.
+    return Collections.<String>emptySet();
+  }
 
-    @Override
-    public Set<String> getConnectionGroupIdentifiers() {
-        // This group contains only connections, not other groups.
-        return Collections.<String>emptySet();
-    }
+  @Override
+  public Map<String, String> getAttributes() {
+    // There are no attributes associated with this group.
+    return Collections.<String, String>emptyMap();
+  }
 
-    @Override
-    public Map<String, String> getAttributes() {
-        // There are no attributes associated with this group.
-        return Collections.<String, String>emptyMap();
-    }
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    // Do nothing - there are no attributes
+  }
 
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        // Do nothing - there are no attributes
-    }
-
-    @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info,
-            Map<String, String> tokens) throws GuacamoleException {
-        // This group does not support connections
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public GuacamoleTunnel connect(GuacamoleClientInformation info,
+      Map<String, String> tokens) throws GuacamoleException {
+    // This group does not support connections
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
 
 }

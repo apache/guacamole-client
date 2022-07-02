@@ -17,30 +17,30 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="2.5"
+  xmlns="http://java.sun.com/xml/ns/javaee"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
-    <!-- Basic config -->
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
-    <session-config>
-        <session-timeout>
-			30
-        </session-timeout>
-    </session-config>
+  <!-- Basic config -->
+  <servlet>
+    <description>Tunnel servlet.</description>
+    <servlet-class>org.apache.guacamole.net.example.DummyGuacamoleTunnelServlet</servlet-class>
+    <servlet-name>Tunnel</servlet-name>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Tunnel</servlet-name>
+    <url-pattern>/tunnel</url-pattern>
+  </servlet-mapping>
 
-    <!-- Guacamole Tunnel Servlet -->
-    <servlet>
-        <description>Tunnel servlet.</description>
-        <servlet-name>Tunnel</servlet-name>
-        <servlet-class>org.apache.guacamole.net.example.DummyGuacamoleTunnelServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>Tunnel</servlet-name>
-        <url-pattern>/tunnel</url-pattern>
-    </servlet-mapping>
+  <!-- Guacamole Tunnel Servlet -->
+  <session-config>
+    <session-timeout>
+      30
+    </session-timeout>
+  </session-config>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
 
 
 </web-app>

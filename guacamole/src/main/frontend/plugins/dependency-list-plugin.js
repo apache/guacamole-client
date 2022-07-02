@@ -36,23 +36,23 @@ const PLUGIN_NAME = 'dependency-list-plugin';
  * @see https://github.com/webpack/schema-utils/blob/v1.0.0/README.md#usage
  */
 const PLUGIN_OPTIONS_SCHEMA = {
-    type: 'object',
-    properties: {
+  type: 'object',
+  properties: {
 
-        /**
-         * The name of the file that should contain the dependency list. By
-         * default, this will be "npm-dependencies.txt".
-         */
-        filename: { type: 'string' },
+    /**
+     * The name of the file that should contain the dependency list. By
+     * default, this will be "npm-dependencies.txt".
+     */
+    filename: {type: 'string'},
 
-        /**
-         * The path in which the dependency list file should be saved. By
-         * default, this will be the output path of the Webpack compiler.
-         */
-        path: { type: 'string' }
+    /**
+     * The path in which the dependency list file should be saved. By
+     * default, this will be the output path of the Webpack compiler.
+     */
+    path: {type: 'string'}
 
-    },
-    additionalProperties: false
+  },
+  additionalProperties: false
 };
 
 /**
@@ -61,84 +61,84 @@ const PLUGIN_OPTIONS_SCHEMA = {
  */
 class DependencyListPlugin {
 
-    /**
-     * Creates a new DependencyListPlugin configured with the given options.
-     * The options given must conform to the options schema.
-     *
-     * @see PLUGIN_OPTIONS_SCHEMA
-     *
-     * @param {*} options
-     *     The configuration options to apply to the plugin.
-     */
-    constructor(options = {}) {
-        validateOptions(PLUGIN_OPTIONS_SCHEMA, options, 'DependencyListPlugin');
-        this.options = options;
-    }
+  /**
+   * Creates a new DependencyListPlugin configured with the given options.
+   * The options given must conform to the options schema.
+   *
+   * @see PLUGIN_OPTIONS_SCHEMA
+   *
+   * @param {*} options
+   *     The configuration options to apply to the plugin.
+   */
+  constructor(options = {}) {
+    validateOptions(PLUGIN_OPTIONS_SCHEMA, options, 'DependencyListPlugin');
+    this.options = options;
+  }
+
+  /**
+   * Entrypoint for all Webpack plugins. This function will be invoked when
+   * the plugin is being associated with the compile process.
+   *
+   * @param {Compiler} compiler
+   *     A reference to the Webpack compiler.
+   */
+  apply(compiler) {
 
     /**
-     * Entrypoint for all Webpack plugins. This function will be invoked when
-     * the plugin is being associated with the compile process.
+     * Logger for this plugin.
      *
-     * @param {Compiler} compiler
-     *     A reference to the Webpack compiler.
+     * @type {Logger}
      */
-    apply(compiler) {
+    const logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
 
-        /**
-         * Logger for this plugin.
-         *
-         * @type {Logger}
-         */
-        const logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
+    /**
+     * The full path to the output file that should contain the list of
+     * discovered NPM module dependencies.
+     *
+     * @type {string}
+     */
+    const outputFile = path.join(
+        this.options.path || compiler.options.output.path,
+        this.options.filename || 'npm-dependencies.txt'
+    );
 
-        /**
-         * The full path to the output file that should contain the list of
-         * discovered NPM module dependencies.
-         *
-         * @type {string}
-         */
-        const outputFile = path.join(
-            this.options.path || compiler.options.output.path,
-            this.options.filename || 'npm-dependencies.txt'
-        );
+    // Wait for compilation to fully complete
+    compiler.hooks.done.tap(PLUGIN_NAME, (stats) => {
 
-        // Wait for compilation to fully complete
-        compiler.hooks.done.tap(PLUGIN_NAME, (stats) => {
+      const moduleCoords = {};
 
-            const moduleCoords = {};
+      // Map each file used within any bundle built by the compiler to
+      // its corresponding NPM package, ignoring files that have no such
+      // package
+      stats.compilation.fileDependencies.forEach(file => {
 
-            // Map each file used within any bundle built by the compiler to
-            // its corresponding NPM package, ignoring files that have no such
-            // package
-            stats.compilation.fileDependencies.forEach(file => {
+        // Locate NPM package corresponding to file dependency (there
+        // may not be one)
+        const moduleFinder = finder(file);
+        const npmPackage = moduleFinder.next().value;
 
-                // Locate NPM package corresponding to file dependency (there
-                // may not be one)
-                const moduleFinder = finder(file);
-                const npmPackage = moduleFinder.next().value;
+        // Translate absolute path into more readable path relative to
+        // root of compilation process
+        const relativePath = path.relative(compiler.options.context, file);
 
-                // Translate absolute path into more readable path relative to
-                // root of compilation process
-                const relativePath = path.relative(compiler.options.context, file);
+        if (npmPackage.name) {
+          moduleCoords[npmPackage.name + ':' + npmPackage.version] = true;
+          logger.info('File dependency "%s" mapped to NPM package "%s" (v%s)',
+              relativePath, npmPackage.name, npmPackage.version);
+        } else {
+          logger.info('Skipping file dependency "%s" (no NPM package)',
+              relativePath);
+        }
 
-                if (npmPackage.name) {
-                    moduleCoords[npmPackage.name + ':' + npmPackage.version] = true;
-                    logger.info('File dependency "%s" mapped to NPM package "%s" (v%s)',
-                        relativePath, npmPackage.name, npmPackage.version);
-                }
-                else
-                    logger.info('Skipping file dependency "%s" (no NPM package)',
-                        relativePath);
+      });
 
-            });
+      // Write all discovered NPM packages to configured output file
+      const sortedCoords = Object.keys(moduleCoords).sort();
+      fs.writeFileSync(outputFile, sortedCoords.join('\n') + '\n');
 
-            // Write all discovered NPM packages to configured output file
-            const sortedCoords = Object.keys(moduleCoords).sort();
-            fs.writeFileSync(outputFile, sortedCoords.join('\n') + '\n');
+    });
 
-        });
-
-    }
+  }
 
 }
 

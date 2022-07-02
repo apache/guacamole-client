@@ -22,32 +22,29 @@ package org.apache.guacamole.properties;
 import org.apache.guacamole.GuacamoleException;
 
 /**
- * An abstract representation of a property in the guacamole.properties file,
- * which parses into a specific type.
+ * An abstract representation of a property in the guacamole.properties file, which parses into a
+ * specific type.
  *
- * @param <Type>
- *     The type this GuacamoleProperty will parse into.
+ * @param <Type> The type this GuacamoleProperty will parse into.
  */
 public interface GuacamoleProperty<Type> {
 
-    /**
-     * Returns the name of the property in guacamole.properties that this
-     * GuacamoleProperty will parse.
-     *
-     * @return The name of the property in guacamole.properties that this
-     *         GuacamoleProperty will parse.
-     */
-    public String getName();
+  /**
+   * Returns the name of the property in guacamole.properties that this GuacamoleProperty will
+   * parse.
+   *
+   * @return The name of the property in guacamole.properties that this GuacamoleProperty will
+   * parse.
+   */
+  public String getName();
 
-    /**
-     * Parses the given string value into the type associated with this
-     * GuacamoleProperty.
-     *
-     * @param value The string value to parse.
-     * @return The parsed value.
-     * @throws GuacamoleException If an error occurs while parsing the
-     *                            provided value.
-     */
-    public Type parseValue(String value) throws GuacamoleException;
+  /**
+   * Parses the given string value into the type associated with this GuacamoleProperty.
+   *
+   * @param value The string value to parse.
+   * @return The parsed value.
+   * @throws GuacamoleException If an error occurs while parsing the provided value.
+   */
+  public Type parseValue(String value) throws GuacamoleException;
 
 }

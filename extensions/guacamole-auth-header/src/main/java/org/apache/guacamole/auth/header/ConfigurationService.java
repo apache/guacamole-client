@@ -24,34 +24,28 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 
 /**
- * Service for retrieving configuration information for HTTP header-based 
- * authentication.
+ * Service for retrieving configuration information for HTTP header-based authentication.
  */
 public class ConfigurationService {
 
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
+  /**
+   * The Guacamole server environment.
+   */
+  @Inject
+  private Environment environment;
 
-    /**
-     * Returns the header of the HTTP server as configured with
-     * guacamole.properties used for HTTP authentication.
-     * By default, this will be "REMOTE_USER".
-     *
-     * @return
-     *     The header used for HTTP authentication, as configured with
-     *     guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed.
-     */
-    public String getHttpAuthHeader() throws GuacamoleException {
-        return environment.getProperty(
-            HTTPHeaderGuacamoleProperties.HTTP_AUTH_HEADER,
-            "REMOTE_USER"
-        );
-    }
+  /**
+   * Returns the header of the HTTP server as configured with guacamole.properties used for HTTP
+   * authentication. By default, this will be "REMOTE_USER".
+   *
+   * @return The header used for HTTP authentication, as configured with guacamole.properties.
+   * @throws GuacamoleException If guacamole.properties cannot be parsed.
+   */
+  public String getHttpAuthHeader() throws GuacamoleException {
+    return environment.getProperty(
+        HTTPHeaderGuacamoleProperties.HTTP_AUTH_HEADER,
+        "REMOTE_USER"
+    );
+  }
 
 }

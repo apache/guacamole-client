@@ -22,27 +22,27 @@
  * percentage and display scale.
  */
 angular.module('client').directive('guacZoomCtrl', function guacZoomCtrl() {
-    return {
-        restrict: 'A',
-        require: 'ngModel',
-        priority: 101,
-        link: function(scope, element, attrs, ngModel) {
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+    priority: 101,
+    link: function (scope, element, attrs, ngModel) {
 
-            // Evaluate the ngChange attribute when the model
-            // changes.
-            ngModel.$viewChangeListeners.push(function() {
-                scope.$eval(attrs.ngChange);
-            });
+      // Evaluate the ngChange attribute when the model
+      // changes.
+      ngModel.$viewChangeListeners.push(function () {
+        scope.$eval(attrs.ngChange);
+      });
 
-            // When pushing to the menu, mutiply by 100.
-            ngModel.$formatters.push(function(value) {
-                return Math.round(value * 100);
-            });
-           
-            // When parsing value from menu, divide by 100.
-            ngModel.$parsers.push(function(value) {
-                return Math.round(value) / 100;
-            });
-        }
+      // When pushing to the menu, mutiply by 100.
+      ngModel.$formatters.push(function (value) {
+        return Math.round(value * 100);
+      });
+
+      // When parsing value from menu, divide by 100.
+      ngModel.$parsers.push(function (value) {
+        return Math.round(value) / 100;
+      });
     }
+  }
 });

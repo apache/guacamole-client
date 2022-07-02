@@ -22,135 +22,116 @@ package org.apache.guacamole.auth.jdbc.connection;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 
 /**
- * A single connection record representing a past usage of a particular
- * connection. If the connection was being shared, the sharing profile used to
- * join the connection is included in the record.
+ * A single connection record representing a past usage of a particular connection. If the
+ * connection was being shared, the sharing profile used to join the connection is included in the
+ * record.
  */
 public class ConnectionRecordModel extends ActivityRecordModel {
 
-    /**
-     * The identifier of the connection associated with this connection record.
-     */
-    private String connectionIdentifier;
+  /**
+   * The identifier of the connection associated with this connection record.
+   */
+  private String connectionIdentifier;
 
-    /**
-     * The name of the connection associated with this connection record.
-     */
-    private String connectionName;
+  /**
+   * The name of the connection associated with this connection record.
+   */
+  private String connectionName;
 
-    /**
-     * The identifier of the sharing profile associated with this connection
-     * record. If no sharing profile was used, or the sharing profile that was
-     * used was deleted, this will be null.
-     */
-    private String sharingProfileIdentifier;
+  /**
+   * The identifier of the sharing profile associated with this connection record. If no sharing
+   * profile was used, or the sharing profile that was used was deleted, this will be null.
+   */
+  private String sharingProfileIdentifier;
 
-    /**
-     * The name of the sharing profile associated with this connection record.
-     * If no sharing profile was used, this will be null. If the sharing profile
-     * that was used was deleted, this will still contain the name of the
-     * sharing profile at the time that the connection was used.
-     */
-    private String sharingProfileName;
+  /**
+   * The name of the sharing profile associated with this connection record. If no sharing profile
+   * was used, this will be null. If the sharing profile that was used was deleted, this will still
+   * contain the name of the sharing profile at the time that the connection was used.
+   */
+  private String sharingProfileName;
 
-    /**
-     * Returns the identifier of the connection associated with this connection
-     * record.
-     *
-     * @return
-     *     The identifier of the connection associated with this connection
-     *     record.
-     */
-    public String getConnectionIdentifier() {
-        return connectionIdentifier;
-    }
+  /**
+   * Returns the identifier of the connection associated with this connection record.
+   *
+   * @return The identifier of the connection associated with this connection record.
+   */
+  public String getConnectionIdentifier() {
+    return connectionIdentifier;
+  }
 
-    /**
-     * Sets the identifier of the connection associated with this connection
-     * record.
-     *
-     * @param connectionIdentifier
-     *     The identifier of the connection to associate with this connection
-     *     record.
-     */
-    public void setConnectionIdentifier(String connectionIdentifier) {
-        this.connectionIdentifier = connectionIdentifier;
-    }
+  /**
+   * Sets the identifier of the connection associated with this connection record.
+   *
+   * @param connectionIdentifier The identifier of the connection to associate with this connection
+   *                             record.
+   */
+  public void setConnectionIdentifier(String connectionIdentifier) {
+    this.connectionIdentifier = connectionIdentifier;
+  }
 
 
-    /**
-     * Returns the name of the connection associated with this connection
-     * record.
-     *
-     * @return
-     *     The name of the connection associated with this connection
-     *     record.
-     */
-    public String getConnectionName() {
-        return connectionName;
-    }
+  /**
+   * Returns the name of the connection associated with this connection record.
+   *
+   * @return The name of the connection associated with this connection record.
+   */
+  public String getConnectionName() {
+    return connectionName;
+  }
 
 
-    /**
-     * Sets the name of the connection associated with this connection
-     * record.
-     *
-     * @param connectionName
-     *     The name of the connection to associate with this connection
-     *     record.
-     */
-    public void setConnectionName(String connectionName) {
-        this.connectionName = connectionName;
-    }
+  /**
+   * Sets the name of the connection associated with this connection record.
+   *
+   * @param connectionName The name of the connection to associate with this connection record.
+   */
+  public void setConnectionName(String connectionName) {
+    this.connectionName = connectionName;
+  }
 
-    /**
-     * Returns the identifier of the sharing profile associated with this
-     * connection record. If no sharing profile was used, or the sharing profile
-     * that was used was deleted, this will be null.
-     *
-     * @return
-     *     The identifier of the sharing profile associated with this connection
-     *     record, or null if no sharing profile was used or if the sharing
-     *     profile that was used was deleted.
-     */
-    public String getSharingProfileIdentifier() {
-        return sharingProfileIdentifier;
-    }
+  /**
+   * Returns the identifier of the sharing profile associated with this connection record. If no
+   * sharing profile was used, or the sharing profile that was used was deleted, this will be null.
+   *
+   * @return The identifier of the sharing profile associated with this connection record, or null
+   * if no sharing profile was used or if the sharing profile that was used was deleted.
+   */
+  public String getSharingProfileIdentifier() {
+    return sharingProfileIdentifier;
+  }
 
-    /**
-     * Sets the identifier of the sharing profile associated with this
-     * connection record. If no sharing profile was used, this should be null.
-     *
-     * @param sharingProfileIdentifier
-     *     The identifier of the sharing profile associated with this
-     *     connection record, or null if no sharing profile was used.
-     */
-    public void setSharingProfileIdentifier(String sharingProfileIdentifier) {
-        this.sharingProfileIdentifier = sharingProfileIdentifier;
-    }
+  /**
+   * Sets the identifier of the sharing profile associated with this connection record. If no
+   * sharing profile was used, this should be null.
+   *
+   * @param sharingProfileIdentifier The identifier of the sharing profile associated with this
+   *                                 connection record, or null if no sharing profile was used.
+   */
+  public void setSharingProfileIdentifier(String sharingProfileIdentifier) {
+    this.sharingProfileIdentifier = sharingProfileIdentifier;
+  }
 
-    /**
-     * Returns the human-readable name of the sharing profile associated with this
-     * connection record. If no sharing profile was used, this will be null.
-     *
-     * @return
-     *     The human-readable name of the sharing profile associated with this
-     *     connection record, or null if no sharing profile was used.
-     */
-    public String getSharingProfileName() {
-        return sharingProfileName;
-    }
+  /**
+   * Returns the human-readable name of the sharing profile associated with this connection record.
+   * If no sharing profile was used, this will be null.
+   *
+   * @return The human-readable name of the sharing profile associated with this connection record,
+   * or null if no sharing profile was used.
+   */
+  public String getSharingProfileName() {
+    return sharingProfileName;
+  }
 
-    /**
-     * Sets the human-readable name of the sharing profile associated with this
-     * connection record. If no sharing profile was used, this should be null.
-     *
-     * @param sharingProfileName
-     *     The human-readable name of the sharing profile associated with this
-     *     connection record, or null if no sharing profile was used.
-     */
-    public void setSharingProfileName(String sharingProfileName) {
-        this.sharingProfileName = sharingProfileName;
-    }
+  /**
+   * Sets the human-readable name of the sharing profile associated with this connection record. If
+   * no sharing profile was used, this should be null.
+   *
+   * @param sharingProfileName The human-readable name of the sharing profile associated with this
+   *                           connection record, or null if no sharing profile was used.
+   */
+  public void setSharingProfileName(String sharingProfileName) {
+    this.sharingProfileName = sharingProfileName;
+  }
 
 }

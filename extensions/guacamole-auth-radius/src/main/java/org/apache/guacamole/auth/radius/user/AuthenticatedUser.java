@@ -25,42 +25,40 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * An RADIUS-specific implementation of AuthenticatedUser, associating a
- * particular set of credentials with the RADIUS authentication provider.
+ * An RADIUS-specific implementation of AuthenticatedUser, associating a particular set of
+ * credentials with the RADIUS authentication provider.
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
 
-    /**
-     * Reference to the authentication provider associated with this
-     * authenticated user.
-     */
-    @Inject
-    private AuthenticationProvider authProvider;
+  /**
+   * Reference to the authentication provider associated with this authenticated user.
+   */
+  @Inject
+  private AuthenticationProvider authProvider;
 
-    /**
-     * The credentials provided when this user was authenticated.
-     */
-    private Credentials credentials;
+  /**
+   * The credentials provided when this user was authenticated.
+   */
+  private Credentials credentials;
 
-    /**
-     * Initializes this AuthenticatedUser using the given credentials.
-     *
-     * @param credentials
-     *     The credentials provided when this user was authenticated.
-     */
-    public void init(Credentials credentials) {
-        this.credentials = credentials;
-        setIdentifier(credentials.getUsername().toLowerCase());
-    }
+  /**
+   * Initializes this AuthenticatedUser using the given credentials.
+   *
+   * @param credentials The credentials provided when this user was authenticated.
+   */
+  public void init(Credentials credentials) {
+    this.credentials = credentials;
+    setIdentifier(credentials.getUsername().toLowerCase());
+  }
 
-    @Override
-    public AuthenticationProvider getAuthenticationProvider() {
-        return authProvider;
-    }
+  @Override
+  public AuthenticationProvider getAuthenticationProvider() {
+    return authProvider;
+  }
 
-    @Override
-    public Credentials getCredentials() {
-        return credentials;
-    }
+  @Override
+  public Credentials getCredentials() {
+    return credentials;
+  }
 
 }

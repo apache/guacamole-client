@@ -22,10 +22,10 @@ package org.apache.guacamole.net.auth;
 /**
  * The set of all available connection records, or a subset of those records.
  *
- * @deprecated
- *     Use {@link ActivityRecordSet}&lt;{@link ConnectionRecord}&gt; instead.
+ * @deprecated Use {@link ActivityRecordSet}&lt;{@link ConnectionRecord}&gt; instead.
  */
 @Deprecated
 public interface ConnectionRecordSet
-        extends ActivityRecordSet<ConnectionRecord> {
+    extends ActivityRecordSet<ConnectionRecord> {
+
 }

@@ -32,54 +32,56 @@
  */
 (function verifyCachedVersion(location, sessionStorage) {
 
-    /**
-     * The meta element containing the build identifier of the Guacamole build
-     * that produced index.html.
-     *
-     * @private
-     * @type {HTMLMetaElement}
-     */
-    var buildMeta = document.head.querySelector('meta[name=build]');
+  /**
+   * The meta element containing the build identifier of the Guacamole build
+   * that produced index.html.
+   *
+   * @private
+   * @type {HTMLMetaElement}
+   */
+  var buildMeta = document.head.querySelector('meta[name=build]');
 
-    // Verify that index.html came from the same build as this JavaScript file,
-    // forcing a reload if out-of-date
-    if (!buildMeta || buildMeta.content !== '${guacamole.build.identifier}') {
+  // Verify that index.html came from the same build as this JavaScript file,
+  // forcing a reload if out-of-date
+  if (!buildMeta || buildMeta.content !== '${guacamole.build.identifier}') {
 
-        if (sessionStorage) {
+    if (sessionStorage) {
 
-            // Bail out if we have already tried to automatically refresh the
-            // cache but were unsuccessful
-            if (sessionStorage.getItem('reloadedFor') === '${guacamole.build.identifier}') {
-                console.warn('The version of Guacamole cached by your '
-                    + 'browser does not match the version of Guacamole on the '
-                    + 'server. To avoid unexpected errors, please clear your '
-                    + 'browser cache.');
-                return;
-            }
+      // Bail out if we have already tried to automatically refresh the
+      // cache but were unsuccessful
+      if (sessionStorage.getItem('reloadedFor')
+          === '${guacamole.build.identifier}') {
+        console.warn('The version of Guacamole cached by your '
+            + 'browser does not match the version of Guacamole on the '
+            + 'server. To avoid unexpected errors, please clear your '
+            + 'browser cache.');
+        return;
+      }
 
-            sessionStorage.setItem('reloadedFor', '${guacamole.build.identifier}');
-
-        }
-
-        // Force refresh of cache by issuing an HTTP request with headers that
-        // request revalidation of cached content
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', '', true);
-        xhr.setRequestHeader('Cache-Control', 'no-cache');
-        xhr.setRequestHeader('Pragma', 'no-cache');
-
-        xhr.onreadystatechange = function readyStateChanged() {
-
-            // Reload current page when ready (this call to reload MAY be
-            // sufficient in itself to clear cache, but this is not
-            // guaranteed by any standard)
-            if (xhr.readyState === XMLHttpRequest.DONE)
-                location.reload(true);
-
-        };
-
-        xhr.send();
+      sessionStorage.setItem('reloadedFor', '${guacamole.build.identifier}');
 
     }
+
+    // Force refresh of cache by issuing an HTTP request with headers that
+    // request revalidation of cached content
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '', true);
+    xhr.setRequestHeader('Cache-Control', 'no-cache');
+    xhr.setRequestHeader('Pragma', 'no-cache');
+
+    xhr.onreadystatechange = function readyStateChanged() {
+
+      // Reload current page when ready (this call to reload MAY be
+      // sufficient in itself to clear cache, but this is not
+      // guaranteed by any standard)
+      if (xhr.readyState === XMLHttpRequest.DONE) {
+        location.reload(true);
+      }
+
+    };
+
+    xhr.send();
+
+  }
 
 })(window.location, window.sessionStorage);

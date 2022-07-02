@@ -18,45 +18,45 @@
  */
 
 #guac-menu .header h2.connection-select-menu {
-    overflow: visible;
+  overflow: visible;
 }
 
 .connection-select-menu {
-    padding: 0;
-    min-width: 0;
+  padding: 0;
+  min-width: 0;
 }
 
 .connection-select-menu .menu-dropdown {
-    border: none;
+  border: none;
 }
 
 .connection-select-menu .menu-dropdown .menu-contents {
-    font-weight: normal;
-    font-size: 0.8em;
-    right: auto;
-    left: 0;
-    max-width: 100vw;
-    width: 400px;
+  font-weight: normal;
+  font-size: 0.8em;
+  right: auto;
+  left: 0;
+  max-width: 100vw;
+  width: 400px;
 }
 
 .connection-select-menu .menu-dropdown .menu-contents .filter input {
-    border-bottom: 1px solid rgba(0,0,0,0.125);
-    border-left: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  border-left: none;
 }
 
 .connection-select-menu .menu-dropdown .menu-contents .filter {
-    margin-bottom: 0.5em;
-    padding: 0;
+  margin-bottom: 0.5em;
+  padding: 0;
 }
 
 .connection-select-menu .menu-dropdown .menu-contents .group-list .caption {
-    display: inline-block;
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  display: inline-block;
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .connection-select-menu .menu-dropdown .menu-contents .caption .connection,
 .connection-select-menu .menu-dropdown .menu-contents .caption .connection-group {
-    display: inline-block;
+  display: inline-block;
 }

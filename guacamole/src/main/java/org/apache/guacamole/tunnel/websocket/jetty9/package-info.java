@@ -18,8 +18,8 @@
  */
 
 /**
- * Jetty 9 WebSocket tunnel implementation. The classes here require at least
- * Jetty 9, prior to Jetty 9.1 (when support for JSR 356 was implemented).
+ * Jetty 9 WebSocket tunnel implementation. The classes here require at least Jetty 9, prior to
+ * Jetty 9.1 (when support for JSR 356 was implemented).
  */
 package org.apache.guacamole.tunnel.websocket.jetty9;
 

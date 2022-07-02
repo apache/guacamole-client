@@ -23,8 +23,6 @@ import com.google.inject.Scopes;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.servlet.ServletModule;
 import java.util.Collections;
-import org.apache.guacamole.rest.event.ListenerService;
-import org.apache.guacamole.rest.session.UserContextResourceFactory;
 import org.apache.guacamole.GuacamoleApplication;
 import org.apache.guacamole.rest.activeconnection.ActiveConnectionModule;
 import org.apache.guacamole.rest.auth.AuthTokenGenerator;
@@ -34,7 +32,9 @@ import org.apache.guacamole.rest.auth.SecureRandomAuthTokenGenerator;
 import org.apache.guacamole.rest.auth.TokenSessionMap;
 import org.apache.guacamole.rest.connection.ConnectionModule;
 import org.apache.guacamole.rest.connectiongroup.ConnectionGroupModule;
+import org.apache.guacamole.rest.event.ListenerService;
 import org.apache.guacamole.rest.session.SessionResourceFactory;
+import org.apache.guacamole.rest.session.UserContextResourceFactory;
 import org.apache.guacamole.rest.sharingprofile.SharingProfileModule;
 import org.apache.guacamole.rest.tunnel.TunnelCollectionResourceFactory;
 import org.apache.guacamole.rest.tunnel.TunnelResourceFactory;
@@ -44,61 +44,60 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
 
 /**
- * A Guice Module to set up the servlet mappings and authentication-specific
- * dependency injection for the Guacamole REST API.
+ * A Guice Module to set up the servlet mappings and authentication-specific dependency injection
+ * for the Guacamole REST API.
  */
 public class RESTServiceModule extends ServletModule {
 
-    /**
-     * Singleton instance of TokenSessionMap.
-     */
-    private final TokenSessionMap tokenSessionMap;
+  /**
+   * Singleton instance of TokenSessionMap.
+   */
+  private final TokenSessionMap tokenSessionMap;
 
-    /**
-     * Creates a module which handles binding of REST services and related
-     * authentication objects, including the singleton TokenSessionMap.
-     *
-     * @param tokenSessionMap
-     *     An instance of TokenSessionMap to inject as a singleton wherever
-     *     needed.
-     */
-    public RESTServiceModule(TokenSessionMap tokenSessionMap) {
-        this.tokenSessionMap = tokenSessionMap;
-    }
+  /**
+   * Creates a module which handles binding of REST services and related authentication objects,
+   * including the singleton TokenSessionMap.
+   *
+   * @param tokenSessionMap An instance of TokenSessionMap to inject as a singleton wherever
+   *                        needed.
+   */
+  public RESTServiceModule(TokenSessionMap tokenSessionMap) {
+    this.tokenSessionMap = tokenSessionMap;
+  }
 
-    @Override
-    protected void configureServlets() {
+  @Override
+  protected void configureServlets() {
 
-        // Bind session map
-        bind(TokenSessionMap.class).toInstance(tokenSessionMap);
+    // Bind session map
+    bind(TokenSessionMap.class).toInstance(tokenSessionMap);
 
-        // Bind low-level services
-        bind(ListenerService.class);
-        bind(AuthenticationService.class);
-        bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
-        bind(DecorationService.class);
+    // Bind low-level services
+    bind(ListenerService.class);
+    bind(AuthenticationService.class);
+    bind(AuthTokenGenerator.class).to(SecureRandomAuthTokenGenerator.class);
+    bind(DecorationService.class);
 
-        // Root-level resources
-        install(new FactoryModuleBuilder().build(SessionResourceFactory.class));
-        install(new FactoryModuleBuilder().build(TunnelCollectionResourceFactory.class));
-        install(new FactoryModuleBuilder().build(TunnelResourceFactory.class));
-        install(new FactoryModuleBuilder().build(UserContextResourceFactory.class));
+    // Root-level resources
+    install(new FactoryModuleBuilder().build(SessionResourceFactory.class));
+    install(new FactoryModuleBuilder().build(TunnelCollectionResourceFactory.class));
+    install(new FactoryModuleBuilder().build(TunnelResourceFactory.class));
+    install(new FactoryModuleBuilder().build(UserContextResourceFactory.class));
 
-        // Resources below root
-        install(new ActiveConnectionModule());
-        install(new ConnectionModule());
-        install(new ConnectionGroupModule());
-        install(new SharingProfileModule());
-        install(new UserModule());
-        install(new UserGroupModule());
+    // Resources below root
+    install(new ActiveConnectionModule());
+    install(new ConnectionModule());
+    install(new ConnectionGroupModule());
+    install(new SharingProfileModule());
+    install(new UserModule());
+    install(new UserGroupModule());
 
-        // Serve REST services using Jersey 2.x
-        bind(ServletContainer.class).in(Scopes.SINGLETON);
-        serve("/api/*").with(ServletContainer.class, Collections.singletonMap(
-            ServletProperties.JAXRS_APPLICATION_CLASS,
-            GuacamoleApplication.class.getName()
-        ));
+    // Serve REST services using Jersey 2.x
+    bind(ServletContainer.class).in(Scopes.SINGLETON);
+    serve("/api/*").with(ServletContainer.class, Collections.singletonMap(
+        ServletProperties.JAXRS_APPLICATION_CLASS,
+        GuacamoleApplication.class.getName()
+    ));
 
-    }
+  }
 
 }

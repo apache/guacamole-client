@@ -35,45 +35,36 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
 
 /**
- * A REST resource which abstracts the operations available on a Directory of
- * SharingProfiles.
+ * A REST resource which abstracts the operations available on a Directory of SharingProfiles.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SharingProfileDirectoryResource
-        extends DirectoryResource<SharingProfile, APISharingProfile> {
+    extends DirectoryResource<SharingProfile, APISharingProfile> {
 
-    /**
-     * Creates a new SharingProfileDirectoryResource which exposes the
-     * operations and subresources available for the given SharingProfile
-     * Directory.
-     *
-     * @param userContext
-     *     The UserContext associated with the given Directory.
-     *
-     * @param directory
-     *     The Directory being exposed.
-     *
-     * @param translator
-     *     A DirectoryObjectTranslator implementation which handles
-     *     SharingProfiles.
-     *
-     * @param resourceFactory
-     *     A factory which can be used to create instances of resources
-     *     representing SharingProfiles.
-     */
-    @AssistedInject
-    public SharingProfileDirectoryResource(@Assisted UserContext userContext,
-            @Assisted Directory<SharingProfile> directory,
-            DirectoryObjectTranslator<SharingProfile, APISharingProfile> translator,
-            DirectoryObjectResourceFactory<SharingProfile, APISharingProfile> resourceFactory) {
-        super(userContext, directory, translator, resourceFactory);
-    }
+  /**
+   * Creates a new SharingProfileDirectoryResource which exposes the operations and subresources
+   * available for the given SharingProfile Directory.
+   *
+   * @param userContext     The UserContext associated with the given Directory.
+   * @param directory       The Directory being exposed.
+   * @param translator      A DirectoryObjectTranslator implementation which handles
+   *                        SharingProfiles.
+   * @param resourceFactory A factory which can be used to create instances of resources
+   *                        representing SharingProfiles.
+   */
+  @AssistedInject
+  public SharingProfileDirectoryResource(@Assisted UserContext userContext,
+      @Assisted Directory<SharingProfile> directory,
+      DirectoryObjectTranslator<SharingProfile, APISharingProfile> translator,
+      DirectoryObjectResourceFactory<SharingProfile, APISharingProfile> resourceFactory) {
+    super(userContext, directory, translator, resourceFactory);
+  }
 
-    @Override
-    protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
-            throws GuacamoleException {
-        return permissions.getSharingProfilePermissions();
-    }
+  @Override
+  protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
+      throws GuacamoleException {
+    return permissions.getSharingProfilePermissions();
+  }
 
 }

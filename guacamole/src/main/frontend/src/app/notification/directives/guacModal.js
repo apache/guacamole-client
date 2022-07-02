@@ -21,9 +21,9 @@
  * A directive for displaying arbitrary modal content.
  */
 angular.module('notification').directive('guacModal', [function guacModal() {
-    return {
-        restrict: 'E',
-        templateUrl: 'app/notification/templates/guacModal.html',
-        transclude: true
-    };
+  return {
+    restrict: 'E',
+    templateUrl: 'app/notification/templates/guacModal.html',
+    transclude: true
+  };
 }]);

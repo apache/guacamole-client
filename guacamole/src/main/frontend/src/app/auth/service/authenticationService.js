@@ -29,7 +29,7 @@
  * If a login attempt results in an existing token being replaced, 'guacLogout'
  * will be broadcast first for the token being replaced, followed by
  * 'guacLogin' for the new token.
- * 
+ *
  * Failed logins may also result in guacInsufficientCredentials or
  * guacInvalidCredentials events, if the provided credentials were rejected for
  * being insufficient or invalid respectively. Both events will be provided
@@ -39,16 +39,16 @@
  * will be in the form of a Field array.
  */
 angular.module('auth').factory('authenticationService', ['$injector',
-        function authenticationService($injector) {
+  function authenticationService($injector) {
 
     // Required types
     var AuthenticationResult = $injector.get('AuthenticationResult');
-    var Error                = $injector.get('Error');
+    var Error = $injector.get('Error');
 
     // Required services
-    var $rootScope          = $injector.get('$rootScope');
+    var $rootScope = $injector.get('$rootScope');
     var localStorageService = $injector.get('localStorageService');
-    var requestService      = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
 
     var service = {};
 
@@ -79,17 +79,19 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     var getAuthenticationResult = function getAuthenticationResult() {
 
-        // Use cached result, if any
-        if (cachedResult)
-            return cachedResult;
+      // Use cached result, if any
+      if (cachedResult) {
+        return cachedResult;
+      }
 
-        // Return explicit null if no auth data is currently stored
-        var data = localStorageService.getItem(AUTH_STORAGE_KEY);
-        if (!data)
-            return null;
+      // Return explicit null if no auth data is currently stored
+      var data = localStorageService.getItem(AUTH_STORAGE_KEY);
+      if (!data) {
+        return null;
+      }
 
-        // Update cache and return retrieved auth result
-        return (cachedResult = new AuthenticationResult(data));
+      // Update cache and return retrieved auth result
+      return (cachedResult = new AuthenticationResult(data));
 
     };
 
@@ -103,23 +105,24 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     var setAuthenticationResult = function setAuthenticationResult(data) {
 
-        // Clear the currently-stored result if the last attempt failed
-        if (!data) {
-            cachedResult = null;
-            localStorageService.removeItem(AUTH_STORAGE_KEY);
+      // Clear the currently-stored result if the last attempt failed
+      if (!data) {
+        cachedResult = null;
+        localStorageService.removeItem(AUTH_STORAGE_KEY);
+      }
+
+      // Otherwise store the authentication attempt directly
+      else {
+
+        // Always store in cache
+        cachedResult = data;
+
+        // Persist result past tab/window closure ONLY if not anonymous
+        if (data.username !== AuthenticationResult.ANONYMOUS_USERNAME) {
+          localStorageService.setItem(AUTH_STORAGE_KEY, data);
         }
 
-        // Otherwise store the authentication attempt directly
-        else {
-
-            // Always store in cache
-            cachedResult = data;
-
-            // Persist result past tab/window closure ONLY if not anonymous
-            if (data.username !== AuthenticationResult.ANONYMOUS_USERNAME)
-                localStorageService.setItem(AUTH_STORAGE_KEY, data);
-
-        }
+      }
 
     };
 
@@ -128,7 +131,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * result is currently stored, this function has no effect.
      */
     var clearAuthenticationResult = function clearAuthenticationResult() {
-        setAuthenticationResult(null);
+      setAuthenticationResult(null);
     };
 
     /**
@@ -137,16 +140,16 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * if the authentication operation was successful. The resulting
      * authentication data can be retrieved later via getCurrentToken() or
      * getCurrentUsername().
-     * 
+     *
      * The provided parameters can be virtually any object, as each property
      * will be sent as an HTTP parameter in the authentication request.
      * Standard parameters include "username" for the user's username,
      * "password" for the user's associated password, and "token" for the
      * auth token to check/update.
-     * 
+     *
      * If a token is provided, it will be reused if possible.
-     * 
-     * @param {Object} parameters 
+     *
+     * @param {Object} parameters
      *     Arbitrary parameters to authenticate with.
      *
      * @returns {Promise}
@@ -154,65 +157,68 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.authenticate = function authenticate(parameters) {
 
-        // Attempt authentication
-        return requestService({
-            method: 'POST',
-            url: 'api/tokens',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: $.param(parameters)
-        })
+      // Attempt authentication
+      return requestService({
+        method: 'POST',
+        url: 'api/tokens',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: $.param(parameters)
+      })
 
-        // If authentication succeeds, handle received auth data
-        .then(function authenticationSuccessful(data) {
+      // If authentication succeeds, handle received auth data
+      .then(function authenticationSuccessful(data) {
 
-            var currentToken = service.getCurrentToken();
+        var currentToken = service.getCurrentToken();
 
-            // If a new token was received, ensure the old token is invalidated,
-            // if any, and notify listeners of the new token
-            if (data.authToken !== currentToken) {
+        // If a new token was received, ensure the old token is invalidated,
+        // if any, and notify listeners of the new token
+        if (data.authToken !== currentToken) {
 
-                // If an old token existed, request that the token be revoked
-                if (currentToken) {
-                    service.revokeToken(currentToken).catch(angular.noop);
-                }
+          // If an old token existed, request that the token be revoked
+          if (currentToken) {
+            service.revokeToken(currentToken).catch(angular.noop);
+          }
 
-                // Notify of login and new token
-                setAuthenticationResult(new AuthenticationResult(data));
-                $rootScope.$broadcast('guacLogin', data.authToken);
+          // Notify of login and new token
+          setAuthenticationResult(new AuthenticationResult(data));
+          $rootScope.$broadcast('guacLogin', data.authToken);
 
-            }
+        }
 
             // Update cached authentication result, even if the token remains
-            // the same
-            else
-                setAuthenticationResult(new AuthenticationResult(data));
+        // the same
+        else {
+          setAuthenticationResult(new AuthenticationResult(data));
+        }
 
-            // Authentication was successful
-            return data;
+        // Authentication was successful
+        return data;
 
-        })
+      })
 
-        // If authentication fails, propogate failure to returned promise
-        ['catch'](requestService.createErrorCallback(function authenticationFailed(error) {
+          // If authentication fails, propogate failure to returned promise
+          ['catch'](requestService.createErrorCallback(
+          function authenticationFailed(error) {
 
             // Request credentials if provided credentials were invalid
-            if (error.type === Error.Type.INVALID_CREDENTIALS)
-                $rootScope.$broadcast('guacInvalidCredentials', parameters, error);
-
-            // Request more credentials if provided credentials were not enough 
-            else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS)
-                $rootScope.$broadcast('guacInsufficientCredentials', parameters, error);
-
-            // Abort rendering of page if an internal error occurs
-            else if (error.type === Error.Type.INTERNAL_ERROR)
-                $rootScope.$broadcast('guacFatalPageError', error);
+            if (error.type === Error.Type.INVALID_CREDENTIALS) {
+              $rootScope.$broadcast('guacInvalidCredentials', parameters,
+                  error);
+            }// Request more credentials if provided credentials were not enough
+            else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS) {
+              $rootScope.$broadcast('guacInsufficientCredentials', parameters,
+                  error);
+            }// Abort rendering of page if an internal error occurs
+            else if (error.type === Error.Type.INTERNAL_ERROR) {
+              $rootScope.$broadcast('guacFatalPageError', error);
+            }
 
             // Authentication failed
             throw error;
 
-        }));
+          }));
 
     };
 
@@ -223,10 +229,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * This function returns a promise that succeeds only if the authentication
      * operation was successful. The resulting authentication data can be
      * retrieved later via getCurrentToken() or getCurrentUsername().
-     * 
+     *
      * If there is no current auth token, this function behaves identically to
      * authenticate(), and makes a general authentication request.
-     * 
+     *
      * @param {Object} [parameters]
      *     Arbitrary parameters to authenticate with, if any.
      *
@@ -235,20 +241,22 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.updateCurrentToken = function updateCurrentToken(parameters) {
 
-        // HTTP parameters for the authentication request
-        var httpParameters = {};
+      // HTTP parameters for the authentication request
+      var httpParameters = {};
 
-        // Add token parameter if current token is known
-        var token = service.getCurrentToken();
-        if (token)
-            httpParameters.token = service.getCurrentToken();
+      // Add token parameter if current token is known
+      var token = service.getCurrentToken();
+      if (token) {
+        httpParameters.token = service.getCurrentToken();
+      }
 
-        // Add any additional parameters
-        if (parameters)
-            angular.extend(httpParameters, parameters);
+      // Add any additional parameters
+      if (parameters) {
+        angular.extend(httpParameters, parameters);
+      }
 
-        // Make the request
-        return service.authenticate(httpParameters);
+      // Make the request
+      return service.authenticate(httpParameters);
 
     };
 
@@ -264,19 +272,19 @@ angular.module('auth').factory('authenticationService', ['$injector',
      *     A promise which succeeds only if the token was successfully revoked.
      */
     service.revokeToken = function revokeToken(token) {
-        return service.request({
-            method: 'DELETE',
-            url: 'api/session'
-        }, token);
+      return service.request({
+        method: 'DELETE',
+        url: 'api/session'
+      }, token);
     };
 
     /**
      * Makes a request to authenticate a user using the token REST API endpoint
-     * with a username and password, ignoring any currently-stored token, 
+     * with a username and password, ignoring any currently-stored token,
      * returning a promise that succeeds only if the login operation was
      * successful. The resulting authentication data can be retrieved later
      * via getCurrentToken() or getCurrentUsername().
-     * 
+     *
      * @param {String} username
      *     The username to log in with.
      *
@@ -287,32 +295,32 @@ angular.module('auth').factory('authenticationService', ['$injector',
      *     A promise which succeeds only if the login operation was successful.
      */
     service.login = function login(username, password) {
-        return service.authenticate({
-            username: username,
-            password: password
-        });
+      return service.authenticate({
+        username: username,
+        password: password
+      });
     };
 
     /**
      * Makes a request to logout a user using the token REST API endpoint,
      * returning a promise that succeeds only if the logout operation was
      * successful.
-     * 
+     *
      * @returns {Promise}
      *     A promise which succeeds only if the logout operation was
      *     successful.
      */
     service.logout = function logout() {
 
-        // Clear authentication data
-        var token = service.getCurrentToken();
-        clearAuthenticationResult();
+      // Clear authentication data
+      var token = service.getCurrentToken();
+      clearAuthenticationResult();
 
-        // Notify listeners that a token is being destroyed
-        $rootScope.$broadcast('guacLogout', token);
+      // Notify listeners that a token is being destroyed
+      $rootScope.$broadcast('guacLogout', token);
 
-        // Delete old token
-        return service.revokeToken(token);
+      // Delete old token
+      return service.revokeToken(token);
 
     };
 
@@ -326,7 +334,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
      *     otherwise.
      */
     service.isAnonymous = function isAnonymous() {
-        return service.getCurrentUsername() === '';
+      return service.getCurrentUsername() === '';
     };
 
     /**
@@ -339,13 +347,14 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.getCurrentUsername = function getCurrentUsername() {
 
-        // Return username, if available
-        var authData = getAuthenticationResult();
-        if (authData)
-            return authData.username;
+      // Return username, if available
+      var authData = getAuthenticationResult();
+      if (authData) {
+        return authData.username;
+      }
 
-        // No auth data present
-        return null;
+      // No auth data present
+      return null;
 
     };
 
@@ -359,13 +368,14 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.getCurrentToken = function getCurrentToken() {
 
-        // Return auth token, if available
-        var authData = getAuthenticationResult();
-        if (authData)
-            return authData.authToken;
+      // Return auth token, if available
+      var authData = getAuthenticationResult();
+      if (authData) {
+        return authData.authToken;
+      }
 
-        // No auth data present
-        return null;
+      // No auth data present
+      return null;
 
     };
 
@@ -379,13 +389,14 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.getDataSource = function getDataSource() {
 
-        // Return data source, if available
-        var authData = getAuthenticationResult();
-        if (authData)
-            return authData.dataSource;
+      // Return data source, if available
+      var authData = getAuthenticationResult();
+      if (authData) {
+        return authData.dataSource;
+      }
 
-        // No auth data present
-        return null;
+      // No auth data present
+      return null;
 
     };
 
@@ -399,13 +410,14 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.getAvailableDataSources = function getAvailableDataSources() {
 
-        // Return data sources, if available
-        var authData = getAuthenticationResult();
-        if (authData)
-            return authData.availableDataSources;
+      // Return data sources, if available
+      var authData = getAuthenticationResult();
+      if (authData) {
+        return authData.availableDataSources;
+      }
 
-        // No auth data present
-        return [];
+      // No auth data present
+      return [];
 
     };
 
@@ -434,19 +446,19 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.request = function request(object, token) {
 
-        // Attempt to use current token if none is provided
-        token = token || service.getCurrentToken();
+      // Attempt to use current token if none is provided
+      token = token || service.getCurrentToken();
 
-        // Add "Guacamole-Token" header if an authentication token is available
-        if (token) {
-            object = _.merge({
-                headers : { 'Guacamole-Token' : token }
-            }, object);
-        }
+      // Add "Guacamole-Token" header if an authentication token is available
+      if (token) {
+        object = _.merge({
+          headers: {'Guacamole-Token': token}
+        }, object);
+      }
 
-        return requestService(object);
+      return requestService(object);
 
     };
 
     return service;
-}]);
+  }]);

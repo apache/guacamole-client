@@ -17,65 +17,65 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-vault-base</artifactId>
+  <dependencies>
+
+    <!-- Guacamole Extension API -->
+    <dependency>
+      <artifactId>guacamole-ext</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- Jackson for YAML support -->
+    <dependency>
+      <artifactId>jackson-databind</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+    </dependency>
+
+    <!-- JUnit -->
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- Guice -->
+    <dependency>
+      <artifactId>guice</artifactId>
+      <groupId>com.google.inject</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>guice-assistedinject</artifactId>
+      <groupId>com.google.inject.extensions</groupId>
+    </dependency>
+
+  </dependencies>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-vault-base</name>
+  <packaging>jar</packaging>
+
+  <parent>
+    <artifactId>guacamole-vault</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-vault-base</artifactId>
-    <packaging>jar</packaging>
-    <name>guacamole-vault-base</name>
-    <url>http://guacamole.apache.org/</url>
+    <relativePath>../../</relativePath>
+    <version>1.4.0</version>
+  </parent>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>guacamole-vault</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../../</relativePath>
-    </parent>
-
-    <dependencies>
-
-        <!-- Guacamole Extension API -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-ext</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Jackson for YAML support -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
-
-        <!-- JUnit -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-assistedinject</artifactId>
-        </dependency>
-
-    </dependencies>
+  <url>http://guacamole.apache.org/</url>
 
 </project>

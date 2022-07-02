@@ -32,104 +32,93 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public class NonceService {
 
-    /**
-     * Cryptographically-secure random number generator for generating the
-     * required nonce.
-     */
-    private final SecureRandom random = new SecureRandom();
+  /**
+   * The minimum amount of time to wait between sweeping expired nonces from the Map.
+   */
+  private static final long SWEEP_INTERVAL = 60000;
+  /**
+   * Cryptographically-secure random number generator for generating the required nonce.
+   */
+  private final SecureRandom random = new SecureRandom();
+  /**
+   * Map of all generated nonces to their corresponding expiration timestamps. This Map must be
+   * periodically swept of expired nonces to avoid growing without bound.
+   */
+  private final Map<String, Long> nonces = new ConcurrentHashMap<String, Long>();
+  /**
+   * The timestamp of the last expired nonce sweep.
+   */
+  private long lastSweep = System.currentTimeMillis();
 
-    /**
-     * Map of all generated nonces to their corresponding expiration timestamps.
-     * This Map must be periodically swept of expired nonces to avoid growing
-     * without bound.
-     */
-    private final Map<String, Long> nonces = new ConcurrentHashMap<String, Long>();
+  /**
+   * Iterates through the entire Map of generated nonces, removing any nonce that has exceeded its
+   * expiration timestamp. If insufficient time has elapsed since the last sweep, as dictated by
+   * SWEEP_INTERVAL, this function has no effect.
+   */
+  private void sweepExpiredNonces() {
 
-    /**
-     * The timestamp of the last expired nonce sweep.
-     */
-    private long lastSweep = System.currentTimeMillis();
+    // Do not sweep until enough time has elapsed since the last sweep
+    long currentTime = System.currentTimeMillis();
+    if (currentTime - lastSweep < SWEEP_INTERVAL) {
+      return;
+    }
 
-    /**
-     * The minimum amount of time to wait between sweeping expired nonces from
-     * the Map.
-     */
-    private static final long SWEEP_INTERVAL = 60000;
+    // Record time of sweep
+    lastSweep = currentTime;
 
-    /**
-     * Iterates through the entire Map of generated nonces, removing any nonce
-     * that has exceeded its expiration timestamp. If insufficient time has
-     * elapsed since the last sweep, as dictated by SWEEP_INTERVAL, this
-     * function has no effect.
-     */
-    private void sweepExpiredNonces() {
+    // For each stored nonce
+    Iterator<Map.Entry<String, Long>> entries = nonces.entrySet().iterator();
+    while (entries.hasNext()) {
 
-        // Do not sweep until enough time has elapsed since the last sweep
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastSweep < SWEEP_INTERVAL)
-            return;
-
-        // Record time of sweep
-        lastSweep = currentTime;
-
-        // For each stored nonce
-        Iterator<Map.Entry<String, Long>> entries = nonces.entrySet().iterator();
-        while (entries.hasNext()) {
-
-            // Remove all entries which have expired
-            Map.Entry<String, Long> current = entries.next();
-            if (current.getValue() <= System.currentTimeMillis())
-                entries.remove();
-
-        }
+      // Remove all entries which have expired
+      Map.Entry<String, Long> current = entries.next();
+      if (current.getValue() <= System.currentTimeMillis()) {
+        entries.remove();
+      }
 
     }
 
-    /**
-     * Generates a cryptographically-secure nonce value. The nonce is intended
-     * to be used to prevent replay attacks.
-     *
-     * @param maxAge
-     *     The maximum amount of time that the generated nonce should remain
-     *     valid, in milliseconds.
-     *
-     * @return
-     *     A cryptographically-secure nonce value.
-     */
-    public String generate(long maxAge) {
+  }
 
-        // Sweep expired nonces if enough time has passed
-        sweepExpiredNonces();
+  /**
+   * Generates a cryptographically-secure nonce value. The nonce is intended to be used to prevent
+   * replay attacks.
+   *
+   * @param maxAge The maximum amount of time that the generated nonce should remain valid, in
+   *               milliseconds.
+   * @return A cryptographically-secure nonce value.
+   */
+  public String generate(long maxAge) {
 
-        // Generate and store nonce, along with expiration timestamp
-        String nonce = new BigInteger(130, random).toString(32);
-        nonces.put(nonce, System.currentTimeMillis() + maxAge);
-        return nonce;
+    // Sweep expired nonces if enough time has passed
+    sweepExpiredNonces();
 
+    // Generate and store nonce, along with expiration timestamp
+    String nonce = new BigInteger(130, random).toString(32);
+    nonces.put(nonce, System.currentTimeMillis() + maxAge);
+    return nonce;
+
+  }
+
+  /**
+   * Returns whether the give nonce value is valid. A nonce is valid if and only if it was generated
+   * by this instance of the NonceService. Testing nonce validity through this function immediately
+   * and permanently invalidates that nonce.
+   *
+   * @param nonce The nonce value to test.
+   * @return true if the provided nonce is valid, false otherwise.
+   */
+  public boolean isValid(String nonce) {
+
+    // Remove nonce, verifying whether it was present at all
+    Long expires = nonces.remove(nonce);
+    if (expires == null) {
+      return false;
     }
 
-    /**
-     * Returns whether the give nonce value is valid. A nonce is valid if and
-     * only if it was generated by this instance of the NonceService. Testing
-     * nonce validity through this function immediately and permanently
-     * invalidates that nonce.
-     *
-     * @param nonce
-     *     The nonce value to test.
-     *
-     * @return
-     *     true if the provided nonce is valid, false otherwise.
-     */
-    public boolean isValid(String nonce) {
+    // Nonce is only valid if it hasn't expired
+    return expires > System.currentTimeMillis();
 
-        // Remove nonce, verifying whether it was present at all
-        Long expires = nonces.remove(nonce);
-        if (expires == null)
-            return false;
-
-        // Nonce is only valid if it hasn't expired
-        return expires > System.currentTimeMillis();
-
-    }
+  }
 
 }

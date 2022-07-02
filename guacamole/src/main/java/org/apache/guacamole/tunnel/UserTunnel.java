@@ -28,91 +28,83 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * Tunnel implementation which associates a given tunnel with the UserContext of
- * the user that created it.
+ * Tunnel implementation which associates a given tunnel with the UserContext of the user that
+ * created it.
  */
 public class UserTunnel extends StreamInterceptingTunnel {
 
-    /**
-     * The UserContext associated with the user for whom this tunnel was
-     * created. This UserContext MUST be from the AuthenticationProvider that
-     * created this tunnel.
-     */
-    private final UserContext userContext;
+  /**
+   * The UserContext associated with the user for whom this tunnel was created. This UserContext
+   * MUST be from the AuthenticationProvider that created this tunnel.
+   */
+  private final UserContext userContext;
 
-    /**
-     * Creates a new UserTunnel which wraps the given tunnel, associating it
-     * with the given UserContext. The UserContext MUST be from the
-     * AuthenticationProvider that created this tunnel, and MUST be associated
-     * with the user for whom this tunnel was created.
-     *
-     * @param userContext
-     *     The UserContext associated with the user for whom this tunnel was
-     *     created. This UserContext MUST be from the AuthenticationProvider
-     *     that created this tunnel.
-     *
-     * @param tunnel
-     *     The tunnel whose stream-related instruction should be intercepted if
-     *     interceptStream() is invoked.
-     */
-    public UserTunnel(UserContext userContext, GuacamoleTunnel tunnel) {
-        super(tunnel);
-        this.userContext = userContext;
-    }
+  /**
+   * Creates a new UserTunnel which wraps the given tunnel, associating it with the given
+   * UserContext. The UserContext MUST be from the AuthenticationProvider that created this tunnel,
+   * and MUST be associated with the user for whom this tunnel was created.
+   *
+   * @param userContext The UserContext associated with the user for whom this tunnel was created.
+   *                    This UserContext MUST be from the AuthenticationProvider that created this
+   *                    tunnel.
+   * @param tunnel      The tunnel whose stream-related instruction should be intercepted if
+   *                    interceptStream() is invoked.
+   */
+  public UserTunnel(UserContext userContext, GuacamoleTunnel tunnel) {
+    super(tunnel);
+    this.userContext = userContext;
+  }
 
-    /**
-     * Returns the UserContext of the user for whom this tunnel was created.
-     * This UserContext will be the UserContext from the AuthenticationProvider
-     * that created this tunnel.
-     *
-     * @return
-     *     The UserContext of the user for whom this tunnel was created.
-     */
-    public UserContext getUserContext() {
-        return userContext;
-    }
+  /**
+   * Returns the UserContext of the user for whom this tunnel was created. This UserContext will be
+   * the UserContext from the AuthenticationProvider that created this tunnel.
+   *
+   * @return The UserContext of the user for whom this tunnel was created.
+   */
+  public UserContext getUserContext() {
+    return userContext;
+  }
 
-    /**
-     * Returns the ActiveConnection object associated with this tunnel within
-     * the AuthenticationProvider and UserContext which created the tunnel. If
-     * the AuthenticationProvider is not tracking active connections, or this
-     * tunnel is no longer active, this will be null.
-     *
-     * @return
-     *     The ActiveConnection object associated with this tunnel, or null if
-     *     this tunnel is no longer active or the AuthenticationProvider which
-     *     created the tunnel is not tracking active connections.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs which prevents retrieval of the user's current
-     *     active connections.
-     */
-    public ActiveConnection getActiveConnection() throws GuacamoleException {
+  /**
+   * Returns the ActiveConnection object associated with this tunnel within the
+   * AuthenticationProvider and UserContext which created the tunnel. If the AuthenticationProvider
+   * is not tracking active connections, or this tunnel is no longer active, this will be null.
+   *
+   * @return The ActiveConnection object associated with this tunnel, or null if this tunnel is no
+   * longer active or the AuthenticationProvider which created the tunnel is not tracking active
+   * connections.
+   * @throws GuacamoleException If an error occurs which prevents retrieval of the user's current
+   *                            active connections.
+   */
+  public ActiveConnection getActiveConnection() throws GuacamoleException {
 
-        // Pull the UUID of the current tunnel
-        UUID uuid = getUUID();
+    // Pull the UUID of the current tunnel
+    UUID uuid = getUUID();
 
-        // Get the directory of active connections
-        Directory<ActiveConnection> activeConnectionDirectory = userContext.getActiveConnectionDirectory();
-        Collection<String> activeConnectionIdentifiers = activeConnectionDirectory.getIdentifiers();
+    // Get the directory of active connections
+    Directory<ActiveConnection> activeConnectionDirectory = userContext.getActiveConnectionDirectory();
+    Collection<String> activeConnectionIdentifiers = activeConnectionDirectory.getIdentifiers();
 
-        // Search all connections for a tunnel which matches this tunnel
-        for (ActiveConnection activeConnection : activeConnectionDirectory.getAll(activeConnectionIdentifiers)) {
+    // Search all connections for a tunnel which matches this tunnel
+    for (ActiveConnection activeConnection : activeConnectionDirectory.getAll(
+        activeConnectionIdentifiers)) {
 
-            // If we lack access, continue with next tunnel
-            GuacamoleTunnel tunnel = activeConnection.getTunnel();
-            if (tunnel == null)
-                continue;
+      // If we lack access, continue with next tunnel
+      GuacamoleTunnel tunnel = activeConnection.getTunnel();
+      if (tunnel == null) {
+        continue;
+      }
 
-            // Tunnels are equivalent if they have the same UUID
-            if (uuid.equals(tunnel.getUUID()))
-                return activeConnection;
-
-        }
-
-        // No active connection associated with this tunnel
-        return null;
+      // Tunnels are equivalent if they have the same UUID
+      if (uuid.equals(tunnel.getUUID())) {
+        return activeConnection;
+      }
 
     }
+
+    // No active connection associated with this tunnel
+    return null;
+
+  }
 
 }

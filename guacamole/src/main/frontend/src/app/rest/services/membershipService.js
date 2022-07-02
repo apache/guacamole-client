@@ -21,13 +21,13 @@
  * Service for operating on user group memberships via the REST API.
  */
 angular.module('rest').factory('membershipService', ['$injector',
-        function membershipService($injector) {
+  function membershipService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
-    var cacheService          = $injector.get('cacheService');
-    
+    var cacheService = $injector.get('cacheService');
+
     // Required types
     var RelatedObjectPatch = $injector.get('RelatedObjectPatch');
 
@@ -48,25 +48,27 @@ angular.module('rest').factory('membershipService', ['$injector',
      * @returns {RelatedObjectPatch[]}
      *     A new array of patches which represents the given changes.
      */
-    var getRelatedObjectPatch = function getRelatedObjectPatch(identifiersToAdd, identifiersToRemove) {
+    var getRelatedObjectPatch = function getRelatedObjectPatch(identifiersToAdd,
+        identifiersToRemove) {
 
-        var patch = [];
+      var patch = [];
 
-        angular.forEach(identifiersToAdd, function addIdentifier(identifier) {
+      angular.forEach(identifiersToAdd, function addIdentifier(identifier) {
+        patch.push(new RelatedObjectPatch({
+          op: RelatedObjectPatch.Operation.ADD,
+          value: identifier
+        }));
+      });
+
+      angular.forEach(identifiersToRemove,
+          function removeIdentifier(identifier) {
             patch.push(new RelatedObjectPatch({
-                op    : RelatedObjectPatch.Operation.ADD,
-                value : identifier
+              op: RelatedObjectPatch.Operation.REMOVE,
+              value: identifier
             }));
-        });
+          });
 
-        angular.forEach(identifiersToRemove, function removeIdentifier(identifier) {
-            patch.push(new RelatedObjectPatch({
-                op    : RelatedObjectPatch.Operation.REMOVE,
-                value : identifier
-            }));
-        });
-
-        return patch;
+      return patch;
 
     };
 
@@ -97,25 +99,29 @@ angular.module('rest').factory('membershipService', ['$injector',
      *     The URL for the REST resource representing the parent user groups of
      *     the user or group having the given identifier.
      */
-    var getUserGroupsResourceURL = function getUserGroupsResourceURL(dataSource, identifier, group) {
+    var getUserGroupsResourceURL = function getUserGroupsResourceURL(dataSource,
+        identifier, group) {
 
-        // Create base URL for data source
-        var base = 'api/session/data/' + encodeURIComponent(dataSource);
+      // Create base URL for data source
+      var base = 'api/session/data/' + encodeURIComponent(dataSource);
 
-        // Access parent groups directly (there is no "self" for user groups
-        // as there is for users)
-        if (group)
-            return base + '/userGroups/' + encodeURIComponent(identifier) + '/userGroups';
+      // Access parent groups directly (there is no "self" for user groups
+      // as there is for users)
+      if (group) {
+        return base + '/userGroups/' + encodeURIComponent(identifier)
+            + '/userGroups';
+      }
 
-        // If the username is that of the current user, do not rely on the
-        // user actually existing (they may not). Access their parent groups via
-        // "self" rather than the collection of defined users.
-        if (identifier === authenticationService.getCurrentUsername())
-            return base + '/self/userGroups';
+      // If the username is that of the current user, do not rely on the
+      // user actually existing (they may not). Access their parent groups via
+      // "self" rather than the collection of defined users.
+      if (identifier === authenticationService.getCurrentUsername()) {
+        return base + '/self/userGroups';
+      }
 
-        // Otherwise, the user must exist for their parent groups to be
-        // accessible. Use the collection of defined users.
-        return base + '/users/' + encodeURIComponent(identifier) + '/userGroups';
+      // Otherwise, the user must exist for their parent groups to be
+      // accessible. Use the collection of defined users.
+      return base + '/users/' + encodeURIComponent(identifier) + '/userGroups';
 
     };
 
@@ -142,14 +148,15 @@ angular.module('rest').factory('membershipService', ['$injector',
      *     A promise for the HTTP call which will resolve with an array
      *     containing the requested identifiers upon success.
      */
-    service.getUserGroups = function getUserGroups(dataSource, identifier, group) {
+    service.getUserGroups = function getUserGroups(dataSource, identifier,
+        group) {
 
-        // Retrieve parent groups
-        return authenticationService.request({
-            cache   : cacheService.users,
-            method  : 'GET',
-            url     : getUserGroupsResourceURL(dataSource, identifier, group)
-        });
+      // Retrieve parent groups
+      return authenticationService.request({
+        cache: cacheService.users,
+        method: 'GET',
+        url: getUserGroupsResourceURL(dataSource, identifier, group)
+      });
 
     };
 
@@ -185,19 +192,19 @@ angular.module('rest').factory('membershipService', ['$injector',
      *     patch operation is successful.
      */
     service.patchUserGroups = function patchUserGroups(dataSource, identifier,
-            addToUserGroups, removeFromUserGroups, group) {
+        addToUserGroups, removeFromUserGroups, group) {
 
-        // Update parent user groups
-        return authenticationService.request({
-            method  : 'PATCH',
-            url     : getUserGroupsResourceURL(dataSource, identifier, group),
-            data    : getRelatedObjectPatch(addToUserGroups, removeFromUserGroups)
-        })
+      // Update parent user groups
+      return authenticationService.request({
+        method: 'PATCH',
+        url: getUserGroupsResourceURL(dataSource, identifier, group),
+        data: getRelatedObjectPatch(addToUserGroups, removeFromUserGroups)
+      })
 
-        // Clear the cache
-        .then(function parentUserGroupsChanged(){
-            cacheService.users.removeAll();
-        });
+      // Clear the cache
+      .then(function parentUserGroupsChanged() {
+        cacheService.users.removeAll();
+      });
 
     };
 
@@ -220,12 +227,13 @@ angular.module('rest').factory('membershipService', ['$injector',
      */
     service.getMemberUsers = function getMemberUsers(dataSource, identifier) {
 
-        // Retrieve member users
-        return authenticationService.request({
-            cache   : cacheService.users,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUsers'
-        });
+      // Retrieve member users
+      return authenticationService.request({
+        cache: cacheService.users,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/userGroups/' + encodeURIComponent(identifier) + '/memberUsers'
+      });
 
     };
 
@@ -255,19 +263,20 @@ angular.module('rest').factory('membershipService', ['$injector',
      *     patch operation is successful.
      */
     service.patchMemberUsers = function patchMemberUsers(dataSource, identifier,
-            usersToAdd, usersToRemove) {
+        usersToAdd, usersToRemove) {
 
-        // Update member users
-        return authenticationService.request({
-            method  : 'PATCH',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUsers',
-            data    : getRelatedObjectPatch(usersToAdd, usersToRemove)
-        })
+      // Update member users
+      return authenticationService.request({
+        method: 'PATCH',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/userGroups/' + encodeURIComponent(identifier) + '/memberUsers',
+        data: getRelatedObjectPatch(usersToAdd, usersToRemove)
+      })
 
-        // Clear the cache
-        .then(function memberUsersChanged(){
-            cacheService.users.removeAll();
-        });
+      // Clear the cache
+      .then(function memberUsersChanged() {
+        cacheService.users.removeAll();
+      });
 
     };
 
@@ -290,14 +299,17 @@ angular.module('rest').factory('membershipService', ['$injector',
      *     A promise for the HTTP call which will resolve with an array
      *     containing the requested identifiers upon success.
      */
-    service.getMemberUserGroups = function getMemberUserGroups(dataSource, identifier) {
+    service.getMemberUserGroups = function getMemberUserGroups(dataSource,
+        identifier) {
 
-        // Retrieve member user groups
-        return authenticationService.request({
-            cache   : cacheService.users,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUserGroups'
-        });
+      // Retrieve member user groups
+      return authenticationService.request({
+        cache: cacheService.users,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/userGroups/' + encodeURIComponent(identifier)
+            + '/memberUserGroups'
+      });
 
     };
 
@@ -328,22 +340,24 @@ angular.module('rest').factory('membershipService', ['$injector',
      *     patch operation is successful.
      */
     service.patchMemberUserGroups = function patchMemberUserGroups(dataSource,
-            identifier, userGroupsToAdd, userGroupsToRemove) {
+        identifier, userGroupsToAdd, userGroupsToRemove) {
 
-        // Update member user groups
-        return authenticationService.request({
-            method  : 'PATCH',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUserGroups',
-            data    : getRelatedObjectPatch(userGroupsToAdd, userGroupsToRemove)
-        })
+      // Update member user groups
+      return authenticationService.request({
+        method: 'PATCH',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/userGroups/' + encodeURIComponent(identifier)
+            + '/memberUserGroups',
+        data: getRelatedObjectPatch(userGroupsToAdd, userGroupsToRemove)
+      })
 
-        // Clear the cache
-        .then(function memberUserGroupsChanged(){
-            cacheService.users.removeAll();
-        });
+      // Clear the cache
+      .then(function memberUserGroupsChanged() {
+        cacheService.users.removeAll();
+      });
 
     };
-    
+
     return service;
 
-}]);
+  }]);

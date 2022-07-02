@@ -23,78 +23,67 @@ package org.apache.guacamole.rest.auth;
  * A simple object to represent an auth token/username pair in the API.
  */
 public class APIAuthenticationResponse {
-    
-    /**
-     * The auth token.
-     */
-    private final String authToken;
-    
-    
-    /**
-     * The username of the user that authenticated.
-     */
-    private final String username;
 
-    /**
-     * The unique identifier of the data source from which this user account
-     * came. Although this user account may exist across several data sources
-     * (AuthenticationProviders), this will be the unique identifier of the
-     * AuthenticationProvider that authenticated this user for the current
-     * session.
-     */
-    private final String dataSource;
+  /**
+   * The auth token.
+   */
+  private final String authToken;
 
-    /**
-     * Returns the unique authentication token which identifies the current
-     * session.
-     *
-     * @return
-     *     The user's authentication token.
-     */
-    public String getAuthToken() {
-        return authToken;
-    }
-    
-    /**
-     * Returns the user identified by the authentication token associated with
-     * the current session.
-     *
-     * @return
-     *      The user identified by this authentication token.
-     */
-    public String getUsername() {
-        return username;
-    }
 
-    /**
-     * Returns the unique identifier of the data source associated with the user
-     * account associated with this auth token.
-     * 
-     * @return 
-     *     The unique identifier of the data source associated with the user
-     *     account associated with this auth token.
-     */
-    public String getDataSource() {
-        return dataSource;
-    }
-    
-    /**
-     * Create a new APIAuthToken Object with the given auth token.
-     *
-     * @param dataSource
-     *     The unique identifier of the AuthenticationProvider which
-     *     authenticated the user.
-     *
-     * @param authToken
-     *     The auth token to create the new APIAuthToken with.
-     *
-     * @param username
-     *     The username of the user owning the given token.
-     */
-    public APIAuthenticationResponse(String dataSource, String authToken, String username) {
-        this.dataSource = dataSource;
-        this.authToken = authToken;
-        this.username = username;
-    }
+  /**
+   * The username of the user that authenticated.
+   */
+  private final String username;
+
+  /**
+   * The unique identifier of the data source from which this user account came. Although this user
+   * account may exist across several data sources (AuthenticationProviders), this will be the
+   * unique identifier of the AuthenticationProvider that authenticated this user for the current
+   * session.
+   */
+  private final String dataSource;
+
+  /**
+   * Create a new APIAuthToken Object with the given auth token.
+   *
+   * @param dataSource The unique identifier of the AuthenticationProvider which authenticated the
+   *                   user.
+   * @param authToken  The auth token to create the new APIAuthToken with.
+   * @param username   The username of the user owning the given token.
+   */
+  public APIAuthenticationResponse(String dataSource, String authToken, String username) {
+    this.dataSource = dataSource;
+    this.authToken = authToken;
+    this.username = username;
+  }
+
+  /**
+   * Returns the unique authentication token which identifies the current session.
+   *
+   * @return The user's authentication token.
+   */
+  public String getAuthToken() {
+    return authToken;
+  }
+
+  /**
+   * Returns the user identified by the authentication token associated with the current session.
+   *
+   * @return The user identified by this authentication token.
+   */
+  public String getUsername() {
+    return username;
+  }
+
+  /**
+   * Returns the unique identifier of the data source associated with the user account associated
+   * with this auth token.
+   *
+   * @return The unique identifier of the data source associated with the user account associated
+   * with this auth token.
+   */
+  public String getDataSource() {
+    return dataSource;
+  }
 
 }

@@ -19,17 +19,17 @@
 
 .location-chooser .dropdown {
 
-    position: absolute;
-    z-index: 2;
-    margin-top: -1px;
+  position: absolute;
+  z-index: 2;
+  margin-top: -1px;
 
-    width: 3in;
-    max-height: 2in;
-    overflow: auto;
+  width: 3in;
+  max-height: 2in;
+  overflow: auto;
 
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    background: white;
+  border: 1px solid rgba(0, 0, 0, 0.5);
+  background: white;
 
-    font-size: 10pt;
+  font-size: 10pt;
 
 }

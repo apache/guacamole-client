@@ -19,78 +19,75 @@
 
 package org.apache.guacamole.auth.totp;
 
-import org.apache.guacamole.auth.totp.user.UserVerificationService;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.totp.user.CodeUsageTrackingService;
 import org.apache.guacamole.auth.totp.user.TOTPUserContext;
+import org.apache.guacamole.auth.totp.user.UserVerificationService;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * AuthenticationProvider implementation which uses TOTP as an additional
- * authentication factor for users which have already been authenticated by
- * some other AuthenticationProvider.
+ * AuthenticationProvider implementation which uses TOTP as an additional authentication factor for
+ * users which have already been authenticated by some other AuthenticationProvider.
  */
 public class TOTPAuthenticationProvider extends AbstractAuthenticationProvider {
 
-    /**
-     * Injector which will manage the object graph of this authentication
-     * provider.
-     */
-    private final Injector injector;
+  /**
+   * Injector which will manage the object graph of this authentication provider.
+   */
+  private final Injector injector;
 
-    /**
-     * Creates a new TOTPAuthenticationProvider that verifies users using TOTP.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public TOTPAuthenticationProvider() throws GuacamoleException {
+  /**
+   * Creates a new TOTPAuthenticationProvider that verifies users using TOTP.
+   *
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public TOTPAuthenticationProvider() throws GuacamoleException {
 
-        // Set up Guice injector.
-        injector = Guice.createInjector(
-            new TOTPAuthenticationProviderModule(this)
-        );
+    // Set up Guice injector.
+    injector = Guice.createInjector(
+        new TOTPAuthenticationProviderModule(this)
+    );
 
-    }
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "totp";
-    }
+  @Override
+  public String getIdentifier() {
+    return "totp";
+  }
 
-    @Override
-    public UserContext decorate(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
+  @Override
+  public UserContext decorate(UserContext context,
+      AuthenticatedUser authenticatedUser, Credentials credentials)
+      throws GuacamoleException {
 
-        UserVerificationService verificationService =
-                injector.getInstance(UserVerificationService.class);
+    UserVerificationService verificationService =
+        injector.getInstance(UserVerificationService.class);
 
-        // Verify identity of user
-        verificationService.verifyIdentity(context, authenticatedUser);
+    // Verify identity of user
+    verificationService.verifyIdentity(context, authenticatedUser);
 
-        // User has been verified, and authentication should be allowed to
-        // continue
-        return new TOTPUserContext(context);
+    // User has been verified, and authentication should be allowed to
+    // continue
+    return new TOTPUserContext(context);
 
-    }
+  }
 
-    @Override
-    public UserContext redecorate(UserContext decorated, UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return new TOTPUserContext(context);
-    }
+  @Override
+  public UserContext redecorate(UserContext decorated, UserContext context,
+      AuthenticatedUser authenticatedUser, Credentials credentials)
+      throws GuacamoleException {
+    return new TOTPUserContext(context);
+  }
 
-    @Override
-    public void shutdown() {
-        injector.getInstance(CodeUsageTrackingService.class).shutdown();
-    }
+  @Override
+  public void shutdown() {
+    injector.getInstance(CodeUsageTrackingService.class).shutdown();
+  }
 
 }

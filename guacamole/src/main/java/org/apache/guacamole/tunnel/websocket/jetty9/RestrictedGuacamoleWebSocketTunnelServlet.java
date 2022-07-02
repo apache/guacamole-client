@@ -21,9 +21,9 @@ package org.apache.guacamole.tunnel.websocket.jetty9;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.apache.guacamole.tunnel.TunnelRequestService;
 import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
 import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
-import org.apache.guacamole.tunnel.TunnelRequestService;
 
 /**
  * A WebSocketServlet partial re-implementation of GuacamoleTunnelServlet.
@@ -31,19 +31,19 @@ import org.apache.guacamole.tunnel.TunnelRequestService;
 @Singleton
 public class RestrictedGuacamoleWebSocketTunnelServlet extends WebSocketServlet {
 
-    /**
-     * Service for handling tunnel requests.
-     */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
- 
-    @Override
-    public void configure(WebSocketServletFactory factory) {
+  /**
+   * Service for handling tunnel requests.
+   */
+  @Inject
+  private TunnelRequestService tunnelRequestService;
 
-        // Register WebSocket implementation
-        factory.setCreator(new RestrictedGuacamoleWebSocketCreator(tunnelRequestService));
-        
-    }
-    
+  @Override
+  public void configure(WebSocketServletFactory factory) {
+
+    // Register WebSocket implementation
+    factory.setCreator(new RestrictedGuacamoleWebSocketCreator(tunnelRequestService));
+
+  }
+
 }
 

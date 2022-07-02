@@ -22,27 +22,22 @@ package org.apache.guacamole.form;
 import java.util.Collections;
 
 /**
- * Represents a field with strictly one possible value. It is assumed that the
- * field may be blank, but that its sole non-blank value is the value provided.
- * The provided value represents "true" while all other values, including
- * having no associated value, represent "false".
+ * Represents a field with strictly one possible value. It is assumed that the field may be blank,
+ * but that its sole non-blank value is the value provided. The provided value represents "true"
+ * while all other values, including having no associated value, represent "false".
  */
 public class BooleanField extends Field {
 
-    /**
-     * Creates a new BooleanField with the given name and truth value. The
-     * truth value is the value that, when assigned to this field, means that
-     * this field is "true".
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     *
-     * @param truthValue
-     *     The value to consider "true" for this field. All other values will
-     *     be considered "false".
-     */
-    public BooleanField(String name, String truthValue) {
-        super(name, Field.Type.BOOLEAN, Collections.singletonList(truthValue));
-    }
+  /**
+   * Creates a new BooleanField with the given name and truth value. The truth value is the value
+   * that, when assigned to this field, means that this field is "true".
+   *
+   * @param name       The unique name to associate with this field.
+   * @param truthValue The value to consider "true" for this field. All other values will be
+   *                   considered "false".
+   */
+  public BooleanField(String name, String truthValue) {
+    super(name, Field.Type.BOOLEAN, Collections.singletonList(truthValue));
+  }
 
 }

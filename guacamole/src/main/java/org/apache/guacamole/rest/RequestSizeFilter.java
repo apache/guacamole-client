@@ -43,66 +43,69 @@ import org.apache.guacamole.properties.LongGuacamoleProperty;
 @Provider
 public class RequestSizeFilter implements ContainerRequestFilter {
 
-    /**
-     * Informs the RequestSizeFilter to NOT enforce its request size limits on
-     * requests serviced by the annotated method.
-     */
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public static @interface DoNotLimit {}
-
-    /**
-     * The default maximum number of bytes to accept within the entity body of
-     * any particular REST request.
-     */
-    private static final long DEFAULT_MAX_REQUEST_SIZE = 2097152;
-
-    /**
-     * The maximum number of bytes to accept within the entity body of any
-     * particular REST request. If not specified, requests will be limited to
-     * 2 MB by default. Specifying 0 disables request size limitations.
-     */
-    private final LongGuacamoleProperty API_MAX_REQUEST_SIZE = new LongGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "api-max-request-size"; }
-
-    };
-
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
-
-    /**
-     * Information describing the resource that was requested.
-     */
-    @Context
-    private ResourceInfo resourceInfo;
+  /**
+   * The default maximum number of bytes to accept within the entity body of any particular REST
+   * request.
+   */
+  private static final long DEFAULT_MAX_REQUEST_SIZE = 2097152;
+  /**
+   * The maximum number of bytes to accept within the entity body of any particular REST request. If
+   * not specified, requests will be limited to 2 MB by default. Specifying 0 disables request size
+   * limitations.
+   */
+  private final LongGuacamoleProperty API_MAX_REQUEST_SIZE = new LongGuacamoleProperty() {
 
     @Override
-    public void filter(ContainerRequestContext context) throws IOException {
-
-        // Retrieve configured request size limits
-        final long maxRequestSize;
-        try {
-            maxRequestSize = environment.getProperty(API_MAX_REQUEST_SIZE, DEFAULT_MAX_REQUEST_SIZE);
-        }
-        catch (GuacamoleException e) {
-            throw new APIException(e);
-        }
-
-        // Ignore request size if limit is disabled
-        if (maxRequestSize == 0 || resourceInfo.getResourceMethod().isAnnotationPresent(DoNotLimit.class))
-            return;
-
-        // Restrict maximum size of requests which have an input stream
-        // available to be limited
-        InputStream stream = context.getEntityStream();
-        if (stream != null)
-            context.setEntityStream(new LimitedRequestInputStream(stream, maxRequestSize));
-
+    public String getName() {
+      return "api-max-request-size";
     }
+
+  };
+  /**
+   * The Guacamole server environment.
+   */
+  @Inject
+  private Environment environment;
+  /**
+   * Information describing the resource that was requested.
+   */
+  @Context
+  private ResourceInfo resourceInfo;
+
+  @Override
+  public void filter(ContainerRequestContext context) throws IOException {
+
+    // Retrieve configured request size limits
+    final long maxRequestSize;
+    try {
+      maxRequestSize = environment.getProperty(API_MAX_REQUEST_SIZE, DEFAULT_MAX_REQUEST_SIZE);
+    } catch (GuacamoleException e) {
+      throw new APIException(e);
+    }
+
+    // Ignore request size if limit is disabled
+    if (maxRequestSize == 0 || resourceInfo.getResourceMethod()
+        .isAnnotationPresent(DoNotLimit.class)) {
+      return;
+    }
+
+    // Restrict maximum size of requests which have an input stream
+    // available to be limited
+    InputStream stream = context.getEntityStream();
+    if (stream != null) {
+      context.setEntityStream(new LimitedRequestInputStream(stream, maxRequestSize));
+    }
+
+  }
+
+  /**
+   * Informs the RequestSizeFilter to NOT enforce its request size limits on requests serviced by
+   * the annotated method.
+   */
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.METHOD)
+  public static @interface DoNotLimit {
+
+  }
 
 }

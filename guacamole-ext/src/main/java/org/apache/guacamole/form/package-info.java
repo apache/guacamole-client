@@ -18,7 +18,7 @@
  */
 
 /**
- * Provides classes which describe the contents and semantics of forms which
- * may be presented to the user.
+ * Provides classes which describe the contents and semantics of forms which may be presented to the
+ * user.
  */
 package org.apache.guacamole.form;

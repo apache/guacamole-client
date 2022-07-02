@@ -18,8 +18,8 @@
  */
 
 /**
- * Classes related to the properties which the Guacamole web application
- * (and stock parts of it) read from guacamole.properties.
+ * Classes related to the properties which the Guacamole web application (and stock parts of it)
+ * read from guacamole.properties.
  */
 package org.apache.guacamole.properties;
 

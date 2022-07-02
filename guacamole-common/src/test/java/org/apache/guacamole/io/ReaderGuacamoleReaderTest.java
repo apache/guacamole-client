@@ -19,68 +19,69 @@
 
 package org.apache.guacamole.io;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import java.io.StringReader;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.protocol.GuacamoleInstruction;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
- * Tests the ReaderGuacamoleReader implementation of GuacamoleReader, validating
- * that instructions are parsed correctly.
+ * Tests the ReaderGuacamoleReader implementation of GuacamoleReader, validating that instructions
+ * are parsed correctly.
  */
 public class ReaderGuacamoleReaderTest {
 
-    /**
-     * Test of ReaderGuacamoleReader parsing.
-     * 
-     * @throws GuacamoleException If a parse error occurs while parsing the
-     *                            known-good test string.
-     */
-    @Test
-    public void testReader() throws GuacamoleException {
+  /**
+   * Test of ReaderGuacamoleReader parsing.
+   *
+   * @throws GuacamoleException If a parse error occurs while parsing the known-good test string.
+   */
+  @Test
+  public void testReader() throws GuacamoleException {
 
-        // Test string
-        final String test = "1.a,2.bc,3.def,10.helloworld;4.test,5.test2;0.;3.foo;";
+    // Test string
+    final String test = "1.a,2.bc,3.def,10.helloworld;4.test,5.test2;0.;3.foo;";
 
-        GuacamoleReader reader = new ReaderGuacamoleReader(new StringReader(test));
+    GuacamoleReader reader = new ReaderGuacamoleReader(new StringReader(test));
 
-        GuacamoleInstruction instruction;
+    GuacamoleInstruction instruction;
 
-        // Validate first test instruction
-        instruction = reader.readInstruction();
-        assertNotNull(instruction);
-        assertEquals(3, instruction.getArgs().size());
-        assertEquals("a", instruction.getOpcode());
-        assertEquals("bc", instruction.getArgs().get(0));
-        assertEquals("def", instruction.getArgs().get(1));
-        assertEquals("helloworld", instruction.getArgs().get(2));
+    // Validate first test instruction
+    instruction = reader.readInstruction();
+    assertNotNull(instruction);
+    assertEquals(3, instruction.getArgs().size());
+    assertEquals("a", instruction.getOpcode());
+    assertEquals("bc", instruction.getArgs().get(0));
+    assertEquals("def", instruction.getArgs().get(1));
+    assertEquals("helloworld", instruction.getArgs().get(2));
 
-        // Validate second test instruction
-        instruction = reader.readInstruction();
-        assertNotNull(instruction);
-        assertEquals(1, instruction.getArgs().size());
-        assertEquals("test", instruction.getOpcode());
-        assertEquals("test2", instruction.getArgs().get(0));
+    // Validate second test instruction
+    instruction = reader.readInstruction();
+    assertNotNull(instruction);
+    assertEquals(1, instruction.getArgs().size());
+    assertEquals("test", instruction.getOpcode());
+    assertEquals("test2", instruction.getArgs().get(0));
 
-        // Validate third test instruction
-        instruction = reader.readInstruction();
-        assertNotNull(instruction);
-        assertEquals(0, instruction.getArgs().size());
-        assertEquals("", instruction.getOpcode());
+    // Validate third test instruction
+    instruction = reader.readInstruction();
+    assertNotNull(instruction);
+    assertEquals(0, instruction.getArgs().size());
+    assertEquals("", instruction.getOpcode());
 
-        // Validate fourth test instruction
-        instruction = reader.readInstruction();
-        assertNotNull(instruction);
-        assertEquals(0, instruction.getArgs().size());
-        assertEquals("foo", instruction.getOpcode());
+    // Validate fourth test instruction
+    instruction = reader.readInstruction();
+    assertNotNull(instruction);
+    assertEquals(0, instruction.getArgs().size());
+    assertEquals("foo", instruction.getOpcode());
 
-        // There should be no more instructions
-        instruction = reader.readInstruction();
-        assertNull(instruction);
+    // There should be no more instructions
+    instruction = reader.readInstruction();
+    assertNull(instruction);
 
-    }
+  }
 
 
-   
 }

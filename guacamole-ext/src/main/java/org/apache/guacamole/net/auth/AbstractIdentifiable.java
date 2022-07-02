@@ -21,53 +21,55 @@ package org.apache.guacamole.net.auth;
 
 
 /**
- * Abstract implementation of Identifiable which provides equals() and
- * hashCode() implementations which use the identifier to determine equality.
- * The identifier comparison is case-sensitive.
+ * Abstract implementation of Identifiable which provides equals() and hashCode() implementations
+ * which use the identifier to determine equality. The identifier comparison is case-sensitive.
  */
 public abstract class AbstractIdentifiable implements Identifiable {
 
-    /**
-     * The unique string which identifies this object.
-     */
-    private String identifier;
+  /**
+   * The unique string which identifies this object.
+   */
+  private String identifier;
 
-    @Override
-    public String getIdentifier() {
-        return identifier;
+  @Override
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  @Override
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
+  @Override
+  public int hashCode() {
+
+    if (identifier == null) {
+      return 0;
     }
 
-    @Override
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+    return identifier.hashCode();
+  }
+
+  @Override
+  public boolean equals(Object other) {
+
+    // Not equal if null or not the same type of object
+    if (other == null || getClass() != other.getClass()) {
+      return false;
     }
 
-    @Override
-    public int hashCode() {
+    // Get identifier of other object
+    String otherIdentifier = ((AbstractIdentifiable) other).getIdentifier();
 
-        if (identifier == null)
-            return 0;
-
-        return identifier.hashCode();
+    // If null, equal only if this identifier is null
+    if (otherIdentifier == null) {
+      return identifier == null;
     }
 
-    @Override
-    public boolean equals(Object other) {
+    // Otherwise, equal only if strings are identical
+    return otherIdentifier.equals(identifier);
 
-        // Not equal if null or not the same type of object
-        if (other == null || getClass() != other.getClass())
-            return false;
-
-        // Get identifier of other object
-        String otherIdentifier = ((AbstractIdentifiable) other).getIdentifier();
-
-        // If null, equal only if this identifier is null
-        if (otherIdentifier == null)
-            return identifier == null;
-
-        // Otherwise, equal only if strings are identical
-        return otherIdentifier.equals(identifier);
-
-    }
+  }
 
 }

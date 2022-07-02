@@ -20,20 +20,20 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 
-import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
-import org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupDirectory;
-import org.apache.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
 import java.util.Date;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
+import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
+import org.apache.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordSet;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
+import org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupDirectory;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
+import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileDirectory;
 import org.apache.guacamole.auth.jdbc.usergroup.ModeledUserGroup;
@@ -52,248 +52,242 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.UserGroup;
 
 /**
- * UserContext implementation which is driven by an arbitrary, underlying
- * database.
+ * UserContext implementation which is driven by an arbitrary, underlying database.
  */
 public class ModeledUserContext extends RestrictedObject
     implements org.apache.guacamole.net.auth.UserContext {
 
-    /**
-     * User directory restricted by the permissions of the user associated
-     * with this context.
-     */
-    @Inject
-    private UserDirectory userDirectory;
+  /**
+   * User directory restricted by the permissions of the user associated with this context.
+   */
+  @Inject
+  private UserDirectory userDirectory;
 
-    /**
-     * User group directory restricted by the permissions of the user associated
-     * with this context.
-     */
-    @Inject
-    private UserGroupDirectory userGroupDirectory;
- 
-    /**
-     * Connection directory restricted by the permissions of the user
-     * associated with this context.
-     */
-    @Inject
-    private ConnectionDirectory connectionDirectory;
+  /**
+   * User group directory restricted by the permissions of the user associated with this context.
+   */
+  @Inject
+  private UserGroupDirectory userGroupDirectory;
 
-    /**
-     * Connection group directory restricted by the permissions of the user
-     * associated with this context.
-     */
-    @Inject
-    private ConnectionGroupDirectory connectionGroupDirectory;
+  /**
+   * Connection directory restricted by the permissions of the user associated with this context.
+   */
+  @Inject
+  private ConnectionDirectory connectionDirectory;
 
-    /**
-     * Sharing profile directory restricted by the permissions of the user
-     * associated with this context.
-     */
-    @Inject
-    private SharingProfileDirectory sharingProfileDirectory;
+  /**
+   * Connection group directory restricted by the permissions of the user associated with this
+   * context.
+   */
+  @Inject
+  private ConnectionGroupDirectory connectionGroupDirectory;
 
-    /**
-     * ActiveConnection directory restricted by the permissions of the user
-     * associated with this context.
-     */
-    @Inject
-    private ActiveConnectionDirectory activeConnectionDirectory;
+  /**
+   * Sharing profile directory restricted by the permissions of the user associated with this
+   * context.
+   */
+  @Inject
+  private SharingProfileDirectory sharingProfileDirectory;
 
-    /**
-     * Provider for creating the root group.
-     */
-    @Inject
-    private Provider<RootConnectionGroup> rootGroupProvider;
+  /**
+   * ActiveConnection directory restricted by the permissions of the user associated with this
+   * context.
+   */
+  @Inject
+  private ActiveConnectionDirectory activeConnectionDirectory;
 
-    /**
-     * Provider for creating connection record sets.
-     */
-    @Inject
-    private Provider<ConnectionRecordSet> connectionRecordSetProvider;
+  /**
+   * Provider for creating the root group.
+   */
+  @Inject
+  private Provider<RootConnectionGroup> rootGroupProvider;
 
-    /**
-     * Provider for creating user record sets.
-     */
-    @Inject
-    private Provider<UserRecordSet> userRecordSetProvider;
+  /**
+   * Provider for creating connection record sets.
+   */
+  @Inject
+  private Provider<ConnectionRecordSet> connectionRecordSetProvider;
 
-    /**
-     * Provider for retrieving UserContext instances.
-     */
-    @Inject
-    private Provider<ModeledUserContext> userContextProvider;
+  /**
+   * Provider for creating user record sets.
+   */
+  @Inject
+  private Provider<UserRecordSet> userRecordSetProvider;
 
-    /**
-     * Mapper for user login records.
-     */
-    @Inject
-    private UserRecordMapper userRecordMapper;
+  /**
+   * Provider for retrieving UserContext instances.
+   */
+  @Inject
+  private Provider<ModeledUserContext> userContextProvider;
 
-    /**
-     * The activity record associated with this user's Guacamole session. If
-     * this user's session will not have an associated activity record, such as
-     * a temporary privileged session created via getPrivileged(), this will be
-     * null.
-     */
-    private ActivityRecordModel userRecord;
+  /**
+   * Mapper for user login records.
+   */
+  @Inject
+  private UserRecordMapper userRecordMapper;
 
-    @Override
-    public void init(ModeledAuthenticatedUser currentUser) {
+  /**
+   * The activity record associated with this user's Guacamole session. If this user's session will
+   * not have an associated activity record, such as a temporary privileged session created via
+   * getPrivileged(), this will be null.
+   */
+  private ActivityRecordModel userRecord;
 
-        super.init(currentUser);
-        
-        // Init directories
-        userDirectory.init(currentUser);
-        userGroupDirectory.init(currentUser);
-        connectionDirectory.init(currentUser);
-        connectionGroupDirectory.init(currentUser);
-        sharingProfileDirectory.init(currentUser);
-        activeConnectionDirectory.init(currentUser);
+  @Override
+  public void init(ModeledAuthenticatedUser currentUser) {
 
+    super.init(currentUser);
+
+    // Init directories
+    userDirectory.init(currentUser);
+    userGroupDirectory.init(currentUser);
+    connectionDirectory.init(currentUser);
+    connectionGroupDirectory.init(currentUser);
+    sharingProfileDirectory.init(currentUser);
+    activeConnectionDirectory.init(currentUser);
+
+  }
+
+  /**
+   * Records that the user associated with this UserContext has logged in, creating a partial
+   * activity record. The resulting activity record will contain a start date only, with the end
+   * date being automatically populated when this UserContext is invalidated. If this function is
+   * invoked more than once for the same UserContext, only the first invocation has any effect. If
+   * this function is never invoked, no activity record will be recorded, including when this
+   * UserContext is invalidated.
+   */
+  public void recordUserLogin() {
+
+    // Do nothing if invoked multiple times
+    if (userRecord != null) {
+      return;
     }
 
-    /**
-     * Records that the user associated with this UserContext has logged in,
-     * creating a partial activity record. The resulting activity record will
-     * contain a start date only, with the end date being automatically
-     * populated when this UserContext is invalidated. If this function is
-     * invoked more than once for the same UserContext, only the first
-     * invocation has any effect. If this function is never invoked, no
-     * activity record will be recorded, including when this UserContext is
-     * invalidated.
-     */
-    public void recordUserLogin() {
+    // Create login record for user
+    userRecord = new ActivityRecordModel();
+    userRecord.setUsername(getCurrentUser().getIdentifier());
+    userRecord.setStartDate(new Date());
+    userRecord.setRemoteHost(getCurrentUser().getCredentials().getRemoteAddress());
 
-        // Do nothing if invoked multiple times
-        if (userRecord != null)
-            return;
+    // Insert record representing login
+    userRecordMapper.insert(userRecord);
 
-        // Create login record for user
-        userRecord = new ActivityRecordModel();
-        userRecord.setUsername(getCurrentUser().getIdentifier());
-        userRecord.setStartDate(new Date());
-        userRecord.setRemoteHost(getCurrentUser().getCredentials().getRemoteAddress());
+  }
 
-        // Insert record representing login
-        userRecordMapper.insert(userRecord);
-        
+  @Override
+  public UserContext getPrivileged() {
+    ModeledUserContext context = userContextProvider.get();
+    context.init(new PrivilegedModeledAuthenticatedUser(getCurrentUser()));
+    return context;
+  }
+
+  @Override
+  public User self() {
+    return getCurrentUser().getUser();
+  }
+
+  @Override
+  public Object getResource() throws GuacamoleException {
+    return null;
+  }
+
+  @Override
+  public AuthenticationProvider getAuthenticationProvider() {
+    return getCurrentUser().getModelAuthenticationProvider();
+  }
+
+  @Override
+  public Directory<User> getUserDirectory() throws GuacamoleException {
+    return userDirectory;
+  }
+
+  @Override
+  public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
+    return userGroupDirectory;
+  }
+
+  @Override
+  public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+    return connectionDirectory;
+  }
+
+  @Override
+  public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
+    return connectionGroupDirectory;
+  }
+
+  @Override
+  public Directory<SharingProfile> getSharingProfileDirectory()
+      throws GuacamoleException {
+    return sharingProfileDirectory;
+  }
+
+  @Override
+  public Directory<ActiveConnection> getActiveConnectionDirectory()
+      throws GuacamoleException {
+    return activeConnectionDirectory;
+  }
+
+  @Override
+  public ConnectionRecordSet getConnectionHistory()
+      throws GuacamoleException {
+    ConnectionRecordSet connectionRecordSet = connectionRecordSetProvider.get();
+    connectionRecordSet.init(getCurrentUser());
+    return connectionRecordSet;
+  }
+
+  @Override
+  public ActivityRecordSet<ActivityRecord> getUserHistory()
+      throws GuacamoleException {
+    UserRecordSet userRecordSet = userRecordSetProvider.get();
+    userRecordSet.init(getCurrentUser());
+    return userRecordSet;
+  }
+
+  @Override
+  public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
+
+    // Build and return a root group for the current user
+    RootConnectionGroup rootGroup = rootGroupProvider.get();
+    rootGroup.init(getCurrentUser());
+    return rootGroup;
+
+  }
+
+  @Override
+  public Collection<Form> getUserAttributes() {
+    return ModeledUser.ATTRIBUTES;
+  }
+
+  @Override
+  public Collection<Form> getUserGroupAttributes() {
+    return ModeledUserGroup.ATTRIBUTES;
+  }
+
+  @Override
+  public Collection<Form> getConnectionAttributes() {
+    return ModeledConnection.ATTRIBUTES;
+  }
+
+  @Override
+  public Collection<Form> getConnectionGroupAttributes() {
+    return ModeledConnectionGroup.ATTRIBUTES;
+  }
+
+  @Override
+  public Collection<Form> getSharingProfileAttributes() {
+    return ModeledSharingProfile.ATTRIBUTES;
+  }
+
+  @Override
+  public void invalidate() {
+
+    // Record logout time only if login time was recorded
+    if (userRecord != null) {
+      userRecord.setEndDate(new Date());
+      userRecordMapper.updateEndDate(userRecord);
     }
 
-    @Override
-    public UserContext getPrivileged() {
-        ModeledUserContext context = userContextProvider.get();
-        context.init(new PrivilegedModeledAuthenticatedUser(getCurrentUser()));
-        return context;
-    }
-
-    @Override
-    public User self() {
-        return getCurrentUser().getUser();
-    }
-
-    @Override
-    public Object getResource() throws GuacamoleException {
-        return null;
-    }
-
-    @Override
-    public AuthenticationProvider getAuthenticationProvider() {
-        return getCurrentUser().getModelAuthenticationProvider();
-    }
-
-    @Override
-    public Directory<User> getUserDirectory() throws GuacamoleException {
-        return userDirectory;
-    }
-
-    @Override
-    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
-        return userGroupDirectory;
-    }
-
-    @Override
-    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
-        return connectionDirectory;
-    }
-
-    @Override
-    public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
-        return connectionGroupDirectory;
-    }
-
-    @Override
-    public Directory<SharingProfile> getSharingProfileDirectory()
-            throws GuacamoleException {
-        return sharingProfileDirectory;
-    }
-
-    @Override
-    public Directory<ActiveConnection> getActiveConnectionDirectory()
-            throws GuacamoleException {
-        return activeConnectionDirectory;
-    }
-
-    @Override
-    public ConnectionRecordSet getConnectionHistory()
-            throws GuacamoleException {
-        ConnectionRecordSet connectionRecordSet = connectionRecordSetProvider.get();
-        connectionRecordSet.init(getCurrentUser());
-        return connectionRecordSet;
-    }
-
-    @Override
-    public ActivityRecordSet<ActivityRecord> getUserHistory()
-            throws GuacamoleException {
-        UserRecordSet userRecordSet = userRecordSetProvider.get();
-        userRecordSet.init(getCurrentUser());
-        return userRecordSet;
-    }
-
-    @Override
-    public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
-
-        // Build and return a root group for the current user
-        RootConnectionGroup rootGroup = rootGroupProvider.get();
-        rootGroup.init(getCurrentUser());
-        return rootGroup;
-
-    }
-
-    @Override
-    public Collection<Form> getUserAttributes() {
-        return ModeledUser.ATTRIBUTES;
-    }
-
-    @Override
-    public Collection<Form> getUserGroupAttributes() {
-        return ModeledUserGroup.ATTRIBUTES;
-    }
-
-    @Override
-    public Collection<Form> getConnectionAttributes() {
-        return ModeledConnection.ATTRIBUTES;
-    }
-
-    @Override
-    public Collection<Form> getConnectionGroupAttributes() {
-        return ModeledConnectionGroup.ATTRIBUTES;
-    }
-
-    @Override
-    public Collection<Form> getSharingProfileAttributes() {
-        return ModeledSharingProfile.ATTRIBUTES;
-    }
-
-    @Override
-    public void invalidate() {
-
-        // Record logout time only if login time was recorded
-        if (userRecord != null) {
-            userRecord.setEndDate(new Date());
-            userRecordMapper.updateEndDate(userRecord);
-        }
-
-    }
+  }
 
 }

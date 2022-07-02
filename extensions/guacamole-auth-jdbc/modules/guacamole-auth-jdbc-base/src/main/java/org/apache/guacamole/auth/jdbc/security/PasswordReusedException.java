@@ -23,28 +23,25 @@ import java.util.Collections;
 import org.apache.guacamole.language.TranslatableMessage;
 
 /**
- * Thrown when an attempt is made to reuse a previous password, in violation of
- * the defined password policy.
+ * Thrown when an attempt is made to reuse a previous password, in violation of the defined password
+ * policy.
  */
 public class PasswordReusedException extends PasswordPolicyException {
 
-    /**
-     * Creates a new PasswordReusedException with the given human-readable
-     * message. The translatable message is already defined.
-     *
-     * @param message
-     *     A human-readable message describing the password policy violation
-     *     that occurred.
-     *
-     * @param historySize
-     *     The number of previous passwords which are remembered for each user,
-     *     and must not be reused.
-     */
-    public PasswordReusedException(String message, int historySize) {
-        super(message, new TranslatableMessage(
-            "PASSWORD_POLICY.ERROR_REUSED",
-            Collections.singletonMap("HISTORY_SIZE", historySize)
-        ));
-    }
+  /**
+   * Creates a new PasswordReusedException with the given human-readable message. The translatable
+   * message is already defined.
+   *
+   * @param message     A human-readable message describing the password policy violation that
+   *                    occurred.
+   * @param historySize The number of previous passwords which are remembered for each user, and
+   *                    must not be reused.
+   */
+  public PasswordReusedException(String message, int historySize) {
+    super(message, new TranslatableMessage(
+        "PASSWORD_POLICY.ERROR_REUSED",
+        Collections.singletonMap("HISTORY_SIZE", historySize)
+    ));
+  }
 
 }

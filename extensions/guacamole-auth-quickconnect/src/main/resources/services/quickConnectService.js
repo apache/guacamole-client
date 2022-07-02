@@ -21,49 +21,49 @@
  * Service for managing quickConnect extension.
  */
 angular.module('guacQuickConnect').factory('quickConnectService', ['$injector',
-        function quickConnectService($injector) {
+  function quickConnectService($injector) {
 
     // Required services
     var authenticationService = $injector.get('authenticationService');
-    var cacheService          = $injector.get('cacheService');
-    var requestService        = $injector.get('requestService');
-    
+    var cacheService = $injector.get('cacheService');
+    var requestService = $injector.get('requestService');
+
     var service = {};
-    
+
     /**
      * Makes a request to the REST API to create a connection, returning a
      * promise that can be used for processing the results of the call.
-     * 
+     *
      * @param {uri} The URI of the connection to create.
-     *                          
+     *
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     save operation is successful.
      */
     service.createConnection = function createConnection(uri) {
-        
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
 
-        return requestService({
-            method  : 'POST',
-            url     : 'api/session/ext/quickconnect/create',
-            params  : httpParameters,
-            data    : $.param({uri: uri}),
-            headers : {'Content-Type': 'application/x-www-form-urlencoded'}
-        })
-        .then(function connectionCreated(connectionId) {
-            // Clear connections and users from cache.
-            cacheService.connections.removeAll();
-            cacheService.users.removeAll();
+      // Build HTTP parameters set
+      var httpParameters = {
+        token: authenticationService.getCurrentToken()
+      };
 
-            // Pass on the connection identifier
-            return connectionId.identifier;
-        });
+      return requestService({
+        method: 'POST',
+        url: 'api/session/ext/quickconnect/create',
+        params: httpParameters,
+        data: $.param({uri: uri}),
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+      })
+      .then(function connectionCreated(connectionId) {
+        // Clear connections and users from cache.
+        cacheService.connections.removeAll();
+        cacheService.users.removeAll();
+
+        // Pass on the connection identifier
+        return connectionId.identifier;
+      });
 
     };
-    
+
     return service;
-}]);
+  }]);

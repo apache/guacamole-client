@@ -35,45 +35,36 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
 
 /**
- * A REST resource which abstracts the operations available on a Directory of
- * ActiveConnections.
+ * A REST resource which abstracts the operations available on a Directory of ActiveConnections.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ActiveConnectionDirectoryResource
-        extends DirectoryResource<ActiveConnection, APIActiveConnection> {
+    extends DirectoryResource<ActiveConnection, APIActiveConnection> {
 
-    /**
-     * Creates a new ActiveConnectionDirectoryResource which exposes the
-     * operations and subresources available for the given ActiveConnection
-     * Directory.
-     *
-     * @param userContext
-     *     The UserContext associated with the given Directory.
-     *
-     * @param directory
-     *     The Directory being exposed.
-     *
-     * @param translator
-     *     A DirectoryObjectTranslator implementation which handles
-     *     ActiveConnections.
-     *
-     * @param resourceFactory
-     *     A factory which can be used to create instances of resources
-     *     representing ActiveConnections.
-     */
-    @AssistedInject
-    public ActiveConnectionDirectoryResource(@Assisted UserContext userContext,
-            @Assisted Directory<ActiveConnection> directory,
-            DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> translator,
-            DirectoryObjectResourceFactory<ActiveConnection, APIActiveConnection> resourceFactory) {
-        super(userContext, directory, translator, resourceFactory);
-    }
+  /**
+   * Creates a new ActiveConnectionDirectoryResource which exposes the operations and subresources
+   * available for the given ActiveConnection Directory.
+   *
+   * @param userContext     The UserContext associated with the given Directory.
+   * @param directory       The Directory being exposed.
+   * @param translator      A DirectoryObjectTranslator implementation which handles
+   *                        ActiveConnections.
+   * @param resourceFactory A factory which can be used to create instances of resources
+   *                        representing ActiveConnections.
+   */
+  @AssistedInject
+  public ActiveConnectionDirectoryResource(@Assisted UserContext userContext,
+      @Assisted Directory<ActiveConnection> directory,
+      DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> translator,
+      DirectoryObjectResourceFactory<ActiveConnection, APIActiveConnection> resourceFactory) {
+    super(userContext, directory, translator, resourceFactory);
+  }
 
-    @Override
-    protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
-            throws GuacamoleException {
-        return permissions.getActiveConnectionPermissions();
-    }
+  @Override
+  protected ObjectPermissionSet getObjectPermissions(Permissions permissions)
+      throws GuacamoleException {
+    return permissions.getActiveConnectionPermissions();
+  }
 
 }

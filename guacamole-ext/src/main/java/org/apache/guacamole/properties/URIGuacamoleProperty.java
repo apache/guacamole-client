@@ -28,22 +28,22 @@ import org.apache.guacamole.GuacamoleServerException;
  * A GuacamoleProperty whose value is a URI.
  */
 public abstract class URIGuacamoleProperty implements GuacamoleProperty<URI> {
-    
-    @Override
-    public URI parseValue(String value) throws GuacamoleException {
-        
-        // If nothing is provided, just return null.
-        if (value == null)
-            return null;
-        
-        try {
-            return new URI(value);
-        }
-        catch (URISyntaxException e) {
-            throw new GuacamoleServerException("Value \"" + value
-                + "\" is not a valid URI.");
-        }
-        
+
+  @Override
+  public URI parseValue(String value) throws GuacamoleException {
+
+    // If nothing is provided, just return null.
+    if (value == null) {
+      return null;
     }
-    
+
+    try {
+      return new URI(value);
+    } catch (URISyntaxException e) {
+      throw new GuacamoleServerException("Value \"" + value
+          + "\" is not a valid URI.");
+    }
+
+  }
+
 }

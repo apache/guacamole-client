@@ -17,12 +17,11 @@
  * under the License.
  */
 
-
 /**
  * Controller for password fields.
  */
 angular.module('form').controller('passwordFieldController', ['$scope',
-    function passwordFieldController($scope) {
+  function passwordFieldController($scope) {
 
     /**
      * The type to use for the input field. By default, the input field will
@@ -43,12 +42,13 @@ angular.module('form').controller('passwordFieldController', ['$scope',
      */
     $scope.getTogglePasswordHelpText = function getTogglePasswordHelpText() {
 
-        // If password is hidden, togglePassword() will show the password
-        if ($scope.passwordInputType === 'password')
-            return 'FORM.HELP_SHOW_PASSWORD';
+      // If password is hidden, togglePassword() will show the password
+      if ($scope.passwordInputType === 'password') {
+        return 'FORM.HELP_SHOW_PASSWORD';
+      }
 
-        // If password is shown, togglePassword() will hide the password
-        return 'FORM.HELP_HIDE_PASSWORD';
+      // If password is shown, togglePassword() will hide the password
+      return 'FORM.HELP_HIDE_PASSWORD';
 
     };
 
@@ -59,14 +59,14 @@ angular.module('form').controller('passwordFieldController', ['$scope',
      */
     $scope.togglePassword = function togglePassword() {
 
-        // If password is hidden, show the password
-        if ($scope.passwordInputType === 'password')
-            $scope.passwordInputType = 'text';
-
-        // If password is shown, hide the password
-        else
-            $scope.passwordInputType = 'password';
+      // If password is hidden, show the password
+      if ($scope.passwordInputType === 'password') {
+        $scope.passwordInputType = 'text';
+      }// If password is shown, hide the password
+      else {
+        $scope.passwordInputType = 'password';
+      }
 
     };
 
-}]);
+  }]);

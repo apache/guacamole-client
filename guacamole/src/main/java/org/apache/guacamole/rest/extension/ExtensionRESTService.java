@@ -28,77 +28,71 @@ import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 
 /**
- * A REST service which provides access to extension-specific REST resources,
- * each exposed by the identifier of that extension's AuthenticationProvider.
+ * A REST service which provides access to extension-specific REST resources, each exposed by the
+ * identifier of that extension's AuthenticationProvider.
  */
 @Path("/ext")
 public class ExtensionRESTService {
 
-    /**
-     * All configured authentication providers.
-     */
-    @Inject
-    private List<AuthenticationProvider> authProviders;
+  /**
+   * All configured authentication providers.
+   */
+  @Inject
+  private List<AuthenticationProvider> authProviders;
 
-    /**
-     * Returns the AuthenticationProvider having the given identifier. If no
-     * such AuthenticationProvider has been loaded, null is returned.
-     *
-     * @param identifier
-     *     The identifier of the AuthenticationProvider to locate.
-     *
-     * @return
-     *     The AuthenticationProvider having the given identifier, or null if
-     *     no such AuthenticationProvider is loaded.
-     */
-    private AuthenticationProvider getAuthenticationProvider(String identifier) {
+  /**
+   * Returns the AuthenticationProvider having the given identifier. If no such
+   * AuthenticationProvider has been loaded, null is returned.
+   *
+   * @param identifier The identifier of the AuthenticationProvider to locate.
+   * @return The AuthenticationProvider having the given identifier, or null if no such
+   * AuthenticationProvider is loaded.
+   */
+  private AuthenticationProvider getAuthenticationProvider(String identifier) {
 
-        // Iterate through all installed AuthenticationProviders, searching for
-        // the given identifier
-        for (AuthenticationProvider authProvider : authProviders) {
-            if (authProvider.getIdentifier().equals(identifier))
-                return authProvider;
-        }
+    // Iterate through all installed AuthenticationProviders, searching for
+    // the given identifier
+    for (AuthenticationProvider authProvider : authProviders) {
+      if (authProvider.getIdentifier().equals(identifier)) {
+        return authProvider;
+      }
+    }
 
-        // No such AuthenticationProvider found
-        return null;
+    // No such AuthenticationProvider found
+    return null;
+
+  }
+
+  /**
+   * Returns the arbitrary REST resource exposed by the AuthenticationProvider having the given
+   * identifier.
+   *
+   * @param identifier The identifier of the AuthenticationProvider whose REST resource should be
+   *                   retrieved.
+   * @return The arbitrary REST resource exposed by the AuthenticationProvider having the given
+   * identifier.
+   * @throws GuacamoleException If no such resource could be found, or if an error occurs while
+   *                            retrieving that resource.
+   */
+  @Path("{identifier}")
+  public Object getExtensionResource(@PathParam("identifier") String identifier)
+      throws GuacamoleException {
+
+    // Retrieve authentication provider having given identifier
+    AuthenticationProvider authProvider = getAuthenticationProvider(identifier);
+    if (authProvider != null) {
+
+      // Pull resource from authentication provider
+      Object resource = authProvider.getResource();
+      if (resource != null) {
+        return resource;
+      }
 
     }
 
-    /**
-     * Returns the arbitrary REST resource exposed by the AuthenticationProvider
-     * having the given identifier.
-     *
-     * @param identifier
-     *     The identifier of the AuthenticationProvider whose REST resource
-     *     should be retrieved.
-     *
-     * @return
-     *     The arbitrary REST resource exposed by the AuthenticationProvider
-     *     having the given identifier.
-     *
-     * @throws GuacamoleException
-     *     If no such resource could be found, or if an error occurs while
-     *     retrieving that resource.
-     */
-    @Path("{identifier}")
-    public Object getExtensionResource(@PathParam("identifier") String identifier)
-            throws GuacamoleException {
+    // AuthenticationProvider-specific resource could not be found
+    throw new GuacamoleResourceNotFoundException("No such resource.");
 
-        // Retrieve authentication provider having given identifier
-        AuthenticationProvider authProvider = getAuthenticationProvider(identifier);
-        if (authProvider != null) {
-
-            // Pull resource from authentication provider
-            Object resource = authProvider.getResource();
-            if (resource != null)
-                return resource;
-
-        }
-
-        // AuthenticationProvider-specific resource could not be found
-        throw new GuacamoleResourceNotFoundException("No such resource.");
-
-    }
+  }
 
 }

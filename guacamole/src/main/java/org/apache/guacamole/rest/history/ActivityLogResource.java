@@ -30,48 +30,42 @@ import org.apache.guacamole.net.auth.ActivityLog;
  */
 public class ActivityLogResource {
 
-    /**
-     * The ActivityLog whose contents are being exposed.
-     */
-    private final ActivityLog log;
+  /**
+   * The ActivityLog whose contents are being exposed.
+   */
+  private final ActivityLog log;
 
-    /**
-     * Creates a new ActivityLogResource which exposes the records within the
-     * given ActivityLog.
-     *
-     * @param log
-     *     The ActivityLog whose contents should be exposed.
-     */
-    public ActivityLogResource(ActivityLog log) {
-        this.log = log;
+  /**
+   * Creates a new ActivityLogResource which exposes the records within the given ActivityLog.
+   *
+   * @param log The ActivityLog whose contents should be exposed.
+   */
+  public ActivityLogResource(ActivityLog log) {
+    this.log = log;
+  }
+
+  /**
+   * Returns the raw contents of the underlying ActivityLog. If the size of the ActivityLog is
+   * known, this size is included as the "Content-Length" of the response.
+   *
+   * @return A Response containing the raw contents of the underlying ActivityLog.
+   * @throws GuacamoleException If an error prevents retrieving the content of the log or its size.
+   */
+  @GET
+  public Response getContents() throws GuacamoleException {
+
+    // Build base response exposing the raw contents of the underlying log
+    ResponseBuilder response = Response.ok(log.getContent(),
+        log.getType().getContentType());
+
+    // Include size, if known
+    long size = log.getSize();
+    if (size >= 0) {
+      response.header("Content-Length", size);
     }
 
-    /**
-     * Returns the raw contents of the underlying ActivityLog. If the size of
-     * the ActivityLog is known, this size is included as the "Content-Length"
-     * of the response.
-     *
-     * @return
-     *     A Response containing the raw contents of the underlying
-     *     ActivityLog.
-     *
-     * @throws GuacamoleException
-     *     If an error prevents retrieving the content of the log or its size.
-     */
-    @GET
-    public Response getContents() throws GuacamoleException {
+    return response.build();
 
-        // Build base response exposing the raw contents of the underlying log
-        ResponseBuilder response = Response.ok(log.getContent(),
-                log.getType().getContentType());
-
-        // Include size, if known
-        long size = log.getSize();
-        if (size >= 0)
-            response.header("Content-Length", size);
-
-        return response.build();
-
-    }
+  }
 
 }

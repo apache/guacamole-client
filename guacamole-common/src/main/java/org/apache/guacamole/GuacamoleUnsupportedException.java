@@ -23,44 +23,41 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
 
 
 /**
- * An exception which is thrown when the requested operation is unsupported
- * or unimplemented.
+ * An exception which is thrown when the requested operation is unsupported or unimplemented.
  */
 public class GuacamoleUnsupportedException extends GuacamoleServerException {
 
-    /**
-     * Creates a new GuacamoleUnsupportedException with the given message and cause.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleUnsupportedException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Creates a new GuacamoleUnsupportedException with the given message and cause.
+   *
+   * @param message A human readable description of the exception that occurred.
+   * @param cause   The cause of this exception.
+   */
+  public GuacamoleUnsupportedException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * Creates a new GuacamoleUnsupportedException with the given message.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     */
-    public GuacamoleUnsupportedException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new GuacamoleUnsupportedException with the given message.
+   *
+   * @param message A human readable description of the exception that occurred.
+   */
+  public GuacamoleUnsupportedException(String message) {
+    super(message);
+  }
 
-    /**
-     * Creates a new GuacamoleUnsupportedException with the given cause.
-     *
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleUnsupportedException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Creates a new GuacamoleUnsupportedException with the given cause.
+   *
+   * @param cause The cause of this exception.
+   */
+  public GuacamoleUnsupportedException(Throwable cause) {
+    super(cause);
+  }
 
-    @Override
-    public GuacamoleStatus getStatus() {
-        return GuacamoleStatus.UNSUPPORTED;
-    }
+  @Override
+  public GuacamoleStatus getStatus() {
+    return GuacamoleStatus.UNSUPPORTED;
+  }
 
 }

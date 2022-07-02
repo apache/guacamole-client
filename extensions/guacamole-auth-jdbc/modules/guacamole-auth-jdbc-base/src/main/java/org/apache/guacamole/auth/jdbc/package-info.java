@@ -18,9 +18,9 @@
  */
 
 /**
- * The base JDBC authentication provider. This authentication provider serves
- * as a basis for other JDBC authentication provider implementations which are
- * driven by relatively-common schemas. The only difference between such
- * implementations are maintained within database-specific MyBatis mappings.
+ * The base JDBC authentication provider. This authentication provider serves as a basis for other
+ * JDBC authentication provider implementations which are driven by relatively-common schemas. The
+ * only difference between such implementations are maintained within database-specific MyBatis
+ * mappings.
  */
 package org.apache.guacamole.auth.jdbc;

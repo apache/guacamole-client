@@ -27,20 +27,20 @@ import org.apache.guacamole.GuacamoleServerException;
  */
 public abstract class IntegerGuacamoleProperty implements GuacamoleProperty<Integer> {
 
-    @Override
-    public Integer parseValue(String value) throws GuacamoleException {
+  @Override
+  public Integer parseValue(String value) throws GuacamoleException {
 
-        // If no property provided, return null.
-        if (value == null)
-            return null;
-
-        try {
-            return Integer.valueOf(value);
-        }
-        catch (NumberFormatException e) {
-            throw new GuacamoleServerException("Property \"" + getName() + "\" must be an integer.", e);
-        }
-
+    // If no property provided, return null.
+    if (value == null) {
+      return null;
     }
+
+    try {
+      return Integer.valueOf(value);
+    } catch (NumberFormatException e) {
+      throw new GuacamoleServerException("Property \"" + getName() + "\" must be an integer.", e);
+    }
+
+  }
 
 }

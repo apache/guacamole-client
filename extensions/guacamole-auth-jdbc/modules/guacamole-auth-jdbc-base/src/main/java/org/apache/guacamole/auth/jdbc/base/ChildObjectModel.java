@@ -20,44 +20,41 @@
 package org.apache.guacamole.auth.jdbc.base;
 
 /**
- * Object representation of a Guacamole object which can be the child of another
- * object, such as a connection or sharing profile, as represented in the
- * database.
+ * Object representation of a Guacamole object which can be the child of another object, such as a
+ * connection or sharing profile, as represented in the database.
  */
 public abstract class ChildObjectModel extends ObjectModel {
 
-    /**
-     * The unique identifier which identifies the parent of this object.
-     */
-    private String parentIdentifier;
-    
-    /**
-     * Creates a new, empty object.
-     */
-    public ChildObjectModel() {
-    }
+  /**
+   * The unique identifier which identifies the parent of this object.
+   */
+  private String parentIdentifier;
 
-    /**
-     * Returns the identifier of the parent connection group, or null if the
-     * parent connection group is the root connection group.
-     *
-     * @return 
-     *     The identifier of the parent connection group, or null if the parent
-     *     connection group is the root connection group.
-     */
-    public String getParentIdentifier() {
-        return parentIdentifier;
-    }
+  /**
+   * Creates a new, empty object.
+   */
+  public ChildObjectModel() {
+  }
 
-    /**
-     * Sets the identifier of the parent connection group.
-     *
-     * @param parentIdentifier
-     *     The identifier of the parent connection group, or null if the parent
-     *     connection group is the root connection group.
-     */
-    public void setParentIdentifier(String parentIdentifier) {
-        this.parentIdentifier = parentIdentifier;
-    }
+  /**
+   * Returns the identifier of the parent connection group, or null if the parent connection group
+   * is the root connection group.
+   *
+   * @return The identifier of the parent connection group, or null if the parent connection group
+   * is the root connection group.
+   */
+  public String getParentIdentifier() {
+    return parentIdentifier;
+  }
+
+  /**
+   * Sets the identifier of the parent connection group.
+   *
+   * @param parentIdentifier The identifier of the parent connection group, or null if the parent
+   *                         connection group is the root connection group.
+   */
+  public void setParentIdentifier(String parentIdentifier) {
+    this.parentIdentifier = parentIdentifier;
+  }
 
 }

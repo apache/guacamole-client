@@ -21,70 +21,70 @@
 .user-group,
 .connection-group,
 .connection {
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .user a,
 .user-group a,
 .connection a,
 .connection-group a {
-    text-decoration:none;
-    color: black;
+  text-decoration: none;
+  color: black;
 }
 
 .user a:hover,
 .user-group a:hover,
 .connection a:hover,
 .connection-group a:hover {
-    text-decoration:none;
-    color: black;
+  text-decoration: none;
+  color: black;
 }
 
 .user a:visited,
 .user-group a:visited,
 .connection a:visited,
 .connection-group a:visited {
-    text-decoration:none;
-    color: black;
+  text-decoration: none;
+  color: black;
 }
 
 .recent-connections .connection:hover {
-    background: #CDA;
+  background: #CDA;
 }
 
 .recent-connections .connection .thumbnail {
-    display: block;
-    margin: 0.5em;
+  display: block;
+  margin: 0.5em;
 }
 
 .recent-connections .connection .thumbnail > * {
-    border: 1px solid black;
-    background: black;
-    box-shadow: 1px 1px 5px black;
-    max-width: 75%;
-    display: inline-block;
+  border: 1px solid black;
+  background: black;
+  box-shadow: 1px 1px 5px black;
+  max-width: 75%;
+  display: inline-block;
 }
 
 .caption * {
-    vertical-align: middle;
+  vertical-align: middle;
 }
 
 .caption .choice {
-    display: inline-block;
+  display: inline-block;
 }
 
 .caption .name {
-    margin-left: 0.25em;
+  margin-left: 0.25em;
 }
 
 .placeholder {
 
-    color: rgba(255, 255, 255, 0.5);
-    text-shadow: -1px -1px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    opacity: 0.5;
+  color: rgba(255, 255, 255, 0.5);
+  text-shadow: -1px -1px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  opacity: 0.5;
 
-    font-size: 2em;
-    font-weight: bolder;
+  font-size: 2em;
+  font-weight: bolder;
 
 }

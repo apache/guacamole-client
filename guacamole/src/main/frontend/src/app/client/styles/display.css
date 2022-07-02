@@ -18,49 +18,49 @@
  */
 
 .software-cursor {
-    cursor: url('images/mouse/blank.gif'),url('images/mouse/blank.cur'),default;
-    overflow: hidden;
-    cursor: none;
+  cursor: url('images/mouse/blank.gif'), url('images/mouse/blank.cur'), default;
+  overflow: hidden;
+  cursor: none;
 }
 
 .guac-error .software-cursor {
-    cursor: default;
+  cursor: default;
 }
 
 div.main {
-    overflow: auto;
-    width: 100%;
-    height: 100%;
-    position: relative;
-    font-size: 0px;
+  overflow: auto;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  font-size: 0px;
 }
 
 div.displayOuter {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: table;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: table;
 }
 
 div.displayMiddle {
-    width: 100%;
-    height: 100%;
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
+  width: 100%;
+  height: 100%;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
 }
 
 div.display {
-    display: inline-block;
+  display: inline-block;
 }
 
 div.display * {
-    position: relative;
+  position: relative;
 }
 
 div.display > * {
-    margin-left: auto;
-    margin-right: auto;
+  margin-left: auto;
+  margin-right: auto;
 }

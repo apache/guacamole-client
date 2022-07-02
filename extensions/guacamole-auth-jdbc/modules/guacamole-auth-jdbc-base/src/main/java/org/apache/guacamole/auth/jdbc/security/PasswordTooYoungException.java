@@ -23,29 +23,25 @@ import java.util.Collections;
 import org.apache.guacamole.language.TranslatableMessage;
 
 /**
- * Thrown when an attempt is made to set a user's password before sufficient
- * time has elapsed since the password was last reset, in violation of the
- * defined password policy.
+ * Thrown when an attempt is made to set a user's password before sufficient time has elapsed since
+ * the password was last reset, in violation of the defined password policy.
  */
 public class PasswordTooYoungException extends PasswordPolicyException {
 
-    /**
-     * Creates a new PasswordTooYoungException with the given human-readable
-     * message. The translatable message is already defined.
-     *
-     * @param message
-     *     A human-readable message describing the password policy violation
-     *     that occurred.
-     *
-     * @param wait
-     *     The number of days the user should wait before attempting to reset
-     *     the password again.
-     */
-    public PasswordTooYoungException(String message, long wait) {
-        super(message, new TranslatableMessage(
-            "PASSWORD_POLICY.ERROR_TOO_YOUNG",
-            Collections.singletonMap("WAIT", wait)
-        ));
-    }
+  /**
+   * Creates a new PasswordTooYoungException with the given human-readable message. The translatable
+   * message is already defined.
+   *
+   * @param message A human-readable message describing the password policy violation that
+   *                occurred.
+   * @param wait    The number of days the user should wait before attempting to reset the password
+   *                again.
+   */
+  public PasswordTooYoungException(String message, long wait) {
+    super(message, new TranslatableMessage(
+        "PASSWORD_POLICY.ERROR_TOO_YOUNG",
+        Collections.singletonMap("WAIT", wait)
+    ));
+  }
 
 }

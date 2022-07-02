@@ -30,66 +30,48 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ConnectionGroupMapper extends ModeledDirectoryObjectMapper<ConnectionGroupModel> {
 
-    /**
-     * Selects the identifiers of all connection groups within the given parent
-     * connection group, regardless of whether they are readable by any
-     * particular user. This should only be called on behalf of a system
-     * administrator. If identifiers are needed by a non-administrative user
-     * who must have explicit read rights, use
-     * selectReadableIdentifiersWithin() instead.
-     *
-     * @param parentIdentifier
-     *     The identifier of the parent connection group, or null if the root
-     *     connection group is to be queried.
-     *
-     * @return
-     *     A Set containing all identifiers of all objects.
-     */
-    Set<String> selectIdentifiersWithin(@Param("parentIdentifier") String parentIdentifier);
-    
-    /**
-     * Selects the identifiers of all connection groups within the given parent
-     * connection group that are explicitly readable by the given user. If
-     * identifiers are needed by a system administrator (who, by definition,
-     * does not need explicit read rights), use selectIdentifiersWithin()
-     * instead.
-     *
-     * @param user
-     *    The user whose permissions should determine whether an identifier
-     *    is returned.
-     *
-     * @param parentIdentifier
-     *     The identifier of the parent connection group, or null if the root
-     *     connection group is to be queried.
-     *
-     * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
-     *
-     * @return
-     *     A Set containing all identifiers of all readable objects.
-     */
-    Set<String> selectReadableIdentifiersWithin(@Param("user") UserModel user,
-            @Param("parentIdentifier") String parentIdentifier,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+  /**
+   * Selects the identifiers of all connection groups within the given parent connection group,
+   * regardless of whether they are readable by any particular user. This should only be called on
+   * behalf of a system administrator. If identifiers are needed by a non-administrative user who
+   * must have explicit read rights, use selectReadableIdentifiersWithin() instead.
+   *
+   * @param parentIdentifier The identifier of the parent connection group, or null if the root
+   *                         connection group is to be queried.
+   * @return A Set containing all identifiers of all objects.
+   */
+  Set<String> selectIdentifiersWithin(@Param("parentIdentifier") String parentIdentifier);
 
-    /**
-     * Selects the connection group within the given parent group and having
-     * the given name. If no such connection group exists, null is returned.
-     *
-     * @param parentIdentifier
-     *     The identifier of the parent group to search within.
-     *
-     * @param name
-     *     The name of the connection group to find.
-     *
-     * @return
-     *     The connection group having the given name within the given parent
-     *     group, or null if no such connection group exists.
-     */
-    ConnectionGroupModel selectOneByName(@Param("parentIdentifier") String parentIdentifier,
-            @Param("name") String name);
-    
+  /**
+   * Selects the identifiers of all connection groups within the given parent connection group that
+   * are explicitly readable by the given user. If identifiers are needed by a system administrator
+   * (who, by definition, does not need explicit read rights), use selectIdentifiersWithin()
+   * instead.
+   *
+   * @param user             The user whose permissions should determine whether an identifier is
+   *                         returned.
+   * @param parentIdentifier The identifier of the parent connection group, or null if the root
+   *                         connection group is to be queried.
+   * @param effectiveGroups  The identifiers of all groups that should be taken into account when
+   *                         determining the permissions effectively granted to the user. If no
+   *                         groups are given, only permissions directly granted to the user will be
+   *                         used.
+   * @return A Set containing all identifiers of all readable objects.
+   */
+  Set<String> selectReadableIdentifiersWithin(@Param("user") UserModel user,
+      @Param("parentIdentifier") String parentIdentifier,
+      @Param("effectiveGroups") Collection<String> effectiveGroups);
+
+  /**
+   * Selects the connection group within the given parent group and having the given name. If no
+   * such connection group exists, null is returned.
+   *
+   * @param parentIdentifier The identifier of the parent group to search within.
+   * @param name             The name of the connection group to find.
+   * @return The connection group having the given name within the given parent group, or null if no
+   * such connection group exists.
+   */
+  ConnectionGroupModel selectOneByName(@Param("parentIdentifier") String parentIdentifier,
+      @Param("name") String name);
+
 }

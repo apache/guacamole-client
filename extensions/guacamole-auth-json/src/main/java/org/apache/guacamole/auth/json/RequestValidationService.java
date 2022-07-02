@@ -33,70 +33,72 @@ import org.springframework.security.web.util.matcher.IpAddressMatcher;
  */
 public class RequestValidationService {
 
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(RequestValidationService.class);
+  /**
+   * Logger for this class.
+   */
+  private static final Logger logger = LoggerFactory.getLogger(RequestValidationService.class);
 
-    /**
-     * Service for retrieving configuration information regarding the
-     * JSONAuthenticationProvider.
-     */
-    @Inject
-    private ConfigurationService confService;
+  /**
+   * Service for retrieving configuration information regarding the JSONAuthenticationProvider.
+   */
+  @Inject
+  private ConfigurationService confService;
 
-    /**
-     * Returns whether the given request can be used for authentication, taking
-     * into account restrictions specified within guacamole.properties.
-     *
-     * @param request
-     *     The HTTP request to test.
-     *
-     * @return
-     *     true if the given request comes from a trusted source and can be
-     *     used for authentication, false otherwise.
-     */
-    public boolean isAuthenticationAllowed(HttpServletRequest request) {
+  /**
+   * Returns whether the given request can be used for authentication, taking into account
+   * restrictions specified within guacamole.properties.
+   *
+   * @param request The HTTP request to test.
+   * @return true if the given request comes from a trusted source and can be used for
+   * authentication, false otherwise.
+   */
+  public boolean isAuthenticationAllowed(HttpServletRequest request) {
 
-        // Pull list of all trusted networks
-        Collection<String> trustedNetworks;
-        try {
-            trustedNetworks = confService.getTrustedNetworks();
-        }
+    // Pull list of all trusted networks
+    Collection<String> trustedNetworks;
+    try {
+      trustedNetworks = confService.getTrustedNetworks();
+    }
 
-        // Deny all requests if restrictions cannot be parsed
-        catch (GuacamoleException e) {
-            logger.warn("Authentication request from \"{}\" is DENIED due to parse error: {}", request.getRemoteAddr(), e.getMessage());
-            logger.debug("Error parsing authentication request restrictions from guacamole.properties.", e);
-            return false;
-        }
+    // Deny all requests if restrictions cannot be parsed
+    catch (GuacamoleException e) {
+      logger.warn("Authentication request from \"{}\" is DENIED due to parse error: {}",
+          request.getRemoteAddr(), e.getMessage());
+      logger.debug("Error parsing authentication request restrictions from guacamole.properties.",
+          e);
+      return false;
+    }
 
-        // All requests are allowed if no restrictions are defined
-        if (trustedNetworks.isEmpty()) {
-            logger.debug("Authentication request from \"{}\" is ALLOWED (no restrictions).", request.getRemoteAddr());
-            return true;
-        }
+    // All requests are allowed if no restrictions are defined
+    if (trustedNetworks.isEmpty()) {
+      logger.debug("Authentication request from \"{}\" is ALLOWED (no restrictions).",
+          request.getRemoteAddr());
+      return true;
+    }
 
-        // Build matchers for each trusted network
-        Collection<IpAddressMatcher> matchers = new ArrayList<>(trustedNetworks.size());
-        for (String network : trustedNetworks)
-            matchers.add(new IpAddressMatcher(network));
+    // Build matchers for each trusted network
+    Collection<IpAddressMatcher> matchers = new ArrayList<>(trustedNetworks.size());
+    for (String network : trustedNetworks) {
+      matchers.add(new IpAddressMatcher(network));
+    }
 
-        // Otherwise ensure at least one subnet matches
-        for (IpAddressMatcher matcher : matchers) {
+    // Otherwise ensure at least one subnet matches
+    for (IpAddressMatcher matcher : matchers) {
 
-            // Request is allowed if any subnet matches
-            if (matcher.matches(request)) {
-                logger.debug("Authentication request from \"{}\" is ALLOWED (matched subnet).", request.getRemoteAddr());
-                return true;
-            }
-
-        }
-
-        // Otherwise request is denied - no subnets matched
-        logger.debug("Authentication request from \"{}\" is DENIED (did not match subnet).", request.getRemoteAddr());
-        return false;
+      // Request is allowed if any subnet matches
+      if (matcher.matches(request)) {
+        logger.debug("Authentication request from \"{}\" is ALLOWED (matched subnet).",
+            request.getRemoteAddr());
+        return true;
+      }
 
     }
+
+    // Otherwise request is denied - no subnets matched
+    logger.debug("Authentication request from \"{}\" is DENIED (did not match subnet).",
+        request.getRemoteAddr());
+    return false;
+
+  }
 
 }

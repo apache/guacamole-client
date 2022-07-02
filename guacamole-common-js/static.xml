@@ -18,25 +18,25 @@
     under the License.
 -->
 <assembly>
-    <baseDirectory>guacamole-common-js</baseDirectory>
-    <id>guacamole-common-js</id>
-    <formats>
-        <format>zip</format>
-    </formats>
-    <fileSets>
-        <fileSet>
-            <directory>src/main/webapp/modules/</directory>
-            <includes>
-                <include>*.js</include>
-            </includes>
-            <outputDirectory>modules/</outputDirectory>
-        </fileSet>
-        <fileSet>
-            <directory>target/${project.name}-${project.version}/</directory>
-            <includes>
-                <include>*.js</include>
-            </includes>
-            <outputDirectory></outputDirectory>
-        </fileSet>
-    </fileSets>
+  <baseDirectory>guacamole-common-js</baseDirectory>
+  <fileSets>
+    <fileSet>
+      <directory>src/main/webapp/modules/</directory>
+      <includes>
+        <include>*.js</include>
+      </includes>
+      <outputDirectory>modules/</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>target/${project.name}-${project.version}/</directory>
+      <includes>
+        <include>*.js</include>
+      </includes>
+      <outputDirectory></outputDirectory>
+    </fileSet>
+  </fileSets>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <id>guacamole-common-js</id>
 </assembly>

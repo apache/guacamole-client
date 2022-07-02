@@ -20,8 +20,8 @@
 .settings.connections .connection-list .new-connection,
 .settings.connections .connection-list .new-connection-group,
 .settings.connections .connection-list .new-sharing-profile {
-    opacity: 0.5;
-    font-style: italic;
+  opacity: 0.5;
+  font-style: italic;
 }
 
 .settings.connections .connection-list .new-connection a,
@@ -33,6 +33,6 @@
 .settings.connections .connection-list .new-sharing-profile a,
 .settings.connections .connection-list .new-sharing-profile a:hover,
 .settings.connections .connection-list .new-sharing-profile a:visited {
-    text-decoration:none;
-    color: black;
+  text-decoration: none;
+  color: black;
 }

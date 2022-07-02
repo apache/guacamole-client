@@ -24,30 +24,31 @@
  */
 angular.module('index').filter('resolve', [function resolveFilter() {
 
-    /**
-     * The name of the property to use to store the resolved promise value.
-     *
-     * @type {!string}
-     */
-    const RESOLVED_VALUE_KEY = '_guac_resolveFilter_resolvedValue';
+  /**
+   * The name of the property to use to store the resolved promise value.
+   *
+   * @type {!string}
+   */
+  const RESOLVED_VALUE_KEY = '_guac_resolveFilter_resolvedValue';
 
-    return function resolveFilter(promise) {
+  return function resolveFilter(promise) {
 
-        if (!promise)
-            return null;
+    if (!promise) {
+      return null;
+    }
 
-        // Assign value to RESOLVED_VALUE_KEY automatically upon resolution of
-        // the received promise
-        if (!(RESOLVED_VALUE_KEY in promise)) {
-            promise[RESOLVED_VALUE_KEY] = null;
-            promise.then((value) => {
-                return promise[RESOLVED_VALUE_KEY] = value; 
-            });
-        }
+    // Assign value to RESOLVED_VALUE_KEY automatically upon resolution of
+    // the received promise
+    if (!(RESOLVED_VALUE_KEY in promise)) {
+      promise[RESOLVED_VALUE_KEY] = null;
+      promise.then((value) => {
+        return promise[RESOLVED_VALUE_KEY] = value;
+      });
+    }
 
-        // Always return cached value
-        return promise[RESOLVED_VALUE_KEY];
+    // Always return cached value
+    return promise[RESOLVED_VALUE_KEY];
 
-    };
+  };
 
 }]);

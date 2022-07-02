@@ -21,7 +21,7 @@ var Guacamole = Guacamole || {};
 
 /**
  * Abstract stream which can receive data.
- * 
+ *
  * @constructor
  * @param {!Guacamole.Client} client
  *     The client owning this stream.
@@ -29,47 +29,47 @@ var Guacamole = Guacamole || {};
  * @param {!number} index
  *     The index of this stream.
  */
-Guacamole.OutputStream = function(client, index) {
+Guacamole.OutputStream = function (client, index) {
 
-    /**
-     * Reference to this stream.
-     *
-     * @private
-     * @type {!Guacamole.OutputStream}
-     */
-    var guac_stream = this;
+  /**
+   * Reference to this stream.
+   *
+   * @private
+   * @type {!Guacamole.OutputStream}
+   */
+  var guac_stream = this;
 
-    /**
-     * The index of this stream.
-     * @type {!number}
-     */
-    this.index = index;
+  /**
+   * The index of this stream.
+   * @type {!number}
+   */
+  this.index = index;
 
-    /**
-     * Fired whenever an acknowledgement is received from the server, indicating
-     * that a stream operation has completed, or an error has occurred.
-     * 
-     * @event
-     * @param {!Guacamole.Status} status
-     *     The status of the operation.
-     */
-    this.onack = null;
+  /**
+   * Fired whenever an acknowledgement is received from the server, indicating
+   * that a stream operation has completed, or an error has occurred.
+   *
+   * @event
+   * @param {!Guacamole.Status} status
+   *     The status of the operation.
+   */
+  this.onack = null;
 
-    /**
-     * Writes the given base64-encoded data to this stream as a blob.
-     * 
-     * @param {!string} data
-     *     The base64-encoded data to send.
-     */
-    this.sendBlob = function(data) {
-        client.sendBlob(guac_stream.index, data);
-    };
+  /**
+   * Writes the given base64-encoded data to this stream as a blob.
+   *
+   * @param {!string} data
+   *     The base64-encoded data to send.
+   */
+  this.sendBlob = function (data) {
+    client.sendBlob(guac_stream.index, data);
+  };
 
-    /**
-     * Closes this stream.
-     */
-    this.sendEnd = function() {
-        client.endStream(guac_stream.index);
-    };
+  /**
+   * Closes this stream.
+   */
+  this.sendEnd = function () {
+    client.endStream(guac_stream.index);
+  };
 
 };

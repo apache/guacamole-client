@@ -22,56 +22,42 @@ package org.apache.guacamole.net.auth;
 import org.apache.guacamole.GuacamoleException;
 
 /**
- * A user group of the Guacamole web application. Each user group may contain
- * any number of Guacamole users and other user groups, and defines the
- * permissions implicitly granted to its members.
+ * A user group of the Guacamole web application. Each user group may contain any number of
+ * Guacamole users and other user groups, and defines the permissions implicitly granted to its
+ * members.
  */
 public interface UserGroup extends Identifiable, Attributes, Permissions {
 
-    /**
-     * Returns a set of all readable user groups of which this user group is a
-     * member. If permission is granted for the current user to modify the
-     * membership of this user group, then the returned set will be mutable,
-     * and any such modifications should be made through changes to the
-     * returned set.
-     *
-     * @return
-     *     The set of all readable user groups of which this user group is a
-     *     member.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the user groups.
-     */
-    RelatedObjectSet getUserGroups() throws GuacamoleException;
+  /**
+   * Returns a set of all readable user groups of which this user group is a member. If permission
+   * is granted for the current user to modify the membership of this user group, then the returned
+   * set will be mutable, and any such modifications should be made through changes to the returned
+   * set.
+   *
+   * @return The set of all readable user groups of which this user group is a member.
+   * @throws GuacamoleException If an error occurs while retrieving the user groups.
+   */
+  RelatedObjectSet getUserGroups() throws GuacamoleException;
 
-    /**
-     * Returns a set of all readable users that are members of this user group.
-     * If permission is granted for the current user to modify the members of
-     * this group, then the returned set will be mutable, and any such
-     * modifications should be made through changes to the returned set.
-     *
-     * @return
-     *     The set all readable users that are members of this user group,
-     *     which may be mutable.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the users.
-     */
-    RelatedObjectSet getMemberUsers() throws GuacamoleException;
+  /**
+   * Returns a set of all readable users that are members of this user group. If permission is
+   * granted for the current user to modify the members of this group, then the returned set will be
+   * mutable, and any such modifications should be made through changes to the returned set.
+   *
+   * @return The set all readable users that are members of this user group, which may be mutable.
+   * @throws GuacamoleException If an error occurs while retrieving the users.
+   */
+  RelatedObjectSet getMemberUsers() throws GuacamoleException;
 
-    /**
-     * Returns a set of all readable user groups that are members of this user
-     * group. If permission is granted for the current user to modify the
-     * members of this group, then the returned set will be mutable, and any
-     * such modifications should be made through changes to the returned set.
-     *
-     * @return
-     *     The set of all readable user groups that are members of this user
-     *     group, which may be mutable.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the user groups.
-     */
-    RelatedObjectSet getMemberUserGroups() throws GuacamoleException;
+  /**
+   * Returns a set of all readable user groups that are members of this user group. If permission is
+   * granted for the current user to modify the members of this group, then the returned set will be
+   * mutable, and any such modifications should be made through changes to the returned set.
+   *
+   * @return The set of all readable user groups that are members of this user group, which may be
+   * mutable.
+   * @throws GuacamoleException If an error occurs while retrieving the user groups.
+   */
+  RelatedObjectSet getMemberUserGroups() throws GuacamoleException;
 
 }

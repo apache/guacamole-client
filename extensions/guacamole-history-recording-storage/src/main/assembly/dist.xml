@@ -18,36 +18,36 @@
     under the License.
 -->
 <assembly
-    xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
 
-    <id>dist</id>
-    <baseDirectory>${project.artifactId}-${project.version}</baseDirectory>
+  <baseDirectory>${project.artifactId}-${project.version}</baseDirectory>
+  <fileSets>
 
-    <!-- Output tar.gz -->
-    <formats>
-        <format>tar.gz</format>
-    </formats>
+    <!-- Include licenses -->
+    <fileSet>
+      <directory>target/licenses</directory>
+      <outputDirectory></outputDirectory>
+    </fileSet>
 
-    <!-- Include licenses and extension .jar -->
-    <fileSets>
+    <!-- Include extension .jar -->
+    <fileSet>
+      <directory>target</directory>
+      <includes>
+        <include>*.jar</include>
+      </includes>
+      <outputDirectory></outputDirectory>
+    </fileSet>
 
-        <!-- Include licenses -->
-        <fileSet>
-            <outputDirectory></outputDirectory>
-            <directory>target/licenses</directory>
-        </fileSet>
+  </fileSets>
 
-        <!-- Include extension .jar -->
-        <fileSet>
-            <directory>target</directory>
-            <outputDirectory></outputDirectory>
-            <includes>
-                <include>*.jar</include>
-            </includes>
-        </fileSet>
+  <!-- Output tar.gz -->
+  <formats>
+    <format>tar.gz</format>
+  </formats>
 
-    </fileSets>
+  <!-- Include licenses and extension .jar -->
+  <id>dist</id>
 
 </assembly>

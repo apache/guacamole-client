@@ -31,46 +31,43 @@ import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
- * JAX-RS Application which serves as the root definition of the Guacamole
- * REST API. The HK2 dependency injection used by Jersey is automatically
- * bridged to Guice, allowing injections managed by Guice to be injected within
- * classes served by Jersey.
+ * JAX-RS Application which serves as the root definition of the Guacamole REST API. The HK2
+ * dependency injection used by Jersey is automatically bridged to Guice, allowing injections
+ * managed by Guice to be injected within classes served by Jersey.
  */
 @ApplicationPath("/*")
 public class GuacamoleApplication extends ResourceConfig {
 
-    /**
-     * Creates a new GuacamoleApplication which defines the Guacamole REST API,
-     * automatically configuring Jersey's HK2 dependency injection to
-     * additionally pull services from a Guice injector.
-     *
-     * @param servletContext
-     *     The ServletContext which has already associated with a Guice
-     *     injector via a GuacamoleServletContextListener.
-     *
-     * @param serviceLocator
-     *     The HK2 service locator (injector).
-     */
-    @Inject
-    public GuacamoleApplication(ServletContext servletContext,
-            ServiceLocator serviceLocator) {
+  /**
+   * Creates a new GuacamoleApplication which defines the Guacamole REST API, automatically
+   * configuring Jersey's HK2 dependency injection to additionally pull services from a Guice
+   * injector.
+   *
+   * @param servletContext The ServletContext which has already associated with a Guice injector via
+   *                       a GuacamoleServletContextListener.
+   * @param serviceLocator The HK2 service locator (injector).
+   */
+  @Inject
+  public GuacamoleApplication(ServletContext servletContext,
+      ServiceLocator serviceLocator) {
 
-        // Bridge Jersey logging (java.util.logging) to SLF4J
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
+    // Bridge Jersey logging (java.util.logging) to SLF4J
+    SLF4JBridgeHandler.removeHandlersForRootLogger();
+    SLF4JBridgeHandler.install();
 
-        // Bridge HK2 service locator with Guice injector
-        Injector guiceInjector = (Injector) servletContext.getAttribute(GuacamoleServletContextListener.GUICE_INJECTOR);
-        GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
-        GuiceIntoHK2Bridge bridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
-        bridge.bridgeGuiceInjector(guiceInjector);
+    // Bridge HK2 service locator with Guice injector
+    Injector guiceInjector = (Injector) servletContext.getAttribute(
+        GuacamoleServletContextListener.GUICE_INJECTOR);
+    GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
+    GuiceIntoHK2Bridge bridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
+    bridge.bridgeGuiceInjector(guiceInjector);
 
-        // Automatically scan for REST resources
-        packages("org.apache.guacamole.rest");
+    // Automatically scan for REST resources
+    packages("org.apache.guacamole.rest");
 
-        // Use Jackson for JSON
-        register(JacksonFeature.class);
+    // Use Jackson for JSON
+    register(JacksonFeature.class);
 
-    }
+  }
 
 }

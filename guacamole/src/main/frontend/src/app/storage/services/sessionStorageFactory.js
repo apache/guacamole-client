@@ -24,33 +24,34 @@
  * persist new values, and attempts to retrieve the existing value will result
  * only in the default value.
  */
-angular.module('storage').factory('sessionStorageFactory', ['$injector', function sessionStorageFactory($injector) {
+angular.module('storage').factory('sessionStorageFactory',
+    ['$injector', function sessionStorageFactory($injector) {
 
-    // Required services
-    var $rootScope            = $injector.get('$rootScope');
-    var authenticationService = $injector.get('authenticationService');
+      // Required services
+      var $rootScope = $injector.get('$rootScope');
+      var authenticationService = $injector.get('authenticationService');
 
-    var service = {};
+      var service = {};
 
-    /**
-     * Creates session-local storage that uses the provided default value or
-     * getter to obtain new values as necessary. Beware that if the default is
-     * an object, the resulting getter provide deep copies for new values.
-     *
-     * @param {Function|*} [template]
-     *     The default value for new users, or a getter which returns a newly-
-     *     created default value.
-     *
-     * @param {Function} [destructor]
-     *     Function which will be called just before the stored value is
-     *     destroyed on logout, if a value is stored.
-     *
-     * @returns {Function}
-     *     A getter/setter which returns or sets the current value of the new
-     *     session-local storage. Newly-set values will only persist of the
-     *     user is actually logged in.
-     */
-    service.create = function create(template, destructor) {
+      /**
+       * Creates session-local storage that uses the provided default value or
+       * getter to obtain new values as necessary. Beware that if the default is
+       * an object, the resulting getter provide deep copies for new values.
+       *
+       * @param {Function|*} [template]
+       *     The default value for new users, or a getter which returns a newly-
+       *     created default value.
+       *
+       * @param {Function} [destructor]
+       *     Function which will be called just before the stored value is
+       *     destroyed on logout, if a value is stored.
+       *
+       * @returns {Function}
+       *     A getter/setter which returns or sets the current value of the new
+       *     session-local storage. Newly-set values will only persist of the
+       *     user is actually logged in.
+       */
+      service.create = function create(template, destructor) {
 
         /**
          * Whether new values may be stored and retrieved.
@@ -67,14 +68,14 @@ angular.module('storage').factory('sessionStorageFactory', ['$injector', functio
         var getter;
 
         // If getter provided, use that
-        if (typeof template === 'function')
-            getter = template;
-
-        // Otherwise, always create a deep copy
-        else
-            getter = function getCopy() {
-                return angular.copy(template);
-            };
+        if (typeof template === 'function') {
+          getter = template;
+        }// Otherwise, always create a deep copy
+        else {
+          getter = function getCopy() {
+            return angular.copy(template);
+          };
+        }
 
         /**
          * The current value of this storage, or undefined if not yet set.
@@ -83,49 +84,52 @@ angular.module('storage').factory('sessionStorageFactory', ['$injector', functio
 
         // Reset value and allow storage when the user is logged in
         $rootScope.$on('guacLogin', function userLoggedIn() {
-            enabled = true;
-            value = undefined;
+          enabled = true;
+          value = undefined;
         });
 
         // Reset value and disallow storage when the user is logged out
         $rootScope.$on('guacLogout', function userLoggedOut() {
 
-            // Call destructor before storage is teared down
-            if (angular.isDefined(value) && destructor)
-                destructor(value);
+          // Call destructor before storage is teared down
+          if (angular.isDefined(value) && destructor) {
+            destructor(value);
+          }
 
-            // Destroy storage
-            enabled = false;
-            value = undefined;
+          // Destroy storage
+          enabled = false;
+          value = undefined;
 
         });
 
         // Return getter/setter for value
         return function sessionLocalGetterSetter(newValue) {
 
-            // Only actually store/retrieve values if enabled
-            if (enabled) {
+          // Only actually store/retrieve values if enabled
+          if (enabled) {
 
-                // Set value if provided
-                if (angular.isDefined(newValue))
-                    value = newValue;
-
-                // Obtain new value if unset
-                if (!angular.isDefined(value))
-                    value = getter();
-
-                // Return current value
-                return value;
-
+            // Set value if provided
+            if (angular.isDefined(newValue)) {
+              value = newValue;
             }
 
-            // Otherwise, just pretend to store/retrieve
-            return angular.isDefined(newValue) ? newValue : getter();
+            // Obtain new value if unset
+            if (!angular.isDefined(value)) {
+              value = getter();
+            }
+
+            // Return current value
+            return value;
+
+          }
+
+          // Otherwise, just pretend to store/retrieve
+          return angular.isDefined(newValue) ? newValue : getter();
 
         };
 
-    };
+      };
 
-    return service;
+      return service;
 
-}]);
+    }]);

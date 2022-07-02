@@ -27,39 +27,37 @@ import org.apache.guacamole.protocol.GuacamoleStatus;
  */
 public class GuacamoleClientTimeoutException extends GuacamoleClientException {
 
-    /**
-     * Creates a new GuacamoleClientTimeoutException with the given message and cause.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleClientTimeoutException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Creates a new GuacamoleClientTimeoutException with the given message and cause.
+   *
+   * @param message A human readable description of the exception that occurred.
+   * @param cause   The cause of this exception.
+   */
+  public GuacamoleClientTimeoutException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * Creates a new GuacamoleClientTimeoutException with the given message.
-     *
-     * @param message A human readable description of the exception that
-     *                occurred.
-     */
-    public GuacamoleClientTimeoutException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new GuacamoleClientTimeoutException with the given message.
+   *
+   * @param message A human readable description of the exception that occurred.
+   */
+  public GuacamoleClientTimeoutException(String message) {
+    super(message);
+  }
 
-    /**
-     * Creates a new GuacamoleClientTimeoutException with the given cause.
-     *
-     * @param cause The cause of this exception.
-     */
-    public GuacamoleClientTimeoutException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Creates a new GuacamoleClientTimeoutException with the given cause.
+   *
+   * @param cause The cause of this exception.
+   */
+  public GuacamoleClientTimeoutException(Throwable cause) {
+    super(cause);
+  }
 
-    @Override
-    public GuacamoleStatus getStatus() {
-        return GuacamoleStatus.CLIENT_TIMEOUT;
-    }
+  @Override
+  public GuacamoleStatus getStatus() {
+    return GuacamoleStatus.CLIENT_TIMEOUT;
+  }
 
 }

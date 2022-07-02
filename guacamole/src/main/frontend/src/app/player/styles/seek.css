@@ -49,13 +49,13 @@
  */
 
 input[type="range"] {
-    background: transparent;
-    width: 100%;
-    margin: 0;
+  background: transparent;
+  width: 100%;
+  margin: 0;
 }
 
 input[type="range"]:focus {
-    outline: none;
+  outline: none;
 }
 
 /*
@@ -63,38 +63,38 @@ input[type="range"]:focus {
  */
 
 input[type="range"] {
-    -webkit-appearance: none;
+  -webkit-appearance: none;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
 
-    border: none;
-    border-radius: 0;
-    background: #5AF;
+  border: none;
+  border-radius: 0;
+  background: #5AF;
 
-    width: 100%;
-    height: 0.5em;
+  width: 100%;
+  height: 0.5em;
 
-    cursor: pointer;
+  cursor: pointer;
 
 }
 
 input[type="range"]::-webkit-slider-thumb {
 
-    border: none;
-    border-radius: 0;
-    background: white;
+  border: none;
+  border-radius: 0;
+  background: white;
 
-    width: 3px;
-    height: 0.5em;
+  width: 3px;
+  height: 0.5em;
 
-    -webkit-appearance: none;
-    cursor: pointer;
+  -webkit-appearance: none;
+  cursor: pointer;
 
 }
 
 input[type="range"]:focus::-webkit-slider-runnable-track {
-    background: #5AF;
+  background: #5AF;
 }
 
 /*
@@ -103,27 +103,27 @@ input[type="range"]:focus::-webkit-slider-runnable-track {
 
 input[type="range"]::-moz-range-track {
 
-    border: none;
-    border-radius: 0;
-    background: #5AF;
+  border: none;
+  border-radius: 0;
+  background: #5AF;
 
-    width: 100%;
-    height: 0.5em;
+  width: 100%;
+  height: 0.5em;
 
-    cursor: pointer;
+  cursor: pointer;
 
 }
 
 input[type="range"]::-moz-range-thumb {
 
-    border: none;
-    border-radius: 0;
-    background: white;
+  border: none;
+  border-radius: 0;
+  background: white;
 
-    width: 3px;
-    height: 0.5em;
+  width: 3px;
+  height: 0.5em;
 
-    cursor: pointer;
+  cursor: pointer;
 
 }
 
@@ -133,30 +133,30 @@ input[type="range"]::-moz-range-thumb {
 
 input[type="range"]::-ms-track {
 
-    width: 100%;
-    height: 0.5em;
-    margin: 0;
+  width: 100%;
+  height: 0.5em;
+  margin: 0;
 
-    border: none;
-    border-radius: 0;
-    background: transparent;
-    color: transparent;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  color: transparent;
 
-    cursor: pointer;
+  cursor: pointer;
 
 }
 
 input[type="range"]::-ms-thumb {
 
-    border: none;
-    border-radius: 0;
-    background: white;
+  border: none;
+  border-radius: 0;
+  background: white;
 
-    width: 3px;
-    height: 0.5em;
-    margin: 0;
+  width: 3px;
+  height: 0.5em;
+  margin: 0;
 
-    cursor: pointer;
+  cursor: pointer;
 
 }
 
@@ -164,7 +164,7 @@ input[type="range"]::-ms-fill-lower,
 input[type="range"]::-ms-fill-upper,
 input[type="range"]:focus::-ms-fill-lower,
 input[type="range"]:focus::-ms-fill-upper {
-    border: none;
-    border-radius: 0;
-    background: #5AF;
+  border: none;
+  border-radius: 0;
+  background: #5AF;
 }

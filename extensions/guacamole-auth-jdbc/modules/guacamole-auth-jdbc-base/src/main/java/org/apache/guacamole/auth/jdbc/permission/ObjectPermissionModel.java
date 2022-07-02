@@ -22,40 +22,37 @@ package org.apache.guacamole.auth.jdbc.permission;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 
 /**
- * Object representation of an object-related Guacamole permission, as
- * represented in the database.
+ * Object representation of an object-related Guacamole permission, as represented in the database.
  */
 public class ObjectPermissionModel extends PermissionModel<ObjectPermission.Type> {
 
-    /**
-     * The unique identifier of the object affected by this permission.
-     */
-    private String objectIdentifier;
+  /**
+   * The unique identifier of the object affected by this permission.
+   */
+  private String objectIdentifier;
 
-    /**
-     * Creates a new, empty object permission.
-     */
-    public ObjectPermissionModel() {
-    }
+  /**
+   * Creates a new, empty object permission.
+   */
+  public ObjectPermissionModel() {
+  }
 
-    /**
-     * Returns the unique identifier of the object affected by this permission.
-     *
-     * @return
-     *     The unique identifier of the object affected by this permission.
-     */
-    public String getObjectIdentifier() {
-        return objectIdentifier;
-    }
+  /**
+   * Returns the unique identifier of the object affected by this permission.
+   *
+   * @return The unique identifier of the object affected by this permission.
+   */
+  public String getObjectIdentifier() {
+    return objectIdentifier;
+  }
 
-    /**
-     * Sets the unique identifier of the object affected by this permission.
-     *
-     * @param objectIdentifier 
-     *     The unique identifier of the object affected by this permission.
-     */
-    public void setObjectIdentifier(String objectIdentifier) {
-        this.objectIdentifier = objectIdentifier;
-    }
+  /**
+   * Sets the unique identifier of the object affected by this permission.
+   *
+   * @param objectIdentifier The unique identifier of the object affected by this permission.
+   */
+  public void setObjectIdentifier(String objectIdentifier) {
+    this.objectIdentifier = objectIdentifier;
+  }
 
 }

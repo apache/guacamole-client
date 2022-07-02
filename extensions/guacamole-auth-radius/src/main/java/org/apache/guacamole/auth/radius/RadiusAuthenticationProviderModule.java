@@ -37,67 +37,65 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
  */
 public class RadiusAuthenticationProviderModule extends AbstractModule {
 
-    /**
-     * Guacamole server environment.
-     */
-    private final Environment environment;
+  /**
+   * Guacamole server environment.
+   */
+  private final Environment environment;
 
-    /**
-     * A reference to the RadiusAuthenticationProvider on behalf of which this
-     * module has configured injection.
-     */
-    private final AuthenticationProvider authProvider;
+  /**
+   * A reference to the RadiusAuthenticationProvider on behalf of which this module has configured
+   * injection.
+   */
+  private final AuthenticationProvider authProvider;
 
-    /**
-     * Creates a new RADIUS authentication provider module which configures
-     * injection for the RadiusAuthenticationProvider.
-     *
-     * @param authProvider
-     *     The AuthenticationProvider for which injection is being configured.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the Guacamole server
-     *     environment.
-     */
-    public RadiusAuthenticationProviderModule(AuthenticationProvider authProvider)
-            throws GuacamoleException {
+  /**
+   * Creates a new RADIUS authentication provider module which configures injection for the
+   * RadiusAuthenticationProvider.
+   *
+   * @param authProvider The AuthenticationProvider for which injection is being configured.
+   * @throws GuacamoleException If an error occurs while retrieving the Guacamole server
+   *                            environment.
+   */
+  public RadiusAuthenticationProviderModule(AuthenticationProvider authProvider)
+      throws GuacamoleException {
 
-        // Get local environment
-        this.environment = LocalEnvironment.getInstance();
-        
-        // Check for MD4 requirement
-        RadiusAuthenticationProtocol authProtocol = environment.getProperty(RadiusGuacamoleProperties.RADIUS_AUTH_PROTOCOL);
-        RadiusAuthenticationProtocol innerProtocol = environment.getProperty(RadiusGuacamoleProperties.RADIUS_EAP_TTLS_INNER_PROTOCOL);
-        if (authProtocol == RadiusAuthenticationProtocol.MSCHAP_V1 
-                    || authProtocol == RadiusAuthenticationProtocol.MSCHAP_V2
-                    || innerProtocol == RadiusAuthenticationProtocol.MSCHAP_V1 
-                    || innerProtocol == RadiusAuthenticationProtocol.MSCHAP_V2) {
-            
-            try {
-                MessageDigest.getInstance("MD4");
-            }
-            catch (NoSuchAlgorithmException e) {
-                Security.addProvider(new BouncyCastleProvider());
-            }
-            
-        }
+    // Get local environment
+    this.environment = LocalEnvironment.getInstance();
 
-        // Store associated auth provider
-        this.authProvider = authProvider;
+    // Check for MD4 requirement
+    RadiusAuthenticationProtocol authProtocol = environment.getProperty(
+        RadiusGuacamoleProperties.RADIUS_AUTH_PROTOCOL);
+    RadiusAuthenticationProtocol innerProtocol = environment.getProperty(
+        RadiusGuacamoleProperties.RADIUS_EAP_TTLS_INNER_PROTOCOL);
+    if (authProtocol == RadiusAuthenticationProtocol.MSCHAP_V1
+        || authProtocol == RadiusAuthenticationProtocol.MSCHAP_V2
+        || innerProtocol == RadiusAuthenticationProtocol.MSCHAP_V1
+        || innerProtocol == RadiusAuthenticationProtocol.MSCHAP_V2) {
+
+      try {
+        MessageDigest.getInstance("MD4");
+      } catch (NoSuchAlgorithmException e) {
+        Security.addProvider(new BouncyCastleProvider());
+      }
 
     }
 
-    @Override
-    protected void configure() {
+    // Store associated auth provider
+    this.authProvider = authProvider;
 
-        // Bind core implementations of guacamole-ext classes
-        bind(AuthenticationProvider.class).toInstance(authProvider);
-        bind(Environment.class).toInstance(environment);
+  }
 
-        // Bind RADIUS-specific services
-        bind(ConfigurationService.class);
-        bind(RadiusConnectionService.class);
+  @Override
+  protected void configure() {
 
-    }
+    // Bind core implementations of guacamole-ext classes
+    bind(AuthenticationProvider.class).toInstance(authProvider);
+    bind(Environment.class).toInstance(environment);
+
+    // Bind RADIUS-specific services
+    bind(ConfigurationService.class);
+    bind(RadiusConnectionService.class);
+
+  }
 
 }

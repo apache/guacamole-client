@@ -31,53 +31,53 @@ import org.apache.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
- * Implementation of the Connection Directory which is driven by an underlying,
- * arbitrary database.
+ * Implementation of the Connection Directory which is driven by an underlying, arbitrary database.
  */
 public class ConnectionDirectory extends RestrictedObject
     implements Directory<Connection> {
 
-    /**
-     * Service for managing connection objects.
-     */
-    @Inject
-    private ConnectionService connectionService;
+  /**
+   * Service for managing connection objects.
+   */
+  @Inject
+  private ConnectionService connectionService;
 
-    @Override
-    public Connection get(String identifier) throws GuacamoleException {
-        return connectionService.retrieveObject(getCurrentUser(), identifier);
-    }
+  @Override
+  public Connection get(String identifier) throws GuacamoleException {
+    return connectionService.retrieveObject(getCurrentUser(), identifier);
+  }
 
-    @Override
-    @Transactional
-    public Collection<Connection> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledConnection> objects = connectionService.retrieveObjects(getCurrentUser(), identifiers);
-        return Collections.<Connection>unmodifiableCollection(objects);
-    }
+  @Override
+  @Transactional
+  public Collection<Connection> getAll(Collection<String> identifiers) throws GuacamoleException {
+    Collection<ModeledConnection> objects = connectionService.retrieveObjects(getCurrentUser(),
+        identifiers);
+    return Collections.<Connection>unmodifiableCollection(objects);
+  }
 
-    @Override
-    @Transactional
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return connectionService.getIdentifiers(getCurrentUser());
-    }
+  @Override
+  @Transactional
+  public Set<String> getIdentifiers() throws GuacamoleException {
+    return connectionService.getIdentifiers(getCurrentUser());
+  }
 
-    @Override
-    @Transactional
-    public void add(Connection object) throws GuacamoleException {
-        connectionService.createObject(getCurrentUser(), object);
-    }
+  @Override
+  @Transactional
+  public void add(Connection object) throws GuacamoleException {
+    connectionService.createObject(getCurrentUser(), object);
+  }
 
-    @Override
-    @Transactional
-    public void update(Connection object) throws GuacamoleException {
-        ModeledConnection connection = (ModeledConnection) object;
-        connectionService.updateObject(getCurrentUser(), connection);
-    }
+  @Override
+  @Transactional
+  public void update(Connection object) throws GuacamoleException {
+    ModeledConnection connection = (ModeledConnection) object;
+    connectionService.updateObject(getCurrentUser(), connection);
+  }
 
-    @Override
-    @Transactional
-    public void remove(String identifier) throws GuacamoleException {
-        connectionService.deleteObject(getCurrentUser(), identifier);
-    }
+  @Override
+  @Transactional
+  public void remove(String identifier) throws GuacamoleException {
+    connectionService.deleteObject(getCurrentUser(), identifier);
+  }
 
 }

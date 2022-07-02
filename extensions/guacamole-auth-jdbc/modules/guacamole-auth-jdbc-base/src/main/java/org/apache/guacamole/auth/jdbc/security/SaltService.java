@@ -23,9 +23,11 @@ package org.apache.guacamole.auth.jdbc.security;
  * A service to generate password salts.
  */
 public interface SaltService {
-    /**
-     * Generates a new String that can be used as a password salt.
-     * @return a new salt for password encryption.
-     */
-    public byte[] generateSalt();
+
+  /**
+   * Generates a new String that can be used as a password salt.
+   *
+   * @return a new salt for password encryption.
+   */
+  public byte[] generateSalt();
 }

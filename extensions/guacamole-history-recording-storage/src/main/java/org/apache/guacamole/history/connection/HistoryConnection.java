@@ -27,45 +27,41 @@ import org.apache.guacamole.net.auth.DelegatingConnection;
 import org.apache.guacamole.net.auth.User;
 
 /**
- * Connection implementation that automatically defines ActivityLogs for
- * files that relate to history entries associated with the wrapped connection.
+ * Connection implementation that automatically defines ActivityLogs for files that relate to
+ * history entries associated with the wrapped connection.
  */
 public class HistoryConnection extends DelegatingConnection {
 
-    /**
-     * The current Guacamole user.
-     */
-    private final User currentUser;
+  /**
+   * The current Guacamole user.
+   */
+  private final User currentUser;
 
-    /**
-     * Creates a new HistoryConnection that wraps the given connection,
-     * automatically associating history entries with ActivityLogs based on
-     * related files (session recordings, typescripts, etc.).
-     *
-     * @param currentUser
-     *     The current Guacamole user.
-     *
-     * @param connection
-     *     The connection to wrap.
-     */
-    public HistoryConnection(User currentUser, Connection connection) {
-        super(connection);
-        this.currentUser = currentUser;
-    }
+  /**
+   * Creates a new HistoryConnection that wraps the given connection, automatically associating
+   * history entries with ActivityLogs based on related files (session recordings, typescripts,
+   * etc.).
+   *
+   * @param currentUser The current Guacamole user.
+   * @param connection  The connection to wrap.
+   */
+  public HistoryConnection(User currentUser, Connection connection) {
+    super(connection);
+    this.currentUser = currentUser;
+  }
 
-    /**
-     * Returns the connection wrapped by this HistoryConnection.
-     *
-     * @return
-     *     The connection wrapped by this HistoryConnection.
-     */
-    public Connection getWrappedConnection() {
-        return getDelegateConnection();
-    }
+  /**
+   * Returns the connection wrapped by this HistoryConnection.
+   *
+   * @return The connection wrapped by this HistoryConnection.
+   */
+  public Connection getWrappedConnection() {
+    return getDelegateConnection();
+  }
 
-    @Override
-    public ActivityRecordSet<ConnectionRecord> getConnectionHistory() throws GuacamoleException {
-        return new RecordedConnectionActivityRecordSet(currentUser, super.getConnectionHistory());
-    }
+  @Override
+  public ActivityRecordSet<ConnectionRecord> getConnectionHistory() throws GuacamoleException {
+    return new RecordedConnectionActivityRecordSet(currentUser, super.getConnectionHistory());
+  }
 
 }

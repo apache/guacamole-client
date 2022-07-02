@@ -22,21 +22,20 @@ package org.apache.guacamole.auth.jdbc.permission;
 import com.google.inject.Inject;
 
 /**
- * A database implementation of ObjectPermissionSet which uses an injected
- * service to query and manipulate the user group permissions associated with a
- * particular user.
+ * A database implementation of ObjectPermissionSet which uses an injected service to query and
+ * manipulate the user group permissions associated with a particular user.
  */
 public class UserGroupPermissionSet extends ObjectPermissionSet {
 
-    /**
-     * Service for querying and manipulating user group permissions.
-     */
-    @Inject
-    private UserGroupPermissionService userGroupPermissionService;
-    
-    @Override
-    protected ObjectPermissionService getObjectPermissionService() {
-        return userGroupPermissionService;
-    }
- 
+  /**
+   * Service for querying and manipulating user group permissions.
+   */
+  @Inject
+  private UserGroupPermissionService userGroupPermissionService;
+
+  @Override
+  protected ObjectPermissionService getObjectPermissionService() {
+    return userGroupPermissionService;
+  }
+
 }

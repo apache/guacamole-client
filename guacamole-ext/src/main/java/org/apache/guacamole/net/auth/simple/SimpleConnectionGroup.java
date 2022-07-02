@@ -32,93 +32,86 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 
 /**
- * An extremely simple read-only implementation of a ConnectionGroup which
- * returns the connection and connection group identifiers it was constructed
- * with. Load balancing across this connection group is not allowed.
+ * An extremely simple read-only implementation of a ConnectionGroup which returns the connection
+ * and connection group identifiers it was constructed with. Load balancing across this connection
+ * group is not allowed.
  */
 public class SimpleConnectionGroup extends AbstractConnectionGroup {
 
-    /**
-     * The identifiers of all connections in this group.
-     */
-    private final Set<String> connectionIdentifiers;
+  /**
+   * The identifiers of all connections in this group.
+   */
+  private final Set<String> connectionIdentifiers;
 
-    /**
-     * The identifiers of all connection groups in this group.
-     */
-    private final Set<String> connectionGroupIdentifiers;
+  /**
+   * The identifiers of all connection groups in this group.
+   */
+  private final Set<String> connectionGroupIdentifiers;
 
-    /**
-     * Creates a new SimpleConnectionGroup having the given name and identifier
-     * which will expose the given contents.
-     * 
-     * @param name
-     *     The name to associate with this connection group.
-     *
-     * @param identifier
-     *     The identifier to associate with this connection group.
-     *
-     * @param connectionIdentifiers
-     *     The connection identifiers to expose when requested.
-     *
-     * @param connectionGroupIdentifiers
-     *     The connection group identifiers to expose when requested.
-     */
-    public SimpleConnectionGroup(String name, String identifier,
-            Collection<String> connectionIdentifiers, 
-            Collection<String> connectionGroupIdentifiers) {
+  /**
+   * Creates a new SimpleConnectionGroup having the given name and identifier which will expose the
+   * given contents.
+   *
+   * @param name                       The name to associate with this connection group.
+   * @param identifier                 The identifier to associate with this connection group.
+   * @param connectionIdentifiers      The connection identifiers to expose when requested.
+   * @param connectionGroupIdentifiers The connection group identifiers to expose when requested.
+   */
+  public SimpleConnectionGroup(String name, String identifier,
+      Collection<String> connectionIdentifiers,
+      Collection<String> connectionGroupIdentifiers) {
 
-        // Set name
-        setName(name);
+    // Set name
+    setName(name);
 
-        // Set identifier
-        setIdentifier(identifier);
-        
-        // Set group type
-        setType(ConnectionGroup.Type.ORGANIZATIONAL);
+    // Set identifier
+    setIdentifier(identifier);
 
-        // Populate contents
-        this.connectionIdentifiers = new HashSet<String>(connectionIdentifiers);
-        this.connectionGroupIdentifiers = new HashSet<String>(connectionGroupIdentifiers);
+    // Set group type
+    setType(ConnectionGroup.Type.ORGANIZATIONAL);
 
-    }
+    // Populate contents
+    this.connectionIdentifiers = new HashSet<String>(connectionIdentifiers);
+    this.connectionGroupIdentifiers = new HashSet<String>(connectionGroupIdentifiers);
 
-    @Override
-    public int getActiveConnections() {
-        return 0;
-    }
+  }
 
-    @Override
-    public Set<String> getConnectionIdentifiers() {
-        return connectionIdentifiers;
-    }
+  @Override
+  public int getActiveConnections() {
+    return 0;
+  }
 
-    @Override
-    public Set<String> getConnectionGroupIdentifiers() {
-        return connectionGroupIdentifiers;
-    }
+  @Override
+  public Set<String> getConnectionIdentifiers() {
+    return connectionIdentifiers;
+  }
 
-    @Override
-    public Map<String, String> getAttributes() {
-        return Collections.<String, String>emptyMap();
-    }
+  @Override
+  public Set<String> getConnectionGroupIdentifiers() {
+    return connectionGroupIdentifiers;
+  }
 
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        // Do nothing - there are no attributes
-    }
+  @Override
+  public Map<String, String> getAttributes() {
+    return Collections.<String, String>emptyMap();
+  }
 
-    @Override
-    @Deprecated
-    public GuacamoleTunnel connect(GuacamoleClientInformation info)
-            throws GuacamoleException {
-        throw new GuacamoleSecurityException("Permission denied.");
-    }
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    // Do nothing - there are no attributes
+  }
 
-    @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info,
-            Map<String, String> tokens) throws GuacamoleException {
-        return connect(info);
-    }
+  @Override
+  @Deprecated
+  public GuacamoleTunnel connect(GuacamoleClientInformation info)
+      throws GuacamoleException {
+    throw new GuacamoleSecurityException("Permission denied.");
+  }
+
+  @Override
+  public GuacamoleTunnel connect(GuacamoleClientInformation info,
+      Map<String, String> tokens) throws GuacamoleException {
+    return connect(info);
+  }
 
 }

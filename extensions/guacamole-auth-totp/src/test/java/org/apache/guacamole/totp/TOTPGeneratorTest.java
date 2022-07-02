@@ -19,9 +19,11 @@
 
 package org.apache.guacamole.totp;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.security.InvalidKeyException;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /*
  * NOTE: The tests for this TOTP implementation is based on the TOTP reference
@@ -62,107 +64,102 @@ import static org.junit.Assert.*;
  */
 
 /**
- * Test which verifies the correctness of the TOTPGenerator class against the
- * test inputs and results provided in the IETF reference implementation and
- * spec for TOTP:
- *
+ * Test which verifies the correctness of the TOTPGenerator class against the test inputs and
+ * results provided in the IETF reference implementation and spec for TOTP:
+ * <p>
  * https://tools.ietf.org/id/draft-mraihi-totp-timebased-07.html#Section-Test-Vectors
  */
 public class TOTPGeneratorTest {
 
-    /**
-     * Verifies the results of generating authentication codes using the TOTP
-     * algorithm in SHA1 mode.
-     */
-    @Test
-    public void testGenerateSHA1() {
+  /**
+   * Verifies the results of generating authentication codes using the TOTP algorithm in SHA1 mode.
+   */
+  @Test
+  public void testGenerateSHA1() {
 
-        // 160-bit key consisting of the bytes "12345678901234567890" repeated
-        // as necessary
-        final byte[] key = {
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
-        };
+    // 160-bit key consisting of the bytes "12345678901234567890" repeated
+    // as necessary
+    final byte[] key = {
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'
+    };
 
-        try {
-            final TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA1, 8);
-            assertEquals("94287082", totp.generate(59));
-            assertEquals("07081804", totp.generate(1111111109));
-            assertEquals("14050471", totp.generate(1111111111));
-            assertEquals("89005924", totp.generate(1234567890));
-            assertEquals("69279037", totp.generate(2000000000));
-            assertEquals("65353130", totp.generate(20000000000L));
-        }
-        catch (InvalidKeyException e) {
-            fail("SHA1 test key is invalid.");
-        }
-
-
+    try {
+      final TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA1, 8);
+      assertEquals("94287082", totp.generate(59));
+      assertEquals("07081804", totp.generate(1111111109));
+      assertEquals("14050471", totp.generate(1111111111));
+      assertEquals("89005924", totp.generate(1234567890));
+      assertEquals("69279037", totp.generate(2000000000));
+      assertEquals("65353130", totp.generate(20000000000L));
+    } catch (InvalidKeyException e) {
+      fail("SHA1 test key is invalid.");
     }
 
-    /**
-     * Verifies the results of generating authentication codes using the TOTP
-     * algorithm in SHA256 mode.
-     */
-    @Test
-    public void testGenerateSHA256() {
 
-        // 256-bit key consisting of the bytes "12345678901234567890" repeated
-        // as necessary
-        final byte[] key = {
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2'
-        };
+  }
 
-        try {
-            final TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA256, 8);
-            assertEquals("46119246", totp.generate(59));
-            assertEquals("68084774", totp.generate(1111111109));
-            assertEquals("67062674", totp.generate(1111111111));
-            assertEquals("91819424", totp.generate(1234567890));
-            assertEquals("90698825", totp.generate(2000000000));
-            assertEquals("77737706", totp.generate(20000000000L));
-        }
-        catch (InvalidKeyException e) {
-            fail("SHA256 test key is invalid.");
-        }
+  /**
+   * Verifies the results of generating authentication codes using the TOTP algorithm in SHA256
+   * mode.
+   */
+  @Test
+  public void testGenerateSHA256() {
 
+    // 256-bit key consisting of the bytes "12345678901234567890" repeated
+    // as necessary
+    final byte[] key = {
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2'
+    };
+
+    try {
+      final TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA256, 8);
+      assertEquals("46119246", totp.generate(59));
+      assertEquals("68084774", totp.generate(1111111109));
+      assertEquals("67062674", totp.generate(1111111111));
+      assertEquals("91819424", totp.generate(1234567890));
+      assertEquals("90698825", totp.generate(2000000000));
+      assertEquals("77737706", totp.generate(20000000000L));
+    } catch (InvalidKeyException e) {
+      fail("SHA256 test key is invalid.");
     }
 
-    /**
-     * Verifies the results of generating authentication codes using the TOTP
-     * algorithm in SHA512 mode.
-     */
-    @Test
-    public void testGenerateSHA512() {
+  }
 
-        // 512-bit key consisting of the bytes "12345678901234567890" repeated
-        // as necessary
-        final byte[] key = {
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-            '1', '2', '3', '4'
-        };
+  /**
+   * Verifies the results of generating authentication codes using the TOTP algorithm in SHA512
+   * mode.
+   */
+  @Test
+  public void testGenerateSHA512() {
 
-        try {
-            final TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA512, 8);
-            assertEquals("90693936", totp.generate(59));
-            assertEquals("25091201", totp.generate(1111111109));
-            assertEquals("99943326", totp.generate(1111111111));
-            assertEquals("93441116", totp.generate(1234567890));
-            assertEquals("38618901", totp.generate(2000000000));
-            assertEquals("47863826", totp.generate(20000000000L));
-        }
-        catch (InvalidKeyException e) {
-            fail("SHA512 test key is invalid.");
-        }
+    // 512-bit key consisting of the bytes "12345678901234567890" repeated
+    // as necessary
+    final byte[] key = {
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        '1', '2', '3', '4'
+    };
 
+    try {
+      final TOTPGenerator totp = new TOTPGenerator(key, TOTPGenerator.Mode.SHA512, 8);
+      assertEquals("90693936", totp.generate(59));
+      assertEquals("25091201", totp.generate(1111111109));
+      assertEquals("99943326", totp.generate(1111111111));
+      assertEquals("93441116", totp.generate(1234567890));
+      assertEquals("38618901", totp.generate(2000000000));
+      assertEquals("47863826", totp.generate(20000000000L));
+    } catch (InvalidKeyException e) {
+      fail("SHA512 test key is invalid.");
     }
+
+  }
 
 }

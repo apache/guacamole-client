@@ -24,227 +24,203 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.Collection;
 
 /**
- * Represents an arbitrary field, such as an HTTP parameter, the parameter of a
- * remote desktop protocol, or an input field within a form. Fields are generic
- * and typed dynamically through a type string, with the semantics of the field
- * defined by the type string. The behavior of each field type is defined
- * either through the web application itself (see FormService.js) or through
+ * Represents an arbitrary field, such as an HTTP parameter, the parameter of a remote desktop
+ * protocol, or an input field within a form. Fields are generic and typed dynamically through a
+ * type string, with the semantics of the field defined by the type string. The behavior of each
+ * field type is defined either through the web application itself (see FormService.js) or through
  * extensions.
  */
-@JsonInclude(value=Include.NON_NULL)
+@JsonInclude(value = Include.NON_NULL)
 public class Field {
 
-    /**
-     * All types of fields which are available by default. Additional field
-     * types may be defined by extensions by using a unique field type name and
-     * registering that name with the form service within JavaScript.
-     *
-     * See FormService.js.
-     */
-    public static class Type {
+  /**
+   * The unique name that identifies this field.
+   */
+  private String name;
+  /**
+   * The type of this field.
+   */
+  private String type;
+  /**
+   * A collection of all legal values of this field.
+   */
+  private Collection<String> options;
 
-        /**
-         * A text field, accepting arbitrary values.
-         */
-        public static final String TEXT = "TEXT";
+  /**
+   * Creates a new Parameter with no associated name or type.
+   */
+  public Field() {
+  }
 
-        /**
-         * An email address field. This field type generally behaves
-         * identically to arbitrary text fields, but has semantic differences.
-         */
-        public static final String EMAIL = "EMAIL";
+  /**
+   * Creates a new Field with the given name  and type.
+   *
+   * @param name The unique name to associate with this field.
+   * @param type The type of this field.
+   */
+  public Field(String name, String type) {
+    this.name = name;
+    this.type = type;
+  }
 
-        /**
-         * A username field. This field type generally behaves identically to
-         * arbitrary text fields, but has semantic differences.
-         */
-        public static final String USERNAME = "USERNAME";
+  /**
+   * Creates a new Field with the given name, type, and possible values.
+   *
+   * @param name    The unique name to associate with this field.
+   * @param type    The type of this field.
+   * @param options A collection of all possible valid options for this field.
+   */
+  public Field(String name, String type, Collection<String> options) {
+    this.name = name;
+    this.type = type;
+    this.options = options;
+  }
 
-        /**
-         * A password field, whose value is sensitive and must be hidden.
-         */
-        public static final String PASSWORD = "PASSWORD";
+  /**
+   * Returns the unique name associated with this field.
+   *
+   * @return The unique name associated with this field.
+   */
+  public String getName() {
+    return name;
+  }
 
-        /**
-         * A numeric field, whose value must contain only digits.
-         */
-        public static final String NUMERIC = "NUMERIC";
+  /**
+   * Sets the unique name associated with this field.
+   *
+   * @param name The unique name to assign to this field.
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
 
-        /**
-         * A boolean field, whose value is either blank or "true".
-         */
-        public static final String BOOLEAN = "BOOLEAN";
+  /**
+   * Returns the type of this field.
+   *
+   * @return The type of this field.
+   */
+  public String getType() {
+    return type;
+  }
 
-        /**
-         * An enumerated field, whose legal values are fully enumerated by a
-         * provided, finite list.
-         */
-        public static final String ENUM = "ENUM";
+  /**
+   * Sets the type of this field.
+   *
+   * @param type The type of this field.
+   */
+  public void setType(String type) {
+    this.type = type;
+  }
 
-        /**
-         * A text field that can span more than one line.
-         */
-        public static final String MULTILINE = "MULTILINE";
+  /**
+   * Returns a mutable collection of field options. Changes to this collection directly affect the
+   * available options.
+   *
+   * @return A mutable collection of field options, or null if the field has no options.
+   */
+  public Collection<String> getOptions() {
+    return options;
+  }
 
-        /**
-         * A time zone field whose legal values are only valid time zone IDs,
-         * as dictated by Java within TimeZone.getAvailableIDs().
-         */
-        public static final String TIMEZONE = "TIMEZONE";
+  /**
+   * Sets the options available as possible values of this field.
+   *
+   * @param options The options to associate with this field.
+   */
+  public void setOptions(Collection<String> options) {
+    this.options = options;
+  }
 
-        /**
-         * Field type which allows selection of languages. The languages
-         * displayed are the set of languages supported by the Guacamole web
-         * application. Legal values are valid language IDs, as dictated by
-         * the filenames of Guacamole's available translations.
-         */
-        public static final String LANGUAGE = "LANGUAGE";
-
-        /**
-         * A date field whose legal values conform to the pattern "YYYY-MM-DD",
-         * zero-padded.
-         */
-        public static final String DATE = "DATE";
-
-        /**
-         * A time field whose legal values conform to the pattern "HH:MM:SS",
-         * zero-padded, 24-hour.
-         */
-        public static final String TIME = "TIME";
-
-        /**
-         * An HTTP query parameter which is expected to be embedded in the URL
-         * given to a user.
-         */
-        public static final String QUERY_PARAMETER = "QUERY_PARAMETER";
-
-        /**
-         * A color scheme accepted by the Guacamole server terminal emulator
-         * and protocols which leverage it.
-         */
-        public static final String TERMINAL_COLOR_SCHEME = "TERMINAL_COLOR_SCHEME";
-        
-        /**
-         * A redirect field whose value is an encoded URL to which the user
-         * will be redirected.
-         */
-        public static final String REDIRECT = "REDIRECT";
-
-    }
-
-    /**
-     * The unique name that identifies this field.
-     */
-    private String name;
-
-    /**
-     * The type of this field.
-     */
-    private String type;
-
-    /**
-     * A collection of all legal values of this field.
-     */
-    private Collection<String> options;
+  /**
+   * All types of fields which are available by default. Additional field types may be defined by
+   * extensions by using a unique field type name and registering that name with the form service
+   * within JavaScript.
+   * <p>
+   * See FormService.js.
+   */
+  public static class Type {
 
     /**
-     * Creates a new Parameter with no associated name or type.
+     * A text field, accepting arbitrary values.
      */
-    public Field() {
-    }
+    public static final String TEXT = "TEXT";
 
     /**
-     * Creates a new Field with the given name  and type.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     *
-     * @param type
-     *     The type of this field.
+     * An email address field. This field type generally behaves identically to arbitrary text
+     * fields, but has semantic differences.
      */
-    public Field(String name, String type) {
-        this.name  = name;
-        this.type  = type;
-    }
+    public static final String EMAIL = "EMAIL";
 
     /**
-     * Creates a new Field with the given name, type, and possible values.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     *
-     * @param type
-     *     The type of this field.
-     *
-     * @param options
-     *     A collection of all possible valid options for this field.
+     * A username field. This field type generally behaves identically to arbitrary text fields, but
+     * has semantic differences.
      */
-    public Field(String name, String type, Collection<String> options) {
-        this.name    = name;
-        this.type    = type;
-        this.options = options;
-    }
+    public static final String USERNAME = "USERNAME";
 
     /**
-     * Returns the unique name associated with this field.
-     *
-     * @return
-     *     The unique name associated with this field.
+     * A password field, whose value is sensitive and must be hidden.
      */
-    public String getName() {
-        return name;
-    }
+    public static final String PASSWORD = "PASSWORD";
 
     /**
-     * Sets the unique name associated with this field.
-     *
-     * @param name
-     *     The unique name to assign to this field.
+     * A numeric field, whose value must contain only digits.
      */
-    public void setName(String name) {
-        this.name = name;
-    }
+    public static final String NUMERIC = "NUMERIC";
 
     /**
-     * Returns the type of this field.
-     *
-     * @return
-     *     The type of this field.
+     * A boolean field, whose value is either blank or "true".
      */
-    public String getType() {
-        return type;
-    }
+    public static final String BOOLEAN = "BOOLEAN";
 
     /**
-     * Sets the type of this field.
-     *
-     * @param type
-     *     The type of this field.
+     * An enumerated field, whose legal values are fully enumerated by a provided, finite list.
      */
-    public void setType(String type) {
-        this.type = type;
-    }
+    public static final String ENUM = "ENUM";
 
     /**
-     * Returns a mutable collection of field options. Changes to this
-     * collection directly affect the available options.
-     *
-     * @return
-     *     A mutable collection of field options, or null if the field has no
-     *     options.
+     * A text field that can span more than one line.
      */
-    public Collection<String> getOptions() {
-        return options;
-    }
+    public static final String MULTILINE = "MULTILINE";
 
     /**
-     * Sets the options available as possible values of this field.
-     *
-     * @param options
-     *     The options to associate with this field.
+     * A time zone field whose legal values are only valid time zone IDs, as dictated by Java within
+     * TimeZone.getAvailableIDs().
      */
-    public void setOptions(Collection<String> options) {
-        this.options = options;
-    }
+    public static final String TIMEZONE = "TIMEZONE";
+
+    /**
+     * Field type which allows selection of languages. The languages displayed are the set of
+     * languages supported by the Guacamole web application. Legal values are valid language IDs, as
+     * dictated by the filenames of Guacamole's available translations.
+     */
+    public static final String LANGUAGE = "LANGUAGE";
+
+    /**
+     * A date field whose legal values conform to the pattern "YYYY-MM-DD", zero-padded.
+     */
+    public static final String DATE = "DATE";
+
+    /**
+     * A time field whose legal values conform to the pattern "HH:MM:SS", zero-padded, 24-hour.
+     */
+    public static final String TIME = "TIME";
+
+    /**
+     * An HTTP query parameter which is expected to be embedded in the URL given to a user.
+     */
+    public static final String QUERY_PARAMETER = "QUERY_PARAMETER";
+
+    /**
+     * A color scheme accepted by the Guacamole server terminal emulator and protocols which
+     * leverage it.
+     */
+    public static final String TERMINAL_COLOR_SCHEME = "TERMINAL_COLOR_SCHEME";
+
+    /**
+     * A redirect field whose value is an encoded URL to which the user will be redirected.
+     */
+    public static final String REDIRECT = "REDIRECT";
+
+  }
 
 }

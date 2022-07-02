@@ -20,16 +20,17 @@
 /**
  * A service for defining the ManageableUser class.
  */
-angular.module('manage').factory('ManageableUser', [function defineManageableUser() {
+angular.module('manage').factory('ManageableUser',
+    [function defineManageableUser() {
 
-    /**
-     * A pairing of an @link{User} with the identifier of its corresponding
-     * data source.
-     *
-     * @constructor
-     * @param {Object|ManageableUser} template
-     */
-    var ManageableUser = function ManageableUser(template) {
+      /**
+       * A pairing of an @link{User} with the identifier of its corresponding
+       * data source.
+       *
+       * @constructor
+       * @param {Object|ManageableUser} template
+       */
+      var ManageableUser = function ManageableUser(template) {
 
         /**
          * The unique identifier of the data source containing this user.
@@ -46,8 +47,8 @@ angular.module('manage').factory('ManageableUser', [function defineManageableUse
          */
         this.user = template.user;
 
-    };
+      };
 
-    return ManageableUser;
+      return ManageableUser;
 
-}]);
+    }]);

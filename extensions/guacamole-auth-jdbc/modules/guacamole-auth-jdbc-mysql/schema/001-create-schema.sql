@@ -21,25 +21,26 @@
 -- Table of connection groups. Each connection group has a name.
 --
 
-CREATE TABLE `guacamole_connection_group` (
+CREATE TABLE `guacamole_connection_group`
+(
 
-  `connection_group_id`   int(11)      NOT NULL AUTO_INCREMENT,
-  `parent_id`             int(11),
-  `connection_group_name` varchar(128) NOT NULL,
-  `type`                  enum('ORGANIZATIONAL',
-                               'BALANCING') NOT NULL DEFAULT 'ORGANIZATIONAL',
+    `connection_group_id`      int(11) NOT NULL AUTO_INCREMENT,
+    `parent_id`                int(11),
+    `connection_group_name`    varchar(128) NOT NULL,
+    `type`                     enum('ORGANIZATIONAL',
+        'BALANCING') NOT NULL DEFAULT 'ORGANIZATIONAL',
 
-  -- Concurrency limits
-  `max_connections`          int(11),
-  `max_connections_per_user` int(11),
-  `enable_session_affinity`  boolean NOT NULL DEFAULT 0,
+    -- Concurrency limits
+    `max_connections`          int(11),
+    `max_connections_per_user` int(11),
+    `enable_session_affinity`  boolean      NOT NULL DEFAULT 0,
 
-  PRIMARY KEY (`connection_group_id`),
-  UNIQUE KEY `connection_group_name_parent` (`connection_group_name`, `parent_id`),
+    PRIMARY KEY (`connection_group_id`),
+    UNIQUE KEY `connection_group_name_parent` (`connection_group_name`, `parent_id`),
 
-  CONSTRAINT `guacamole_connection_group_ibfk_1`
-    FOREIGN KEY (`parent_id`)
-    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_connection_group_ibfk_1`
+        FOREIGN KEY (`parent_id`)
+            REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -49,32 +50,33 @@ CREATE TABLE `guacamole_connection_group` (
 -- A connection may belong to a connection group.
 --
 
-CREATE TABLE `guacamole_connection` (
+CREATE TABLE `guacamole_connection`
+(
 
-  `connection_id`       int(11)      NOT NULL AUTO_INCREMENT,
-  `connection_name`     varchar(128) NOT NULL,
-  `parent_id`           int(11),
-  `protocol`            varchar(32)  NOT NULL,
-  
-  -- Guacamole proxy (guacd) overrides
-  `proxy_port`              integer,
-  `proxy_hostname`          varchar(512),
-  `proxy_encryption_method` enum('NONE', 'SSL'),
+    `connection_id`            int(11) NOT NULL AUTO_INCREMENT,
+    `connection_name`          varchar(128) NOT NULL,
+    `parent_id`                int(11),
+    `protocol`                 varchar(32)  NOT NULL,
 
-  -- Concurrency limits
-  `max_connections`          int(11),
-  `max_connections_per_user` int(11),
-  
-  -- Load-balancing behavior
-  `connection_weight`        int(11),
-  `failover_only`            boolean NOT NULL DEFAULT 0,
+    -- Guacamole proxy (guacd) overrides
+    `proxy_port`               integer,
+    `proxy_hostname`           varchar(512),
+    `proxy_encryption_method`  enum('NONE', 'SSL'),
 
-  PRIMARY KEY (`connection_id`),
-  UNIQUE KEY `connection_name_parent` (`connection_name`, `parent_id`),
+    -- Concurrency limits
+    `max_connections`          int(11),
+    `max_connections_per_user` int(11),
 
-  CONSTRAINT `guacamole_connection_ibfk_1`
-    FOREIGN KEY (`parent_id`)
-    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE
+    -- Load-balancing behavior
+    `connection_weight`        int(11),
+    `failover_only`            boolean      NOT NULL DEFAULT 0,
+
+    PRIMARY KEY (`connection_id`),
+    UNIQUE KEY `connection_name_parent` (`connection_name`, `parent_id`),
+
+    CONSTRAINT `guacamole_connection_ibfk_1`
+        FOREIGN KEY (`parent_id`)
+            REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -85,15 +87,16 @@ CREATE TABLE `guacamole_connection` (
 -- users or groups will point to guacamole_user or guacamole_user_group.
 --
 
-CREATE TABLE `guacamole_entity` (
+CREATE TABLE `guacamole_entity`
+(
 
-  `entity_id`     int(11)            NOT NULL AUTO_INCREMENT,
-  `name`          varchar(128)       NOT NULL,
-  `type`          enum('USER',
-                       'USER_GROUP') NOT NULL,
+    `entity_id` int(11) NOT NULL AUTO_INCREMENT,
+    `name`      varchar(128) NOT NULL,
+    `type`      enum('USER',
+        'USER_GROUP') NOT NULL,
 
-  PRIMARY KEY (`entity_id`),
-  UNIQUE KEY `guacamole_entity_name_scope` (`type`, `name`)
+    PRIMARY KEY (`entity_id`),
+    UNIQUE KEY `guacamole_entity_name_scope` (`type`, `name`)
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -104,45 +107,46 @@ CREATE TABLE `guacamole_entity` (
 -- providing the salt.
 --
 
-CREATE TABLE `guacamole_user` (
+CREATE TABLE `guacamole_user`
+(
 
-  `user_id`       int(11)      NOT NULL AUTO_INCREMENT,
-  `entity_id`     int(11)      NOT NULL,
+    `user_id`             int(11) NOT NULL AUTO_INCREMENT,
+    `entity_id`           int(11) NOT NULL,
 
-  -- Optionally-salted password
-  `password_hash` binary(32)   NOT NULL,
-  `password_salt` binary(32),
-  `password_date` datetime     NOT NULL,
+    -- Optionally-salted password
+    `password_hash`       binary(32) NOT NULL,
+    `password_salt`       binary(32),
+    `password_date`       datetime NOT NULL,
 
-  -- Account disabled/expired status
-  `disabled`      boolean      NOT NULL DEFAULT 0,
-  `expired`       boolean      NOT NULL DEFAULT 0,
+    -- Account disabled/expired status
+    `disabled`            boolean  NOT NULL DEFAULT 0,
+    `expired`             boolean  NOT NULL DEFAULT 0,
 
-  -- Time-based access restriction
-  `access_window_start`    TIME,
-  `access_window_end`      TIME,
+    -- Time-based access restriction
+    `access_window_start` TIME,
+    `access_window_end`   TIME,
 
-  -- Date-based access restriction
-  `valid_from`  DATE,
-  `valid_until` DATE,
+    -- Date-based access restriction
+    `valid_from`          DATE,
+    `valid_until`         DATE,
 
-  -- Timezone used for all date/time comparisons and interpretation
-  `timezone` VARCHAR(64),
+    -- Timezone used for all date/time comparisons and interpretation
+    `timezone`            VARCHAR(64),
 
-  -- Profile information
-  `full_name`           VARCHAR(256),
-  `email_address`       VARCHAR(256),
-  `organization`        VARCHAR(256),
-  `organizational_role` VARCHAR(256),
+    -- Profile information
+    `full_name`           VARCHAR(256),
+    `email_address`       VARCHAR(256),
+    `organization`        VARCHAR(256),
+    `organizational_role` VARCHAR(256),
 
-  PRIMARY KEY (`user_id`),
+    PRIMARY KEY (`user_id`),
 
-  UNIQUE KEY `guacamole_user_single_entity` (`entity_id`),
+    UNIQUE KEY `guacamole_user_single_entity` (`entity_id`),
 
-  CONSTRAINT `guacamole_user_entity`
-    FOREIGN KEY (`entity_id`)
-    REFERENCES `guacamole_entity` (`entity_id`)
-    ON DELETE CASCADE
+    CONSTRAINT `guacamole_user_entity`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `guacamole_entity` (`entity_id`)
+            ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -152,22 +156,23 @@ CREATE TABLE `guacamole_user` (
 -- granted to that group.
 --
 
-CREATE TABLE `guacamole_user_group` (
+CREATE TABLE `guacamole_user_group`
+(
 
-  `user_group_id` int(11)      NOT NULL AUTO_INCREMENT,
-  `entity_id`     int(11)      NOT NULL,
+    `user_group_id` int(11) NOT NULL AUTO_INCREMENT,
+    `entity_id`     int(11) NOT NULL,
 
-  -- Group disabled status
-  `disabled`      boolean      NOT NULL DEFAULT 0,
+    -- Group disabled status
+    `disabled`      boolean NOT NULL DEFAULT 0,
 
-  PRIMARY KEY (`user_group_id`),
+    PRIMARY KEY (`user_group_id`),
 
-  UNIQUE KEY `guacamole_user_group_single_entity` (`entity_id`),
+    UNIQUE KEY `guacamole_user_group_single_entity` (`entity_id`),
 
-  CONSTRAINT `guacamole_user_group_entity`
-    FOREIGN KEY (`entity_id`)
-    REFERENCES `guacamole_entity` (`entity_id`)
-    ON DELETE CASCADE
+    CONSTRAINT `guacamole_user_group_entity`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `guacamole_entity` (`entity_id`)
+            ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -175,22 +180,23 @@ CREATE TABLE `guacamole_user_group` (
 -- Table of users which are members of given user groups.
 --
 
-CREATE TABLE `guacamole_user_group_member` (
+CREATE TABLE `guacamole_user_group_member`
+(
 
-  `user_group_id`    int(11)     NOT NULL,
-  `member_entity_id` int(11)     NOT NULL,
+    `user_group_id`    int(11) NOT NULL,
+    `member_entity_id` int(11) NOT NULL,
 
-  PRIMARY KEY (`user_group_id`, `member_entity_id`),
+    PRIMARY KEY (`user_group_id`, `member_entity_id`),
 
-  -- Parent must be a user group
-  CONSTRAINT `guacamole_user_group_member_parent_id`
-    FOREIGN KEY (`user_group_id`)
-    REFERENCES `guacamole_user_group` (`user_group_id`) ON DELETE CASCADE,
+    -- Parent must be a user group
+    CONSTRAINT `guacamole_user_group_member_parent_id`
+        FOREIGN KEY (`user_group_id`)
+            REFERENCES `guacamole_user_group` (`user_group_id`) ON DELETE CASCADE,
 
-  -- Member may be either a user or a user group (any entity)
-  CONSTRAINT `guacamole_user_group_member_entity_id`
-    FOREIGN KEY (`member_entity_id`)
-    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
+    -- Member may be either a user or a user group (any entity)
+    CONSTRAINT `guacamole_user_group_member_entity_id`
+        FOREIGN KEY (`member_entity_id`)
+            REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -202,19 +208,20 @@ CREATE TABLE `guacamole_user_group_member` (
 -- sharing profile.
 --
 
-CREATE TABLE guacamole_sharing_profile (
+CREATE TABLE guacamole_sharing_profile
+(
 
-  `sharing_profile_id`    int(11)      NOT NULL AUTO_INCREMENT,
-  `sharing_profile_name`  varchar(128) NOT NULL,
-  `primary_connection_id` int(11)      NOT NULL,
+    `sharing_profile_id`    int(11) NOT NULL AUTO_INCREMENT,
+    `sharing_profile_name`  varchar(128) NOT NULL,
+    `primary_connection_id` int(11) NOT NULL,
 
-  PRIMARY KEY (`sharing_profile_id`),
-  UNIQUE KEY `sharing_profile_name_primary` (sharing_profile_name, primary_connection_id),
+    PRIMARY KEY (`sharing_profile_id`),
+    UNIQUE KEY `sharing_profile_name_primary` (sharing_profile_name, primary_connection_id),
 
-  CONSTRAINT `guacamole_sharing_profile_ibfk_1`
-    FOREIGN KEY (`primary_connection_id`)
-    REFERENCES `guacamole_connection` (`connection_id`)
-    ON DELETE CASCADE
+    CONSTRAINT `guacamole_sharing_profile_ibfk_1`
+        FOREIGN KEY (`primary_connection_id`)
+            REFERENCES `guacamole_connection` (`connection_id`)
+            ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -223,17 +230,18 @@ CREATE TABLE guacamole_sharing_profile (
 -- associated with a connection.
 --
 
-CREATE TABLE `guacamole_connection_parameter` (
+CREATE TABLE `guacamole_connection_parameter`
+(
 
-  `connection_id`   int(11)       NOT NULL,
-  `parameter_name`  varchar(128)  NOT NULL,
-  `parameter_value` varchar(4096) NOT NULL,
+    `connection_id`   int(11) NOT NULL,
+    `parameter_name`  varchar(128)  NOT NULL,
+    `parameter_value` varchar(4096) NOT NULL,
 
-  PRIMARY KEY (`connection_id`,`parameter_name`),
+    PRIMARY KEY (`connection_id`, `parameter_name`),
 
-  CONSTRAINT `guacamole_connection_parameter_ibfk_1`
-    FOREIGN KEY (`connection_id`)
-    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_connection_parameter_ibfk_1`
+        FOREIGN KEY (`connection_id`)
+            REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -244,17 +252,18 @@ CREATE TABLE `guacamole_connection_parameter` (
 -- connection via the sharing profile.
 --
 
-CREATE TABLE guacamole_sharing_profile_parameter (
+CREATE TABLE guacamole_sharing_profile_parameter
+(
 
-  `sharing_profile_id` integer       NOT NULL,
-  `parameter_name`     varchar(128)  NOT NULL,
-  `parameter_value`    varchar(4096) NOT NULL,
+    `sharing_profile_id` integer       NOT NULL,
+    `parameter_name`     varchar(128)  NOT NULL,
+    `parameter_value`    varchar(4096) NOT NULL,
 
-  PRIMARY KEY (`sharing_profile_id`, `parameter_name`),
+    PRIMARY KEY (`sharing_profile_id`, `parameter_name`),
 
-  CONSTRAINT `guacamole_sharing_profile_parameter_ibfk_1`
-    FOREIGN KEY (`sharing_profile_id`)
-    REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_sharing_profile_parameter_ibfk_1`
+        FOREIGN KEY (`sharing_profile_id`)
+            REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -265,18 +274,19 @@ CREATE TABLE guacamole_sharing_profile_parameter (
 -- properly-typed columns of a specific table.
 --
 
-CREATE TABLE guacamole_user_attribute (
+CREATE TABLE guacamole_user_attribute
+(
 
-  `user_id`         int(11)       NOT NULL,
-  `attribute_name`  varchar(128)  NOT NULL,
-  `attribute_value` varchar(4096) NOT NULL,
+    `user_id`         int(11) NOT NULL,
+    `attribute_name`  varchar(128)  NOT NULL,
+    `attribute_value` varchar(4096) NOT NULL,
 
-  PRIMARY KEY (user_id, attribute_name),
-  KEY `user_id` (`user_id`),
+    PRIMARY KEY (user_id, attribute_name),
+    KEY               `user_id` (`user_id`),
 
-  CONSTRAINT guacamole_user_attribute_ibfk_1
-    FOREIGN KEY (user_id)
-    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
+    CONSTRAINT guacamole_user_attribute_ibfk_1
+        FOREIGN KEY (user_id)
+            REFERENCES guacamole_user (user_id) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -287,18 +297,19 @@ CREATE TABLE guacamole_user_attribute (
 -- mapped to properly-typed columns of a specific table.
 --
 
-CREATE TABLE guacamole_user_group_attribute (
+CREATE TABLE guacamole_user_group_attribute
+(
 
-  `user_group_id`   int(11)       NOT NULL,
-  `attribute_name`  varchar(128)  NOT NULL,
-  `attribute_value` varchar(4096) NOT NULL,
+    `user_group_id`   int(11) NOT NULL,
+    `attribute_name`  varchar(128)  NOT NULL,
+    `attribute_value` varchar(4096) NOT NULL,
 
-  PRIMARY KEY (`user_group_id`, `attribute_name`),
-  KEY `user_group_id` (`user_group_id`),
+    PRIMARY KEY (`user_group_id`, `attribute_name`),
+    KEY               `user_group_id` (`user_group_id`),
 
-  CONSTRAINT `guacamole_user_group_attribute_ibfk_1`
-    FOREIGN KEY (`user_group_id`)
-    REFERENCES `guacamole_user_group` (`user_group_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_user_group_attribute_ibfk_1`
+        FOREIGN KEY (`user_group_id`)
+            REFERENCES `guacamole_user_group` (`user_group_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -309,18 +320,19 @@ CREATE TABLE guacamole_user_group_attribute (
 -- mapped to properly-typed columns of a specific table.
 --
 
-CREATE TABLE guacamole_connection_attribute (
+CREATE TABLE guacamole_connection_attribute
+(
 
-  `connection_id`   int(11)       NOT NULL,
-  `attribute_name`  varchar(128)  NOT NULL,
-  `attribute_value` varchar(4096) NOT NULL,
+    `connection_id`   int(11) NOT NULL,
+    `attribute_name`  varchar(128)  NOT NULL,
+    `attribute_value` varchar(4096) NOT NULL,
 
-  PRIMARY KEY (connection_id, attribute_name),
-  KEY `connection_id` (`connection_id`),
+    PRIMARY KEY (connection_id, attribute_name),
+    KEY               `connection_id` (`connection_id`),
 
-  CONSTRAINT guacamole_connection_attribute_ibfk_1
-    FOREIGN KEY (connection_id)
-    REFERENCES guacamole_connection (connection_id) ON DELETE CASCADE
+    CONSTRAINT guacamole_connection_attribute_ibfk_1
+        FOREIGN KEY (connection_id)
+            REFERENCES guacamole_connection (connection_id) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -331,18 +343,19 @@ CREATE TABLE guacamole_connection_attribute (
 -- mapped to properly-typed columns of a specific table.
 --
 
-CREATE TABLE guacamole_connection_group_attribute (
+CREATE TABLE guacamole_connection_group_attribute
+(
 
-  `connection_group_id` int(11)       NOT NULL,
-  `attribute_name`      varchar(128)  NOT NULL,
-  `attribute_value`     varchar(4096) NOT NULL,
+    `connection_group_id` int(11) NOT NULL,
+    `attribute_name`      varchar(128)  NOT NULL,
+    `attribute_value`     varchar(4096) NOT NULL,
 
-  PRIMARY KEY (connection_group_id, attribute_name),
-  KEY `connection_group_id` (`connection_group_id`),
+    PRIMARY KEY (connection_group_id, attribute_name),
+    KEY                   `connection_group_id` (`connection_group_id`),
 
-  CONSTRAINT guacamole_connection_group_attribute_ibfk_1
-    FOREIGN KEY (connection_group_id)
-    REFERENCES guacamole_connection_group (connection_group_id) ON DELETE CASCADE
+    CONSTRAINT guacamole_connection_group_attribute_ibfk_1
+        FOREIGN KEY (connection_group_id)
+            REFERENCES guacamole_connection_group (connection_group_id) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -353,18 +366,19 @@ CREATE TABLE guacamole_connection_group_attribute (
 -- mapped to properly-typed columns of a specific table.
 --
 
-CREATE TABLE guacamole_sharing_profile_attribute (
+CREATE TABLE guacamole_sharing_profile_attribute
+(
 
-  `sharing_profile_id` int(11)       NOT NULL,
-  `attribute_name`     varchar(128)  NOT NULL,
-  `attribute_value`    varchar(4096) NOT NULL,
+    `sharing_profile_id` int(11) NOT NULL,
+    `attribute_name`     varchar(128)  NOT NULL,
+    `attribute_value`    varchar(4096) NOT NULL,
 
-  PRIMARY KEY (sharing_profile_id, attribute_name),
-  KEY `sharing_profile_id` (`sharing_profile_id`),
+    PRIMARY KEY (sharing_profile_id, attribute_name),
+    KEY                  `sharing_profile_id` (`sharing_profile_id`),
 
-  CONSTRAINT guacamole_sharing_profile_attribute_ibfk_1
-    FOREIGN KEY (sharing_profile_id)
-    REFERENCES guacamole_sharing_profile (sharing_profile_id) ON DELETE CASCADE
+    CONSTRAINT guacamole_sharing_profile_attribute_ibfk_1
+        FOREIGN KEY (sharing_profile_id)
+            REFERENCES guacamole_sharing_profile (sharing_profile_id) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -373,24 +387,25 @@ CREATE TABLE guacamole_sharing_profile_attribute (
 -- user group specific access to a connection.
 --
 
-CREATE TABLE `guacamole_connection_permission` (
+CREATE TABLE `guacamole_connection_permission`
+(
 
-  `entity_id`     int(11) NOT NULL,
-  `connection_id` int(11) NOT NULL,
-  `permission`    enum('READ',
-                       'UPDATE',
-                       'DELETE',
-                       'ADMINISTER') NOT NULL,
+    `entity_id`     int(11) NOT NULL,
+    `connection_id` int(11) NOT NULL,
+    `permission`    enum('READ',
+        'UPDATE',
+        'DELETE',
+        'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`entity_id`,`connection_id`,`permission`),
+    PRIMARY KEY (`entity_id`, `connection_id`, `permission`),
 
-  CONSTRAINT `guacamole_connection_permission_ibfk_1`
-    FOREIGN KEY (`connection_id`)
-    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE,
+    CONSTRAINT `guacamole_connection_permission_ibfk_1`
+        FOREIGN KEY (`connection_id`)
+            REFERENCES `guacamole_connection` (`connection_id`) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_connection_permission_entity`
-    FOREIGN KEY (`entity_id`)
-    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_connection_permission_entity`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -399,24 +414,25 @@ CREATE TABLE `guacamole_connection_permission` (
 -- or user group specific access to a connection group.
 --
 
-CREATE TABLE `guacamole_connection_group_permission` (
+CREATE TABLE `guacamole_connection_group_permission`
+(
 
-  `entity_id`           int(11) NOT NULL,
-  `connection_group_id` int(11) NOT NULL,
-  `permission`          enum('READ',
-                             'UPDATE',
-                             'DELETE',
-                             'ADMINISTER') NOT NULL,
+    `entity_id`           int(11) NOT NULL,
+    `connection_group_id` int(11) NOT NULL,
+    `permission`          enum('READ',
+        'UPDATE',
+        'DELETE',
+        'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`entity_id`,`connection_group_id`,`permission`),
+    PRIMARY KEY (`entity_id`, `connection_group_id`, `permission`),
 
-  CONSTRAINT `guacamole_connection_group_permission_ibfk_1`
-    FOREIGN KEY (`connection_group_id`)
-    REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE,
+    CONSTRAINT `guacamole_connection_group_permission_ibfk_1`
+        FOREIGN KEY (`connection_group_id`)
+            REFERENCES `guacamole_connection_group` (`connection_group_id`) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_connection_group_permission_entity`
-    FOREIGN KEY (`entity_id`)
-    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_connection_group_permission_entity`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -425,24 +441,25 @@ CREATE TABLE `guacamole_connection_group_permission` (
 -- a user or user group specific access to a sharing profile.
 --
 
-CREATE TABLE guacamole_sharing_profile_permission (
+CREATE TABLE guacamole_sharing_profile_permission
+(
 
-  `entity_id`          integer NOT NULL,
-  `sharing_profile_id` integer NOT NULL,
-  `permission`         enum('READ',
-                            'UPDATE',
-                            'DELETE',
-                            'ADMINISTER') NOT NULL,
+    `entity_id`          integer NOT NULL,
+    `sharing_profile_id` integer NOT NULL,
+    `permission`         enum('READ',
+        'UPDATE',
+        'DELETE',
+        'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`entity_id`, `sharing_profile_id`, `permission`),
+    PRIMARY KEY (`entity_id`, `sharing_profile_id`, `permission`),
 
-  CONSTRAINT `guacamole_sharing_profile_permission_ibfk_1`
-    FOREIGN KEY (`sharing_profile_id`)
-    REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE CASCADE,
+    CONSTRAINT `guacamole_sharing_profile_permission_ibfk_1`
+        FOREIGN KEY (`sharing_profile_id`)
+            REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_sharing_profile_permission_entity`
-    FOREIGN KEY (`entity_id`)
-    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_sharing_profile_permission_entity`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -451,21 +468,22 @@ CREATE TABLE guacamole_sharing_profile_permission (
 -- group a system-level privilege of some kind.
 --
 
-CREATE TABLE `guacamole_system_permission` (
+CREATE TABLE `guacamole_system_permission`
+(
 
-  `entity_id`  int(11) NOT NULL,
-  `permission` enum('CREATE_CONNECTION',
-                    'CREATE_CONNECTION_GROUP',
-                    'CREATE_SHARING_PROFILE',
-                    'CREATE_USER',
-                    'CREATE_USER_GROUP',
-                    'ADMINISTER') NOT NULL,
+    `entity_id`  int(11) NOT NULL,
+    `permission` enum('CREATE_CONNECTION',
+        'CREATE_CONNECTION_GROUP',
+        'CREATE_SHARING_PROFILE',
+        'CREATE_USER',
+        'CREATE_USER_GROUP',
+        'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`entity_id`,`permission`),
+    PRIMARY KEY (`entity_id`, `permission`),
 
-  CONSTRAINT `guacamole_system_permission_entity`
-    FOREIGN KEY (`entity_id`)
-    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_system_permission_entity`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -475,24 +493,25 @@ CREATE TABLE `guacamole_system_permission` (
 -- operation.
 --
 
-CREATE TABLE `guacamole_user_permission` (
+CREATE TABLE `guacamole_user_permission`
+(
 
-  `entity_id`        int(11) NOT NULL,
-  `affected_user_id` int(11) NOT NULL,
-  `permission`       enum('READ',
-                          'UPDATE',
-                          'DELETE',
-                          'ADMINISTER') NOT NULL,
+    `entity_id`        int(11) NOT NULL,
+    `affected_user_id` int(11) NOT NULL,
+    `permission`       enum('READ',
+        'UPDATE',
+        'DELETE',
+        'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`entity_id`,`affected_user_id`,`permission`),
+    PRIMARY KEY (`entity_id`, `affected_user_id`, `permission`),
 
-  CONSTRAINT `guacamole_user_permission_ibfk_1`
-    FOREIGN KEY (`affected_user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE,
+    CONSTRAINT `guacamole_user_permission_ibfk_1`
+        FOREIGN KEY (`affected_user_id`)
+            REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_user_permission_entity`
-    FOREIGN KEY (`entity_id`)
-    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_user_permission_entity`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -502,24 +521,25 @@ CREATE TABLE `guacamole_user_permission` (
 -- a specific type of operation.
 --
 
-CREATE TABLE `guacamole_user_group_permission` (
+CREATE TABLE `guacamole_user_group_permission`
+(
 
-  `entity_id`              int(11) NOT NULL,
-  `affected_user_group_id` int(11) NOT NULL,
-  `permission`             enum('READ',
-                                'UPDATE',
-                                'DELETE',
-                                'ADMINISTER') NOT NULL,
+    `entity_id`              int(11) NOT NULL,
+    `affected_user_group_id` int(11) NOT NULL,
+    `permission`             enum('READ',
+        'UPDATE',
+        'DELETE',
+        'ADMINISTER') NOT NULL,
 
-  PRIMARY KEY (`entity_id`, `affected_user_group_id`, `permission`),
+    PRIMARY KEY (`entity_id`, `affected_user_group_id`, `permission`),
 
-  CONSTRAINT `guacamole_user_group_permission_affected_user_group`
-    FOREIGN KEY (`affected_user_group_id`)
-    REFERENCES `guacamole_user_group` (`user_group_id`) ON DELETE CASCADE,
+    CONSTRAINT `guacamole_user_group_permission_affected_user_group`
+        FOREIGN KEY (`affected_user_group_id`)
+            REFERENCES `guacamole_user_group` (`user_group_id`) ON DELETE CASCADE,
 
-  CONSTRAINT `guacamole_user_group_permission_entity`
-    FOREIGN KEY (`entity_id`)
-    REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_user_group_permission_entity`
+        FOREIGN KEY (`entity_id`)
+            REFERENCES `guacamole_entity` (`entity_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -529,38 +549,39 @@ CREATE TABLE `guacamole_user_group_permission` (
 -- (if any).
 --
 
-CREATE TABLE `guacamole_connection_history` (
+CREATE TABLE `guacamole_connection_history`
+(
 
-  `history_id`           int(11)      NOT NULL AUTO_INCREMENT,
-  `user_id`              int(11)      DEFAULT NULL,
-  `username`             varchar(128) NOT NULL,
-  `remote_host`          varchar(256) DEFAULT NULL,
-  `connection_id`        int(11)      DEFAULT NULL,
-  `connection_name`      varchar(128) NOT NULL,
-  `sharing_profile_id`   int(11)      DEFAULT NULL,
-  `sharing_profile_name` varchar(128) DEFAULT NULL,
-  `start_date`           datetime     NOT NULL,
-  `end_date`             datetime     DEFAULT NULL,
+    `history_id`           int(11) NOT NULL AUTO_INCREMENT,
+    `user_id`              int(11) DEFAULT NULL,
+    `username`             varchar(128) NOT NULL,
+    `remote_host`          varchar(256) DEFAULT NULL,
+    `connection_id`        int(11) DEFAULT NULL,
+    `connection_name`      varchar(128) NOT NULL,
+    `sharing_profile_id`   int(11) DEFAULT NULL,
+    `sharing_profile_name` varchar(128) DEFAULT NULL,
+    `start_date`           datetime     NOT NULL,
+    `end_date`             datetime     DEFAULT NULL,
 
-  PRIMARY KEY (`history_id`),
-  KEY `user_id` (`user_id`),
-  KEY `connection_id` (`connection_id`),
-  KEY `sharing_profile_id` (`sharing_profile_id`),
-  KEY `start_date` (`start_date`),
-  KEY `end_date` (`end_date`),
-  KEY `connection_start_date` (`connection_id`, `start_date`),
+    PRIMARY KEY (`history_id`),
+    KEY                    `user_id` (`user_id`),
+    KEY                    `connection_id` (`connection_id`),
+    KEY                    `sharing_profile_id` (`sharing_profile_id`),
+    KEY                    `start_date` (`start_date`),
+    KEY                    `end_date` (`end_date`),
+    KEY                    `connection_start_date` (`connection_id`, `start_date`),
 
-  CONSTRAINT `guacamole_connection_history_ibfk_1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE SET NULL,
+    CONSTRAINT `guacamole_connection_history_ibfk_1`
+        FOREIGN KEY (`user_id`)
+            REFERENCES `guacamole_user` (`user_id`) ON DELETE SET NULL,
 
-  CONSTRAINT `guacamole_connection_history_ibfk_2`
-    FOREIGN KEY (`connection_id`)
-    REFERENCES `guacamole_connection` (`connection_id`) ON DELETE SET NULL,
+    CONSTRAINT `guacamole_connection_history_ibfk_2`
+        FOREIGN KEY (`connection_id`)
+            REFERENCES `guacamole_connection` (`connection_id`) ON DELETE SET NULL,
 
-  CONSTRAINT `guacamole_connection_history_ibfk_3`
-    FOREIGN KEY (`sharing_profile_id`)
-    REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE SET NULL
+    CONSTRAINT `guacamole_connection_history_ibfk_3`
+        FOREIGN KEY (`sharing_profile_id`)
+            REFERENCES `guacamole_sharing_profile` (`sharing_profile_id`) ON DELETE SET NULL
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -568,24 +589,25 @@ CREATE TABLE `guacamole_connection_history` (
 -- User login/logout history
 --
 
-CREATE TABLE guacamole_user_history (
+CREATE TABLE guacamole_user_history
+(
 
-  `history_id`           int(11)      NOT NULL AUTO_INCREMENT,
-  `user_id`              int(11)      DEFAULT NULL,
-  `username`             varchar(128) NOT NULL,
-  `remote_host`          varchar(256) DEFAULT NULL,
-  `start_date`           datetime     NOT NULL,
-  `end_date`             datetime     DEFAULT NULL,
+    `history_id`  int(11) NOT NULL AUTO_INCREMENT,
+    `user_id`     int(11) DEFAULT NULL,
+    `username`    varchar(128) NOT NULL,
+    `remote_host` varchar(256) DEFAULT NULL,
+    `start_date`  datetime     NOT NULL,
+    `end_date`    datetime     DEFAULT NULL,
 
-  PRIMARY KEY (history_id),
-  KEY `user_id` (`user_id`),
-  KEY `start_date` (`start_date`),
-  KEY `end_date` (`end_date`),
-  KEY `user_start_date` (`user_id`, `start_date`),
+    PRIMARY KEY (history_id),
+    KEY           `user_id` (`user_id`),
+    KEY           `start_date` (`start_date`),
+    KEY           `end_date` (`end_date`),
+    KEY           `user_start_date` (`user_id`, `start_date`),
 
-  CONSTRAINT guacamole_user_history_ibfk_1
-    FOREIGN KEY (user_id)
-    REFERENCES guacamole_user (user_id) ON DELETE SET NULL
+    CONSTRAINT guacamole_user_history_ibfk_1
+        FOREIGN KEY (user_id)
+            REFERENCES guacamole_user (user_id) ON DELETE SET NULL
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -593,21 +615,22 @@ CREATE TABLE guacamole_user_history (
 -- User password history
 --
 
-CREATE TABLE guacamole_user_password_history (
+CREATE TABLE guacamole_user_password_history
+(
 
-  `password_history_id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id`             int(11) NOT NULL,
+    `password_history_id` int(11) NOT NULL AUTO_INCREMENT,
+    `user_id`             int(11) NOT NULL,
 
-  -- Salted password
-  `password_hash` binary(32) NOT NULL,
-  `password_salt` binary(32),
-  `password_date` datetime   NOT NULL,
+    -- Salted password
+    `password_hash`       binary(32) NOT NULL,
+    `password_salt`       binary(32),
+    `password_date`       datetime NOT NULL,
 
-  PRIMARY KEY (`password_history_id`),
-  KEY `user_id` (`user_id`),
+    PRIMARY KEY (`password_history_id`),
+    KEY                   `user_id` (`user_id`),
 
-  CONSTRAINT `guacamole_user_password_history_ibfk_1`
-    FOREIGN KEY (`user_id`)
-    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+    CONSTRAINT `guacamole_user_password_history_ibfk_1`
+        FOREIGN KEY (`user_id`)
+            REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

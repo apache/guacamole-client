@@ -24,43 +24,32 @@ import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.ibatis.annotations.Param;
 
 /**
- * Mapper for historical password records (users' prior passwords, along with
- * the dates they were set).
+ * Mapper for historical password records (users' prior passwords, along with the dates they were
+ * set).
  */
 public interface PasswordRecordMapper extends ModeledDirectoryObjectMapper<UserModel> {
 
-    /**
-     * Returns a collection of all password records associated with the user
-     * having the given username.
-     *
-     * @param username
-     *     The username of the user whose password records are to be retrieved.
-     *
-     * @param maxHistorySize
-     *     The maximum number of records to maintain for each user.
-     *
-     * @return
-     *     A collection of all password records associated with the user having
-     *     the given username. This collection will be empty if no such user
-     *     exists.
-     */
-    List<PasswordRecordModel> select(@Param("username") String username,
-            @Param("maxHistorySize") int maxHistorySize);
+  /**
+   * Returns a collection of all password records associated with the user having the given
+   * username.
+   *
+   * @param username       The username of the user whose password records are to be retrieved.
+   * @param maxHistorySize The maximum number of records to maintain for each user.
+   * @return A collection of all password records associated with the user having the given
+   * username. This collection will be empty if no such user exists.
+   */
+  List<PasswordRecordModel> select(@Param("username") String username,
+      @Param("maxHistorySize") int maxHistorySize);
 
-    /**
-     * Inserts the given password record. Old records exceeding the maximum
-     * history size will be automatically deleted.
-     *
-     * @param record
-     *     The password record to insert.
-     *
-     * @param maxHistorySize
-     *     The maximum number of records to maintain for each user.
-     *
-     * @return
-     *     The number of rows inserted.
-     */
-    int insert(@Param("record") PasswordRecordModel record,
-            @Param("maxHistorySize") int maxHistorySize);
+  /**
+   * Inserts the given password record. Old records exceeding the maximum history size will be
+   * automatically deleted.
+   *
+   * @param record         The password record to insert.
+   * @param maxHistorySize The maximum number of records to maintain for each user.
+   * @return The number of rows inserted.
+   */
+  int insert(@Param("record") PasswordRecordModel record,
+      @Param("maxHistorySize") int maxHistorySize);
 
 }

@@ -21,7 +21,7 @@
  * A service for reading and manipulating the Guacamole connection history.
  */
 angular.module('history').factory('guacHistory', ['$injector',
-        function guacHistory($injector) {
+  function guacHistory($injector) {
 
     // Required types
     var HistoryEntry = $injector.get('HistoryEntry');
@@ -33,7 +33,7 @@ angular.module('history').factory('guacHistory', ['$injector',
 
     // The parameter name for getting the history from local storage
     var GUAC_HISTORY_STORAGE_KEY = "GUAC_HISTORY";
-                                    
+
     /**
      * The number of entries to allow before removing old entries based on the
      * cutoff.
@@ -42,7 +42,7 @@ angular.module('history').factory('guacHistory', ['$injector',
 
     /**
      * The top few recent connections, sorted in order of most recent access.
-     * 
+     *
      * @type HistoryEntry[]
      */
     service.recentConnections = [];
@@ -50,46 +50,50 @@ angular.module('history').factory('guacHistory', ['$injector',
     /**
      * Updates the thumbnail and access time of the history entry for the
      * connection with the given ID.
-     * 
+     *
      * @param {String} id
      *     The ID of the connection whose history entry should be updated.
-     * 
+     *
      * @param {String} thumbnail
      *     The URL of the thumbnail image to associate with the history entry.
      */
-    service.updateThumbnail = function(id, thumbnail) {
+    service.updateThumbnail = function (id, thumbnail) {
 
-        var i;
+      var i;
 
-        // Remove any existing entry for this connection
-        for (i=0; i < service.recentConnections.length; i++) {
-            if (service.recentConnections[i].id === id) {
-                service.recentConnections.splice(i, 1);
-                break;
-            }
+      // Remove any existing entry for this connection
+      for (i = 0; i < service.recentConnections.length; i++) {
+        if (service.recentConnections[i].id === id) {
+          service.recentConnections.splice(i, 1);
+          break;
         }
+      }
 
-        // Store new entry in history
-        service.recentConnections.unshift(new HistoryEntry(
-            id,
-            thumbnail,
-            new Date().getTime()
-        ));
+      // Store new entry in history
+      service.recentConnections.unshift(new HistoryEntry(
+          id,
+          thumbnail,
+          new Date().getTime()
+      ));
 
-        // Truncate history to ideal length
-        if (service.recentConnections.length > IDEAL_LENGTH)
-            service.recentConnections.length = IDEAL_LENGTH;
+      // Truncate history to ideal length
+      if (service.recentConnections.length > IDEAL_LENGTH) {
+        service.recentConnections.length = IDEAL_LENGTH;
+      }
 
-        // Save updated history
-        localStorageService.setItem(GUAC_HISTORY_STORAGE_KEY, service.recentConnections);
+      // Save updated history
+      localStorageService.setItem(GUAC_HISTORY_STORAGE_KEY,
+          service.recentConnections);
 
     };
 
     // Init stored connection history from localStorage
-    var storedHistory = localStorageService.getItem(GUAC_HISTORY_STORAGE_KEY) || [];
-    if (storedHistory instanceof Array)
-        service.recentConnections = storedHistory;
+    var storedHistory = localStorageService.getItem(GUAC_HISTORY_STORAGE_KEY)
+        || [];
+    if (storedHistory instanceof Array) {
+      service.recentConnections = storedHistory;
+    }
 
     return service;
 
-}]);
+  }]);

@@ -22,21 +22,16 @@ package org.apache.guacamole.rest.tunnel;
 import org.apache.guacamole.tunnel.UserTunnel;
 
 /**
- * Factory which creates resources that expose the contents of a given
- * tunnel.
+ * Factory which creates resources that expose the contents of a given tunnel.
  */
 public interface TunnelResourceFactory {
 
-    /**
-     * Creates a new TunnelResource which exposes the contents of the
-     * given tunnel.
-     *
-     * @param tunnel
-     *     The tunnel whose contents should be exposed.
-     *
-     * @return
-     *     A new TunnelResource which exposes the contents of the given tunnel.
-     */
-    TunnelResource create(UserTunnel tunnel);
+  /**
+   * Creates a new TunnelResource which exposes the contents of the given tunnel.
+   *
+   * @param tunnel The tunnel whose contents should be exposed.
+   * @return A new TunnelResource which exposes the contents of the given tunnel.
+   */
+  TunnelResource create(UserTunnel tunnel);
 
 }

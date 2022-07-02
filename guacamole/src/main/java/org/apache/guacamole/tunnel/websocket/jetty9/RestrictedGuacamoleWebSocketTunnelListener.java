@@ -19,36 +19,36 @@
 
 package org.apache.guacamole.tunnel.websocket.jetty9;
 
-import org.eclipse.jetty.websocket.api.Session;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.tunnel.TunnelRequestService;
+import org.eclipse.jetty.websocket.api.Session;
 
 /**
- * WebSocket listener implementation which properly parses connection IDs
- * included in the connection request.
+ * WebSocket listener implementation which properly parses connection IDs included in the connection
+ * request.
  */
 public class RestrictedGuacamoleWebSocketTunnelListener extends GuacamoleWebSocketTunnelListener {
 
-    /**
-     * Service for handling tunnel requests.
-     */
-    private final TunnelRequestService tunnelRequestService;
+  /**
+   * Service for handling tunnel requests.
+   */
+  private final TunnelRequestService tunnelRequestService;
 
-    /**
-     * Creates a new WebSocketListener which uses the given TunnelRequestService
-     * to create new GuacamoleTunnels for inbound requests.
-     *
-     * @param tunnelRequestService The service to use for inbound tunnel
-     *                             requests.
-     */
-    public RestrictedGuacamoleWebSocketTunnelListener(TunnelRequestService tunnelRequestService) {
-        this.tunnelRequestService = tunnelRequestService;
-    }
+  /**
+   * Creates a new WebSocketListener which uses the given TunnelRequestService to create new
+   * GuacamoleTunnels for inbound requests.
+   *
+   * @param tunnelRequestService The service to use for inbound tunnel requests.
+   */
+  public RestrictedGuacamoleWebSocketTunnelListener(TunnelRequestService tunnelRequestService) {
+    this.tunnelRequestService = tunnelRequestService;
+  }
 
-    @Override
-    protected GuacamoleTunnel createTunnel(Session session) throws GuacamoleException {
-        return tunnelRequestService.createTunnel(new WebSocketTunnelRequest(session.getUpgradeRequest()));
-    }
+  @Override
+  protected GuacamoleTunnel createTunnel(Session session) throws GuacamoleException {
+    return tunnelRequestService.createTunnel(
+        new WebSocketTunnelRequest(session.getUpgradeRequest()));
+  }
 
 }

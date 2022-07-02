@@ -22,5 +22,5 @@
  * into multiple pages.
  */
 angular.module('list', [
-    'auth'
+  'auth'
 ]);

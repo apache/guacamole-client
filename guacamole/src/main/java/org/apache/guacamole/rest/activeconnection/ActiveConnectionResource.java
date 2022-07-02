@@ -39,106 +39,89 @@ import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 
 /**
- * A REST resource which abstracts the operations available on an existing
- * ActiveConnection.
+ * A REST resource which abstracts the operations available on an existing ActiveConnection.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ActiveConnectionResource
-        extends DirectoryObjectResource<ActiveConnection, APIActiveConnection> {
+    extends DirectoryObjectResource<ActiveConnection, APIActiveConnection> {
 
-    /**
-     * The UserContext associated with the Directory which contains the
-     * Connection exposed by this resource.
-     */
-    private final UserContext userContext;
+  /**
+   * The UserContext associated with the Directory which contains the Connection exposed by this
+   * resource.
+   */
+  private final UserContext userContext;
 
-    /**
-     * The ActiveConnection exposed by this ActiveConnectionResource.
-     */
-    private final ActiveConnection activeConnection;
+  /**
+   * The ActiveConnection exposed by this ActiveConnectionResource.
+   */
+  private final ActiveConnection activeConnection;
 
-    /**
-     * A factory which can be used to create instances of resources representing
-     * Connection.
-     */
-    @Inject
-    private DirectoryResourceFactory<Connection, APIConnection>
-            connectionDirectoryResourceFactory;
+  /**
+   * A factory which can be used to create instances of resources representing Connection.
+   */
+  @Inject
+  private DirectoryResourceFactory<Connection, APIConnection>
+      connectionDirectoryResourceFactory;
 
-    /**
-     * Creates a new ActiveConnectionResource which exposes the operations and
-     * subresources available for the given ActiveConnection.
-     *
-     * @param userContext
-     *     The UserContext associated with the given Directory.
-     *
-     * @param directory
-     *     The Directory which contains the given ActiveConnection.
-     *
-     * @param activeConnection
-     *     The ActiveConnection that this ActiveConnectionResource should
-     *     represent.
-     *
-     * @param translator
-     *     A DirectoryObjectTranslator implementation which handles
-     *     ActiveConnections.
-     */
-    @AssistedInject
-    public ActiveConnectionResource(@Assisted UserContext userContext,
-            @Assisted Directory<ActiveConnection> directory,
-            @Assisted ActiveConnection activeConnection,
-            DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> translator) {
-        super(userContext, directory, activeConnection, translator);
-        this.userContext = userContext;
-        this.activeConnection = activeConnection;
-    }
+  /**
+   * Creates a new ActiveConnectionResource which exposes the operations and subresources available
+   * for the given ActiveConnection.
+   *
+   * @param userContext      The UserContext associated with the given Directory.
+   * @param directory        The Directory which contains the given ActiveConnection.
+   * @param activeConnection The ActiveConnection that this ActiveConnectionResource should
+   *                         represent.
+   * @param translator       A DirectoryObjectTranslator implementation which handles
+   *                         ActiveConnections.
+   */
+  @AssistedInject
+  public ActiveConnectionResource(@Assisted UserContext userContext,
+      @Assisted Directory<ActiveConnection> directory,
+      @Assisted ActiveConnection activeConnection,
+      DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> translator) {
+    super(userContext, directory, activeConnection, translator);
+    this.userContext = userContext;
+    this.activeConnection = activeConnection;
+  }
 
-    /**
-     * Retrieves a resource representing the Connection object that is being
-     * actively used.
-     *
-     * @return
-     *     A resource representing the Connection object that is being actively
-     *     used.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the Connection.
-     */
-    @Path("connection")
-    public DirectoryObjectResource<Connection, APIConnection> getConnection()
-            throws GuacamoleException {
+  /**
+   * Retrieves a resource representing the Connection object that is being actively used.
+   *
+   * @return A resource representing the Connection object that is being actively used.
+   * @throws GuacamoleException If an error occurs while retrieving the Connection.
+   */
+  @Path("connection")
+  public DirectoryObjectResource<Connection, APIConnection> getConnection()
+      throws GuacamoleException {
 
-        // Return the underlying connection as a resource
-        return connectionDirectoryResourceFactory
-                .create(userContext, userContext.getConnectionDirectory())
-                .getObjectResource(activeConnection.getConnectionIdentifier());
+    // Return the underlying connection as a resource
+    return connectionDirectoryResourceFactory
+        .create(userContext, userContext.getConnectionDirectory())
+        .getObjectResource(activeConnection.getConnectionIdentifier());
 
-    }
+  }
 
-    /**
-     * Retrieves a set of credentials which can be POSTed by another user to the
-     * "/api/tokens" endpoint to obtain access strictly to this connection. The
-     * retrieved credentials may be purpose-generated and temporary.
-     *
-     * @param sharingProfileIdentifier The identifier of the sharing connection
-     * defining the semantics of the shared session.
-     *
-     * @return The set of credentials which should be used to access strictly
-     * this connection.
-     *
-     * @throws GuacamoleException If an error occurs while retrieving the
-     * sharing credentials for this connection.
-     */
-    @GET
-    @Path("sharingCredentials/{sharingProfile}")
-    public APIUserCredentials getSharingCredentials(
-            @PathParam("sharingProfile") String sharingProfileIdentifier)
-            throws GuacamoleException {
+  /**
+   * Retrieves a set of credentials which can be POSTed by another user to the "/api/tokens"
+   * endpoint to obtain access strictly to this connection. The retrieved credentials may be
+   * purpose-generated and temporary.
+   *
+   * @param sharingProfileIdentifier The identifier of the sharing connection defining the semantics
+   *                                 of the shared session.
+   * @return The set of credentials which should be used to access strictly this connection.
+   * @throws GuacamoleException If an error occurs while retrieving the sharing credentials for this
+   *                            connection.
+   */
+  @GET
+  @Path("sharingCredentials/{sharingProfile}")
+  public APIUserCredentials getSharingCredentials(
+      @PathParam("sharingProfile") String sharingProfileIdentifier)
+      throws GuacamoleException {
 
-        // Generate and return sharing credentials for the active connection
-        return new APIUserCredentials(activeConnection.getSharingCredentials(sharingProfileIdentifier));
+    // Generate and return sharing credentials for the active connection
+    return new APIUserCredentials(activeConnection.getSharingCredentials(sharingProfileIdentifier));
 
-    }
+  }
 
 }

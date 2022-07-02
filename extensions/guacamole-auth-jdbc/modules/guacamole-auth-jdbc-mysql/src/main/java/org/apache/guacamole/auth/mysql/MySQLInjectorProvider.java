@@ -27,24 +27,23 @@ import org.apache.guacamole.auth.jdbc.JDBCInjectorProvider;
 import org.apache.guacamole.auth.mysql.conf.MySQLEnvironment;
 
 /**
- * JDBCInjectorProvider implementation which configures Guice injections for
- * connecting to a MySQL database based on MySQL-specific options provided via
- * guacamole.properties.
+ * JDBCInjectorProvider implementation which configures Guice injections for connecting to a MySQL
+ * database based on MySQL-specific options provided via guacamole.properties.
  */
 public class MySQLInjectorProvider extends JDBCInjectorProvider {
 
-    @Override
-    protected Injector create() throws GuacamoleException {
+  @Override
+  protected Injector create() throws GuacamoleException {
 
-        // Get local environment
-        MySQLEnvironment environment = new MySQLEnvironment();
+    // Get local environment
+    MySQLEnvironment environment = new MySQLEnvironment();
 
-        // Set up Guice injector
-        return Guice.createInjector(
-            new JDBCAuthenticationProviderModule(environment),
-            new MySQLAuthenticationProviderModule(environment)
-        );
+    // Set up Guice injector
+    return Guice.createInjector(
+        new JDBCAuthenticationProviderModule(environment),
+        new MySQLAuthenticationProviderModule(environment)
+    );
 
-    }
+  }
 
 }

@@ -31,75 +31,74 @@ import org.apache.guacamole.net.auth.TokenInjectingUserContext;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * Allows users to be authenticated against an LDAP server. Each user may have
- * any number of authorized configurations. Authorized configurations may be
- * shared.
+ * Allows users to be authenticated against an LDAP server. Each user may have any number of
+ * authorized configurations. Authorized configurations may be shared.
  */
 public class LDAPAuthenticationProvider extends AbstractAuthenticationProvider {
 
-    /**
-     * The identifier reserved for the root connection group.
-     */
-    public static final String ROOT_CONNECTION_GROUP = "ROOT";
+  /**
+   * The identifier reserved for the root connection group.
+   */
+  public static final String ROOT_CONNECTION_GROUP = "ROOT";
 
-    /**
-     * Injector which will manage the object graph of this authentication
-     * provider.
-     */
-    private final Injector injector;
+  /**
+   * Injector which will manage the object graph of this authentication provider.
+   */
+  private final Injector injector;
 
-    /**
-     * Creates a new LDAPAuthenticationProvider that authenticates users
-     * against an LDAP directory.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public LDAPAuthenticationProvider() throws GuacamoleException {
+  /**
+   * Creates a new LDAPAuthenticationProvider that authenticates users against an LDAP directory.
+   *
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public LDAPAuthenticationProvider() throws GuacamoleException {
 
-        // Set up Guice injector.
-        injector = Guice.createInjector(
-            new LDAPAuthenticationProviderModule(this)
-        );
+    // Set up Guice injector.
+    injector = Guice.createInjector(
+        new LDAPAuthenticationProviderModule(this)
+    );
 
+  }
+
+  @Override
+  public String getIdentifier() {
+    return "ldap";
+  }
+
+  @Override
+  public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
+
+    AuthenticationProviderService authProviderService = injector.getInstance(
+        AuthenticationProviderService.class);
+    return authProviderService.authenticateUser(credentials);
+
+  }
+
+  @Override
+  public UserContext getUserContext(AuthenticatedUser authenticatedUser)
+      throws GuacamoleException {
+
+    AuthenticationProviderService authProviderService = injector.getInstance(
+        AuthenticationProviderService.class);
+    return authProviderService.getUserContext(authenticatedUser);
+
+  }
+
+  @Override
+  public UserContext decorate(UserContext context,
+      AuthenticatedUser authenticatedUser, Credentials credentials)
+      throws GuacamoleException {
+
+    // Only decorate if the user authenticated against LDAP
+    if (!(authenticatedUser instanceof LDAPAuthenticatedUser)) {
+      return context;
     }
 
-    @Override
-    public String getIdentifier() {
-        return "ldap";
-    }
+    // Apply LDAP-specific tokens to all connections / connection groups
+    return new TokenInjectingUserContext(context,
+        ((LDAPAuthenticatedUser) authenticatedUser).getTokens());
 
-    @Override
-    public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
-
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
-        return authProviderService.authenticateUser(credentials);
-
-    }
-
-    @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
-
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
-        return authProviderService.getUserContext(authenticatedUser);
-
-    }
-
-    @Override
-    public UserContext decorate(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-
-        // Only decorate if the user authenticated against LDAP
-        if (!(authenticatedUser instanceof LDAPAuthenticatedUser))
-            return context;
-
-        // Apply LDAP-specific tokens to all connections / connection groups
-        return new TokenInjectingUserContext(context,
-                ((LDAPAuthenticatedUser) authenticatedUser).getTokens());
-
-    }
+  }
 
 }

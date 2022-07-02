@@ -21,13 +21,13 @@
  * Config block which registers Radius-specific field types.
  */
 angular.module('guacRadius').config(['formServiceProvider',
-        function guacRadiusConfig(formServiceProvider) {
+  function guacRadiusConfig(formServiceProvider) {
 
     // Define the hidden field for the RADIUS state
     formServiceProvider.registerFieldType('GUAC_RADIUS_STATE', {
-        module      : 'guacRadius',
-        controller  : 'radiusStateController',
-        templateUrl : 'app/ext/radius/templates/radiusStateField.html'
+      module: 'guacRadius',
+      controller: 'radiusStateController',
+      templateUrl: 'app/ext/radius/templates/radiusStateField.html'
     });
 
-}]);
+  }]);

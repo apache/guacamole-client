@@ -26,52 +26,39 @@ import org.apache.ibatis.annotations.Param;
 /**
  * Generic base for mappers which handle permissions.
  *
- * @param <PermissionType>
- *     The type of permission model object handled by this mapper.
+ * @param <PermissionType> The type of permission model object handled by this mapper.
  */
 public interface PermissionMapper<PermissionType> {
 
-    /**
-     * Retrieves all permissions associated with the given entity (user or user
-     * group).
-     *
-     * @param entity
-     *     The entity to retrieve permissions for.
-     *
-     * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the user. If
-     *     no groups are given, only permissions directly granted to the user
-     *     will be used.
-     *
-     * @return
-     *     All permissions associated with the given entity.
-     */
-    Collection<PermissionType> select(@Param("entity") EntityModel entity,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+  /**
+   * Retrieves all permissions associated with the given entity (user or user group).
+   *
+   * @param entity          The entity to retrieve permissions for.
+   * @param effectiveGroups The identifiers of all groups that should be taken into account when
+   *                        determining the permissions effectively granted to the user. If no
+   *                        groups are given, only permissions directly granted to the user will be
+   *                        used.
+   * @return All permissions associated with the given entity.
+   */
+  Collection<PermissionType> select(@Param("entity") EntityModel entity,
+      @Param("effectiveGroups") Collection<String> effectiveGroups);
 
-    /**
-     * Inserts the given permissions into the database. If any permissions
-     * already exist, they will be ignored.
-     *
-     * @param permissions 
-     *     The permissions to insert.
-     *
-     * @return
-     *     The number of rows inserted.
-     */
-    int insert(@Param("permissions") Collection<PermissionType> permissions);
+  /**
+   * Inserts the given permissions into the database. If any permissions already exist, they will be
+   * ignored.
+   *
+   * @param permissions The permissions to insert.
+   * @return The number of rows inserted.
+   */
+  int insert(@Param("permissions") Collection<PermissionType> permissions);
 
-    /**
-     * Deletes the given permissions from the database. If any permissions do
-     * not exist, they will be ignored.
-     *
-     * @param permissions
-     *     The permissions to delete.
-     *
-     * @return
-     *     The number of rows deleted.
-     */
-    int delete(@Param("permissions") Collection<PermissionType> permissions);
+  /**
+   * Deletes the given permissions from the database. If any permissions do not exist, they will be
+   * ignored.
+   *
+   * @param permissions The permissions to delete.
+   * @return The number of rows deleted.
+   */
+  int delete(@Param("permissions") Collection<PermissionType> permissions);
 
 }

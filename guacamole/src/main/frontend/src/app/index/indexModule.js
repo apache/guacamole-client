@@ -28,21 +28,21 @@ require('angular-translate-loader-static-files');
  */
 angular.module('index', [
 
-    require('angular-route'),
-    require('angular-translate'),
+  require('angular-route'),
+  require('angular-translate'),
 
-    'auth',
-    'client',
-    'clipboard',
-    'home',
-    'login',
-    'manage',
-    'navigation',
-    'notification',
-    'rest',
-    'settings',
+  'auth',
+  'client',
+  'clipboard',
+  'home',
+  'login',
+  'manage',
+  'navigation',
+  'notification',
+  'rest',
+  'settings',
 
-    'templates-main'
+  'templates-main'
 
 ]);
 

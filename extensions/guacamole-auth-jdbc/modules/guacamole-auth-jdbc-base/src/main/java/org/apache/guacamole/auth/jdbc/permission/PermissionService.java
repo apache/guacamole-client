@@ -21,127 +21,89 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.permission.Permission;
 import org.apache.guacamole.net.auth.permission.PermissionSet;
 
 /**
- * Service which provides convenience methods for creating, retrieving, and
- * deleting permissions, and for obtaining the permission sets that contain
- * these permissions. This service will automatically enforce the permissions
- * of the current user.
+ * Service which provides convenience methods for creating, retrieving, and deleting permissions,
+ * and for obtaining the permission sets that contain these permissions. This service will
+ * automatically enforce the permissions of the current user.
  *
- * @param <PermissionSetType>
- *     The type of permission sets this service provides access to.
- *
- * @param <PermissionType>
- *     The type of permission this service provides access to.
+ * @param <PermissionSetType> The type of permission sets this service provides access to.
+ * @param <PermissionType>    The type of permission this service provides access to.
  */
 public interface PermissionService<PermissionSetType extends PermissionSet<PermissionType>,
-        PermissionType extends Permission> {
+    PermissionType extends Permission> {
 
-    /**
-     * Returns a permission set that can be used to retrieve and manipulate the
-     * permissions of the given entity.
-     *
-     * @param user
-     *     The user who will be retrieving or manipulating permissions through
-     *     the returned permission set.
-     *
-     * @param targetEntity
-     *     The entity to whom the permissions in the returned permission set are
-     *     granted.
-     *
-     * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the entity.
-     *     If no groups are given, only permissions directly granted to the
-     *     entity will be used.
-     *
-     * @return
-     *     A permission set that contains all permissions associated with the
-     *     given entity, and can be used to manipulate that entity's
-     *     permissions.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the permissions of the given
-     *     entity, or if permission to retrieve the permissions of the given
-     *     entity is denied.
-     */
-    PermissionSetType getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException;
+  /**
+   * Returns a permission set that can be used to retrieve and manipulate the permissions of the
+   * given entity.
+   *
+   * @param user            The user who will be retrieving or manipulating permissions through the
+   *                        returned permission set.
+   * @param targetEntity    The entity to whom the permissions in the returned permission set are
+   *                        granted.
+   * @param effectiveGroups The identifiers of all groups that should be taken into account when
+   *                        determining the permissions effectively granted to the entity. If no
+   *                        groups are given, only permissions directly granted to the entity will
+   *                        be used.
+   * @return A permission set that contains all permissions associated with the given entity, and
+   * can be used to manipulate that entity's permissions.
+   * @throws GuacamoleException If an error occurs while retrieving the permissions of the given
+   *                            entity, or if permission to retrieve the permissions of the given
+   *                            entity is denied.
+   */
+  PermissionSetType getPermissionSet(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Set<String> effectiveGroups) throws GuacamoleException;
 
-    /**
-     * Retrieves all permissions associated with the given entity.
-     *
-     * @param user
-     *     The user retrieving the permissions.
-     *
-     * @param targetEntity
-     *     The entity associated with the permissions to be retrieved.
-     *
-     * @param effectiveGroups
-     *     The identifiers of all groups that should be taken into account
-     *     when determining the permissions effectively granted to the entity.
-     *     If no groups are given, only permissions directly granted to the
-     *     entity will be used.
-     *
-     * @return
-     *     The permissions associated with the given entity.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the requested permissions.
-     */
-    Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException;
+  /**
+   * Retrieves all permissions associated with the given entity.
+   *
+   * @param user            The user retrieving the permissions.
+   * @param targetEntity    The entity associated with the permissions to be retrieved.
+   * @param effectiveGroups The identifiers of all groups that should be taken into account when
+   *                        determining the permissions effectively granted to the entity. If no
+   *                        groups are given, only permissions directly granted to the entity will
+   *                        be used.
+   * @return The permissions associated with the given entity.
+   * @throws GuacamoleException If an error occurs while retrieving the requested permissions.
+   */
+  Set<PermissionType> retrievePermissions(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Set<String> effectiveGroups) throws GuacamoleException;
 
-    /**
-     * Creates the given permissions within the database. If any permissions
-     * already exist, they will be ignored.
-     *
-     * @param user
-     *     The user creating the permissions.
-     *
-     * @param targetEntity
-     *     The entity associated with the permissions to be created.
-     *
-     * @param permissions 
-     *     The permissions to create.
-     *
-     * @throws GuacamoleException
-     *     If the user lacks permission to create the permissions, or an error
-     *     occurs while creating the permissions.
-     */
-    void createPermissions(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Collection<PermissionType> permissions)
-            throws GuacamoleException;
+  /**
+   * Creates the given permissions within the database. If any permissions already exist, they will
+   * be ignored.
+   *
+   * @param user         The user creating the permissions.
+   * @param targetEntity The entity associated with the permissions to be created.
+   * @param permissions  The permissions to create.
+   * @throws GuacamoleException If the user lacks permission to create the permissions, or an error
+   *                            occurs while creating the permissions.
+   */
+  void createPermissions(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Collection<PermissionType> permissions)
+      throws GuacamoleException;
 
-    /**
-     * Deletes the given permissions. If any permissions do not exist, they
-     * will be ignored.
-     *
-     * @param user
-     *     The user deleting the permissions.
-     *
-     * @param targetEntity
-     *     The entity associated with the permissions to be deleted.
-     *
-     * @param permissions
-     *     The permissions to delete.
-     *
-     * @throws GuacamoleException
-     *     If the user lacks permission to delete the permissions, or an error
-     *     occurs while deleting the permissions.
-     */
-    void deletePermissions(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Collection<PermissionType> permissions)
-            throws GuacamoleException;
+  /**
+   * Deletes the given permissions. If any permissions do not exist, they will be ignored.
+   *
+   * @param user         The user deleting the permissions.
+   * @param targetEntity The entity associated with the permissions to be deleted.
+   * @param permissions  The permissions to delete.
+   * @throws GuacamoleException If the user lacks permission to delete the permissions, or an error
+   *                            occurs while deleting the permissions.
+   */
+  void deletePermissions(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Collection<PermissionType> permissions)
+      throws GuacamoleException;
 
 }

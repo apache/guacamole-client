@@ -20,22 +20,20 @@
 package org.apache.guacamole.auth.jdbc.security;
 
 /**
- * Thrown when an attempt is made to set a user's password to a string which
- * contains no numeric characters (digits), in violation of the defined password
- * policy.
+ * Thrown when an attempt is made to set a user's password to a string which contains no numeric
+ * characters (digits), in violation of the defined password policy.
  */
 public class PasswordRequiresDigitException extends PasswordPolicyException {
 
-    /**
-     * Creates a new PasswordRequiresDigitException with the given
-     * human-readable message. The translatable message is already defined.
-     *
-     * @param message
-     *     A human-readable message describing the password policy violation
-     *     that occurred.
-     */
-    public PasswordRequiresDigitException(String message) {
-        super(message, "PASSWORD_POLICY.ERROR_REQUIRES_DIGIT");
-    }
+  /**
+   * Creates a new PasswordRequiresDigitException with the given human-readable message. The
+   * translatable message is already defined.
+   *
+   * @param message A human-readable message describing the password policy violation that
+   *                occurred.
+   */
+  public PasswordRequiresDigitException(String message) {
+    super(message, "PASSWORD_POLICY.ERROR_REQUIRES_DIGIT");
+  }
 
 }

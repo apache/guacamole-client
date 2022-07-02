@@ -18,7 +18,6 @@
  */
 
 /**
- * Classes which expose the absolute root of the data available to a Guacamole
- * user's session.
+ * Classes which expose the absolute root of the data available to a Guacamole user's session.
  */
 package org.apache.guacamole.rest.session;

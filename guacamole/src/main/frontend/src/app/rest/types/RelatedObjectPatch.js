@@ -20,18 +20,19 @@
 /**
  * Service which defines the RelatedObjectPatch class.
  */
-angular.module('rest').factory('RelatedObjectPatch', [function defineRelatedObjectPatch() {
-            
-    /**
-     * The object returned by REST API calls when representing changes to an
-     * arbitrary set of objects which share some common relation.
-     * 
-     * @constructor
-     * @param {RelatedObjectPatch|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     RelatedObjectPatch.
-     */
-    var RelatedObjectPatch = function RelatedObjectPatch(template) {
+angular.module('rest').factory('RelatedObjectPatch',
+    [function defineRelatedObjectPatch() {
+
+      /**
+       * The object returned by REST API calls when representing changes to an
+       * arbitrary set of objects which share some common relation.
+       *
+       * @constructor
+       * @param {RelatedObjectPatch|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     RelatedObjectPatch.
+       */
+      var RelatedObjectPatch = function RelatedObjectPatch(template) {
 
         // Use empty object by default
         template = template || {};
@@ -60,26 +61,26 @@ angular.module('rest').factory('RelatedObjectPatch', [function defineRelatedObje
          */
         this.value = template.value;
 
-    };
+      };
 
-    /**
-     * All valid patch operations for objects sharing some common relation.
-     * Currently, only add and remove are supported.
-     */
-    RelatedObjectPatch.Operation = {
+      /**
+       * All valid patch operations for objects sharing some common relation.
+       * Currently, only add and remove are supported.
+       */
+      RelatedObjectPatch.Operation = {
 
         /**
          * Adds the specified object to the relation.
          */
-        ADD : "add",
+        ADD: "add",
 
         /**
          * Removes the specified object from the relation.
          */
-        REMOVE : "remove"
+        REMOVE: "remove"
 
-    };
+      };
 
-    return RelatedObjectPatch;
+      return RelatedObjectPatch;
 
-}]);
+    }]);

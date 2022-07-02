@@ -18,8 +18,7 @@
  */
 
 /**
- * Provides classes which describe the various permissions a Guacamole user
- * can be granted.
+ * Provides classes which describe the various permissions a Guacamole user can be granted.
  */
 package org.apache.guacamole.net.auth.permission;
 

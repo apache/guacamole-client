@@ -22,29 +22,28 @@ package org.apache.guacamole.auth.jdbc.user;
 import org.apache.guacamole.GuacamoleException;
 
 /**
- * A ModeledAuthenticatedUser which is always privileged, returning true for
- * every call to isPrivileged().
+ * A ModeledAuthenticatedUser which is always privileged, returning true for every call to
+ * isPrivileged().
  */
 public class PrivilegedModeledAuthenticatedUser extends ModeledAuthenticatedUser {
 
-    /**
-     * Creates a new PrivilegedModeledAuthenticatedUser which shares the same
-     * user identity as the given ModeledAuthenticatedUser. Regardless of the
-     * privileges explicitly granted to the given user, the resulting
-     * PrivilegedModeledAuthenticatedUser will always assert that it is
-     * privileged.
-     *
-     * @param authenticatedUser
-     *     The ModeledAuthenticatedUser that declares the identity of the user
-     *     in question.
-     */
-    public PrivilegedModeledAuthenticatedUser(ModeledAuthenticatedUser authenticatedUser){
-        super(authenticatedUser, authenticatedUser.getModelAuthenticationProvider(), authenticatedUser.getUser());
-    }
+  /**
+   * Creates a new PrivilegedModeledAuthenticatedUser which shares the same user identity as the
+   * given ModeledAuthenticatedUser. Regardless of the privileges explicitly granted to the given
+   * user, the resulting PrivilegedModeledAuthenticatedUser will always assert that it is
+   * privileged.
+   *
+   * @param authenticatedUser The ModeledAuthenticatedUser that declares the identity of the user in
+   *                          question.
+   */
+  public PrivilegedModeledAuthenticatedUser(ModeledAuthenticatedUser authenticatedUser) {
+    super(authenticatedUser, authenticatedUser.getModelAuthenticationProvider(),
+        authenticatedUser.getUser());
+  }
 
-    @Override
-    public boolean isPrivileged() throws GuacamoleException {
-        return true;
-    }
+  @Override
+  public boolean isPrivileged() throws GuacamoleException {
+    return true;
+  }
 
 }

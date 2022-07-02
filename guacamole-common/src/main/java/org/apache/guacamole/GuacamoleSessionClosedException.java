@@ -22,48 +22,42 @@ package org.apache.guacamole;
 import org.apache.guacamole.protocol.GuacamoleStatus;
 
 /**
- * An exception which indicates that a session within an upstream server (such
- * as the remote desktop) has been forcibly terminated.
+ * An exception which indicates that a session within an upstream server (such as the remote
+ * desktop) has been forcibly terminated.
  */
 public class GuacamoleSessionClosedException extends GuacamoleUpstreamException {
 
-    /**
-     * Creates a new GuacamoleSessionClosedException with the given message and
-     * cause.
-     *
-     * @param message
-     *     A human readable description of the exception that occurred.
-     *
-     * @param cause
-     *     The cause of this exception.
-     */
-    public GuacamoleSessionClosedException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  /**
+   * Creates a new GuacamoleSessionClosedException with the given message and cause.
+   *
+   * @param message A human readable description of the exception that occurred.
+   * @param cause   The cause of this exception.
+   */
+  public GuacamoleSessionClosedException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-    /**
-     * Creates a new GuacamoleSessionClosedException with the given message.
-     *
-     * @param message
-     *     A human readable description of the exception that occurred.
-     */
-    public GuacamoleSessionClosedException(String message) {
-        super(message);
-    }
+  /**
+   * Creates a new GuacamoleSessionClosedException with the given message.
+   *
+   * @param message A human readable description of the exception that occurred.
+   */
+  public GuacamoleSessionClosedException(String message) {
+    super(message);
+  }
 
-    /**
-     * Creates a new GuacamoleSessionClosedException with the given cause.
-     *
-     * @param cause
-     *     The cause of this exception.
-     */
-    public GuacamoleSessionClosedException(Throwable cause) {
-        super(cause);
-    }
+  /**
+   * Creates a new GuacamoleSessionClosedException with the given cause.
+   *
+   * @param cause The cause of this exception.
+   */
+  public GuacamoleSessionClosedException(Throwable cause) {
+    super(cause);
+  }
 
-    @Override
-    public GuacamoleStatus getStatus() {
-        return GuacamoleStatus.SESSION_CLOSED;
-    }
+  @Override
+  public GuacamoleStatus getStatus() {
+    return GuacamoleStatus.SESSION_CLOSED;
+  }
 
 }

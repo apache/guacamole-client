@@ -23,12 +23,12 @@
  * available, an internal in-memory clipboard will be used instead.
  */
 angular.module('clipboard').factory('clipboardService', ['$injector',
-        function clipboardService($injector) {
+  function clipboardService($injector) {
 
     // Get required services
-    const $q                    = $injector.get('$q');
-    const $window               = $injector.get('$window');
-    const $rootScope            = $injector.get('$rootScope');
+    const $q = $injector.get('$q');
+    const $window = $injector.get('$window');
+    const $rootScope = $injector.get('$rootScope');
     const sessionStorageFactory = $injector.get('sessionStorageFactory');
 
     // Required types
@@ -42,7 +42,8 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *
      * @type Function
      */
-    const storedClipboardData = sessionStorageFactory.create(new ClipboardData());
+    const storedClipboardData = sessionStorageFactory.create(
+        new ClipboardData());
 
     var service = {};
 
@@ -96,12 +97,12 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *     The event whose propagation through the DOM tree should be stopped.
      */
     var stopEventPropagation = function stopEventPropagation(e) {
-        e.stopPropagation();
+      e.stopPropagation();
     };
 
     // Prevent events generated due to execCommand() from disturbing external things
-    clipboardContent.addEventListener('cut',   stopEventPropagation);
-    clipboardContent.addEventListener('copy',  stopEventPropagation);
+    clipboardContent.addEventListener('cut', stopEventPropagation);
+    clipboardContent.addEventListener('copy', stopEventPropagation);
     clipboardContent.addEventListener('paste', stopEventPropagation);
     clipboardContent.addEventListener('input', stopEventPropagation);
 
@@ -121,10 +122,11 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     var pushSelection = function pushSelection() {
 
-        // Add a range representing the current selection to the stack
-        var selection = $window.getSelection();
-        if (selection.getRangeAt && selection.rangeCount)
-            selectionStack.push(selection.getRangeAt(0));
+      // Add a range representing the current selection to the stack
+      var selection = $window.getSelection();
+      if (selection.getRangeAt && selection.rangeCount) {
+        selectionStack.push(selection.getRangeAt(0));
+      }
 
     };
 
@@ -136,15 +138,16 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     var popSelection = function popSelection() {
 
-        // Pull one selection range from the stack
-        var range = selectionStack.pop();
-        if (!range)
-            return;
+      // Pull one selection range from the stack
+      var range = selectionStack.pop();
+      if (!range) {
+        return;
+      }
 
-        // Replace any current selection with the retrieved selection
-        var selection = $window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
+      // Replace any current selection with the retrieved selection
+      var selection = $window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
 
     };
 
@@ -159,23 +162,22 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     var selectAll = function selectAll(element) {
 
-        // Use the select() function defined for input elements, if available
-        if (element.select)
-            element.select();
+      // Use the select() function defined for input elements, if available
+      if (element.select) {
+        element.select();
+      }// Fallback to manual manipulation of the selection
+      else {
 
-        // Fallback to manual manipulation of the selection
-        else {
+        // Generate a range which selects all nodes within the given element
+        var range = document.createRange();
+        range.selectNodeContents(element);
 
-            // Generate a range which selects all nodes within the given element
-            var range = document.createRange();
-            range.selectNodeContents(element);
+        // Replace any current selection with the generated range
+        var selection = $window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
 
-            // Replace any current selection with the generated range
-            var selection = $window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-
-        }
+      }
 
     };
 
@@ -191,56 +193,59 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     const setLocalClipboard = function setLocalClipboard(data) {
 
-        var deferred = $q.defer();
+      var deferred = $q.defer();
 
-        try {
+      try {
 
-            // Attempt to read the clipboard using the Asynchronous Clipboard
-            // API, if it's available
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                if (data.type === 'text/plain') {
-                    navigator.clipboard.writeText(data.data).then(deferred.resolve, deferred.reject);
-                    return deferred.promise;
-                }
-            }
-
+        // Attempt to read the clipboard using the Asynchronous Clipboard
+        // API, if it's available
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          if (data.type === 'text/plain') {
+            navigator.clipboard.writeText(data.data).then(deferred.resolve,
+                deferred.reject);
+            return deferred.promise;
+          }
         }
 
-        // Ignore any hard failures to use Asynchronous Clipboard API, falling
-        // back to traditional document.execCommand()
-        catch (ignore) {}
+      }
 
-        // Track the originally-focused element prior to changing focus
-        var originalElement = document.activeElement;
-        pushSelection();
+          // Ignore any hard failures to use Asynchronous Clipboard API, falling
+          // back to traditional document.execCommand()
+      catch (ignore) {
+      }
 
-        // Copy the given value into the clipboard DOM element
-        if (typeof data.data === 'string')
-            clipboardContent.value = data.data;
-        else {
-            clipboardContent.innerHTML = '';
-            var img = document.createElement('img');
-            img.src = URL.createObjectURL(data.data);
-            clipboardContent.appendChild(img);
-        }
+      // Track the originally-focused element prior to changing focus
+      var originalElement = document.activeElement;
+      pushSelection();
 
-        // Select all data within the clipboard target
-        clipboardContent.focus();
-        selectAll(clipboardContent);
+      // Copy the given value into the clipboard DOM element
+      if (typeof data.data === 'string') {
+        clipboardContent.value = data.data;
+      } else {
+        clipboardContent.innerHTML = '';
+        var img = document.createElement('img');
+        img.src = URL.createObjectURL(data.data);
+        clipboardContent.appendChild(img);
+      }
 
-        // Attempt to copy data from clipboard element into local clipboard
-        if (document.execCommand('copy'))
-            deferred.resolve();
-        else
-            deferred.reject();
+      // Select all data within the clipboard target
+      clipboardContent.focus();
+      selectAll(clipboardContent);
 
-        // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
-        // restoring whichever element was originally focused
-        clipboardContent.blur();
-        originalElement.focus();
-        popSelection();
+      // Attempt to copy data from clipboard element into local clipboard
+      if (document.execCommand('copy')) {
+        deferred.resolve();
+      } else {
+        deferred.reject();
+      }
 
-        return deferred.promise;
+      // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
+      // restoring whichever element was originally focused
+      clipboardContent.blur();
+      originalElement.focus();
+      popSelection();
+
+      return deferred.promise;
     };
 
     /**
@@ -256,23 +261,25 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.parseDataURL = function parseDataURL(url) {
 
-        // Parse given string as a data URL
-        var result = /^data:([^;]*);base64,([a-zA-Z0-9+/]*[=]*)$/.exec(url);
-        if (!result)
-            return null;
+      // Parse given string as a data URL
+      var result = /^data:([^;]*);base64,([a-zA-Z0-9+/]*[=]*)$/.exec(url);
+      if (!result) {
+        return null;
+      }
 
-        // Pull the mimetype and base64 contents of the data URL
-        var type = result[1];
-        var data = $window.atob(result[2]);
+      // Pull the mimetype and base64 contents of the data URL
+      var type = result[1];
+      var data = $window.atob(result[2]);
 
-        // Convert the decoded binary string into a typed array
-        var buffer = new Uint8Array(data.length);
-        for (var i = 0; i < data.length; i++)
-            buffer[i] = data.charCodeAt(i);
+      // Convert the decoded binary string into a typed array
+      var buffer = new Uint8Array(data.length);
+      for (var i = 0; i < data.length; i++) {
+        buffer[i] = data.charCodeAt(i);
+      }
 
-        // Produce a proper blob containing the data and type provided in
-        // the data URL
-        return new Blob([buffer], { type : type });
+      // Produce a proper blob containing the data and type provided in
+      // the data URL
+      return new Blob([buffer], {type: type});
 
     };
 
@@ -290,58 +297,58 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.getTextContent = function getTextContent(element) {
 
-        var blocks = [];
-        var currentBlock = '';
+      var blocks = [];
+      var currentBlock = '';
 
-        // For each child of the given element
-        var current = element.firstChild;
-        while (current) {
+      // For each child of the given element
+      var current = element.firstChild;
+      while (current) {
 
-            // Simply append the content of any text nodes
-            if (current.nodeType === Node.TEXT_NODE)
-                currentBlock += current.nodeValue;
+        // Simply append the content of any text nodes
+        if (current.nodeType === Node.TEXT_NODE) {
+          currentBlock += current.nodeValue;
+        }// Render <br> as a newline character
+        else if (current.nodeName === 'BR') {
+          currentBlock += '\n';
+        }// Render <img> as alt text, if available
+        else if (current.nodeName === 'IMG') {
+          currentBlock += current.getAttribute('alt') || '';
+        }// For all other nodes, handling depends on whether they are
+        // block-level elements
+        else {
 
-            // Render <br> as a newline character
-            else if (current.nodeName === 'BR')
-                currentBlock += '\n';
+          // If we are entering a new block context, start a new block if
+          // the current block is non-empty
+          if (currentBlock.length && $window.getComputedStyle(current).display
+              === 'block') {
 
-            // Render <img> as alt text, if available
-            else if (current.nodeName === 'IMG')
-                currentBlock += current.getAttribute('alt') || '';
-
-            // For all other nodes, handling depends on whether they are
-            // block-level elements
-            else {
-
-                // If we are entering a new block context, start a new block if
-                // the current block is non-empty
-                if (currentBlock.length && $window.getComputedStyle(current).display === 'block') {
-
-                    // Trim trailing newline (would otherwise inflate the line count by 1)
-                    if (currentBlock.substring(currentBlock.length - 1) === '\n')
-                        currentBlock = currentBlock.substring(0, currentBlock.length - 1);
-
-                    // Finish current block and start a new block
-                    blocks.push(currentBlock);
-                    currentBlock = '';
-
-                }
-
-                // Append the content of the current element to the current block
-                currentBlock += service.getTextContent(current);
-
+            // Trim trailing newline (would otherwise inflate the line count by 1)
+            if (currentBlock.substring(currentBlock.length - 1) === '\n') {
+              currentBlock = currentBlock.substring(0, currentBlock.length - 1);
             }
 
-            current = current.nextSibling;
+            // Finish current block and start a new block
+            blocks.push(currentBlock);
+            currentBlock = '';
+
+          }
+
+          // Append the content of the current element to the current block
+          currentBlock += service.getTextContent(current);
 
         }
 
-        // Add any in-progress block
-        if (currentBlock.length)
-            blocks.push(currentBlock);
+        current = current.nextSibling;
 
-        // Combine all non-empty blocks, separated by newlines
-        return blocks.join('\n');
+      }
+
+      // Add any in-progress block
+      if (currentBlock.length) {
+        blocks.push(currentBlock);
+      }
+
+      // Combine all non-empty blocks, separated by newlines
+      return blocks.join('\n');
 
     };
 
@@ -360,12 +367,13 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.setTextContent = function setTextContent(element, text) {
 
-        // Strip out any images
-        $(element).find('img').remove();
+      // Strip out any images
+      $(element).find('img').remove();
 
-        // Reset text content only if doing so will actually change the content
-        if (service.getTextContent(element) !== text)
-            element.textContent = text;
+      // Reset text content only if doing so will actually change the content
+      if (service.getTextContent(element) !== text) {
+        element.textContent = text;
+      }
 
     };
 
@@ -384,13 +392,15 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.getImageContent = function getImageContent(element) {
 
-        // Return the source of the single child element, if it is an image
-        var firstChild = element.firstChild;
-        if (firstChild && firstChild.nodeName === 'IMG' && !firstChild.nextSibling)
-            return firstChild.getAttribute('src');
+      // Return the source of the single child element, if it is an image
+      var firstChild = element.firstChild;
+      if (firstChild && firstChild.nodeName === 'IMG'
+          && !firstChild.nextSibling) {
+        return firstChild.getAttribute('src');
+      }
 
-        // Otherwise, the content of this element is not simply an image
-        return null;
+      // Otherwise, the content of this element is not simply an image
+      return null;
 
     };
 
@@ -410,22 +420,22 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     service.setImageContent = function setImageContent(element, url) {
 
-        // Retrieve the URL of the current image contents, if any
-        var currentImage = service.getImageContent(element);
+      // Retrieve the URL of the current image contents, if any
+      var currentImage = service.getImageContent(element);
 
-        // If the current contents are not the given image (or not an image
-        // at all), reassign the contents
-        if (currentImage !== url) {
+      // If the current contents are not the given image (or not an image
+      // at all), reassign the contents
+      if (currentImage !== url) {
 
-            // Clear current contents
-            element.innerHTML = '';
+        // Clear current contents
+        element.innerHTML = '';
 
-            // Add a new image as the sole contents of the element
-            var img = document.createElement('img');
-            img.src = url;
-            element.appendChild(img);
+        // Add a new image as the sole contents of the element
+        var img = document.createElement('img');
+        img.src = url;
+        element.appendChild(img);
 
-        }
+      }
 
     };
 
@@ -439,126 +449,132 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      */
     const getLocalClipboard = function getLocalClipboard() {
 
-        // If the clipboard is already being read, do not overlap the read
-        // attempts; instead share the result across all requests
-        if (pendingRead)
-            return pendingRead;
+      // If the clipboard is already being read, do not overlap the read
+      // attempts; instead share the result across all requests
+      if (pendingRead) {
+        return pendingRead;
+      }
 
-        var deferred = $q.defer();
+      var deferred = $q.defer();
 
-        try {
+      try {
 
-            // Attempt to read the clipboard using the Asynchronous Clipboard
-            // API, if it's available
-            if (navigator.clipboard && navigator.clipboard.readText) {
+        // Attempt to read the clipboard using the Asynchronous Clipboard
+        // API, if it's available
+        if (navigator.clipboard && navigator.clipboard.readText) {
 
-                navigator.clipboard.readText().then(function textRead(text) {
-                    deferred.resolve(new ClipboardData({
-                        type : 'text/plain',
-                        data : text
-                    }));
-                }, deferred.reject);
+          navigator.clipboard.readText().then(function textRead(text) {
+            deferred.resolve(new ClipboardData({
+              type: 'text/plain',
+              data: text
+            }));
+          }, deferred.reject);
 
-                return deferred.promise;
-
-            }
+          return deferred.promise;
 
         }
 
-        // Ignore any hard failures to use Asynchronous Clipboard API, falling
-        // back to traditional document.execCommand()
-        catch (ignore) {}
+      }
 
-        // Track the originally-focused element prior to changing focus
-        var originalElement = document.activeElement;
+          // Ignore any hard failures to use Asynchronous Clipboard API, falling
+          // back to traditional document.execCommand()
+      catch (ignore) {
+      }
 
-        /**
-         * Attempts to paste the clipboard contents into the
-         * currently-focused element. The promise related to the current
-         * attempt to read the clipboard will be resolved or rejected
-         * depending on whether the attempt to paste succeeds.
-         */
-        var performPaste = function performPaste() {
+      // Track the originally-focused element prior to changing focus
+      var originalElement = document.activeElement;
 
-            // Attempt paste local clipboard into clipboard DOM element
-            if (document.execCommand('paste')) {
+      /**
+       * Attempts to paste the clipboard contents into the
+       * currently-focused element. The promise related to the current
+       * attempt to read the clipboard will be resolved or rejected
+       * depending on whether the attempt to paste succeeds.
+       */
+      var performPaste = function performPaste() {
 
-                // If the pasted data is a single image, resolve with a blob
-                // containing that image
-                var currentImage = service.getImageContent(clipboardContent);
-                if (currentImage) {
+        // Attempt paste local clipboard into clipboard DOM element
+        if (document.execCommand('paste')) {
 
-                    // Convert the image's data URL into a blob
-                    var blob = service.parseDataURL(currentImage);
-                    if (blob) {
-                        deferred.resolve(new ClipboardData({
-                            type : blob.type,
-                            data : blob
-                        }));
-                    }
+          // If the pasted data is a single image, resolve with a blob
+          // containing that image
+          var currentImage = service.getImageContent(clipboardContent);
+          if (currentImage) {
 
-                    // Reject if conversion fails
-                    else
-                        deferred.reject();
-
-                } // end if clipboard is an image
-
-                // Otherwise, assume the clipboard contains plain text
-                else
-                    deferred.resolve(new ClipboardData({
-                        type : 'text/plain',
-                        data : clipboardContent.value
-                    }));
-
+            // Convert the image's data URL into a blob
+            var blob = service.parseDataURL(currentImage);
+            if (blob) {
+              deferred.resolve(new ClipboardData({
+                type: blob.type,
+                data: blob
+              }));
             }
 
-            // Otherwise, reading from the clipboard has failed
-            else
-                deferred.reject();
+            // Reject if conversion fails
+            else {
+              deferred.reject();
+            }
 
-        };
+          } // end if clipboard is an image
 
-        // Mark read attempt as in progress, cleaning up event listener and
-        // selection once the paste attempt has completed
-        pendingRead = deferred.promise['finally'](function cleanupReadAttempt() {
+          // Otherwise, assume the clipboard contains plain text
+          else {
+            deferred.resolve(new ClipboardData({
+              type: 'text/plain',
+              data: clipboardContent.value
+            }));
+          }
 
-            // Do not use future changes in focus
-            clipboardContent.removeEventListener('focus', performPaste);
+        }
 
-            // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
-            // restoring whichever element was originally focused
-            clipboardContent.blur();
-            originalElement.focus();
-            popSelection();
+        // Otherwise, reading from the clipboard has failed
+        else {
+          deferred.reject();
+        }
 
-            // No read is pending any longer
-            pendingRead = null;
+      };
 
-        });
+      // Mark read attempt as in progress, cleaning up event listener and
+      // selection once the paste attempt has completed
+      pendingRead = deferred.promise['finally'](function cleanupReadAttempt() {
 
-        // Wait for the next event queue run before attempting to read
-        // clipboard data (in case the copy/cut has not yet completed)
-        $window.setTimeout(function deferredClipboardRead() {
+        // Do not use future changes in focus
+        clipboardContent.removeEventListener('focus', performPaste);
 
-            pushSelection();
+        // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
+        // restoring whichever element was originally focused
+        clipboardContent.blur();
+        originalElement.focus();
+        popSelection();
 
-            // Ensure clipboard element is blurred (and that the "focus" event
-            // will fire)
-            clipboardContent.blur();
-            clipboardContent.addEventListener('focus', performPaste);
+        // No read is pending any longer
+        pendingRead = null;
 
-            // Clear and select the clipboard DOM element
-            clipboardContent.value = '';
-            clipboardContent.focus();
-            selectAll(clipboardContent);
+      });
 
-            // If focus failed to be set, we cannot read the clipboard
-            if (document.activeElement !== clipboardContent)
-                deferred.reject();
+      // Wait for the next event queue run before attempting to read
+      // clipboard data (in case the copy/cut has not yet completed)
+      $window.setTimeout(function deferredClipboardRead() {
 
-        }, CLIPBOARD_READ_DELAY);
+        pushSelection();
 
-        return pendingRead;
+        // Ensure clipboard element is blurred (and that the "focus" event
+        // will fire)
+        clipboardContent.blur();
+        clipboardContent.addEventListener('focus', performPaste);
+
+        // Clear and select the clipboard DOM element
+        clipboardContent.value = '';
+        clipboardContent.focus();
+        selectAll(clipboardContent);
+
+        // If focus failed to be set, we cannot read the clipboard
+        if (document.activeElement !== clipboardContent) {
+          deferred.reject();
+        }
+
+      }, CLIPBOARD_READ_DELAY);
+
+      return pendingRead;
 
     };
 
@@ -577,7 +593,8 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *     resolved.
      */
     service.getClipboard = function getClipboard() {
-        return getLocalClipboard().then((data) => storedClipboardData(data), () => storedClipboardData());
+      return getLocalClipboard().then((data) => storedClipboardData(data),
+          () => storedClipboardData());
     };
 
     /**
@@ -597,14 +614,14 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      *     set. This promise is always resolved.
      */
     service.setClipboard = function setClipboard(data) {
-        return setLocalClipboard(data)['catch'](angular.noop).finally(() => {
+      return setLocalClipboard(data)['catch'](angular.noop).finally(() => {
 
-            // Update internal clipboard and broadcast event notifying of
-            // updated contents
-            storedClipboardData(data);
-            $rootScope.$broadcast('guacClipboard', data);
+        // Update internal clipboard and broadcast event notifying of
+        // updated contents
+        storedClipboardData(data);
+        $rootScope.$broadcast('guacClipboard', data);
 
-        });
+      });
     };
 
     /**
@@ -615,11 +632,11 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
      * components like the "guacClient" directive.
      */
     service.resyncClipboard = function resyncClipboard() {
-        getLocalClipboard().then(function clipboardRead(data) {
-            return service.setClipboard(data);
-        }, angular.noop);
+      getLocalClipboard().then(function clipboardRead(data) {
+        return service.setClipboard(data);
+      }, angular.noop);
     };
 
     return service;
 
-}]);
+  }]);

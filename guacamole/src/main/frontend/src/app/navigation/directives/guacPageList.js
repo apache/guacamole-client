@@ -20,24 +20,26 @@
 /**
  * A directive which provides a list of links to specific pages.
  */
-angular.module('navigation').directive('guacPageList', [function guacPageList() {
+angular.module('navigation').directive('guacPageList',
+    [function guacPageList() {
 
-    return {
+      return {
         restrict: 'E',
         replace: true,
         scope: {
 
-            /**
-             * The array of pages to display.
-             *
-             * @type PageDefinition[]
-             */
-            pages : '='
+          /**
+           * The array of pages to display.
+           *
+           * @type PageDefinition[]
+           */
+          pages: '='
 
         },
 
         templateUrl: 'app/navigation/templates/guacPageList.html',
-        controller: ['$scope', '$injector', function guacPageListController($scope, $injector) {
+        controller: ['$scope', '$injector',
+          function guacPageListController($scope, $injector) {
 
             // Required types
             var PageDefinition = $injector.get('PageDefinition');
@@ -86,12 +88,13 @@ angular.module('navigation').directive('guacPageList', [function guacPageList() 
              */
             var getPageNames = function getPageNames(page) {
 
-                // If already an array, simply return the name
-                if (angular.isArray(page.name))
-                    return page.name;
+              // If already an array, simply return the name
+              if (angular.isArray(page.name)) {
+                return page.name;
+              }
 
-                // Otherwise, transform into array
-                return [page.name];
+              // Otherwise, transform into array
+              return [page.name];
 
             };
 
@@ -110,54 +113,56 @@ angular.module('navigation').directive('guacPageList', [function guacPageList() 
              */
             var addPage = function addPage(page, weight) {
 
-                // Pull all names for page
-                var names = getPageNames(page);
+              // Pull all names for page
+              var names = getPageNames(page);
 
-                // Copy the hierarchy of this page into the displayed levels
-                // as far as is relevant for the currently-displayed page
-                for (var i = 0; i < names.length; i++) {
+              // Copy the hierarchy of this page into the displayed levels
+              // as far as is relevant for the currently-displayed page
+              for (var i = 0; i < names.length; i++) {
 
-                    // Create current level, if it doesn't yet exist
-                    var pages = $scope.levels[i];
-                    if (!pages)
-                        pages = $scope.levels[i] = {};
-
-                    // Get the name at the current level
-                    var name = names[i];
-
-                    // Determine whether this page definition is part of the
-                    // hierarchy containing the current page
-                    var isCurrentPage = (currentPageName[i] === name);
-
-                    // Store new page if it doesn't yet exist at this level
-                    if (!pages[name]) {
-                        pages[name] = new PageDefinition({
-                            name      : name,
-                            url       : isCurrentPage ? currentURL : page.url,
-                            className : page.className,
-                            weight    : page.weight || (weight + i)
-                        });
-                    }
-
-                    // If the name at this level no longer matches the
-                    // hierarchy of the current page, do not go any deeper
-                    if (currentPageName[i] !== name)
-                        break;
-
+                // Create current level, if it doesn't yet exist
+                var pages = $scope.levels[i];
+                if (!pages) {
+                  pages = $scope.levels[i] = {};
                 }
+
+                // Get the name at the current level
+                var name = names[i];
+
+                // Determine whether this page definition is part of the
+                // hierarchy containing the current page
+                var isCurrentPage = (currentPageName[i] === name);
+
+                // Store new page if it doesn't yet exist at this level
+                if (!pages[name]) {
+                  pages[name] = new PageDefinition({
+                    name: name,
+                    url: isCurrentPage ? currentURL : page.url,
+                    className: page.className,
+                    weight: page.weight || (weight + i)
+                  });
+                }
+
+                // If the name at this level no longer matches the
+                // hierarchy of the current page, do not go any deeper
+                if (currentPageName[i] !== name) {
+                  break;
+                }
+
+              }
 
             };
 
             /**
              * Navigate to the given page.
-             * 
+             *
              * @param {PageDefinition} page
              *     The page to navigate to.
              */
             $scope.navigateToPage = function navigateToPage(page) {
-                $location.path(page.url);
+              $location.path(page.url);
             };
-            
+
             /**
              * Tests whether the given page is the page currently being viewed.
              *
@@ -168,7 +173,7 @@ angular.module('navigation').directive('guacPageList', [function guacPageList() 
              *     true if the given page is the current page, false otherwise.
              */
             $scope.isCurrentPage = function isCurrentPage(page) {
-                return currentURL === page.url;
+              return currentURL === page.url;
             };
 
             /**
@@ -185,62 +190,64 @@ angular.module('navigation').directive('guacPageList', [function guacPageList() 
              */
             $scope.getPages = function getPages(level) {
 
-                var pages = [];
+              var pages = [];
 
-                // Convert contents of level to a flat array of pages
-                angular.forEach(level, function addPageFromLevel(page) {
-                    pages.push(page);
-                });
+              // Convert contents of level to a flat array of pages
+              angular.forEach(level, function addPageFromLevel(page) {
+                pages.push(page);
+              });
 
-                // Sort page array by weight
-                pages.sort(function comparePages(a, b) {
-                    return a.weight - b.weight;
-                });
+              // Sort page array by weight
+              pages.sort(function comparePages(a, b) {
+                return a.weight - b.weight;
+              });
 
-                return pages;
+              return pages;
 
             };
 
             // Update page levels whenever pages changes
             $scope.$watch('pages', function setPages(pages) {
 
-                // Determine current page name
-                currentPageName = [];
-                angular.forEach(pages, function findCurrentPageName(page) {
+              // Determine current page name
+              currentPageName = [];
+              angular.forEach(pages, function findCurrentPageName(page) {
 
-                    // If page is current page, store its names
-                    if ($scope.isCurrentPage(page))
-                        currentPageName = getPageNames(page);
+                // If page is current page, store its names
+                if ($scope.isCurrentPage(page)) {
+                  currentPageName = getPageNames(page);
+                }
 
-                });
+              });
 
-                // Reset contents of levels
-                $scope.levels = [];
+              // Reset contents of levels
+              $scope.levels = [];
 
-                // Add all page definitions
-                angular.forEach(pages, addPage);
+              // Add all page definitions
+              angular.forEach(pages, addPage);
 
-                // Filter to only relevant levels
-                $scope.levels = $scope.levels.filter(function isRelevant(level) {
+              // Filter to only relevant levels
+              $scope.levels = $scope.levels.filter(function isRelevant(level) {
 
-                    // Determine relevancy by counting the number of pages
-                    var pageCount = 0;
-                    for (var name in level) {
+                // Determine relevancy by counting the number of pages
+                var pageCount = 0;
+                for (var name in level) {
 
-                        // Level is relevant if it has two or more pages
-                        if (++pageCount === 2)
-                            return true;
+                  // Level is relevant if it has two or more pages
+                  if (++pageCount === 2) {
+                    return true;
+                  }
 
-                    }
+                }
 
-                    // Otherwise, the level is not relevant
-                    return false;
+                // Otherwise, the level is not relevant
+                return false;
 
-                });
+              });
 
             });
 
-        }] // end controller
+          }] // end controller
 
-    };
-}]);
+      };
+    }]);

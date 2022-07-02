@@ -20,19 +20,19 @@
 package org.apache.guacamole.auth.jdbc.base;
 
 /**
- * The type of object represented by an entity. Each entity may represent
- * either a user or a user group.
+ * The type of object represented by an entity. Each entity may represent either a user or a user
+ * group.
  */
 public enum EntityType {
 
-    /**
-     * An individual user.
-     */
-    USER,
+  /**
+   * An individual user.
+   */
+  USER,
 
-    /**
-     * A group of users and/or other groups.
-     */
-    USER_GROUP
+  /**
+   * A group of users and/or other groups.
+   */
+  USER_GROUP
 
 }

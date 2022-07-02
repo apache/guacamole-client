@@ -18,8 +18,7 @@
  */
 
 /**
- * Classes related to retrieving or manipulating sharing profiles using the
- * Guacamole REST API.
+ * Classes related to retrieving or manipulating sharing profiles using the Guacamole REST API.
  */
 package org.apache.guacamole.rest.sharingprofile;
 

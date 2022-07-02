@@ -29,33 +29,32 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Filter that sets the HTTP response headers necessary to request that the
- * browser always revalidate its cached copy of the response before using that
- * cached copy.
+ * Filter that sets the HTTP response headers necessary to request that the browser always
+ * revalidate its cached copy of the response before using that cached copy.
  */
 public class CacheRevalidationFilter implements Filter {
 
-    @Override
-    public void init(FilterConfig config) throws ServletException {
-        // No configuration
-    }
+  @Override
+  public void init(FilterConfig config) throws ServletException {
+    // No configuration
+  }
 
-    @Override
-    public void doFilter(ServletRequest request, ServletResponse response,
-            FilterChain chain) throws IOException, ServletException {
+  @Override
+  public void doFilter(ServletRequest request, ServletResponse response,
+      FilterChain chain) throws IOException, ServletException {
 
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        httpResponse.addHeader("Cache-Control", "no-cache");
-        httpResponse.addHeader("Pragma", "no-cache");
-        
-        chain.doFilter(request, response);
-        
-    }
+    HttpServletResponse httpResponse = (HttpServletResponse) response;
+    httpResponse.addHeader("Cache-Control", "no-cache");
+    httpResponse.addHeader("Pragma", "no-cache");
 
-    @Override
-    public void destroy() {
-        // Nothing to clean up
-    }
+    chain.doFilter(request, response);
+
+  }
+
+  @Override
+  public void destroy() {
+    // Nothing to clean up
+  }
 
 
 }

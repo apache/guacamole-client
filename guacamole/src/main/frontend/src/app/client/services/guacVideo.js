@@ -21,17 +21,17 @@
  * A service for checking browser video support.
  */
 angular.module('client').factory('guacVideo', [function guacVideo() {
-           
+
+  /**
+   * Object describing the UI's level of video support.
+   */
+  return new (function () {
+
     /**
-     * Object describing the UI's level of video support.
+     * Array of all supported video mimetypes.
      */
-    return new (function() {
+    this.supported = Guacamole.VideoPlayer.getSupportedTypes();
 
-        /**
-         * Array of all supported video mimetypes.
-         */
-        this.supported = Guacamole.VideoPlayer.getSupportedTypes();
-
-    })();
+  })();
 
 }]);

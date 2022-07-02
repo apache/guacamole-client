@@ -18,6 +18,6 @@
  */
 
 .guac-hide-cursor {
-    cursor: url('dot.gif'),default;
+  cursor: url('dot.gif'), default;
 }
 

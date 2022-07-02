@@ -23,71 +23,71 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.io.GuacamoleReader;
 
 /**
- * GuacamoleReader which applies a given GuacamoleFilter to observe or alter all
- * read instructions. Instructions may also be dropped or denied by the filter.
+ * GuacamoleReader which applies a given GuacamoleFilter to observe or alter all read instructions.
+ * Instructions may also be dropped or denied by the filter.
  */
 public class FilteredGuacamoleReader implements GuacamoleReader {
 
-    /**
-     * The wrapped GuacamoleReader.
-     */
-    private final GuacamoleReader reader;
+  /**
+   * The wrapped GuacamoleReader.
+   */
+  private final GuacamoleReader reader;
 
-    /**
-     * The filter to apply when reading instructions.
-     */
-    private final GuacamoleFilter filter;
+  /**
+   * The filter to apply when reading instructions.
+   */
+  private final GuacamoleFilter filter;
 
-    /**
-     * Wraps the given GuacamoleReader, applying the given filter to all read
-     * instructions. Future reads will return only instructions which pass
-     * the filter.
-     *
-     * @param reader The GuacamoleReader to wrap.
-     * @param filter The filter which dictates which instructions are read, and
-     *               how.
-     */
-    public FilteredGuacamoleReader(GuacamoleReader reader, GuacamoleFilter filter) {
-        this.reader = reader;
-        this.filter = filter;
-    }
-    
-    @Override
-    public boolean available() throws GuacamoleException {
-        return reader.available();
-    }
+  /**
+   * Wraps the given GuacamoleReader, applying the given filter to all read instructions. Future
+   * reads will return only instructions which pass the filter.
+   *
+   * @param reader The GuacamoleReader to wrap.
+   * @param filter The filter which dictates which instructions are read, and how.
+   */
+  public FilteredGuacamoleReader(GuacamoleReader reader, GuacamoleFilter filter) {
+    this.reader = reader;
+    this.filter = filter;
+  }
 
-    @Override
-    public char[] read() throws GuacamoleException {
+  @Override
+  public boolean available() throws GuacamoleException {
+    return reader.available();
+  }
 
-        GuacamoleInstruction filteredInstruction = readInstruction();
-        if (filteredInstruction == null)
-            return null;
+  @Override
+  public char[] read() throws GuacamoleException {
 
-        return filteredInstruction.toString().toCharArray();
-        
+    GuacamoleInstruction filteredInstruction = readInstruction();
+    if (filteredInstruction == null) {
+      return null;
     }
 
-    @Override
-    public GuacamoleInstruction readInstruction() throws GuacamoleException {
+    return filteredInstruction.toString().toCharArray();
 
-        GuacamoleInstruction filteredInstruction;
+  }
 
-        // Read and filter instructions until no instructions are dropped
-        do {
+  @Override
+  public GuacamoleInstruction readInstruction() throws GuacamoleException {
 
-            // Read next instruction
-            GuacamoleInstruction unfilteredInstruction = reader.readInstruction();
-            if (unfilteredInstruction == null)
-                return null;
+    GuacamoleInstruction filteredInstruction;
 
-            // Apply filter
-            filteredInstruction = filter.filter(unfilteredInstruction);
+    // Read and filter instructions until no instructions are dropped
+    do {
 
-        } while (filteredInstruction == null);
+      // Read next instruction
+      GuacamoleInstruction unfilteredInstruction = reader.readInstruction();
+      if (unfilteredInstruction == null) {
+        return null;
+      }
 
-        return filteredInstruction;
-        
-    }
+      // Apply filter
+      filteredInstruction = filter.filter(unfilteredInstruction);
+
+    } while (filteredInstruction == null);
+
+    return filteredInstruction;
+
+  }
 
 }

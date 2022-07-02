@@ -23,5 +23,5 @@
  */
 
 *[ng-cloak], .translate-cloak {
-    display: none !important;
+  display: none !important;
 }

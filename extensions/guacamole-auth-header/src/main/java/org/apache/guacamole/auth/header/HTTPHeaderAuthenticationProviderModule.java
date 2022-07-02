@@ -30,49 +30,46 @@ import org.apache.guacamole.net.auth.AuthenticationProvider;
  */
 public class HTTPHeaderAuthenticationProviderModule extends AbstractModule {
 
-    /**
-     * Guacamole server environment.
-     */
-    private final Environment environment;
+  /**
+   * Guacamole server environment.
+   */
+  private final Environment environment;
 
-    /**
-     * A reference to the HTTPHeaderAuthenticationProvider on behalf of which this
-     * module has configured injection.
-     */
-    private final AuthenticationProvider authProvider;
+  /**
+   * A reference to the HTTPHeaderAuthenticationProvider on behalf of which this module has
+   * configured injection.
+   */
+  private final AuthenticationProvider authProvider;
 
-    /**
-     * Creates a new HTTP header authentication provider module which configures
-     * injection for the HTTPHeaderAuthenticationProvider.
-     *
-     * @param authProvider
-     *     The AuthenticationProvider for which injection is being configured.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the Guacamole server
-     *     environment.
-     */
-    public HTTPHeaderAuthenticationProviderModule(AuthenticationProvider authProvider)
-            throws GuacamoleException {
+  /**
+   * Creates a new HTTP header authentication provider module which configures injection for the
+   * HTTPHeaderAuthenticationProvider.
+   *
+   * @param authProvider The AuthenticationProvider for which injection is being configured.
+   * @throws GuacamoleException If an error occurs while retrieving the Guacamole server
+   *                            environment.
+   */
+  public HTTPHeaderAuthenticationProviderModule(AuthenticationProvider authProvider)
+      throws GuacamoleException {
 
-        // Get local environment
-        this.environment = LocalEnvironment.getInstance();
+    // Get local environment
+    this.environment = LocalEnvironment.getInstance();
 
-        // Store associated auth provider
-        this.authProvider = authProvider;
+    // Store associated auth provider
+    this.authProvider = authProvider;
 
-    }
+  }
 
-    @Override
-    protected void configure() {
+  @Override
+  protected void configure() {
 
-        // Bind core implementations of guacamole-ext classes
-        bind(AuthenticationProvider.class).toInstance(authProvider);
-        bind(Environment.class).toInstance(environment);
+    // Bind core implementations of guacamole-ext classes
+    bind(AuthenticationProvider.class).toInstance(authProvider);
+    bind(Environment.class).toInstance(environment);
 
-        // Bind HTTPHeader-specific classes
-        bind(ConfigurationService.class);
+    // Bind HTTPHeader-specific classes
+    bind(ConfigurationService.class);
 
-    }
+  }
 
 }

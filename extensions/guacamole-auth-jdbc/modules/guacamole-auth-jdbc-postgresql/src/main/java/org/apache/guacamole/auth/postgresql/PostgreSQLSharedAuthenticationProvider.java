@@ -24,27 +24,26 @@ import org.apache.guacamole.auth.jdbc.InjectedAuthenticationProvider;
 import org.apache.guacamole.auth.jdbc.sharing.SharedAuthenticationProviderService;
 
 /**
- * Provides a implementation of AuthenticationProvider which interacts with the
- * PostgreSQL AuthenticationProvider, accepting share keys as credentials and
- * providing access to the shared connections.
+ * Provides a implementation of AuthenticationProvider which interacts with the PostgreSQL
+ * AuthenticationProvider, accepting share keys as credentials and providing access to the shared
+ * connections.
  */
 public class PostgreSQLSharedAuthenticationProvider extends InjectedAuthenticationProvider {
 
-    /**
-     * Creates a new PostgreSQLSharedAuthenticationProvider that provides access
-     * to shared connections exposed by the PostgreSQLAuthenticationProvider.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public PostgreSQLSharedAuthenticationProvider() throws GuacamoleException {
-        super(new PostgreSQLInjectorProvider(), SharedAuthenticationProviderService.class);
-    }
+  /**
+   * Creates a new PostgreSQLSharedAuthenticationProvider that provides access to shared connections
+   * exposed by the PostgreSQLAuthenticationProvider.
+   *
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public PostgreSQLSharedAuthenticationProvider() throws GuacamoleException {
+    super(new PostgreSQLInjectorProvider(), SharedAuthenticationProviderService.class);
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "postgresql-shared";
-    }
+  @Override
+  public String getIdentifier() {
+    return "postgresql-shared";
+  }
 
 }

@@ -23,27 +23,28 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.GuacamoleTunnel;
-import org.apache.guacamole.tunnel.TunnelRequestService;
 import org.apache.guacamole.tunnel.TunnelRequest;
+import org.apache.guacamole.tunnel.TunnelRequestService;
 
 /**
- * Tunnel servlet implementation which uses WebSocket as a tunnel backend,
- * rather than HTTP, properly parsing connection IDs included in the connection
- * request.
+ * Tunnel servlet implementation which uses WebSocket as a tunnel backend, rather than HTTP,
+ * properly parsing connection IDs included in the connection request.
  */
 @Singleton
 public class RestrictedGuacamoleWebSocketTunnelServlet extends GuacamoleWebSocketTunnelServlet {
 
-    /**
-     * Service for handling tunnel requests.
-     */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
- 
-    @Override
-    protected GuacamoleTunnel doConnect(TunnelRequest request)
-            throws GuacamoleException {
-        return tunnelRequestService.createTunnel(request);
-    };
+  /**
+   * Service for handling tunnel requests.
+   */
+  @Inject
+  private TunnelRequestService tunnelRequestService;
+
+  @Override
+  protected GuacamoleTunnel doConnect(TunnelRequest request)
+      throws GuacamoleException {
+    return tunnelRequestService.createTunnel(request);
+  }
+
+  ;
 
 }

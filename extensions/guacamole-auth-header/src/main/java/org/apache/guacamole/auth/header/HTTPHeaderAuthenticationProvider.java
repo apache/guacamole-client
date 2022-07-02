@@ -27,49 +27,46 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
- * Guacamole authentication backend which authenticates users using an
- * arbitrary external HTTP header. No storage for connections is
- * provided - only authentication. Storage must be provided by some other
- * extension.
+ * Guacamole authentication backend which authenticates users using an arbitrary external HTTP
+ * header. No storage for connections is provided - only authentication. Storage must be provided by
+ * some other extension.
  */
 public class HTTPHeaderAuthenticationProvider extends AbstractAuthenticationProvider {
 
-    /**
-     * Injector which will manage the object graph of this authentication
-     * provider.
-     */
-    private final Injector injector;
+  /**
+   * Injector which will manage the object graph of this authentication provider.
+   */
+  private final Injector injector;
 
-    /**
-     * Creates a new HTTPHeaderAuthenticationProvider that authenticates users
-     * using HTTP headers.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public HTTPHeaderAuthenticationProvider() throws GuacamoleException {
+  /**
+   * Creates a new HTTPHeaderAuthenticationProvider that authenticates users using HTTP headers.
+   *
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public HTTPHeaderAuthenticationProvider() throws GuacamoleException {
 
-        // Set up Guice injector.
-        injector = Guice.createInjector(
-            new HTTPHeaderAuthenticationProviderModule(this)
-        );
+    // Set up Guice injector.
+    injector = Guice.createInjector(
+        new HTTPHeaderAuthenticationProviderModule(this)
+    );
 
-    }
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "header";
-    }
+  @Override
+  public String getIdentifier() {
+    return "header";
+  }
 
-    @Override
-    public AuthenticatedUser authenticateUser(Credentials credentials)
-            throws GuacamoleException {
+  @Override
+  public AuthenticatedUser authenticateUser(Credentials credentials)
+      throws GuacamoleException {
 
-        // Pass credentials to authentication service.
-        AuthenticationProviderService authProviderService = injector.getInstance(AuthenticationProviderService.class);
-        return authProviderService.authenticateUser(credentials);
+    // Pass credentials to authentication service.
+    AuthenticationProviderService authProviderService = injector.getInstance(
+        AuthenticationProviderService.class);
+    return authProviderService.authenticateUser(credentials);
 
-    }
+  }
 
 }

@@ -22,42 +22,42 @@
 .attributes input[type=email],
 .attributes input[type=password],
 .attributes input[type=number] {
-    width: auto;
+  width: auto;
 }
 
 .attributes .form .fields {
-    display: table;
-    margin: 1em;
+  display: table;
+  margin: 1em;
 }
 
 .attributes .form .fields .labeled-field {
-    display: table-row;
+  display: table-row;
 }
 
 .attributes .form .fields .field-header,
 .attributes .form .fields .form-field {
-    display: table-cell;
-    padding: 0.125em;
-    vertical-align: top;
+  display: table-cell;
+  padding: 0.125em;
+  vertical-align: top;
 }
 
 .attributes .form .fields .field-header {
-    padding-right: 1em;
+  padding-right: 1em;
 }
 
 .attributes .form h3 {
 
-    font-size: 1.25em;
-    font-weight: bold;
-    text-transform: uppercase;
-    padding: 0.5em;
-    margin: 1em 0;
+  font-size: 1.25em;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 0.5em;
+  margin: 1em 0;
 
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-    border-top: 1px solid rgba(0, 0, 0, 0.125);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
-    background: rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.125);
+  background: rgba(0, 0, 0, 0.04);
 
-    width: 100%;
+  width: 100%;
 
 }

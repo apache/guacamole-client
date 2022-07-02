@@ -25,10 +25,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation which automatically maps the authentication token used by
- * Guacamole's REST API, regardless of whether that token is received via an
- * HTTP header or via a query parameter.
+ * Annotation which automatically maps the authentication token used by Guacamole's REST API,
+ * regardless of whether that token is received via an HTTP header or via a query parameter.
  */
 @Target({ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
-public @interface TokenParam {}
+public @interface TokenParam {
+
+}

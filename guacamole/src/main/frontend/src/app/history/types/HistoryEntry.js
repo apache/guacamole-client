@@ -20,18 +20,19 @@
 /**
  * Provides the HistoryEntry class used by the guacHistory service.
  */
-angular.module('history').factory('HistoryEntry', [function defineHistoryEntry() {
+angular.module('history').factory('HistoryEntry',
+    [function defineHistoryEntry() {
 
-    /**
-     * A single entry in the connection history.
-     * 
-     * @constructor
-     * @param {String} id The ID of the connection.
-     * 
-     * @param {String} thumbnail
-     *     The URL of the thumbnail to use to represent the connection.
-     */
-    var HistoryEntry = function HistoryEntry(id, thumbnail) {
+      /**
+       * A single entry in the connection history.
+       *
+       * @constructor
+       * @param {String} id The ID of the connection.
+       *
+       * @param {String} thumbnail
+       *     The URL of the thumbnail to use to represent the connection.
+       */
+      var HistoryEntry = function HistoryEntry(id, thumbnail) {
 
         /**
          * The ID of the connection associated with this history entry,
@@ -45,8 +46,8 @@ angular.module('history').factory('HistoryEntry', [function defineHistoryEntry()
          */
         this.thumbnail = thumbnail;
 
-    };
+      };
 
-    return HistoryEntry;
+      return HistoryEntry;
 
-}]);
+    }]);

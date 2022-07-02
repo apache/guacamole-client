@@ -1,7 +1,5 @@
 {
-
-    "DATA_SOURCE_LDAP" : {
-        "NAME" : "LDAP"
-    }
-
+  "DATA_SOURCE_LDAP": {
+    "NAME": "LDAP"
+  }
 }

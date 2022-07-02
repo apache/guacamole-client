@@ -1,13 +1,13 @@
 <div class="time-field">
-    <input type="time"
-           ng-disabled="disabled"
-           ng-attr-id="{{ fieldId }}"
-           ng-attr-name="{{ field.name }}"
-           ng-model="typedValue"
-           ng-model-options="modelOptions"
-           guac-focus="focused"
-           guac-lenient-time
-           placeholder="{{'FORM.FIELD_PLACEHOLDER_TIME' | translate}}"
-           autocorrect="off"
-           autocapitalize="off">
+  <input autocapitalize="off"
+         autocorrect="off"
+         guac-focus="focused"
+         guac-lenient-time
+         ng-attr-id="{{ fieldId }}"
+         ng-attr-name="{{ field.name }}"
+         ng-disabled="disabled"
+         ng-model="typedValue"
+         ng-model-options="modelOptions"
+         placeholder="{{'FORM.FIELD_PLACEHOLDER_TIME' | translate}}"
+         type="time">
 </div>

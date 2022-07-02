@@ -1,13 +1,14 @@
 <div class="connection-group-permission choice">
 
-    <!-- Connection group icon -->
-    <div class="icon type"></div>
+  <!-- Connection group icon -->
+  <div class="icon type"></div>
 
-    <!-- Permission checkbox -->
-    <input type="checkbox" ng-model="context.getPermissionFlags().connectionGroupPermissions.READ[item.identifier]"
-                           ng-change="context.connectionGroupPermissionChanged(item.identifier)">
+  <!-- Permission checkbox -->
+  <input ng-change="context.connectionGroupPermissionChanged(item.identifier)"
+         ng-model="context.getPermissionFlags().connectionGroupPermissions.READ[item.identifier]"
+         type="checkbox">
 
-    <!-- Connection group name -->
-    <span class="name">{{item.name}}</span>
+  <!-- Connection group name -->
+  <span class="name">{{item.name}}</span>
 
 </div>

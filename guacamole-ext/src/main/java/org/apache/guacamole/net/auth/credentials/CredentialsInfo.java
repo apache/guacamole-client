@@ -31,58 +31,49 @@ import org.apache.guacamole.form.UsernameField;
  */
 public class CredentialsInfo {
 
-    /**
-     * All fields required for valid credentials.
-     */
-    private final Collection<Field> fields;
+  /**
+   * CredentialsInfo object which describes empty credentials. No fields are required.
+   */
+  public static final CredentialsInfo EMPTY = new CredentialsInfo(Collections.<Field>emptyList());
+  /**
+   * A field describing the username HTTP parameter expected by Guacamole during login, if usernames
+   * are being used.
+   */
+  public static final Field USERNAME = new UsernameField("username");
+  /**
+   * A field describing the password HTTP parameter expected by Guacamole during login, if passwords
+   * are being used.
+   */
+  public static final Field PASSWORD = new PasswordField("password");
+  /**
+   * CredentialsInfo object which describes standard username/password credentials.
+   */
+  public static final CredentialsInfo USERNAME_PASSWORD = new CredentialsInfo(Arrays.asList(
+      USERNAME,
+      PASSWORD
+  ));
+  /**
+   * All fields required for valid credentials.
+   */
+  private final Collection<Field> fields;
 
-    /**
-     * Creates a new CredentialsInfo object which requires the given fields for
-     * any conforming credentials.
-     *
-     * @param fields
-     *     The fields to require.
-     */
-    public CredentialsInfo(Collection<Field> fields) {
-        this.fields = fields;
-    }
-    
-    /**
-     * Returns all fields required for valid credentials as described by this
-     * object.
-     *
-     * @return
-     *     All fields required for valid credentials.
-     */
-    public Collection<Field> getFields() {
-        return Collections.unmodifiableCollection(fields);
-    }
+  /**
+   * Creates a new CredentialsInfo object which requires the given fields for any conforming
+   * credentials.
+   *
+   * @param fields The fields to require.
+   */
+  public CredentialsInfo(Collection<Field> fields) {
+    this.fields = fields;
+  }
 
-    /**
-     * CredentialsInfo object which describes empty credentials. No fields are
-     * required.
-     */
-    public static final CredentialsInfo EMPTY = new CredentialsInfo(Collections.<Field>emptyList());
+  /**
+   * Returns all fields required for valid credentials as described by this object.
+   *
+   * @return All fields required for valid credentials.
+   */
+  public Collection<Field> getFields() {
+    return Collections.unmodifiableCollection(fields);
+  }
 
-    /**
-     * A field describing the username HTTP parameter expected by Guacamole
-     * during login, if usernames are being used.
-     */
-    public static final Field USERNAME = new UsernameField("username");
-
-    /**
-     * A field describing the password HTTP parameter expected by Guacamole
-     * during login, if passwords are being used.
-     */
-    public static final Field PASSWORD = new PasswordField("password");
-
-    /**
-     * CredentialsInfo object which describes standard username/password
-     * credentials.
-     */
-    public static final CredentialsInfo USERNAME_PASSWORD = new CredentialsInfo(Arrays.asList(
-        USERNAME,
-        PASSWORD
-    ));
-    
 }

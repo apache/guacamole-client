@@ -17,36 +17,36 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-history-recording-storage</artifactId>
+  <dependencies>
+
+    <!-- Guacamole Extension API -->
+    <dependency>
+      <artifactId>guacamole-ext</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+      <scope>provided</scope>
+      <version>1.4.0</version>
+    </dependency>
+
+  </dependencies>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-history-recording-storage</name>
+  <packaging>jar</packaging>
+  <parent>
+    <artifactId>extensions</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-history-recording-storage</artifactId>
-    <packaging>jar</packaging>
+    <relativePath>../</relativePath>
     <version>1.4.0</version>
-    <name>guacamole-history-recording-storage</name>
-    <url>http://guacamole.apache.org/</url>
+  </parent>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>extensions</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../</relativePath>
-    </parent>
+  <url>http://guacamole.apache.org/</url>
 
-    <dependencies>
-
-       <!-- Guacamole Extension API -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-ext</artifactId>
-            <version>1.4.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-    </dependencies>
+  <version>1.4.0</version>
 
 </project>

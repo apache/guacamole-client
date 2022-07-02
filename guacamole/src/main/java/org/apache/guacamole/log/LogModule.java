@@ -34,61 +34,61 @@ import org.slf4j.LoggerFactory;
  */
 public class LogModule extends AbstractModule {
 
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(LogModule.class);
+  /**
+   * Logger for this class.
+   */
+  private final Logger logger = LoggerFactory.getLogger(LogModule.class);
 
-    /**
-     * The Guacamole server environment.
-     */
-    private final Environment environment;
+  /**
+   * The Guacamole server environment.
+   */
+  private final Environment environment;
 
-    /**
-     * Creates a new LogModule which uses the given environment to determine
-     * the logging configuration.
-     *
-     * @param environment
-     *     The environment to use when configuring logging.
-     */
-    public LogModule(Environment environment) {
-        this.environment = environment;
+  /**
+   * Creates a new LogModule which uses the given environment to determine the logging
+   * configuration.
+   *
+   * @param environment The environment to use when configuring logging.
+   */
+  public LogModule(Environment environment) {
+    this.environment = environment;
+  }
+
+  @Override
+  protected void configure() {
+
+    // Only load logback configuration if GUACAMOLE_HOME exists
+    File guacamoleHome = environment.getGuacamoleHome();
+    if (!guacamoleHome.isDirectory()) {
+      return;
     }
-    
-    @Override
-    protected void configure() {
 
-        // Only load logback configuration if GUACAMOLE_HOME exists
-        File guacamoleHome = environment.getGuacamoleHome();
-        if (!guacamoleHome.isDirectory())
-            return;
-
-        // Check for custom logback.xml
-        File logbackConfiguration = new File(guacamoleHome, "logback.xml");
-        if (!logbackConfiguration.exists())
-            return;
-
-        logger.info("Loading logback configuration from \"{}\".", logbackConfiguration);
-
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        context.reset();
-
-        try {
-
-            // Initialize logback
-            JoranConfigurator configurator = new JoranConfigurator();
-            configurator.setContext(context);
-            configurator.doConfigure(logbackConfiguration);
-
-            // Dump any errors that occur during logback init
-            StatusPrinter.printInCaseOfErrorsOrWarnings(context);
-
-        }
-        catch (JoranException e) {
-            logger.error("Initialization of logback failed: {}", e.getMessage());
-            logger.debug("Unable to load logback configuration..", e);
-        }
-
+    // Check for custom logback.xml
+    File logbackConfiguration = new File(guacamoleHome, "logback.xml");
+    if (!logbackConfiguration.exists()) {
+      return;
     }
+
+    logger.info("Loading logback configuration from \"{}\".", logbackConfiguration);
+
+    LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+    context.reset();
+
+    try {
+
+      // Initialize logback
+      JoranConfigurator configurator = new JoranConfigurator();
+      configurator.setContext(context);
+      configurator.doConfigure(logbackConfiguration);
+
+      // Dump any errors that occur during logback init
+      StatusPrinter.printInCaseOfErrorsOrWarnings(context);
+
+    } catch (JoranException e) {
+      logger.error("Initialization of logback failed: {}", e.getMessage());
+      logger.debug("Unable to load logback configuration..", e);
+    }
+
+  }
 
 }

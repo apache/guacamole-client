@@ -5,27 +5,28 @@
 <!-- Player controls -->
 <div class="guac-player-controls" ng-show="recording">
 
-    <!-- Playback position slider -->
-    <input class="guac-player-seek" type="range" min="0" step="1"
-           ng-attr-max="{{ recording.getDuration() }}"
-           ng-change="beginSeekRequest()"
-           ng-model="playbackPosition"
-           ng-on-change="commitSeekRequest()">
+  <!-- Playback position slider -->
+  <input class="guac-player-seek" min="0" ng-attr-max="{{ recording.getDuration() }}"
+         ng-change="beginSeekRequest()"
+         ng-model="playbackPosition"
+         ng-on-change="commitSeekRequest()"
+         step="1"
+         type="range">
 
-    <!-- Play button -->
-    <button class="guac-player-play"
-            ng-attr-title="{{ 'PLAYER.ACTION_PLAY' | translate }}"
-            ng-click="recording.play()"
-            ng-hide="recording.isPlaying()"><span class="play-icon"></span></button>
+  <!-- Play button -->
+  <button class="guac-player-play"
+          ng-attr-title="{{ 'PLAYER.ACTION_PLAY' | translate }}"
+          ng-click="recording.play()"
+          ng-hide="recording.isPlaying()"><span class="play-icon"></span></button>
 
-    <!-- Pause button -->
-    <button class="guac-player-pause"
-            ng-attr-title="{{ 'PLAYER.ACTION_PAUSE' | translate }}"
-            ng-click="recording.pause()"
-            ng-show="recording.isPlaying()"><span class="pause-icon"></span></button>
+  <!-- Pause button -->
+  <button class="guac-player-pause"
+          ng-attr-title="{{ 'PLAYER.ACTION_PAUSE' | translate }}"
+          ng-click="recording.pause()"
+          ng-show="recording.isPlaying()"><span class="pause-icon"></span></button>
 
-    <!-- Playback position and duration -->
-    <span class="guac-player-position">
+  <!-- Playback position and duration -->
+  <span class="guac-player-position">
         {{ formatTime(playbackPosition) }} / {{ formatTime(recording.getDuration()) }}
     </span>
 
@@ -33,9 +34,10 @@
 
 <!-- Modal status indicator -->
 <div class="guac-player-status" ng-show="operationMessage">
-    <guac-player-progress-indicator progress="operationProgress"></guac-player-progress-indicator>
-    <p translate="{{ operationMessage }}"></p>
-    <button class="guac-player-button guac-player-cancel"
-            ng-show="cancelOperation"
-            ng-click="cancelOperation()">{{ 'PLAYER.ACTION_CANCEL' | translate }}</button>
+  <guac-player-progress-indicator progress="operationProgress"></guac-player-progress-indicator>
+  <p translate="{{ operationMessage }}"></p>
+  <button class="guac-player-button guac-player-cancel"
+          ng-click="cancelOperation()"
+          ng-show="cancelOperation">{{ 'PLAYER.ACTION_CANCEL' | translate }}
+  </button>
 </div>

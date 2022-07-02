@@ -27,49 +27,48 @@ import org.apache.guacamole.net.auth.ConnectionRecord;
  * A ConnectionRecord which is backed by a database model.
  */
 public class ModeledConnectionRecord extends ModeledActivityRecord
-        implements ConnectionRecord {
+    implements ConnectionRecord {
 
-    /**
-     * The model object backing this connection record.
-     */
-    private final ConnectionRecordModel model;
+  /**
+   * The model object backing this connection record.
+   */
+  private final ConnectionRecordModel model;
 
-    /**
-     * Creates a new ModeledConnectionRecord backed by the given model object.
-     * Changes to this record will affect the backing model object, and changes
-     * to the backing model object will affect this record.
-     * 
-     * @param model
-     *     The model object to use to back this connection record.
-     */
-    public ModeledConnectionRecord(ConnectionRecordModel model) {
-        super(ConnectionRecordSet.UUID_NAMESPACE, model);
-        this.model = model;
-    }
+  /**
+   * Creates a new ModeledConnectionRecord backed by the given model object. Changes to this record
+   * will affect the backing model object, and changes to the backing model object will affect this
+   * record.
+   *
+   * @param model The model object to use to back this connection record.
+   */
+  public ModeledConnectionRecord(ConnectionRecordModel model) {
+    super(ConnectionRecordSet.UUID_NAMESPACE, model);
+    this.model = model;
+  }
 
-    @Override
-    public String getConnectionIdentifier() {
-        return model.getConnectionIdentifier();
-    }
+  @Override
+  public String getConnectionIdentifier() {
+    return model.getConnectionIdentifier();
+  }
 
-    @Override
-    public String getConnectionName() {
-        return model.getConnectionName();
-    }
+  @Override
+  public String getConnectionName() {
+    return model.getConnectionName();
+  }
 
-    @Override
-    public String getSharingProfileIdentifier() {
-        return model.getSharingProfileIdentifier();
-    }
+  @Override
+  public String getSharingProfileIdentifier() {
+    return model.getSharingProfileIdentifier();
+  }
 
-    @Override
-    public String getSharingProfileName() {
-        return model.getSharingProfileName();
-    }
+  @Override
+  public String getSharingProfileName() {
+    return model.getSharingProfileName();
+  }
 
-    @Override
-    public ConnectionRecordModel getModel() {
-        return model;
-    }
-    
+  @Override
+  public ConnectionRecordModel getModel() {
+    return model;
+  }
+
 }

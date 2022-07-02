@@ -21,12 +21,13 @@
  * Controller for the redirect field, which redirects the user to the provided
  * URL.
  */
-angular.module('form').controller('redirectFieldController', ['$scope','$window',
-    function redirectFieldController($scope,$window) {
+angular.module('form').controller('redirectFieldController',
+    ['$scope', '$window',
+      function redirectFieldController($scope, $window) {
 
-    /**
-     * Redirect the user to the provided URL.
-     */
-    $window.location.href = $scope.field.redirectUrl;
+        /**
+         * Redirect the user to the provided URL.
+         */
+        $window.location.href = $scope.field.redirectUrl;
 
-}]);
+      }]);

@@ -21,36 +21,36 @@
  * Provides the ManagedClient class used by the guacClientManager service.
  */
 angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
-    function defineManagedClient($rootScope, $injector) {
+  function defineManagedClient($rootScope, $injector) {
 
     // Required types
-    const ClientProperties       = $injector.get('ClientProperties');
-    const ClientIdentifier       = $injector.get('ClientIdentifier');
-    const ClipboardData          = $injector.get('ClipboardData');
-    const ManagedArgument        = $injector.get('ManagedArgument');
-    const ManagedClientState     = $injector.get('ManagedClientState');
+    const ClientProperties = $injector.get('ClientProperties');
+    const ClientIdentifier = $injector.get('ClientIdentifier');
+    const ClipboardData = $injector.get('ClipboardData');
+    const ManagedArgument = $injector.get('ManagedArgument');
+    const ManagedClientState = $injector.get('ManagedClientState');
     const ManagedClientThumbnail = $injector.get('ManagedClientThumbnail');
-    const ManagedDisplay         = $injector.get('ManagedDisplay');
-    const ManagedFilesystem      = $injector.get('ManagedFilesystem');
-    const ManagedFileUpload      = $injector.get('ManagedFileUpload');
-    const ManagedShareLink       = $injector.get('ManagedShareLink');
+    const ManagedDisplay = $injector.get('ManagedDisplay');
+    const ManagedFilesystem = $injector.get('ManagedFilesystem');
+    const ManagedFileUpload = $injector.get('ManagedFileUpload');
+    const ManagedShareLink = $injector.get('ManagedShareLink');
 
     // Required services
-    const $document               = $injector.get('$document');
-    const $q                      = $injector.get('$q');
-    const $window                 = $injector.get('$window');
+    const $document = $injector.get('$document');
+    const $q = $injector.get('$q');
+    const $window = $injector.get('$window');
     const activeConnectionService = $injector.get('activeConnectionService');
-    const authenticationService   = $injector.get('authenticationService');
-    const clipboardService        = $injector.get('clipboardService');
-    const connectionGroupService  = $injector.get('connectionGroupService');
-    const connectionService       = $injector.get('connectionService');
-    const preferenceService       = $injector.get('preferenceService');
-    const requestService          = $injector.get('requestService');
-    const tunnelService           = $injector.get('tunnelService');
-    const guacAudio               = $injector.get('guacAudio');
-    const guacHistory             = $injector.get('guacHistory');
-    const guacImage               = $injector.get('guacImage');
-    const guacVideo               = $injector.get('guacVideo');
+    const authenticationService = $injector.get('authenticationService');
+    const clipboardService = $injector.get('clipboardService');
+    const connectionGroupService = $injector.get('connectionGroupService');
+    const connectionService = $injector.get('connectionService');
+    const preferenceService = $injector.get('preferenceService');
+    const requestService = $injector.get('requestService');
+    const tunnelService = $injector.get('tunnelService');
+    const guacAudio = $injector.get('guacAudio');
+    const guacHistory = $injector.get('guacHistory');
+    const guacImage = $injector.get('guacImage');
+    const guacVideo = $injector.get('guacVideo');
 
     /**
      * The minimum amount of time to wait between updates to the client
@@ -65,7 +65,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      * client while it is active, allowing it to be maintained in the
      * background. One or more ManagedClients are grouped within
      * ManagedClientGroups before being attached to the client view.
-     * 
+     *
      * @constructor
      * @param {ManagedClient|Object} [template={}]
      *     The object whose properties should be copied within the new
@@ -73,151 +73,152 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     var ManagedClient = function ManagedClient(template) {
 
-        // Use empty object by default
-        template = template || {};
+      // Use empty object by default
+      template = template || {};
 
-        /**
-         * The ID of the connection associated with this client.
-         *
-         * @type String
-         */
-        this.id = template.id;
+      /**
+       * The ID of the connection associated with this client.
+       *
+       * @type String
+       */
+      this.id = template.id;
 
-        /**
-         * The actual underlying Guacamole client.
-         *
-         * @type Guacamole.Client
-         */
-        this.client = template.client;
+      /**
+       * The actual underlying Guacamole client.
+       *
+       * @type Guacamole.Client
+       */
+      this.client = template.client;
 
-        /**
-         * The tunnel being used by the underlying Guacamole client.
-         *
-         * @type Guacamole.Tunnel
-         */
-        this.tunnel = template.tunnel;
+      /**
+       * The tunnel being used by the underlying Guacamole client.
+       *
+       * @type Guacamole.Tunnel
+       */
+      this.tunnel = template.tunnel;
 
-        /**
-         * The display associated with the underlying Guacamole client.
-         * 
-         * @type ManagedDisplay
-         */
-        this.managedDisplay = template.managedDisplay;
+      /**
+       * The display associated with the underlying Guacamole client.
+       *
+       * @type ManagedDisplay
+       */
+      this.managedDisplay = template.managedDisplay;
 
-        /**
-         * The name returned associated with the connection or connection
-         * group in use.
-         *
-         * @type String
-         */
-        this.name = template.name;
+      /**
+       * The name returned associated with the connection or connection
+       * group in use.
+       *
+       * @type String
+       */
+      this.name = template.name;
 
-        /**
-         * The title which should be displayed as the page title for this
-         * client.
-         *
-         * @type String
-         */
-        this.title = template.title;
+      /**
+       * The title which should be displayed as the page title for this
+       * client.
+       *
+       * @type String
+       */
+      this.title = template.title;
 
-        /**
-         * The name which uniquely identifies the protocol of the connection in
-         * use. If the protocol cannot be determined, such as when a connection
-         * group is in use, this will be null.
-         *
-         * @type {String}
-         */
-        this.protocol = template.protocol || null;
+      /**
+       * The name which uniquely identifies the protocol of the connection in
+       * use. If the protocol cannot be determined, such as when a connection
+       * group is in use, this will be null.
+       *
+       * @type {String}
+       */
+      this.protocol = template.protocol || null;
 
-        /**
-         * An array of forms describing all known parameters for the connection
-         * in use, including those which may not be editable.
-         *
-         * @type {Form[]}
-         */
-        this.forms = template.forms || [];
+      /**
+       * An array of forms describing all known parameters for the connection
+       * in use, including those which may not be editable.
+       *
+       * @type {Form[]}
+       */
+      this.forms = template.forms || [];
 
-        /**
-         * The most recently-generated thumbnail for this connection, as
-         * stored within the local connection history. If no thumbnail is
-         * stored, this will be null.
-         *
-         * @type ManagedClientThumbnail
-         */
-        this.thumbnail = template.thumbnail;
+      /**
+       * The most recently-generated thumbnail for this connection, as
+       * stored within the local connection history. If no thumbnail is
+       * stored, this will be null.
+       *
+       * @type ManagedClientThumbnail
+       */
+      this.thumbnail = template.thumbnail;
 
-        /**
-         * The current state of all parameters requested by the server via
-         * "required" instructions, where each object key is the name of a
-         * requested parameter and each value is the current value entered by
-         * the user or null if no parameters are currently being requested.
-         *
-         * @type Object.<String, String>
-         */
-        this.requiredParameters = null;
+      /**
+       * The current state of all parameters requested by the server via
+       * "required" instructions, where each object key is the name of a
+       * requested parameter and each value is the current value entered by
+       * the user or null if no parameters are currently being requested.
+       *
+       * @type Object.<String, String>
+       */
+      this.requiredParameters = null;
 
-        /**
-         * All uploaded files. As files are uploaded, their progress can be
-         * observed through the elements of this array. It is intended that
-         * this array be manipulated externally as needed.
-         *
-         * @type ManagedFileUpload[]
-         */
-        this.uploads = template.uploads || [];
+      /**
+       * All uploaded files. As files are uploaded, their progress can be
+       * observed through the elements of this array. It is intended that
+       * this array be manipulated externally as needed.
+       *
+       * @type ManagedFileUpload[]
+       */
+      this.uploads = template.uploads || [];
 
-        /**
-         * All currently-exposed filesystems. When the Guacamole server exposes
-         * a filesystem object, that object will be made available as a
-         * ManagedFilesystem within this array.
-         *
-         * @type ManagedFilesystem[]
-         */
-        this.filesystems = template.filesystems || [];
+      /**
+       * All currently-exposed filesystems. When the Guacamole server exposes
+       * a filesystem object, that object will be made available as a
+       * ManagedFilesystem within this array.
+       *
+       * @type ManagedFilesystem[]
+       */
+      this.filesystems = template.filesystems || [];
 
-        /**
-         * All available share links generated for the this ManagedClient via
-         * ManagedClient.createShareLink(). Each resulting share link is stored
-         * under the identifier of its corresponding SharingProfile.
-         *
-         * @type Object.<String, ManagedShareLink>
-         */
-        this.shareLinks = template.shareLinks || {};
+      /**
+       * All available share links generated for the this ManagedClient via
+       * ManagedClient.createShareLink(). Each resulting share link is stored
+       * under the identifier of its corresponding SharingProfile.
+       *
+       * @type Object.<String, ManagedShareLink>
+       */
+      this.shareLinks = template.shareLinks || {};
 
-        /**
-         * The number of simultaneous touch contacts supported by the remote
-         * desktop. Unless explicitly declared otherwise by the remote desktop
-         * after connecting, this will be 0 (multi-touch unsupported).
-         *
-         * @type Number
-         */
-        this.multiTouchSupport = template.multiTouchSupport || 0;
+      /**
+       * The number of simultaneous touch contacts supported by the remote
+       * desktop. Unless explicitly declared otherwise by the remote desktop
+       * after connecting, this will be 0 (multi-touch unsupported).
+       *
+       * @type Number
+       */
+      this.multiTouchSupport = template.multiTouchSupport || 0;
 
-        /**
-         * The current state of the Guacamole client (idle, connecting,
-         * connected, terminated with error, etc.).
-         * 
-         * @type ManagedClientState
-         */
-        this.clientState = template.clientState || new ManagedClientState();
+      /**
+       * The current state of the Guacamole client (idle, connecting,
+       * connected, terminated with error, etc.).
+       *
+       * @type ManagedClientState
+       */
+      this.clientState = template.clientState || new ManagedClientState();
 
-        /**
-         * Properties associated with the display and behavior of the Guacamole
-         * client.
-         *
-         * @type ClientProperties
-         */
-        this.clientProperties = template.clientProperties || new ClientProperties();
+      /**
+       * Properties associated with the display and behavior of the Guacamole
+       * client.
+       *
+       * @type ClientProperties
+       */
+      this.clientProperties = template.clientProperties
+          || new ClientProperties();
 
-        /**
-         * All editable arguments (connection parameters), stored by their
-         * names. Arguments will only be present within this set if their
-         * current values have been exposed by the server via an inbound "argv"
-         * stream and the server has confirmed that the value may be changed
-         * through a successful "ack" to an outbound "argv" stream.
-         *
-         * @type {Object.<String, ManagedArgument>}
-         */
-        this.arguments = template.arguments || {};
+      /**
+       * All editable arguments (connection parameters), stored by their
+       * names. Arguments will only be present within this set if their
+       * current values have been exposed by the server via an inbound "argv"
+       * stream and the server has confirmed that the value may be changed
+       * through a successful "ack" to an outbound "argv" stream.
+       *
+       * @type {Object.<String, ManagedArgument>}
+       */
+      this.arguments = template.arguments || {};
 
     };
 
@@ -252,51 +253,54 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *     A promise which resolves with the string of connection parameters to
      *     be passed to the Guacamole client, once the string is ready.
      */
-    const getConnectString = function getConnectString(identifier, width, height) {
+    const getConnectString = function getConnectString(identifier, width,
+        height) {
 
-        const deferred = $q.defer();
+      const deferred = $q.defer();
 
-        // Calculate optimal width/height for display
-        const pixel_density = $window.devicePixelRatio || 1;
-        const optimal_dpi = pixel_density * 96;
-        const optimal_width = width * pixel_density;
-        const optimal_height = height * pixel_density;
+      // Calculate optimal width/height for display
+      const pixel_density = $window.devicePixelRatio || 1;
+      const optimal_dpi = pixel_density * 96;
+      const optimal_width = width * pixel_density;
+      const optimal_height = height * pixel_density;
 
-        // Build base connect string
-        let connectString =
-              "token="             + encodeURIComponent(authenticationService.getCurrentToken())
-            + "&GUAC_DATA_SOURCE=" + encodeURIComponent(identifier.dataSource)
-            + "&GUAC_ID="          + encodeURIComponent(identifier.id)
-            + "&GUAC_TYPE="        + encodeURIComponent(identifier.type)
-            + "&GUAC_WIDTH="       + Math.floor(optimal_width)
-            + "&GUAC_HEIGHT="      + Math.floor(optimal_height)
-            + "&GUAC_DPI="         + Math.floor(optimal_dpi)
-            + "&GUAC_TIMEZONE="    + encodeURIComponent(preferenceService.preferences.timezone);
+      // Build base connect string
+      let connectString =
+          "token=" + encodeURIComponent(authenticationService.getCurrentToken())
+          + "&GUAC_DATA_SOURCE=" + encodeURIComponent(identifier.dataSource)
+          + "&GUAC_ID=" + encodeURIComponent(identifier.id)
+          + "&GUAC_TYPE=" + encodeURIComponent(identifier.type)
+          + "&GUAC_WIDTH=" + Math.floor(optimal_width)
+          + "&GUAC_HEIGHT=" + Math.floor(optimal_height)
+          + "&GUAC_DPI=" + Math.floor(optimal_dpi)
+          + "&GUAC_TIMEZONE=" + encodeURIComponent(
+              preferenceService.preferences.timezone);
 
-        // Add audio mimetypes to connect string
-        guacAudio.supported.forEach(function(mimetype) {
-            connectString += "&GUAC_AUDIO=" + encodeURIComponent(mimetype);
-        });
+      // Add audio mimetypes to connect string
+      guacAudio.supported.forEach(function (mimetype) {
+        connectString += "&GUAC_AUDIO=" + encodeURIComponent(mimetype);
+      });
 
-        // Add video mimetypes to connect string
-        guacVideo.supported.forEach(function(mimetype) {
-            connectString += "&GUAC_VIDEO=" + encodeURIComponent(mimetype);
-        });
+      // Add video mimetypes to connect string
+      guacVideo.supported.forEach(function (mimetype) {
+        connectString += "&GUAC_VIDEO=" + encodeURIComponent(mimetype);
+      });
 
-        // Add image mimetypes to connect string
-        guacImage.getSupportedMimetypes().then(function supportedMimetypesKnown(mimetypes) {
+      // Add image mimetypes to connect string
+      guacImage.getSupportedMimetypes().then(
+          function supportedMimetypesKnown(mimetypes) {
 
             // Add each image mimetype
             angular.forEach(mimetypes, function addImageMimetype(mimetype) {
-                connectString += "&GUAC_IMAGE=" + encodeURIComponent(mimetype);
+              connectString += "&GUAC_IMAGE=" + encodeURIComponent(mimetype);
             });
 
             // Connect string is now ready - nothing else is deferred
             deferred.resolve(connectString);
 
-        });
+          });
 
-        return deferred.promise;
+      return deferred.promise;
 
     };
 
@@ -315,18 +319,19 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     var requestAudioStream = function requestAudioStream(client) {
 
-        // Create new audio stream, associating it with an AudioRecorder
-        var stream = client.createAudioStream(ManagedClient.AUDIO_INPUT_MIMETYPE);
-        var recorder = Guacamole.AudioRecorder.getInstance(stream, ManagedClient.AUDIO_INPUT_MIMETYPE);
+      // Create new audio stream, associating it with an AudioRecorder
+      var stream = client.createAudioStream(ManagedClient.AUDIO_INPUT_MIMETYPE);
+      var recorder = Guacamole.AudioRecorder.getInstance(stream,
+          ManagedClient.AUDIO_INPUT_MIMETYPE);
 
-        // If creation of the AudioRecorder failed, simply end the stream
-        if (!recorder)
-            stream.sendEnd();
-
-        // Otherwise, ensure that another audio stream is created after this
-        // audio stream is closed
-        else
-            recorder.onclose = requestAudioStream.bind(this, client);
+      // If creation of the AudioRecorder failed, simply end the stream
+      if (!recorder) {
+        stream.sendEnd();
+      }// Otherwise, ensure that another audio stream is created after this
+      // audio stream is closed
+      else {
+        recorder.onclose = requestAudioStream.bind(this, client);
+      }
 
     };
 
@@ -346,308 +351,324 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.getInstance = function getInstance(id) {
 
-        var tunnel;
+      var tunnel;
 
-        // If WebSocket available, try to use it.
-        if ($window.WebSocket)
-            tunnel = new Guacamole.ChainedTunnel(
-                new Guacamole.WebSocketTunnel('websocket-tunnel'),
-                new Guacamole.HTTPTunnel('tunnel')
-            );
-        
-        // If no WebSocket, then use HTTP.
-        else
-            tunnel = new Guacamole.HTTPTunnel('tunnel');
+      // If WebSocket available, try to use it.
+      if ($window.WebSocket) {
+        tunnel = new Guacamole.ChainedTunnel(
+            new Guacamole.WebSocketTunnel('websocket-tunnel'),
+            new Guacamole.HTTPTunnel('tunnel')
+        );
+      }// If no WebSocket, then use HTTP.
+      else {
+        tunnel = new Guacamole.HTTPTunnel('tunnel');
+      }
 
-        // Get new client instance
-        var client = new Guacamole.Client(tunnel);
+      // Get new client instance
+      var client = new Guacamole.Client(tunnel);
 
-        // Associate new managed client with new client and tunnel
-        var managedClient = new ManagedClient({
-            id     : id,
-            client : client,
-            tunnel : tunnel
+      // Associate new managed client with new client and tunnel
+      var managedClient = new ManagedClient({
+        id: id,
+        client: client,
+        tunnel: tunnel
+      });
+
+      // Fire events for tunnel errors
+      tunnel.onerror = function tunnelError(status) {
+        $rootScope.$apply(function handleTunnelError() {
+          ManagedClientState.setConnectionState(managedClient.clientState,
+              ManagedClientState.ConnectionState.TUNNEL_ERROR,
+              status.code);
         });
+      };
 
-        // Fire events for tunnel errors
-        tunnel.onerror = function tunnelError(status) {
-            $rootScope.$apply(function handleTunnelError() {
-                ManagedClientState.setConnectionState(managedClient.clientState,
-                    ManagedClientState.ConnectionState.TUNNEL_ERROR,
-                    status.code);
-            });
-        };
-
-        // Pull protocol-specific information from tunnel once tunnel UUID is
-        // known
-        tunnel.onuuid = function tunnelAssignedUUID(uuid) {
-            tunnelService.getProtocol(uuid).then(function protocolRetrieved(protocol) {
-                managedClient.protocol = protocol.name;
-                managedClient.forms = protocol.connectionForms;
+      // Pull protocol-specific information from tunnel once tunnel UUID is
+      // known
+      tunnel.onuuid = function tunnelAssignedUUID(uuid) {
+        tunnelService.getProtocol(uuid).then(
+            function protocolRetrieved(protocol) {
+              managedClient.protocol = protocol.name;
+              managedClient.forms = protocol.connectionForms;
             }, requestService.WARN);
+      };
+
+      // Update connection state as tunnel state changes
+      tunnel.onstatechange = function tunnelStateChanged(state) {
+        $rootScope.$evalAsync(function updateTunnelState() {
+
+          switch (state) {
+
+              // Connection is being established
+            case Guacamole.Tunnel.State.CONNECTING:
+              ManagedClientState.setConnectionState(managedClient.clientState,
+                  ManagedClientState.ConnectionState.CONNECTING);
+              break;
+
+              // Connection is established / no longer unstable
+            case Guacamole.Tunnel.State.OPEN:
+              ManagedClientState.setTunnelUnstable(managedClient.clientState,
+                  false);
+              break;
+
+              // Connection is established but misbehaving
+            case Guacamole.Tunnel.State.UNSTABLE:
+              ManagedClientState.setTunnelUnstable(managedClient.clientState,
+                  true);
+              break;
+
+              // Connection has closed
+            case Guacamole.Tunnel.State.CLOSED:
+              ManagedClientState.setConnectionState(managedClient.clientState,
+                  ManagedClientState.ConnectionState.DISCONNECTED);
+              break;
+
+          }
+
+        });
+      };
+
+      // Update connection state as client state changes
+      client.onstatechange = function clientStateChanged(clientState) {
+        $rootScope.$evalAsync(function updateClientState() {
+
+          switch (clientState) {
+
+              // Idle
+            case 0:
+              ManagedClientState.setConnectionState(managedClient.clientState,
+                  ManagedClientState.ConnectionState.IDLE);
+              break;
+
+              // Connecting
+            case 1:
+              ManagedClientState.setConnectionState(managedClient.clientState,
+                  ManagedClientState.ConnectionState.CONNECTING);
+              break;
+
+              // Connected + waiting
+            case 2:
+              ManagedClientState.setConnectionState(managedClient.clientState,
+                  ManagedClientState.ConnectionState.WAITING);
+              break;
+
+              // Connected
+            case 3:
+              ManagedClientState.setConnectionState(managedClient.clientState,
+                  ManagedClientState.ConnectionState.CONNECTED);
+
+              // Sync current clipboard data
+              clipboardService.getClipboard().then((data) => {
+                ManagedClient.setClipboard(managedClient, data);
+              }, angular.noop);
+
+              // Begin streaming audio input if possible
+              requestAudioStream(client);
+
+              // Update thumbnail with initial display contents
+              ManagedClient.updateThumbnail(managedClient);
+              break;
+
+              // Update history when disconnecting
+            case 4: // Disconnecting
+            case 5: // Disconnected
+              ManagedClient.updateThumbnail(managedClient);
+              break;
+
+          }
+
+        });
+      };
+
+      // Disconnect and update status when the client receives an error
+      client.onerror = function clientError(status) {
+        $rootScope.$apply(function handleClientError() {
+
+          // Disconnect, if connected
+          client.disconnect();
+
+          // Update state
+          ManagedClientState.setConnectionState(managedClient.clientState,
+              ManagedClientState.ConnectionState.CLIENT_ERROR,
+              status.code);
+
+        });
+      };
+
+      // Automatically update the client thumbnail
+      client.onsync = function syncReceived() {
+
+        var thumbnail = managedClient.thumbnail;
+        var timestamp = new Date().getTime();
+
+        // Update thumbnail if it doesn't exist or is old
+        if (!thumbnail || timestamp - thumbnail.timestamp
+            >= THUMBNAIL_UPDATE_FREQUENCY) {
+          $rootScope.$apply(function updateClientThumbnail() {
+            ManagedClient.updateThumbnail(managedClient);
+          });
+        }
+
+      };
+
+      // Test for argument mutability whenever an argument value is
+      // received
+      client.onargv = function clientArgumentValueReceived(stream, mimetype,
+          name) {
+
+        // Ignore arguments which do not use a mimetype currently supported
+        // by the web application
+        if (mimetype !== 'text/plain') {
+          return;
+        }
+
+        var reader = new Guacamole.StringReader(stream);
+
+        // Assemble received data into a single string
+        var value = '';
+        reader.ontext = function textReceived(text) {
+          value += text;
         };
 
-        // Update connection state as tunnel state changes
-        tunnel.onstatechange = function tunnelStateChanged(state) {
-            $rootScope.$evalAsync(function updateTunnelState() {
-                
-                switch (state) {
-
-                    // Connection is being established
-                    case Guacamole.Tunnel.State.CONNECTING:
-                        ManagedClientState.setConnectionState(managedClient.clientState,
-                            ManagedClientState.ConnectionState.CONNECTING);
-                        break;
-
-                    // Connection is established / no longer unstable
-                    case Guacamole.Tunnel.State.OPEN:
-                        ManagedClientState.setTunnelUnstable(managedClient.clientState, false);
-                        break;
-
-                    // Connection is established but misbehaving
-                    case Guacamole.Tunnel.State.UNSTABLE:
-                        ManagedClientState.setTunnelUnstable(managedClient.clientState, true);
-                        break;
-
-                    // Connection has closed
-                    case Guacamole.Tunnel.State.CLOSED:
-                        ManagedClientState.setConnectionState(managedClient.clientState,
-                            ManagedClientState.ConnectionState.DISCONNECTED);
-                        break;
-                    
-                }
-            
-            });
+        // Test mutability once stream is finished, storing the current
+        // value for the argument only if it is mutable
+        reader.onend = function textComplete() {
+          ManagedArgument.getInstance(managedClient, name, value).then(
+              function argumentIsMutable(argument) {
+                managedClient.arguments[name] = argument;
+              }, function ignoreImmutableArguments() {
+              });
         };
 
-        // Update connection state as client state changes
-        client.onstatechange = function clientStateChanged(clientState) {
-            $rootScope.$evalAsync(function updateClientState() {
+      };
 
-                switch (clientState) {
+      // Handle any received clipboard data
+      client.onclipboard = function clientClipboardReceived(stream, mimetype) {
 
-                    // Idle
-                    case 0:
-                        ManagedClientState.setConnectionState(managedClient.clientState,
-                            ManagedClientState.ConnectionState.IDLE);
-                        break;
+        var reader;
 
-                    // Connecting
-                    case 1:
-                        ManagedClientState.setConnectionState(managedClient.clientState,
-                            ManagedClientState.ConnectionState.CONNECTING);
-                        break;
+        // If the received data is text, read it as a simple string
+        if (/^text\//.exec(mimetype)) {
 
-                    // Connected + waiting
-                    case 2:
-                        ManagedClientState.setConnectionState(managedClient.clientState,
-                            ManagedClientState.ConnectionState.WAITING);
-                        break;
+          reader = new Guacamole.StringReader(stream);
 
-                    // Connected
-                    case 3:
-                        ManagedClientState.setConnectionState(managedClient.clientState,
-                            ManagedClientState.ConnectionState.CONNECTED);
+          // Assemble received data into a single string
+          var data = '';
+          reader.ontext = function textReceived(text) {
+            data += text;
+          };
 
-                        // Sync current clipboard data
-                        clipboardService.getClipboard().then((data) => {
-                            ManagedClient.setClipboard(managedClient, data);
-                        }, angular.noop);
+          // Set clipboard contents once stream is finished
+          reader.onend = function textComplete() {
+            clipboardService.setClipboard(new ClipboardData({
+              source: managedClient.id,
+              type: mimetype,
+              data: data
+            }))['catch'](angular.noop);
+          };
 
-                        // Begin streaming audio input if possible
-                        requestAudioStream(client);
+        }
 
-                        // Update thumbnail with initial display contents
-                        ManagedClient.updateThumbnail(managedClient);
-                        break;
+        // Otherwise read the clipboard data as a Blob
+        else {
+          reader = new Guacamole.BlobReader(stream, mimetype);
+          reader.onend = function blobComplete() {
+            clipboardService.setClipboard(new ClipboardData({
+              source: managedClient.id,
+              type: mimetype,
+              data: reader.getBlob()
+            }))['catch'](angular.noop);
+          };
+        }
 
-                    // Update history when disconnecting
-                    case 4: // Disconnecting
-                    case 5: // Disconnected
-                        ManagedClient.updateThumbnail(managedClient);
-                        break;
+      };
 
-                }
+      // Update level of multi-touch support when known
+      client.onmultitouch = function multiTouchSupportDeclared(layer, touches) {
+        managedClient.multiTouchSupport = touches;
+      };
 
-            });
-        };
+      // Update title when a "name" instruction is received
+      client.onname = function clientNameReceived(name) {
+        $rootScope.$apply(function updateClientTitle() {
+          managedClient.title = name;
+        });
+      };
 
-        // Disconnect and update status when the client receives an error
-        client.onerror = function clientError(status) {
-            $rootScope.$apply(function handleClientError() {
+      // Handle any received files
+      client.onfile = function clientFileReceived(stream, mimetype, filename) {
+        tunnelService.downloadStream(tunnel.uuid, stream, mimetype, filename);
+      };
 
-                // Disconnect, if connected
-                client.disconnect();
+      // Handle any received filesystem objects
+      client.onfilesystem = function fileSystemReceived(object, name) {
+        $rootScope.$apply(function exposeFilesystem() {
+          managedClient.filesystems.push(
+              ManagedFilesystem.getInstance(managedClient, object, name));
+        });
+      };
 
-                // Update state
-                ManagedClientState.setConnectionState(managedClient.clientState,
-                    ManagedClientState.ConnectionState.CLIENT_ERROR,
-                    status.code);
+      // Handle any received prompts
+      client.onrequired = function onrequired(parameters) {
+        $rootScope.$apply(function promptUser() {
+          managedClient.requiredParameters = {};
+          angular.forEach(parameters, function populateParameter(name) {
+            managedClient.requiredParameters[name] = '';
+          });
+        });
+      };
 
-            });
-        };
+      // Manage the client display
+      managedClient.managedDisplay = ManagedDisplay.getInstance(
+          client.getDisplay());
 
-        // Automatically update the client thumbnail
-        client.onsync = function syncReceived() {
+      // Parse connection details from ID
+      var clientIdentifier = ClientIdentifier.fromString(id);
 
-            var thumbnail = managedClient.thumbnail;
-            var timestamp = new Date().getTime();
+      // Defer actually connecting the Guacamole client until
+      // ManagedClient.connect() is explicitly invoked
 
-            // Update thumbnail if it doesn't exist or is old
-            if (!thumbnail || timestamp - thumbnail.timestamp >= THUMBNAIL_UPDATE_FREQUENCY) {
-                $rootScope.$apply(function updateClientThumbnail() {
-                    ManagedClient.updateThumbnail(managedClient);
-                });
-            }
+      // If using a connection, pull connection name and protocol information
+      if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
+        connectionService.getConnection(clientIdentifier.dataSource,
+            clientIdentifier.id)
+        .then(function connectionRetrieved(connection) {
+          managedClient.name = managedClient.title = connection.name;
+        }, requestService.WARN);
+      }
 
-        };
+      // If using a connection group, pull connection name
+      else if (clientIdentifier.type
+          === ClientIdentifier.Types.CONNECTION_GROUP) {
+        connectionGroupService.getConnectionGroup(clientIdentifier.dataSource,
+            clientIdentifier.id)
+        .then(function connectionGroupRetrieved(group) {
+          managedClient.name = managedClient.title = group.name;
+        }, requestService.WARN);
+      }
 
-        // Test for argument mutability whenever an argument value is
-        // received
-        client.onargv = function clientArgumentValueReceived(stream, mimetype, name) {
+          // If using an active connection, pull corresponding connection, then
+      // pull connection name and protocol information from that
+      else if (clientIdentifier.type
+          === ClientIdentifier.Types.ACTIVE_CONNECTION) {
+        activeConnectionService.getActiveConnection(clientIdentifier.dataSource,
+            clientIdentifier.id)
+        .then(function activeConnectionRetrieved(activeConnection) {
 
-            // Ignore arguments which do not use a mimetype currently supported
-            // by the web application
-            if (mimetype !== 'text/plain')
-                return;
-
-            var reader = new Guacamole.StringReader(stream);
-
-            // Assemble received data into a single string
-            var value = '';
-            reader.ontext = function textReceived(text) {
-                value += text;
-            };
-
-            // Test mutability once stream is finished, storing the current
-            // value for the argument only if it is mutable
-            reader.onend = function textComplete() {
-                ManagedArgument.getInstance(managedClient, name, value).then(function argumentIsMutable(argument) {
-                    managedClient.arguments[name] = argument;
-                }, function ignoreImmutableArguments() {});
-            };
-
-        };
-
-        // Handle any received clipboard data
-        client.onclipboard = function clientClipboardReceived(stream, mimetype) {
-
-            var reader;
-
-            // If the received data is text, read it as a simple string
-            if (/^text\//.exec(mimetype)) {
-
-                reader = new Guacamole.StringReader(stream);
-
-                // Assemble received data into a single string
-                var data = '';
-                reader.ontext = function textReceived(text) {
-                    data += text;
-                };
-
-                // Set clipboard contents once stream is finished
-                reader.onend = function textComplete() {
-                    clipboardService.setClipboard(new ClipboardData({
-                        source : managedClient.id,
-                        type : mimetype,
-                        data : data
-                    }))['catch'](angular.noop);
-                };
-
-            }
-
-            // Otherwise read the clipboard data as a Blob
-            else {
-                reader = new Guacamole.BlobReader(stream, mimetype);
-                reader.onend = function blobComplete() {
-                    clipboardService.setClipboard(new ClipboardData({
-                        source : managedClient.id,
-                        type : mimetype,
-                        data : reader.getBlob()
-                    }))['catch'](angular.noop);
-                };
-            }
-
-        };
-
-        // Update level of multi-touch support when known
-        client.onmultitouch = function multiTouchSupportDeclared(layer, touches) {
-            managedClient.multiTouchSupport = touches;
-        };
-
-        // Update title when a "name" instruction is received
-        client.onname = function clientNameReceived(name) {
-            $rootScope.$apply(function updateClientTitle() {
-                managedClient.title = name;
-            });
-        };
-
-        // Handle any received files
-        client.onfile = function clientFileReceived(stream, mimetype, filename) {
-            tunnelService.downloadStream(tunnel.uuid, stream, mimetype, filename);
-        };
-
-        // Handle any received filesystem objects
-        client.onfilesystem = function fileSystemReceived(object, name) {
-            $rootScope.$apply(function exposeFilesystem() {
-                managedClient.filesystems.push(ManagedFilesystem.getInstance(managedClient, object, name));
-            });
-        };
-
-        // Handle any received prompts
-        client.onrequired = function onrequired(parameters) {
-            $rootScope.$apply(function promptUser() {
-                managedClient.requiredParameters = {};
-                angular.forEach(parameters, function populateParameter(name) {
-                    managedClient.requiredParameters[name] = '';
-                });
-            });
-        };
-
-        // Manage the client display
-        managedClient.managedDisplay = ManagedDisplay.getInstance(client.getDisplay());
-
-        // Parse connection details from ID
-        var clientIdentifier = ClientIdentifier.fromString(id);
-
-        // Defer actually connecting the Guacamole client until
-        // ManagedClient.connect() is explicitly invoked
-
-        // If using a connection, pull connection name and protocol information
-        if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
-            connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id)
+          // Attempt to retrieve connection details only if the
+          // underlying connection is known
+          if (activeConnection.connectionIdentifier) {
+            connectionService.getConnection(clientIdentifier.dataSource,
+                activeConnection.connectionIdentifier)
             .then(function connectionRetrieved(connection) {
-                managedClient.name = managedClient.title = connection.name;
+              managedClient.name = managedClient.title = connection.name;
             }, requestService.WARN);
-        }
-        
-        // If using a connection group, pull connection name
-        else if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION_GROUP) {
-            connectionGroupService.getConnectionGroup(clientIdentifier.dataSource, clientIdentifier.id)
-            .then(function connectionGroupRetrieved(group) {
-                managedClient.name = managedClient.title = group.name;
-            }, requestService.WARN);
-        }
+          }
 
-        // If using an active connection, pull corresponding connection, then
-        // pull connection name and protocol information from that
-        else if (clientIdentifier.type === ClientIdentifier.Types.ACTIVE_CONNECTION) {
-            activeConnectionService.getActiveConnection(clientIdentifier.dataSource, clientIdentifier.id)
-            .then(function activeConnectionRetrieved(activeConnection) {
+        }, requestService.WARN);
+      }
 
-                // Attempt to retrieve connection details only if the
-                // underlying connection is known
-                if (activeConnection.connectionIdentifier) {
-                    connectionService.getConnection(clientIdentifier.dataSource, activeConnection.connectionIdentifier)
-                    .then(function connectionRetrieved(connection) {
-                        managedClient.name = managedClient.title = connection.name;
-                    }, requestService.WARN);
-                }
-
-            }, requestService.WARN);
-        }
-
-        return managedClient;
+      return managedClient;
 
     };
 
@@ -670,18 +691,20 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.connect = function connect(managedClient, width, height) {
 
-        // Ignore if already connected
-        if (managedClient.clientState.connectionState !== ManagedClientState.ConnectionState.IDLE)
-            return;
+      // Ignore if already connected
+      if (managedClient.clientState.connectionState
+          !== ManagedClientState.ConnectionState.IDLE) {
+        return;
+      }
 
-        // Parse connection details from ID
-        const clientIdentifier = ClientIdentifier.fromString(managedClient.id);
+      // Parse connection details from ID
+      const clientIdentifier = ClientIdentifier.fromString(managedClient.id);
 
-        // Connect the Guacamole client
-        getConnectString(clientIdentifier, width, height)
-        .then(function connectClient(connectString) {
-            managedClient.client.connect(connectString);
-        });
+      // Connect the Guacamole client
+      getConnectString(clientIdentifier, width, height)
+      .then(function connectClient(connectString) {
+        managedClient.client.connect(connectString);
+      });
 
     };
 
@@ -689,10 +712,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      * Uploads the given file to the server through the given Guacamole client.
      * The file transfer can be monitored through the corresponding entry in
      * the uploads array of the given managedClient.
-     * 
+     *
      * @param {ManagedClient} managedClient
      *     The ManagedClient through which the file is to be uploaded.
-     * 
+     *
      * @param {File} file
      *     The file to upload.
      *
@@ -705,20 +728,24 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *     not specified, but a filesystem is given, the current directory of
      *     that filesystem will be used.
      */
-    ManagedClient.uploadFile = function uploadFile(managedClient, file, filesystem, directory) {
+    ManagedClient.uploadFile = function uploadFile(managedClient, file,
+        filesystem, directory) {
 
-        // Use generic Guacamole file streams by default
-        var object = null;
-        var streamName = null;
+      // Use generic Guacamole file streams by default
+      var object = null;
+      var streamName = null;
 
-        // If a filesystem is given, determine the destination object and stream
-        if (filesystem) {
-            object = filesystem.object;
-            streamName = (directory || filesystem.currentDirectory).streamName + '/' + file.name;
-        }
+      // If a filesystem is given, determine the destination object and stream
+      if (filesystem) {
+        object = filesystem.object;
+        streamName = (directory || filesystem.currentDirectory).streamName + '/'
+            + file.name;
+      }
 
-        // Start and manage file upload
-        managedClient.uploads.push(ManagedFileUpload.getInstance(managedClient, file, object, streamName));
+      // Start and manage file upload
+      managedClient.uploads.push(
+          ManagedFileUpload.getInstance(managedClient, file, object,
+              streamName));
 
     };
 
@@ -736,35 +763,36 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.setClipboard = function setClipboard(managedClient, data) {
 
-        // Ignore clipboard data that was received from this connection
-        if (data.source === managedClient.id)
-            return;
+      // Ignore clipboard data that was received from this connection
+      if (data.source === managedClient.id) {
+        return;
+      }
 
-        var writer;
+      var writer;
 
-        // Create stream with proper mimetype
-        var stream = managedClient.client.createClipboardStream(data.type);
+      // Create stream with proper mimetype
+      var stream = managedClient.client.createClipboardStream(data.type);
 
-        // Send data as a string if it is stored as a string
-        if (typeof data.data === 'string') {
-            writer = new Guacamole.StringWriter(stream);
-            writer.sendText(data.data);
-            writer.sendEnd();
-        }
+      // Send data as a string if it is stored as a string
+      if (typeof data.data === 'string') {
+        writer = new Guacamole.StringWriter(stream);
+        writer.sendText(data.data);
+        writer.sendEnd();
+      }
 
-        // Otherwise, assume the data is a File/Blob
-        else {
+      // Otherwise, assume the data is a File/Blob
+      else {
 
-            // Write File/Blob asynchronously
-            writer = new Guacamole.BlobWriter(stream);
-            writer.oncomplete = function clipboardSent() {
-                writer.sendEnd();
-            };
+        // Write File/Blob asynchronously
+        writer = new Guacamole.BlobWriter(stream);
+        writer.oncomplete = function clipboardSent() {
+          writer.sendEnd();
+        };
 
-            // Begin sending data
-            writer.sendBlob(data.data);
+        // Begin sending data
+        writer.sendBlob(data.data);
 
-        }
+      }
 
     };
 
@@ -783,10 +811,12 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      * @param {String} value
      *     The value to attempt to assign to the given connection parameter.
      */
-    ManagedClient.setArgument = function setArgument(managedClient, name, value) {
-        var managedArgument = managedClient.arguments[name];
-        if (managedArgument && ManagedArgument.setValue(managedArgument, value))
-            delete managedClient.arguments[name];
+    ManagedClient.setArgument = function setArgument(managedClient, name,
+        value) {
+      var managedArgument = managedClient.arguments[name];
+      if (managedArgument && ManagedArgument.setValue(managedArgument, value)) {
+        delete managedClient.arguments[name];
+      }
     };
 
     /**
@@ -803,13 +833,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *     parameters, where each object key is the connection parameter being
      *     set.
      */
-    ManagedClient.sendArguments = function sendArguments(managedClient, values) {
-        angular.forEach(values, function sendArgument(value, name) {
-            var stream = managedClient.client.createArgumentValueStream("text/plain", name);
-            var writer = new Guacamole.StringWriter(stream);
-            writer.sendText(value);
-            writer.sendEnd();
-        });
+    ManagedClient.sendArguments = function sendArguments(managedClient,
+        values) {
+      angular.forEach(values, function sendArgument(value, name) {
+        var stream = managedClient.client.createArgumentValueStream(
+            "text/plain", name);
+        var writer = new Guacamole.StringWriter(stream);
+        writer.sendText(value);
+        writer.sendEnd();
+      });
     };
 
     /**
@@ -827,13 +859,14 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.getArgumentModel = function getArgumentModel(client) {
 
-        var model = {};
+      var model = {};
 
-        angular.forEach(client.arguments, function addModelEntry(managedArgument) {
+      angular.forEach(client.arguments,
+          function addModelEntry(managedArgument) {
             model[managedArgument.name] = managedArgument.value;
-        });
+          });
 
-        return model;
+      return model;
 
     };
 
@@ -855,19 +888,22 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *     A Promise which is resolved once the sharing link has been
      *     successfully generated, and rejected if generating the link fails.
      */
-    ManagedClient.createShareLink = function createShareLink(client, sharingProfile) {
+    ManagedClient.createShareLink = function createShareLink(client,
+        sharingProfile) {
 
-        // Retrieve sharing credentials for the sake of generating a share link
-        var credentialRequest = tunnelService.getSharingCredentials(
-                client.tunnel.uuid, sharingProfile.identifier);
+      // Retrieve sharing credentials for the sake of generating a share link
+      var credentialRequest = tunnelService.getSharingCredentials(
+          client.tunnel.uuid, sharingProfile.identifier);
 
-        // Add a new share link once the credentials are ready
-        credentialRequest.then(function sharingCredentialsReceived(sharingCredentials) {
+      // Add a new share link once the credentials are ready
+      credentialRequest.then(
+          function sharingCredentialsReceived(sharingCredentials) {
             client.shareLinks[sharingProfile.identifier] =
-                ManagedShareLink.getInstance(sharingProfile, sharingCredentials);
-        }, requestService.WARN);
+                ManagedShareLink.getInstance(sharingProfile,
+                    sharingCredentials);
+          }, requestService.WARN);
 
-        return credentialRequest;
+      return credentialRequest;
 
     };
 
@@ -884,12 +920,13 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.isShared = function isShared(client) {
 
-        // The connection is shared if at least one share link exists
-        for (var dummy in client.shareLinks)
-            return true;
+      // The connection is shared if at least one share link exists
+      for (var dummy in client.shareLinks) {
+        return true;
+      }
 
-        // No share links currently exist
-        return false;
+      // No share links currently exist
+      return false;
 
     };
 
@@ -902,7 +939,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      *     given client, false otherwise.
      */
     ManagedClient.hasTransfers = function hasTransfers(client) {
-        return !!(client && client.uploads && client.uploads.length);
+      return !!(client && client.uploads && client.uploads.length);
     };
 
     /**
@@ -915,42 +952,43 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.updateThumbnail = function updateThumbnail(managedClient) {
 
-        var display = managedClient.client.getDisplay();
+      var display = managedClient.client.getDisplay();
 
-        // Update stored thumbnail of previous connection
-        if (display && display.getWidth() > 0 && display.getHeight() > 0) {
+      // Update stored thumbnail of previous connection
+      if (display && display.getWidth() > 0 && display.getHeight() > 0) {
 
-            // Get screenshot
-            var canvas = display.flatten();
+        // Get screenshot
+        var canvas = display.flatten();
 
-            // Calculate scale of thumbnail (max 320x240, max zoom 100%)
-            var scale = Math.min(320 / canvas.width, 240 / canvas.height, 1);
+        // Calculate scale of thumbnail (max 320x240, max zoom 100%)
+        var scale = Math.min(320 / canvas.width, 240 / canvas.height, 1);
 
-            // Create thumbnail canvas
-            var thumbnail = $document[0].createElement("canvas");
-            thumbnail.width  = canvas.width*scale;
-            thumbnail.height = canvas.height*scale;
+        // Create thumbnail canvas
+        var thumbnail = $document[0].createElement("canvas");
+        thumbnail.width = canvas.width * scale;
+        thumbnail.height = canvas.height * scale;
 
-            // Scale screenshot to thumbnail
-            var context = thumbnail.getContext("2d");
-            context.drawImage(canvas,
-                0, 0, canvas.width, canvas.height,
-                0, 0, thumbnail.width, thumbnail.height
-            );
+        // Scale screenshot to thumbnail
+        var context = thumbnail.getContext("2d");
+        context.drawImage(canvas,
+            0, 0, canvas.width, canvas.height,
+            0, 0, thumbnail.width, thumbnail.height
+        );
 
-            // Store updated thumbnail within client
-            managedClient.thumbnail = new ManagedClientThumbnail({
-                timestamp : new Date().getTime(),
-                canvas    : thumbnail
-            });
+        // Store updated thumbnail within client
+        managedClient.thumbnail = new ManagedClientThumbnail({
+          timestamp: new Date().getTime(),
+          canvas: thumbnail
+        });
 
-            // Update historical thumbnail
-            guacHistory.updateThumbnail(managedClient.id, thumbnail.toDataURL("image/png"));
+        // Update historical thumbnail
+        guacHistory.updateThumbnail(managedClient.id,
+            thumbnail.toDataURL("image/png"));
 
-        }
+      }
 
     };
 
     return ManagedClient;
 
-}]);
+  }]);

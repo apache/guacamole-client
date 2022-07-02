@@ -20,44 +20,49 @@
 package org.apache.guacamole.rest.usergroup;
 
 import com.google.inject.AbstractModule;
-import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
-import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
+import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
+import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 
 /**
- * Guice Module which configures injections required for handling UserGroup
- * resources via the REST API.
+ * Guice Module which configures injections required for handling UserGroup resources via the REST
+ * API.
  */
 public class UserGroupModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
+  @Override
+  protected void configure() {
 
-        // Create the required DirectoryResourceFactory implementation
-        install(new FactoryModuleBuilder()
-                .implement(
-                    new TypeLiteral<DirectoryResource<UserGroup, APIUserGroup>>() {},
-                    UserGroupDirectoryResource.class
-                )
-                .build(new TypeLiteral<DirectoryResourceFactory<UserGroup, APIUserGroup>>() {}));
+    // Create the required DirectoryResourceFactory implementation
+    install(new FactoryModuleBuilder()
+        .implement(
+            new TypeLiteral<DirectoryResource<UserGroup, APIUserGroup>>() {
+            },
+            UserGroupDirectoryResource.class
+        )
+        .build(new TypeLiteral<DirectoryResourceFactory<UserGroup, APIUserGroup>>() {
+        }));
 
-        // Create the required DirectoryObjectResourceFactory implementation
-        install(new FactoryModuleBuilder()
-                .implement(
-                    new TypeLiteral<DirectoryObjectResource<UserGroup, APIUserGroup>>() {},
-                    UserGroupResource.class
-                )
-                .build(new TypeLiteral<DirectoryObjectResourceFactory<UserGroup, APIUserGroup>>() {}));
+    // Create the required DirectoryObjectResourceFactory implementation
+    install(new FactoryModuleBuilder()
+        .implement(
+            new TypeLiteral<DirectoryObjectResource<UserGroup, APIUserGroup>>() {
+            },
+            UserGroupResource.class
+        )
+        .build(new TypeLiteral<DirectoryObjectResourceFactory<UserGroup, APIUserGroup>>() {
+        }));
 
-        // Bind translator for converting between UserGroup and APIUserGroup
-        bind(new TypeLiteral<DirectoryObjectTranslator<UserGroup, APIUserGroup>>() {})
-                .to(UserGroupObjectTranslator.class);
+    // Bind translator for converting between UserGroup and APIUserGroup
+    bind(new TypeLiteral<DirectoryObjectTranslator<UserGroup, APIUserGroup>>() {
+    })
+        .to(UserGroupObjectTranslator.class);
 
-    }
+  }
 
 }

@@ -21,38 +21,39 @@
  * Service for operating on connections via the REST API.
  */
 angular.module('rest').factory('connectionService', ['$injector',
-        function connectionService($injector) {
+  function connectionService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
-    var cacheService          = $injector.get('cacheService');
-    
+    var cacheService = $injector.get('cacheService');
+
     var service = {};
-    
+
     /**
      * Makes a request to the REST API to get a single connection, returning a
      * promise that provides the corresponding @link{Connection} if successful.
-     * 
+     *
      * @param {String} id The ID of the connection.
-     * 
+     *
      * @returns {Promise.<Connection>}
      *     A promise which will resolve with a @link{Connection} upon success.
-     * 
+     *
      * @example
-     * 
+     *
      * connectionService.getConnection('myConnection').then(function(connection) {
      *     // Do something with the connection
      * });
      */
     service.getConnection = function getConnection(dataSource, id) {
 
-        // Retrieve connection
-        return authenticationService.request({
-            cache   : cacheService.connections,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id)
-        });
+      // Retrieve connection
+      return authenticationService.request({
+        cache: cacheService.connections,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/connections/' + encodeURIComponent(id)
+      });
 
     };
 
@@ -60,45 +61,49 @@ angular.module('rest').factory('connectionService', ['$injector',
      * Makes a request to the REST API to get the usage history of a single
      * connection, returning a promise that provides the corresponding
      * array of @link{ConnectionHistoryEntry} objects if successful.
-     * 
+     *
      * @param {String} id
      *     The identifier of the connection.
-     * 
+     *
      * @returns {Promise.<ConnectionHistoryEntry[]>}
      *     A promise which will resolve with an array of
      *     @link{ConnectionHistoryEntry} objects upon success.
      */
-    service.getConnectionHistory = function getConnectionHistory(dataSource, id) {
+    service.getConnectionHistory = function getConnectionHistory(dataSource,
+        id) {
 
-        // Retrieve connection history
-        return authenticationService.request({
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/history'
-        });
- 
+      // Retrieve connection history
+      return authenticationService.request({
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/connections/' + encodeURIComponent(id) + '/history'
+      });
+
     };
 
     /**
      * Makes a request to the REST API to get the parameters of a single
      * connection, returning a promise that provides the corresponding
      * map of parameter name/value pairs if successful.
-     * 
+     *
      * @param {String} id
      *     The identifier of the connection.
-     * 
+     *
      * @returns {Promise.<Object.<String, String>>}
      *     A promise which will resolve with an map of parameter name/value
      *     pairs upon success.
      */
-    service.getConnectionParameters = function getConnectionParameters(dataSource, id) {
+    service.getConnectionParameters = function getConnectionParameters(dataSource,
+        id) {
 
-        // Retrieve connection parameters
-        return authenticationService.request({
-            cache   : cacheService.connections,
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/parameters'
-        });
- 
+      // Retrieve connection parameters
+      return authenticationService.request({
+        cache: cacheService.connections,
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/connections/' + encodeURIComponent(id) + '/parameters'
+      });
+
     };
 
     /**
@@ -107,78 +112,82 @@ angular.module('rest').factory('connectionService', ['$injector',
      * connection is new, and thus does not yet have an associated identifier,
      * the identifier will be automatically set in the provided connection
      * upon success.
-     * 
+     *
      * @param {Connection} connection The connection to update.
-     *                          
+     *
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     save operation is successful.
      */
     service.saveConnection = function saveConnection(dataSource, connection) {
-        
-        // If connection is new, add it and set the identifier automatically
-        if (!connection.identifier) {
-            return authenticationService.request({
-                method  : 'POST',
-                url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections',
-                data    : connection
-            })
 
-            // Set the identifier on the new connection and clear the cache
-            .then(function connectionCreated(newConnection){
-                connection.identifier = newConnection.identifier;
-                cacheService.connections.removeAll();
+      // If connection is new, add it and set the identifier automatically
+      if (!connection.identifier) {
+        return authenticationService.request({
+          method: 'POST',
+          url: 'api/session/data/' + encodeURIComponent(dataSource)
+              + '/connections',
+          data: connection
+        })
 
-                // Clear users cache to force reload of permissions for this
-                // newly created connection
-                cacheService.users.removeAll();
-            });
-        }
+        // Set the identifier on the new connection and clear the cache
+        .then(function connectionCreated(newConnection) {
+          connection.identifier = newConnection.identifier;
+          cacheService.connections.removeAll();
 
-        // Otherwise, update the existing connection
-        else {
-            return authenticationService.request({
-                method  : 'PUT',
-                url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(connection.identifier),
-                data    : connection
-            })
-            
-            // Clear the cache
-            .then(function connectionUpdated(){
-                cacheService.connections.removeAll();
+          // Clear users cache to force reload of permissions for this
+          // newly created connection
+          cacheService.users.removeAll();
+        });
+      }
 
-                // Clear users cache to force reload of permissions for this
-                // newly updated connection
-                cacheService.users.removeAll();
-            });
-        }
+      // Otherwise, update the existing connection
+      else {
+        return authenticationService.request({
+          method: 'PUT',
+          url: 'api/session/data/' + encodeURIComponent(dataSource)
+              + '/connections/' + encodeURIComponent(connection.identifier),
+          data: connection
+        })
+
+        // Clear the cache
+        .then(function connectionUpdated() {
+          cacheService.connections.removeAll();
+
+          // Clear users cache to force reload of permissions for this
+          // newly updated connection
+          cacheService.users.removeAll();
+        });
+      }
 
     };
-    
+
     /**
      * Makes a request to the REST API to delete a connection,
      * returning a promise that can be used for processing the results of the call.
-     * 
+     *
      * @param {Connection} connection The connection to delete.
-     *                          
+     *
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
      *     delete operation is successful.
      */
-    service.deleteConnection = function deleteConnection(dataSource, connection) {
+    service.deleteConnection = function deleteConnection(dataSource,
+        connection) {
 
-        // Delete connection
-        return authenticationService.request({
-            method  : 'DELETE',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(connection.identifier)
-        })
+      // Delete connection
+      return authenticationService.request({
+        method: 'DELETE',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/connections/' + encodeURIComponent(connection.identifier)
+      })
 
-        // Clear the cache
-        .then(function connectionDeleted(){
-            cacheService.connections.removeAll();
-        });
+      // Clear the cache
+      .then(function connectionDeleted() {
+        cacheService.connections.removeAll();
+      });
 
     };
-    
+
     return service;
-}]);
+  }]);

@@ -28,71 +28,71 @@ import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.SharingProfile;
 
 /**
- * An implementation of the SharingProfile object which is backed by a database
- * model.
+ * An implementation of the SharingProfile object which is backed by a database model.
  */
 public class ModeledSharingProfile
-        extends ModeledChildDirectoryObject<SharingProfileModel>
-        implements SharingProfile {
+    extends ModeledChildDirectoryObject<SharingProfileModel>
+    implements SharingProfile {
 
-    /**
-     * All possible attributes of sharing profile objects organized as
-     * individual, logical forms. Currently, there are no such attributes.
-     */
-    public static final Collection<Form> ATTRIBUTES = Collections.<Form>emptyList();
+  /**
+   * All possible attributes of sharing profile objects organized as individual, logical forms.
+   * Currently, there are no such attributes.
+   */
+  public static final Collection<Form> ATTRIBUTES = Collections.<Form>emptyList();
 
-    /**
-     * The manually-set parameter map, if any.
-     */
-    private Map<String, String> parameters = null;
+  /**
+   * The manually-set parameter map, if any.
+   */
+  private Map<String, String> parameters = null;
 
-    /**
-     * Service for managing sharing profiles.
-     */
-    @Inject
-    private SharingProfileService sharingProfileService;
+  /**
+   * Service for managing sharing profiles.
+   */
+  @Inject
+  private SharingProfileService sharingProfileService;
 
-    /**
-     * Creates a new, empty ModeledSharingProfile.
-     */
-    public ModeledSharingProfile() {
+  /**
+   * Creates a new, empty ModeledSharingProfile.
+   */
+  public ModeledSharingProfile() {
+  }
+
+  @Override
+  public String getName() {
+    return getModel().getName();
+  }
+
+  @Override
+  public void setName(String name) {
+    getModel().setName(name);
+  }
+
+  @Override
+  public String getPrimaryConnectionIdentifier() {
+    return getModel().getParentIdentifier();
+  }
+
+  @Override
+  public void setPrimaryConnectionIdentifier(String identifier) {
+    getModel().setParentIdentifier(identifier);
+  }
+
+  @Override
+  public Map<String, String> getParameters() {
+
+    // Retrieve visible parameters, if not overridden by setParameters()
+    if (parameters == null) {
+      return sharingProfileService.retrieveParameters(getCurrentUser(),
+          getModel().getIdentifier());
     }
 
-    @Override
-    public String getName() {
-        return getModel().getName();
-    }
+    return parameters;
 
-    @Override
-    public void setName(String name) {
-        getModel().setName(name);
-    }
+  }
 
-    @Override
-    public String getPrimaryConnectionIdentifier() {
-        return getModel().getParentIdentifier();
-    }
-
-    @Override
-    public void setPrimaryConnectionIdentifier(String identifier) {
-        getModel().setParentIdentifier(identifier);
-    }
-
-    @Override
-    public Map<String, String> getParameters() {
-
-        // Retrieve visible parameters, if not overridden by setParameters()
-        if (parameters == null)
-            return sharingProfileService.retrieveParameters(getCurrentUser(),
-                    getModel().getIdentifier());
-
-        return parameters;
-
-    }
-
-    @Override
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
+  @Override
+  public void setParameters(Map<String, String> parameters) {
+    this.parameters = parameters;
+  }
 
 }

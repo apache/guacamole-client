@@ -1,6 +1,12 @@
 <div class="action-buttons">
-    <button ng-show="permissions.canSaveObject" ng-click="saveObject()" class="save">{{namespace + '.ACTION_SAVE' | translate}}</button>
-    <button ng-show="permissions.canCloneObject" ng-click="cloneObject()" class="clone">{{namespace + '.ACTION_CLONE' | translate}}</button>
-    <button ng-click="cancel()" class="cancel">{{namespace + '.ACTION_CANCEL' | translate}}</button>
-    <button ng-show="permissions.canDeleteObject" ng-click="deleteObject()" class="danger delete">{{namespace + '.ACTION_DELETE' | translate}}</button>
+  <button class="save" ng-click="saveObject()" ng-show="permissions.canSaveObject">{{namespace +
+    '.ACTION_SAVE' | translate}}
+  </button>
+  <button class="clone" ng-click="cloneObject()" ng-show="permissions.canCloneObject">{{namespace +
+    '.ACTION_CLONE' | translate}}
+  </button>
+  <button class="cancel" ng-click="cancel()">{{namespace + '.ACTION_CANCEL' | translate}}</button>
+  <button class="danger delete" ng-click="deleteObject()" ng-show="permissions.canDeleteObject">
+    {{namespace + '.ACTION_DELETE' | translate}}
+  </button>
 </div>

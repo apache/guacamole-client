@@ -27,29 +27,27 @@ import org.apache.guacamole.environment.Environment;
  */
 public class EnvironmentModule extends AbstractModule {
 
-    /**
-     * The Guacamole server environment.
-     */
-    private final Environment environment;
+  /**
+   * The Guacamole server environment.
+   */
+  private final Environment environment;
 
-    /**
-     * Creates a new EnvironmentModule which will bind the given environment
-     * for future injection.
-     *
-     * @param environment
-     *     The environment to bind.
-     */
-    public EnvironmentModule(Environment environment) {
-        this.environment = environment;
-    }
+  /**
+   * Creates a new EnvironmentModule which will bind the given environment for future injection.
+   *
+   * @param environment The environment to bind.
+   */
+  public EnvironmentModule(Environment environment) {
+    this.environment = environment;
+  }
 
-    @Override
-    protected void configure() {
+  @Override
+  protected void configure() {
 
-        // Bind environment
-        bind(Environment.class).toInstance(environment);
+    // Bind environment
+    bind(Environment.class).toInstance(environment);
 
-    }
+  }
 
 }
 

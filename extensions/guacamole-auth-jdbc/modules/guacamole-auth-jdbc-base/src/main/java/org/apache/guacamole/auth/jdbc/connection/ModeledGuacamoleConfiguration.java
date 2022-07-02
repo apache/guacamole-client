@@ -25,91 +25,85 @@ import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 
 /**
- * Implementation of GuacamoleConfiguration which loads parameter values only
- * if necessary, and only if allowed.
+ * Implementation of GuacamoleConfiguration which loads parameter values only if necessary, and only
+ * if allowed.
  */
 public class ModeledGuacamoleConfiguration extends GuacamoleConfiguration {
 
-    /**
-     * The user this configuration belongs to. Access is based on his/her
-     * permission settings.
-     */
-    private ModeledAuthenticatedUser currentUser;
+  /**
+   * The user this configuration belongs to. Access is based on his/her permission settings.
+   */
+  private ModeledAuthenticatedUser currentUser;
 
-    /**
-     * The internal model object containing the values which represent the
-     * connection associated with this configuration.
-     */
-    private ConnectionModel connectionModel;
+  /**
+   * The internal model object containing the values which represent the connection associated with
+   * this configuration.
+   */
+  private ConnectionModel connectionModel;
 
-    /**
-     * Service for managing connection parameters.
-     */
-    @Inject
-    private ConnectionService connectionService;
+  /**
+   * Service for managing connection parameters.
+   */
+  @Inject
+  private ConnectionService connectionService;
 
-    /**
-     * The manually-set parameter map, if any.
-     */
-    private Map<String, String> parameters = null;
-    
-    /**
-     * Creates a new, empty ModelGuacamoleConfiguration.
-     */
-    public ModeledGuacamoleConfiguration() {
-    }
+  /**
+   * The manually-set parameter map, if any.
+   */
+  private Map<String, String> parameters = null;
 
-    /**
-     * Initializes this configuration, associating it with the current
-     * authenticated user and populating it with data from the given model
-     * object.
-     *
-     * @param currentUser
-     *     The user that created or retrieved this configuration.
-     *
-     * @param connectionModel 
-     *     The model object backing this configuration.
-     */
-    public void init(ModeledAuthenticatedUser currentUser, ConnectionModel connectionModel) {
-        this.currentUser = currentUser;
-        this.connectionModel = connectionModel;
-    }
+  /**
+   * Creates a new, empty ModelGuacamoleConfiguration.
+   */
+  public ModeledGuacamoleConfiguration() {
+  }
 
-    @Override
-    public String getProtocol() {
-        return connectionModel.getProtocol();
-    }
+  /**
+   * Initializes this configuration, associating it with the current authenticated user and
+   * populating it with data from the given model object.
+   *
+   * @param currentUser     The user that created or retrieved this configuration.
+   * @param connectionModel The model object backing this configuration.
+   */
+  public void init(ModeledAuthenticatedUser currentUser, ConnectionModel connectionModel) {
+    this.currentUser = currentUser;
+    this.connectionModel = connectionModel;
+  }
 
-    @Override
-    public void setProtocol(String protocol) {
-        super.setProtocol(protocol);
-        connectionModel.setProtocol(protocol);
-    }
+  @Override
+  public String getProtocol() {
+    return connectionModel.getProtocol();
+  }
 
+  @Override
+  public void setProtocol(String protocol) {
+    super.setProtocol(protocol);
+    connectionModel.setProtocol(protocol);
+  }
 
-    @Override
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-        super.setParameters(parameters);
-    }
+  @Override
+  public Map<String, String> getParameters() {
 
-    @Override
-    public Map<String, String> getParameters() {
+    // Retrieve visible parameters, if not overridden by setParameters()
+    if (parameters == null) {
 
-        // Retrieve visible parameters, if not overridden by setParameters()
-        if (parameters == null) {
+      // Retrieve all visible parameters
+      Map<String, String> visibleParameters =
+          connectionService.retrieveParameters(currentUser, connectionModel.getIdentifier());
 
-            // Retrieve all visible parameters
-            Map<String, String> visibleParameters =
-                    connectionService.retrieveParameters(currentUser, connectionModel.getIdentifier());
-
-            // Use retrieved parameters to back future operations
-            super.setParameters(visibleParameters);
-
-        }
-
-        return super.getParameters();
+      // Use retrieved parameters to back future operations
+      super.setParameters(visibleParameters);
 
     }
+
+    return super.getParameters();
+
+  }
+
+  @Override
+  public void setParameters(Map<String, String> parameters) {
+    this.parameters = parameters;
+    super.setParameters(parameters);
+  }
 
 }

@@ -26,25 +26,19 @@ import org.apache.ibatis.annotations.Param;
  * Mapper for sharing profile objects.
  */
 public interface SharingProfileMapper
-        extends ModeledDirectoryObjectMapper<SharingProfileModel> {
+    extends ModeledDirectoryObjectMapper<SharingProfileModel> {
 
-    /**
-     * Selects the sharing profile associated with the given primary connection
-     * and having the given name. If no such sharing profile exists, null is
-     * returned.
-     *
-     * @param parentIdentifier
-     *     The identifier of the primary connection to search against.
-     *
-     * @param name
-     *     The name of the sharing profile to find.
-     *
-     * @return
-     *     The sharing profile having the given name and associated with the
-     *     given primary connection, or null if no such sharing profile exists.
-     */
-    SharingProfileModel selectOneByName(
-            @Param("parentIdentifier") String parentIdentifier,
-            @Param("name") String name);
-    
+  /**
+   * Selects the sharing profile associated with the given primary connection and having the given
+   * name. If no such sharing profile exists, null is returned.
+   *
+   * @param parentIdentifier The identifier of the primary connection to search against.
+   * @param name             The name of the sharing profile to find.
+   * @return The sharing profile having the given name and associated with the given primary
+   * connection, or null if no such sharing profile exists.
+   */
+  SharingProfileModel selectOneByName(
+      @Param("parentIdentifier") String parentIdentifier,
+      @Param("name") String name);
+
 }

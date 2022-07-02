@@ -19,30 +19,31 @@
 
 package org.apache.guacamole.auth.header;
 
-import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 
 /**
- * Provides properties required for use of the HTTP header 
- * authentication provider. These properties will be read from 
- * guacamole.properties when the HTTP authentication provider is used.
+ * Provides properties required for use of the HTTP header authentication provider. These properties
+ * will be read from guacamole.properties when the HTTP authentication provider is used.
  */
 public class HTTPHeaderGuacamoleProperties {
 
-    /**
-     * This class should not be instantiated.
-     */
-    private HTTPHeaderGuacamoleProperties() {}
+  /**
+   * The header used for HTTP header authentication.
+   */
+  public static final StringGuacamoleProperty HTTP_AUTH_HEADER = new StringGuacamoleProperty() {
 
-    /**
-     * The header used for HTTP header authentication.
-     */
-    public static final StringGuacamoleProperty HTTP_AUTH_HEADER = new StringGuacamoleProperty() {
+    @Override
+    public String getName() {
+      return "http-auth-header";
+    }
 
-        @Override
-        public String getName() { return "http-auth-header"; }
+  };
 
-    };
+  /**
+   * This class should not be instantiated.
+   */
+  private HTTPHeaderGuacamoleProperties() {
+  }
 
 }

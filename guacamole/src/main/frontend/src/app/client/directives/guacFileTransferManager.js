@@ -20,30 +20,33 @@
 /**
  * Directive which displays all active file transfers.
  */
-angular.module('client').directive('guacFileTransferManager', [function guacFileTransferManager() {
+angular.module('client').directive('guacFileTransferManager',
+    [function guacFileTransferManager() {
 
-    return {
+      return {
         restrict: 'E',
         replace: true,
         scope: {
 
-            /**
-             * The client group whose file transfers should be managed by this
-             * directive.
-             * 
-             * @type ManagedClientGroup
-             */
-            clientGroup : '='
+          /**
+           * The client group whose file transfers should be managed by this
+           * directive.
+           *
+           * @type ManagedClientGroup
+           */
+          clientGroup: '='
 
         },
 
         templateUrl: 'app/client/templates/guacFileTransferManager.html',
-        controller: ['$scope', '$injector', function guacFileTransferManagerController($scope, $injector) {
+        controller: ['$scope', '$injector',
+          function guacFileTransferManagerController($scope, $injector) {
 
             // Required types
-            const ManagedClient            = $injector.get('ManagedClient');
-            const ManagedClientGroup       = $injector.get('ManagedClientGroup');
-            const ManagedFileTransferState = $injector.get('ManagedFileTransferState');
+            const ManagedClient = $injector.get('ManagedClient');
+            const ManagedClientGroup = $injector.get('ManagedClientGroup');
+            const ManagedFileTransferState = $injector.get(
+                'ManagedFileTransferState');
 
             /**
              * Determines whether the given file transfer state indicates an
@@ -57,18 +60,18 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
              *     progress transfer, false otherwise.
              */
             var isInProgress = function isInProgress(transferState) {
-                switch (transferState.streamState) {
+              switch (transferState.streamState) {
 
-                    // IDLE or OPEN file transfers are active
-                    case ManagedFileTransferState.StreamState.IDLE:
-                    case ManagedFileTransferState.StreamState.OPEN:
-                        return true;
+                  // IDLE or OPEN file transfers are active
+                case ManagedFileTransferState.StreamState.IDLE:
+                case ManagedFileTransferState.StreamState.OPEN:
+                  return true;
 
-                    // All others are not active
-                    default:
-                        return false;
+                  // All others are not active
+                default:
+                  return false;
 
-                }
+              }
             };
 
             /**
@@ -76,16 +79,18 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
              */
             $scope.clearCompletedTransfers = function clearCompletedTransfers() {
 
-                // Nothing to clear if no client group attached
-                if (!$scope.clientGroup)
-                    return;
+              // Nothing to clear if no client group attached
+              if (!$scope.clientGroup) {
+                return;
+              }
 
-                // Remove completed uploads
-                $scope.clientGroup.clients.forEach(client =>  {
-                    client.uploads = client.uploads.filter(function isUploadInProgress(upload) {
-                        return isInProgress(upload.transferState);
+              // Remove completed uploads
+              $scope.clientGroup.clients.forEach(client => {
+                client.uploads = client.uploads.filter(
+                    function isUploadInProgress(upload) {
+                      return isInProgress(upload.transferState);
                     });
-                });
+              });
 
             };
 
@@ -99,7 +104,7 @@ angular.module('client').directive('guacFileTransferManager', [function guacFile
              */
             $scope.hasTransfers = ManagedClient.hasTransfers;
 
-        }]
+          }]
 
-    };
-}]);
+      };
+    }]);

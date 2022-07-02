@@ -18,55 +18,55 @@
  */
 
 #filesystem-menu .header h2 {
-    font-size: 1em;
-    font-weight: normal;
-    padding-top: 0;
-    padding-bottom: 0;
+  font-size: 1em;
+  font-weight: normal;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 #filesystem-menu .header {
-    -ms-flex-align:      center;
-    -moz-box-align:      center;
-    -webkit-box-align:   center;
-    -webkit-align-items: center;
-    align-items:         center;
+  -ms-flex-align: center;
+  -moz-box-align: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
 }
 
 #filesystem-menu .menu-body {
-    padding: 0.25em;
+  padding: 0.25em;
 }
 
 #filesystem-menu .header.breadcrumbs {
-    display: block;
-    background: rgba(0,0,0,0.0125);
-    border-bottom: 1px solid rgba(0,0,0,0.05);
-    box-shadow: none;
-    margin-top: 0;
-    border-top: none;
+  display: block;
+  background: rgba(0, 0, 0, 0.0125);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: none;
+  margin-top: 0;
+  border-top: none;
 }
 
 #filesystem-menu .header.breadcrumbs .breadcrumb {
-    display: inline-block;
-    padding: 0.5em;
-    font-size: 0.8em;
-    font-weight: bold;
+  display: inline-block;
+  padding: 0.5em;
+  font-size: 0.8em;
+  font-weight: bold;
 }
 
 #filesystem-menu .header.breadcrumbs .breadcrumb:hover {
-    background-color: #CDA;
-    cursor: pointer;
+  background-color: #CDA;
+  cursor: pointer;
 }
 
 #filesystem-menu .header.breadcrumbs .breadcrumb.root {
-    background-size:         1.5em 1.5em;
-    -moz-background-size:    1.5em 1.5em;
-    -webkit-background-size: 1.5em 1.5em;
-    -khtml-background-size:  1.5em 1.5em;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-image: url('images/drive.svg');
-    width: 2em;
-    height: 2em;
-    padding: 0;
-    vertical-align: middle;
+  background-size: 1.5em 1.5em;
+  -moz-background-size: 1.5em 1.5em;
+  -webkit-background-size: 1.5em 1.5em;
+  -khtml-background-size: 1.5em 1.5em;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-image: url('images/drive.svg');
+  width: 2em;
+  height: 2em;
+  padding: 0;
+  vertical-align: middle;
 }

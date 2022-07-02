@@ -20,58 +20,52 @@
 package org.apache.guacamole.resource;
 
 /**
- * Base abstract resource implementation which provides an associated mimetype,
- * and modification time. Classes which extend AbstractResource must provide
- * their own InputStream, however.
+ * Base abstract resource implementation which provides an associated mimetype, and modification
+ * time. Classes which extend AbstractResource must provide their own InputStream, however.
  */
 public abstract class AbstractResource implements Resource {
 
-    /**
-     * The mimetype of this resource.
-     */
-    private final String mimetype;
+  /**
+   * The mimetype of this resource.
+   */
+  private final String mimetype;
 
-    /**
-     * The time this resource was last modified, in milliseconds since midnight
-     * of January 1, 1970 UTC.
-     */
-    private final long lastModified;
+  /**
+   * The time this resource was last modified, in milliseconds since midnight of January 1, 1970
+   * UTC.
+   */
+  private final long lastModified;
 
-    /**
-     * Initializes this AbstractResource with the given mimetype and
-     * modification time.
-     *
-     * @param mimetype
-     *     The mimetype of this resource.
-     *
-     * @param lastModified
-     *     The time this resource was last modified, in milliseconds since
-     *     midnight of January 1, 1970 UTC.
-     */
-    public AbstractResource(String mimetype, long lastModified) {
-        this.mimetype = mimetype;
-        this.lastModified = lastModified;
-    }
+  /**
+   * Initializes this AbstractResource with the given mimetype and modification time.
+   *
+   * @param mimetype     The mimetype of this resource.
+   * @param lastModified The time this resource was last modified, in milliseconds since midnight of
+   *                     January 1, 1970 UTC.
+   */
+  public AbstractResource(String mimetype, long lastModified) {
+    this.mimetype = mimetype;
+    this.lastModified = lastModified;
+  }
 
-    /**
-     * Initializes this AbstractResource with the given mimetype. The
-     * modification time of the resource is set to the current system time.
-     *
-     * @param mimetype
-     *     The mimetype of this resource.
-     */
-    public AbstractResource(String mimetype) {
-        this(mimetype, System.currentTimeMillis());
-    }
+  /**
+   * Initializes this AbstractResource with the given mimetype. The modification time of the
+   * resource is set to the current system time.
+   *
+   * @param mimetype The mimetype of this resource.
+   */
+  public AbstractResource(String mimetype) {
+    this(mimetype, System.currentTimeMillis());
+  }
 
-    @Override
-    public long getLastModified() {
-        return lastModified;
-    }
+  @Override
+  public long getLastModified() {
+    return lastModified;
+  }
 
-    @Override
-    public String getMimeType() {
-        return mimetype;
-    }
+  @Override
+  public String getMimeType() {
+    return mimetype;
+  }
 
 }

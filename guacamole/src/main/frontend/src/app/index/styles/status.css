@@ -18,25 +18,25 @@
  */
 
 .global-status-modal guac-modal {
-    background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .global-status-modal .notification {
 
-    width: 75%;
-    max-width: 5in;
-    margin-left: auto;
-    margin-right: auto;
-    overflow: auto;
+  width: 75%;
+  max-width: 5in;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: auto;
 
-    text-align: left;
-    
+  text-align: left;
+
 }
 
 .global-status-modal .notification .body {
-    margin: 1.25em;
+  margin: 1.25em;
 }
 
 .global-status-modal .notification .buttons {
-    margin: 1em;
+  margin: 1em;
 }

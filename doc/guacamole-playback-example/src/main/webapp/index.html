@@ -19,47 +19,47 @@
 -->
 <html>
 
-    <head>
-        <title>Guacamole Recording Playback (EXAMPLE)</title>
-        <meta charset="utf-8">
-        <link rel="stylesheet" type="text/css" href="playback.css">
-    </head>
+<head>
+  <title>Guacamole Recording Playback (EXAMPLE)</title>
+  <meta charset="utf-8">
+  <link href="playback.css" rel="stylesheet" type="text/css">
+</head>
 
-    <body>
+<body>
 
-        <!-- Guacamole recording player -->
-        <div id="player">
+<!-- Guacamole recording player -->
+<div id="player">
 
-            <!-- Player display -->
-            <div id="display">
-                <div class="notification-container">
-                    <div class="seek-notification">
-                        <p>
-                            Seek in progress...
-                            <button id="cancel-seek">Cancel</button>
-                        </p>
-                    </div>
-                </div>
-            </div>
+  <!-- Player display -->
+  <div id="display">
+    <div class="notification-container">
+      <div class="seek-notification">
+        <p>
+          Seek in progress...
+          <button id="cancel-seek">Cancel</button>
+        </p>
+      </div>
+    </div>
+  </div>
 
-            <!-- Player controls -->
-            <div class="controls">
-                <button id="play-pause">Play</button>
-                <input id="position-slider" type="range">
-                <span id="position">00:00</span>
-                <span>/</span>
-                <span id="duration">00:00</span>
-            </div>
+  <!-- Player controls -->
+  <div class="controls">
+    <button id="play-pause">Play</button>
+    <input id="position-slider" type="range">
+    <span id="position">00:00</span>
+    <span>/</span>
+    <span id="duration">00:00</span>
+  </div>
 
-        </div>
+</div>
 
-        <!-- Guacamole JavaScript API -->
-        <script type="text/javascript"
-            src="guacamole-common-js/all.min.js"></script>
+<!-- Guacamole JavaScript API -->
+<script src="guacamole-common-js/all.min.js"
+        type="text/javascript"></script>
 
-        <!-- -->
-        <script type="text/javascript" src="playback.js"></script>
+<!-- -->
+<script src="playback.js" type="text/javascript"></script>
 
-    </body>
+</body>
 
 </html>

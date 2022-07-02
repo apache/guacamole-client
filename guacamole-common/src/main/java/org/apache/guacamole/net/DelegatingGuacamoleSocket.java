@@ -24,61 +24,58 @@ import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;
 
 /**
- * GuacamoleSocket implementation which simply delegates all function calls to
- * an underlying GuacamoleSocket.
+ * GuacamoleSocket implementation which simply delegates all function calls to an underlying
+ * GuacamoleSocket.
  */
 public class DelegatingGuacamoleSocket implements GuacamoleSocket {
 
-    /**
-     * The wrapped socket.
-     */
-    private final GuacamoleSocket socket;
+  /**
+   * The wrapped socket.
+   */
+  private final GuacamoleSocket socket;
 
-    /**
-     * Wraps the given GuacamoleSocket such that all function calls against
-     * this DelegatingGuacamoleSocket will be delegated to it.
-     *
-     * @param socket
-     *     The GuacamoleSocket to wrap.
-     */
-    public DelegatingGuacamoleSocket(GuacamoleSocket socket) {
-        this.socket = socket;
-    }
+  /**
+   * Wraps the given GuacamoleSocket such that all function calls against this
+   * DelegatingGuacamoleSocket will be delegated to it.
+   *
+   * @param socket The GuacamoleSocket to wrap.
+   */
+  public DelegatingGuacamoleSocket(GuacamoleSocket socket) {
+    this.socket = socket;
+  }
 
-    /**
-     * Returns the underlying GuacamoleSocket wrapped by this
-     * DelegatingGuacamoleSocket.
-     *
-     * @return
-     *     The GuacamoleSocket wrapped by this DelegatingGuacamoleSocket.
-     */
-    protected GuacamoleSocket getDelegateSocket() {
-        return socket;
-    }
+  /**
+   * Returns the underlying GuacamoleSocket wrapped by this DelegatingGuacamoleSocket.
+   *
+   * @return The GuacamoleSocket wrapped by this DelegatingGuacamoleSocket.
+   */
+  protected GuacamoleSocket getDelegateSocket() {
+    return socket;
+  }
 
-    @Override
-    public String getProtocol() {
-        return socket.getProtocol();
-    }
+  @Override
+  public String getProtocol() {
+    return socket.getProtocol();
+  }
 
-    @Override
-    public GuacamoleReader getReader() {
-        return socket.getReader();
-    }
+  @Override
+  public GuacamoleReader getReader() {
+    return socket.getReader();
+  }
 
-    @Override
-    public GuacamoleWriter getWriter() {
-        return socket.getWriter();
-    }
+  @Override
+  public GuacamoleWriter getWriter() {
+    return socket.getWriter();
+  }
 
-    @Override
-    public void close() throws GuacamoleException {
-        socket.close();
-    }
+  @Override
+  public void close() throws GuacamoleException {
+    socket.close();
+  }
 
-    @Override
-    public boolean isOpen() {
-        return socket.isOpen();
-    }
+  @Override
+  public boolean isOpen() {
+    return socket.isOpen();
+  }
 
 }

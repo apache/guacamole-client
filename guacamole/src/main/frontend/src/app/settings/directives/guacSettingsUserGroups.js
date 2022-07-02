@@ -21,29 +21,30 @@
  * A directive for managing all user groups in the system.
  */
 angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
-    function guacSettingsUserGroups($injector) {
+  function guacSettingsUserGroups($injector) {
 
     // Required types
     var ManageableUserGroup = $injector.get('ManageableUserGroup');
-    var PermissionSet       = $injector.get('PermissionSet');
-    var SortOrder           = $injector.get('SortOrder');
+    var PermissionSet = $injector.get('PermissionSet');
+    var SortOrder = $injector.get('SortOrder');
 
     // Required services
-    var $location              = $injector.get('$location');
-    var authenticationService  = $injector.get('authenticationService');
-    var dataSourceService      = $injector.get('dataSourceService');
-    var permissionService      = $injector.get('permissionService');
-    var requestService         = $injector.get('requestService');
-    var userGroupService       = $injector.get('userGroupService');
+    var $location = $injector.get('$location');
+    var authenticationService = $injector.get('authenticationService');
+    var dataSourceService = $injector.get('dataSourceService');
+    var permissionService = $injector.get('permissionService');
+    var requestService = $injector.get('requestService');
+    var userGroupService = $injector.get('userGroupService');
 
     var directive = {
-        restrict    : 'E',
-        replace     : true,
-        templateUrl : 'app/settings/templates/settingsUserGroups.html',
-        scope       : {}
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'app/settings/templates/settingsUserGroups.html',
+      scope: {}
     };
 
-    directive.controller = ['$scope', function settingsUserGroupsController($scope) {
+    directive.controller = ['$scope',
+      function settingsUserGroupsController($scope) {
 
         // Identifier of the current user
         var currentUsername = authenticationService.getCurrentUsername();
@@ -79,7 +80,7 @@ angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
          * @type String[]
          */
         $scope.filteredUserGroupProperties = [
-            'userGroup.identifier'
+          'userGroup.identifier'
         ];
 
         /**
@@ -89,7 +90,7 @@ angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
          * @type SortOrder
          */
         $scope.order = new SortOrder([
-            'userGroup.identifier'
+          'userGroup.identifier'
         ]);
 
         /**
@@ -100,7 +101,7 @@ angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
          *     interface to be useful, false otherwise.
          */
         $scope.isLoaded = function isLoaded() {
-            return $scope.manageableUserGroups !== null;
+          return $scope.manageableUserGroups !== null;
         };
 
         /**
@@ -114,27 +115,31 @@ angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
          */
         $scope.getDefaultDataSource = function getDefaultDataSource() {
 
-            // Abort if permissions have not yet loaded
-            if (!permissions)
-                return null;
+          // Abort if permissions have not yet loaded
+          if (!permissions) {
+            return null;
+          }
 
-            // For each data source
-            var dataSources = _.keys(permissions).sort();
-            for (var i = 0; i < dataSources.length; i++) {
+          // For each data source
+          var dataSources = _.keys(permissions).sort();
+          for (var i = 0; i < dataSources.length; i++) {
 
-                // Retrieve corresponding permission set
-                var dataSource = dataSources[i];
-                var permissionSet = permissions[dataSource];
+            // Retrieve corresponding permission set
+            var dataSource = dataSources[i];
+            var permissionSet = permissions[dataSource];
 
-                // Can create user groups if adminstrator or have explicit permission
-                if (PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.ADMINISTER)
-                 || PermissionSet.hasSystemPermission(permissionSet, PermissionSet.SystemPermissionType.CREATE_USER_GROUP))
-                    return dataSource;
-
+            // Can create user groups if adminstrator or have explicit permission
+            if (PermissionSet.hasSystemPermission(permissionSet,
+                    PermissionSet.SystemPermissionType.ADMINISTER)
+                || PermissionSet.hasSystemPermission(permissionSet,
+                    PermissionSet.SystemPermissionType.CREATE_USER_GROUP)) {
+              return dataSource;
             }
 
-            // No data sources allow user group creation
-            return null;
+          }
+
+          // No data sources allow user group creation
+          return null;
 
         };
 
@@ -147,7 +152,7 @@ angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
          *     least one data source, false otherwise.
          */
         $scope.canCreateUserGroups = function canCreateUserGroups() {
-            return $scope.getDefaultDataSource() !== null;
+          return $scope.getDefaultDataSource() !== null;
         };
 
         /**
@@ -163,29 +168,34 @@ angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
          */
         var canManageUserGroups = function canManageUserGroups() {
 
-            // Abort if permissions have not yet loaded
-            if (!permissions)
-                return false;
+          // Abort if permissions have not yet loaded
+          if (!permissions) {
+            return false;
+          }
 
-            // Creating user groups counts as management
-            if ($scope.canCreateUserGroups())
-                return true;
+          // Creating user groups counts as management
+          if ($scope.canCreateUserGroups()) {
+            return true;
+          }
 
-            // For each data source
-            for (var dataSource in permissions) {
+          // For each data source
+          for (var dataSource in permissions) {
 
-                // Retrieve corresponding permission set
-                var permissionSet = permissions[dataSource];
+            // Retrieve corresponding permission set
+            var permissionSet = permissions[dataSource];
 
-                // Can manage user groups if granted explicit update or delete
-                if (PermissionSet.hasUserGroupPermission(permissionSet, PermissionSet.ObjectPermissionType.UPDATE)
-                 || PermissionSet.hasUserGroupPermission(permissionSet, PermissionSet.ObjectPermissionType.DELETE))
-                    return true;
-
+            // Can manage user groups if granted explicit update or delete
+            if (PermissionSet.hasUserGroupPermission(permissionSet,
+                    PermissionSet.ObjectPermissionType.UPDATE)
+                || PermissionSet.hasUserGroupPermission(permissionSet,
+                    PermissionSet.ObjectPermissionType.DELETE)) {
+              return true;
             }
 
-            // No data sources allow management of user groups
-            return false;
+          }
+
+          // No data sources allow management of user groups
+          return false;
 
         };
 
@@ -204,34 +214,46 @@ angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
          *     were retrieved and each value is a map of user group identifiers
          *     to their corresponding @link{UserGroup} objects.
          */
-        var setDisplayedUserGroups = function setDisplayedUserGroups(permissions, userGroups) {
+        var setDisplayedUserGroups = function setDisplayedUserGroups(permissions,
+            userGroups) {
 
-            var addedUserGroups = {};
-            $scope.manageableUserGroups = [];
+          var addedUserGroups = {};
+          $scope.manageableUserGroups = [];
 
-            // For each user group in each data source
-            angular.forEach(dataSources, function addUserGroupList(dataSource) {
-                angular.forEach(userGroups[dataSource], function addUserGroup(userGroup) {
+          // For each user group in each data source
+          angular.forEach(dataSources, function addUserGroupList(dataSource) {
+            angular.forEach(userGroups[dataSource],
+                function addUserGroup(userGroup) {
 
-                    // Do not add the same user group twice
-                    if (addedUserGroups[userGroup.identifier])
-                        return;
+                  // Do not add the same user group twice
+                  if (addedUserGroups[userGroup.identifier]) {
+                    return;
+                  }
 
-                    // Link to default creation data source if we cannot manage this user
-                    if (!PermissionSet.hasSystemPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.ADMINISTER)
-                     && !PermissionSet.hasUserGroupPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.UPDATE, userGroup.identifier)
-                     && !PermissionSet.hasUserGroupPermission(permissions[dataSource], PermissionSet.ObjectPermissionType.DELETE, userGroup.identifier))
-                        dataSource = $scope.getDefaultDataSource();
+                  // Link to default creation data source if we cannot manage this user
+                  if (!PermissionSet.hasSystemPermission(
+                          permissions[dataSource],
+                          PermissionSet.ObjectPermissionType.ADMINISTER)
+                      && !PermissionSet.hasUserGroupPermission(
+                          permissions[dataSource],
+                          PermissionSet.ObjectPermissionType.UPDATE,
+                          userGroup.identifier)
+                      && !PermissionSet.hasUserGroupPermission(
+                          permissions[dataSource],
+                          PermissionSet.ObjectPermissionType.DELETE,
+                          userGroup.identifier)) {
+                    dataSource = $scope.getDefaultDataSource();
+                  }
 
-                    // Add user group to overall list
-                    addedUserGroups[userGroup.identifier] = userGroup;
-                    $scope.manageableUserGroups.push(new ManageableUserGroup ({
-                        'dataSource' : dataSource,
-                        'userGroup'  : userGroup
-                    }));
+                  // Add user group to overall list
+                  addedUserGroups[userGroup.identifier] = userGroup;
+                  $scope.manageableUserGroups.push(new ManageableUserGroup({
+                    'dataSource': dataSource,
+                    'userGroup': userGroup
+                  }));
 
                 });
-            });
+          });
 
         };
 
@@ -243,30 +265,34 @@ angular.module('settings').directive('guacSettingsUserGroups', ['$injector',
         )
         .then(function permissionsRetrieved(retrievedPermissions) {
 
-            // Store retrieved permissions
-            permissions = retrievedPermissions;
+          // Store retrieved permissions
+          permissions = retrievedPermissions;
 
-            // Return to home if there's nothing to do here
-            if (!canManageUserGroups())
-                $location.path('/');
+          // Return to home if there's nothing to do here
+          if (!canManageUserGroups()) {
+            $location.path('/');
+          }
 
-            // If user groups can be created, list all readable user groups
-            if ($scope.canCreateUserGroups())
-                return dataSourceService.apply(userGroupService.getUserGroups, dataSources);
+          // If user groups can be created, list all readable user groups
+          if ($scope.canCreateUserGroups()) {
+            return dataSourceService.apply(userGroupService.getUserGroups,
+                dataSources);
+          }
 
-            // Otherwise, list only updateable/deletable users
-            return dataSourceService.apply(userGroupService.getUserGroups, dataSources, [
+          // Otherwise, list only updateable/deletable users
+          return dataSourceService.apply(userGroupService.getUserGroups,
+              dataSources, [
                 PermissionSet.ObjectPermissionType.UPDATE,
                 PermissionSet.ObjectPermissionType.DELETE
-            ]);
+              ]);
 
         })
         .then(function userGroupsReceived(userGroups) {
-            setDisplayedUserGroups(permissions, userGroups);
+          setDisplayedUserGroups(permissions, userGroups);
         }, requestService.WARN);
 
-    }];
+      }];
 
     return directive;
-    
-}]);
+
+  }]);

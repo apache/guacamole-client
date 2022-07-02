@@ -30,180 +30,159 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 
 /**
- * Service which provides convenience methods for creating, retrieving, and
- * manipulating objects that can be children of other objects. This service will
- * automatically enforce the permissions of the current user.
+ * Service which provides convenience methods for creating, retrieving, and manipulating objects
+ * that can be children of other objects. This service will automatically enforce the permissions of
+ * the current user.
  *
- * @param <InternalType>
- *     The specific internal implementation of the type of object this service
- *     provides access to.
- *
- * @param <ExternalType>
- *     The external interface or implementation of the type of object this
- *     service provides access to, as defined by the guacamole-ext API.
- *
- * @param <ModelType>
- *     The underlying model object used to represent InternalType in the
- *     database.
+ * @param <InternalType> The specific internal implementation of the type of object this service
+ *                       provides access to.
+ * @param <ExternalType> The external interface or implementation of the type of object this service
+ *                       provides access to, as defined by the guacamole-ext API.
+ * @param <ModelType>    The underlying model object used to represent InternalType in the
+ *                       database.
  */
 public abstract class ModeledChildDirectoryObjectService<InternalType extends ModeledChildDirectoryObject<ModelType>,
-        ExternalType extends Identifiable, ModelType extends ChildObjectModel>
-        extends ModeledDirectoryObjectService<InternalType, ExternalType, ModelType> {
+    ExternalType extends Identifiable, ModelType extends ChildObjectModel>
+    extends ModeledDirectoryObjectService<InternalType, ExternalType, ModelType> {
 
-    /**
-     * Returns the permission set associated with the given user and related
-     * to the type of objects which can be parents of the child objects handled
-     * by this directory object service, taking into account permission
-     * inheritance via user groups.
-     *
-     * @param user
-     *     The user whose permissions are being retrieved.
-     *
-     * @return
-     *     A permission set which contains the permissions associated with the
-     *     given user and related to the type of objects which can be parents
-     *     of the child objects handled by this directory object service.
-     *
-     * @throws GuacamoleException
-     *     If permission to read the user's permissions is denied.
-     */
-    protected abstract ObjectPermissionSet getParentEffectivePermissionSet(
-            ModeledAuthenticatedUser user) throws GuacamoleException;
+  /**
+   * Returns the permission set associated with the given user and related to the type of objects
+   * which can be parents of the child objects handled by this directory object service, taking into
+   * account permission inheritance via user groups.
+   *
+   * @param user The user whose permissions are being retrieved.
+   * @return A permission set which contains the permissions associated with the given user and
+   * related to the type of objects which can be parents of the child objects handled by this
+   * directory object service.
+   * @throws GuacamoleException If permission to read the user's permissions is denied.
+   */
+  protected abstract ObjectPermissionSet getParentEffectivePermissionSet(
+      ModeledAuthenticatedUser user) throws GuacamoleException;
 
-    /**
-     * Returns the set of parent objects that are modified by the given model
-     * object (by virtue of the object changing parents). If the model is not
-     * changing parents, the resulting collection will be empty.
-     *
-     * @param user
-     *     The user making the given changes to the model.
-     *
-     * @param identifier
-     *     The identifier of the object that has been modified, if it exists.
-     *     If the object is being created, this will be null.
-     *
-     * @param model
-     *     The model that has been modified, if any. If the object is being
-     *     deleted, this will be null.
-     *
-     * @return
-     *     A collection of the identifiers of all parents that will be affected
-     *     (updated) by the change.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while determining which parents are affected.
-     */
-    protected Collection<String> getModifiedParents(ModeledAuthenticatedUser user,
-            String identifier, ModelType model) throws GuacamoleException {
+  /**
+   * Returns the set of parent objects that are modified by the given model object (by virtue of the
+   * object changing parents). If the model is not changing parents, the resulting collection will
+   * be empty.
+   *
+   * @param user       The user making the given changes to the model.
+   * @param identifier The identifier of the object that has been modified, if it exists. If the
+   *                   object is being created, this will be null.
+   * @param model      The model that has been modified, if any. If the object is being deleted,
+   *                   this will be null.
+   * @return A collection of the identifiers of all parents that will be affected (updated) by the
+   * change.
+   * @throws GuacamoleException If an error occurs while determining which parents are affected.
+   */
+  protected Collection<String> getModifiedParents(ModeledAuthenticatedUser user,
+      String identifier, ModelType model) throws GuacamoleException {
 
-        // Get old parent identifier
-        String oldParentIdentifier = null;
-        if (identifier != null) {
-            ModelType current = retrieveObject(user, identifier).getModel();
-            oldParentIdentifier = current.getParentIdentifier();
-        }
+    // Get old parent identifier
+    String oldParentIdentifier = null;
+    if (identifier != null) {
+      ModelType current = retrieveObject(user, identifier).getModel();
+      oldParentIdentifier = current.getParentIdentifier();
+    }
 
-        // Get new parent identifier
-        String parentIdentifier = null;
-        if (model != null) {
+    // Get new parent identifier
+    String parentIdentifier = null;
+    if (model != null) {
 
-            parentIdentifier = model.getParentIdentifier();
+      parentIdentifier = model.getParentIdentifier();
 
-            // If both parents have the same identifier, nothing has changed
-            if (parentIdentifier != null && parentIdentifier.equals(oldParentIdentifier))
-                return Collections.<String>emptyList();
-
-        }
-
-        // Return collection of all non-root parents involved
-        Collection<String> parents = new ArrayList<String>(2);
-        if (oldParentIdentifier != null) parents.add(oldParentIdentifier);
-        if (parentIdentifier    != null) parents.add(parentIdentifier);
-        return parents;
+      // If both parents have the same identifier, nothing has changed
+      if (parentIdentifier != null && parentIdentifier.equals(oldParentIdentifier)) {
+        return Collections.<String>emptyList();
+      }
 
     }
 
-    /**
-     * Returns whether the given user has permission to modify the parents
-     * affected by the modifications made to the given model object.
-     *
-     * @param user
-     *     The user who changed the model object.
-     *
-     * @param identifier
-     *     The identifier of the object that has been modified, if it exists.
-     *     If the object is being created, this will be null.
-     *
-     * @param model
-     *     The model that has been modified, if any. If the object is being
-     *     deleted, this will be null.
-     *
-     * @return
-     *     true if the user has update permission for all modified parents,
-     *     false otherwise.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while determining which parents are affected.
-     */
-    protected boolean canUpdateModifiedParents(ModeledAuthenticatedUser user,
-            String identifier, ModelType model) throws GuacamoleException {
+    // Return collection of all non-root parents involved
+    Collection<String> parents = new ArrayList<String>(2);
+    if (oldParentIdentifier != null) {
+      parents.add(oldParentIdentifier);
+    }
+    if (parentIdentifier != null) {
+      parents.add(parentIdentifier);
+    }
+    return parents;
 
-        // If user is privileged, no need to check
-        if (user.isPrivileged())
-            return true;
-        
-        // Verify that we have permission to modify any modified parents
-        Collection<String> modifiedParents = getModifiedParents(user, identifier, model);
-        if (!modifiedParents.isEmpty()) {
+  }
 
-            ObjectPermissionSet permissionSet = getParentEffectivePermissionSet(user);
-            Collection<String> updateableParents = permissionSet.getAccessibleObjects(
-                Collections.singleton(ObjectPermission.Type.UPDATE),
-                modifiedParents
-            );
+  /**
+   * Returns whether the given user has permission to modify the parents affected by the
+   * modifications made to the given model object.
+   *
+   * @param user       The user who changed the model object.
+   * @param identifier The identifier of the object that has been modified, if it exists. If the
+   *                   object is being created, this will be null.
+   * @param model      The model that has been modified, if any. If the object is being deleted,
+   *                   this will be null.
+   * @return true if the user has update permission for all modified parents, false otherwise.
+   * @throws GuacamoleException If an error occurs while determining which parents are affected.
+   */
+  protected boolean canUpdateModifiedParents(ModeledAuthenticatedUser user,
+      String identifier, ModelType model) throws GuacamoleException {
 
-            return updateableParents.size() == modifiedParents.size();
-            
-        }
+    // If user is privileged, no need to check
+    if (user.isPrivileged()) {
+      return true;
+    }
 
-        return true;
+    // Verify that we have permission to modify any modified parents
+    Collection<String> modifiedParents = getModifiedParents(user, identifier, model);
+    if (!modifiedParents.isEmpty()) {
+
+      ObjectPermissionSet permissionSet = getParentEffectivePermissionSet(user);
+      Collection<String> updateableParents = permissionSet.getAccessibleObjects(
+          Collections.singleton(ObjectPermission.Type.UPDATE),
+          modifiedParents
+      );
+
+      return updateableParents.size() == modifiedParents.size();
 
     }
 
-    @Override
-    protected void beforeCreate(ModeledAuthenticatedUser user,
-            ExternalType object, ModelType model) throws GuacamoleException {
+    return true;
 
-        super.beforeCreate(user, object, model);
-        
-        // Validate that we can update all applicable parents
-        if (!canUpdateModifiedParents(user, null, model))
-            throw new GuacamoleSecurityException("Permission denied.");
-        
+  }
+
+  @Override
+  protected void beforeCreate(ModeledAuthenticatedUser user,
+      ExternalType object, ModelType model) throws GuacamoleException {
+
+    super.beforeCreate(user, object, model);
+
+    // Validate that we can update all applicable parents
+    if (!canUpdateModifiedParents(user, null, model)) {
+      throw new GuacamoleSecurityException("Permission denied.");
     }
 
-    @Override
-    protected void beforeUpdate(ModeledAuthenticatedUser user,
-            InternalType object, ModelType model) throws GuacamoleException {
+  }
 
-        super.beforeUpdate(user, object, model);
+  @Override
+  protected void beforeUpdate(ModeledAuthenticatedUser user,
+      InternalType object, ModelType model) throws GuacamoleException {
 
-        // Validate that we can update all applicable parents
-        if (!canUpdateModifiedParents(user, model.getIdentifier(), model))
-            throw new GuacamoleSecurityException("Permission denied.");
-        
+    super.beforeUpdate(user, object, model);
+
+    // Validate that we can update all applicable parents
+    if (!canUpdateModifiedParents(user, model.getIdentifier(), model)) {
+      throw new GuacamoleSecurityException("Permission denied.");
     }
 
-    @Override
-    protected void beforeDelete(ModeledAuthenticatedUser user,
-            String identifier) throws GuacamoleException {
+  }
 
-        super.beforeDelete(user, identifier);
+  @Override
+  protected void beforeDelete(ModeledAuthenticatedUser user,
+      String identifier) throws GuacamoleException {
 
-        // Validate that we can update all applicable parents
-        if (!canUpdateModifiedParents(user, identifier, null))
-            throw new GuacamoleSecurityException("Permission denied.");
-        
+    super.beforeDelete(user, identifier);
+
+    // Validate that we can update all applicable parents
+    if (!canUpdateModifiedParents(user, identifier, null)) {
+      throw new GuacamoleSecurityException("Permission denied.");
     }
+
+  }
 
 }

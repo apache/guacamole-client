@@ -23,22 +23,22 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Basic implementation of an AuthenticatedUser which uses the username to
- * determine equality. Username comparison is case-sensitive.
+ * Basic implementation of an AuthenticatedUser which uses the username to determine equality.
+ * Username comparison is case-sensitive.
  */
 public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
-        implements AuthenticatedUser {
+    implements AuthenticatedUser {
 
-    // Prior functionality now resides within AbstractIdentifiable
+  // Prior functionality now resides within AbstractIdentifiable
 
-    @Override
-    public Set<String> getEffectiveUserGroups() {
-        return Collections.<String>emptySet();
-    }
+  @Override
+  public Set<String> getEffectiveUserGroups() {
+    return Collections.<String>emptySet();
+  }
 
-    @Override
-    public void invalidate() {
-        // Nothing to invalidate
-    }
+  @Override
+  public void invalidate() {
+    // Nothing to invalidate
+  }
 
 }

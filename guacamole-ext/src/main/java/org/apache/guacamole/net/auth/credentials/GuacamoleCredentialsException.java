@@ -22,74 +22,62 @@ package org.apache.guacamole.net.auth.credentials;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 
 /**
- * A security-related exception thrown when access is denied to a user because
- * of a problem related to the provided credentials. Additional information
- * describing the form of valid credentials is provided.
+ * A security-related exception thrown when access is denied to a user because of a problem related
+ * to the provided credentials. Additional information describing the form of valid credentials is
+ * provided.
  */
 public class GuacamoleCredentialsException extends GuacamoleUnauthorizedException {
 
-    /**
-     * Information describing the form of valid credentials.
-     */
-    private final CredentialsInfo credentialsInfo;
-    
-    /**
-     * Creates a new GuacamoleInvalidCredentialsException with the given
-     * message, cause, and associated credential information.
-     *
-     * @param message
-     *     A human readable description of the exception that occurred.
-     *
-     * @param cause
-     *     The cause of this exception.
-     *
-     * @param credentialsInfo
-     *     Information describing the form of valid credentials.
-     */
-    public GuacamoleCredentialsException(String message, Throwable cause,
-            CredentialsInfo credentialsInfo) {
-        super(message, cause);
-        this.credentialsInfo = credentialsInfo;
-    }
+  /**
+   * Information describing the form of valid credentials.
+   */
+  private final CredentialsInfo credentialsInfo;
 
-    /**
-     * Creates a new GuacamoleInvalidCredentialsException with the given
-     * message and associated credential information.
-     *
-     * @param message
-     *     A human readable description of the exception that occurred.
-     *
-     * @param credentialsInfo
-     *     Information describing the form of valid credentials.
-     */
-    public GuacamoleCredentialsException(String message, CredentialsInfo credentialsInfo) {
-        super(message);
-        this.credentialsInfo = credentialsInfo;
-    }
+  /**
+   * Creates a new GuacamoleInvalidCredentialsException with the given message, cause, and
+   * associated credential information.
+   *
+   * @param message         A human readable description of the exception that occurred.
+   * @param cause           The cause of this exception.
+   * @param credentialsInfo Information describing the form of valid credentials.
+   */
+  public GuacamoleCredentialsException(String message, Throwable cause,
+      CredentialsInfo credentialsInfo) {
+    super(message, cause);
+    this.credentialsInfo = credentialsInfo;
+  }
 
-    /**
-     * Creates a new GuacamoleInvalidCredentialsException with the given cause
-     * and associated credential information.
-     *
-     * @param cause
-     *     The cause of this exception.
-     *
-     * @param credentialsInfo
-     *     Information describing the form of valid credentials.
-     */
-    public GuacamoleCredentialsException(Throwable cause, CredentialsInfo credentialsInfo) {
-        super(cause);
-        this.credentialsInfo = credentialsInfo;
-    }
+  /**
+   * Creates a new GuacamoleInvalidCredentialsException with the given message and associated
+   * credential information.
+   *
+   * @param message         A human readable description of the exception that occurred.
+   * @param credentialsInfo Information describing the form of valid credentials.
+   */
+  public GuacamoleCredentialsException(String message, CredentialsInfo credentialsInfo) {
+    super(message);
+    this.credentialsInfo = credentialsInfo;
+  }
 
-    /**
-     * Returns information describing the form of valid credentials.
-     *
-     * @return
-     *     Information describing the form of valid credentials.
-     */
-    public CredentialsInfo getCredentialsInfo() {
-        return credentialsInfo;
-    }
+  /**
+   * Creates a new GuacamoleInvalidCredentialsException with the given cause and associated
+   * credential information.
+   *
+   * @param cause           The cause of this exception.
+   * @param credentialsInfo Information describing the form of valid credentials.
+   */
+  public GuacamoleCredentialsException(Throwable cause, CredentialsInfo credentialsInfo) {
+    super(cause);
+    this.credentialsInfo = credentialsInfo;
+  }
+
+  /**
+   * Returns information describing the form of valid credentials.
+   *
+   * @return Information describing the form of valid credentials.
+   */
+  public CredentialsInfo getCredentialsInfo() {
+    return credentialsInfo;
+  }
 
 }

@@ -22,56 +22,52 @@ package org.apache.guacamole.rest.user;
  * All the information necessary for the password update operation on a user.
  */
 public class APIUserPasswordUpdate {
-    
-    /**
-     * The old (current) password of this user.
-     */
-    private String oldPassword;
-    
-    /**
-     * The new password of this user.
-     */
-    private String newPassword;
 
-    /**
-     * Returns the old password for this user. This password must match the
-     * user's current password for the password update operation to succeed.
-     *
-     * @return
-     *     The old password for this user.
-     */
-    public String getOldPassword() {
-        return oldPassword;
-    }
+  /**
+   * The old (current) password of this user.
+   */
+  private String oldPassword;
 
-    /**
-     * Set the old password for this user. This password must match the
-     * user's current password for the password update operation to succeed.
-     *
-     * @param oldPassword
-     *     The old password for this user.
-     */
-    public void setOldPassword(String oldPassword) {
-        this.oldPassword = oldPassword;
-    }
+  /**
+   * The new password of this user.
+   */
+  private String newPassword;
 
-    /**
-     * Returns the new password that will be assigned to this user.
-     *
-     * @return
-     *     The new password for this user.
-     */
-    public String getNewPassword() {
-        return newPassword;
-    }
+  /**
+   * Returns the old password for this user. This password must match the user's current password
+   * for the password update operation to succeed.
+   *
+   * @return The old password for this user.
+   */
+  public String getOldPassword() {
+    return oldPassword;
+  }
 
-    /**
-     * Set the new password that will be assigned to this user.
-     *
-     * @param newPassword
-     *     The new password for this user.
-     */
-    public void setNewPassword(String newPassword) {
-        this.newPassword = newPassword;
-    }
+  /**
+   * Set the old password for this user. This password must match the user's current password for
+   * the password update operation to succeed.
+   *
+   * @param oldPassword The old password for this user.
+   */
+  public void setOldPassword(String oldPassword) {
+    this.oldPassword = oldPassword;
+  }
+
+  /**
+   * Returns the new password that will be assigned to this user.
+   *
+   * @return The new password for this user.
+   */
+  public String getNewPassword() {
+    return newPassword;
+  }
+
+  /**
+   * Set the new password that will be assigned to this user.
+   *
+   * @param newPassword The new password for this user.
+   */
+  public void setNewPassword(String newPassword) {
+    this.newPassword = newPassword;
+  }
 }

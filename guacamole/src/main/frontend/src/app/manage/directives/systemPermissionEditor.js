@@ -25,75 +25,76 @@
  * password/attributes) may also be manipulated.
  */
 angular.module('manage').directive('systemPermissionEditor', ['$injector',
-    function systemPermissionEditor($injector) {
+  function systemPermissionEditor($injector) {
 
     // Required services
     var authenticationService = $injector.get('authenticationService');
-    var dataSourceService     = $injector.get('dataSourceService');
-    var permissionService     = $injector.get('permissionService');
-    var requestService        = $injector.get('requestService');
+    var dataSourceService = $injector.get('dataSourceService');
+    var permissionService = $injector.get('permissionService');
+    var requestService = $injector.get('requestService');
 
     // Required types
     var PermissionSet = $injector.get('PermissionSet');
 
     var directive = {
 
-        // Element only
-        restrict: 'E',
-        replace: true,
+      // Element only
+      restrict: 'E',
+      replace: true,
 
-        scope: {
+      scope: {
 
-            /**
-             * The unique identifier of the data source associated with the
-             * permissions being manipulated.
-             *
-             * @type String
-             */
-            dataSource : '=',
+        /**
+         * The unique identifier of the data source associated with the
+         * permissions being manipulated.
+         *
+         * @type String
+         */
+        dataSource: '=',
 
-            /**
-             * The username of the user whose self-update permission (whether
-             * the user has permission to update their own user account) should
-             * be additionally controlled by this editor. If no such user
-             * permissions should be controlled, this should be left undefined.
-             *
-             * @type String
-             */
-            username : '=',
+        /**
+         * The username of the user whose self-update permission (whether
+         * the user has permission to update their own user account) should
+         * be additionally controlled by this editor. If no such user
+         * permissions should be controlled, this should be left undefined.
+         *
+         * @type String
+         */
+        username: '=',
 
-            /**
-             * The current state of the permissions being manipulated. This
-             * {@link PemissionFlagSet} will be modified as changes are made
-             * through this permission editor.
-             *
-             * @type PermissionFlagSet
-             */
-            permissionFlags : '=',
+        /**
+         * The current state of the permissions being manipulated. This
+         * {@link PemissionFlagSet} will be modified as changes are made
+         * through this permission editor.
+         *
+         * @type PermissionFlagSet
+         */
+        permissionFlags: '=',
 
-            /**
-             * The set of permissions that have been added, relative to the
-             * initial state of the permissions being manipulated.
-             *
-             * @type PermissionSet
-             */
-            permissionsAdded : '=',
+        /**
+         * The set of permissions that have been added, relative to the
+         * initial state of the permissions being manipulated.
+         *
+         * @type PermissionSet
+         */
+        permissionsAdded: '=',
 
-            /**
-             * The set of permissions that have been removed, relative to the
-             * initial state of the permissions being manipulated.
-             *
-             * @type PermissionSet
-             */
-            permissionsRemoved : '='
+        /**
+         * The set of permissions that have been removed, relative to the
+         * initial state of the permissions being manipulated.
+         *
+         * @type PermissionSet
+         */
+        permissionsRemoved: '='
 
-        },
+      },
 
-        templateUrl: 'app/manage/templates/systemPermissionEditor.html'
+      templateUrl: 'app/manage/templates/systemPermissionEditor.html'
 
     };
 
-    directive.controller = ['$scope', function systemPermissionEditorController($scope) {
+    directive.controller = ['$scope',
+      function systemPermissionEditorController($scope) {
 
         /**
          * The identifiers of all data sources currently available to the
@@ -117,30 +118,30 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
          * @type Object[]
          */
         $scope.systemPermissionTypes = [
-            {
-                label: "MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
-                value: PermissionSet.SystemPermissionType.ADMINISTER
-            },
-            {
-                label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
-                value: PermissionSet.SystemPermissionType.CREATE_USER
-            },
-            {
-                label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
-                value: PermissionSet.SystemPermissionType.CREATE_USER_GROUP
-            },
-            {
-                label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
-                value: PermissionSet.SystemPermissionType.CREATE_CONNECTION
-            },
-            {
-                label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
-                value: PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP
-            },
-            {
-                label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
-                value: PermissionSet.SystemPermissionType.CREATE_SHARING_PROFILE
-            }
+          {
+            label: "MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+            value: PermissionSet.SystemPermissionType.ADMINISTER
+          },
+          {
+            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+            value: PermissionSet.SystemPermissionType.CREATE_USER
+          },
+          {
+            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+            value: PermissionSet.SystemPermissionType.CREATE_USER_GROUP
+          },
+          {
+            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+            value: PermissionSet.SystemPermissionType.CREATE_CONNECTION
+          },
+          {
+            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+            value: PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP
+          },
+          {
+            label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+            value: PermissionSet.SystemPermissionType.CREATE_SHARING_PROFILE
+          }
         ];
 
         // Query the permissions granted to the currently-authenticated user
@@ -150,7 +151,7 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
             currentUsername
         )
         .then(function permissionsReceived(permissions) {
-            $scope.permissions = permissions;
+          $scope.permissions = permissions;
         }, requestService.DIE);
 
         /**
@@ -163,13 +164,15 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
          */
         $scope.canChangeSystemPermissions = function canChangeSystemPermissions() {
 
-            // Do not check if permissions are not yet loaded
-            if (!$scope.permissions)
-                return false;
+          // Do not check if permissions are not yet loaded
+          if (!$scope.permissions) {
+            return false;
+          }
 
-            // Only the administrator can modify system permissions
-            return PermissionSet.hasSystemPermission($scope.permissions[$scope.dataSource],
-                PermissionSet.SystemPermissionType.ADMINISTER);
+          // Only the administrator can modify system permissions
+          return PermissionSet.hasSystemPermission(
+              $scope.permissions[$scope.dataSource],
+              PermissionSet.SystemPermissionType.ADMINISTER);
 
         };
 
@@ -183,13 +186,15 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
          */
         var addSystemPermission = function addSystemPermission(type) {
 
-            // If permission was previously removed, simply un-remove it
-            if (PermissionSet.hasSystemPermission($scope.permissionsRemoved, type))
-                PermissionSet.removeSystemPermission($scope.permissionsRemoved, type);
-
-            // Otherwise, explicitly add the permission
-            else
-                PermissionSet.addSystemPermission($scope.permissionsAdded, type);
+          // If permission was previously removed, simply un-remove it
+          if (PermissionSet.hasSystemPermission($scope.permissionsRemoved,
+              type)) {
+            PermissionSet.removeSystemPermission($scope.permissionsRemoved,
+                type);
+          }// Otherwise, explicitly add the permission
+          else {
+            PermissionSet.addSystemPermission($scope.permissionsAdded, type);
+          }
 
         };
 
@@ -203,13 +208,14 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
          */
         var removeSystemPermission = function removeSystemPermission(type) {
 
-            // If permission was previously added, simply un-add it
-            if (PermissionSet.hasSystemPermission($scope.permissionsAdded, type))
-                PermissionSet.removeSystemPermission($scope.permissionsAdded, type);
-
-            // Otherwise, explicitly remove the permission
-            else
-                PermissionSet.addSystemPermission($scope.permissionsRemoved, type);
+          // If permission was previously added, simply un-add it
+          if (PermissionSet.hasSystemPermission($scope.permissionsAdded,
+              type)) {
+            PermissionSet.removeSystemPermission($scope.permissionsAdded, type);
+          }// Otherwise, explicitly remove the permission
+          else {
+            PermissionSet.addSystemPermission($scope.permissionsRemoved, type);
+          }
 
         };
 
@@ -223,14 +229,15 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
          */
         $scope.systemPermissionChanged = function systemPermissionChanged(type) {
 
-            // Determine current permission setting
-            var granted = $scope.permissionFlags.systemPermissions[type];
+          // Determine current permission setting
+          var granted = $scope.permissionFlags.systemPermissions[type];
 
-            // Add/remove permission depending on flag state
-            if (granted)
-                addSystemPermission(type);
-            else
-                removeSystemPermission(type);
+          // Add/remove permission depending on flag state
+          if (granted) {
+            addSystemPermission(type);
+          } else {
+            removeSystemPermission(type);
+          }
 
         };
 
@@ -247,13 +254,16 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
          */
         var addUserPermission = function addUserPermission(type, identifier) {
 
-            // If permission was previously removed, simply un-remove it
-            if (PermissionSet.hasUserPermission($scope.permissionsRemoved, type, identifier))
-                PermissionSet.removeUserPermission($scope.permissionsRemoved, type, identifier);
-
-            // Otherwise, explicitly add the permission
-            else
-                PermissionSet.addUserPermission($scope.permissionsAdded, type, identifier);
+          // If permission was previously removed, simply un-remove it
+          if (PermissionSet.hasUserPermission($scope.permissionsRemoved, type,
+              identifier)) {
+            PermissionSet.removeUserPermission($scope.permissionsRemoved, type,
+                identifier);
+          }// Otherwise, explicitly add the permission
+          else {
+            PermissionSet.addUserPermission($scope.permissionsAdded, type,
+                identifier);
+          }
 
         };
 
@@ -269,15 +279,19 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
          *     The identifier of the user affected by the permission being
          *     removed.
          */
-        var removeUserPermission = function removeUserPermission(type, identifier) {
+        var removeUserPermission = function removeUserPermission(type,
+            identifier) {
 
-            // If permission was previously added, simply un-add it
-            if (PermissionSet.hasUserPermission($scope.permissionsAdded, type, identifier))
-                PermissionSet.removeUserPermission($scope.permissionsAdded, type, identifier);
-
-            // Otherwise, explicitly remove the permission
-            else
-                PermissionSet.addUserPermission($scope.permissionsRemoved, type, identifier);
+          // If permission was previously added, simply un-add it
+          if (PermissionSet.hasUserPermission($scope.permissionsAdded, type,
+              identifier)) {
+            PermissionSet.removeUserPermission($scope.permissionsAdded, type,
+                identifier);
+          }// Otherwise, explicitly remove the permission
+          else {
+            PermissionSet.addUserPermission($scope.permissionsRemoved, type,
+                identifier);
+          }
 
         };
 
@@ -292,21 +306,23 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
          * @param {String} identifier
          *     The identifier of the user affected by the changed permission.
          */
-        $scope.userPermissionChanged = function userPermissionChanged(type, identifier) {
+        $scope.userPermissionChanged = function userPermissionChanged(type,
+            identifier) {
 
-            // Determine current permission setting
-            var granted = $scope.permissionFlags.userPermissions[type][identifier];
+          // Determine current permission setting
+          var granted = $scope.permissionFlags.userPermissions[type][identifier];
 
-            // Add/remove permission depending on flag state
-            if (granted)
-                addUserPermission(type, identifier);
-            else
-                removeUserPermission(type, identifier);
+          // Add/remove permission depending on flag state
+          if (granted) {
+            addUserPermission(type, identifier);
+          } else {
+            removeUserPermission(type, identifier);
+          }
 
         };
 
-    }];
+      }];
 
     return directive;
 
-}]);
+  }]);

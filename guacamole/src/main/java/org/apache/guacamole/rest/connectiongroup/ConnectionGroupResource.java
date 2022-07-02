@@ -37,82 +37,68 @@ import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
- * A REST resource which abstracts the operations available on an existing
- * ConnectionGroup.
+ * A REST resource which abstracts the operations available on an existing ConnectionGroup.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConnectionGroupResource
-        extends DirectoryObjectResource<ConnectionGroup, APIConnectionGroup> {
+    extends DirectoryObjectResource<ConnectionGroup, APIConnectionGroup> {
 
-    /**
-     * The UserContext associated with the Directory which contains the
-     * ConnectionGroup exposed by this resource.
-     */
-    private final UserContext userContext;
+  /**
+   * The UserContext associated with the Directory which contains the ConnectionGroup exposed by
+   * this resource.
+   */
+  private final UserContext userContext;
 
-    /**
-     * The ConnectionGroup object represented by this ConnectionGroupResource.
-     */
-    private final ConnectionGroup connectionGroup;
+  /**
+   * The ConnectionGroup object represented by this ConnectionGroupResource.
+   */
+  private final ConnectionGroup connectionGroup;
 
-    /**
-     * Creates a new ConnectionGroupResource which exposes the operations and
-     * subresources available for the given ConnectionGroup.
-     *
-     * @param userContext
-     *     The UserContext associated with the given Directory.
-     *
-     * @param directory
-     *     The Directory which contains the given ConnectionGroup.
-     *
-     * @param connectionGroup
-     *     The ConnectionGroup that this ConnectionGroupResource should
-     *     represent.
-     *
-     * @param translator
-     *     A DirectoryObjectTranslator implementation which handles the type of
-     *     object given.
-     */
-    @AssistedInject
-    public ConnectionGroupResource(@Assisted UserContext userContext,
-            @Assisted Directory<ConnectionGroup> directory,
-            @Assisted ConnectionGroup connectionGroup,
-            DirectoryObjectTranslator<ConnectionGroup, APIConnectionGroup> translator) {
-        super(userContext, directory, connectionGroup, translator);
-        this.userContext = userContext;
-        this.connectionGroup = connectionGroup;
-    }
+  /**
+   * Creates a new ConnectionGroupResource which exposes the operations and subresources available
+   * for the given ConnectionGroup.
+   *
+   * @param userContext     The UserContext associated with the given Directory.
+   * @param directory       The Directory which contains the given ConnectionGroup.
+   * @param connectionGroup The ConnectionGroup that this ConnectionGroupResource should represent.
+   * @param translator      A DirectoryObjectTranslator implementation which handles the type of
+   *                        object given.
+   */
+  @AssistedInject
+  public ConnectionGroupResource(@Assisted UserContext userContext,
+      @Assisted Directory<ConnectionGroup> directory,
+      @Assisted ConnectionGroup connectionGroup,
+      DirectoryObjectTranslator<ConnectionGroup, APIConnectionGroup> translator) {
+    super(userContext, directory, connectionGroup, translator);
+    this.userContext = userContext;
+    this.connectionGroup = connectionGroup;
+  }
 
-    /**
-     * Returns the current connection group along with all descendants.
-     *
-     * @param permissions
-     *     If specified and non-empty, limit the returned list to only those
-     *     connections for which the current user has any of the given
-     *     permissions. Otherwise, all visible connections are returned.
-     *     ConnectionGroups are unaffected by this parameter.
-     *
-     * @return
-     *     The current connection group, including all descendants.
-     *
-     * @throws GuacamoleException
-     *     If a problem is encountered while retrieving the connection group or
-     *     its descendants.
-     */
-    @GET
-    @Path("tree")
-    public APIConnectionGroup getConnectionGroupTree(
-            @QueryParam("permission") List<ObjectPermission.Type> permissions)
-            throws GuacamoleException {
+  /**
+   * Returns the current connection group along with all descendants.
+   *
+   * @param permissions If specified and non-empty, limit the returned list to only those
+   *                    connections for which the current user has any of the given permissions.
+   *                    Otherwise, all visible connections are returned. ConnectionGroups are
+   *                    unaffected by this parameter.
+   * @return The current connection group, including all descendants.
+   * @throws GuacamoleException If a problem is encountered while retrieving the connection group or
+   *                            its descendants.
+   */
+  @GET
+  @Path("tree")
+  public APIConnectionGroup getConnectionGroupTree(
+      @QueryParam("permission") List<ObjectPermission.Type> permissions)
+      throws GuacamoleException {
 
-        // Retrieve the requested tree, filtering by the given permissions
-        ConnectionGroupTree tree = new ConnectionGroupTree(userContext,
-                connectionGroup, permissions);
+    // Retrieve the requested tree, filtering by the given permissions
+    ConnectionGroupTree tree = new ConnectionGroupTree(userContext,
+        connectionGroup, permissions);
 
-        // Return tree as a connection group
-        return tree.getRootAPIConnectionGroup();
+    // Return tree as a connection group
+    return tree.getRootAPIConnectionGroup();
 
-    }
+  }
 
 }

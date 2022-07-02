@@ -18,30 +18,30 @@
  */
 
 .login-ui .login-dialog .login-fields input {
-    display: block;
-    border: 1px solid rgba(0, 0, 0, 0.25);
-    -moz-border-radius: 0.2em;
-    -webkit-border-radius: 0.2em;
-    -khtml-border-radius: 0.2em;
-    font-family: Carlito, FreeSans, Helvetica, Arial, sans-serif;
-    border-radius: 0.2em;
-    width: 100%;
-    margin: 0;
-    margin-bottom: 0.5em;
-    padding: 0.5em 0.75em;
-    max-width: none;
+  display: block;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  -moz-border-radius: 0.2em;
+  -webkit-border-radius: 0.2em;
+  -khtml-border-radius: 0.2em;
+  font-family: Carlito, FreeSans, Helvetica, Arial, sans-serif;
+  border-radius: 0.2em;
+  width: 100%;
+  margin: 0;
+  margin-bottom: 0.5em;
+  padding: 0.5em 0.75em;
+  max-width: none;
 }
 
 .login-ui .login-dialog .buttons input[type="submit"] {
-    width: 100%;
-    margin: 0;
+  width: 100%;
+  margin: 0;
 }
 
 .login-ui.continuation .login-dialog .buttons input[type="submit"] {
-    width: auto;
+  width: auto;
 }
 
 .login-ui.initial .login-dialog input.continue-login,
 .login-ui.continuation .login-dialog input.login {
-    display: none;
+  display: none;
 }

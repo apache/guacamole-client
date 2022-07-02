@@ -17,36 +17,38 @@
  * under the License.
  */
 
-
 /**
  * Controller for the language field type. The language field type allows the
  * user to select a language from the set of languages supported by the
  * Guacamole web application.
  */
-angular.module('form').controller('languageFieldController', ['$scope', '$injector',
-    function languageFieldController($scope, $injector) {
+angular.module('form').controller('languageFieldController',
+    ['$scope', '$injector',
+      function languageFieldController($scope, $injector) {
 
-    // Required services
-    var languageService = $injector.get('languageService');
-    var requestService  = $injector.get('requestService');
+        // Required services
+        var languageService = $injector.get('languageService');
+        var requestService = $injector.get('requestService');
 
-    /**
-     * A map of all available language keys to their human-readable
-     * names.
-     *
-     * @type Object.<String, String>
-     */
-    $scope.languages = null;
+        /**
+         * A map of all available language keys to their human-readable
+         * names.
+         *
+         * @type Object.<String, String>
+         */
+        $scope.languages = null;
 
-    // Retrieve defined languages
-    languageService.getLanguages().then(function languagesRetrieved(languages) {
-        $scope.languages = languages;
-    }, requestService.DIE);
+        // Retrieve defined languages
+        languageService.getLanguages().then(
+            function languagesRetrieved(languages) {
+              $scope.languages = languages;
+            }, requestService.DIE);
 
-    // Interpret undefined/null as empty string
-    $scope.$watch('model', function setModel(model) {
-        if (!model && model !== '')
+        // Interpret undefined/null as empty string
+        $scope.$watch('model', function setModel(model) {
+          if (!model && model !== '') {
             $scope.model = '';
-    });
+          }
+        });
 
-}]);
+      }]);

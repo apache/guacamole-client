@@ -20,28 +20,30 @@
 /**
  * Provides the NotificationProgress class definition.
  */
-angular.module('notification').factory('NotificationProgress', [function defineNotificationProgress() {
+angular.module('notification').factory('NotificationProgress',
+    [function defineNotificationProgress() {
 
-    /**
-     * Creates a new NotificationProgress which describes the current status
-     * of an operation, and how much of that operation remains to be performed.
-     *
-     * @constructor
-     * @param {String} text The text describing the operation progress.
-     *
-     * @param {Number} value
-     *     The current state of operation progress, as an arbitrary number
-     *     which increases as the operation continues.
-     *
-     * @param {String} [unit]
-     *     The unit of the arbitrary value, if that value has an associated
-     *     unit.
-     *
-     * @param {Number} [ratio]
-     *     If known, the current status of the operation as a value between 0
-     *     and 1 inclusive, where 0 is not yet started, and 1 is complete.
-     */
-    var NotificationProgress = function NotificationProgress(text, value, unit, ratio) {
+      /**
+       * Creates a new NotificationProgress which describes the current status
+       * of an operation, and how much of that operation remains to be performed.
+       *
+       * @constructor
+       * @param {String} text The text describing the operation progress.
+       *
+       * @param {Number} value
+       *     The current state of operation progress, as an arbitrary number
+       *     which increases as the operation continues.
+       *
+       * @param {String} [unit]
+       *     The unit of the arbitrary value, if that value has an associated
+       *     unit.
+       *
+       * @param {Number} [ratio]
+       *     If known, the current status of the operation as a value between 0
+       *     and 1 inclusive, where 0 is not yet started, and 1 is complete.
+       */
+      var NotificationProgress = function NotificationProgress(text, value,
+          unit, ratio) {
 
         /**
          * The text describing the operation progress. For the sake of i18n,
@@ -77,8 +79,8 @@ angular.module('notification').factory('NotificationProgress', [function defineN
          */
         this.ratio = ratio;
 
-    };
+      };
 
-    return NotificationProgress;
+      return NotificationProgress;
 
-}]);
+    }]);

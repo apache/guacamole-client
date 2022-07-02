@@ -27,35 +27,35 @@ import org.apache.guacamole.net.auth.ConnectionRecord;
 /**
  * An immutable and empty ConnectionRecordSet.
  *
- * @deprecated
- *     Use {@link SimpleActivityRecordSet}&lt;{@link ConnectionRecord}&gt;
- *     instead.
+ * @deprecated Use {@link SimpleActivityRecordSet}&lt;{@link ConnectionRecord}&gt; instead.
  */
 @Deprecated
-public class SimpleConnectionRecordSet implements org.apache.guacamole.net.auth.ConnectionRecordSet {
+public class SimpleConnectionRecordSet implements
+    org.apache.guacamole.net.auth.ConnectionRecordSet {
 
-    @Override
-    public Collection<ConnectionRecord> asCollection()
-            throws GuacamoleException {
-        return Collections.<ConnectionRecord>emptyList();
-    }
+  @Override
+  public Collection<ConnectionRecord> asCollection()
+      throws GuacamoleException {
+    return Collections.<ConnectionRecord>emptyList();
+  }
 
-    @Override
-    public org.apache.guacamole.net.auth.ConnectionRecordSet contains(String value)
-            throws GuacamoleException {
-        return this;
-    }
+  @Override
+  public org.apache.guacamole.net.auth.ConnectionRecordSet contains(String value)
+      throws GuacamoleException {
+    return this;
+  }
 
-    @Override
-    public org.apache.guacamole.net.auth.ConnectionRecordSet limit(int limit)
-            throws GuacamoleException {
-        return this;
-    }
+  @Override
+  public org.apache.guacamole.net.auth.ConnectionRecordSet limit(int limit)
+      throws GuacamoleException {
+    return this;
+  }
 
-    @Override
-    public org.apache.guacamole.net.auth.ConnectionRecordSet sort(SortableProperty property, boolean desc)
-            throws GuacamoleException {
-        return this;
-    }
+  @Override
+  public org.apache.guacamole.net.auth.ConnectionRecordSet sort(SortableProperty property,
+      boolean desc)
+      throws GuacamoleException {
+    return this;
+  }
 
 }

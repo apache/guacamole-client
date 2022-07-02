@@ -20,18 +20,19 @@
 /**
  * Provides the PageDefinition class definition.
  */
-angular.module('navigation').factory('PageDefinition', [function definePageDefinition() {
+angular.module('navigation').factory('PageDefinition',
+    [function definePageDefinition() {
 
-    /**
-     * Creates a new PageDefinition object which pairs the URL of a page with
-     * an arbitrary, human-readable name.
-     *
-     * @constructor
-     * @param {PageDefinition|Object} template
-     *     The object whose properties should be copied within the new
-     *     PageDefinition.
-     */
-    var PageDefinition = function PageDefinition(template) {
+      /**
+       * Creates a new PageDefinition object which pairs the URL of a page with
+       * an arbitrary, human-readable name.
+       *
+       * @constructor
+       * @param {PageDefinition|Object} template
+       *     The object whose properties should be copied within the new
+       *     PageDefinition.
+       */
+      var PageDefinition = function PageDefinition(template) {
 
         /**
          * The name of the page, which should be a translation table key.
@@ -68,8 +69,8 @@ angular.module('navigation').factory('PageDefinition', [function definePageDefin
          */
         this.weight = template.weight;
 
-    };
+      };
 
-    return PageDefinition;
+      return PageDefinition;
 
-}]);
+    }]);

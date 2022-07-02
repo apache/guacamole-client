@@ -22,11 +22,11 @@
  * "manage" module, which deals only with administrator-level system management.
  */
 angular.module('settings', [
-    'groupList',
-    'list',
-    'navigation',
-    'notification',
-    'player',
-    'rest',
-    'storage'
+  'groupList',
+  'list',
+  'navigation',
+  'notification',
+  'player',
+  'rest',
+  'storage'
 ]);

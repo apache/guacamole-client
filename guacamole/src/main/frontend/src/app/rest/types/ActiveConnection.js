@@ -20,20 +20,21 @@
 /**
  * Service which defines the ActiveConnection class.
  */
-angular.module('rest').factory('ActiveConnection', [function defineActiveConnection() {
-            
-    /**
-     * The object returned by REST API calls when representing the data
-     * associated with an active connection. Each active connection is
-     * effectively a pairing of a connection and the user currently using it,
-     * along with other information.
-     * 
-     * @constructor
-     * @param {ActiveConnection|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ActiveConnection.
-     */
-    var ActiveConnection = function ActiveConnection(template) {
+angular.module('rest').factory('ActiveConnection',
+    [function defineActiveConnection() {
+
+      /**
+       * The object returned by REST API calls when representing the data
+       * associated with an active connection. Each active connection is
+       * effectively a pairing of a connection and the user currently using it,
+       * along with other information.
+       *
+       * @constructor
+       * @param {ActiveConnection|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     ActiveConnection.
+       */
+      var ActiveConnection = function ActiveConnection(template) {
 
         // Use empty object by default
         template = template || {};
@@ -41,7 +42,7 @@ angular.module('rest').factory('ActiveConnection', [function defineActiveConnect
         /**
          * The identifier which uniquely identifies this specific active
          * connection.
-         * 
+         *
          * @type String
          */
         this.identifier = template.identifier;
@@ -58,7 +59,7 @@ angular.module('rest').factory('ActiveConnection', [function defineActiveConnect
          * The time that the connection began, in seconds since
          * 1970-01-01 00:00:00 UTC, if known.
          *
-         * @type Number 
+         * @type Number
          */
         this.startDate = template.startDate;
 
@@ -71,7 +72,7 @@ angular.module('rest').factory('ActiveConnection', [function defineActiveConnect
 
         /**
          * The username of the user associated with the connection, if known.
-         * 
+         *
          * @type String
          */
         this.username = template.username;
@@ -84,8 +85,8 @@ angular.module('rest').factory('ActiveConnection', [function defineActiveConnect
          */
         this.connectable = template.connectable;
 
-    };
+      };
 
-    return ActiveConnection;
+      return ActiveConnection;
 
-}]);
+    }]);

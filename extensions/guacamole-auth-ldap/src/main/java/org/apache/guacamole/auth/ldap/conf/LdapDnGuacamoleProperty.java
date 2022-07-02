@@ -26,25 +26,24 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
- * A GuacamoleProperty that converts a string to a Dn that can be used
- * in LDAP connections.  An exception is thrown if the provided DN is invalid
- * and cannot be parsed.
+ * A GuacamoleProperty that converts a string to a Dn that can be used in LDAP connections.  An
+ * exception is thrown if the provided DN is invalid and cannot be parsed.
  */
 public abstract class LdapDnGuacamoleProperty implements GuacamoleProperty<Dn> {
 
-    @Override
-    public Dn parseValue(String value) throws GuacamoleException {
+  @Override
+  public Dn parseValue(String value) throws GuacamoleException {
 
-        if (value == null)
-            return null;
-
-        try {
-            return new Dn(value);
-        }
-        catch (LdapInvalidDnException e) {
-            throw new GuacamoleServerException("The DN \"" + value + "\" is invalid.", e);
-        }
-
+    if (value == null) {
+      return null;
     }
+
+    try {
+      return new Dn(value);
+    } catch (LdapInvalidDnException e) {
+      throw new GuacamoleServerException("The DN \"" + value + "\" is invalid.", e);
+    }
+
+  }
 
 }

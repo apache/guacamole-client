@@ -31,47 +31,43 @@ import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.user.VaultUserContextFactory;
 
 /**
- * AuthenticationProvider implementation which automatically injects tokens
- * containing the values of secrets retrieved from a vault.
+ * AuthenticationProvider implementation which automatically injects tokens containing the values of
+ * secrets retrieved from a vault.
  */
 public abstract class VaultAuthenticationProvider
-        extends AbstractAuthenticationProvider {
+    extends AbstractAuthenticationProvider {
 
-    /**
-     * Factory for creating instances of the relevant vault-specific
-     * UserContext implementation.
-     */
-    private final VaultUserContextFactory userContextFactory;
+  /**
+   * Factory for creating instances of the relevant vault-specific UserContext implementation.
+   */
+  private final VaultUserContextFactory userContextFactory;
 
-    /**
-     * Creates a new VaultAuthenticationProvider which uses the given module to
-     * configure dependency injection.
-     *
-     * @param module
-     *     The module to use to configure dependency injection.
-     *
-     * @throws GuacamoleException
-     *     If the properties file containing vault-mapped Guacamole
-     *     configuration properties exists but cannot be read.
-     */
-    protected VaultAuthenticationProvider(VaultAuthenticationProviderModule module)
-            throws GuacamoleException {
+  /**
+   * Creates a new VaultAuthenticationProvider which uses the given module to configure dependency
+   * injection.
+   *
+   * @param module The module to use to configure dependency injection.
+   * @throws GuacamoleException If the properties file containing vault-mapped Guacamole
+   *                            configuration properties exists but cannot be read.
+   */
+  protected VaultAuthenticationProvider(VaultAuthenticationProviderModule module)
+      throws GuacamoleException {
 
-        Injector injector = Guice.createInjector(module);
-        this.userContextFactory = injector.getInstance(VaultUserContextFactory.class);
+    Injector injector = Guice.createInjector(module);
+    this.userContextFactory = injector.getInstance(VaultUserContextFactory.class);
 
-        // Automatically pull properties from vault
-        Environment environment = injector.getInstance(Environment.class);
-        VaultConfigurationService confService = injector.getInstance(VaultConfigurationService.class);
-        environment.addGuacamoleProperties(confService.getProperties());
-        
-    }
+    // Automatically pull properties from vault
+    Environment environment = injector.getInstance(Environment.class);
+    VaultConfigurationService confService = injector.getInstance(VaultConfigurationService.class);
+    environment.addGuacamoleProperties(confService.getProperties());
 
-    @Override
-    public UserContext decorate(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return userContextFactory.create(context);
-    }
+  }
+
+  @Override
+  public UserContext decorate(UserContext context,
+      AuthenticatedUser authenticatedUser, Credentials credentials)
+      throws GuacamoleException {
+    return userContextFactory.create(context);
+  }
 
 }

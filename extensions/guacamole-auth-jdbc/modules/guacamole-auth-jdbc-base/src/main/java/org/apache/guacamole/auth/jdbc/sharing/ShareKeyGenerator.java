@@ -20,18 +20,16 @@
 package org.apache.guacamole.auth.jdbc.sharing;
 
 /**
- * Produces unique keys that can be safely used for the automatically-generated
- * "sharing credentials" associated with a shared connection.
+ * Produces unique keys that can be safely used for the automatically-generated "sharing
+ * credentials" associated with a shared connection.
  */
 public interface ShareKeyGenerator {
-    
-    /**
-     * Returns a new share key, guaranteed to be unique from all previously-
-     * returned share keys.
-     * 
-     * @return
-     *     The new share key.
-     */
-    public String getShareKey();
+
+  /**
+   * Returns a new share key, guaranteed to be unique from all previously- returned share keys.
+   *
+   * @return The new share key.
+   */
+  public String getShareKey();
 
 }

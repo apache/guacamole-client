@@ -19,49 +19,48 @@
 
 package org.apache.guacamole.tunnel.websocket.jetty9;
 
+import org.apache.guacamole.tunnel.TunnelRequestService;
 import org.eclipse.jetty.websocket.api.UpgradeRequest;
 import org.eclipse.jetty.websocket.api.UpgradeResponse;
 import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
-import org.apache.guacamole.tunnel.TunnelRequestService;
 
 /**
- * WebSocketCreator which selects the appropriate WebSocketListener
- * implementation if the "guacamole" subprotocol is in use.
+ * WebSocketCreator which selects the appropriate WebSocketListener implementation if the
+ * "guacamole" subprotocol is in use.
  */
 public class RestrictedGuacamoleWebSocketCreator implements WebSocketCreator {
 
-    /**
-     * Service for handling tunnel requests.
-     */
-    private final TunnelRequestService tunnelRequestService;
+  /**
+   * Service for handling tunnel requests.
+   */
+  private final TunnelRequestService tunnelRequestService;
 
-    /**
-     * Creates a new WebSocketCreator which uses the given TunnelRequestService
-     * to create new GuacamoleTunnels for inbound requests.
-     *
-     * @param tunnelRequestService The service to use for inbound tunnel
-     *                             requests.
-     */
-    public RestrictedGuacamoleWebSocketCreator(TunnelRequestService tunnelRequestService) {
-        this.tunnelRequestService = tunnelRequestService;
-    }
+  /**
+   * Creates a new WebSocketCreator which uses the given TunnelRequestService to create new
+   * GuacamoleTunnels for inbound requests.
+   *
+   * @param tunnelRequestService The service to use for inbound tunnel requests.
+   */
+  public RestrictedGuacamoleWebSocketCreator(TunnelRequestService tunnelRequestService) {
+    this.tunnelRequestService = tunnelRequestService;
+  }
 
-    @Override
-    public Object createWebSocket(UpgradeRequest request, UpgradeResponse response) {
+  @Override
+  public Object createWebSocket(UpgradeRequest request, UpgradeResponse response) {
 
-        // Validate and use "guacamole" subprotocol
-        for (String subprotocol : request.getSubProtocols()) {
+    // Validate and use "guacamole" subprotocol
+    for (String subprotocol : request.getSubProtocols()) {
 
-            if ("guacamole".equals(subprotocol)) {
-                response.setAcceptedSubProtocol(subprotocol);
-                return new RestrictedGuacamoleWebSocketTunnelListener(tunnelRequestService);
-            }
-
-        }
-
-        // Invalid protocol
-        return null;
+      if ("guacamole".equals(subprotocol)) {
+        response.setAcceptedSubProtocol(subprotocol);
+        return new RestrictedGuacamoleWebSocketTunnelListener(tunnelRequestService);
+      }
 
     }
+
+    // Invalid protocol
+    return null;
+
+  }
 
 }

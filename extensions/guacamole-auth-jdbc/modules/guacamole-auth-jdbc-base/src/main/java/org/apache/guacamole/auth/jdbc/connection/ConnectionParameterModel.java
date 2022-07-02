@@ -24,79 +24,73 @@ package org.apache.guacamole.auth.jdbc.connection;
  */
 public class ConnectionParameterModel {
 
-    /**
-     * The identifier of the connection associated with this parameter.
-     */
-    private String connectionIdentifier;
+  /**
+   * The identifier of the connection associated with this parameter.
+   */
+  private String connectionIdentifier;
 
-    /**
-     * The name of the parameter.
-     */
-    private String name;
+  /**
+   * The name of the parameter.
+   */
+  private String name;
 
-    /**
-     * The value the parameter is set to.
-     */
-    private String value;
+  /**
+   * The value the parameter is set to.
+   */
+  private String value;
 
-    /**
-     * Returns the identifier of the connection associated with this parameter.
-     *
-     * @return
-     *     The identifier of the connection associated with this parameter.
-     */
-    public String getConnectionIdentifier() {
-        return connectionIdentifier;
-    }
+  /**
+   * Returns the identifier of the connection associated with this parameter.
+   *
+   * @return The identifier of the connection associated with this parameter.
+   */
+  public String getConnectionIdentifier() {
+    return connectionIdentifier;
+  }
 
-    /**
-     * Sets the identifier of the connection associated with this parameter.
-     *
-     * @param connectionIdentifier
-     *     The identifier of the connection to associate with this parameter.
-     */
-    public void setConnectionIdentifier(String connectionIdentifier) {
-        this.connectionIdentifier = connectionIdentifier;
-    }
+  /**
+   * Sets the identifier of the connection associated with this parameter.
+   *
+   * @param connectionIdentifier The identifier of the connection to associate with this parameter.
+   */
+  public void setConnectionIdentifier(String connectionIdentifier) {
+    this.connectionIdentifier = connectionIdentifier;
+  }
 
-    /**
-     * Returns the name of this parameter.
-     *
-     * @return
-     *     The name of this parameter.
-     */
-    public String getName() {
-        return name;
-    }
+  /**
+   * Returns the name of this parameter.
+   *
+   * @return The name of this parameter.
+   */
+  public String getName() {
+    return name;
+  }
 
-    /**
-     * Sets the name of this parameter.
-     *
-     * @param name
-     *     The name of this parameter.
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+  /**
+   * Sets the name of this parameter.
+   *
+   * @param name The name of this parameter.
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    /**
-     * Returns the value of this parameter.
-     *
-     * @return
-     *     The value of this parameter.
-     */
-    public String getValue() {
-        return value;
-    }
+  /**
+   * Returns the value of this parameter.
+   *
+   * @return The value of this parameter.
+   */
+  public String getValue() {
+    return value;
+  }
 
-    /**
-     * Sets the value of this parameter.
-     *
-     * @param value
-     *     The value of this parameter.
-     */
-    public void setValue(String value) {
-        this.value = value;
-    }
+  /**
+   * Sets the value of this parameter.
+   *
+   * @param value The value of this parameter.
+   */
+  public void setValue(String value) {
+    this.value = value;
+  }
 
 }

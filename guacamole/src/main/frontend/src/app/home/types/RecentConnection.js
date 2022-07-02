@@ -21,32 +21,33 @@
  * Provides the RecentConnection class used by the guacRecentConnections
  * directive.
  */
-angular.module('home').factory('RecentConnection', [function defineRecentConnection() {
+angular.module('home').factory('RecentConnection',
+    [function defineRecentConnection() {
 
-    /**
-     * A recently-user connection, visible to the current user, with an
-     * associated history entry.
-     * 
-     * @constructor
-     */
-    var RecentConnection = function RecentConnection(name, entry) {
+      /**
+       * A recently-user connection, visible to the current user, with an
+       * associated history entry.
+       *
+       * @constructor
+       */
+      var RecentConnection = function RecentConnection(name, entry) {
 
         /**
          * The human-readable name of this connection.
-         * 
+         *
          * @type String
          */
         this.name = name;
 
         /**
          * The history entry associated with this recent connection.
-         * 
+         *
          * @type HistoryEntry
          */
         this.entry = entry;
 
-    };
+      };
 
-    return RecentConnection;
+      return RecentConnection;
 
-}]);
+    }]);

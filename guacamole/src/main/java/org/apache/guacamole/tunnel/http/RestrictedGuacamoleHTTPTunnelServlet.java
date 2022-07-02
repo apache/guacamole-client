@@ -23,41 +23,40 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.tunnel.TunnelRequestService;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.servlet.GuacamoleHTTPTunnelServlet;
+import org.apache.guacamole.tunnel.TunnelRequestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Connects users to a tunnel associated with the authorized connection
- * having the given ID.
+ * Connects users to a tunnel associated with the authorized connection having the given ID.
  */
 @Singleton
 public class RestrictedGuacamoleHTTPTunnelServlet extends GuacamoleHTTPTunnelServlet {
 
-    /**
-     * Service for handling tunnel requests.
-     */
-    @Inject
-    private TunnelRequestService tunnelRequestService;
-    
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(RestrictedGuacamoleHTTPTunnelServlet.class);
+  /**
+   * Logger for this class.
+   */
+  private static final Logger logger = LoggerFactory.getLogger(
+      RestrictedGuacamoleHTTPTunnelServlet.class);
+  /**
+   * Service for handling tunnel requests.
+   */
+  @Inject
+  private TunnelRequestService tunnelRequestService;
 
-    @Override
-    protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
+  @Override
+  protected GuacamoleTunnel doConnect(HttpServletRequest request) throws GuacamoleException {
 
-        // Attempt to create HTTP tunnel
-        GuacamoleTunnel tunnel = tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
+    // Attempt to create HTTP tunnel
+    GuacamoleTunnel tunnel = tunnelRequestService.createTunnel(new HTTPTunnelRequest(request));
 
-        // If successful, warn of lack of WebSocket
-        logger.info("Using HTTP tunnel (not WebSocket). Performance may be sub-optimal.");
+    // If successful, warn of lack of WebSocket
+    logger.info("Using HTTP tunnel (not WebSocket). Performance may be sub-optimal.");
 
-        return tunnel;
+    return tunnel;
 
-    }
+  }
 
 }

@@ -18,8 +18,7 @@
  */
 
 /**
- * Classes which describe and provide access to arbitrary resources, such as
- * the contents of the classpath of a classloader, or files within the web
- * application itself.
+ * Classes which describe and provide access to arbitrary resources, such as the contents of the
+ * classpath of a classloader, or files within the web application itself.
  */
 package org.apache.guacamole.resource;

@@ -24,31 +24,28 @@ import com.google.inject.Singleton;
 import java.security.SecureRandom;
 
 /**
- * Generator of unique and unpredictable identifiers. Each generated identifier
- * is an arbitrary, random string produced using a cryptographically-secure
- * random number generator and consists of at least 256 bits.
+ * Generator of unique and unpredictable identifiers. Each generated identifier is an arbitrary,
+ * random string produced using a cryptographically-secure random number generator and consists of
+ * at least 256 bits.
  */
 @Singleton
 public class IdentifierGenerator {
 
-    /**
-     * Cryptographically-secure random number generator for generating unique
-     * identifiers.
-     */
-    private final SecureRandom secureRandom = new SecureRandom();
+  /**
+   * Cryptographically-secure random number generator for generating unique identifiers.
+   */
+  private final SecureRandom secureRandom = new SecureRandom();
 
-    /**
-     * Generates a unique and unpredictable identifier. Each identifier is at
-     * least 256-bit and produced using a cryptographically-secure random
-     * number generator.
-     *
-     * @return
-     *     A unique and unpredictable identifier.
-     */
-    public String generateIdentifier() {
-        byte[] bytes = new byte[33];
-        secureRandom.nextBytes(bytes);
-        return BaseEncoding.base64().encode(bytes);
-    }
+  /**
+   * Generates a unique and unpredictable identifier. Each identifier is at least 256-bit and
+   * produced using a cryptographically-secure random number generator.
+   *
+   * @return A unique and unpredictable identifier.
+   */
+  public String generateIdentifier() {
+    byte[] bytes = new byte[33];
+    secureRandom.nextBytes(bytes);
+    return BaseEncoding.base64().encode(bytes);
+  }
 
 }

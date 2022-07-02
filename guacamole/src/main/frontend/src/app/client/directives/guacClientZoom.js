@@ -21,65 +21,67 @@
  * A directive for controlling the zoom level and scale-to-fit behavior of a
  * a single Guacamole client.
  */
-angular.module('client').directive('guacClientZoom', [function guacClientZoom() {
+angular.module('client').directive('guacClientZoom',
+    [function guacClientZoom() {
 
-    const directive = {
+      const directive = {
         restrict: 'E',
         replace: true,
         templateUrl: 'app/client/templates/guacClientZoom.html'
-    };
+      };
 
-    directive.scope = {
+      directive.scope = {
 
         /**
          * The client to control the zoom/autofit of.
          *
          * @type ManagedClient
          */
-        client : '='
+        client: '='
 
-    };
+      };
 
-    directive.controller = ['$scope', '$injector', '$element',
-            function guacClientZoomController($scope, $injector, $element) {
+      directive.controller = ['$scope', '$injector', '$element',
+        function guacClientZoomController($scope, $injector, $element) {
 
-        /**
-         * Zooms in by 10%, automatically disabling autofit.
-         */
-        $scope.zoomIn = function zoomIn() {
+          /**
+           * Zooms in by 10%, automatically disabling autofit.
+           */
+          $scope.zoomIn = function zoomIn() {
             $scope.client.clientProperties.autoFit = false;
             $scope.client.clientProperties.scale += 0.1;
-        };
+          };
 
-        /**
-         * Zooms out by 10%, automatically disabling autofit.
-         */
-        $scope.zoomOut = function zoomOut() {
+          /**
+           * Zooms out by 10%, automatically disabling autofit.
+           */
+          $scope.zoomOut = function zoomOut() {
             $scope.client.clientProperties.autoFit = false;
             $scope.client.clientProperties.scale -= 0.1;
-        };
+          };
 
-        /**
-         * Resets the client autofit setting to false.
-         */
-        $scope.clearAutoFit = function clearAutoFit() {
+          /**
+           * Resets the client autofit setting to false.
+           */
+          $scope.clearAutoFit = function clearAutoFit() {
             $scope.client.clientProperties.autoFit = false;
-        };
+          };
 
-        /**
-         * Notifies that the autofit setting has been manually changed by the
-         * user.
-         */
-        $scope.autoFitChanged = function autoFitChanged() {
+          /**
+           * Notifies that the autofit setting has been manually changed by the
+           * user.
+           */
+          $scope.autoFitChanged = function autoFitChanged() {
 
             // Reset to 100% scale when autofit is first disabled
-            if (!$scope.client.clientProperties.autoFit)
-                $scope.client.clientProperties.scale = 1;
+            if (!$scope.client.clientProperties.autoFit) {
+              $scope.client.clientProperties.scale = 1;
+            }
 
-        };
+          };
 
-    }];
+        }];
 
-    return directive;
+      return directive;
 
-}]);
+    }]);

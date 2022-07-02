@@ -35,105 +35,104 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  */
 public class APIConnectionWrapper implements Connection {
 
-    /**
-     * The wrapped APIConnection.
-     */
-    private final APIConnection apiConnection;
+  /**
+   * The wrapped APIConnection.
+   */
+  private final APIConnection apiConnection;
 
-    /**
-     * Creates a new APIConnectionWrapper which wraps the given APIConnection
-     * as a Connection.
-     *
-     * @param apiConnection
-     *     The APIConnection to wrap.
-     */
-    public APIConnectionWrapper(APIConnection apiConnection) {
-        this.apiConnection = apiConnection;
+  /**
+   * Creates a new APIConnectionWrapper which wraps the given APIConnection as a Connection.
+   *
+   * @param apiConnection The APIConnection to wrap.
+   */
+  public APIConnectionWrapper(APIConnection apiConnection) {
+    this.apiConnection = apiConnection;
+  }
+
+  @Override
+  public String getName() {
+    return apiConnection.getName();
+  }
+
+  @Override
+  public void setName(String name) {
+    apiConnection.setName(name);
+  }
+
+  @Override
+  public String getIdentifier() {
+    return apiConnection.getIdentifier();
+  }
+
+  @Override
+  public void setIdentifier(String identifier) {
+    apiConnection.setIdentifier(identifier);
+  }
+
+  @Override
+  public String getParentIdentifier() {
+    return apiConnection.getParentIdentifier();
+  }
+
+  @Override
+  public void setParentIdentifier(String parentIdentifier) {
+    apiConnection.setParentIdentifier(parentIdentifier);
+  }
+
+  @Override
+  public int getActiveConnections() {
+    return apiConnection.getActiveConnections();
+  }
+
+  @Override
+  public GuacamoleConfiguration getConfiguration() {
+
+    // Create the GuacamoleConfiguration with current protocol
+    GuacamoleConfiguration configuration = new GuacamoleConfiguration();
+    configuration.setProtocol(apiConnection.getProtocol());
+
+    // Add parameters, if available
+    Map<String, String> parameters = apiConnection.getParameters();
+    if (parameters != null) {
+      configuration.setParameters(parameters);
     }
 
-    @Override
-    public String getName() {
-        return apiConnection.getName();
-    }
+    return configuration;
+  }
 
-    @Override
-    public void setName(String name) {
-        apiConnection.setName(name);
-    }
+  @Override
+  public void setConfiguration(GuacamoleConfiguration config) {
 
-    @Override
-    public String getIdentifier() {
-        return apiConnection.getIdentifier();
-    }
+    // Set protocol and parameters
+    apiConnection.setProtocol(config.getProtocol());
+    apiConnection.setParameters(config.getParameters());
 
-    @Override
-    public void setIdentifier(String identifier) {
-        apiConnection.setIdentifier(identifier);
-    }
+  }
 
-    @Override
-    public String getParentIdentifier() {
-        return apiConnection.getParentIdentifier();
-    }
+  @Override
+  public Map<String, String> getAttributes() {
+    return apiConnection.getAttributes();
+  }
 
-    @Override
-    public void setParentIdentifier(String parentIdentifier) {
-        apiConnection.setParentIdentifier(parentIdentifier);
-    }
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    apiConnection.setAttributes(attributes);
+  }
 
-    @Override
-    public int getActiveConnections() {
-        return apiConnection.getActiveConnections();
-    }
+  @Override
+  public Set<String> getSharingProfileIdentifiers() throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("Operation not supported.");
+  }
 
-    @Override
-    public GuacamoleConfiguration getConfiguration() {
-        
-        // Create the GuacamoleConfiguration with current protocol
-        GuacamoleConfiguration configuration = new GuacamoleConfiguration();
-        configuration.setProtocol(apiConnection.getProtocol());
+  @Override
+  public GuacamoleTunnel connect(GuacamoleClientInformation info,
+      Map<String, String> tokens) throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("Operation not supported.");
+  }
 
-        // Add parameters, if available
-        Map<String, String> parameters = apiConnection.getParameters();
-        if (parameters != null)
-            configuration.setParameters(parameters);
-        
-        return configuration;
-    }
+  @Override
+  public Date getLastActive() {
+    return null;
+  }
 
-    @Override
-    public void setConfiguration(GuacamoleConfiguration config) {
-        
-        // Set protocol and parameters
-        apiConnection.setProtocol(config.getProtocol());
-        apiConnection.setParameters(config.getParameters());
-
-    }
-
-    @Override
-    public Map<String, String> getAttributes() {
-        return apiConnection.getAttributes();
-    }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        apiConnection.setAttributes(attributes);
-    }
-
-    @Override
-    public Set<String> getSharingProfileIdentifiers() throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("Operation not supported.");
-    }
-
-    @Override
-    public GuacamoleTunnel connect(GuacamoleClientInformation info,
-            Map<String, String> tokens) throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("Operation not supported.");
-    }
-
-    @Override
-    public Date getLastActive() {
-        return null;
-    }
-    
 }

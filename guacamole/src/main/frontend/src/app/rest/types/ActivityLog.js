@@ -22,68 +22,68 @@
  */
 angular.module('rest').factory('ActivityLog', [function defineActivityLog() {
 
-    /**
-     * The object returned by REST API calls when representing a log or
-     * recording associated with a connection's usage history, such as a
-     * session recording or typescript.
-     *
-     * @constructor
-     * @param {ActivityLog|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     ActivityLog.
-     */
-    var ActivityLog = function ActivityLog(template) {
+  /**
+   * The object returned by REST API calls when representing a log or
+   * recording associated with a connection's usage history, such as a
+   * session recording or typescript.
+   *
+   * @constructor
+   * @param {ActivityLog|Object} [template={}]
+   *     The object whose properties should be copied within the new
+   *     ActivityLog.
+   */
+  var ActivityLog = function ActivityLog(template) {
 
-        // Use empty object by default
-        template = template || {};
-
-        /**
-         * The type of this ActivityLog.
-         *
-         * @type {string}
-         */
-        this.type = template.type;
-
-        /**
-         * A human-readable description of this log.
-         *
-         * @type {TranslatableMessage}
-         */
-        this.description = template.description;
-
-    };
+    // Use empty object by default
+    template = template || {};
 
     /**
-     * All possible types of ActivityLog.
+     * The type of this ActivityLog.
      *
-     * @type {!object.<string, string>}
+     * @type {string}
      */
-    ActivityLog.Type = {
+    this.type = template.type;
 
-        /**
-         * A Guacamole session recording in the form of a Guacamole protocol
-         * dump.
-         */
-        GUACAMOLE_SESSION_RECORDING : 'GUACAMOLE_SESSION_RECORDING',
+    /**
+     * A human-readable description of this log.
+     *
+     * @type {TranslatableMessage}
+     */
+    this.description = template.description;
 
-        /**
-         * A text log from a server-side process, such as the Guacamole web
-         * application or guacd.
-         */
-        SERVER_LOG : 'SERVER_LOG',
+  };
 
-        /**
-         * A text session recording in the form of a standard typescript.
-         */
-        TYPESCRIPT : 'TYPESCRIPT',
+  /**
+   * All possible types of ActivityLog.
+   *
+   * @type {!object.<string, string>}
+   */
+  ActivityLog.Type = {
 
-        /**
-         * The timing file related to a typescript.
-         */
-        TYPESCRIPT_TIMING : 'TYPESCRIPT_TIMING'
+    /**
+     * A Guacamole session recording in the form of a Guacamole protocol
+     * dump.
+     */
+    GUACAMOLE_SESSION_RECORDING: 'GUACAMOLE_SESSION_RECORDING',
 
-    };
+    /**
+     * A text log from a server-side process, such as the Guacamole web
+     * application or guacd.
+     */
+    SERVER_LOG: 'SERVER_LOG',
 
-    return ActivityLog;
+    /**
+     * A text session recording in the form of a standard typescript.
+     */
+    TYPESCRIPT: 'TYPESCRIPT',
+
+    /**
+     * The timing file related to a typescript.
+     */
+    TYPESCRIPT_TIMING: 'TYPESCRIPT_TIMING'
+
+  };
+
+  return ActivityLog;
 
 }]);

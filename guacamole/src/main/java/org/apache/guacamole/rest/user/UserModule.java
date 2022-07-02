@@ -20,44 +20,48 @@
 package org.apache.guacamole.rest.user;
 
 import com.google.inject.AbstractModule;
-import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
-import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
+import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
+import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 
 /**
- * Guice Module which configures injections required for handling User resources
- * via the REST API.
+ * Guice Module which configures injections required for handling User resources via the REST API.
  */
 public class UserModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
+  @Override
+  protected void configure() {
 
-        // Create the required DirectoryResourceFactory implementation
-        install(new FactoryModuleBuilder()
-                .implement(
-                    new TypeLiteral<DirectoryResource<User, APIUser>>() {},
-                    UserDirectoryResource.class
-                )
-                .build(new TypeLiteral<DirectoryResourceFactory<User, APIUser>>() {}));
+    // Create the required DirectoryResourceFactory implementation
+    install(new FactoryModuleBuilder()
+        .implement(
+            new TypeLiteral<DirectoryResource<User, APIUser>>() {
+            },
+            UserDirectoryResource.class
+        )
+        .build(new TypeLiteral<DirectoryResourceFactory<User, APIUser>>() {
+        }));
 
-        // Create the required DirectoryObjectResourceFactory implementation
-        install(new FactoryModuleBuilder()
-                .implement(
-                    new TypeLiteral<DirectoryObjectResource<User, APIUser>>() {},
-                    UserResource.class
-                )
-                .build(new TypeLiteral<DirectoryObjectResourceFactory<User, APIUser>>() {}));
+    // Create the required DirectoryObjectResourceFactory implementation
+    install(new FactoryModuleBuilder()
+        .implement(
+            new TypeLiteral<DirectoryObjectResource<User, APIUser>>() {
+            },
+            UserResource.class
+        )
+        .build(new TypeLiteral<DirectoryObjectResourceFactory<User, APIUser>>() {
+        }));
 
-        // Bind translator for converting between User and APIUser
-        bind(new TypeLiteral<DirectoryObjectTranslator<User, APIUser>>() {})
-                .to(UserObjectTranslator.class);
+    // Bind translator for converting between User and APIUser
+    bind(new TypeLiteral<DirectoryObjectTranslator<User, APIUser>>() {
+    })
+        .to(UserObjectTranslator.class);
 
-    }
+  }
 
 }

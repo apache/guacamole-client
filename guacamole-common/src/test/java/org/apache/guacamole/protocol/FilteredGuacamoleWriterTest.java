@@ -19,50 +19,52 @@
 
 package org.apache.guacamole.protocol;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.StringWriter;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.io.GuacamoleWriter;
 import org.apache.guacamole.io.WriterGuacamoleWriter;
-import static org.junit.Assert.*;
 import org.junit.Test;
 
 /**
- * Test which validates filtering of Guacamole instructions with
- * FilteredGuacamoleWriter.
+ * Test which validates filtering of Guacamole instructions with FilteredGuacamoleWriter.
  */
 public class FilteredGuacamoleWriterTest {
 
-    /**
-     * Filter which allows through "yes" instructions but drops all others.
-     */
-    private static class TestFilter implements GuacamoleFilter {
+  @Test
+  public void testFilter() throws Exception {
 
-        @Override
-        public GuacamoleInstruction filter(GuacamoleInstruction instruction) throws GuacamoleException {
+    StringWriter stringWriter = new StringWriter();
+    GuacamoleWriter writer = new FilteredGuacamoleWriter(new WriterGuacamoleWriter(stringWriter),
+        new TestFilter());
 
-            if (instruction.getOpcode().equals("yes"))
-                return instruction;
+    // Write a few chunks of complete instructions
+    writer.write("3.yes,1.A;2.no,1.B;3.yes,1.C;3.yes,1.D;4.nope,1.E;".toCharArray());
+    writer.write("1.n,3.abc;3.yes,5.hello;2.no,4.test;3.yes,5.world;".toCharArray());
 
-            return null;
-            
-        }
+    // Validate filtered results
+    assertEquals("3.yes,1.A;3.yes,1.C;3.yes,1.D;3.yes,5.hello;3.yes,5.world;",
+        stringWriter.toString());
+
+  }
+
+  /**
+   * Filter which allows through "yes" instructions but drops all others.
+   */
+  private static class TestFilter implements GuacamoleFilter {
+
+    @Override
+    public GuacamoleInstruction filter(GuacamoleInstruction instruction) throws GuacamoleException {
+
+      if (instruction.getOpcode().equals("yes")) {
+        return instruction;
+      }
+
+      return null;
 
     }
-    
-    @Test
-    public void testFilter() throws Exception {
 
-        StringWriter stringWriter = new StringWriter();
-        GuacamoleWriter writer = new FilteredGuacamoleWriter(new WriterGuacamoleWriter(stringWriter),
-                                                             new TestFilter());
+  }
 
-        // Write a few chunks of complete instructions
-        writer.write("3.yes,1.A;2.no,1.B;3.yes,1.C;3.yes,1.D;4.nope,1.E;".toCharArray());
-        writer.write("1.n,3.abc;3.yes,5.hello;2.no,4.test;3.yes,5.world;".toCharArray());
-
-        // Validate filtered results
-        assertEquals("3.yes,1.A;3.yes,1.C;3.yes,1.D;3.yes,5.hello;3.yes,5.world;", stringWriter.toString());
-
-    }
-    
 }

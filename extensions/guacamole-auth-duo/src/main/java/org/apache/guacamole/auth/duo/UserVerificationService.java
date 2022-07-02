@@ -38,76 +38,74 @@ import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
  */
 public class UserVerificationService {
 
-    /**
-     * Service for retrieving Duo configuration information.
-     */
-    @Inject
-    private ConfigurationService confService;
+  /**
+   * Service for retrieving Duo configuration information.
+   */
+  @Inject
+  private ConfigurationService confService;
 
-    /**
-     * Service for verifying users against Duo.
-     */
-    @Inject
-    private DuoService duoService;
+  /**
+   * Service for verifying users against Duo.
+   */
+  @Inject
+  private DuoService duoService;
 
-    /**
-     * Verifies the identity of the given user via the Duo multi-factor
-     * authentication service. If a signed response from Duo has not already
-     * been provided, a signed response from Duo is requested in the
-     * form of additional expected credentials. Any provided signed response
-     * is cryptographically verified. If no signed response is present, or the
-     * signed response is invalid, an exception is thrown.
-     *
-     * @param authenticatedUser
-     *     The user whose identity should be verified against Duo.
-     *
-     * @throws GuacamoleException
-     *     If required Duo-specific configuration options are missing or
-     *     malformed, or if the user's identity cannot be verified.
-     */
-    public void verifyAuthenticatedUser(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
+  /**
+   * Verifies the identity of the given user via the Duo multi-factor authentication service. If a
+   * signed response from Duo has not already been provided, a signed response from Duo is requested
+   * in the form of additional expected credentials. Any provided signed response is
+   * cryptographically verified. If no signed response is present, or the signed response is
+   * invalid, an exception is thrown.
+   *
+   * @param authenticatedUser The user whose identity should be verified against Duo.
+   * @throws GuacamoleException If required Duo-specific configuration options are missing or
+   *                            malformed, or if the user's identity cannot be verified.
+   */
+  public void verifyAuthenticatedUser(AuthenticatedUser authenticatedUser)
+      throws GuacamoleException {
 
-        // Pull the original HTTP request used to authenticate
-        Credentials credentials = authenticatedUser.getCredentials();
-        HttpServletRequest request = credentials.getRequest();
+    // Pull the original HTTP request used to authenticate
+    Credentials credentials = authenticatedUser.getCredentials();
+    HttpServletRequest request = credentials.getRequest();
 
-        // Ignore anonymous users
-        if (authenticatedUser.getIdentifier().equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
-            return;
+    // Ignore anonymous users
+    if (authenticatedUser.getIdentifier().equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER)) {
+      return;
+    }
 
-        // Retrieve signed Duo response from request
-        String signedResponse = request.getParameter(DuoSignedResponseField.PARAMETER_NAME);
+    // Retrieve signed Duo response from request
+    String signedResponse = request.getParameter(DuoSignedResponseField.PARAMETER_NAME);
 
-        // If no signed response, request one
-        if (signedResponse == null) {
+    // If no signed response, request one
+    if (signedResponse == null) {
 
-            // Create field which requests a signed response from Duo that
-            // verifies the identity of the given user via the configured
-            // Duo API endpoint
-            Field signedResponseField = new DuoSignedResponseField(
-                    confService.getAPIHostname(),
-                    duoService.createSignedRequest(authenticatedUser));
+      // Create field which requests a signed response from Duo that
+      // verifies the identity of the given user via the configured
+      // Duo API endpoint
+      Field signedResponseField = new DuoSignedResponseField(
+          confService.getAPIHostname(),
+          duoService.createSignedRequest(authenticatedUser));
 
-            // Create an overall description of the additional credentials
-            // required to verify identity
-            CredentialsInfo expectedCredentials = new CredentialsInfo(
-                        Collections.singletonList(signedResponseField));
+      // Create an overall description of the additional credentials
+      // required to verify identity
+      CredentialsInfo expectedCredentials = new CredentialsInfo(
+          Collections.singletonList(signedResponseField));
 
-            // Request additional credentials
-            throw new TranslatableGuacamoleInsufficientCredentialsException(
-                    "Verification using Duo is required before authentication "
-                    + "can continue.", "LOGIN.INFO_DUO_AUTH_REQUIRED",
-                    expectedCredentials);
-
-        }
-
-        // If signed response does not verify this user's identity, abort auth
-        if (!duoService.isValidSignedResponse(authenticatedUser, signedResponse))
-            throw new TranslatableGuacamoleClientException("Provided Duo "
-                    + "validation code is incorrect.",
-                    "LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
+      // Request additional credentials
+      throw new TranslatableGuacamoleInsufficientCredentialsException(
+          "Verification using Duo is required before authentication "
+              + "can continue.", "LOGIN.INFO_DUO_AUTH_REQUIRED",
+          expectedCredentials);
 
     }
+
+    // If signed response does not verify this user's identity, abort auth
+    if (!duoService.isValidSignedResponse(authenticatedUser, signedResponse)) {
+      throw new TranslatableGuacamoleClientException("Provided Duo "
+          + "validation code is incorrect.",
+          "LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
+    }
+
+  }
 
 }

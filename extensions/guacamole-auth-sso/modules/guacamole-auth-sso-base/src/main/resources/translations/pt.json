@@ -1,7 +1,5 @@
 {
-
-    "LOGIN" : {
-        "INFO_IDP_REDIRECT_PENDING" : "Por favor aguarde, redirecionando ao provedor de indentidade..."
-    }
-
+  "LOGIN": {
+    "INFO_IDP_REDIRECT_PENDING": "Por favor aguarde, redirecionando ao provedor de indentidade..."
+  }
 }

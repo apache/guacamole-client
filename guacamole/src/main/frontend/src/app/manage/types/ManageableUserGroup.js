@@ -20,16 +20,17 @@
 /**
  * A service for defining the ManageableUserGroup class.
  */
-angular.module('manage').factory('ManageableUserGroup', [function defineManageableUserGroup() {
+angular.module('manage').factory('ManageableUserGroup',
+    [function defineManageableUserGroup() {
 
-    /**
-     * A pairing of an @link{UserGroup} with the identifier of its corresponding
-     * data source.
-     *
-     * @constructor
-     * @param {Object|ManageableUserGroup} template
-     */
-    var ManageableUserGroup = function ManageableUserGroup(template) {
+      /**
+       * A pairing of an @link{UserGroup} with the identifier of its corresponding
+       * data source.
+       *
+       * @constructor
+       * @param {Object|ManageableUserGroup} template
+       */
+      var ManageableUserGroup = function ManageableUserGroup(template) {
 
         /**
          * The unique identifier of the data source containing this user.
@@ -46,8 +47,8 @@ angular.module('manage').factory('ManageableUserGroup', [function defineManageab
          */
         this.userGroup = template.userGroup;
 
-    };
+      };
 
-    return ManageableUserGroup;
+      return ManageableUserGroup;
 
-}]);
+    }]);

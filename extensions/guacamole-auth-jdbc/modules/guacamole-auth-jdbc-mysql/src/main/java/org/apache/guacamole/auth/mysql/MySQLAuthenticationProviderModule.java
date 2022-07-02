@@ -36,124 +36,127 @@ import org.mybatis.guice.datasource.helper.JdbcHelper;
  */
 public class MySQLAuthenticationProviderModule implements Module {
 
-    /**
-     * MyBatis-specific configuration properties.
-     */
-    private final Properties myBatisProperties = new Properties();
+  /**
+   * MyBatis-specific configuration properties.
+   */
+  private final Properties myBatisProperties = new Properties();
 
-    /**
-     * MySQL-specific driver configuration properties.
-     */
-    private final Properties driverProperties = new Properties();
-    
-    /**
-     * The MySQL-compatible driver that should be used to talk to the database
-     * server.
-     */
-    private MySQLDriver mysqlDriver;
-    
-    /**
-     * Creates a new MySQL authentication provider module that configures
-     * driver and MyBatis properties using the given environment.
-     *
-     * @param environment
-     *     The environment to use when configuring MyBatis and the underlying
-     *     JDBC driver.
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, or an error occurs while parsing
-     *     a property.
-     */
-    public MySQLAuthenticationProviderModule(MySQLEnvironment environment)
-            throws GuacamoleException {
+  /**
+   * MySQL-specific driver configuration properties.
+   */
+  private final Properties driverProperties = new Properties();
 
-        // Set the MySQL-specific properties for MyBatis.
-        myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
-        myBatisProperties.setProperty("JDBC.host", environment.getMySQLHostname());
-        myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getMySQLPort()));
-        myBatisProperties.setProperty("JDBC.schema", environment.getMySQLDatabase());
-        myBatisProperties.setProperty("JDBC.autoCommit", "false");
-        myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
-        myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
+  /**
+   * The MySQL-compatible driver that should be used to talk to the database server.
+   */
+  private MySQLDriver mysqlDriver;
 
-        // Use UTF-8 in database
-        driverProperties.setProperty("characterEncoding", "UTF-8");
+  /**
+   * Creates a new MySQL authentication provider module that configures driver and MyBatis
+   * properties using the given environment.
+   *
+   * @param environment The environment to use when configuring MyBatis and the underlying JDBC
+   *                    driver.
+   * @throws GuacamoleException If a required property is missing, or an error occurs while parsing
+   *                            a property.
+   */
+  public MySQLAuthenticationProviderModule(MySQLEnvironment environment)
+      throws GuacamoleException {
 
-        // Allow use of multiple statements within a single query
-        driverProperties.setProperty("allowMultiQueries", "true");
-        
-        // Set the SSL mode to use when conncting
-        MySQLSSLMode sslMode = environment.getMySQLSSLMode();
-        driverProperties.setProperty("sslMode", sslMode.getDriverValue());
-        
-        // For compatibility, set legacy useSSL property when SSL is disabled.
-        if (sslMode == MySQLSSLMode.DISABLED)
-            driverProperties.setProperty("useSSL", "false");
-        // For compatibility, set legacy useSSL property when SSL is eisabled.(Required for mariadb connector/j)
-        else
-            driverProperties.setProperty("useSSL", "true");
+    // Set the MySQL-specific properties for MyBatis.
+    myBatisProperties.setProperty("mybatis.environment.id", "guacamole");
+    myBatisProperties.setProperty("JDBC.host", environment.getMySQLHostname());
+    myBatisProperties.setProperty("JDBC.port", String.valueOf(environment.getMySQLPort()));
+    myBatisProperties.setProperty("JDBC.schema", environment.getMySQLDatabase());
+    myBatisProperties.setProperty("JDBC.autoCommit", "false");
+    myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
+    myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
-        // Check other SSL settings and set as required
-        File trustStore = environment.getMySQLSSLTrustStore();
-        if (trustStore != null)
-            driverProperties.setProperty("trustCertificateKeyStoreUrl",
-                    trustStore.toURI().toString());
-        
-        String trustPassword = environment.getMySQLSSLTrustPassword();
-        if (trustPassword != null)
-            driverProperties.setProperty("trustCertificateKeyStorePassword",
-                    trustPassword);
-        
-        File clientStore = environment.getMySQLSSLClientStore();
-        if (clientStore != null)
-            driverProperties.setProperty("clientCertificateKeyStoreUrl",
-                    clientStore.toURI().toString());
-        
-        String clientPassword = environment.getMYSQLSSLClientPassword();
-        if (clientPassword != null)
-            driverProperties.setProperty("clientCertificateKeyStorePassword",
-                    clientPassword);
-        
-        // Get the MySQL-compatible driver to use.
-        mysqlDriver = environment.getMySQLDriver();
+    // Use UTF-8 in database
+    driverProperties.setProperty("characterEncoding", "UTF-8");
 
-        // If timezone is present, set it.
-        TimeZone serverTz = environment.getServerTimeZone();
-        if (serverTz != null)
-            driverProperties.setProperty("serverTimezone", serverTz.getID());
+    // Allow use of multiple statements within a single query
+    driverProperties.setProperty("allowMultiQueries", "true");
 
+    // Set the SSL mode to use when conncting
+    MySQLSSLMode sslMode = environment.getMySQLSSLMode();
+    driverProperties.setProperty("sslMode", sslMode.getDriverValue());
+
+    // For compatibility, set legacy useSSL property when SSL is disabled.
+    if (sslMode == MySQLSSLMode.DISABLED) {
+      driverProperties.setProperty("useSSL", "false");
+    }
+    // For compatibility, set legacy useSSL property when SSL is eisabled.(Required for mariadb connector/j)
+    else {
+      driverProperties.setProperty("useSSL", "true");
     }
 
-    @Override
-    public void configure(Binder binder) {
-
-        // Check which MySQL-compatible driver is in use
-        switch(mysqlDriver) {
-            
-            // Bind MySQL-specific properties
-            case MYSQL:
-                JdbcHelper.MySQL.configure(binder);
-                break;
-                
-            // Bind MariaDB-specific properties
-            case MARIADB:
-                JdbcHelper.MariaDB.configure(binder);
-                break;
-                
-            default:
-                throw new UnsupportedOperationException(
-                    "A driver has been specified that is not supported by this module."
-                );
-        }
-
-        // Bind MyBatis properties
-        Names.bindProperties(binder, myBatisProperties);
-
-        // Bind JDBC driver properties
-        binder.bind(Properties.class)
-            .annotatedWith(Names.named("JDBC.driverProperties"))
-            .toInstance(driverProperties);
-
+    // Check other SSL settings and set as required
+    File trustStore = environment.getMySQLSSLTrustStore();
+    if (trustStore != null) {
+      driverProperties.setProperty("trustCertificateKeyStoreUrl",
+          trustStore.toURI().toString());
     }
+
+    String trustPassword = environment.getMySQLSSLTrustPassword();
+    if (trustPassword != null) {
+      driverProperties.setProperty("trustCertificateKeyStorePassword",
+          trustPassword);
+    }
+
+    File clientStore = environment.getMySQLSSLClientStore();
+    if (clientStore != null) {
+      driverProperties.setProperty("clientCertificateKeyStoreUrl",
+          clientStore.toURI().toString());
+    }
+
+    String clientPassword = environment.getMYSQLSSLClientPassword();
+    if (clientPassword != null) {
+      driverProperties.setProperty("clientCertificateKeyStorePassword",
+          clientPassword);
+    }
+
+    // Get the MySQL-compatible driver to use.
+    mysqlDriver = environment.getMySQLDriver();
+
+    // If timezone is present, set it.
+    TimeZone serverTz = environment.getServerTimeZone();
+    if (serverTz != null) {
+      driverProperties.setProperty("serverTimezone", serverTz.getID());
+    }
+
+  }
+
+  @Override
+  public void configure(Binder binder) {
+
+    // Check which MySQL-compatible driver is in use
+    switch (mysqlDriver) {
+
+      // Bind MySQL-specific properties
+      case MYSQL:
+        JdbcHelper.MySQL.configure(binder);
+        break;
+
+      // Bind MariaDB-specific properties
+      case MARIADB:
+        JdbcHelper.MariaDB.configure(binder);
+        break;
+
+      default:
+        throw new UnsupportedOperationException(
+            "A driver has been specified that is not supported by this module."
+        );
+    }
+
+    // Bind MyBatis properties
+    Names.bindProperties(binder, myBatisProperties);
+
+    // Bind JDBC driver properties
+    binder.bind(Properties.class)
+        .annotatedWith(Names.named("JDBC.driverProperties"))
+        .toInstance(driverProperties);
+
+  }
 
 }

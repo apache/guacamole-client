@@ -29,40 +29,42 @@ import org.slf4j.LoggerFactory;
  */
 public class WebSocketTunnelModule extends ServletModule implements TunnelLoader {
 
-    /**
-     * Logger for this class.
-     */
-    private final Logger logger = LoggerFactory.getLogger(WebSocketTunnelModule.class);
+  /**
+   * Logger for this class.
+   */
+  private final Logger logger = LoggerFactory.getLogger(WebSocketTunnelModule.class);
 
-    @Override
-    public boolean isSupported() {
+  @Override
+  public boolean isSupported() {
 
-        try {
+    try {
 
-            // Attempt to find WebSocket servlet
-            Class.forName("org.apache.guacamole.tunnel.websocket.jetty9.RestrictedGuacamoleWebSocketTunnelServlet");
+      // Attempt to find WebSocket servlet
+      Class.forName(
+          "org.apache.guacamole.tunnel.websocket.jetty9.RestrictedGuacamoleWebSocketTunnelServlet");
 
-            // Support found
-            return true;
-
-        }
-
-        // If no such servlet class, this particular WebSocket support
-        // is not present
-        catch (ClassNotFoundException e) {}
-        catch (NoClassDefFoundError e) {}
-
-        // Support not found
-        return false;
-        
-    }
-    
-    @Override
-    public void configureServlets() {
-
-        logger.info("Loading Jetty 9 WebSocket support...");
-        serve("/websocket-tunnel").with(RestrictedGuacamoleWebSocketTunnelServlet.class);
+      // Support found
+      return true;
 
     }
+
+    // If no such servlet class, this particular WebSocket support
+    // is not present
+    catch (ClassNotFoundException e) {
+    } catch (NoClassDefFoundError e) {
+    }
+
+    // Support not found
+    return false;
+
+  }
+
+  @Override
+  public void configureServlets() {
+
+    logger.info("Loading Jetty 9 WebSocket support...");
+    serve("/websocket-tunnel").with(RestrictedGuacamoleWebSocketTunnelServlet.class);
+
+  }
 
 }

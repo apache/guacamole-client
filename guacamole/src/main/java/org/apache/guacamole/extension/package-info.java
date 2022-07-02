@@ -18,7 +18,7 @@
  */
 
 /**
- * Classes which represent and facilitate the loading of extensions to the
- * Guacamole web application.
+ * Classes which represent and facilitate the loading of extensions to the Guacamole web
+ * application.
  */
 package org.apache.guacamole.extension;

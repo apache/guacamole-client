@@ -18,48 +18,48 @@
  */
 
 div.login-ui {
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: table;
-    background: white;
-    z-index: 20;
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: table;
+  background: white;
+  z-index: 20;
 }
 
 .login-ui p.login-error {
-    display: none;
+  display: none;
 }
 
 .login-ui.error p.login-error {
-    display: block;
+  display: block;
 
-    position: fixed;
-    left: 0;
-    right: 0;
-    top: 0;
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
 
-    padding: 1em;
-    margin: 0.2em;
+  padding: 1em;
+  margin: 0.2em;
 
-    background: #FDD;
-    border: 1px solid #964040;
-    -moz-border-radius: 0.25em;
-    -webkit-border-radius: 0.25em;
-    -khtml-border-radius: 0.25em;
-    text-align: center;
-    color: #964040;
+  background: #FDD;
+  border: 1px solid #964040;
+  -moz-border-radius: 0.25em;
+  -webkit-border-radius: 0.25em;
+  -khtml-border-radius: 0.25em;
+  text-align: center;
+  color: #964040;
 }
 
 .login-ui .login-fields .form-field .password-field .toggle-password {
-    display: none;
+  display: none;
 }
 
 .login-ui .login-fields .labeled-field {
-    display: block;
-    position: relative;
-    z-index: 1;
+  display: block;
+  position: relative;
+  z-index: 1;
 }
 
 .login-ui .login-fields .labeled-field .field-header {
@@ -78,9 +78,9 @@ div.login-ui {
 }
 
 .login-ui .login-fields .labeled-field.empty input {
-    background: transparent;
+  background: transparent;
 }
 
 .login-ui .login-fields .labeled-field input:focus {
-    background: white;
+  background: white;
 }

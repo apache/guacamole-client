@@ -26,41 +26,40 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
- * Translator which converts between ActiveConnection objects and
- * APIActiveConnection objects. As ActiveConnection objects are read-only, only
- * toExternalObject() is implemented here.
+ * Translator which converts between ActiveConnection objects and APIActiveConnection objects. As
+ * ActiveConnection objects are read-only, only toExternalObject() is implemented here.
  */
 public class ActiveConnectionObjectTranslator
-        extends DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> {
+    extends DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> {
 
-    @Override
-    public APIActiveConnection toExternalObject(ActiveConnection object)
-            throws GuacamoleException {
-        return new APIActiveConnection(object);
-    }
+  @Override
+  public APIActiveConnection toExternalObject(ActiveConnection object)
+      throws GuacamoleException {
+    return new APIActiveConnection(object);
+  }
 
-    @Override
-    public ActiveConnection toInternalObject(APIActiveConnection object)
-            throws GuacamoleException {
+  @Override
+  public ActiveConnection toInternalObject(APIActiveConnection object)
+      throws GuacamoleException {
 
-        // ActiveConnection objects are read-only
-        throw new GuacamoleUnsupportedException("Active connection records are read-only.");
+    // ActiveConnection objects are read-only
+    throw new GuacamoleUnsupportedException("Active connection records are read-only.");
 
-    }
+  }
 
-    @Override
-    public void applyExternalChanges(ActiveConnection existingObject,
-            APIActiveConnection object) throws GuacamoleException {
+  @Override
+  public void applyExternalChanges(ActiveConnection existingObject,
+      APIActiveConnection object) throws GuacamoleException {
 
-        // Modification not supported for ActiveConnection
-        throw new GuacamoleUnsupportedException("Active connection records are read-only.");
+    // Modification not supported for ActiveConnection
+    throw new GuacamoleUnsupportedException("Active connection records are read-only.");
 
-    }
+  }
 
-    @Override
-    public void filterExternalObject(UserContext context,
-            APIActiveConnection object) throws GuacamoleException {
-        // Nothing to filter on ActiveConnections (no attributes)
-    }
+  @Override
+  public void filterExternalObject(UserContext context,
+      APIActiveConnection object) throws GuacamoleException {
+    // Nothing to filter on ActiveConnections (no attributes)
+  }
 
 }

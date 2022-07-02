@@ -29,195 +29,206 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
  */
 public class SQLServerGuacamoleProperties {
 
-    /**
-     * This class should not be instantiated.
-     */
-    private SQLServerGuacamoleProperties() {}
-
-    /**
-     * The URL of the SQLServer server hosting the Guacamole authentication tables.
-     */
-    public static final StringGuacamoleProperty SQLSERVER_HOSTNAME =
-            new StringGuacamoleProperty() {
+  /**
+   * The URL of the SQLServer server hosting the Guacamole authentication tables.
+   */
+  public static final StringGuacamoleProperty SQLSERVER_HOSTNAME =
+      new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "sqlserver-hostname"; }
+        public String getName() {
+          return "sqlserver-hostname";
+        }
 
-    };
-
-    /**
-     * The instance name of the SQL Server where the Guacamole database is running.
-     */
-    public static final StringGuacamoleProperty SQLSERVER_INSTANCE =
-            new StringGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "sqlserver-instance"; }
-
-    };
-
-    /**
-     * The port of the SQLServer server hosting the Guacamole authentication
-     * tables.
-     */
-    public static final IntegerGuacamoleProperty SQLSERVER_PORT =
-            new IntegerGuacamoleProperty() {
+      };
+  /**
+   * The instance name of the SQL Server where the Guacamole database is running.
+   */
+  public static final StringGuacamoleProperty SQLSERVER_INSTANCE =
+      new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "sqlserver-port"; }
+        public String getName() {
+          return "sqlserver-instance";
+        }
 
-    };
-
-    /**
-     * The name of the SQLServer database containing the Guacamole
-     * authentication tables.
-     */
-    public static final StringGuacamoleProperty SQLSERVER_DATABASE =
-            new StringGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "sqlserver-database"; }
-
-    };
-
-    /**
-     * The username used to authenticate to the SQLServer database containing
-     * the Guacamole authentication tables.
-     */
-    public static final StringGuacamoleProperty SQLSERVER_USERNAME =
-            new StringGuacamoleProperty() {
+      };
+  /**
+   * The port of the SQLServer server hosting the Guacamole authentication tables.
+   */
+  public static final IntegerGuacamoleProperty SQLSERVER_PORT =
+      new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "sqlserver-username"; }
+        public String getName() {
+          return "sqlserver-port";
+        }
 
-    };
-
-    /**
-     * The password used to authenticate to the SQLServer database containing
-     * the Guacamole authentication tables.
-     */
-    public static final StringGuacamoleProperty SQLSERVER_PASSWORD =
-            new StringGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "sqlserver-password"; }
-
-    };
-
-    /**
-     * Whether a user account within the database is required for authentication
-     * to succeed, even if the user has been authenticated via another
-     * authentication provider.
-     */
-    public static final BooleanGuacamoleProperty
-            SQLSERVER_USER_REQUIRED = new BooleanGuacamoleProperty() {
+      };
+  /**
+   * The name of the SQLServer database containing the Guacamole authentication tables.
+   */
+  public static final StringGuacamoleProperty SQLSERVER_DATABASE =
+      new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "sqlserver-user-required"; }
+        public String getName() {
+          return "sqlserver-database";
+        }
 
-    };
-
-    /**
-     * The maximum number of concurrent connections to allow overall. Zero
-     * denotes unlimited.
-     */
-    public static final IntegerGuacamoleProperty
-            SQLSERVER_ABSOLUTE_MAX_CONNECTIONS =
-            new IntegerGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "sqlserver-absolute-max-connections"; }
-
-    };
-
-    /**
-     * The maximum number of concurrent connections to allow to any one
-     * connection. Zero denotes unlimited.
-     */
-    public static final IntegerGuacamoleProperty
-            SQLSERVER_DEFAULT_MAX_CONNECTIONS =
-            new IntegerGuacamoleProperty() {
+      };
+  /**
+   * The username used to authenticate to the SQLServer database containing the Guacamole
+   * authentication tables.
+   */
+  public static final StringGuacamoleProperty SQLSERVER_USERNAME =
+      new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "sqlserver-default-max-connections"; }
+        public String getName() {
+          return "sqlserver-username";
+        }
 
-    };
-
-    /**
-     * The maximum number of concurrent connections to allow to any one
-     * connection group. Zero denotes unlimited.
-     */
-    public static final IntegerGuacamoleProperty
-            SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS =
-            new IntegerGuacamoleProperty() {
-
-        @Override
-        public String getName() { return "sqlserver-default-max-group-connections"; }
-
-    };
-
-    /**
-     * The maximum number of concurrent connections to allow to any one
-     * connection by an individual user. Zero denotes unlimited.
-     */
-    public static final IntegerGuacamoleProperty
-            SQLSERVER_DEFAULT_MAX_CONNECTIONS_PER_USER =
-            new IntegerGuacamoleProperty() {
+      };
+  /**
+   * The password used to authenticate to the SQLServer database containing the Guacamole
+   * authentication tables.
+   */
+  public static final StringGuacamoleProperty SQLSERVER_PASSWORD =
+      new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "sqlserver-default-max-connections-per-user"; }
+        public String getName() {
+          return "sqlserver-password";
+        }
 
-    };
+      };
+  /**
+   * Whether a user account within the database is required for authentication to succeed, even if
+   * the user has been authenticated via another authentication provider.
+   */
+  public static final BooleanGuacamoleProperty
+      SQLSERVER_USER_REQUIRED = new BooleanGuacamoleProperty() {
 
-    /**
-     * The maximum number of concurrent connections to allow to any one
-     * connection group by an individual user. Zero denotes
-     * unlimited.
-     */
-    public static final IntegerGuacamoleProperty
-            SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER =
-            new IntegerGuacamoleProperty() {
+    @Override
+    public String getName() {
+      return "sqlserver-user-required";
+    }
 
-        @Override
-        public String getName() { return "sqlserver-default-max-group-connections-per-user"; }
-
-    };
-
-    /**
-     * Which TDS-compatible JDBC driver should be used for the connection.
-     */
-    public static final EnumGuacamoleProperty<SQLServerDriver>
-            SQLSERVER_DRIVER = new EnumGuacamoleProperty<SQLServerDriver>(SQLServerDriver.class) {
-
-        @Override
-        public String getName() { return "sqlserver-driver"; }
-
-    };
-
-    /**
-     * Whether or not to automatically create accounts in the SQL Server
-     * database for users who successfully authenticate through another
-     * extension. By default users will not be automatically created.
-     */
-    public static final BooleanGuacamoleProperty SQLSERVER_AUTO_CREATE_ACCOUNTS =
-            new BooleanGuacamoleProperty() {
+  };
+  /**
+   * The maximum number of concurrent connections to allow overall. Zero denotes unlimited.
+   */
+  public static final IntegerGuacamoleProperty
+      SQLSERVER_ABSOLUTE_MAX_CONNECTIONS =
+      new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "sqlserver-auto-create-accounts"; }
+        public String getName() {
+          return "sqlserver-absolute-max-connections";
+        }
 
-    };
-
-    /**
-     * Whether or not to track connection history for connections that do not originate
-     * from within the SQL Server database. By default, external connection history will be
-     * tracked.
-     */
-    public static final BooleanGuacamoleProperty SQLSERVER_TRACK_EXTERNAL_CONNECTION_HISTORY =
-            new BooleanGuacamoleProperty() {
+      };
+  /**
+   * The maximum number of concurrent connections to allow to any one connection. Zero denotes
+   * unlimited.
+   */
+  public static final IntegerGuacamoleProperty
+      SQLSERVER_DEFAULT_MAX_CONNECTIONS =
+      new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "sqlserver-track-external-connection-history"; }
+        public String getName() {
+          return "sqlserver-default-max-connections";
+        }
 
-    };
+      };
+  /**
+   * The maximum number of concurrent connections to allow to any one connection group. Zero denotes
+   * unlimited.
+   */
+  public static final IntegerGuacamoleProperty
+      SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS =
+      new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+          return "sqlserver-default-max-group-connections";
+        }
+
+      };
+  /**
+   * The maximum number of concurrent connections to allow to any one connection by an individual
+   * user. Zero denotes unlimited.
+   */
+  public static final IntegerGuacamoleProperty
+      SQLSERVER_DEFAULT_MAX_CONNECTIONS_PER_USER =
+      new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+          return "sqlserver-default-max-connections-per-user";
+        }
+
+      };
+  /**
+   * The maximum number of concurrent connections to allow to any one connection group by an
+   * individual user. Zero denotes unlimited.
+   */
+  public static final IntegerGuacamoleProperty
+      SQLSERVER_DEFAULT_MAX_GROUP_CONNECTIONS_PER_USER =
+      new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+          return "sqlserver-default-max-group-connections-per-user";
+        }
+
+      };
+  /**
+   * Which TDS-compatible JDBC driver should be used for the connection.
+   */
+  public static final EnumGuacamoleProperty<SQLServerDriver>
+      SQLSERVER_DRIVER = new EnumGuacamoleProperty<SQLServerDriver>(SQLServerDriver.class) {
+
+    @Override
+    public String getName() {
+      return "sqlserver-driver";
+    }
+
+  };
+  /**
+   * Whether or not to automatically create accounts in the SQL Server database for users who
+   * successfully authenticate through another extension. By default users will not be automatically
+   * created.
+   */
+  public static final BooleanGuacamoleProperty SQLSERVER_AUTO_CREATE_ACCOUNTS =
+      new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+          return "sqlserver-auto-create-accounts";
+        }
+
+      };
+  /**
+   * Whether or not to track connection history for connections that do not originate from within
+   * the SQL Server database. By default, external connection history will be tracked.
+   */
+  public static final BooleanGuacamoleProperty SQLSERVER_TRACK_EXTERNAL_CONNECTION_HISTORY =
+      new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+          return "sqlserver-track-external-connection-history";
+        }
+
+      };
+
+  /**
+   * This class should not be instantiated.
+   */
+  private SQLServerGuacamoleProperties() {
+  }
 
 }

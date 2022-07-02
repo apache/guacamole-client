@@ -28,92 +28,88 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Identifiable;
 
 /**
- * Directory implementation which represents a read-only subset of another
- * existing Directory. Access is provided only to a limited set of objects,
- * determined by the set of identifiers provided when the DirectoryView is
- * created.
+ * Directory implementation which represents a read-only subset of another existing Directory.
+ * Access is provided only to a limited set of objects, determined by the set of identifiers
+ * provided when the DirectoryView is created.
  *
- * @param <ObjectType>
- *     The type of objects accessible through this DirectoryView.
+ * @param <ObjectType> The type of objects accessible through this DirectoryView.
  */
 public class DirectoryView<ObjectType extends Identifiable>
-        implements Directory<ObjectType> {
+    implements Directory<ObjectType> {
 
-    /**
-     * The Directory from which the given set of objects will be retrieved.
-     */
-    private final Directory<ObjectType> directory;
+  /**
+   * The Directory from which the given set of objects will be retrieved.
+   */
+  private final Directory<ObjectType> directory;
 
-    /**
-     * The set of identifiers representing the restricted set of objects that
-     * this DirectoryView should provide access to.
-     */
-    private final Set<String> identifiers;
+  /**
+   * The set of identifiers representing the restricted set of objects that this DirectoryView
+   * should provide access to.
+   */
+  private final Set<String> identifiers;
 
-    /**
-     * Creates a new DirectoryView which provides access to a read-only subset
-     * of the objects in the given Directory. Only objects whose identifiers
-     * are within the provided set will be accessible.
-     *
-     * @param directory
-     *     The Directory of which this DirectoryView represents a subset.
-     *
-     * @param identifiers
-     *     The identifiers of all objects which should be accessible through
-     *     this DirectoryView. Objects which do not have identifiers within
-     *     the provided set will be inaccessible.
-     */
-    public DirectoryView(Directory<ObjectType> directory,
-            Set<String> identifiers) {
-        this.directory = directory;
-        this.identifiers = identifiers;
+  /**
+   * Creates a new DirectoryView which provides access to a read-only subset of the objects in the
+   * given Directory. Only objects whose identifiers are within the provided set will be
+   * accessible.
+   *
+   * @param directory   The Directory of which this DirectoryView represents a subset.
+   * @param identifiers The identifiers of all objects which should be accessible through this
+   *                    DirectoryView. Objects which do not have identifiers within the provided set
+   *                    will be inaccessible.
+   */
+  public DirectoryView(Directory<ObjectType> directory,
+      Set<String> identifiers) {
+    this.directory = directory;
+    this.identifiers = identifiers;
+  }
+
+  @Override
+  public ObjectType get(String identifier) throws GuacamoleException {
+
+    // Attempt to retrieve the requested object ONLY if it's within the
+    // originally-specified subset
+    if (!identifiers.contains(identifier)) {
+      return null;
     }
 
-    @Override
-    public ObjectType get(String identifier) throws GuacamoleException {
+    // Delegate to underlying directory
+    return directory.get(identifier);
 
-        // Attempt to retrieve the requested object ONLY if it's within the
-        // originally-specified subset
-        if (!identifiers.contains(identifier))
-            return null;
+  }
 
-        // Delegate to underlying directory
-        return directory.get(identifier);
+  @Override
+  public Collection<ObjectType> getAll(Collection<String> identifiers)
+      throws GuacamoleException {
 
-    }
+    // Reduce requested identifiers to only those which occur within the
+    // originally-specified subset
+    identifiers = new ArrayList<String>(identifiers);
+    identifiers.retainAll(this.identifiers);
 
-    @Override
-    public Collection<ObjectType> getAll(Collection<String> identifiers)
-            throws GuacamoleException {
+    // Delegate to underlying directory
+    return directory.getAll(identifiers);
 
-        // Reduce requested identifiers to only those which occur within the
-        // originally-specified subset
-        identifiers = new ArrayList<String>(identifiers);
-        identifiers.retainAll(this.identifiers);
+  }
 
-        // Delegate to underlying directory
-        return directory.getAll(identifiers);
+  @Override
+  public Set<String> getIdentifiers() throws GuacamoleException {
+    return identifiers;
+  }
 
-    }
+  @Override
+  public void add(ObjectType object) throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("Directory view is read-only");
+  }
 
-    @Override
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return identifiers;
-    }
+  @Override
+  public void update(ObjectType object) throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("Directory view is read-only");
+  }
 
-    @Override
-    public void add(ObjectType object) throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("Directory view is read-only");
-    }
-
-    @Override
-    public void update(ObjectType object) throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("Directory view is read-only");
-    }
-
-    @Override
-    public void remove(String identifier) throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("Directory view is read-only");
-    }
+  @Override
+  public void remove(String identifier) throws GuacamoleException {
+    throw new GuacamoleUnsupportedException("Directory view is read-only");
+  }
 
 }

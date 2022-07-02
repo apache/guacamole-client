@@ -25,9 +25,8 @@ import java.util.Map;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 
 /**
- * An extremely simple read-only implementation of a Directory of
- * ConnectionGroup which provides which provides access to a pre-defined
- * Collection of ConnectionGroups.
+ * An extremely simple read-only implementation of a Directory of ConnectionGroup which provides
+ * which provides access to a pre-defined Collection of ConnectionGroups.
  *
  * @deprecated Use {@link SimpleDirectory} instead.
  */
@@ -35,51 +34,49 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 public class SimpleConnectionGroupDirectory
     extends SimpleDirectory<ConnectionGroup> {
 
-    /**
-     * The Map of ConnectionGroups to provide access to.
-     */
-    private final Map<String, ConnectionGroup> connectionGroups =
-            new HashMap<String, ConnectionGroup>();
+  /**
+   * The Map of ConnectionGroups to provide access to.
+   */
+  private final Map<String, ConnectionGroup> connectionGroups =
+      new HashMap<String, ConnectionGroup>();
 
-    /**
-     * Creates a new SimpleConnectionGroupDirectory which contains the given
-     * groups.
-     *
-     * @param groups A Collection of all groups that should be present in this
-     *               connection group directory.
-     */
-    public SimpleConnectionGroupDirectory(Collection<ConnectionGroup> groups) {
+  /**
+   * Creates a new SimpleConnectionGroupDirectory which contains the given groups.
+   *
+   * @param groups A Collection of all groups that should be present in this connection group
+   *               directory.
+   */
+  public SimpleConnectionGroupDirectory(Collection<ConnectionGroup> groups) {
 
-        // Add all given groups
-        for (ConnectionGroup group : groups)
-            connectionGroups.put(group.getIdentifier(), group);
-
-        // Use the connection group map to back the underlying AbstractDirectory
-        super.setObjects(connectionGroups);
-
+    // Add all given groups
+    for (ConnectionGroup group : groups) {
+      connectionGroups.put(group.getIdentifier(), group);
     }
 
-    /**
-     * An internal method for modifying the ConnectionGroups in this Directory.
-     * Returns the previous connection group for the given identifier, if found.
-     *
-     * @param connectionGroup The connection group to add or update the
-     *                        Directory with.
-     * @return The previous connection group for the connection group
-     *         identifier, if found.
-     */
-    public ConnectionGroup putConnectionGroup(ConnectionGroup connectionGroup) {
-        return connectionGroups.put(connectionGroup.getIdentifier(), connectionGroup);
-    }
+    // Use the connection group map to back the underlying AbstractDirectory
+    super.setObjects(connectionGroups);
 
-    /**
-     * An internal method for removing a ConnectionGroup from this Directory.
-     *
-     * @param identifier The identifier of the ConnectionGroup to remove.
-     * @return The previous connection group for the given identifier, if found.
-     */
-    public ConnectionGroup removeConnectionGroup(String identifier) {
-        return connectionGroups.remove(identifier);
-    }
+  }
+
+  /**
+   * An internal method for modifying the ConnectionGroups in this Directory. Returns the previous
+   * connection group for the given identifier, if found.
+   *
+   * @param connectionGroup The connection group to add or update the Directory with.
+   * @return The previous connection group for the connection group identifier, if found.
+   */
+  public ConnectionGroup putConnectionGroup(ConnectionGroup connectionGroup) {
+    return connectionGroups.put(connectionGroup.getIdentifier(), connectionGroup);
+  }
+
+  /**
+   * An internal method for removing a ConnectionGroup from this Directory.
+   *
+   * @param identifier The identifier of the ConnectionGroup to remove.
+   * @return The previous connection group for the given identifier, if found.
+   */
+  public ConnectionGroup removeConnectionGroup(String identifier) {
+    return connectionGroups.remove(identifier);
+  }
 
 }

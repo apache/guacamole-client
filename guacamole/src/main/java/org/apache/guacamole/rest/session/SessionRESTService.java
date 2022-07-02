@@ -30,50 +30,43 @@ import org.apache.guacamole.rest.TokenParam;
 import org.apache.guacamole.rest.auth.AuthenticationService;
 
 /**
- * A REST service which exposes all data associated with Guacamole users'
- * sessions.
+ * A REST service which exposes all data associated with Guacamole users' sessions.
  */
 @Path("/session")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class SessionRESTService {
 
-    /**
-     * A service for authenticating users from auth tokens.
-     */
-    @Inject
-    private AuthenticationService authenticationService;
+  /**
+   * A service for authenticating users from auth tokens.
+   */
+  @Inject
+  private AuthenticationService authenticationService;
 
-    /**
-     * Factory for creating SessionResources which expose a given
-     * GuacamoleSession.
-     */
-    @Inject
-    private SessionResourceFactory sessionResourceFactory;
+  /**
+   * Factory for creating SessionResources which expose a given GuacamoleSession.
+   */
+  @Inject
+  private SessionResourceFactory sessionResourceFactory;
 
-    /**
-     * Retrieves a resource representing the GuacamoleSession associated with
-     * the given authentication token.
-     *
-     * @param authToken
-     *     The authentication token that is used to authenticate the user
-     *     having the session being exposed.
-     *
-     * @return
-     *     A resource representing the GuacamoleSession associated with the
-     *     given authentication token.
-     *
-     * @throws GuacamoleException
-     *     If the authentication token is invalid.
-     */
-    @Path("/")
-    public SessionResource getSessionResource(@TokenParam String authToken)
-            throws GuacamoleException {
+  /**
+   * Retrieves a resource representing the GuacamoleSession associated with the given authentication
+   * token.
+   *
+   * @param authToken The authentication token that is used to authenticate the user having the
+   *                  session being exposed.
+   * @return A resource representing the GuacamoleSession associated with the given authentication
+   * token.
+   * @throws GuacamoleException If the authentication token is invalid.
+   */
+  @Path("/")
+  public SessionResource getSessionResource(@TokenParam String authToken)
+      throws GuacamoleException {
 
-        // Return a resource exposing the retrieved session
-        GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
-        return sessionResourceFactory.create(authToken, session);
+    // Return a resource exposing the retrieved session
+    GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
+    return sessionResourceFactory.create(authToken, session);
 
-    }
+  }
 
 }

@@ -18,18 +18,18 @@
  */
 
 .redirect-field-container {
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    display: table;
-    background: white;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  background: white;
 }
 
 .redirect-field {
-    width: 100%;
-    display: table-cell;
-    vertical-align: middle;
-    text-align: center;
+  width: 100%;
+  display: table-cell;
+  vertical-align: middle;
+  text-align: center;
 }

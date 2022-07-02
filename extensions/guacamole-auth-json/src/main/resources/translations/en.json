@@ -1,7 +1,5 @@
 {
-
-    "DATA_SOURCE_JSON" : {
-        "NAME" : "JSON"
-    }
-
+  "DATA_SOURCE_JSON": {
+    "NAME": "JSON"
+  }
 }

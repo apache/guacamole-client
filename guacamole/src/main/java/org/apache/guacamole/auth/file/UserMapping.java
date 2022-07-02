@@ -27,31 +27,30 @@ import java.util.Map;
  */
 public class UserMapping {
 
-    /**
-     * All authorizations, indexed by username.
-     */
-    private Map<String, Authorization> authorizations =
-            new HashMap<String, Authorization>();
+  /**
+   * All authorizations, indexed by username.
+   */
+  private Map<String, Authorization> authorizations =
+      new HashMap<String, Authorization>();
 
-    /**
-     * Adds the given authorization to the user mapping.
-     *
-     * @param authorization The authorization to add to the user mapping.
-     */
-    public void addAuthorization(Authorization authorization) {
-        authorizations.put(authorization.getUsername(), authorization);
-    }
+  /**
+   * Adds the given authorization to the user mapping.
+   *
+   * @param authorization The authorization to add to the user mapping.
+   */
+  public void addAuthorization(Authorization authorization) {
+    authorizations.put(authorization.getUsername(), authorization);
+  }
 
-    /**
-     * Returns the authorization corresponding to the user having the given
-     * username, if any.
-     *
-     * @param username The username to find the authorization for.
-     * @return The authorization corresponding to the user having the given
-     *         username, or null if no such authorization exists.
-     */
-    public Authorization getAuthorization(String username) {
-        return authorizations.get(username);
-    }
+  /**
+   * Returns the authorization corresponding to the user having the given username, if any.
+   *
+   * @param username The username to find the authorization for.
+   * @return The authorization corresponding to the user having the given username, or null if no
+   * such authorization exists.
+   */
+  public Authorization getAuthorization(String username) {
+    return authorizations.get(username);
+  }
 
 }

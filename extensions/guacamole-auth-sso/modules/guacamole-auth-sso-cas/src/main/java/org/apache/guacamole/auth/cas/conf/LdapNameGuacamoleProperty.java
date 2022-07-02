@@ -21,29 +21,29 @@ package org.apache.guacamole.auth.cas.conf;
 
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
-import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
  * A GuacamoleProperty whose value is an LDAP DN.
  */
-public abstract class LdapNameGuacamoleProperty implements GuacamoleProperty<LdapName>  {
+public abstract class LdapNameGuacamoleProperty implements GuacamoleProperty<LdapName> {
 
-    @Override
-    public LdapName parseValue(String value) throws GuacamoleServerException {
+  @Override
+  public LdapName parseValue(String value) throws GuacamoleServerException {
 
-        // Consider null/empty values to be empty
-        if (value == null || value.isEmpty())
-            return null;
-
-        // Parse provided value as an LDAP DN
-        try {
-            return new LdapName(value);
-        }
-        catch (InvalidNameException e) {
-            throw new GuacamoleServerException("Invalid LDAP distinguished name.", e);
-        }
-
+    // Consider null/empty values to be empty
+    if (value == null || value.isEmpty()) {
+      return null;
     }
+
+    // Parse provided value as an LDAP DN
+    try {
+      return new LdapName(value);
+    } catch (InvalidNameException e) {
+      throw new GuacamoleServerException("Invalid LDAP distinguished name.", e);
+    }
+
+  }
 
 }

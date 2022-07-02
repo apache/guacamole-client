@@ -27,44 +27,31 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface ConnectionParameterMapper {
 
-    /**
-     * Returns a collection of all parameters associated with the connection
-     * having the given identifier.
-     *
-     * @param identifier
-     *     The identifier of the connection whose parameters are to be
-     *     retrieved.
-     *
-     * @return
-     *     A collection of all parameters associated with the connection
-     *     having the given identifier. This collection will be empty if no
-     *     such connection exists.
-     */
-    Collection<ConnectionParameterModel> select(@Param("identifier") String identifier);
+  /**
+   * Returns a collection of all parameters associated with the connection having the given
+   * identifier.
+   *
+   * @param identifier The identifier of the connection whose parameters are to be retrieved.
+   * @return A collection of all parameters associated with the connection having the given
+   * identifier. This collection will be empty if no such connection exists.
+   */
+  Collection<ConnectionParameterModel> select(@Param("identifier") String identifier);
 
-    /**
-     * Inserts each of the parameter model objects in the given collection as
-     * new connection parameters.
-     *
-     * @param parameters
-     *     The connection parameters to insert.
-     *
-     * @return
-     *     The number of rows inserted.
-     */
-    int insert(@Param("parameters") Collection<ConnectionParameterModel> parameters);
+  /**
+   * Inserts each of the parameter model objects in the given collection as new connection
+   * parameters.
+   *
+   * @param parameters The connection parameters to insert.
+   * @return The number of rows inserted.
+   */
+  int insert(@Param("parameters") Collection<ConnectionParameterModel> parameters);
 
-    /**
-     * Deletes all parameters associated with the connection having the given
-     * identifier.
-     *
-     * @param identifier
-     *     The identifier of the connection whose parameters should be
-     *     deleted.
-     *
-     * @return
-     *     The number of rows deleted.
-     */
-    int delete(@Param("identifier") String identifier);
-    
+  /**
+   * Deletes all parameters associated with the connection having the given identifier.
+   *
+   * @param identifier The identifier of the connection whose parameters should be deleted.
+   * @return The number of rows deleted.
+   */
+  int delete(@Param("identifier") String identifier);
+
 }

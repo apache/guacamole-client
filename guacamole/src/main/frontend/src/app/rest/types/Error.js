@@ -22,124 +22,124 @@
  */
 angular.module('rest').factory('Error', [function defineError() {
 
+  /**
+   * The object returned by REST API calls when an error occurs.
+   *
+   * @constructor
+   * @param {Error|Object} [template={}]
+   *     The object whose properties should be copied within the new
+   *     Error.
+   */
+  var Error = function Error(template) {
+
+    // Use empty object by default
+    template = template || {};
+
     /**
-     * The object returned by REST API calls when an error occurs.
+     * A human-readable message describing the error that occurred.
      *
-     * @constructor
-     * @param {Error|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     Error.
+     * @type String
      */
-    var Error = function Error(template) {
-
-        // Use empty object by default
-        template = template || {};
-
-        /**
-         * A human-readable message describing the error that occurred.
-         *
-         * @type String
-         */
-        this.message = template.message;
-
-        /**
-         * A message which can be translated using the translation service,
-         * consisting of a translation key and optional set of substitution
-         * variables.
-         *
-         * @type TranslatableMessage
-         */
-        this.translatableMessage = template.translatableMessage;
-
-        /**
-         * The Guacamole protocol status code associated with the error that
-         * occurred. This is only valid for errors of type STREAM_ERROR.
-         *
-         * @type Number
-         */
-        this.statusCode = template.statusCode;
-
-        /**
-         * The type string defining which values this parameter may contain,
-         * as well as what properties are applicable. Valid types are listed
-         * within Error.Type.
-         *
-         * @type String
-         * @default Error.Type.INTERNAL_ERROR
-         */
-        this.type = template.type || Error.Type.INTERNAL_ERROR;
-
-        /**
-         * Any parameters which were expected in the original request, or are
-         * now expected as a result of the original request, if any. If no
-         * such information is available, this will be null.
-         *
-         * @type Field[]
-         */
-        this.expected = template.expected;
-
-    };
+    this.message = template.message;
 
     /**
-     * All valid field types.
+     * A message which can be translated using the translation service,
+     * consisting of a translation key and optional set of substitution
+     * variables.
+     *
+     * @type TranslatableMessage
      */
-    Error.Type = {
+    this.translatableMessage = template.translatableMessage;
 
-        /**
-         * The requested operation could not be performed because the request
-         * itself was malformed.
-         *
-         * @type String
-         */
-        BAD_REQUEST : 'BAD_REQUEST',
+    /**
+     * The Guacamole protocol status code associated with the error that
+     * occurred. This is only valid for errors of type STREAM_ERROR.
+     *
+     * @type Number
+     */
+    this.statusCode = template.statusCode;
 
-        /**
-         * The credentials provided were invalid.
-         *
-         * @type String
-         */
-        INVALID_CREDENTIALS : 'INVALID_CREDENTIALS',
+    /**
+     * The type string defining which values this parameter may contain,
+     * as well as what properties are applicable. Valid types are listed
+     * within Error.Type.
+     *
+     * @type String
+     * @default Error.Type.INTERNAL_ERROR
+     */
+    this.type = template.type || Error.Type.INTERNAL_ERROR;
 
-        /**
-         * The credentials provided were not necessarily invalid, but were not
-         * sufficient to determine validity.
-         *
-         * @type String
-         */
-        INSUFFICIENT_CREDENTIALS : 'INSUFFICIENT_CREDENTIALS',
+    /**
+     * Any parameters which were expected in the original request, or are
+     * now expected as a result of the original request, if any. If no
+     * such information is available, this will be null.
+     *
+     * @type Field[]
+     */
+    this.expected = template.expected;
 
-        /**
-         * An internal server error has occurred.
-         *
-         * @type String
-         */
-        INTERNAL_ERROR : 'INTERNAL_ERROR',
+  };
 
-        /**
-         * An object related to the request does not exist.
-         *
-         * @type String
-         */
-        NOT_FOUND : 'NOT_FOUND',
+  /**
+   * All valid field types.
+   */
+  Error.Type = {
 
-        /**
-         * Permission was denied to perform the requested operation.
-         *
-         * @type String
-         */
-        PERMISSION_DENIED : 'PERMISSION_DENIED',
+    /**
+     * The requested operation could not be performed because the request
+     * itself was malformed.
+     *
+     * @type String
+     */
+    BAD_REQUEST: 'BAD_REQUEST',
 
-        /**
-         * An error occurred within an intercepted stream, terminating that
-         * stream. The Guacamole protocol status code of that error will be
-         * stored within statusCode.
-         *
-         * @type String
-         */
-        STREAM_ERROR : 'STREAM_ERROR'
+    /**
+     * The credentials provided were invalid.
+     *
+     * @type String
+     */
+    INVALID_CREDENTIALS: 'INVALID_CREDENTIALS',
 
-    };
+    /**
+     * The credentials provided were not necessarily invalid, but were not
+     * sufficient to determine validity.
+     *
+     * @type String
+     */
+    INSUFFICIENT_CREDENTIALS: 'INSUFFICIENT_CREDENTIALS',
 
-    return Error;
+    /**
+     * An internal server error has occurred.
+     *
+     * @type String
+     */
+    INTERNAL_ERROR: 'INTERNAL_ERROR',
+
+    /**
+     * An object related to the request does not exist.
+     *
+     * @type String
+     */
+    NOT_FOUND: 'NOT_FOUND',
+
+    /**
+     * Permission was denied to perform the requested operation.
+     *
+     * @type String
+     */
+    PERMISSION_DENIED: 'PERMISSION_DENIED',
+
+    /**
+     * An error occurred within an intercepted stream, terminating that
+     * stream. The Guacamole protocol status code of that error will be
+     * stored within statusCode.
+     *
+     * @type String
+     */
+    STREAM_ERROR: 'STREAM_ERROR'
+
+  };
+
+  return Error;
 
 }]);

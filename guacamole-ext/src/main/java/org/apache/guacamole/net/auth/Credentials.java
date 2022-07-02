@@ -25,215 +25,195 @@ import javax.servlet.http.HttpSession;
 
 
 /**
- * Simple arbitrary set of credentials, including a username/password pair,
- * the HttpServletRequest associated with the request for authorization
- * (if any) and the HttpSession associated with that request.
- *
- * This class is used along with AuthenticationProvider to provide arbitrary
- * HTTP-based authentication for Guacamole.
+ * Simple arbitrary set of credentials, including a username/password pair, the HttpServletRequest
+ * associated with the request for authorization (if any) and the HttpSession associated with that
+ * request.
+ * <p>
+ * This class is used along with AuthenticationProvider to provide arbitrary HTTP-based
+ * authentication for Guacamole.
  */
 public class Credentials implements Serializable {
 
-    /**
-     * Unique identifier associated with this specific version of Credentials.
-     */
-    private static final long serialVersionUID = 1L;
+  /**
+   * Unique identifier associated with this specific version of Credentials.
+   */
+  private static final long serialVersionUID = 1L;
 
-    /**
-     * An arbitrary username.
-     */
-    private String username;
+  /**
+   * An arbitrary username.
+   */
+  private String username;
 
-    /**
-     * An arbitrary password.
-     */
-    private String password;
+  /**
+   * An arbitrary password.
+   */
+  private String password;
 
-    /**
-     * The address of the client end of the connection which provided these
-     * credentials, if known.
-     */
-    private String remoteAddress;
+  /**
+   * The address of the client end of the connection which provided these credentials, if known.
+   */
+  private String remoteAddress;
 
-    /**
-     * The hostname or, if the hostname cannot be determined, the address of
-     * the client end of the connection which provided these credentials, if
-     * known.
-     */
-    private String remoteHostname;
+  /**
+   * The hostname or, if the hostname cannot be determined, the address of the client end of the
+   * connection which provided these credentials, if known.
+   */
+  private String remoteHostname;
 
-    /**
-     * The HttpServletRequest carrying additional credentials, if any.
-     */
-    private transient HttpServletRequest request;
+  /**
+   * The HttpServletRequest carrying additional credentials, if any.
+   */
+  private transient HttpServletRequest request;
 
-    /**
-     * The HttpSession carrying additional credentials, if any.
-     */
-    private transient HttpSession session;
+  /**
+   * The HttpSession carrying additional credentials, if any.
+   */
+  private transient HttpSession session;
 
-    /**
-     * Construct a Credentials object with the given username, password,
-     * and HTTP request.  The information is assigned to the various
-     * storage objects, and the remote hostname and address is parsed out
-     * of the request object.
-     * 
-     * @param username
-     *     The username that was provided for authentication.
-     * 
-     * @param password
-     *     The password that was provided for authentication.
-     * 
-     * @param request 
-     *     The HTTP request associated with the authentication
-     *     request.
-     */
-    public Credentials(String username, String password, HttpServletRequest request) {
-        this.username = username;
-        this.password = password;
-        this.request = request;
+  /**
+   * Construct a Credentials object with the given username, password, and HTTP request.  The
+   * information is assigned to the various storage objects, and the remote hostname and address is
+   * parsed out of the request object.
+   *
+   * @param username The username that was provided for authentication.
+   * @param password The password that was provided for authentication.
+   * @param request  The HTTP request associated with the authentication request.
+   */
+  public Credentials(String username, String password, HttpServletRequest request) {
+    this.username = username;
+    this.password = password;
+    this.request = request;
 
-        // Set the remote address
-        this.remoteAddress = request.getRemoteAddr();
+    // Set the remote address
+    this.remoteAddress = request.getRemoteAddr();
 
-        // Get the remote hostname
-        this.remoteHostname = request.getRemoteHost();
+    // Get the remote hostname
+    this.remoteHostname = request.getRemoteHost();
 
-        // If session exists get it, but don't create a new one.
-        this.session = request.getSession(false);
+    // If session exists get it, but don't create a new one.
+    this.session = request.getSession(false);
 
-    }
-    
-    /**
-     * Returns the password associated with this set of credentials.
-     *
-     * @return The password associated with this username/password pair, or
-     *         null if no password has been set.
-     */
-    public String getPassword() {
-        return password;
-    }
+  }
 
-    /**
-     * Sets the password associated with this set of credentials.
-     *
-     * @param password The password to associate with this username/password
-     *                 pair.
-     */
-    public void setPassword(String password) {
-        this.password = password;
-    }
+  /**
+   * Returns the password associated with this set of credentials.
+   *
+   * @return The password associated with this username/password pair, or null if no password has
+   * been set.
+   */
+  public String getPassword() {
+    return password;
+  }
 
-    /**
-     * Returns the username associated with this set of credentials.
-     *
-     * @return The username associated with this username/password pair, or
-     *         null if no username has been set.
-     */
-    public String getUsername() {
-        return username;
-    }
+  /**
+   * Sets the password associated with this set of credentials.
+   *
+   * @param password The password to associate with this username/password pair.
+   */
+  public void setPassword(String password) {
+    this.password = password;
+  }
 
-    /**
-     * Sets the username associated with this set of credentials.
-     *
-     * @param username The username to associate with this username/password
-     *                 pair.
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
+  /**
+   * Returns the username associated with this set of credentials.
+   *
+   * @return The username associated with this username/password pair, or null if no username has
+   * been set.
+   */
+  public String getUsername() {
+    return username;
+  }
 
-    /**
-     * Returns the HttpServletRequest associated with this set of credentials.
-     *
-     * @return The HttpServletRequest associated with this set of credentials,
-     *         or null if no such request exists.
-     */
-    public HttpServletRequest getRequest() {
-        return request;
-    }
+  /**
+   * Sets the username associated with this set of credentials.
+   *
+   * @param username The username to associate with this username/password pair.
+   */
+  public void setUsername(String username) {
+    this.username = username;
+  }
 
-    /**
-     * Sets the HttpServletRequest associated with this set of credentials.
-     *
-     * @param request  The HttpServletRequest to associated with this set of
-     *                 credentials.
-     */
-    public void setRequest(HttpServletRequest request) {
-        this.request = request;
-    }
+  /**
+   * Returns the HttpServletRequest associated with this set of credentials.
+   *
+   * @return The HttpServletRequest associated with this set of credentials, or null if no such
+   * request exists.
+   */
+  public HttpServletRequest getRequest() {
+    return request;
+  }
 
-    /**
-     * Returns the HttpSession associated with this set of credentials.
-     *
-     * @return The HttpSession associated with this set of credentials, or null
-     *         if no such request exists.
-     */
-    public HttpSession getSession() {
-        return session;
-    }
+  /**
+   * Sets the HttpServletRequest associated with this set of credentials.
+   *
+   * @param request The HttpServletRequest to associated with this set of credentials.
+   */
+  public void setRequest(HttpServletRequest request) {
+    this.request = request;
+  }
 
-    /**
-     * Sets the HttpSession associated with this set of credentials.
-     *
-     * @param session The HttpSession to associated with this set of
-     *                credentials.
-     */
-    public void setSession(HttpSession session) {
-        this.session = session;
-    }
+  /**
+   * Returns the HttpSession associated with this set of credentials.
+   *
+   * @return The HttpSession associated with this set of credentials, or null if no such request
+   * exists.
+   */
+  public HttpSession getSession() {
+    return session;
+  }
 
-    /**
-     * Returns the address of the client end of the connection which provided
-     * these credentials, if known.
-     *
-     * @return
-     *     The address of the client end of the connection which provided these
-     *     credentials, or null if the address is not known.
-     */
-    public String getRemoteAddress() {
-        return remoteAddress;
-    }
+  /**
+   * Sets the HttpSession associated with this set of credentials.
+   *
+   * @param session The HttpSession to associated with this set of credentials.
+   */
+  public void setSession(HttpSession session) {
+    this.session = session;
+  }
 
-    /**
-     * Sets the address of the client end of the connection which provided
-     * these credentials.
-     *
-     * @param remoteAddress
-     *     The address of the client end of the connection which provided these
-     *     credentials, or null if the address is not known.
-     */
-    public void setRemoteAddress(String remoteAddress) {
-        this.remoteAddress = remoteAddress;
-    }
+  /**
+   * Returns the address of the client end of the connection which provided these credentials, if
+   * known.
+   *
+   * @return The address of the client end of the connection which provided these credentials, or
+   * null if the address is not known.
+   */
+  public String getRemoteAddress() {
+    return remoteAddress;
+  }
 
-    /**
-     * Returns the hostname of the client end of the connection which provided
-     * these credentials, if known. If the hostname of the client cannot be
-     * determined, but the address is known, the address may be returned
-     * instead.
-     *
-     * @return
-     *     The hostname or address of the client end of the connection which
-     *     provided these credentials, or null if the hostname is not known.
-     */
-    public String getRemoteHostname() {
-        return remoteHostname;
-    }
+  /**
+   * Sets the address of the client end of the connection which provided these credentials.
+   *
+   * @param remoteAddress The address of the client end of the connection which provided these
+   *                      credentials, or null if the address is not known.
+   */
+  public void setRemoteAddress(String remoteAddress) {
+    this.remoteAddress = remoteAddress;
+  }
 
-    /**
-     * Sets the hostname of the client end of the connection which provided
-     * these credentials, if known. If the hostname of the client cannot be
-     * determined, but the address is known, the address may be specified
-     * instead.
-     *
-     * @param remoteHostname
-     *     The hostname or address of the client end of the connection which
-     *     provided these credentials, or null if the hostname is not known.
-     */
-    public void setRemoteHostname(String remoteHostname) {
-        this.remoteHostname = remoteHostname;
-    }
+  /**
+   * Returns the hostname of the client end of the connection which provided these credentials, if
+   * known. If the hostname of the client cannot be determined, but the address is known, the
+   * address may be returned instead.
+   *
+   * @return The hostname or address of the client end of the connection which provided these
+   * credentials, or null if the hostname is not known.
+   */
+  public String getRemoteHostname() {
+    return remoteHostname;
+  }
+
+  /**
+   * Sets the hostname of the client end of the connection which provided these credentials, if
+   * known. If the hostname of the client cannot be determined, but the address is known, the
+   * address may be specified instead.
+   *
+   * @param remoteHostname The hostname or address of the client end of the connection which
+   *                       provided these credentials, or null if the hostname is not known.
+   */
+  public void setRemoteHostname(String remoteHostname) {
+    this.remoteHostname = remoteHostname;
+  }
 
 }

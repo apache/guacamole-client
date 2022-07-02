@@ -22,75 +22,62 @@ package org.apache.guacamole.net.auth;
 import java.util.Map;
 
 /**
- * Represents the semantics which apply to an existing connection when shared,
- * along with a human-readable name and unique identifier.
+ * Represents the semantics which apply to an existing connection when shared, along with a
+ * human-readable name and unique identifier.
  */
 public interface SharingProfile extends Identifiable, Attributes {
 
-    /**
-     * Returns the human-readable name assigned to this SharingProfile.
-     *
-     * @return
-     *     The name assigned to this SharingProfile.
-     */
-    public String getName();
+  /**
+   * Returns the human-readable name assigned to this SharingProfile.
+   *
+   * @return The name assigned to this SharingProfile.
+   */
+  public String getName();
 
-    /**
-     * Sets the human-readable name assigned to this SharingProfile.
-     *
-     * @param name
-     *     The name to assign.
-     */
-    public void setName(String name);
+  /**
+   * Sets the human-readable name assigned to this SharingProfile.
+   *
+   * @param name The name to assign.
+   */
+  public void setName(String name);
 
-    /**
-     * Returns the identifier of the primary connection associated with this
-     * connection. The primary connection is the connection that this sharing
-     * profile can be used to share.
-     *
-     * @return
-     *     The identifier of the primary connection associated with this
-     *     connection.
-     */
-    public String getPrimaryConnectionIdentifier();
+  /**
+   * Returns the identifier of the primary connection associated with this connection. The primary
+   * connection is the connection that this sharing profile can be used to share.
+   *
+   * @return The identifier of the primary connection associated with this connection.
+   */
+  public String getPrimaryConnectionIdentifier();
 
-    /**
-     * Sets the identifier of the primary connection associated with this
-     * connection. The primary connection is the connection that this sharing
-     * profile can be used to share.
-     *
-     * @param identifier
-     *     The identifier of the primary connection associated with this
-     *     connection.
-     */
-    public void setPrimaryConnectionIdentifier(String identifier);
+  /**
+   * Sets the identifier of the primary connection associated with this connection. The primary
+   * connection is the connection that this sharing profile can be used to share.
+   *
+   * @param identifier The identifier of the primary connection associated with this connection.
+   */
+  public void setPrimaryConnectionIdentifier(String identifier);
 
-    /**
-     * Returns a map which contains connection parameter name/value pairs as
-     * key/value pairs. Changes to this map will affect the parameters stored
-     * within this sharing profile. The differences in these parameters compared
-     * to those of the associated primary connection yield different levels of
-     * access to users joining the primary connection via this sharing profile.
-     * Note that because configurations may contain sensitive information, some
-     * data in this map may be omitted or tokenized.
-     *
-     * @return
-     *     A map which contains all connection parameter name/value pairs as
-     *     key/value pairs.
-     */
-    public Map<String, String> getParameters();
+  /**
+   * Returns a map which contains connection parameter name/value pairs as key/value pairs. Changes
+   * to this map will affect the parameters stored within this sharing profile. The differences in
+   * these parameters compared to those of the associated primary connection yield different levels
+   * of access to users joining the primary connection via this sharing profile. Note that because
+   * configurations may contain sensitive information, some data in this map may be omitted or
+   * tokenized.
+   *
+   * @return A map which contains all connection parameter name/value pairs as key/value pairs.
+   */
+  public Map<String, String> getParameters();
 
-    /**
-     * Replaces all current parameters with the parameters defined within the
-     * given map. Key/value pairs within the map represent parameter name/value
-     * pairs. The differences in these parameters compared to those of the
-     * associated primary connection yield different levels of access to users
-     * joining the primary connection via this sharing profile.
-     *
-     * @param parameters
-     *     A map which contains all connection parameter name/value pairs as
-     *     key/value pairs.
-     */
-    public void setParameters(Map<String, String> parameters);
+  /**
+   * Replaces all current parameters with the parameters defined within the given map. Key/value
+   * pairs within the map represent parameter name/value pairs. The differences in these parameters
+   * compared to those of the associated primary connection yield different levels of access to
+   * users joining the primary connection via this sharing profile.
+   *
+   * @param parameters A map which contains all connection parameter name/value pairs as key/value
+   *                   pairs.
+   */
+  public void setParameters(Map<String, String> parameters);
 
 }

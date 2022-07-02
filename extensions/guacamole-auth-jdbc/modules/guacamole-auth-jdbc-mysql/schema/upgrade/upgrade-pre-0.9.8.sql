@@ -21,32 +21,41 @@
 -- Add per-user time-based access restrictions.
 --
 
-ALTER TABLE guacamole_user ADD COLUMN access_window_start    TIME;
-ALTER TABLE guacamole_user ADD COLUMN access_window_end      TIME;
+ALTER TABLE guacamole_user
+    ADD COLUMN access_window_start TIME;
+ALTER TABLE guacamole_user
+    ADD COLUMN access_window_end TIME;
 
 --
 -- Add per-user date-based account validity restrictions.
 --
 
-ALTER TABLE guacamole_user ADD COLUMN valid_from  DATE;
-ALTER TABLE guacamole_user ADD COLUMN valid_until DATE;
+ALTER TABLE guacamole_user
+    ADD COLUMN valid_from DATE;
+ALTER TABLE guacamole_user
+    ADD COLUMN valid_until DATE;
 
 --
 -- Add per-user timezone for sake of time comparisons/interpretation.
 --
 
-ALTER TABLE guacamole_user ADD COLUMN timezone VARCHAR(64);
+ALTER TABLE guacamole_user
+    ADD COLUMN timezone VARCHAR(64);
 
 --
 -- Add connection concurrency limits
 --
 
-ALTER TABLE guacamole_connection ADD COLUMN max_connections          INT(11);
-ALTER TABLE guacamole_connection ADD COLUMN max_connections_per_user INT(11);
+ALTER TABLE guacamole_connection
+    ADD COLUMN max_connections INT(11);
+ALTER TABLE guacamole_connection
+    ADD COLUMN max_connections_per_user INT(11);
 
 --
 -- Add connection group concurrency limits
 --
 
-ALTER TABLE guacamole_connection_group ADD COLUMN max_connections          INT(11);
-ALTER TABLE guacamole_connection_group ADD COLUMN max_connections_per_user INT(11);
+ALTER TABLE guacamole_connection_group
+    ADD COLUMN max_connections INT(11);
+ALTER TABLE guacamole_connection_group
+    ADD COLUMN max_connections_per_user INT(11);

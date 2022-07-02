@@ -35,7 +35,6 @@ import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Permissions;
-import org.apache.guacamole.rest.directory.DirectoryView;
 import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
@@ -48,169 +47,153 @@ import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
 import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
+import org.apache.guacamole.rest.directory.DirectoryView;
 import org.apache.guacamole.rest.history.ConnectionHistoryResource;
 import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A REST resource which abstracts the operations available on an existing
- * Connection.
+ * A REST resource which abstracts the operations available on an existing Connection.
  */
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConnectionResource extends DirectoryObjectResource<Connection, APIConnection> {
 
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(ConnectionResource.class);
-    
-    /**
-     * The UserContext associated with the Directory which contains the
-     * Connection exposed by this resource.
-     */
-    private final UserContext userContext;
+  /**
+   * Logger for this class.
+   */
+  private static final Logger logger = LoggerFactory.getLogger(ConnectionResource.class);
 
-    /**
-     * The Connection object represented by this ConnectionResource.
-     */
-    private final Connection connection;
+  /**
+   * The UserContext associated with the Directory which contains the Connection exposed by this
+   * resource.
+   */
+  private final UserContext userContext;
 
-    /**
-     * A factory which can be used to create instances of resources representing
-     * SharingProfiles.
-     */
-    @Inject
-    private DirectoryResourceFactory<SharingProfile, APISharingProfile>
-            sharingProfileDirectoryResourceFactory;
+  /**
+   * The Connection object represented by this ConnectionResource.
+   */
+  private final Connection connection;
 
-    /**
-     * Creates a new ConnectionResource which exposes the operations and
-     * subresources available for the given Connection.
-     *
-     * @param userContext
-     *     The UserContext associated with the given Directory.
-     *
-     * @param directory
-     *     The Directory which contains the given Connection.
-     *
-     * @param connection
-     *     The Connection that this ConnectionResource should represent.
-     *
-     * @param translator
-     *     A DirectoryObjectTranslator implementation which handles the type of
-     *     object given.
-     */
-    @AssistedInject
-    public ConnectionResource(@Assisted UserContext userContext,
-            @Assisted Directory<Connection> directory,
-            @Assisted Connection connection,
-            DirectoryObjectTranslator<Connection, APIConnection> translator) {
-        super(userContext, directory, connection, translator);
-        this.userContext = userContext;
-        this.connection = connection;
+  /**
+   * A factory which can be used to create instances of resources representing SharingProfiles.
+   */
+  @Inject
+  private DirectoryResourceFactory<SharingProfile, APISharingProfile>
+      sharingProfileDirectoryResourceFactory;
+
+  /**
+   * Creates a new ConnectionResource which exposes the operations and subresources available for
+   * the given Connection.
+   *
+   * @param userContext The UserContext associated with the given Directory.
+   * @param directory   The Directory which contains the given Connection.
+   * @param connection  The Connection that this ConnectionResource should represent.
+   * @param translator  A DirectoryObjectTranslator implementation which handles the type of object
+   *                    given.
+   */
+  @AssistedInject
+  public ConnectionResource(@Assisted UserContext userContext,
+      @Assisted Directory<Connection> directory,
+      @Assisted Connection connection,
+      DirectoryObjectTranslator<Connection, APIConnection> translator) {
+    super(userContext, directory, connection, translator);
+    this.userContext = userContext;
+    this.connection = connection;
+  }
+
+  /**
+   * Retrieves the parameters associated with a single connection.
+   *
+   * @return A map of parameter name/value pairs.
+   * @throws GuacamoleException If an error occurs while retrieving the connection parameters.
+   */
+  @GET
+  @Path("parameters")
+  public Map<String, String> getConnectionParameters()
+      throws GuacamoleException {
+
+    // Pull effective permissions
+    Permissions effective = userContext.self().getEffectivePermissions();
+
+    // Retrieve permission sets
+    SystemPermissionSet systemPermissions = effective.getSystemPermissions();
+    ObjectPermissionSet connectionPermissions = effective.getConnectionPermissions();
+
+    // Deny access if adminstrative or update permission is missing
+    String identifier = connection.getIdentifier();
+    if (!systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER)
+        && !connectionPermissions.hasPermission(ObjectPermission.Type.UPDATE, identifier)) {
+      throw new GuacamoleSecurityException("Permission to read connection parameters denied.");
     }
 
-    /**
-     * Retrieves the parameters associated with a single connection.
-     * 
-     * @return
-     *     A map of parameter name/value pairs.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the connection parameters.
-     */
-    @GET
-    @Path("parameters")
-    public Map<String, String> getConnectionParameters()
-            throws GuacamoleException {
+    // Retrieve connection configuration
+    GuacamoleConfiguration config = connection.getConfiguration();
 
-        // Pull effective permissions
-        Permissions effective = userContext.self().getEffectivePermissions();
+    // Return parameter map
+    return config.getParameters();
 
-        // Retrieve permission sets
-        SystemPermissionSet systemPermissions = effective.getSystemPermissions();
-        ObjectPermissionSet connectionPermissions = effective.getConnectionPermissions();
+  }
 
-        // Deny access if adminstrative or update permission is missing
-        String identifier = connection.getIdentifier();
-        if (!systemPermissions.hasPermission(SystemPermission.Type.ADMINISTER)
-         && !connectionPermissions.hasPermission(ObjectPermission.Type.UPDATE, identifier))
-            throw new GuacamoleSecurityException("Permission to read connection parameters denied.");
+  /**
+   * Retrieves the usage history of a single connection.
+   *
+   * @return A list of connection records, describing the start and end times of various usages of
+   * this connection.
+   * @throws GuacamoleException If an error occurs while retrieving the connection history.
+   */
+  @SuppressWarnings("deprecation")
+  @Path("history")
+  public ConnectionHistoryResource getConnectionHistory()
+      throws GuacamoleException {
 
-        // Retrieve connection configuration
-        GuacamoleConfiguration config = connection.getConfiguration();
-
-        // Return parameter map
-        return config.getParameters();
-
+    // Try the current getConnectionHistory() method, first, for connection history.
+    try {
+      return new ConnectionHistoryResource(connection.getConnectionHistory()
+          .sort(ActivityRecordSet.SortableProperty.START_DATE, true));
+    } catch (GuacamoleUnsupportedException e) {
+      logger.debug("Call to getConnectionHistory() is unsupported, falling back to getHistory().",
+          e);
     }
 
-    /**
-     * Retrieves the usage history of a single connection.
-     * 
-     * @return
-     *     A list of connection records, describing the start and end times of
-     *     various usages of this connection.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the connection history.
-     */
-    @SuppressWarnings("deprecation")
-    @Path("history")
-    public ConnectionHistoryResource getConnectionHistory()
-            throws GuacamoleException {
-
-        // Try the current getConnectionHistory() method, first, for connection history.
-        try {
-            return new ConnectionHistoryResource(connection.getConnectionHistory()
-                    .sort(ActivityRecordSet.SortableProperty.START_DATE, true));
-        }
-        catch (GuacamoleUnsupportedException e) {
-            logger.debug("Call to getConnectionHistory() is unsupported, falling back to getHistory().", e);
-        }
-        
-        // Fall back to the deprecated getHistory() method.
-        try {
-            return new ConnectionHistoryResource(new SimpleActivityRecordSet<>(connection.getHistory()));
-        }
-        catch (GuacamoleUnsupportedException e) {
-            logger.debug("Call to getHistory() is unsupported, no connection history records will be returned.", e);
-        }
-        
-        // If all fails, return an empty connection history set.
-        return new ConnectionHistoryResource(new SimpleActivityRecordSet<>());
-
+    // Fall back to the deprecated getHistory() method.
+    try {
+      return new ConnectionHistoryResource(new SimpleActivityRecordSet<>(connection.getHistory()));
+    } catch (GuacamoleUnsupportedException e) {
+      logger.debug(
+          "Call to getHistory() is unsupported, no connection history records will be returned.",
+          e);
     }
 
-    /**
-     * Returns a resource which provides read-only access to the subset of
-     * SharingProfiles that the current user can use to share this connection.
-     *
-     * @return
-     *     A resource which provides read-only access to the subset of
-     *     SharingProfiles that the current user can use to share this
-     *     connection.
-     *
-     * @throws GuacamoleException
-     *     If the SharingProfiles associated with this connection cannot be
-     *     retrieved.
-     */
-    @Path("sharingProfiles")
-    public DirectoryResource<SharingProfile, APISharingProfile>
-            getSharingProfileDirectoryResource() throws GuacamoleException {
+    // If all fails, return an empty connection history set.
+    return new ConnectionHistoryResource(new SimpleActivityRecordSet<>());
 
-        // Produce subset of all SharingProfiles, containing only those which
-        // are associated with this connection
-        Directory<SharingProfile> sharingProfiles = new DirectoryView<>(
-            userContext.getSharingProfileDirectory(),
-            connection.getSharingProfileIdentifiers()
-        );
+  }
 
-        // Return a new resource which provides access to only those SharingProfiles
-        return sharingProfileDirectoryResourceFactory.create(userContext, sharingProfiles);
+  /**
+   * Returns a resource which provides read-only access to the subset of SharingProfiles that the
+   * current user can use to share this connection.
+   *
+   * @return A resource which provides read-only access to the subset of SharingProfiles that the
+   * current user can use to share this connection.
+   * @throws GuacamoleException If the SharingProfiles associated with this connection cannot be
+   *                            retrieved.
+   */
+  @Path("sharingProfiles")
+  public DirectoryResource<SharingProfile, APISharingProfile>
+  getSharingProfileDirectoryResource() throws GuacamoleException {
 
-    }
+    // Produce subset of all SharingProfiles, containing only those which
+    // are associated with this connection
+    Directory<SharingProfile> sharingProfiles = new DirectoryView<>(
+        userContext.getSharingProfileDirectory(),
+        connection.getSharingProfileIdentifiers()
+    );
+
+    // Return a new resource which provides access to only those SharingProfiles
+    return sharingProfileDirectoryResourceFactory.create(userContext, sharingProfiles);
+
+  }
 
 }

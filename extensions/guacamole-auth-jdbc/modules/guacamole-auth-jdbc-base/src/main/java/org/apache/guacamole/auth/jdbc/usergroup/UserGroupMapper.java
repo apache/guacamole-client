@@ -27,16 +27,12 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface UserGroupMapper extends ModeledDirectoryObjectMapper<UserGroupModel> {
 
-    /**
-     * Returns the group having the given name, if any. If no such group
-     * exists, null is returned.
-     *
-     * @param name
-     *     The name of the group to return.
-     *
-     * @return
-     *     The group having the given name, or null if no such group exists.
-     */
-    UserGroupModel selectOne(@Param("name") String name);
+  /**
+   * Returns the group having the given name, if any. If no such group exists, null is returned.
+   *
+   * @param name The name of the group to return.
+   * @return The group having the given name, or null if no such group exists.
+   */
+  UserGroupModel selectOne(@Param("name") String name);
 
 }

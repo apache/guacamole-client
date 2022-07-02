@@ -18,7 +18,6 @@
  */
 
 /**
- * Classes related to the manipulation of active connections via the Guacamole
- * REST API.
+ * Classes related to the manipulation of active connections via the Guacamole REST API.
  */
 package org.apache.guacamole.rest.activeconnection;

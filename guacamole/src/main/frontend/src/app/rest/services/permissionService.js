@@ -21,13 +21,13 @@
  * Service for operating on user permissions via the REST API.
  */
 angular.module('rest').factory('permissionService', ['$injector',
-        function permissionService($injector) {
+  function permissionService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
-    var cacheService          = $injector.get('cacheService');
-    
+    var cacheService = $injector.get('cacheService');
+
     // Required types
     var PermissionPatch = $injector.get('PermissionPatch');
 
@@ -63,20 +63,23 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     The URL for the REST resource representing the user having the given
      *     username.
      */
-    var getEffectivePermissionsResourceURL = function getEffectivePermissionsResourceURL(dataSource, username) {
+    var getEffectivePermissionsResourceURL = function getEffectivePermissionsResourceURL(dataSource,
+        username) {
 
-        // Create base URL for data source
-        var base = 'api/session/data/' + encodeURIComponent(dataSource);
+      // Create base URL for data source
+      var base = 'api/session/data/' + encodeURIComponent(dataSource);
 
-        // If the username is that of the current user, do not rely on the
-        // user actually existing (they may not). Access their permissions via
-        // "self" rather than the collection of defined users.
-        if (username === authenticationService.getCurrentUsername())
-            return base + '/self/effectivePermissions';
+      // If the username is that of the current user, do not rely on the
+      // user actually existing (they may not). Access their permissions via
+      // "self" rather than the collection of defined users.
+      if (username === authenticationService.getCurrentUsername()) {
+        return base + '/self/effectivePermissions';
+      }
 
-        // Otherwise, the user must exist for their permissions to be
-        // accessible. Use the collection of defined users.
-        return base + '/users/' + encodeURIComponent(username) + '/effectivePermissions';
+      // Otherwise, the user must exist for their permissions to be
+      // accessible. Use the collection of defined users.
+      return base + '/users/' + encodeURIComponent(username)
+          + '/effectivePermissions';
 
     };
 
@@ -103,14 +106,15 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     A promise which will resolve with a @link{PermissionSet} upon
      *     success.
      */
-    service.getEffectivePermissions = function getEffectivePermissions(dataSource, userID) {
+    service.getEffectivePermissions = function getEffectivePermissions(dataSource,
+        userID) {
 
-        // Retrieve user permissions
-        return authenticationService.request({
-            cache   : cacheService.users,
-            method  : 'GET',
-            url     : getEffectivePermissionsResourceURL(dataSource, userID)
-        });
+      // Retrieve user permissions
+      return authenticationService.request({
+        cache: cacheService.users,
+        method: 'GET',
+        url: getEffectivePermissionsResourceURL(dataSource, userID)
+      });
 
     };
 
@@ -120,7 +124,7 @@ angular.module('rest').factory('permissionService', ['$injector',
      * permissions retrieved differ from effective permissions (those returned
      * by getEffectivePermissions()) in that only permissions which are directly
      * granted to the user or group are included.
-     * 
+     *
      * It is important to note that a particular data source can authenticate
      * and provide permissions for a user, even if that user does not exist
      * within that data source (and thus cannot be found beneath
@@ -143,25 +147,29 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     The URL for the REST resource representing the user or group having
      *     the given identifier.
      */
-    var getPermissionsResourceURL = function getPermissionsResourceURL(dataSource, identifier, group) {
+    var getPermissionsResourceURL = function getPermissionsResourceURL(dataSource,
+        identifier, group) {
 
-        // Create base URL for data source
-        var base = 'api/session/data/' + encodeURIComponent(dataSource);
+      // Create base URL for data source
+      var base = 'api/session/data/' + encodeURIComponent(dataSource);
 
-        // Access group permissions directly (there is no "self" for user groups
-        // as there is for users)
-        if (group)
-            return base + '/userGroups/' + encodeURIComponent(identifier) + '/permissions';
+      // Access group permissions directly (there is no "self" for user groups
+      // as there is for users)
+      if (group) {
+        return base + '/userGroups/' + encodeURIComponent(identifier)
+            + '/permissions';
+      }
 
-        // If the username is that of the current user, do not rely on the
-        // user actually existing (they may not). Access their permissions via
-        // "self" rather than the collection of defined users.
-        if (identifier === authenticationService.getCurrentUsername())
-            return base + '/self/permissions';
+      // If the username is that of the current user, do not rely on the
+      // user actually existing (they may not). Access their permissions via
+      // "self" rather than the collection of defined users.
+      if (identifier === authenticationService.getCurrentUsername()) {
+        return base + '/self/permissions';
+      }
 
-        // Otherwise, the user must exist for their permissions to be
-        // accessible. Use the collection of defined users.
-        return base + '/users/' + encodeURIComponent(identifier) + '/permissions';
+      // Otherwise, the user must exist for their permissions to be
+      // accessible. Use the collection of defined users.
+      return base + '/users/' + encodeURIComponent(identifier) + '/permissions';
 
     };
 
@@ -173,7 +181,7 @@ angular.module('rest').factory('permissionService', ['$injector',
      * getEffectivePermissions()) in that both users and groups may be queried,
      * and only permissions which are directly granted to the user or group are
      * included.
-     * 
+     *
      * @param {String} dataSource
      *     The unique identifier of the data source containing the user or group
      *     whose permissions should be retrieved. This identifier corresponds to
@@ -190,14 +198,15 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     A promise which will resolve with a @link{PermissionSet} upon
      *     success.
      */
-    service.getPermissions = function getPermissions(dataSource, identifier, group) {
+    service.getPermissions = function getPermissions(dataSource, identifier,
+        group) {
 
-        // Retrieve user/group permissions
-        return authenticationService.request({
-            cache   : cacheService.users,
-            method  : 'GET',
-            url     : getPermissionsResourceURL(dataSource, identifier, group)
-        });
+      // Retrieve user/group permissions
+      return authenticationService.request({
+        cache: cacheService.users,
+        method: 'GET',
+        url: getPermissionsResourceURL(dataSource, identifier, group)
+      });
 
     };
 
@@ -211,7 +220,7 @@ angular.module('rest').factory('permissionService', ['$injector',
      * @param {String} operation
      *     The operation to specify within each of the patches. Valid values
      *     for this are defined within PermissionPatch.Operation.
-     *     
+     *
      * @param {String} path
      *     The path of the permissions being patched. The path is a JSON path
      *     describing the position of the permissions within a PermissionSet.
@@ -221,25 +230,26 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     where each type string is a value from
      *     PermissionSet.ObjectPermissionType.
      */
-    var addObjectPatchOperations = function addObjectPatchOperations(patch, operation, path, permissions) {
+    var addObjectPatchOperations = function addObjectPatchOperations(patch,
+        operation, path, permissions) {
 
-        // Add object permission operations to patch
-        for (var identifier in permissions) {
-            permissions[identifier].forEach(function addObjectPatch(type) {
-                patch.push({
-                    op    : operation,
-                    path  : path + "/" + identifier,
-                    value : type
-                });
-            });
-        }
+      // Add object permission operations to patch
+      for (var identifier in permissions) {
+        permissions[identifier].forEach(function addObjectPatch(type) {
+          patch.push({
+            op: operation,
+            path: path + "/" + identifier,
+            value: type
+          });
+        });
+      }
 
     };
 
     /**
      * Adds patches for modifying any permission that can be stored within a
      * @link{PermissionSet}.
-     * 
+     *
      * @param {PermissionPatch[]} patch
      *     The array of patches to add new patches to.
      *
@@ -250,50 +260,51 @@ angular.module('rest').factory('permissionService', ['$injector',
      * @param {PermissionSet} permissions
      *     The set of permissions for which patches should be added.
      */
-    var addPatchOperations = function addPatchOperations(patch, operation, permissions) {
+    var addPatchOperations = function addPatchOperations(patch, operation,
+        permissions) {
 
-        // Add connection permission operations to patch
-        addObjectPatchOperations(patch, operation, "/connectionPermissions",
-            permissions.connectionPermissions);
+      // Add connection permission operations to patch
+      addObjectPatchOperations(patch, operation, "/connectionPermissions",
+          permissions.connectionPermissions);
 
-        // Add connection group permission operations to patch
-        addObjectPatchOperations(patch, operation, "/connectionGroupPermissions",
-            permissions.connectionGroupPermissions);
+      // Add connection group permission operations to patch
+      addObjectPatchOperations(patch, operation, "/connectionGroupPermissions",
+          permissions.connectionGroupPermissions);
 
-        // Add sharing profile permission operations to patch
-        addObjectPatchOperations(patch, operation, "/sharingProfilePermissions",
-            permissions.sharingProfilePermissions);
+      // Add sharing profile permission operations to patch
+      addObjectPatchOperations(patch, operation, "/sharingProfilePermissions",
+          permissions.sharingProfilePermissions);
 
-        // Add active connection permission operations to patch
-        addObjectPatchOperations(patch, operation, "/activeConnectionPermissions",
-            permissions.activeConnectionPermissions);
+      // Add active connection permission operations to patch
+      addObjectPatchOperations(patch, operation, "/activeConnectionPermissions",
+          permissions.activeConnectionPermissions);
 
-        // Add user permission operations to patch
-        addObjectPatchOperations(patch, operation, "/userPermissions",
-            permissions.userPermissions);
+      // Add user permission operations to patch
+      addObjectPatchOperations(patch, operation, "/userPermissions",
+          permissions.userPermissions);
 
-        // Add user group permission operations to patch
-        addObjectPatchOperations(patch, operation, "/userGroupPermissions",
-            permissions.userGroupPermissions);
+      // Add user group permission operations to patch
+      addObjectPatchOperations(patch, operation, "/userGroupPermissions",
+          permissions.userGroupPermissions);
 
-        // Add system operations to patch
-        permissions.systemPermissions.forEach(function addSystemPatch(type) {
-            patch.push({
-                op    : operation,
-                path  : "/systemPermissions",
-                value : type
-            });
+      // Add system operations to patch
+      permissions.systemPermissions.forEach(function addSystemPatch(type) {
+        patch.push({
+          op: operation,
+          path: "/systemPermissions",
+          value: type
         });
+      });
 
     };
-            
+
     /**
      * Makes a request to the REST API to modify the permissions for a given
      * user or group, returning a promise that can be used for processing the
      * results of the call. This request affects only the permissions directly
      * granted to the user or group, and may not affect permissions inherited
      * through other means (effective permissions).
-     * 
+     *
      * @param {String} dataSource
      *     The unique identifier of the data source containing the user or group
      *     whose permissions should be modified. This identifier corresponds to
@@ -301,7 +312,7 @@ angular.module('rest').factory('permissionService', ['$injector',
      *
      * @param {String} identifier
      *     The identifier of the user or group to modify the permissions of.
-     *                          
+     *
      * @param {PermissionSet} [permissionsToAdd]
      *     The set of permissions to add, if any.
      *
@@ -317,29 +328,31 @@ angular.module('rest').factory('permissionService', ['$injector',
      *     patch operation is successful.
      */
     service.patchPermissions = function patchPermissions(dataSource, identifier,
-            permissionsToAdd, permissionsToRemove, group) {
+        permissionsToAdd, permissionsToRemove, group) {
 
-        var permissionPatch = [];
-        
-        // Add all the add operations to the patch
-        addPatchOperations(permissionPatch, PermissionPatch.Operation.ADD, permissionsToAdd);
+      var permissionPatch = [];
 
-        // Add all the remove operations to the patch
-        addPatchOperations(permissionPatch, PermissionPatch.Operation.REMOVE, permissionsToRemove);
+      // Add all the add operations to the patch
+      addPatchOperations(permissionPatch, PermissionPatch.Operation.ADD,
+          permissionsToAdd);
 
-        // Patch user/group permissions
-        return authenticationService.request({
-            method  : 'PATCH', 
-            url     : getPermissionsResourceURL(dataSource, identifier, group),
-            data    : permissionPatch
-        })
-        
-        // Clear the cache
-        .then(function permissionsPatched(){
-            cacheService.users.removeAll();
-        });
+      // Add all the remove operations to the patch
+      addPatchOperations(permissionPatch, PermissionPatch.Operation.REMOVE,
+          permissionsToRemove);
+
+      // Patch user/group permissions
+      return authenticationService.request({
+        method: 'PATCH',
+        url: getPermissionsResourceURL(dataSource, identifier, group),
+        data: permissionPatch
+      })
+
+      // Clear the cache
+      .then(function permissionsPatched() {
+        cacheService.users.removeAll();
+      });
     };
-    
+
     return service;
 
-}]);
+  }]);

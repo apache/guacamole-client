@@ -25,70 +25,67 @@ import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
  * Possible values for PostgreSQL SSL connectivity.
  */
 public enum PostgreSQLSSLMode {
-    
-    /**
-     * Do not use SSL to connect to server.
-     */
-    @PropertyValue("disable")
-    DISABLE("disable"),
-    
-    /**
-     * Allow SSL connections, but try non-SSL, first.
-     */
-    @PropertyValue("allow")
-    ALLOW("allow"),
-    
-    /**
-     * Prefer SSL connections, falling back to non-SSL if that fails.
-     */
-    @PropertyValue("prefer")
-    PREFER("prefer"),
-    
-    /**
-     * Require SSL connections, do not connect if SSL fails.
-     */
-    @PropertyValue("require")
-    REQUIRE("require"),
-    
-    /**
-     * Require SSL connections and validate the CA certificate.
-     */
-    @PropertyValue("verify-ca")
-    VERIFY_CA("verify-ca"),
-    
-    /**
-     * Require SSL connections and validate both the CA and server certificates.
-     */
-    @PropertyValue("verify-full")
-    VERIFY_FULL("verify-full");
-    
-    /**
-     * The value expected by and passed on to the JDBC driver for the given
-     * SSL operation mode.
-     */
-    private final String driverValue;
-    
-    /**
-     * Create a new instance of this enum with the given driverValue as the
-     * value that will be used when configuring the JDBC driver.
-     * 
-     * @param driverValue
-     *     The value to use when configuring the JDBC driver.
-     */
-    PostgreSQLSSLMode(String driverValue) {
-        this.driverValue = driverValue;
-    }
-    
-    /**
-     * Returns the String value for a given Enum that properly configures the
-     * JDBC driver for the desired mode of SSL operation.
-     * 
-     * @return 
-     *     The String value for the current Enum that configures the JDBC driver
-     *     for the desired mode of SSL operation.
-     */
-    public String getDriverValue() {
-        return driverValue;
-    }
-    
+
+  /**
+   * Do not use SSL to connect to server.
+   */
+  @PropertyValue("disable")
+  DISABLE("disable"),
+
+  /**
+   * Allow SSL connections, but try non-SSL, first.
+   */
+  @PropertyValue("allow")
+  ALLOW("allow"),
+
+  /**
+   * Prefer SSL connections, falling back to non-SSL if that fails.
+   */
+  @PropertyValue("prefer")
+  PREFER("prefer"),
+
+  /**
+   * Require SSL connections, do not connect if SSL fails.
+   */
+  @PropertyValue("require")
+  REQUIRE("require"),
+
+  /**
+   * Require SSL connections and validate the CA certificate.
+   */
+  @PropertyValue("verify-ca")
+  VERIFY_CA("verify-ca"),
+
+  /**
+   * Require SSL connections and validate both the CA and server certificates.
+   */
+  @PropertyValue("verify-full")
+  VERIFY_FULL("verify-full");
+
+  /**
+   * The value expected by and passed on to the JDBC driver for the given SSL operation mode.
+   */
+  private final String driverValue;
+
+  /**
+   * Create a new instance of this enum with the given driverValue as the value that will be used
+   * when configuring the JDBC driver.
+   *
+   * @param driverValue The value to use when configuring the JDBC driver.
+   */
+  PostgreSQLSSLMode(String driverValue) {
+    this.driverValue = driverValue;
+  }
+
+  /**
+   * Returns the String value for a given Enum that properly configures the JDBC driver for the
+   * desired mode of SSL operation.
+   *
+   * @return The String value for the current Enum that configures the JDBC driver for the desired
+   * mode of SSL operation.
+   */
+  public String getDriverValue() {
+    return driverValue;
+  }
+
 }

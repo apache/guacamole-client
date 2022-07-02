@@ -17,51 +17,51 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-auth-header</artifactId>
+  <dependencies>
+
+    <!-- Guacamole Extension API -->
+    <dependency>
+      <artifactId>guacamole-ext</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+      <scope>provided</scope>
+      <version>1.4.0</version>
+    </dependency>
+
+    <!-- Guice -->
+    <dependency>
+      <artifactId>guice</artifactId>
+      <groupId>com.google.inject</groupId>
+    </dependency>
+
+    <!-- Java servlet API -->
+    <dependency>
+      <artifactId>servlet-api</artifactId>
+      <groupId>javax.servlet</groupId>
+      <scope>provided</scope>
+      <version>2.5</version>
+    </dependency>
+
+
+  </dependencies>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-auth-header</name>
+  <packaging>jar</packaging>
+  <parent>
+    <artifactId>extensions</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-header</artifactId>
-    <packaging>jar</packaging>
+    <relativePath>../</relativePath>
     <version>1.4.0</version>
-    <name>guacamole-auth-header</name>
-    <url>http://guacamole.apache.org/</url>
+  </parent>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>extensions</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../</relativePath>
-    </parent>
+  <url>http://guacamole.apache.org/</url>
 
-    <dependencies>
-
-        <!-- Guacamole Extension API -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-ext</artifactId>
-            <version>1.4.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-
-        <!-- Java servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-
-
-    </dependencies>
+  <version>1.4.0</version>
 
 </project>

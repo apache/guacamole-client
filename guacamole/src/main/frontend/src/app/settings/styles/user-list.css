@@ -18,24 +18,24 @@
  */
 
 .settings.users table.user-list {
-    width: 100%;
+  width: 100%;
 }
 
 .settings.users table.user-list th.last-active,
 .settings.users table.user-list td.last-active {
-    white-space: nowrap;
+  white-space: nowrap;
 }
 
 .settings.users table.user-list th,
 .settings.users table.user-list td {
-    width: 25%;
+  width: 25%;
 }
 
 .settings.users table.user-list tr.user td.username a[href] {
-    display: block;
-    padding: .5em 1em;
+  display: block;
+  padding: .5em 1em;
 }
 
 .settings.users table.user-list tr.user td.username {
-    padding: 0;
+  padding: 0;
 }

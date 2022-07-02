@@ -21,10 +21,10 @@
  * Service for operating on active connections via the REST API.
  */
 angular.module('rest').factory('activeConnectionService', ['$injector',
-        function activeConnectionService($injector) {
+  function activeConnectionService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
 
     var service = {};
@@ -47,11 +47,12 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
      */
     service.getActiveConnection = function getActiveConnection(dataSource, id) {
 
-        // Retrieve active connection
-        return authenticationService.request({
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections/' + encodeURIComponent(id)
-        });
+      // Retrieve active connection
+      return authenticationService.request({
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/activeConnections/' + encodeURIComponent(id)
+      });
 
     };
 
@@ -65,25 +66,28 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
      *     of these permissions for an active connection to appear in the
      *     result.  If null, no filtering will be performed. Valid values are
      *     listed within PermissionSet.ObjectType.
-     *                          
+     *
      * @returns {Promise.<Object.<String, ActiveConnection>>}
      *     A promise which will resolve with a map of @link{ActiveConnection}
      *     objects, where each key is the identifier of the corresponding
      *     active connection.
      */
-    service.getActiveConnections = function getActiveConnections(dataSource, permissionTypes) {
+    service.getActiveConnections = function getActiveConnections(dataSource,
+        permissionTypes) {
 
-        // Add permission filter if specified
-        var httpParameters = {};
-        if (permissionTypes)
-            httpParameters.permission = permissionTypes;
+      // Add permission filter if specified
+      var httpParameters = {};
+      if (permissionTypes) {
+        httpParameters.permission = permissionTypes;
+      }
 
-        // Retrieve tunnels
-        return authenticationService.request({
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
-            params  : httpParameters
-        });
+      // Retrieve tunnels
+      return authenticationService.request({
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/activeConnections',
+        params: httpParameters
+      });
 
     };
 
@@ -99,24 +103,26 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
      *     A promise for the HTTP call which will succeed if and only if the
      *     delete operation is successful.
      */
-    service.deleteActiveConnections = function deleteActiveConnections(dataSource, identifiers) {
+    service.deleteActiveConnections = function deleteActiveConnections(dataSource,
+        identifiers) {
 
-        // Convert provided array of identifiers to a patch
-        var activeConnectionPatch = [];
-        identifiers.forEach(function addActiveConnectionPatch(identifier) {
-            activeConnectionPatch.push({
-                op   : 'remove',
-                path : '/' + identifier 
-            });
+      // Convert provided array of identifiers to a patch
+      var activeConnectionPatch = [];
+      identifiers.forEach(function addActiveConnectionPatch(identifier) {
+        activeConnectionPatch.push({
+          op: 'remove',
+          path: '/' + identifier
         });
+      });
 
-        // Perform active connection deletion via PATCH
-        return authenticationService.request({
-            method  : 'PATCH',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
-            data    : activeConnectionPatch
-        });
-        
+      // Perform active connection deletion via PATCH
+      return authenticationService.request({
+        method: 'PATCH',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/activeConnections',
+        data: activeConnectionPatch
+      });
+
     };
 
     /**
@@ -136,18 +142,19 @@ angular.module('rest').factory('activeConnectionService', ['$injector',
      *     A promise which will resolve with a @link{UserCredentials} object
      *     upon success.
      */
-    service.getSharingCredentials = function getSharingCredentials(dataSource, id, sharingProfile) {
+    service.getSharingCredentials = function getSharingCredentials(dataSource,
+        id, sharingProfile) {
 
-        // Generate sharing credentials
-        return authenticationService.request({
-            method  : 'GET',
-            url     : 'api/session/data/' + encodeURIComponent(dataSource)
-                        + '/activeConnections/' + encodeURIComponent(id)
-                        + '/sharingCredentials/' + encodeURIComponent(sharingProfile)
-        });
+      // Generate sharing credentials
+      return authenticationService.request({
+        method: 'GET',
+        url: 'api/session/data/' + encodeURIComponent(dataSource)
+            + '/activeConnections/' + encodeURIComponent(id)
+            + '/sharingCredentials/' + encodeURIComponent(sharingProfile)
+      });
 
     };
 
     return service;
 
-}]);
+  }]);

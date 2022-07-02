@@ -26,55 +26,60 @@
  */
 angular.module('index').filter('toArray', [function toArrayFactory() {
 
-    /**
-     * The name of the property to use to store the cached result of converting
-     * an object to an array. This property is added to each object converted,
-     * such that the same array is returned each time unless the original
-     * object has changed.
-     *
-     * @type String
-     */
-    var CACHE_KEY = '_guac_toArray';
+  /**
+   * The name of the property to use to store the cached result of converting
+   * an object to an array. This property is added to each object converted,
+   * such that the same array is returned each time unless the original
+   * object has changed.
+   *
+   * @type String
+   */
+  var CACHE_KEY = '_guac_toArray';
 
-    return function toArrayFilter(input) {
+  return function toArrayFilter(input) {
 
-        // If no object is available, just return an empty array
-        if (!input) {
-            return [];
-        }
+    // If no object is available, just return an empty array
+    if (!input) {
+      return [];
+    }
 
-        // Translate object into array of key/value pairs
-        var array = [];
-        angular.forEach(input, function fetchValueByKey(value, key) {
-            array.push({
-                key   : key,
-                value : value
-            });
-        });
+    // Translate object into array of key/value pairs
+    var array = [];
+    angular.forEach(input, function fetchValueByKey(value, key) {
+      array.push({
+        key: key,
+        value: value
+      });
+    });
 
-        // Sort consistently by key
-        array.sort(function compareKeys(a, b) {
-            if (a.key < b.key) return -1;
-            if (a.key > b.key) return 1;
-            return 0;
-        });
+    // Sort consistently by key
+    array.sort(function compareKeys(a, b) {
+      if (a.key < b.key) {
+        return -1;
+      }
+      if (a.key > b.key) {
+        return 1;
+      }
+      return 0;
+    });
 
-        // Define non-enumerable property for holding cached array
-        if (!input[CACHE_KEY]) {
-            Object.defineProperty(input, CACHE_KEY, {
-                value        : [],
-                enumerable   : false,
-                configurable : true,
-                writable     : true
-            });
-        }
+    // Define non-enumerable property for holding cached array
+    if (!input[CACHE_KEY]) {
+      Object.defineProperty(input, CACHE_KEY, {
+        value: [],
+        enumerable: false,
+        configurable: true,
+        writable: true
+      });
+    }
 
-        // Update cache if resulting array is different
-        if (!angular.equals(input[CACHE_KEY], array))
-            input[CACHE_KEY] = array;
+    // Update cache if resulting array is different
+    if (!angular.equals(input[CACHE_KEY], array)) {
+      input[CACHE_KEY] = array;
+    }
 
-        return input[CACHE_KEY];
+    return input[CACHE_KEY];
 
-    };
+  };
 
 }]);

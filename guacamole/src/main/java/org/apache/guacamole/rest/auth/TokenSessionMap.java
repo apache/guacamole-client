@@ -22,43 +22,40 @@ package org.apache.guacamole.rest.auth;
 import org.apache.guacamole.GuacamoleSession;
 
 /**
- * Represents a mapping of auth token to Guacamole session for the REST 
- * authentication system.
+ * Represents a mapping of auth token to Guacamole session for the REST authentication system.
  */
 public interface TokenSessionMap {
-    
-    /**
-     * Registers that a user has just logged in with the specified authToken and
-     * GuacamoleSession.
-     * 
-     * @param authToken The authentication token for the logged in user.
-     * @param session The GuacamoleSession for the logged in user.
-     */
-    public void put(String authToken, GuacamoleSession session);
-    
-    /**
-     * Get the GuacamoleSession for a logged in user. If the auth token does not
-     * represent a user who is currently logged in, returns null. 
-     * 
-     * @param authToken The authentication token for the logged in user.
-     * @return The GuacamoleSession for the given auth token, if the auth token
-     *         represents a currently logged in user, null otherwise.
-     */
-    public GuacamoleSession get(String authToken);
 
-    /**
-     * Removes the GuacamoleSession associated with the given auth token.
-     *
-     * @param authToken The token to remove.
-     * @return The GuacamoleSession for the given auth token, if the auth token
-     *         represents a currently logged in user, null otherwise.
-     */
-    public GuacamoleSession remove(String authToken);
-    
-    /**
-     * Shuts down this session map, disallowing future sessions and reclaiming
-     * any resources.
-     */
-    public void shutdown();
-    
+  /**
+   * Registers that a user has just logged in with the specified authToken and GuacamoleSession.
+   *
+   * @param authToken The authentication token for the logged in user.
+   * @param session   The GuacamoleSession for the logged in user.
+   */
+  public void put(String authToken, GuacamoleSession session);
+
+  /**
+   * Get the GuacamoleSession for a logged in user. If the auth token does not represent a user who
+   * is currently logged in, returns null.
+   *
+   * @param authToken The authentication token for the logged in user.
+   * @return The GuacamoleSession for the given auth token, if the auth token represents a currently
+   * logged in user, null otherwise.
+   */
+  public GuacamoleSession get(String authToken);
+
+  /**
+   * Removes the GuacamoleSession associated with the given auth token.
+   *
+   * @param authToken The token to remove.
+   * @return The GuacamoleSession for the given auth token, if the auth token represents a currently
+   * logged in user, null otherwise.
+   */
+  public GuacamoleSession remove(String authToken);
+
+  /**
+   * Shuts down this session map, disallowing future sessions and reclaiming any resources.
+   */
+  public void shutdown();
+
 }

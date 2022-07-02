@@ -17,69 +17,69 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-auth-json</artifactId>
+  <dependencies>
+
+    <!-- Guacamole Extension API -->
+    <dependency>
+      <artifactId>guacamole-ext</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+      <scope>provided</scope>
+      <version>1.4.0</version>
+    </dependency>
+
+    <!-- Guice -->
+    <dependency>
+      <artifactId>guice</artifactId>
+      <groupId>com.google.inject</groupId>
+    </dependency>
+
+    <!-- Jackson for JSON support -->
+    <dependency>
+      <artifactId>jackson-databind</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+    </dependency>
+
+    <!-- Guava Base Libraries -->
+    <dependency>
+      <artifactId>guava</artifactId>
+      <groupId>com.google.guava</groupId>
+    </dependency>
+
+    <!-- Java servlet API -->
+    <dependency>
+      <artifactId>servlet-api</artifactId>
+      <groupId>javax.servlet</groupId>
+      <scope>provided</scope>
+      <version>2.5</version>
+    </dependency>
+
+    <!-- Spring security library (required for IP address matching) -->
+    <dependency>
+      <artifactId>spring-security-web</artifactId>
+      <groupId>org.springframework.security</groupId>
+      <version>5.6.1</version>
+    </dependency>
+
+  </dependencies>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-auth-json</name>
+  <packaging>jar</packaging>
+  <parent>
+    <artifactId>extensions</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-json</artifactId>
-    <packaging>jar</packaging>
+    <relativePath>../</relativePath>
     <version>1.4.0</version>
-    <name>guacamole-auth-json</name>
-    <url>http://guacamole.apache.org/</url>
+  </parent>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>extensions</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../</relativePath>
-    </parent>
+  <url>http://guacamole.apache.org/</url>
 
-    <dependencies>
-
-        <!-- Guacamole Extension API -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-ext</artifactId>
-            <version>1.4.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-
-        <!-- Jackson for JSON support -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <!-- Guava Base Libraries -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-
-        <!-- Java servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Spring security library (required for IP address matching) -->
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-web</artifactId>
-            <version>5.6.1</version>
-        </dependency>
-
-    </dependencies>
+  <version>1.4.0</version>
 
 </project>

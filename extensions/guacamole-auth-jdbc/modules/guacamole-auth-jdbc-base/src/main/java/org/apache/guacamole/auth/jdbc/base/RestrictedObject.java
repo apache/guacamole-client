@@ -22,50 +22,43 @@ package org.apache.guacamole.auth.jdbc.base;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 
 /**
- * Common base class for objects that are associated with the users that
- * obtain them.
+ * Common base class for objects that are associated with the users that obtain them.
  */
 public abstract class RestrictedObject {
 
-    /**
-     * The user this object belongs to. Access is based on his/her permission
-     * settings.
-     */
-    private ModeledAuthenticatedUser currentUser;
+  /**
+   * The user this object belongs to. Access is based on his/her permission settings.
+   */
+  private ModeledAuthenticatedUser currentUser;
 
-    /**
-     * Initializes this object, associating it with the current authenticated
-     * user and populating it with data from the given model object
-     *
-     * @param currentUser
-     *     The user that created or retrieved this object.
-     */
-    public void init(ModeledAuthenticatedUser currentUser) {
-        setCurrentUser(currentUser);
-    }
+  /**
+   * Initializes this object, associating it with the current authenticated user and populating it
+   * with data from the given model object
+   *
+   * @param currentUser The user that created or retrieved this object.
+   */
+  public void init(ModeledAuthenticatedUser currentUser) {
+    setCurrentUser(currentUser);
+  }
 
-    /**
-     * Returns the user that created or queried this object. This user's
-     * permissions dictate what operations can be performed on or through this
-     * object.
-     *
-     * @return
-     *     The user that created or queried this object.
-     */
-    public ModeledAuthenticatedUser getCurrentUser() {
-        return currentUser;
-    }
+  /**
+   * Returns the user that created or queried this object. This user's permissions dictate what
+   * operations can be performed on or through this object.
+   *
+   * @return The user that created or queried this object.
+   */
+  public ModeledAuthenticatedUser getCurrentUser() {
+    return currentUser;
+  }
 
-    /**
-     * Sets the user that created or queried this object. This user's
-     * permissions dictate what operations can be performed on or through this
-     * object.
-     *
-     * @param currentUser 
-     *     The user that created or queried this object.
-     */
-    public void setCurrentUser(ModeledAuthenticatedUser currentUser) {
-        this.currentUser = currentUser;
-    }
+  /**
+   * Sets the user that created or queried this object. This user's permissions dictate what
+   * operations can be performed on or through this object.
+   *
+   * @param currentUser The user that created or queried this object.
+   */
+  public void setCurrentUser(ModeledAuthenticatedUser currentUser) {
+    this.currentUser = currentUser;
+  }
 
 }

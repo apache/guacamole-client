@@ -17,116 +17,116 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-auth-sso-openid</artifactId>
+  <build>
+    <plugins>
+
+      <!-- JS/CSS Minification Plugin -->
+      <plugin>
+        <artifactId>minify-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <charset>UTF-8</charset>
+
+              <closureWarningLevels>
+                <misplacedTypeAnnotation>OFF</misplacedTypeAnnotation>
+                <nonStandardJsDocs>OFF</nonStandardJsDocs>
+              </closureWarningLevels>
+              <jsEngine>CLOSURE</jsEngine>
+
+              <jsFinalFile>openid.js</jsFinalFile>
+              <jsSourceDir>/</jsSourceDir>
+              <jsSourceExcludes>
+                <jsSourceExclude>**/*.test.js</jsSourceExclude>
+              </jsSourceExcludes>
+
+              <jsSourceFiles>
+                <jsSourceFile>license.txt</jsSourceFile>
+              </jsSourceFiles>
+
+              <jsSourceIncludes>
+                <jsSourceInclude>**/*.js</jsSourceInclude>
+              </jsSourceIncludes>
+
+              <!-- Do not minify and include tests -->
+              <jsTargetDir>/</jsTargetDir>
+              <webappSourceDir>${basedir}/src/main/resources</webappSourceDir>
+
+              <!-- Disable warnings for JSDoc annotations -->
+              <webappTargetDir>${project.build.directory}/classes</webappTargetDir>
+
+            </configuration>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+            <id>default-cli</id>
+          </execution>
+        </executions>
+        <groupId>com.github.buckelieg</groupId>
+      </plugin>
+
+    </plugins>
+  </build>
+  <dependencies>
+
+    <!-- Guacamole Extension API -->
+    <dependency>
+      <artifactId>guacamole-ext</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+    </dependency>
+
+    <!-- Core SSO support -->
+    <dependency>
+      <artifactId>guacamole-auth-sso-base</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+    </dependency>
+
+    <!-- Java implementation of JOSE (jose.4.j) -->
+    <dependency>
+      <artifactId>jose4j</artifactId>
+      <groupId>org.bitbucket.b_c</groupId>
+      <version>0.7.9</version>
+    </dependency>
+
+    <!-- Guice -->
+    <dependency>
+      <artifactId>guice</artifactId>
+      <groupId>com.google.inject</groupId>
+    </dependency>
+
+    <!-- Java servlet API -->
+    <dependency>
+      <artifactId>servlet-api</artifactId>
+      <groupId>javax.servlet</groupId>
+    </dependency>
+
+    <!-- JAX-RS Annotations -->
+    <dependency>
+      <artifactId>jsr311-api</artifactId>
+      <groupId>javax.ws.rs</groupId>
+    </dependency>
+
+  </dependencies>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-auth-sso-openid</name>
+  <packaging>jar</packaging>
+
+  <parent>
+    <artifactId>guacamole-auth-sso</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-sso-openid</artifactId>
-    <packaging>jar</packaging>
+    <relativePath>../../</relativePath>
     <version>1.4.0</version>
-    <name>guacamole-auth-sso-openid</name>
-    <url>http://guacamole.apache.org/</url>
+  </parent>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>guacamole-auth-sso</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../../</relativePath>
-    </parent>
+  <url>http://guacamole.apache.org/</url>
 
-    <build>
-        <plugins>
-
-            <!-- JS/CSS Minification Plugin -->
-            <plugin>
-                <groupId>com.github.buckelieg</groupId>
-                <artifactId>minify-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-cli</id>
-                        <configuration>
-                            <charset>UTF-8</charset>
-
-                            <webappSourceDir>${basedir}/src/main/resources</webappSourceDir>
-                            <webappTargetDir>${project.build.directory}/classes</webappTargetDir>
-
-                            <jsSourceDir>/</jsSourceDir>
-                            <jsTargetDir>/</jsTargetDir>
-                            <jsFinalFile>openid.js</jsFinalFile>
-
-                            <jsSourceFiles>
-                                <jsSourceFile>license.txt</jsSourceFile>
-                            </jsSourceFiles>
-
-                            <jsSourceIncludes>
-                                <jsSourceInclude>**/*.js</jsSourceInclude>
-                            </jsSourceIncludes>
-
-                            <!-- Do not minify and include tests -->
-                            <jsSourceExcludes>
-                                <jsSourceExclude>**/*.test.js</jsSourceExclude>
-                            </jsSourceExcludes>
-                            <jsEngine>CLOSURE</jsEngine>
-
-                            <!-- Disable warnings for JSDoc annotations -->
-                            <closureWarningLevels>
-                                <misplacedTypeAnnotation>OFF</misplacedTypeAnnotation>
-                                <nonStandardJsDocs>OFF</nonStandardJsDocs>
-                            </closureWarningLevels>
-
-                        </configuration>
-                        <goals>
-                            <goal>minify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-        </plugins>
-    </build>
-
-    <dependencies>
-
-        <!-- Guacamole Extension API -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-ext</artifactId>
-        </dependency>
-
-        <!-- Core SSO support -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-auth-sso-base</artifactId>
-        </dependency>
-
-        <!-- Java implementation of JOSE (jose.4.j) -->
-        <dependency>
-            <groupId>org.bitbucket.b_c</groupId>
-            <artifactId>jose4j</artifactId>
-            <version>0.7.9</version>
-        </dependency>
-
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-
-        <!-- Java servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-        </dependency>
-
-        <!-- JAX-RS Annotations -->
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-        </dependency>
-
-    </dependencies>
+  <version>1.4.0</version>
 
 </project>

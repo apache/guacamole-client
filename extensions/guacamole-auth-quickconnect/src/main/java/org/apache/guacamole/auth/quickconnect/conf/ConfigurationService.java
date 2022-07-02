@@ -29,69 +29,61 @@ import org.apache.guacamole.properties.StringListProperty;
  * Configuration options to control the QuickConnect module.
  */
 public class ConfigurationService {
-   
-    /**
-     * The environment of the Guacamole Server.
-     */ 
-    @Inject
-    private Environment environment;
-    
-    /**
-     * A list of parameters that, if set, will limit the parameters allowed to
-     * be defined by connections created using the QuickConnect module to only
-     * the parameters defined in this list.  Defaults to null (all parameters
-     * are allowed).
-     */
-    public static final StringListProperty QUICKCONNECT_ALLOWED_PARAMETERS = new StringListProperty() {
-        
-        @Override
-        public String getName() { return "quickconnect-allowed-parameters"; }
-        
-    };
-    
-    /**
-     * A list of parameters that, if set, will limit the parameters allowed to
-     * be defined by connections created using the QuickConnect module to any
-     * except the ones defined in this list.  Defaults to null (all parameters
-     * are allowed).
-     */
-    public static final StringListProperty QUICKCONNECT_DENIED_PARAMETERS = new StringListProperty() {
-        
-        @Override
-        public String getName() { return "quickconnect-denied-parameters"; }
-        
-    };
-    
-    /**
-     * Return the list of allowed parameters to be set by connections created
-     * using the QuickConnect module, or null if none are defined (thereby
-     * allowing all parameters to be set).
-     * 
-     * @return 
-     *    The list of allowed parameters to be set by connections crated using
-     *    the QuickConnect module.
-     * 
-     * @throws GuacamoleException
-     *    If guacamole.properties cannot be parsed.
-     */
-    public List<String> getAllowedParameters() throws GuacamoleException {
-        return environment.getProperty(QUICKCONNECT_ALLOWED_PARAMETERS);
+
+  /**
+   * A list of parameters that, if set, will limit the parameters allowed to be defined by
+   * connections created using the QuickConnect module to only the parameters defined in this list.
+   * Defaults to null (all parameters are allowed).
+   */
+  public static final StringListProperty QUICKCONNECT_ALLOWED_PARAMETERS = new StringListProperty() {
+
+    @Override
+    public String getName() {
+      return "quickconnect-allowed-parameters";
     }
-    
-    /**
-     * Return the list of denied parameters for connections created using the
-     * QuickConnect module, or null if none are defined (thereby allowing all
-     * parameters to be set).
-     * 
-     * @return
-     *     The list of parameters that cannot be set by connections created
-     *     using the QuickConnect module.
-     * 
-     * @throws GuacamoleException 
-     *     If guacamole.properties cannot be parsed.
-     */
-    public List<String> getDeniedParameters() throws GuacamoleException {
-        return environment.getProperty(QUICKCONNECT_DENIED_PARAMETERS);
+
+  };
+  /**
+   * A list of parameters that, if set, will limit the parameters allowed to be defined by
+   * connections created using the QuickConnect module to any except the ones defined in this list.
+   * Defaults to null (all parameters are allowed).
+   */
+  public static final StringListProperty QUICKCONNECT_DENIED_PARAMETERS = new StringListProperty() {
+
+    @Override
+    public String getName() {
+      return "quickconnect-denied-parameters";
     }
-    
+
+  };
+  /**
+   * The environment of the Guacamole Server.
+   */
+  @Inject
+  private Environment environment;
+
+  /**
+   * Return the list of allowed parameters to be set by connections created using the QuickConnect
+   * module, or null if none are defined (thereby allowing all parameters to be set).
+   *
+   * @return The list of allowed parameters to be set by connections crated using the QuickConnect
+   * module.
+   * @throws GuacamoleException If guacamole.properties cannot be parsed.
+   */
+  public List<String> getAllowedParameters() throws GuacamoleException {
+    return environment.getProperty(QUICKCONNECT_ALLOWED_PARAMETERS);
+  }
+
+  /**
+   * Return the list of denied parameters for connections created using the QuickConnect module, or
+   * null if none are defined (thereby allowing all parameters to be set).
+   *
+   * @return The list of parameters that cannot be set by connections created using the QuickConnect
+   * module.
+   * @throws GuacamoleException If guacamole.properties cannot be parsed.
+   */
+  public List<String> getDeniedParameters() throws GuacamoleException {
+    return environment.getProperty(QUICKCONNECT_DENIED_PARAMETERS);
+  }
+
 }

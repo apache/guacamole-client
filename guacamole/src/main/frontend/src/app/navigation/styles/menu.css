@@ -19,143 +19,143 @@
 
 .menu-dropdown {
 
-    /* IE10 */
-    display: -ms-flexbox;
-    -ms-flex-align: center;
-    -ms-flex-direction: row;
+  /* IE10 */
+  display: -ms-flexbox;
+  -ms-flex-align: center;
+  -ms-flex-direction: row;
 
-    /* Ancient Mozilla */
-    display: -moz-box;
-    -moz-box-align: center;
-    -moz-box-orient: horizontal;
-    
-    /* Ancient WebKit */
-    display: -webkit-box;
-    -webkit-box-align: center;
-    -webkit-box-orient: horizontal;
+  /* Ancient Mozilla */
+  display: -moz-box;
+  -moz-box-align: center;
+  -moz-box-orient: horizontal;
 
-    /* Old WebKit */
-    display: -webkit-flex;
-    -webkit-align-items: center;
-    -webkit-flex-direction: row;
+  /* Ancient WebKit */
+  display: -webkit-box;
+  -webkit-box-align: center;
+  -webkit-box-orient: horizontal;
 
-    /* W3C */
-    display: flex;
-    align-items: center;
-    flex-direction: row;
+  /* Old WebKit */
+  display: -webkit-flex;
+  -webkit-align-items: center;
+  -webkit-flex-direction: row;
+
+  /* W3C */
+  display: flex;
+  align-items: center;
+  flex-direction: row;
 
 }
 
 .menu-dropdown {
-    position: relative;
-    border-left: 1px solid rgba(0,0,0,0.125);
-    background: rgba(0,0,0,0.04);
+  position: relative;
+  border-left: 1px solid rgba(0, 0, 0, 0.125);
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .menu-dropdown:hover {
-    background: rgba(0,0,0,0.01);
+  background: rgba(0, 0, 0, 0.01);
 }
 
 .menu-dropdown.open,
 .menu-dropdown.open:hover {
-    background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
 }
 
 .menu-dropdown .menu-title {
 
-    cursor: default;
-    margin: 0;
-    padding: 0.5em;
-    padding-right: 2em;
+  cursor: default;
+  margin: 0;
+  padding: 0.5em;
+  padding-right: 2em;
 
-    white-space: nowrap;
-    overflow: hidden;
-    width: 100%;
-    text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  text-overflow: ellipsis;
 
-    -ms-flex: 0 0 auto;
-    -moz-box-flex: 0;
-    -webkit-box-flex: 0;
-    -webkit-flex: 0 0 auto;
-    flex: 0 0 auto;
-   
+  -ms-flex: 0 0 auto;
+  -moz-box-flex: 0;
+  -webkit-box-flex: 0;
+  -webkit-flex: 0 0 auto;
+  flex: 0 0 auto;
+
 }
 
 .menu-dropdown .menu-indicator {
 
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
 
-    width: 2em;
-    background-repeat: no-repeat;
-    background-size: 1em;
-    background-position: center center;
-    background-image: url('images/arrows/down.svg');
+  width: 2em;
+  background-repeat: no-repeat;
+  background-size: 1em;
+  background-position: center center;
+  background-image: url('images/arrows/down.svg');
 
 }
 
 .menu-dropdown .menu-contents {
 
-    visibility: hidden;
+  visibility: hidden;
 
-    position: absolute;
-    top: 100%;
-    right: 0;
-    min-width: 100%;
-    white-space: nowrap;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 100%;
+  white-space: nowrap;
 
-    background: #EEE;
-    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.125);
-    border-left: 1px solid rgba(0,0,0,0.125);
-    border-bottom: 1px solid rgba(0,0,0,0.125);
+  background: #EEE;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.125);
+  border-left: 1px solid rgba(0, 0, 0, 0.125);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 
-    z-index: 5;
-    
+  z-index: 5;
+
 }
 
 .menu-dropdown .menu-contents ul {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .menu-dropdown.open .menu-contents {
-    visibility: visible;
+  visibility: visible;
 }
 
 .menu-dropdown .menu-contents li {
-    padding: 0;
-    list-style-type: none;
+  padding: 0;
+  list-style-type: none;
 }
 
 .menu-dropdown .menu-contents li a {
 
-    display: block;
-    cursor: pointer;
-    color: black;
-    text-decoration: none;
-    padding: 0.75em;
+  display: block;
+  cursor: pointer;
+  color: black;
+  text-decoration: none;
+  padding: 0.75em;
 
 }
 
 .menu-dropdown .menu-contents li a:hover {
-    background-color: #CDA;
+  background-color: #CDA;
 }
 
 .menu-dropdown .menu-contents li a.current,
 .menu-dropdown .menu-contents li a.current:hover {
-    background-color: transparent;
-    cursor: default;
-    opacity: 0.25;
+  background-color: transparent;
+  cursor: default;
+  opacity: 0.25;
 }
 
 .menu-dropdown .menu-contents li a.danger {
-    color: white;
-    font-weight: bold;
-    background-color: #A43;
+  color: white;
+  font-weight: bold;
+  background-color: #A43;
 }
 
 .menu-dropdown .menu-contents li a.danger:hover {
-    background-color: #C54;
+  background-color: #C54;
 }

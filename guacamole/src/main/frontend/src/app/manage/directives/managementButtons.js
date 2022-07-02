@@ -23,102 +23,103 @@
  * context of the object being edited/created.
  */
 angular.module('manage').directive('managementButtons', ['$injector',
-    function managementButtons($injector) {
+  function managementButtons($injector) {
 
     // Required services
     var guacNotification = $injector.get('guacNotification');
 
     var directive = {
 
-        restrict    : 'E',
-        replace     : true,
-        templateUrl : 'app/manage/templates/managementButtons.html',
+      restrict: 'E',
+      replace: true,
+      templateUrl: 'app/manage/templates/managementButtons.html',
 
-        scope : {
+      scope: {
 
-            /**
-             * The translation namespace associated with all applicable
-             * translation strings. This directive requires at least the
-             * following translation strings within the given namespace:
-             *
-             *     - ACTION_CANCEL
-             *     - ACTION_CLONE
-             *     - ACTION_DELETE
-             *     - ACTION_SAVE
-             *     - DIALOG_HEADER_CONFIRM_DELETE
-             *     - TEXT_CONFIRM_DELETE
-             *
-             * @type String
-             */
-            namespace : '@',
+        /**
+         * The translation namespace associated with all applicable
+         * translation strings. This directive requires at least the
+         * following translation strings within the given namespace:
+         *
+         *     - ACTION_CANCEL
+         *     - ACTION_CLONE
+         *     - ACTION_DELETE
+         *     - ACTION_SAVE
+         *     - DIALOG_HEADER_CONFIRM_DELETE
+         *     - TEXT_CONFIRM_DELETE
+         *
+         * @type String
+         */
+        namespace: '@',
 
-            /**
-             * The permissions which dictate the management actions available
-             * to the current user.
-             *
-             * @type ManagementPermissions
-             */
-            permissions : '=',
+        /**
+         * The permissions which dictate the management actions available
+         * to the current user.
+         *
+         * @type ManagementPermissions
+         */
+        permissions: '=',
 
-            /**
-             * The function to invoke to save the arbitrary object being edited
-             * if the current user has permission to do so. The provided
-             * function MUST return a promise which is resolved if the save
-             * operation succeeds and is rejected with an {@link Error} if the
-             * save operation fails.
-             *
-             * @type Function
-             */
-            save : '&',
+        /**
+         * The function to invoke to save the arbitrary object being edited
+         * if the current user has permission to do so. The provided
+         * function MUST return a promise which is resolved if the save
+         * operation succeeds and is rejected with an {@link Error} if the
+         * save operation fails.
+         *
+         * @type Function
+         */
+        save: '&',
 
-            /**
-             * The function to invoke when the current user chooses to clone
-             * the object being edited. The provided function MUST perform the
-             * actions necessary to produce an interface which will clone the
-             * object.
-             *
-             * @type Function
-             */
-            clone : '&',
+        /**
+         * The function to invoke when the current user chooses to clone
+         * the object being edited. The provided function MUST perform the
+         * actions necessary to produce an interface which will clone the
+         * object.
+         *
+         * @type Function
+         */
+        clone: '&',
 
-            /**
-             * The function to invoke to delete the arbitrary object being edited
-             * if the current user has permission to do so. The provided
-             * function MUST return a promise which is resolved if the delete
-             * operation succeeds and is rejected with an {@link Error} if the
-             * delete operation fails.
-             *
-             * @type Function
-             */
-            delete : '&',
+        /**
+         * The function to invoke to delete the arbitrary object being edited
+         * if the current user has permission to do so. The provided
+         * function MUST return a promise which is resolved if the delete
+         * operation succeeds and is rejected with an {@link Error} if the
+         * delete operation fails.
+         *
+         * @type Function
+         */
+        delete: '&',
 
-            /**
-             * The function to invoke when the current user chooses to cancel
-             * the edit in progress, or when a save/delete operation has
-             * succeeded. The provided function MUST perform the actions
-             * necessary to return the user to a reasonable starting point.
-             *
-             * @type Function
-             */
-            return : '&'
+        /**
+         * The function to invoke when the current user chooses to cancel
+         * the edit in progress, or when a save/delete operation has
+         * succeeded. The provided function MUST perform the actions
+         * necessary to return the user to a reasonable starting point.
+         *
+         * @type Function
+         */
+        return: '&'
 
-        }
+      }
 
     };
 
-    directive.controller = ['$scope', function managementButtonsController($scope) {
+    directive.controller = ['$scope',
+      function managementButtonsController($scope) {
 
         /**
          * An action to be provided along with the object sent to showStatus which
          * immediately deletes the current connection.
          */
         var DELETE_ACTION = {
-            name      : $scope.namespace + '.ACTION_DELETE',
-            className : 'danger',
-            callback  : function deleteCallback() {
-                deleteObjectImmediately();
-                guacNotification.showStatus(false);
-            }
+          name: $scope.namespace + '.ACTION_DELETE',
+          className: 'danger',
+          callback: function deleteCallback() {
+            deleteObjectImmediately();
+            guacNotification.showStatus(false);
+          }
         };
 
         /**
@@ -126,10 +127,10 @@ angular.module('manage').directive('managementButtons', ['$injector',
          * closes the currently-shown status dialog.
          */
         var CANCEL_ACTION = {
-            name     : $scope.namespace + '.ACTION_CANCEL',
-            callback : function cancelCallback() {
-                guacNotification.showStatus(false);
-            }
+          name: $scope.namespace + '.ACTION_CANCEL',
+          callback: function cancelCallback() {
+            guacNotification.showStatus(false);
+          }
         };
 
         /**
@@ -137,7 +138,7 @@ angular.module('manage').directive('managementButtons', ['$injector',
          * the page they started from.
          */
         var navigateBack = function navigateBack() {
-            $scope['return']($scope.$parent);
+          $scope['return']($scope.$parent);
         };
 
         /**
@@ -148,7 +149,8 @@ angular.module('manage').directive('managementButtons', ['$injector',
          * displayed.
          */
         var deleteObjectImmediately = function deleteObjectImmediately() {
-            $scope['delete']($scope.$parent).then(navigateBack, guacNotification.SHOW_REQUEST_ERROR);
+          $scope['delete']($scope.$parent).then(navigateBack,
+              guacNotification.SHOW_REQUEST_ERROR);
         };
 
         /**
@@ -162,8 +164,8 @@ angular.module('manage').directive('managementButtons', ['$injector',
          * open an edit page for a new object which is prepopulated with the
          * data from the current object.
          */
-        $scope.cloneObject = function cloneObject () {
-            $scope.clone($scope.$parent);
+        $scope.cloneObject = function cloneObject() {
+          $scope.clone($scope.$parent);
         };
 
         /**
@@ -172,7 +174,8 @@ angular.module('manage').directive('managementButtons', ['$injector',
          * started from. If saving fails, an error notification is displayed.
          */
         $scope.saveObject = function saveObject() {
-            $scope.save($scope.$parent).then(navigateBack, guacNotification.SHOW_REQUEST_ERROR);
+          $scope.save($scope.$parent).then(navigateBack,
+              guacNotification.SHOW_REQUEST_ERROR);
         };
 
         /**
@@ -185,17 +188,17 @@ angular.module('manage').directive('managementButtons', ['$injector',
          */
         $scope.deleteObject = function deleteObject() {
 
-            // Confirm deletion request
-            guacNotification.showStatus({
-                title   : $scope.namespace + '.DIALOG_HEADER_CONFIRM_DELETE',
-                text    : { key : $scope.namespace + '.TEXT_CONFIRM_DELETE' },
-                actions : [ DELETE_ACTION, CANCEL_ACTION]
-            });
+          // Confirm deletion request
+          guacNotification.showStatus({
+            title: $scope.namespace + '.DIALOG_HEADER_CONFIRM_DELETE',
+            text: {key: $scope.namespace + '.TEXT_CONFIRM_DELETE'},
+            actions: [DELETE_ACTION, CANCEL_ACTION]
+          });
 
         };
 
-    }];
+      }];
 
     return directive;
 
-}]);
+  }]);

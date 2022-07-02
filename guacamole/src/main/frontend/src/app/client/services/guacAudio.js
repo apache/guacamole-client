@@ -21,19 +21,19 @@
  * A service for checking browser audio support.
  */
 angular.module('client').factory('guacAudio', [function guacAudio() {
-            
+
+  /**
+   * Object describing the UI's level of audio support.
+   */
+  return new (function () {
+
     /**
-     * Object describing the UI's level of audio support.
+     * Array of all supported audio mimetypes.
+     *
+     * @type String[]
      */
-    return new (function() {
+    this.supported = Guacamole.AudioPlayer.getSupportedTypes();
 
-        /**
-         * Array of all supported audio mimetypes.
-         *
-         * @type String[]
-         */
-        this.supported = Guacamole.AudioPlayer.getSupportedTypes();
-
-    })();
+  })();
 
 }]);

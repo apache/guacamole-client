@@ -17,76 +17,76 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-sso</artifactId>
-    <packaging>pom</packaging>
-    <version>1.4.0</version>
-    <name>guacamole-auth-sso</name>
-    <url>http://guacamole.apache.org/</url>
+  <artifactId>guacamole-auth-sso</artifactId>
+  <dependencyManagement>
+    <dependencies>
 
-    <parent>
+      <!-- Guacamole Extension API -->
+      <dependency>
+        <artifactId>guacamole-ext</artifactId>
         <groupId>org.apache.guacamole</groupId>
-        <artifactId>extensions</artifactId>
+        <scope>provided</scope>
         <version>1.4.0</version>
-        <relativePath>../</relativePath>
-    </parent>
+      </dependency>
 
-    <modules>
+      <!-- Core SSO support -->
+      <dependency>
+        <artifactId>guacamole-auth-sso-base</artifactId>
+        <groupId>org.apache.guacamole</groupId>
+        <version>1.4.0</version>
+      </dependency>
 
-        <!-- Distribution .tar.gz -->
-        <module>modules/guacamole-auth-sso-dist</module>
+      <!-- Java servlet API -->
+      <dependency>
+        <artifactId>servlet-api</artifactId>
+        <groupId>javax.servlet</groupId>
+        <scope>provided</scope>
+        <version>2.5</version>
+      </dependency>
 
-        <!-- Base classes -->
-        <module>modules/guacamole-auth-sso-base</module>
+      <!-- JAX-RS Annotations -->
+      <dependency>
+        <artifactId>jsr311-api</artifactId>
+        <groupId>javax.ws.rs</groupId>
+        <scope>provided</scope>
+        <version>1.1.1</version>
+      </dependency>
 
-        <!-- SSO implementations -->
-        <module>modules/guacamole-auth-sso-cas</module>
-        <module>modules/guacamole-auth-sso-openid</module>
-        <module>modules/guacamole-auth-sso-saml</module>
+    </dependencies>
+  </dependencyManagement>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <modules>
 
-    </modules>
+    <!-- Distribution .tar.gz -->
+    <module>modules/guacamole-auth-sso-dist</module>
 
-    <dependencyManagement>
-        <dependencies>
+    <!-- Base classes -->
+    <module>modules/guacamole-auth-sso-base</module>
 
-            <!-- Guacamole Extension API -->
-            <dependency>
-                <groupId>org.apache.guacamole</groupId>
-                <artifactId>guacamole-ext</artifactId>
-                <version>1.4.0</version>
-                <scope>provided</scope>
-            </dependency>
+    <!-- SSO implementations -->
+    <module>modules/guacamole-auth-sso-cas</module>
+    <module>modules/guacamole-auth-sso-openid</module>
+    <module>modules/guacamole-auth-sso-saml</module>
 
-            <!-- Core SSO support -->
-            <dependency>
-                <groupId>org.apache.guacamole</groupId>
-                <artifactId>guacamole-auth-sso-base</artifactId>
-                <version>1.4.0</version>
-            </dependency>
+  </modules>
+  <name>guacamole-auth-sso</name>
+  <packaging>pom</packaging>
 
-            <!-- Java servlet API -->
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>2.5</version>
-                <scope>provided</scope>
-            </dependency>
+  <parent>
+    <artifactId>extensions</artifactId>
+    <groupId>org.apache.guacamole</groupId>
+    <relativePath>../</relativePath>
+    <version>1.4.0</version>
+  </parent>
 
-            <!-- JAX-RS Annotations -->
-            <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>jsr311-api</artifactId>
-                <version>1.1.1</version>
-                <scope>provided</scope>
-            </dependency>
+  <url>http://guacamole.apache.org/</url>
 
-        </dependencies>
-    </dependencyManagement>
+  <version>1.4.0</version>
 
 </project>

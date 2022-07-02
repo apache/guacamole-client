@@ -24,81 +24,78 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * ActivityRecord implementation which simply delegates all function calls to an
- * underlying ActivityRecord.
+ * ActivityRecord implementation which simply delegates all function calls to an underlying
+ * ActivityRecord.
  */
 public class DelegatingActivityRecord implements ActivityRecord {
 
-    /**
-     * The wrapped ActivityRecord.
-     */
-    private final ActivityRecord record;
+  /**
+   * The wrapped ActivityRecord.
+   */
+  private final ActivityRecord record;
 
-    /**
-     * Wraps the given ActivityRecord such that all function calls against this
-     * DelegatingActivityRecord will be delegated to it.
-     *
-     * @param record
-     *     The record to wrap.
-     */
-    public DelegatingActivityRecord(ActivityRecord record) {
-        this.record = record;
-    }
+  /**
+   * Wraps the given ActivityRecord such that all function calls against this
+   * DelegatingActivityRecord will be delegated to it.
+   *
+   * @param record The record to wrap.
+   */
+  public DelegatingActivityRecord(ActivityRecord record) {
+    this.record = record;
+  }
 
-    /**
-     * Returns the underlying ActivityRecord wrapped by this
-     * DelegatingActivityRecord.
-     *
-     * @return
-     *     The ActivityRecord wrapped by this DelegatingActivityRecord.
-     */
-    protected ActivityRecord getDelegateActivityRecord() {
-        return record;
-    }
+  /**
+   * Returns the underlying ActivityRecord wrapped by this DelegatingActivityRecord.
+   *
+   * @return The ActivityRecord wrapped by this DelegatingActivityRecord.
+   */
+  protected ActivityRecord getDelegateActivityRecord() {
+    return record;
+  }
 
-    @Override
-    public Date getStartDate() {
-        return record.getStartDate();
-    }
+  @Override
+  public Date getStartDate() {
+    return record.getStartDate();
+  }
 
-    @Override
-    public Date getEndDate() {
-        return record.getEndDate();
-    }
+  @Override
+  public Date getEndDate() {
+    return record.getEndDate();
+  }
 
-    @Override
-    public String getRemoteHost() {
-        return record.getRemoteHost();
-    }
+  @Override
+  public String getRemoteHost() {
+    return record.getRemoteHost();
+  }
 
-    @Override
-    public String getUsername() {
-        return record.getUsername();
-    }
+  @Override
+  public String getUsername() {
+    return record.getUsername();
+  }
 
-    @Override
-    public boolean isActive() {
-        return record.isActive();
-    }
+  @Override
+  public boolean isActive() {
+    return record.isActive();
+  }
 
-    @Override
-    public String getIdentifier() {
-        return record.getIdentifier();
-    }
+  @Override
+  public String getIdentifier() {
+    return record.getIdentifier();
+  }
 
-    @Override
-    public UUID getUUID() {
-        return record.getUUID();
-    }
+  @Override
+  public UUID getUUID() {
+    return record.getUUID();
+  }
 
-    @Override
-    public Map<String, ActivityLog> getLogs() {
-        return record.getLogs();
-    }
+  @Override
+  public Map<String, ActivityLog> getLogs() {
+    return record.getLogs();
+  }
 
-    @Override
-    public Map<String, String> getAttributes() {
-        return record.getAttributes();
-    }
+  @Override
+  public Map<String, String> getAttributes() {
+    return record.getAttributes();
+  }
 
 }

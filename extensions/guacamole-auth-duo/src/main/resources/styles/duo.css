@@ -19,44 +19,44 @@
 
 
 .duo-signature-response-field-container {
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    left: 0;
-    top: 0;
-    display: table;
-    background: white;
+  height: 100%;
+  width: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: table;
+  background: white;
 }
 
 .duo-signature-response-field {
-    width: 100%;
-    display: table-cell;
-    vertical-align: middle;
+  width: 100%;
+  display: table-cell;
+  vertical-align: middle;
 }
 
 .duo-signature-response-field input[type="submit"] {
-    display: none !important;
+  display: none !important;
 }
 
 .duo-signature-response-field iframe {
-    width: 100%;
-    max-width: 620px;
-    height: 330px;
-    border: none;
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
-    display: block;
-    margin: 1.5em auto;
+  width: 100%;
+  max-width: 620px;
+  height: 330px;
+  border: none;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+  display: block;
+  margin: 1.5em auto;
 }
 
 .duo-signature-response-field iframe {
-    opacity: 1;
-    -webkit-transition: opacity 0.125s;
-    -moz-transition:    opacity 0.125s;
-    -ms-transition:     opacity 0.125s;
-    -o-transition:      opacity 0.125s;
-    transition:         opacity 0.125s;
+  opacity: 1;
+  -webkit-transition: opacity 0.125s;
+  -moz-transition: opacity 0.125s;
+  -ms-transition: opacity 0.125s;
+  -o-transition: opacity 0.125s;
+  transition: opacity 0.125s;
 }
 
 .duo-signature-response-field.loading iframe {
-    opacity: 0;
+  opacity: 0;
 }

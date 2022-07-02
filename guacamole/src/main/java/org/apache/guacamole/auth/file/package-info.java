@@ -18,8 +18,7 @@
  */
 
 /**
- * Classes which drive the default, file-based authentication of the Guacamole
- * web application.
+ * Classes which drive the default, file-based authentication of the Guacamole web application.
  */
 package org.apache.guacamole.auth.file;
 

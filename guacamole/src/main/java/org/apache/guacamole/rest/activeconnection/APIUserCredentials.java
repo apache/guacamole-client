@@ -25,56 +25,51 @@ import org.apache.guacamole.form.Field;
 import org.apache.guacamole.net.auth.credentials.UserCredentials;
 
 /**
- * The object returned by REST API calls to define a full set of valid
- * credentials, including field definitions and corresponding expected
- * values.
+ * The object returned by REST API calls to define a full set of valid credentials, including field
+ * definitions and corresponding expected values.
  */
 public class APIUserCredentials {
 
-    /**
-     * All expected request parameters, if any, as a collection of fields.
-     */
-    private final Collection<Field> expected;
+  /**
+   * All expected request parameters, if any, as a collection of fields.
+   */
+  private final Collection<Field> expected;
 
-    /**
-     * A map of all field values by field name.
-     */
-    private final Map<String, String> values;
+  /**
+   * A map of all field values by field name.
+   */
+  private final Map<String, String> values;
 
-    /**
-     * Creates a new APIUserCredentials object whose required parameters and
-     * corresponding values are defined by the given UserCredentials.
-     *
-     * @param userCredentials
-     *     The UserCredentials which defines the parameters and corresponding
-     *     values of this APIUserCredentials.
-     */
-    public APIUserCredentials(UserCredentials userCredentials) {
-        this.expected = userCredentials.getFields();
-        this.values = userCredentials.getValues();
-    }
+  /**
+   * Creates a new APIUserCredentials object whose required parameters and corresponding values are
+   * defined by the given UserCredentials.
+   *
+   * @param userCredentials The UserCredentials which defines the parameters and corresponding
+   *                        values of this APIUserCredentials.
+   */
+  public APIUserCredentials(UserCredentials userCredentials) {
+    this.expected = userCredentials.getFields();
+    this.values = userCredentials.getValues();
+  }
 
-    /**
-     * Returns a collection of all required parameters, where each parameter is
-     * represented by a field.
-     *
-     * @return
-     *     A collection of all required parameters.
-     */
-    public Collection<Field> getExpected() {
-        return expected;
-    }
+  /**
+   * Returns a collection of all required parameters, where each parameter is represented by a
+   * field.
+   *
+   * @return A collection of all required parameters.
+   */
+  public Collection<Field> getExpected() {
+    return expected;
+  }
 
-    /**
-     * Returns a map of all field values by field name. The fields having the
-     * names used within this map should be defined within the collection of
-     * required parameters returned by getExpected().
-     *
-     * @return
-     *     A map of all field values by field name.
-     */
-    public Map<String, String> getValues() {
-        return values;
-    }
+  /**
+   * Returns a map of all field values by field name. The fields having the names used within this
+   * map should be defined within the collection of required parameters returned by getExpected().
+   *
+   * @return A map of all field values by field name.
+   */
+  public Map<String, String> getValues() {
+    return values;
+  }
 
 }

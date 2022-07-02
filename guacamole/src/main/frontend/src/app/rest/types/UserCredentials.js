@@ -20,25 +20,26 @@
 /**
  * Service which defines the UserCredentials class.
  */
-angular.module('rest').factory('UserCredentials', ['$injector', function defineUserCredentials($injector) {
+angular.module('rest').factory('UserCredentials',
+    ['$injector', function defineUserCredentials($injector) {
 
-    // Required services
-    var $window = $injector.get('$window');
+      // Required services
+      var $window = $injector.get('$window');
 
-    // Required types
-    var Field = $injector.get('Field');
+      // Required types
+      var Field = $injector.get('Field');
 
-    /**
-     * The object returned by REST API calls to define a full set of valid
-     * credentials, including field definitions and corresponding expected
-     * values.
-     *
-     * @constructor
-     * @param {UserCredentials|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     UserCredentials.
-     */
-    var UserCredentials = function UserCredentials(template) {
+      /**
+       * The object returned by REST API calls to define a full set of valid
+       * credentials, including field definitions and corresponding expected
+       * values.
+       *
+       * @constructor
+       * @param {UserCredentials|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     UserCredentials.
+       */
+      var UserCredentials = function UserCredentials(template) {
 
         // Use empty object by default
         template = template || {};
@@ -60,80 +61,87 @@ angular.module('rest').factory('UserCredentials', ['$injector', function defineU
          */
         this.values = template.values;
 
-    };
+      };
 
-    /**
-     * Generates a query string containing all QUERY_PARAMETER fields from the
-     * given UserCredentials object, along with their corresponding values. The
-     * parameter names and values will be appropriately URL-encoded and
-     * separated by ampersands.
-     *
-     * @param {UserCredentials} userCredentials
-     *     The UserCredentials to retrieve all query parameters from.
-     *
-     * @returns {String}
-     *     A string containing all QUERY_PARAMETER fields as name/value pairs
-     *     separated by ampersands, where each name is separated by the value
-     *     by an equals sign.
-     */
-    UserCredentials.getQueryParameters = function getQueryParameters(userCredentials) {
+      /**
+       * Generates a query string containing all QUERY_PARAMETER fields from the
+       * given UserCredentials object, along with their corresponding values. The
+       * parameter names and values will be appropriately URL-encoded and
+       * separated by ampersands.
+       *
+       * @param {UserCredentials} userCredentials
+       *     The UserCredentials to retrieve all query parameters from.
+       *
+       * @returns {String}
+       *     A string containing all QUERY_PARAMETER fields as name/value pairs
+       *     separated by ampersands, where each name is separated by the value
+       *     by an equals sign.
+       */
+      UserCredentials.getQueryParameters = function getQueryParameters(userCredentials) {
 
         // Build list of parameter name/value pairs
         var parameters = [];
-        angular.forEach(userCredentials.expected, function addQueryParameter(field) {
+        angular.forEach(userCredentials.expected,
+            function addQueryParameter(field) {
 
-            // Only add query parameters
-            if (field.type !== Field.Type.QUERY_PARAMETER)
+              // Only add query parameters
+              if (field.type !== Field.Type.QUERY_PARAMETER) {
                 return;
+              }
 
-            // Pull parameter name and value
-            var name = field.name;
-            var value = userCredentials.values[name];
+              // Pull parameter name and value
+              var name = field.name;
+              var value = userCredentials.values[name];
 
-            // Properly encode name/value pair
-            parameters.push(encodeURIComponent(name) + '=' + encodeURIComponent(value));
+              // Properly encode name/value pair
+              parameters.push(
+                  encodeURIComponent(name) + '=' + encodeURIComponent(value));
 
-        });
+            });
 
         // Separate each name/value pair by an ampersand
         return parameters.join('&');
 
-    };
+      };
 
-    /**
-     * Returns a fully-qualified, absolute URL to Guacamole prepopulated with
-     * any query parameters dictated by the QUERY_PARAMETER fields defined in
-     * the given UserCredentials.
-     *
-     * @param {UserCredentials} userCredentials
-     *     The UserCredentials to retrieve all query parameters from.
-     *
-     * @returns {String}
-     *     A fully-qualified, absolute URL to Guacamole prepopulated with the
-     *     query parameters dictated by the given UserCredentials.
-     */
-    UserCredentials.getLink = function getLink(userCredentials) {
+      /**
+       * Returns a fully-qualified, absolute URL to Guacamole prepopulated with
+       * any query parameters dictated by the QUERY_PARAMETER fields defined in
+       * the given UserCredentials.
+       *
+       * @param {UserCredentials} userCredentials
+       *     The UserCredentials to retrieve all query parameters from.
+       *
+       * @returns {String}
+       *     A fully-qualified, absolute URL to Guacamole prepopulated with the
+       *     query parameters dictated by the given UserCredentials.
+       */
+      UserCredentials.getLink = function getLink(userCredentials) {
 
         // Work-around for IE missing window.location.origin
-        if (!$window.location.origin)
-            var linkOrigin = $window.location.protocol + '//' + $window.location.hostname + ($window.location.port ? (':' + $window.location.port) : '');
-        else
-            var linkOrigin = $window.location.origin;
+        if (!$window.location.origin) {
+          var linkOrigin = $window.location.protocol + '//'
+              + $window.location.hostname + ($window.location.port ? (':'
+                  + $window.location.port) : '');
+        } else {
+          var linkOrigin = $window.location.origin;
+        }
 
         // Build base link
         var link = linkOrigin
-                 + $window.location.pathname
-                 + '#/';
+            + $window.location.pathname
+            + '#/';
 
         // Add any required parameters
         var params = UserCredentials.getQueryParameters(userCredentials);
-        if (params)
-            link += '?' + params;
+        if (params) {
+          link += '?' + params;
+        }
 
         return link;
 
-    };
+      };
 
-    return UserCredentials;
+      return UserCredentials;
 
-}]);
+    }]);

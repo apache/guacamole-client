@@ -20,44 +20,50 @@
 package org.apache.guacamole.rest.activeconnection;
 
 import com.google.inject.AbstractModule;
-import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
-import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 import com.google.inject.TypeLiteral;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
+import org.apache.guacamole.rest.directory.DirectoryObjectResourceFactory;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.directory.DirectoryResource;
+import org.apache.guacamole.rest.directory.DirectoryResourceFactory;
 
 /**
- * Guice Module which configures injections required for handling
- * ActiveConnection resources via the REST API.
+ * Guice Module which configures injections required for handling ActiveConnection resources via the
+ * REST API.
  */
 public class ActiveConnectionModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
+  @Override
+  protected void configure() {
 
-        // Create the required DirectoryResourceFactory implementation
-        install(new FactoryModuleBuilder()
-                .implement(
-                    new TypeLiteral<DirectoryResource<ActiveConnection, APIActiveConnection>>() {},
-                    ActiveConnectionDirectoryResource.class
-                )
-                .build(new TypeLiteral<DirectoryResourceFactory<ActiveConnection, APIActiveConnection>>() {}));
+    // Create the required DirectoryResourceFactory implementation
+    install(new FactoryModuleBuilder()
+        .implement(
+            new TypeLiteral<DirectoryResource<ActiveConnection, APIActiveConnection>>() {
+            },
+            ActiveConnectionDirectoryResource.class
+        )
+        .build(new TypeLiteral<DirectoryResourceFactory<ActiveConnection, APIActiveConnection>>() {
+        }));
 
-        // Create the required DirectoryObjectResourceFactory implementation
-        install(new FactoryModuleBuilder()
-                .implement(
-                    new TypeLiteral<DirectoryObjectResource<ActiveConnection, APIActiveConnection>>() {},
-                    ActiveConnectionResource.class
-                )
-                .build(new TypeLiteral<DirectoryObjectResourceFactory<ActiveConnection, APIActiveConnection>>() {}));
+    // Create the required DirectoryObjectResourceFactory implementation
+    install(new FactoryModuleBuilder()
+        .implement(
+            new TypeLiteral<DirectoryObjectResource<ActiveConnection, APIActiveConnection>>() {
+            },
+            ActiveConnectionResource.class
+        )
+        .build(
+            new TypeLiteral<DirectoryObjectResourceFactory<ActiveConnection, APIActiveConnection>>() {
+            }));
 
-        // Bind translator for converting between ActiveConnection and APIActiveConnection
-        bind(new TypeLiteral<DirectoryObjectTranslator<ActiveConnection, APIActiveConnection>>() {})
-                .to(ActiveConnectionObjectTranslator.class);
+    // Bind translator for converting between ActiveConnection and APIActiveConnection
+    bind(new TypeLiteral<DirectoryObjectTranslator<ActiveConnection, APIActiveConnection>>() {
+    })
+        .to(ActiveConnectionObjectTranslator.class);
 
-    }
+  }
 
 }

@@ -25,4 +25,6 @@ import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 /**
  * Mapper for user login activity records.
  */
-public interface UserRecordMapper extends ActivityRecordMapper<ActivityRecordModel> {}
+public interface UserRecordMapper extends ActivityRecordMapper<ActivityRecordModel> {
+
+}

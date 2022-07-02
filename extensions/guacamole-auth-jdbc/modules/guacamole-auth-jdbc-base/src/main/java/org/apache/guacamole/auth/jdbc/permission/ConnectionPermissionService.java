@@ -22,46 +22,45 @@ package org.apache.guacamole.auth.jdbc.permission;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 
 /**
- * Service which provides convenience methods for creating, retrieving, and
- * deleting connection permissions. This service will automatically enforce the
- * permissions of the current user.
+ * Service which provides convenience methods for creating, retrieving, and deleting connection
+ * permissions. This service will automatically enforce the permissions of the current user.
  */
 public class ConnectionPermissionService extends ModeledObjectPermissionService {
 
-    /**
-     * Mapper for connection permissions.
-     */
-    @Inject
-    private ConnectionPermissionMapper connectionPermissionMapper;
-    
-    /**
-     * Provider for connection permission sets.
-     */
-    @Inject
-    private Provider<ConnectionPermissionSet> connectionPermissionSetProvider;
-    
-    @Override
-    protected ObjectPermissionMapper getPermissionMapper() {
-        return connectionPermissionMapper;
-    }
+  /**
+   * Mapper for connection permissions.
+   */
+  @Inject
+  private ConnectionPermissionMapper connectionPermissionMapper;
 
-    @Override
-    public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
-            ModeledPermissions<? extends EntityModel> targetEntity,
-            Set<String> effectiveGroups) throws GuacamoleException {
+  /**
+   * Provider for connection permission sets.
+   */
+  @Inject
+  private Provider<ConnectionPermissionSet> connectionPermissionSetProvider;
 
-        // Create permission set for requested entity
-        ObjectPermissionSet permissionSet = connectionPermissionSetProvider.get();
-        permissionSet.init(user, targetEntity, effectiveGroups);
+  @Override
+  protected ObjectPermissionMapper getPermissionMapper() {
+    return connectionPermissionMapper;
+  }
 
-        return permissionSet;
-        
-    }
+  @Override
+  public ObjectPermissionSet getPermissionSet(ModeledAuthenticatedUser user,
+      ModeledPermissions<? extends EntityModel> targetEntity,
+      Set<String> effectiveGroups) throws GuacamoleException {
+
+    // Create permission set for requested entity
+    ObjectPermissionSet permissionSet = connectionPermissionSetProvider.get();
+    permissionSet.init(user, targetEntity, effectiveGroups);
+
+    return permissionSet;
+
+  }
 
 }

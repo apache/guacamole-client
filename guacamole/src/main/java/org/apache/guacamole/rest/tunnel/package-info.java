@@ -18,7 +18,6 @@
  */
 
 /**
- * Classes related to the manipulation of Guacamole tunnels and underlying
- * streams.
+ * Classes related to the manipulation of Guacamole tunnels and underlying streams.
  */
 package org.apache.guacamole.rest.tunnel;

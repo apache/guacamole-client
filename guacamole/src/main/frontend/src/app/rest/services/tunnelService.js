@@ -22,16 +22,16 @@
  * underlying objects) via the REST API.
  */
 angular.module('rest').factory('tunnelService', ['$injector',
-        function tunnelService($injector) {
+  function tunnelService($injector) {
 
     // Required types
     var Error = $injector.get('Error');
 
     // Required services
-    var $q                    = $injector.get('$q');
-    var $window               = $injector.get('$window');
+    var $q = $injector.get('$q');
+    var $window = $injector.get('$window');
     var authenticationService = $injector.get('authenticationService');
-    var requestService        = $injector.get('requestService');
+    var requestService = $injector.get('requestService');
 
     var service = {};
 
@@ -65,11 +65,11 @@ angular.module('rest').factory('tunnelService', ['$injector',
      */
     service.getTunnels = function getTunnels() {
 
-        // Retrieve tunnels
-        return authenticationService.request({
-            method  : 'GET',
-            url     : 'api/session/tunnels'
-        });
+      // Retrieve tunnels
+      return authenticationService.request({
+        method: 'GET',
+        url: 'api/session/tunnels'
+      });
 
     };
 
@@ -88,18 +88,18 @@ angular.module('rest').factory('tunnelService', ['$injector',
      */
     service.getProtocol = function getProtocol(tunnel) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
+      // Build HTTP parameters set
+      var httpParameters = {
+        token: authenticationService.getCurrentToken()
+      };
 
-        // Retrieve the protocol details of the specified tunnel
-        return requestService({
-            method  : 'GET',
-            url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
-                        + '/protocol',
-            params  : httpParameters
-        });
+      // Retrieve the protocol details of the specified tunnel
+      return requestService({
+        method: 'GET',
+        url: 'api/session/tunnels/' + encodeURIComponent(tunnel)
+            + '/protocol',
+        params: httpParameters
+      });
 
     };
 
@@ -118,12 +118,12 @@ angular.module('rest').factory('tunnelService', ['$injector',
      */
     service.getSharingProfiles = function getSharingProfiles(tunnel) {
 
-        // Retrieve all associated sharing profiles
-        return authenticationService.request({
-            method  : 'GET',
-            url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
-                        + '/activeConnection/connection/sharingProfiles'
-        });
+      // Retrieve all associated sharing profiles
+      return authenticationService.request({
+        method: 'GET',
+        url: 'api/session/tunnels/' + encodeURIComponent(tunnel)
+            + '/activeConnection/connection/sharingProfiles'
+      });
 
     };
 
@@ -146,15 +146,16 @@ angular.module('rest').factory('tunnelService', ['$injector',
      *     A promise which will resolve with a @link{UserCredentials} object
      *     upon success.
      */
-    service.getSharingCredentials = function getSharingCredentials(tunnel, sharingProfile) {
+    service.getSharingCredentials = function getSharingCredentials(tunnel,
+        sharingProfile) {
 
-        // Generate sharing credentials
-        return authenticationService.request({
-            method  : 'GET',
-            url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
-                        + '/activeConnection/sharingCredentials/'
-                        + encodeURIComponent(sharingProfile)
-        });
+      // Generate sharing credentials
+      return authenticationService.request({
+        method: 'GET',
+        url: 'api/session/tunnels/' + encodeURIComponent(tunnel)
+            + '/activeConnection/sharingCredentials/'
+            + encodeURIComponent(sharingProfile)
+      });
 
     };
 
@@ -169,7 +170,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
      *     The sanitized filename.
      */
     var sanitizeFilename = function sanitizeFilename(filename) {
-        return filename.replace(/[\\\/]+/g, '_');
+      return filename.replace(/[\\\/]+/g, '_');
     };
 
     /**
@@ -199,57 +200,62 @@ angular.module('rest').factory('tunnelService', ['$injector',
      * @param {String} filename
      *     The filename that should be given to the downloaded file.
      */
-    service.downloadStream = function downloadStream(tunnel, stream, mimetype, filename) {
+    service.downloadStream = function downloadStream(tunnel, stream, mimetype,
+        filename) {
 
-        // Work-around for IE missing window.location.origin
-        if (!$window.location.origin)
-            var streamOrigin = $window.location.protocol + '//' + $window.location.hostname + ($window.location.port ? (':' + $window.location.port) : '');
-        else
-            var streamOrigin = $window.location.origin;
+      // Work-around for IE missing window.location.origin
+      if (!$window.location.origin) {
+        var streamOrigin = $window.location.protocol + '//'
+            + $window.location.hostname + ($window.location.port ? (':'
+                + $window.location.port) : '');
+      } else {
+        var streamOrigin = $window.location.origin;
+      }
 
-        // Build download URL
-        var url = streamOrigin
-                + $window.location.pathname
-                + 'api/session/tunnels/' + encodeURIComponent(tunnel)
-                + '/streams/' + encodeURIComponent(stream.index)
-                + '/' + encodeURIComponent(sanitizeFilename(filename))
-                + '?token=' + encodeURIComponent(authenticationService.getCurrentToken());
+      // Build download URL
+      var url = streamOrigin
+          + $window.location.pathname
+          + 'api/session/tunnels/' + encodeURIComponent(tunnel)
+          + '/streams/' + encodeURIComponent(stream.index)
+          + '/' + encodeURIComponent(sanitizeFilename(filename))
+          + '?token=' + encodeURIComponent(
+              authenticationService.getCurrentToken());
 
-        // Create temporary hidden iframe to facilitate download
-        var iframe = document.createElement('iframe');
-        iframe.style.position = 'fixed';
-        iframe.style.border = 'none';
-        iframe.style.width = '1px';
-        iframe.style.height = '1px';
-        iframe.style.left = '-1px';
-        iframe.style.top = '-1px';
+      // Create temporary hidden iframe to facilitate download
+      var iframe = document.createElement('iframe');
+      iframe.style.position = 'fixed';
+      iframe.style.border = 'none';
+      iframe.style.width = '1px';
+      iframe.style.height = '1px';
+      iframe.style.left = '-1px';
+      iframe.style.top = '-1px';
 
-        // The iframe MUST be part of the DOM for the download to occur
-        document.body.appendChild(iframe);
+      // The iframe MUST be part of the DOM for the download to occur
+      document.body.appendChild(iframe);
 
-        // Automatically remove iframe from DOM when download completes, if
-        // browser supports tracking of iframe downloads via the "load" event
-        iframe.onload = function downloadComplete() {
+      // Automatically remove iframe from DOM when download completes, if
+      // browser supports tracking of iframe downloads via the "load" event
+      iframe.onload = function downloadComplete() {
+        document.body.removeChild(iframe);
+      };
+
+      // Acknowledge (and ignore) any received blobs
+      stream.onblob = function acknowledgeData() {
+        stream.sendAck('OK', Guacamole.Status.Code.SUCCESS);
+      };
+
+      // Automatically remove iframe from DOM a few seconds after the stream
+      // ends, in the browser does NOT fire the "load" event for downloads
+      stream.onend = function downloadComplete() {
+        $window.setTimeout(function cleanupIframe() {
+          if (iframe.parentElement) {
             document.body.removeChild(iframe);
-        };
+          }
+        }, DOWNLOAD_CLEANUP_WAIT);
+      };
 
-        // Acknowledge (and ignore) any received blobs
-        stream.onblob = function acknowledgeData() {
-            stream.sendAck('OK', Guacamole.Status.Code.SUCCESS);
-        };
-
-        // Automatically remove iframe from DOM a few seconds after the stream
-        // ends, in the browser does NOT fire the "load" event for downloads
-        stream.onend = function downloadComplete() {
-            $window.setTimeout(function cleanupIframe() {
-                if (iframe.parentElement) {
-                    document.body.removeChild(iframe);
-                }
-            }, DOWNLOAD_CLEANUP_WAIT);
-        };
-
-        // Begin download
-        iframe.src = url;
+      // Begin download
+      iframe.src = url;
 
     };
 
@@ -285,72 +291,75 @@ angular.module('rest').factory('tunnelService', ['$injector',
     service.uploadToStream = function uploadToStream(tunnel, stream, file,
         progressCallback) {
 
-        var deferred = $q.defer();
+      var deferred = $q.defer();
 
-        // Work-around for IE missing window.location.origin
-        if (!$window.location.origin)
-            var streamOrigin = $window.location.protocol + '//' + $window.location.hostname + ($window.location.port ? (':' + $window.location.port) : '');
-        else
-            var streamOrigin = $window.location.origin;
+      // Work-around for IE missing window.location.origin
+      if (!$window.location.origin) {
+        var streamOrigin = $window.location.protocol + '//'
+            + $window.location.hostname + ($window.location.port ? (':'
+                + $window.location.port) : '');
+      } else {
+        var streamOrigin = $window.location.origin;
+      }
 
-        // Build upload URL
-        var url = streamOrigin
-                + $window.location.pathname
-                + 'api/session/tunnels/' + encodeURIComponent(tunnel)
-                + '/streams/' + encodeURIComponent(stream.index)
-                + '/' + encodeURIComponent(sanitizeFilename(file.name))
-                + '?token=' + encodeURIComponent(authenticationService.getCurrentToken());
+      // Build upload URL
+      var url = streamOrigin
+          + $window.location.pathname
+          + 'api/session/tunnels/' + encodeURIComponent(tunnel)
+          + '/streams/' + encodeURIComponent(stream.index)
+          + '/' + encodeURIComponent(sanitizeFilename(file.name))
+          + '?token=' + encodeURIComponent(
+              authenticationService.getCurrentToken());
 
-        var xhr = new XMLHttpRequest();
+      var xhr = new XMLHttpRequest();
 
-        // Invoke provided callback if upload tracking is supported
-        if (progressCallback && xhr.upload) {
-            xhr.upload.addEventListener('progress', function updateProgress(e) {
-                progressCallback(e.loaded);
-            });
+      // Invoke provided callback if upload tracking is supported
+      if (progressCallback && xhr.upload) {
+        xhr.upload.addEventListener('progress', function updateProgress(e) {
+          progressCallback(e.loaded);
+        });
+      }
+
+      // Resolve/reject promise once upload has stopped
+      xhr.onreadystatechange = function uploadStatusChanged() {
+
+        // Ignore state changes prior to completion
+        if (xhr.readyState !== 4) {
+          return;
         }
 
-        // Resolve/reject promise once upload has stopped
-        xhr.onreadystatechange = function uploadStatusChanged() {
+        // Resolve if HTTP status code indicates success
+        if (xhr.status >= 200 && xhr.status < 300) {
+          deferred.resolve();
+        }// Parse and reject with resulting JSON error
+        else if (xhr.getResponseHeader('Content-Type') === 'application/json') {
+          deferred.reject(new Error(angular.fromJson(xhr.responseText)));
+        }// Warn of lack of permission of a proxy rejects the upload
+        else if (xhr.status >= 400 && xhr.status < 500) {
+          deferred.reject(new Error({
+            'type': Error.Type.STREAM_ERROR,
+            'statusCode': Guacamole.Status.Code.CLIENT_FORBIDDEN,
+            'message': 'HTTP ' + xhr.status
+          }));
+        }// Assume internal error for all other cases
+        else {
+          deferred.reject(new Error({
+            'type': Error.Type.STREAM_ERROR,
+            'statusCode': Guacamole.Status.Code.INTERNAL_ERROR,
+            'message': 'HTTP ' + xhr.status
+          }));
+        }
 
-            // Ignore state changes prior to completion
-            if (xhr.readyState !== 4)
-                return;
+      };
 
-            // Resolve if HTTP status code indicates success
-            if (xhr.status >= 200 && xhr.status < 300)
-                deferred.resolve();
+      // Perform upload
+      xhr.open('POST', url, true);
+      xhr.send(file);
 
-            // Parse and reject with resulting JSON error
-            else if (xhr.getResponseHeader('Content-Type') === 'application/json')
-                deferred.reject(new Error(angular.fromJson(xhr.responseText)));
-
-            // Warn of lack of permission of a proxy rejects the upload
-            else if (xhr.status >= 400 && xhr.status < 500)
-                deferred.reject(new Error({
-                    'type'       : Error.Type.STREAM_ERROR,
-                    'statusCode' : Guacamole.Status.Code.CLIENT_FORBIDDEN,
-                    'message'    : 'HTTP ' + xhr.status
-                }));
-
-            // Assume internal error for all other cases
-            else
-                deferred.reject(new Error({
-                    'type'       : Error.Type.STREAM_ERROR,
-                    'statusCode' : Guacamole.Status.Code.INTERNAL_ERROR,
-                    'message'    : 'HTTP ' + xhr.status
-                }));
-
-        };
-
-        // Perform upload
-        xhr.open('POST', url, true);
-        xhr.send(file);
-
-        return deferred.promise;
+      return deferred.promise;
 
     };
 
     return service;
 
-}]);
+  }]);

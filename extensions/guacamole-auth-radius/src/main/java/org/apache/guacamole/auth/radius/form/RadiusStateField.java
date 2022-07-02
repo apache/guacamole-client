@@ -22,48 +22,45 @@ package org.apache.guacamole.auth.radius.form;
 import org.apache.guacamole.form.Field;
 
 /**
- * The invisible field that stores the state of the RADIUS
- * connection.  The state is simply a placeholder that helps
- * the client and server pick back up the conversation
- * at the correct spot during challenge/response.
+ * The invisible field that stores the state of the RADIUS connection.  The state is simply a
+ * placeholder that helps the client and server pick back up the conversation at the correct spot
+ * during challenge/response.
  */
 public class RadiusStateField extends Field {
-    
-    /**
-     * The parameter returned by the RADIUS state.
-     */
-    public static final String PARAMETER_NAME = "guac-radius-state";
 
-    /**
-     * The type of field to initialize for the state.
-     */
-    private static final String RADIUS_FIELD_TYPE = "GUAC_RADIUS_STATE";
+  /**
+   * The parameter returned by the RADIUS state.
+   */
+  public static final String PARAMETER_NAME = "guac-radius-state";
 
-    /**
-     * The state of the connection passed by the previous RADIUS attempt.
-     */
-    private final String radiusState;
+  /**
+   * The type of field to initialize for the state.
+   */
+  private static final String RADIUS_FIELD_TYPE = "GUAC_RADIUS_STATE";
 
-    /**
-     * Initialize the field with the state returned by the RADIUS server.
-     *
-     * @param radiusState
-     *     The state returned by the RADIUS server.
-     */
-    public RadiusStateField(String radiusState) {
-        super(PARAMETER_NAME, RADIUS_FIELD_TYPE);
-        this.radiusState = radiusState;
+  /**
+   * The state of the connection passed by the previous RADIUS attempt.
+   */
+  private final String radiusState;
 
-    }
+  /**
+   * Initialize the field with the state returned by the RADIUS server.
+   *
+   * @param radiusState The state returned by the RADIUS server.
+   */
+  public RadiusStateField(String radiusState) {
+    super(PARAMETER_NAME, RADIUS_FIELD_TYPE);
+    this.radiusState = radiusState;
 
-    /**
-     * Get the state provided by the RADIUS server.
-     *
-     * @return
-     *     The state provided by the RADIUS server.
-     */
-    public String getRadiusState() {
-        return radiusState;
-    }
+  }
+
+  /**
+   * Get the state provided by the RADIUS server.
+   *
+   * @return The state provided by the RADIUS server.
+   */
+  public String getRadiusState() {
+    return radiusState;
+  }
 
 }

@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.auth.file;
 
-import org.apache.guacamole.xml.TagHandler;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.xml.TagHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -29,41 +29,40 @@ import org.xml.sax.SAXException;
  */
 public class ParamTagHandler implements TagHandler {
 
-    /**
-     * The GuacamoleConfiguration which will be populated with data from
-     * the tag handled by this tag handler.
-     */
-    private GuacamoleConfiguration config;
+  /**
+   * The GuacamoleConfiguration which will be populated with data from the tag handled by this tag
+   * handler.
+   */
+  private GuacamoleConfiguration config;
 
-    /**
-     * The name of the parameter.
-     */
-    private String name;
+  /**
+   * The name of the parameter.
+   */
+  private String name;
 
-    /**
-     * Creates a new handler for an "param" tag having the given
-     * attributes.
-     *
-     * @param config The GuacamoleConfiguration to update with the data parsed
-     *               from the "protocol" tag.
-     */
-    public ParamTagHandler(GuacamoleConfiguration config) {
-        this.config = config;
-    }
+  /**
+   * Creates a new handler for an "param" tag having the given attributes.
+   *
+   * @param config The GuacamoleConfiguration to update with the data parsed from the "protocol"
+   *               tag.
+   */
+  public ParamTagHandler(GuacamoleConfiguration config) {
+    this.config = config;
+  }
 
-    @Override
-    public void init(Attributes attributes) throws SAXException {
-        this.name = attributes.getValue("name");
-    }
+  @Override
+  public void init(Attributes attributes) throws SAXException {
+    this.name = attributes.getValue("name");
+  }
 
-    @Override
-    public TagHandler childElement(String localName) throws SAXException {
-        throw new SAXException("The 'param' tag can contain no elements.");
-    }
+  @Override
+  public TagHandler childElement(String localName) throws SAXException {
+    throw new SAXException("The 'param' tag can contain no elements.");
+  }
 
-    @Override
-    public void complete(String textContent) throws SAXException {
-        config.setParameter(name, textContent);
-    }
+  @Override
+  public void complete(String textContent) throws SAXException {
+    config.setParameter(name, textContent);
+  }
 
 }

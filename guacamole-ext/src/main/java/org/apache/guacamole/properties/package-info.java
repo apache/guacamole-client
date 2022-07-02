@@ -18,8 +18,7 @@
  */
 
 /**
- * Provides classes for reading properties from the web-application-wide
- * guacamole.properties file.
+ * Provides classes for reading properties from the web-application-wide guacamole.properties file.
  */
 package org.apache.guacamole.properties;
 

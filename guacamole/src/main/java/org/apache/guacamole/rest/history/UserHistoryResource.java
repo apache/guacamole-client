@@ -23,26 +23,26 @@ import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 
 /**
- * A REST resource for retrieving and managing the history records of Guacamole
- * user sessions. User session history records describe the start/end times of
- * individual user sessions (when specific users logged in and out).
+ * A REST resource for retrieving and managing the history records of Guacamole user sessions. User
+ * session history records describe the start/end times of individual user sessions (when specific
+ * users logged in and out).
  */
-public class UserHistoryResource extends ActivityRecordSetResource<ActivityRecord, APIActivityRecord> {
+public class UserHistoryResource extends
+    ActivityRecordSetResource<ActivityRecord, APIActivityRecord> {
 
-    /**
-     * Creates a new UserHistoryResource which exposes the user session history
-     * records of the given ActivityRecordSet.
-     *
-     * @param history
-     *     The ActivityRecordSet whose records should be exposed.
-     */
-    public UserHistoryResource(ActivityRecordSet<ActivityRecord> history) {
-        super(history);
-    }
+  /**
+   * Creates a new UserHistoryResource which exposes the user session history records of the given
+   * ActivityRecordSet.
+   *
+   * @param history The ActivityRecordSet whose records should be exposed.
+   */
+  public UserHistoryResource(ActivityRecordSet<ActivityRecord> history) {
+    super(history);
+  }
 
-    @Override
-    protected APIActivityRecord toExternalRecord(ActivityRecord record) {
-        return new APIActivityRecord(record);
-    }
+  @Override
+  protected APIActivityRecord toExternalRecord(ActivityRecord record) {
+    return new APIActivityRecord(record);
+  }
 
 }

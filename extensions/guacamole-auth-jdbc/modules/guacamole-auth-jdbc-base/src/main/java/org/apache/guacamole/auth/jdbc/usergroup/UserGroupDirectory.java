@@ -30,53 +30,53 @@ import org.apache.guacamole.net.auth.UserGroup;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
- * Implementation of the UserGroup Directory which is driven by an underlying,
- * arbitrary database.
+ * Implementation of the UserGroup Directory which is driven by an underlying, arbitrary database.
  */
 public class UserGroupDirectory extends RestrictedObject
     implements Directory<UserGroup> {
 
-    /**
-     * Service for managing user group objects.
-     */
-    @Inject
-    private UserGroupService userGroupService;
+  /**
+   * Service for managing user group objects.
+   */
+  @Inject
+  private UserGroupService userGroupService;
 
-    @Override
-    public UserGroup get(String identifier) throws GuacamoleException {
-        return userGroupService.retrieveObject(getCurrentUser(), identifier);
-    }
+  @Override
+  public UserGroup get(String identifier) throws GuacamoleException {
+    return userGroupService.retrieveObject(getCurrentUser(), identifier);
+  }
 
-    @Override
-    @Transactional
-    public Collection<UserGroup> getAll(Collection<String> identifiers) throws GuacamoleException {
-        Collection<ModeledUserGroup> objects = userGroupService.retrieveObjects(getCurrentUser(), identifiers);
-        return Collections.<UserGroup>unmodifiableCollection(objects);
-    }
+  @Override
+  @Transactional
+  public Collection<UserGroup> getAll(Collection<String> identifiers) throws GuacamoleException {
+    Collection<ModeledUserGroup> objects = userGroupService.retrieveObjects(getCurrentUser(),
+        identifiers);
+    return Collections.<UserGroup>unmodifiableCollection(objects);
+  }
 
-    @Override
-    @Transactional
-    public Set<String> getIdentifiers() throws GuacamoleException {
-        return userGroupService.getIdentifiers(getCurrentUser());
-    }
+  @Override
+  @Transactional
+  public Set<String> getIdentifiers() throws GuacamoleException {
+    return userGroupService.getIdentifiers(getCurrentUser());
+  }
 
-    @Override
-    @Transactional
-    public void add(UserGroup object) throws GuacamoleException {
-        userGroupService.createObject(getCurrentUser(), object);
-    }
+  @Override
+  @Transactional
+  public void add(UserGroup object) throws GuacamoleException {
+    userGroupService.createObject(getCurrentUser(), object);
+  }
 
-    @Override
-    @Transactional
-    public void update(UserGroup object) throws GuacamoleException {
-        ModeledUserGroup group = (ModeledUserGroup) object;
-        userGroupService.updateObject(getCurrentUser(), group);
-    }
+  @Override
+  @Transactional
+  public void update(UserGroup object) throws GuacamoleException {
+    ModeledUserGroup group = (ModeledUserGroup) object;
+    userGroupService.updateObject(getCurrentUser(), group);
+  }
 
-    @Override
-    @Transactional
-    public void remove(String identifier) throws GuacamoleException {
-        userGroupService.deleteObject(getCurrentUser(), identifier);
-    }
+  @Override
+  @Transactional
+  public void remove(String identifier) throws GuacamoleException {
+    userGroupService.deleteObject(getCurrentUser(), identifier);
+  }
 
 }

@@ -42,87 +42,88 @@
  * @param {Location} location
  *     The Location object representing the URL of the current page.
  */
-(function relocateParameters(location){
+(function relocateParameters(location) {
 
-    /**
-     * The default path, including leading '#' character, which should be used
-     * if the URL of the current page has no fragment identifier.
-     *
-     * @constant
-     * @type String
-     */
-    var DEFAULT_ANGULAR_PATH = '#/';
+  /**
+   * The default path, including leading '#' character, which should be used
+   * if the URL of the current page has no fragment identifier.
+   *
+   * @constant
+   * @type String
+   */
+  var DEFAULT_ANGULAR_PATH = '#/';
 
-    /**
-     * The query parameters within the URL of the current page, including the
-     * leading '?' character.
-     *
-     * @type String
-     */
-    var parameters = location.search;
+  /**
+   * The query parameters within the URL of the current page, including the
+   * leading '?' character.
+   *
+   * @type String
+   */
+  var parameters = location.search;
 
-    /**
-     * The base URL of the current page, containing only the protocol, hostname,
-     * and path. Query parameters and the fragment, if any, are excluded.
-     *
-     * @type String
-     */
-    var baseUrl = location.origin + location.pathname;
+  /**
+   * The base URL of the current page, containing only the protocol, hostname,
+   * and path. Query parameters and the fragment, if any, are excluded.
+   *
+   * @type String
+   */
+  var baseUrl = location.origin + location.pathname;
 
-    /**
-     * The Angular-specific path within the fragment identifier of the URL of
-     * the current page, including the leading '#' character of the fragment
-     * identifier. If no fragment identifier is present, the deafult path will
-     * be used.
-     *
-     * @type String
-     */
-    var angularUrl = location.hash || DEFAULT_ANGULAR_PATH;
+  /**
+   * The Angular-specific path within the fragment identifier of the URL of
+   * the current page, including the leading '#' character of the fragment
+   * identifier. If no fragment identifier is present, the deafult path will
+   * be used.
+   *
+   * @type String
+   */
+  var angularUrl = location.hash || DEFAULT_ANGULAR_PATH;
 
-    /**
-     * Appends the given parameter string to the given URL. The URL may already
-     * contain parameters.
-     *
-     * @param {String} url
-     *     The URL that the given parameters should be appended to, which may
-     *     already contain parameters.
-     *
-     * @param {String} parameters
-     *     The parameters which should be appended to the given URL, including
-     *     leading '?' character.
-     *
-     * @returns {String}
-     *     A properly-formatted URL consisting of the given URL and additional
-     *     parameters.
-     */
-    var appendParameters = function appendParameters(url, parameters) {
+  /**
+   * Appends the given parameter string to the given URL. The URL may already
+   * contain parameters.
+   *
+   * @param {String} url
+   *     The URL that the given parameters should be appended to, which may
+   *     already contain parameters.
+   *
+   * @param {String} parameters
+   *     The parameters which should be appended to the given URL, including
+   *     leading '?' character.
+   *
+   * @returns {String}
+   *     A properly-formatted URL consisting of the given URL and additional
+   *     parameters.
+   */
+  var appendParameters = function appendParameters(url, parameters) {
 
-        // If URL already contains parameters, replace the leading '?' with an
-        // '&' prior to appending more parameters
-        if (url.indexOf('?') !== -1)
-            return url + '&' + parameters.substring(1);
-
-        // Otherwise, the provided parameters already contains the necessary
-        // '?' character - just append
-        return url + parameters;
-
-    };
-
-    // If non-Angular query parameters are present, reformat the URL such that
-    // they are after the path and thus visible to Angular
-    if (parameters) {
-
-        // Reformat the URL such that query parameters are after Angular's path
-        var reformattedUrl = appendParameters(baseUrl + angularUrl, parameters);
-
-        // Simply rewrite the visible URL if the HTML5 History API is supported
-        if (window.history && history.replaceState)
-            history.replaceState(null, document.title, reformattedUrl);
-
-        // Otherwise, redirect to the reformatted URL
-        else
-            location.href = reformattedUrl;
-
+    // If URL already contains parameters, replace the leading '?' with an
+    // '&' prior to appending more parameters
+    if (url.indexOf('?') !== -1) {
+      return url + '&' + parameters.substring(1);
     }
+
+    // Otherwise, the provided parameters already contains the necessary
+    // '?' character - just append
+    return url + parameters;
+
+  };
+
+  // If non-Angular query parameters are present, reformat the URL such that
+  // they are after the path and thus visible to Angular
+  if (parameters) {
+
+    // Reformat the URL such that query parameters are after Angular's path
+    var reformattedUrl = appendParameters(baseUrl + angularUrl, parameters);
+
+    // Simply rewrite the visible URL if the HTML5 History API is supported
+    if (window.history && history.replaceState) {
+      history.replaceState(null, document.title, reformattedUrl);
+    }// Otherwise, redirect to the reformatted URL
+    else {
+      location.href = reformattedUrl;
+    }
+
+  }
 
 })(window.location);

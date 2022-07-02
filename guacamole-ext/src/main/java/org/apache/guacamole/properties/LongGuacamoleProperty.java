@@ -27,20 +27,20 @@ import org.apache.guacamole.GuacamoleServerException;
  */
 public abstract class LongGuacamoleProperty implements GuacamoleProperty<Long> {
 
-    @Override
-    public Long parseValue(String value) throws GuacamoleException {
+  @Override
+  public Long parseValue(String value) throws GuacamoleException {
 
-        // If no property provided, return null.
-        if (value == null)
-            return null;
-
-        try {
-            return Long.valueOf(value);
-        }
-        catch (NumberFormatException e) {
-            throw new GuacamoleServerException("Property \"" + getName() + "\" must be an long.", e);
-        }
-
+    // If no property provided, return null.
+    if (value == null) {
+      return null;
     }
+
+    try {
+      return Long.valueOf(value);
+    } catch (NumberFormatException e) {
+      throw new GuacamoleServerException("Property \"" + getName() + "\" must be an long.", e);
+    }
+
+  }
 
 }

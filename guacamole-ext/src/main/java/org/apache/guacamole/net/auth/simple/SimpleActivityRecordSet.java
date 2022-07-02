@@ -24,63 +24,59 @@ import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
-import org.apache.guacamole.net.auth.ActivityRecordSet.SortableProperty;
 
 /**
  * An immutable and empty ActivityRecordSet.
  *
- * @param <RecordType>
- *     The type of ActivityRecord contained within this set.
+ * @param <RecordType> The type of ActivityRecord contained within this set.
  */
 public class SimpleActivityRecordSet<RecordType extends ActivityRecord>
-        implements ActivityRecordSet<RecordType> {
+    implements ActivityRecordSet<RecordType> {
 
-    /**
-     * The records associated with this record set, if any.
-     */
-    private final Collection<RecordType> records;
-    
-    /**
-     * Create a new SimpleActivityRecordSet that contains an empty set of
-     * records.
-     */
-    public SimpleActivityRecordSet() {
-        records = Collections.emptyList();
-    }
-    
-    /**
-     * Create a new SimpleActivityRecordSet that contains the provided records
-     * which will back this record set.
-     * 
-     * @param records 
-     *     The records that this SimpleActivityRecordSet should contain.
-     */
-    public SimpleActivityRecordSet(Collection<? extends RecordType> records) {
-        this.records = Collections.unmodifiableCollection(records);
-    }
-    
-    @Override
-    public Collection<RecordType> asCollection()
-            throws GuacamoleException {
-        return records;
-    }
+  /**
+   * The records associated with this record set, if any.
+   */
+  private final Collection<RecordType> records;
 
-    @Override
-    public ActivityRecordSet<RecordType> contains(String value)
-            throws GuacamoleException {
-        return this;
-    }
+  /**
+   * Create a new SimpleActivityRecordSet that contains an empty set of records.
+   */
+  public SimpleActivityRecordSet() {
+    records = Collections.emptyList();
+  }
 
-    @Override
-    public ActivityRecordSet<RecordType> limit(int limit)
-            throws GuacamoleException {
-        return this;
-    }
+  /**
+   * Create a new SimpleActivityRecordSet that contains the provided records which will back this
+   * record set.
+   *
+   * @param records The records that this SimpleActivityRecordSet should contain.
+   */
+  public SimpleActivityRecordSet(Collection<? extends RecordType> records) {
+    this.records = Collections.unmodifiableCollection(records);
+  }
 
-    @Override
-    public ActivityRecordSet<RecordType> sort(SortableProperty property,
-            boolean desc) throws GuacamoleException {
-        return this;
-    }
+  @Override
+  public Collection<RecordType> asCollection()
+      throws GuacamoleException {
+    return records;
+  }
+
+  @Override
+  public ActivityRecordSet<RecordType> contains(String value)
+      throws GuacamoleException {
+    return this;
+  }
+
+  @Override
+  public ActivityRecordSet<RecordType> limit(int limit)
+      throws GuacamoleException {
+    return this;
+  }
+
+  @Override
+  public ActivityRecordSet<RecordType> sort(SortableProperty property,
+      boolean desc) throws GuacamoleException {
+    return this;
+  }
 
 }

@@ -17,53 +17,53 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-jdbc</artifactId>
-    <packaging>pom</packaging>
-    <version>1.4.0</version>
-    <name>guacamole-auth-jdbc</name>
-    <url>http://guacamole.apache.org/</url>
+  <artifactId>guacamole-auth-jdbc</artifactId>
+  <dependencyManagement>
+    <dependencies>
 
-    <parent>
+      <!-- Guacamole Extension API -->
+      <dependency>
+        <artifactId>guacamole-ext</artifactId>
         <groupId>org.apache.guacamole</groupId>
-        <artifactId>extensions</artifactId>
+        <scope>provided</scope>
         <version>1.4.0</version>
-        <relativePath>../</relativePath>
-    </parent>
+      </dependency>
 
-    <modules>
+    </dependencies>
+  </dependencyManagement>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <modules>
 
-        <!-- Distribution .tar.gz -->
-        <module>modules/guacamole-auth-jdbc-dist</module>
+    <!-- Distribution .tar.gz -->
+    <module>modules/guacamole-auth-jdbc-dist</module>
 
-        <!-- Base JDBC classes -->
-        <module>modules/guacamole-auth-jdbc-base</module>
+    <!-- Base JDBC classes -->
+    <module>modules/guacamole-auth-jdbc-base</module>
 
-        <!-- Database-specific implementations -->
-        <module>modules/guacamole-auth-jdbc-mysql</module>
-        <module>modules/guacamole-auth-jdbc-postgresql</module>
-        <module>modules/guacamole-auth-jdbc-sqlserver</module>
+    <!-- Database-specific implementations -->
+    <module>modules/guacamole-auth-jdbc-mysql</module>
+    <module>modules/guacamole-auth-jdbc-postgresql</module>
+    <module>modules/guacamole-auth-jdbc-sqlserver</module>
 
-    </modules>
+  </modules>
+  <name>guacamole-auth-jdbc</name>
+  <packaging>pom</packaging>
 
-    <dependencyManagement>
-        <dependencies>
+  <parent>
+    <artifactId>extensions</artifactId>
+    <groupId>org.apache.guacamole</groupId>
+    <relativePath>../</relativePath>
+    <version>1.4.0</version>
+  </parent>
 
-            <!-- Guacamole Extension API -->
-            <dependency>
-                <groupId>org.apache.guacamole</groupId>
-                <artifactId>guacamole-ext</artifactId>
-                <version>1.4.0</version>
-                <scope>provided</scope>
-            </dependency>
+  <url>http://guacamole.apache.org/</url>
 
-        </dependencies>
-    </dependencyManagement>
+  <version>1.4.0</version>
 
 </project>

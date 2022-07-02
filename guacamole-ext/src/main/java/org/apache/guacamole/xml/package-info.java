@@ -18,8 +18,7 @@
  */
 
 /**
- * Classes driving the SAX-based XML parser used by the Guacamole web
- * application.
+ * Classes driving the SAX-based XML parser used by the Guacamole web application.
  */
 package org.apache.guacamole.xml;
 

@@ -24,14 +24,13 @@ package org.apache.guacamole.form;
  */
 public class MultilineField extends Field {
 
-    /**
-     * Creates a new MultilineField with the given name.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     */
-    public MultilineField(String name) {
-        super(name, Field.Type.MULTILINE);
-    }
+  /**
+   * Creates a new MultilineField with the given name.
+   *
+   * @param name The unique name to associate with this field.
+   */
+  public MultilineField(String name) {
+    super(name, Field.Type.MULTILINE);
+  }
 
 }

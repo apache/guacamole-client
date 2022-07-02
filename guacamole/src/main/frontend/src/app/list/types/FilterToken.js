@@ -21,7 +21,7 @@
  * A service for defining the FilterToken class.
  */
 angular.module('list').factory('FilterToken', ['$injector',
-    function defineFilterToken($injector) {
+  function defineFilterToken($injector) {
 
     // Required types
     var IPv4Network = $injector.get('IPv4Network');
@@ -44,27 +44,27 @@ angular.module('list').factory('FilterToken', ['$injector',
      */
     var FilterToken = function FilterToken(consumed, type, value) {
 
-        /**
-         * The input string that was consumed to produce this token.
-         *
-         * @type String
-         */
-        this.consumed = consumed;
+      /**
+       * The input string that was consumed to produce this token.
+       *
+       * @type String
+       */
+      this.consumed = consumed;
 
-        /**
-         * The type of this token. Each legal type name is a property within
-         * FilterToken.Types.
-         *
-         * @type String
-         */
-        this.type = type;
+      /**
+       * The type of this token. Each legal type name is a property within
+       * FilterToken.Types.
+       *
+       * @type String
+       */
+      this.type = type;
 
-        /**
-         * The value of this token.
-         *
-         * @type Object
-         */
-        this.value = value;
+      /**
+       * The value of this token.
+       *
+       * @type Object
+       */
+      this.value = value;
 
     };
 
@@ -77,89 +77,96 @@ angular.module('list').factory('FilterToken', ['$injector',
      */
     FilterToken.Types = {
 
-        /**
-         * An IPv4 address or subnet. The value of an IPV4_NETWORK token is an
-         * IPv4Network.
-         */
-        IPV4_NETWORK: function parseIPv4(str) {
+      /**
+       * An IPv4 address or subnet. The value of an IPV4_NETWORK token is an
+       * IPv4Network.
+       */
+      IPV4_NETWORK: function parseIPv4(str) {
 
-            var pattern = /^\S+/;
+        var pattern = /^\S+/;
 
-            // Read first word via regex
-            var matches = pattern.exec(str);
-            if (!matches)
-                return null;
-
-            // Validate and parse as IPv4 address
-            var network = IPv4Network.parse(matches[0]);
-            if (!network)
-                return null;
-
-            return new FilterToken(matches[0], 'IPV4_NETWORK', network);
-
-        },
-
-        /**
-         * An IPv6 address or subnet. The value of an IPV6_NETWORK token is an
-         * IPv6Network.
-         */
-        IPV6_NETWORK: function parseIPv6(str) {
-
-            var pattern = /^\S+/;
-
-            // Read first word via regex
-            var matches = pattern.exec(str);
-            if (!matches)
-                return null;
-
-            // Validate and parse as IPv6 address
-            var network = IPv6Network.parse(matches[0]);
-            if (!network)
-                return null;
-
-            return new FilterToken(matches[0], 'IPV6_NETWORK', network);
-
-        },
-
-        /**
-         * A string literal, which may be quoted. The value of a LITERAL token
-         * is a String.
-         */
-        LITERAL: function parseLiteral(str) {
-
-            var pattern = /^"([^"]*)"|^\S+/;
-
-            // Validate against pattern
-            var matches = pattern.exec(str);
-            if (!matches)
-                return null;
-
-            // If literal is quoted, parse within the quotes
-            if (matches[1])
-                return new FilterToken(matches[0], 'LITERAL', matches[1]);
-
-            //  Otherwise, literal is unquoted
-            return new FilterToken(matches[0], 'LITERAL', matches[0]);
-
-        },
-
-        /**
-         * Arbitrary contiguous whitespace. The value of a WHITESPACE token is
-         * a String.
-         */
-        WHITESPACE: function parseWhitespace(str) {
-
-            var pattern = /^\s+/;
-
-            // Validate against pattern
-            var matches = pattern.exec(str);
-            if (!matches)
-                return null;
-
-            //  Generate token from matching whitespace
-            return new FilterToken(matches[0], 'WHITESPACE', matches[0]);
-
+        // Read first word via regex
+        var matches = pattern.exec(str);
+        if (!matches) {
+          return null;
         }
+
+        // Validate and parse as IPv4 address
+        var network = IPv4Network.parse(matches[0]);
+        if (!network) {
+          return null;
+        }
+
+        return new FilterToken(matches[0], 'IPV4_NETWORK', network);
+
+      },
+
+      /**
+       * An IPv6 address or subnet. The value of an IPV6_NETWORK token is an
+       * IPv6Network.
+       */
+      IPV6_NETWORK: function parseIPv6(str) {
+
+        var pattern = /^\S+/;
+
+        // Read first word via regex
+        var matches = pattern.exec(str);
+        if (!matches) {
+          return null;
+        }
+
+        // Validate and parse as IPv6 address
+        var network = IPv6Network.parse(matches[0]);
+        if (!network) {
+          return null;
+        }
+
+        return new FilterToken(matches[0], 'IPV6_NETWORK', network);
+
+      },
+
+      /**
+       * A string literal, which may be quoted. The value of a LITERAL token
+       * is a String.
+       */
+      LITERAL: function parseLiteral(str) {
+
+        var pattern = /^"([^"]*)"|^\S+/;
+
+        // Validate against pattern
+        var matches = pattern.exec(str);
+        if (!matches) {
+          return null;
+        }
+
+        // If literal is quoted, parse within the quotes
+        if (matches[1]) {
+          return new FilterToken(matches[0], 'LITERAL', matches[1]);
+        }
+
+        //  Otherwise, literal is unquoted
+        return new FilterToken(matches[0], 'LITERAL', matches[0]);
+
+      },
+
+      /**
+       * Arbitrary contiguous whitespace. The value of a WHITESPACE token is
+       * a String.
+       */
+      WHITESPACE: function parseWhitespace(str) {
+
+        var pattern = /^\s+/;
+
+        // Validate against pattern
+        var matches = pattern.exec(str);
+        if (!matches) {
+          return null;
+        }
+
+        //  Generate token from matching whitespace
+        return new FilterToken(matches[0], 'WHITESPACE', matches[0]);
+
+      }
 
     };
 
@@ -175,55 +182,57 @@ angular.module('list').factory('FilterToken', ['$injector',
      */
     FilterToken.tokenize = function tokenize(str) {
 
-        var tokens = [];
+      var tokens = [];
 
-        /**
-         * Returns the first token on the current string, removing the token
-         * from that string.
-         *
-         * @returns FilterToken
-         *     The first token on the string, or null if no tokens match.
-         */
-        var popToken = function popToken() {
+      /**
+       * Returns the first token on the current string, removing the token
+       * from that string.
+       *
+       * @returns FilterToken
+       *     The first token on the string, or null if no tokens match.
+       */
+      var popToken = function popToken() {
 
-            // Attempt to find a matching token
-            for (var type in FilterToken.Types) {
+        // Attempt to find a matching token
+        for (var type in FilterToken.Types) {
 
-                // Get matching function for current type
-                var matcher = FilterToken.Types[type];
+          // Get matching function for current type
+          var matcher = FilterToken.Types[type];
 
-                // If token matches, return the matching group
-                var token = matcher(str);
-                if (token) {
-                    str = str.substring(token.consumed.length);
-                    return token;
-                }
-
-            }
-
-            // No match
-            return null;
-
-        };
-
-        // Tokenize input until no input remains
-        while (str) {
-
-            // Remove first token
-            var token = popToken();
-            if (!token)
-                break;
-
-            // Add token to tokens array, if not whitespace
-            if (token.type !== 'WHITESPACE')
-                tokens.push(token);
+          // If token matches, return the matching group
+          var token = matcher(str);
+          if (token) {
+            str = str.substring(token.consumed.length);
+            return token;
+          }
 
         }
 
-        return tokens;
+        // No match
+        return null;
+
+      };
+
+      // Tokenize input until no input remains
+      while (str) {
+
+        // Remove first token
+        var token = popToken();
+        if (!token) {
+          break;
+        }
+
+        // Add token to tokens array, if not whitespace
+        if (token.type !== 'WHITESPACE') {
+          tokens.push(token);
+        }
+
+      }
+
+      return tokens;
 
     };
 
     return FilterToken;
 
-}]);
+  }]);

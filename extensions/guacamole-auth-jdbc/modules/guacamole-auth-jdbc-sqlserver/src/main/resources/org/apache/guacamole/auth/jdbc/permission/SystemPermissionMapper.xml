@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <!--
     Licensed to the Apache Software Foundation (ASF) under one
@@ -21,83 +21,87 @@
     under the License.
 -->
 
-<mapper namespace="org.apache.guacamole.auth.jdbc.permission.SystemPermissionMapper" >
+<mapper namespace="org.apache.guacamole.auth.jdbc.permission.SystemPermissionMapper">
 
-    <!-- Result mapper for system permissions -->
-    <resultMap id="SystemPermissionResultMap" type="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
-        <result column="entity_id"  property="entityID" jdbcType="INTEGER"/>
-        <result column="permission" property="type"     jdbcType="VARCHAR"
-                javaType="org.apache.guacamole.net.auth.permission.SystemPermission$Type"/>
-    </resultMap>
+  <!-- Result mapper for system permissions -->
+  <delete id="delete"
+    parameterType="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
 
-    <!-- Select all permissions for a given entity -->
-    <select id="select" resultMap="SystemPermissionResultMap">
+    DELETE FROM [guacamole_system_permission]
+    WHERE
+    <foreach close=")" collection="permissions"
+      item="permission" open="(" separator=" OR ">
+      (entity_id = #{permission.entityID,jdbcType=INTEGER}
+      AND permission = #{permission.type,jdbcType=VARCHAR})
+    </foreach>
 
-        SELECT DISTINCT
-            #{entity.entityID} AS entity_id,
-            permission
-        FROM [guacamole_system_permission]
-        WHERE
-            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
+  </delete>
 
-    </select>
+  <!-- Select all permissions for a given entity -->
+  <insert id="insert"
+    parameterType="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
 
-    <!-- Select the single permission matching the given criteria -->
-    <select id="selectOne" resultMap="SystemPermissionResultMap">
+    INSERT INTO [guacamole_system_permission] (
+    entity_id,
+    permission
+    )
+    SELECT DISTINCT
+    permissions.entity_id,
+    permissions.permission
+    FROM
+    <foreach close=")" collection="permissions"
+      item="permission" open="(" separator="UNION ALL">
+      SELECT #{permission.entityID,jdbcType=INTEGER} AS entity_id,
+      #{permission.type,jdbcType=VARCHAR} AS permission
+    </foreach>
+    AS permissions
+    WHERE NOT EXISTS (SELECT 1 FROM [guacamole_system_permission]
+    WHERE [guacamole_system_permission].entity_id = permissions.entity_id
+    AND [guacamole_system_permission].permission = permissions.permission
+    );
 
-        SELECT DISTINCT
-            #{entity.entityID} AS entity_id,
-            permission
-        FROM [guacamole_system_permission]
-        WHERE
-            <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
-            </include>
-            AND permission = #{type,jdbcType=VARCHAR}
+  </insert>
 
-    </select>
+  <!-- Select the single permission matching the given criteria -->
+  <resultMap id="SystemPermissionResultMap"
+    type="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
+    <result column="entity_id" jdbcType="INTEGER" property="entityID"/>
+    <result column="permission"
+      javaType="org.apache.guacamole.net.auth.permission.SystemPermission$Type" jdbcType="VARCHAR"
+      property="type"/>
+  </resultMap>
 
-    <!-- Delete all given permissions -->
-    <delete id="delete" parameterType="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
+  <!-- Delete all given permissions -->
+  <select id="select" resultMap="SystemPermissionResultMap">
 
-        DELETE FROM [guacamole_system_permission]
-        WHERE
-            <foreach collection="permissions" item="permission"
-                     open="(" separator=" OR " close=")">
-                     (entity_id = #{permission.entityID,jdbcType=INTEGER}
-                      AND permission = #{permission.type,jdbcType=VARCHAR})
-            </foreach>
+    SELECT DISTINCT
+    #{entity.entityID} AS entity_id,
+    permission
+    FROM [guacamole_system_permission]
+    WHERE
+    <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+      <property name="column" value="entity_id"/>
+      <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
+      <property name="groups" value="effectiveGroups"/>
+    </include>
 
-    </delete>
+  </select>
 
-    <!-- Insert all given permissions -->
-    <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.permission.SystemPermissionModel">
+  <!-- Insert all given permissions -->
+  <select id="selectOne" resultMap="SystemPermissionResultMap">
 
-        INSERT INTO [guacamole_system_permission] (
-            entity_id,
-            permission
-        )
-        SELECT DISTINCT
-            permissions.entity_id,
-            permissions.permission
-        FROM
-            <foreach collection="permissions" item="permission"
-                     open="(" separator="UNION ALL" close=")">
-                SELECT #{permission.entityID,jdbcType=INTEGER} AS entity_id,
-                       #{permission.type,jdbcType=VARCHAR} AS permission
-            </foreach>
-        AS permissions
-        WHERE NOT EXISTS (SELECT 1 FROM [guacamole_system_permission]
-            WHERE [guacamole_system_permission].entity_id = permissions.entity_id
-            AND [guacamole_system_permission].permission = permissions.permission
-        );
+    SELECT DISTINCT
+    #{entity.entityID} AS entity_id,
+    permission
+    FROM [guacamole_system_permission]
+    WHERE
+    <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
+      <property name="column" value="entity_id"/>
+      <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
+      <property name="groups" value="effectiveGroups"/>
+    </include>
+    AND permission = #{type,jdbcType=VARCHAR}
 
-    </insert>
+  </select>
 
 </mapper>

@@ -18,16 +18,16 @@
  */
 
 .filter {
-    margin: 0.5em 0;
+  margin: 0.5em 0;
 }
 
 .filter .search-string {
-    background-image: url('images/magnifier.svg');
-    background-repeat: no-repeat;
-    background-size: 1.75em;
-    background-position: 0.25em center;
-    padding: 0.5em;
-    padding-left: 2.25em;
-    width: 100%;
-    max-width: none;
+  background-image: url('images/magnifier.svg');
+  background-repeat: no-repeat;
+  background-size: 1.75em;
+  background-position: 0.25em center;
+  padding: 0.5em;
+  padding-left: 2.25em;
+  width: 100%;
+  max-width: none;
 }

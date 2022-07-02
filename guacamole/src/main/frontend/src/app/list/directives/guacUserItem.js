@@ -22,71 +22,72 @@
  */
 angular.module('list').directive('guacUserItem', [function guacUserItem() {
 
-    return {
-        restrict: 'E',
-        replace: true,
-        scope: {
+  return {
+    restrict: 'E',
+    replace: true,
+    scope: {
 
-            /**
-             * The username of the user represented by this guacUserItem.
-             *
-             * @type String
-             */
-            username : '='
+      /**
+       * The username of the user represented by this guacUserItem.
+       *
+       * @type String
+       */
+      username: '='
 
-        },
+    },
 
-        templateUrl: 'app/list/templates/guacUserItem.html',
-        controller: ['$scope', '$injector',
-            function guacUserItemController($scope, $injector) {
+    templateUrl: 'app/list/templates/guacUserItem.html',
+    controller: ['$scope', '$injector',
+      function guacUserItemController($scope, $injector) {
 
-            // Required types
-            var AuthenticationResult = $injector.get('AuthenticationResult');
+        // Required types
+        var AuthenticationResult = $injector.get('AuthenticationResult');
 
-            // Required services
-            var $translate = $injector.get('$translate');
+        // Required services
+        var $translate = $injector.get('$translate');
 
-            /**
-             * The string to display when listing the user having the provided
-             * username. Generally, this will be the username itself, but can
-             * also be an arbitrary human-readable representation of the user,
-             * or null if the display name is not yet determined.
-             *
-             * @type String
-             */
-            $scope.displayName = null;
+        /**
+         * The string to display when listing the user having the provided
+         * username. Generally, this will be the username itself, but can
+         * also be an arbitrary human-readable representation of the user,
+         * or null if the display name is not yet determined.
+         *
+         * @type String
+         */
+        $scope.displayName = null;
 
-            /**
-             * Returns whether the username provided to this directive denotes
-             * a user that authenticated anonymously.
-             *
-             * @returns {Boolean}
-             *     true if the username provided represents an anonymous user,
-             *     false otherwise.
-             */
-            $scope.isAnonymous = function isAnonymous() {
-                return $scope.username === AuthenticationResult.ANONYMOUS_USERNAME;
-            };
+        /**
+         * Returns whether the username provided to this directive denotes
+         * a user that authenticated anonymously.
+         *
+         * @returns {Boolean}
+         *     true if the username provided represents an anonymous user,
+         *     false otherwise.
+         */
+        $scope.isAnonymous = function isAnonymous() {
+          return $scope.username === AuthenticationResult.ANONYMOUS_USERNAME;
+        };
 
-            // Update display name whenever provided username changes
-            $scope.$watch('username', function updateDisplayName(username) {
+        // Update display name whenever provided username changes
+        $scope.$watch('username', function updateDisplayName(username) {
 
-                // If the user is anonymous, pull the display name for anonymous
-                // users from the translation service
-                if ($scope.isAnonymous()) {
-                    $translate('LIST.TEXT_ANONYMOUS_USER')
-                    .then(function retrieveAnonymousDisplayName(anonymousDisplayName) {
-                        $scope.displayName = anonymousDisplayName;
-                    }, angular.noop);
-                }
+          // If the user is anonymous, pull the display name for anonymous
+          // users from the translation service
+          if ($scope.isAnonymous()) {
+            $translate('LIST.TEXT_ANONYMOUS_USER')
+            .then(function retrieveAnonymousDisplayName(anonymousDisplayName) {
+              $scope.displayName = anonymousDisplayName;
+            }, angular.noop);
+          }
 
-                // For all other users, use the username verbatim
-                else
-                    $scope.displayName = username;
+          // For all other users, use the username verbatim
+          else {
+            $scope.displayName = username;
+          }
 
-            });
+        });
 
-        }] // end controller
+      }] // end controller
 
-    };
+  };
 }]);

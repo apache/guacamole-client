@@ -19,67 +19,67 @@
 -->
 <html>
 
-    <head>
-        <link rel="stylesheet" type="text/css" href="guacamole.css">
-        <title>Guacamole (EXAMPLE)</title>
-    </head>
+<head>
+  <link href="guacamole.css" rel="stylesheet" type="text/css">
+  <title>Guacamole (EXAMPLE)</title>
+</head>
 
-    <body>
+<body>
 
-        <!-- Display -->
-        <div id="display"></div>
+<!-- Display -->
+<div id="display"></div>
 
-        <!-- Guacamole JavaScript API -->
-        <script type="text/javascript"
-            src="guacamole-common-js/all.min.js"></script>
+<!-- Guacamole JavaScript API -->
+<script src="guacamole-common-js/all.min.js"
+        type="text/javascript"></script>
 
-        <!-- Init -->
-        <script type="text/javascript"> /* <![CDATA[ */
+<!-- Init -->
+<script type="text/javascript"> /* <![CDATA[ */
 
-            // Get display div from document
-            var display = document.getElementById("display");
+// Get display div from document
+var display = document.getElementById("display");
 
-            // Instantiate client, using an HTTP tunnel for communications.
-            var guac = new Guacamole.Client(
-                new Guacamole.HTTPTunnel("tunnel")
-            );
+// Instantiate client, using an HTTP tunnel for communications.
+var guac = new Guacamole.Client(
+    new Guacamole.HTTPTunnel("tunnel")
+);
 
-            // Add client to display div
-            display.appendChild(guac.getDisplay().getElement());
-            
-            // Error handler
-            guac.onerror = function(error) {
-                alert(error);
-            };
+// Add client to display div
+display.appendChild(guac.getDisplay().getElement());
 
-            // Connect
-            guac.connect();
+// Error handler
+guac.onerror = function (error) {
+  alert(error);
+};
 
-            // Disconnect on close
-            window.onunload = function() {
-                guac.disconnect();
-            }
+// Connect
+guac.connect();
 
-            // Mouse
-            var mouse = new Guacamole.Mouse(guac.getDisplay().getElement());
+// Disconnect on close
+window.onunload = function () {
+  guac.disconnect();
+}
 
-            mouse.onEach(['mousedown', 'mouseup', 'mousemove'], function sendMouseEvent(e) {
-                guac.sendMouseState(e.state);
-            });
+// Mouse
+var mouse = new Guacamole.Mouse(guac.getDisplay().getElement());
 
-            // Keyboard
-            var keyboard = new Guacamole.Keyboard(document);
+mouse.onEach(['mousedown', 'mouseup', 'mousemove'], function sendMouseEvent(e) {
+  guac.sendMouseState(e.state);
+});
 
-            keyboard.onkeydown = function (keysym) {
-                guac.sendKeyEvent(1, keysym);
-            };
+// Keyboard
+var keyboard = new Guacamole.Keyboard(document);
 
-            keyboard.onkeyup = function (keysym) {
-                guac.sendKeyEvent(0, keysym);
-            };
+keyboard.onkeydown = function (keysym) {
+  guac.sendKeyEvent(1, keysym);
+};
 
-        /* ]]> */ </script>
+keyboard.onkeyup = function (keysym) {
+  guac.sendKeyEvent(0, keysym);
+};
 
-    </body>
+/* ]]> */ </script>
+
+</body>
 
 </html>

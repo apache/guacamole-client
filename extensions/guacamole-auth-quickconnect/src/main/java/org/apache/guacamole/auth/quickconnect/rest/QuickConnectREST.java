@@ -22,60 +22,49 @@ package org.apache.guacamole.auth.quickconnect.rest;
 import java.util.Collections;
 import java.util.Map;
 import javax.ws.rs.FormParam;
-import javax.ws.rs.Path;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.quickconnect.QuickConnectDirectory;
-import org.apache.guacamole.auth.quickconnect.utility.QCParser;
 
 /**
- * A class that implements REST endpoints for the QuickConnect
- * extension.
+ * A class that implements REST endpoints for the QuickConnect extension.
  */
 @Produces(MediaType.APPLICATION_JSON)
 public class QuickConnectREST {
-    
-    /**
-     * The connection directory for this REST endpoint.
-     */
-    private final QuickConnectDirectory directory;
 
-    /**
-     * Construct a new QuickConnectREST class, taking in a
-     * QuickConnectDirectory for use with this class. 
-     *
-     * @param directory
-     *     The QuickConnectDirectory object to associate with this
-     *     REST endpoint class.
-     */
-    public QuickConnectREST(QuickConnectDirectory directory) {
-        this.directory = directory;
-    }
+  /**
+   * The connection directory for this REST endpoint.
+   */
+  private final QuickConnectDirectory directory;
 
-    /**
-     * Parse the URI read from the POST input, add the connection
-     * to the directory, and return a Map containing a single key,
-     * identifier, and the identifier of the new connection.
-     *
-     * @param uri
-     *     The URI to parse into a connection.
-     *
-     * @return
-     *     A Map containing a single key, identifier, and the
-     *     identifier of the new connection.
-     *
-     * @throws GuacamoleException
-     *     If an error is encountered parsing the URI.
-     */
-    @POST
-    @Path("create")
-    public Map<String, String> create(@FormParam("uri") String uri) 
-            throws GuacamoleException {
+  /**
+   * Construct a new QuickConnectREST class, taking in a QuickConnectDirectory for use with this
+   * class.
+   *
+   * @param directory The QuickConnectDirectory object to associate with this REST endpoint class.
+   */
+  public QuickConnectREST(QuickConnectDirectory directory) {
+    this.directory = directory;
+  }
 
-        return Collections.singletonMap("identifier", directory.create(uri));
- 
-    }
+  /**
+   * Parse the URI read from the POST input, add the connection to the directory, and return a Map
+   * containing a single key, identifier, and the identifier of the new connection.
+   *
+   * @param uri The URI to parse into a connection.
+   * @return A Map containing a single key, identifier, and the identifier of the new connection.
+   * @throws GuacamoleException If an error is encountered parsing the URI.
+   */
+  @POST
+  @Path("create")
+  public Map<String, String> create(@FormParam("uri") String uri)
+      throws GuacamoleException {
+
+    return Collections.singletonMap("identifier", directory.create(uri));
+
+  }
 
 }

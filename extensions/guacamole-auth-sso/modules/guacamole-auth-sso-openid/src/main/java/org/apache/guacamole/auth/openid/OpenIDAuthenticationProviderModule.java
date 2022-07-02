@@ -29,11 +29,11 @@ import org.apache.guacamole.auth.openid.token.TokenValidationService;
  */
 public class OpenIDAuthenticationProviderModule extends AbstractModule {
 
-    @Override
-    protected void configure() {
-        bind(ConfigurationService.class);
-        bind(NonceService.class);
-        bind(TokenValidationService.class);
-    }
+  @Override
+  protected void configure() {
+    bind(ConfigurationService.class);
+    bind(NonceService.class);
+    bind(TokenValidationService.class);
+  }
 
 }

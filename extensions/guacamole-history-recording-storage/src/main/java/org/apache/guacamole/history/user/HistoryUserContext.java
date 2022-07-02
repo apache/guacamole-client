@@ -36,87 +36,80 @@ import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * UserContext implementation that automatically defines ActivityLogs for
- * files that relate to history entries.
+ * UserContext implementation that automatically defines ActivityLogs for files that relate to
+ * history entries.
  */
 public class HistoryUserContext extends TokenInjectingUserContext {
 
-    /**
-     * The name of the parameter token that contains the automatically-searched
-     * history recording/log path.
-     */
-    private static final String HISTORY_PATH_TOKEN_NAME = "HISTORY_PATH";
-    
-    /**
-     * The current Guacamole user.
-     */
-    private final User currentUser;
+  /**
+   * The name of the parameter token that contains the automatically-searched history recording/log
+   * path.
+   */
+  private static final String HISTORY_PATH_TOKEN_NAME = "HISTORY_PATH";
 
-    /**
-     * Creates a new HistoryUserContext that wraps the given UserContext,
-     * automatically associating history entries with ActivityLogs based on
-     * related files (session recordings, typescripts, etc.).
-     *
-     * @param currentUser
-     *     The current Guacamole user.
-     *
-     * @param context
-     *     The UserContext to wrap.
-     */
-    public HistoryUserContext(User currentUser, UserContext context) {
-        super(context);
-        this.currentUser = currentUser;
-    }
+  /**
+   * The current Guacamole user.
+   */
+  private final User currentUser;
 
-    /**
-     * Returns the tokens which should be added to an in-progress call to
-     * connect() for any Connectable object.
-     *
-     * @return
-     *     The tokens which should be added to the in-progress call to
-     *     connect().
-     *
-     * @throws GuacamoleException
-     *     If the relevant tokens cannot be generated.
-     */
-    private Map<String, String> getTokens() throws GuacamoleException {
-        return Collections.singletonMap(HISTORY_PATH_TOKEN_NAME,
-                HistoryAuthenticationProvider.getRecordingSearchPath().getAbsolutePath());
-    }
-    
-    @Override
-    protected Map<String, String> getTokens(ConnectionGroup connectionGroup)
-            throws GuacamoleException {
-        return getTokens();
-    }
+  /**
+   * Creates a new HistoryUserContext that wraps the given UserContext, automatically associating
+   * history entries with ActivityLogs based on related files (session recordings, typescripts,
+   * etc.).
+   *
+   * @param currentUser The current Guacamole user.
+   * @param context     The UserContext to wrap.
+   */
+  public HistoryUserContext(User currentUser, UserContext context) {
+    super(context);
+    this.currentUser = currentUser;
+  }
 
-    @Override
-    protected Map<String, String> getTokens(Connection connection)
-            throws GuacamoleException {
-        return getTokens();
-    }
+  /**
+   * Returns the tokens which should be added to an in-progress call to connect() for any
+   * Connectable object.
+   *
+   * @return The tokens which should be added to the in-progress call to connect().
+   * @throws GuacamoleException If the relevant tokens cannot be generated.
+   */
+  private Map<String, String> getTokens() throws GuacamoleException {
+    return Collections.singletonMap(HISTORY_PATH_TOKEN_NAME,
+        HistoryAuthenticationProvider.getRecordingSearchPath().getAbsolutePath());
+  }
 
-    @Override
-    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
-        return new DecoratingDirectory<Connection>(super.getConnectionDirectory()) {
+  @Override
+  protected Map<String, String> getTokens(ConnectionGroup connectionGroup)
+      throws GuacamoleException {
+    return getTokens();
+  }
 
-            @Override
-            protected Connection decorate(Connection object) {
-                return new HistoryConnection(currentUser, object);
-            }
+  @Override
+  protected Map<String, String> getTokens(Connection connection)
+      throws GuacamoleException {
+    return getTokens();
+  }
 
-            @Override
-            protected Connection undecorate(Connection object) throws GuacamoleException {
-                return ((HistoryConnection) object).getWrappedConnection();
-            }
+  @Override
+  public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+    return new DecoratingDirectory<Connection>(super.getConnectionDirectory()) {
 
-        };
-    }
+      @Override
+      protected Connection decorate(Connection object) {
+        return new HistoryConnection(currentUser, object);
+      }
 
-    @Override
-    public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
-            throws GuacamoleException {
-        return new RecordedConnectionActivityRecordSet(currentUser, super.getConnectionHistory());
-    }
+      @Override
+      protected Connection undecorate(Connection object) throws GuacamoleException {
+        return ((HistoryConnection) object).getWrappedConnection();
+      }
+
+    };
+  }
+
+  @Override
+  public ActivityRecordSet<ConnectionRecord> getConnectionHistory()
+      throws GuacamoleException {
+    return new RecordedConnectionActivityRecordSet(currentUser, super.getConnectionHistory());
+  }
 
 }

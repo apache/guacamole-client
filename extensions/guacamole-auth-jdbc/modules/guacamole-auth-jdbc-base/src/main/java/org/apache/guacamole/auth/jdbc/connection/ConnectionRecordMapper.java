@@ -24,4 +24,6 @@ import org.apache.guacamole.auth.jdbc.base.ActivityRecordMapper;
 /**
  * Mapper for connection record objects.
  */
-public interface ConnectionRecordMapper extends ActivityRecordMapper<ConnectionRecordModel> {}
+public interface ConnectionRecordMapper extends ActivityRecordMapper<ConnectionRecordModel> {
+
+}

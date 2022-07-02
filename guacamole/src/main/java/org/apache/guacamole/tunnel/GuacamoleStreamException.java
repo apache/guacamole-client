@@ -23,37 +23,34 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.protocol.GuacamoleStatus;
 
 /**
- * A generic exception thrown when an intercepted Guacamole stream has closed
- * with an error condition. Guacamole streams report errors using the "ack"
- * instruction, which provides a status code and human-readable message.
+ * A generic exception thrown when an intercepted Guacamole stream has closed with an error
+ * condition. Guacamole streams report errors using the "ack" instruction, which provides a status
+ * code and human-readable message.
  */
 public class GuacamoleStreamException extends GuacamoleServerException {
 
-    /**
-     * The error condition reported by the intercepted Guacamole stream.
-     */
-    private final GuacamoleStatus status;
+  /**
+   * The error condition reported by the intercepted Guacamole stream.
+   */
+  private final GuacamoleStatus status;
 
-    /**
-     * Creates a new GuacamoleStreamException representing an error returned by
-     * an intercepted stream.
-     *
-     * @param status
-     *     The status code of the error condition reported by the intercepted
-     *     Guacamole stream.
-     *
-     * @param message
-     *     The human readable description of the error that occurred, as
-     *     provided by the stream.
-     */
-    public GuacamoleStreamException(GuacamoleStatus status, String message) {
-        super(message);
-        this.status = status;
-    }
+  /**
+   * Creates a new GuacamoleStreamException representing an error returned by an intercepted
+   * stream.
+   *
+   * @param status  The status code of the error condition reported by the intercepted Guacamole
+   *                stream.
+   * @param message The human readable description of the error that occurred, as provided by the
+   *                stream.
+   */
+  public GuacamoleStreamException(GuacamoleStatus status, String message) {
+    super(message);
+    this.status = status;
+  }
 
-    @Override
-    public GuacamoleStatus getStatus() {
-        return status;
-    }
+  @Override
+  public GuacamoleStatus getStatus() {
+    return status;
+  }
 
 }

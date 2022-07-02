@@ -21,13 +21,13 @@
  * Provides the ManagedDisplay class used by the guacClientManager service.
  */
 angular.module('client').factory('ManagedDisplay', ['$rootScope',
-    function defineManagedDisplay($rootScope) {
+  function defineManagedDisplay($rootScope) {
 
     /**
      * Object which serves as a surrogate interface, encapsulating a Guacamole
      * display while it is active, allowing it to be detached and reattached
      * from different client views.
-     * 
+     *
      * @constructor
      * @param {ManagedDisplay|Object} [template={}]
      *     The object whose properties should be copied within the new
@@ -35,29 +35,29 @@ angular.module('client').factory('ManagedDisplay', ['$rootScope',
      */
     var ManagedDisplay = function ManagedDisplay(template) {
 
-        // Use empty object by default
-        template = template || {};
+      // Use empty object by default
+      template = template || {};
 
-        /**
-         * The underlying Guacamole display.
-         * 
-         * @type Guacamole.Display
-         */
-        this.display = template.display;
+      /**
+       * The underlying Guacamole display.
+       *
+       * @type Guacamole.Display
+       */
+      this.display = template.display;
 
-        /**
-         * The current size of the Guacamole display.
-         *
-         * @type ManagedDisplay.Dimensions
-         */
-        this.size = new ManagedDisplay.Dimensions(template.size);
+      /**
+       * The current size of the Guacamole display.
+       *
+       * @type ManagedDisplay.Dimensions
+       */
+      this.size = new ManagedDisplay.Dimensions(template.size);
 
-        /**
-         * The current mouse cursor, if any.
-         * 
-         * @type ManagedDisplay.Cursor
-         */
-        this.cursor = template.cursor;
+      /**
+       * The current mouse cursor, if any.
+       *
+       * @type ManagedDisplay.Cursor
+       */
+      this.cursor = template.cursor;
 
     };
 
@@ -71,22 +71,22 @@ angular.module('client').factory('ManagedDisplay', ['$rootScope',
      */
     ManagedDisplay.Dimensions = function Dimensions(template) {
 
-        // Use empty object by default
-        template = template || {};
+      // Use empty object by default
+      template = template || {};
 
-        /**
-         * The current width of the Guacamole display, in pixels.
-         *
-         * @type Number
-         */
-        this.width = template.width || 0;
+      /**
+       * The current width of the Guacamole display, in pixels.
+       *
+       * @type Number
+       */
+      this.width = template.width || 0;
 
-        /**
-         * The current width of the Guacamole display, in pixels.
-         *
-         * @type Number
-         */
-        this.height = template.height || 0;
+      /**
+       * The current width of the Guacamole display, in pixels.
+       *
+       * @type Number
+       */
+      this.height = template.height || 0;
 
     };
 
@@ -100,36 +100,36 @@ angular.module('client').factory('ManagedDisplay', ['$rootScope',
      */
     ManagedDisplay.Cursor = function Cursor(template) {
 
-        // Use empty object by default
-        template = template || {};
+      // Use empty object by default
+      template = template || {};
 
-        /**
-         * The actual mouse cursor image.
-         * 
-         * @type HTMLCanvasElement
-         */
-        this.canvas = template.canvas;
+      /**
+       * The actual mouse cursor image.
+       *
+       * @type HTMLCanvasElement
+       */
+      this.canvas = template.canvas;
 
-        /**
-         * The X coordinate of the cursor hotspot.
-         * 
-         * @type Number
-         */
-        this.x = template.x;
+      /**
+       * The X coordinate of the cursor hotspot.
+       *
+       * @type Number
+       */
+      this.x = template.x;
 
-        /**
-         * The Y coordinate of the cursor hotspot.
-         * 
-         * @type Number
-         */
-        this.y = template.y;
+      /**
+       * The Y coordinate of the cursor hotspot.
+       *
+       * @type Number
+       */
+      this.y = template.y;
 
     };
 
     /**
      * Creates a new ManagedDisplay which represents the current state of the
      * given Guacamole display.
-     * 
+     *
      * @param {Guacamole.Display} display
      *     The Guacamole display to represent. Changes to this display will
      *     affect this ManagedDisplay.
@@ -140,35 +140,35 @@ angular.module('client').factory('ManagedDisplay', ['$rootScope',
      */
     ManagedDisplay.getInstance = function getInstance(display) {
 
-        var managedDisplay = new ManagedDisplay({
-            display : display
+      var managedDisplay = new ManagedDisplay({
+        display: display
+      });
+
+      // Store changes to display size
+      display.onresize = function setClientSize() {
+        $rootScope.$apply(function updateClientSize() {
+          managedDisplay.size = new ManagedDisplay.Dimensions({
+            width: display.getWidth(),
+            height: display.getHeight()
+          });
         });
+      };
 
-        // Store changes to display size
-        display.onresize = function setClientSize() {
-            $rootScope.$apply(function updateClientSize() {
-                managedDisplay.size = new ManagedDisplay.Dimensions({
-                    width  : display.getWidth(),
-                    height : display.getHeight()
-                });
-            });
-        };
+      // Store changes to display cursor
+      display.oncursor = function setClientCursor(canvas, x, y) {
+        $rootScope.$apply(function updateClientCursor() {
+          managedDisplay.cursor = new ManagedDisplay.Cursor({
+            canvas: canvas,
+            x: x,
+            y: y
+          });
+        });
+      };
 
-        // Store changes to display cursor
-        display.oncursor = function setClientCursor(canvas, x, y) {
-            $rootScope.$apply(function updateClientCursor() {
-                managedDisplay.cursor = new ManagedDisplay.Cursor({
-                    canvas : canvas,
-                    x      : x,
-                    y      : y
-                });
-            });
-        };
-
-        return managedDisplay;
+      return managedDisplay;
 
     };
 
     return ManagedDisplay;
 
-}]);
+  }]);

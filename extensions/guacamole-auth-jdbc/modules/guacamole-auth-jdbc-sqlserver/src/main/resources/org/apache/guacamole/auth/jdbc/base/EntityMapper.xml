@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <!--
     Licensed to the Apache Software Foundation (ASF) under one
@@ -21,107 +21,110 @@
     under the License.
 -->
 
-<mapper namespace="org.apache.guacamole.auth.jdbc.base.EntityMapper" >
+<mapper namespace="org.apache.guacamole.auth.jdbc.base.EntityMapper">
 
-    <!--
-      * SQL fragment which tests whether the value of the given column matches
-      * the given entity ID. If group identifiers are provided, the IDs of the
-      * entities for all groups having those identifiers are tested, as well.
-      * Disabled groups are ignored.
-      *
-      * @param column
-      *     The name of the column to test. This column MUST contain an entity
-      *     ID (a foreign key into the [guacamole_entity] table).
-      *
-      * @param entityID
-      *     The ID of the specific entity to test the column against.
-      *
-      * @param groups
-      *     A collection of group identifiers to additionally test the column
-      *     against. Though this functionality is optional, a collection must
-      *     always be given, even if that collection is empty.
-      -->
-    <sql id="isRelatedEntity">
-        (
-            ${column} = ${entityID}
-            <if test="!${groups}.isEmpty()">
-                OR ${column} IN (
-                    SELECT [guacamole_entity].entity_id
-                    FROM [guacamole_entity]
-                    JOIN [guacamole_user_group] ON [guacamole_user_group].entity_id = [guacamole_entity].entity_id
-                    WHERE
-                        type = 'USER_GROUP'
-                        AND name IN
-                            <foreach collection="${groups}" item="effectiveGroup"
-                                     open="(" separator="," close=")">
-                                #{effectiveGroup,jdbcType=VARCHAR}
-                            </foreach>
-                        AND disabled = 0
-                )
-            </if>
-        )
-    </sql>
+  <!--
+    * SQL fragment which tests whether the value of the given column matches
+    * the given entity ID. If group identifiers are provided, the IDs of the
+    * entities for all groups having those identifiers are tested, as well.
+    * Disabled groups are ignored.
+    *
+    * @param column
+    *     The name of the column to test. This column MUST contain an entity
+    *     ID (a foreign key into the [guacamole_entity] table).
+    *
+    * @param entityID
+    *     The ID of the specific entity to test the column against.
+    *
+    * @param groups
+    *     A collection of group identifiers to additionally test the column
+    *     against. Though this functionality is optional, a collection must
+    *     always be given, even if that collection is empty.
+    -->
+  <insert id="insert" keyProperty="entity.entityID"
+    parameterType="org.apache.guacamole.auth.jdbc.base.EntityModel"
+    useGeneratedKeys="true">
 
-    <!-- Select names of all effective groups (including inherited) -->
-    <select id="selectEffectiveGroupIdentifiers" resultType="string">
+    INSERT INTO [guacamole_entity] (name,
+                                    type)
+    VALUES (
+      #{entity.identifier,jdbcType=VARCHAR},
+      #{entity.entityType,jdbcType=VARCHAR}
+      )
 
-        WITH [related_entity] ([entity_id], [path]) AS (
-            SELECT
-                [guacamole_user_group].entity_id,
-                '{' + CAST([guacamole_user_group].entity_id AS VARCHAR(MAX)) + '}'
-            FROM [guacamole_user_group]
-            JOIN [guacamole_user_group_member] ON [guacamole_user_group].user_group_id = [guacamole_user_group_member].user_group_id
-            WHERE
-                [guacamole_user_group_member].member_entity_id = #{entity.entityID}
-                AND [guacamole_user_group].disabled = 0
-            <if test="!effectiveGroups.isEmpty()">
-                UNION ALL
-                    SELECT
-                        [guacamole_entity].entity_id,
-                        '{' + CAST([guacamole_entity].entity_id AS VARCHAR(MAX)) + '}'
-                    FROM [guacamole_entity]
-                    JOIN [guacamole_user_group] ON [guacamole_user_group].entity_id = [guacamole_entity].entity_id
-                    WHERE
-                        type = 'USER_GROUP'
-                        AND name IN
-                            <foreach collection="effectiveGroups" item="effectiveGroup"
-                                     open="(" separator="," close=")">
-                                #{effectiveGroup,jdbcType=VARCHAR}
-                            </foreach>
-                        AND [guacamole_user_group].disabled = 0
-            </if>
-            UNION ALL
-                SELECT
-                    [guacamole_user_group].entity_id,
-                    [related_entity].path + '{' + CAST([guacamole_user_group].entity_id AS VARCHAR(MAX)) + '}'
-                FROM [related_entity]
-                JOIN [guacamole_user_group_member] ON [related_entity].entity_id = [guacamole_user_group_member].member_entity_id
-                JOIN [guacamole_user_group] ON [guacamole_user_group].user_group_id = [guacamole_user_group_member].user_group_id
-                WHERE
-                    [guacamole_user_group].disabled = 0
-                    AND [related_entity].path NOT LIKE '%{' + CAST([guacamole_user_group].entity_id AS VARCHAR(MAX)) + '}%'
-        )
-        SELECT DISTINCT name
-        FROM [related_entity]
-        JOIN [guacamole_entity] ON [related_entity].entity_id = [guacamole_entity].entity_id
-        WHERE
-            [guacamole_entity].type = 'USER_GROUP';
+  </insert>
 
-    </select>
+  <!-- Select names of all effective groups (including inherited) -->
+  <select id="selectEffectiveGroupIdentifiers" resultType="string">
 
-    <!-- Insert single entity -->
-    <insert id="insert" useGeneratedKeys="true" keyProperty="entity.entityID"
-            parameterType="org.apache.guacamole.auth.jdbc.base.EntityModel">
+    WITH [related_entity] ([entity_id], [path]) AS (
+    SELECT
+    [guacamole_user_group].entity_id,
+    '{' + CAST([guacamole_user_group].entity_id AS VARCHAR(MAX)) + '}'
+    FROM [guacamole_user_group]
+    JOIN [guacamole_user_group_member] ON [guacamole_user_group].user_group_id =
+    [guacamole_user_group_member].user_group_id
+    WHERE
+    [guacamole_user_group_member].member_entity_id = #{entity.entityID}
+    AND [guacamole_user_group].disabled = 0
+    <if test="!effectiveGroups.isEmpty()">
+      UNION ALL
+      SELECT
+      [guacamole_entity].entity_id,
+      '{' + CAST([guacamole_entity].entity_id AS VARCHAR(MAX)) + '}'
+      FROM [guacamole_entity]
+      JOIN [guacamole_user_group] ON [guacamole_user_group].entity_id = [guacamole_entity].entity_id
+      WHERE
+      type = 'USER_GROUP'
+      AND name IN
+      <foreach close=")" collection="effectiveGroups"
+        item="effectiveGroup" open="(" separator=",">
+        #{effectiveGroup,jdbcType=VARCHAR}
+      </foreach>
+      AND [guacamole_user_group].disabled = 0
+    </if>
+    UNION ALL
+    SELECT
+    [guacamole_user_group].entity_id,
+    [related_entity].path + '{' + CAST([guacamole_user_group].entity_id AS VARCHAR(MAX)) + '}'
+    FROM [related_entity]
+    JOIN [guacamole_user_group_member] ON [related_entity].entity_id =
+    [guacamole_user_group_member].member_entity_id
+    JOIN [guacamole_user_group] ON [guacamole_user_group].user_group_id =
+    [guacamole_user_group_member].user_group_id
+    WHERE
+    [guacamole_user_group].disabled = 0
+    AND [related_entity].path NOT LIKE '%{' + CAST([guacamole_user_group].entity_id AS VARCHAR(MAX))
+    + '}%'
+    )
+    SELECT DISTINCT name
+    FROM [related_entity]
+    JOIN [guacamole_entity] ON [related_entity].entity_id = [guacamole_entity].entity_id
+    WHERE
+    [guacamole_entity].type = 'USER_GROUP';
 
-        INSERT INTO [guacamole_entity] (
-            name,
-            type
-        )
-        VALUES (
-            #{entity.identifier,jdbcType=VARCHAR},
-            #{entity.entityType,jdbcType=VARCHAR}
-        )
+  </select>
 
-    </insert>
+  <!-- Insert single entity -->
+  <sql id="isRelatedEntity">
+    (
+    ${column} = ${entityID}
+    <if test="!${groups}.isEmpty()">
+      OR ${column} IN (
+      SELECT [guacamole_entity].entity_id
+      FROM [guacamole_entity]
+      JOIN [guacamole_user_group] ON [guacamole_user_group].entity_id = [guacamole_entity].entity_id
+      WHERE
+      type = 'USER_GROUP'
+      AND name IN
+      <foreach close=")" collection="${groups}"
+        item="effectiveGroup" open="(" separator=",">
+        #{effectiveGroup,jdbcType=VARCHAR}
+      </foreach>
+      AND disabled = 0
+      )
+    </if>
+    )
+  </sql>
 
 </mapper>

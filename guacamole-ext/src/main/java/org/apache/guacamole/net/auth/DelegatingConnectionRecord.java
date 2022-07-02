@@ -19,63 +19,56 @@
 
 package org.apache.guacamole.net.auth;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
-
 /**
- * ConnectionRecord implementation which simply delegates all function calls to
- * an underlying ConnectionRecord.
+ * ConnectionRecord implementation which simply delegates all function calls to an underlying
+ * ConnectionRecord.
  */
 public class DelegatingConnectionRecord extends DelegatingActivityRecord
-        implements ConnectionRecord {
+    implements ConnectionRecord {
 
-    /**
-     * The wrapped ConnectionRecord.
-     */
-    private final ConnectionRecord record;
+  /**
+   * The wrapped ConnectionRecord.
+   */
+  private final ConnectionRecord record;
 
-    /**
-     * Wraps the given ConnectionRecord such that all function calls against
-     * this DelegatingConnectionRecord will be delegated to it.
-     *
-     * @param record
-     *     The record to wrap.
-     */
-    public DelegatingConnectionRecord(ConnectionRecord record) {
-        super(record);
-        this.record = record;
-    }
+  /**
+   * Wraps the given ConnectionRecord such that all function calls against this
+   * DelegatingConnectionRecord will be delegated to it.
+   *
+   * @param record The record to wrap.
+   */
+  public DelegatingConnectionRecord(ConnectionRecord record) {
+    super(record);
+    this.record = record;
+  }
 
-    /**
-     * Returns the underlying ConnectionRecord wrapped by this
-     * DelegatingConnectionRecord.
-     *
-     * @return
-     *     The ConnectionRecord wrapped by this DelegatingConnectionRecord.
-     */
-    protected ConnectionRecord getDelegateConnectionRecord() {
-        return record;
-    }
+  /**
+   * Returns the underlying ConnectionRecord wrapped by this DelegatingConnectionRecord.
+   *
+   * @return The ConnectionRecord wrapped by this DelegatingConnectionRecord.
+   */
+  protected ConnectionRecord getDelegateConnectionRecord() {
+    return record;
+  }
 
-    @Override
-    public String getConnectionIdentifier() {
-        return record.getConnectionIdentifier();
-    }
+  @Override
+  public String getConnectionIdentifier() {
+    return record.getConnectionIdentifier();
+  }
 
-    @Override
-    public String getConnectionName() {
-        return record.getConnectionName();
-    }
+  @Override
+  public String getConnectionName() {
+    return record.getConnectionName();
+  }
 
-    @Override
-    public String getSharingProfileIdentifier() {
-        return record.getSharingProfileIdentifier();
-    }
+  @Override
+  public String getSharingProfileIdentifier() {
+    return record.getSharingProfileIdentifier();
+  }
 
-    @Override
-    public String getSharingProfileName() {
-        return record.getSharingProfileName();
-    }
+  @Override
+  public String getSharingProfileName() {
+    return record.getSharingProfileName();
+  }
 
 }

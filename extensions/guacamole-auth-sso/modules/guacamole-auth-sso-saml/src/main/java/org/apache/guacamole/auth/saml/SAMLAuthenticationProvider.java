@@ -23,26 +23,25 @@ import org.apache.guacamole.auth.saml.acs.AssertionConsumerServiceResource;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
 
 /**
- * AuthenticationProvider implementation that authenticates Guacamole users
- * against a SAML SSO Identity Provider (IdP). This module does not provide any
- * storage for connection information, and must be layered with other modules
- * for authenticated users to have access to Guacamole connections.
+ * AuthenticationProvider implementation that authenticates Guacamole users against a SAML SSO
+ * Identity Provider (IdP). This module does not provide any storage for connection information, and
+ * must be layered with other modules for authenticated users to have access to Guacamole
+ * connections.
  */
 public class SAMLAuthenticationProvider extends SSOAuthenticationProvider {
 
-    /**
-     * Creates a new SAMLAuthenticationProvider that authenticates users
-     * against a SAML IdP.
-     */
-    public SAMLAuthenticationProvider() {
-        super(AuthenticationProviderService.class,
-                AssertionConsumerServiceResource.class,
-                new SAMLAuthenticationProviderModule());
-    }
+  /**
+   * Creates a new SAMLAuthenticationProvider that authenticates users against a SAML IdP.
+   */
+  public SAMLAuthenticationProvider() {
+    super(AuthenticationProviderService.class,
+        AssertionConsumerServiceResource.class,
+        new SAMLAuthenticationProviderModule());
+  }
 
-    @Override
-    public String getIdentifier() {
-        return "saml";
-    }
+  @Override
+  public String getIdentifier() {
+    return "saml";
+  }
 
 }

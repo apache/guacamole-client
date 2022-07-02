@@ -25,41 +25,40 @@ import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
- * Translator which converts between UserGroup objects and APIUserGroup
- * objects.
+ * Translator which converts between UserGroup objects and APIUserGroup objects.
  */
 public class UserGroupObjectTranslator
-        extends DirectoryObjectTranslator<UserGroup, APIUserGroup> {
+    extends DirectoryObjectTranslator<UserGroup, APIUserGroup> {
 
-    @Override
-    public APIUserGroup toExternalObject(UserGroup object)
-            throws GuacamoleException {
-        return new APIUserGroup(object);
-    }
+  @Override
+  public APIUserGroup toExternalObject(UserGroup object)
+      throws GuacamoleException {
+    return new APIUserGroup(object);
+  }
 
-    @Override
-    public UserGroup toInternalObject(APIUserGroup object)
-            throws GuacamoleException {
-        return new APIUserGroupWrapper(object);
-    }
+  @Override
+  public UserGroup toInternalObject(APIUserGroup object)
+      throws GuacamoleException {
+    return new APIUserGroupWrapper(object);
+  }
 
-    @Override
-    public void applyExternalChanges(UserGroup existingObject,
-            APIUserGroup object) throws GuacamoleException {
+  @Override
+  public void applyExternalChanges(UserGroup existingObject,
+      APIUserGroup object) throws GuacamoleException {
 
-        // Update user attributes
-        existingObject.setAttributes(object.getAttributes());
+    // Update user attributes
+    existingObject.setAttributes(object.getAttributes());
 
-    }
+  }
 
-    @Override
-    public void filterExternalObject(UserContext userContext, APIUserGroup object)
-            throws GuacamoleException {
+  @Override
+  public void filterExternalObject(UserContext userContext, APIUserGroup object)
+      throws GuacamoleException {
 
-        // Filter object attributes by defined schema
-        object.setAttributes(filterAttributes(userContext.getUserGroupAttributes(),
-                object.getAttributes()));
+    // Filter object attributes by defined schema
+    object.setAttributes(filterAttributes(userContext.getUserGroupAttributes(),
+        object.getAttributes()));
 
-    }
+  }
 
 }

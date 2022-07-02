@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 
 <!--
     Licensed to the Apache Software Foundation (ASF) under one
@@ -23,46 +23,47 @@
 
 <mapper namespace="org.apache.guacamole.auth.jdbc.connection.ConnectionParameterMapper">
 
-    <!-- Result mapper for connection parameters -->
-    <resultMap id="ParameterResultMap" type="org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel">
-        <result column="connection_id"   property="connectionIdentifier" jdbcType="INTEGER"/>
-        <result column="parameter_name"  property="name"                 jdbcType="VARCHAR"/>
-        <result column="parameter_value" property="value"                jdbcType="VARCHAR"/>
-    </resultMap>
+  <!-- Result mapper for connection parameters -->
+  <delete id="delete">
+    DELETE
+    FROM guacamole_connection_parameter
+    WHERE connection_id = #{identifier,jdbcType=INTEGER}::integer
+  </delete>
 
-    <!-- Select all parameters of a given connection -->
-    <select id="select" resultMap="ParameterResultMap">
-        SELECT
-            connection_id,
-            parameter_name,
-            parameter_value
-        FROM guacamole_connection_parameter
-        WHERE
-            connection_id = #{identifier,jdbcType=INTEGER}::integer
-    </select>
+  <!-- Select all parameters of a given connection -->
+  <insert id="insert"
+    parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel">
 
-    <!-- Delete all parameters of a given connection -->
-    <delete id="delete">
-        DELETE FROM guacamole_connection_parameter
-        WHERE connection_id = #{identifier,jdbcType=INTEGER}::integer
-    </delete>
+    INSERT INTO guacamole_connection_parameter (
+    connection_id,
+    parameter_name,
+    parameter_value
+    )
+    VALUES
+    <foreach collection="parameters" item="parameter" separator=",">
+      (#{parameter.connectionIdentifier,jdbcType=INTEGER}::integer,
+      #{parameter.name,jdbcType=VARCHAR},
+      #{parameter.value,jdbcType=VARCHAR})
+    </foreach>
 
-    <!-- Insert all given parameters -->
-    <insert id="insert" parameterType="org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel">
+  </insert>
 
-        INSERT INTO guacamole_connection_parameter (
-            connection_id,
-            parameter_name,
-            parameter_value
-        )
-        VALUES 
-            <foreach collection="parameters" item="parameter" separator=",">
-                (#{parameter.connectionIdentifier,jdbcType=INTEGER}::integer,
-                 #{parameter.name,jdbcType=VARCHAR},
-                 #{parameter.value,jdbcType=VARCHAR})
-            </foreach>
+  <!-- Delete all parameters of a given connection -->
+  <resultMap id="ParameterResultMap"
+    type="org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel">
+    <result column="connection_id" jdbcType="INTEGER" property="connectionIdentifier"/>
+    <result column="parameter_name" jdbcType="VARCHAR" property="name"/>
+    <result column="parameter_value" jdbcType="VARCHAR" property="value"/>
+  </resultMap>
 
-    </insert>
+  <!-- Insert all given parameters -->
+  <select id="select" resultMap="ParameterResultMap">
+    SELECT connection_id,
+           parameter_name,
+           parameter_value
+    FROM guacamole_connection_parameter
+    WHERE connection_id = #{identifier,jdbcType=INTEGER}::integer
+  </select>
 
 
 </mapper>

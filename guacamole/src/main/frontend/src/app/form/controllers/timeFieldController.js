@@ -17,12 +17,11 @@
  * under the License.
  */
 
-
 /**
  * Controller for time fields.
  */
 angular.module('form').controller('timeFieldController', ['$scope', '$injector',
-    function timeFieldController($scope, $injector) {
+  function timeFieldController($scope, $injector) {
 
     // Required services
     var $filter = $injector.get('$filter');
@@ -35,20 +34,20 @@ angular.module('form').controller('timeFieldController', ['$scope', '$injector',
      */
     $scope.modelOptions = {
 
-        /**
-         * Space-delimited list of events on which the model will be updated.
-         *
-         * @type String
-         */
-        updateOn : 'blur',
+      /**
+       * Space-delimited list of events on which the model will be updated.
+       *
+       * @type String
+       */
+      updateOn: 'blur',
 
-        /**
-         * The time zone to use when reading/writing the Date object of the
-         * model.
-         *
-         * @type String
-         */
-        timezone : 'UTC'
+      /**
+       * The time zone to use when reading/writing the Date object of the
+       * model.
+       *
+       * @type String
+       */
+      timezone: 'UTC'
 
     };
 
@@ -67,23 +66,25 @@ angular.module('form').controller('timeFieldController', ['$scope', '$injector',
      */
     var parseTime = function parseTime(str) {
 
-        // Parse time, return blank if invalid
-        var parsedDate = new Date('1970-01-01T' + str + 'Z');
-        if (isNaN(parsedDate.getTime()))
-            return null;
-        
-        return parsedDate;
+      // Parse time, return blank if invalid
+      var parsedDate = new Date('1970-01-01T' + str + 'Z');
+      if (isNaN(parsedDate.getTime())) {
+        return null;
+      }
+
+      return parsedDate;
 
     };
 
     // Update typed value when model is changed
     $scope.$watch('model', function modelChanged(model) {
-        $scope.typedValue = (model ? parseTime(model) : null);
+      $scope.typedValue = (model ? parseTime(model) : null);
     });
 
     // Update string value in model when typed value is changed
     $scope.$watch('typedValue', function typedValueChanged(typedValue) {
-        $scope.model = (typedValue ? $filter('date')(typedValue, 'HH:mm:ss', 'UTC') : '');
+      $scope.model = (typedValue ? $filter('date')(typedValue, 'HH:mm:ss',
+          'UTC') : '');
     });
 
-}]);
+  }]);

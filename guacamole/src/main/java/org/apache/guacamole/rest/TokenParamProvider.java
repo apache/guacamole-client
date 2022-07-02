@@ -28,33 +28,33 @@ import org.glassfish.jersey.server.model.Parameter;
 import org.glassfish.jersey.server.spi.internal.ValueParamProvider;
 
 /**
- * Provider which automatically maps Guacamole authentication tokens received
- * via REST API requests to parameters that have been annotated with the
+ * Provider which automatically maps Guacamole authentication tokens received via REST API requests
+ * to parameters that have been annotated with the
  * <code>@TokenParam</code> annotation.
  */
 @Provider
 public class TokenParamProvider implements ValueParamProvider {
 
-    /**
-     * Service for authenticating users and working with the resulting
-     * authentication tokens.
-     */
-    @Inject
-    private AuthenticationService authenticationService;
+  /**
+   * Service for authenticating users and working with the resulting authentication tokens.
+   */
+  @Inject
+  private AuthenticationService authenticationService;
 
-    @Override
-    public Function<ContainerRequest, ?> getValueProvider(Parameter parameter) {
+  @Override
+  public Function<ContainerRequest, ?> getValueProvider(Parameter parameter) {
 
-        if (parameter.getAnnotation(TokenParam.class) == null)
-            return null;
-
-        return (request) -> authenticationService.getAuthenticationToken(request);
-
+    if (parameter.getAnnotation(TokenParam.class) == null) {
+      return null;
     }
 
-    @Override
-    public PriorityType getPriority() {
-        return Priority.HIGH;
-    }
+    return (request) -> authenticationService.getAuthenticationToken(request);
+
+  }
+
+  @Override
+  public PriorityType getPriority() {
+    return Priority.HIGH;
+  }
 
 }

@@ -21,35 +21,37 @@
  * A directive which displays the recently-accessed connections nested beneath
  * each of the given connection groups.
  */
-angular.module('home').directive('guacRecentConnections', [function guacRecentConnections() {
+angular.module('home').directive('guacRecentConnections',
+    [function guacRecentConnections() {
 
-    return {
+      return {
         restrict: 'E',
         replace: true,
         scope: {
 
-            /**
-             * The root connection groups to display, and all visible
-             * descendants, as a map of data source identifier to the root
-             * connection group within that data source. Recent connections
-             * will only be shown if they exist within this hierarchy,
-             * regardless of their existence within the history.
-             *
-             * @type Object.<String, ConnectionGroup>
-             */
-            rootGroups : '='
+          /**
+           * The root connection groups to display, and all visible
+           * descendants, as a map of data source identifier to the root
+           * connection group within that data source. Recent connections
+           * will only be shown if they exist within this hierarchy,
+           * regardless of their existence within the history.
+           *
+           * @type Object.<String, ConnectionGroup>
+           */
+          rootGroups: '='
 
         },
 
         templateUrl: 'app/home/templates/guacRecentConnections.html',
-        controller: ['$scope', '$injector', function guacRecentConnectionsController($scope, $injector) {
+        controller: ['$scope', '$injector',
+          function guacRecentConnectionsController($scope, $injector) {
 
             // Required types
             var ClientIdentifier = $injector.get('ClientIdentifier');
             var RecentConnection = $injector.get('RecentConnection');
 
             // Required services
-            var guacHistory       = $injector.get('guacHistory');
+            var guacHistory = $injector.get('guacHistory');
 
             /**
              * Array of all known and visible recently-used connections.
@@ -65,7 +67,7 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
              *     true if recent connections are present, false otherwise.
              */
             $scope.hasRecentConnections = function hasRecentConnections() {
-                return !!$scope.recentConnections.length;
+              return !!$scope.recentConnections.length;
             };
 
             /**
@@ -87,14 +89,15 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
              * @param {Connection} connection
              *     The connection to add to the internal set of visible objects.
              */
-            var addVisibleConnection = function addVisibleConnection(dataSource, connection) {
+            var addVisibleConnection = function addVisibleConnection(dataSource,
+                connection) {
 
-                // Add given connection to set of visible objects
-                visibleObjects[ClientIdentifier.toString({
-                    dataSource : dataSource,
-                    type       : ClientIdentifier.Types.CONNECTION,
-                    id         : connection.identifier
-                })] = connection;
+              // Add given connection to set of visible objects
+              visibleObjects[ClientIdentifier.toString({
+                dataSource: dataSource,
+                type: ClientIdentifier.Types.CONNECTION,
+                id: connection.identifier
+              })] = connection;
 
             };
 
@@ -110,59 +113,67 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
              *     The connection group to add to the internal set of visible
              *     objects, along with any descendants.
              */
-            var addVisibleConnectionGroup = function addVisibleConnectionGroup(dataSource, connectionGroup) {
+            var addVisibleConnectionGroup = function addVisibleConnectionGroup(dataSource,
+                connectionGroup) {
 
-                // Add given connection group to set of visible objects
-                visibleObjects[ClientIdentifier.toString({
-                    dataSource : dataSource,
-                    type       : ClientIdentifier.Types.CONNECTION_GROUP,
-                    id         : connectionGroup.identifier
-                })] = connectionGroup;
+              // Add given connection group to set of visible objects
+              visibleObjects[ClientIdentifier.toString({
+                dataSource: dataSource,
+                type: ClientIdentifier.Types.CONNECTION_GROUP,
+                id: connectionGroup.identifier
+              })] = connectionGroup;
 
-                // Add all child connections
-                if (connectionGroup.childConnections)
-                    connectionGroup.childConnections.forEach(function addChildConnection(child) {
-                        addVisibleConnection(dataSource, child);
+              // Add all child connections
+              if (connectionGroup.childConnections) {
+                connectionGroup.childConnections.forEach(
+                    function addChildConnection(child) {
+                      addVisibleConnection(dataSource, child);
                     });
+              }
 
-                // Add all child connection groups
-                if (connectionGroup.childConnectionGroups)
-                    connectionGroup.childConnectionGroups.forEach(function addChildConnectionGroup(child) {
-                        addVisibleConnectionGroup(dataSource, child);
+              // Add all child connection groups
+              if (connectionGroup.childConnectionGroups) {
+                connectionGroup.childConnectionGroups.forEach(
+                    function addChildConnectionGroup(child) {
+                      addVisibleConnectionGroup(dataSource, child);
                     });
+              }
 
             };
 
             // Update visible objects when root groups are set
             $scope.$watch("rootGroups", function setRootGroups(rootGroups) {
 
-                // Clear connection arrays
-                $scope.recentConnections = [];
+              // Clear connection arrays
+              $scope.recentConnections = [];
 
-                // Produce collection of visible objects
-                visibleObjects = {};
-                if (rootGroups) {
-                    angular.forEach(rootGroups, function addConnectionGroup(rootGroup, dataSource) {
-                        addVisibleConnectionGroup(dataSource, rootGroup);
+              // Produce collection of visible objects
+              visibleObjects = {};
+              if (rootGroups) {
+                angular.forEach(rootGroups,
+                    function addConnectionGroup(rootGroup, dataSource) {
+                      addVisibleConnectionGroup(dataSource, rootGroup);
                     });
-                }
+              }
 
-                // Add any recent connections that are visible
-                guacHistory.recentConnections.forEach(function addRecentConnection(historyEntry) {
+              // Add any recent connections that are visible
+              guacHistory.recentConnections.forEach(
+                  function addRecentConnection(historyEntry) {
 
                     // Add recent connections for history entries with associated visible objects
                     if (historyEntry.id in visibleObjects) {
 
-                        var object = visibleObjects[historyEntry.id];
-                        $scope.recentConnections.push(new RecentConnection(object.name, historyEntry));
+                      var object = visibleObjects[historyEntry.id];
+                      $scope.recentConnections.push(
+                          new RecentConnection(object.name, historyEntry));
 
                     }
 
-                });
+                  });
 
             }); // end rootGroup scope watch
 
-        }]
+          }]
 
-    };
-}]);
+      };
+    }]);

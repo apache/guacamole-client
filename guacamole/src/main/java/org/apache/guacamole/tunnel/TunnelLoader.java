@@ -22,18 +22,18 @@ package org.apache.guacamole.tunnel;
 import com.google.inject.Module;
 
 /**
- * Generic means of loading a tunnel without adding explicit dependencies within
- * the main ServletModule, as not all servlet containers may have the classes
- * required by all tunnel implementations.
+ * Generic means of loading a tunnel without adding explicit dependencies within the main
+ * ServletModule, as not all servlet containers may have the classes required by all tunnel
+ * implementations.
  */
 public interface TunnelLoader extends Module {
 
-    /**
-     * Checks whether this type of tunnel is supported by the servlet container.
-     * 
-     * @return true if this type of tunnel is supported and can be loaded
-     *         without errors, false otherwise.
-     */
-    public boolean isSupported();
+  /**
+   * Checks whether this type of tunnel is supported by the servlet container.
+   *
+   * @return true if this type of tunnel is supported and can be loaded without errors, false
+   * otherwise.
+   */
+  public boolean isSupported();
 
 }

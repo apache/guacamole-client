@@ -20,82 +20,85 @@
 package org.apache.guacamole.rest;
 
 /**
- * An object for representing the body of a HTTP PATCH method.
- * See https://tools.ietf.org/html/rfc6902
+ * An object for representing the body of a HTTP PATCH method. See
+ * https://tools.ietf.org/html/rfc6902
  *
- * @param <T>
- *     The type of object being patched.
+ * @param <T> The type of object being patched.
  */
 public class APIPatch<T> {
-    
-    /**
-     * The possible operations for a PATCH request.
-     */
-    public enum Operation {
-        add, remove, test, copy, replace, move
-    }
-    
-    /**
-     * The operation to perform for this patch.
-     */
-    private Operation op;
-    
-    /**
-     * The value for this patch.
-     */
-    private T value;
-    
-    /**
-     * The path for this patch.
-     */
-    private String path;
 
-    /**
-     * Returns the operation for this patch.
-     * @return the operation for this patch. 
-     */
-    public Operation getOp() {
-        return op;
-    }
+  /**
+   * The operation to perform for this patch.
+   */
+  private Operation op;
+  /**
+   * The value for this patch.
+   */
+  private T value;
+  /**
+   * The path for this patch.
+   */
+  private String path;
 
-    /**
-     * Set the operation for this patch.
-     * @param op The operation for this patch.
-     */
-    public void setOp(Operation op) {
-        this.op = op;
-    }
+  /**
+   * Returns the operation for this patch.
+   *
+   * @return the operation for this patch.
+   */
+  public Operation getOp() {
+    return op;
+  }
 
-    /**
-     * Returns the value of this patch.
-     * @return The value of this patch.
-     */
-    public T getValue() {
-        return value;
-    }
+  /**
+   * Set the operation for this patch.
+   *
+   * @param op The operation for this patch.
+   */
+  public void setOp(Operation op) {
+    this.op = op;
+  }
 
-    /**
-     * Sets the value of this patch.
-     * @param value The value of this patch.
-     */
-    public void setValue(T value) {
-        this.value = value;
-    }
+  /**
+   * Returns the value of this patch.
+   *
+   * @return The value of this patch.
+   */
+  public T getValue() {
+    return value;
+  }
 
-    /**
-     * Returns the path for this patch.
-     * @return The path for this patch.
-     */
-    public String getPath() {
-        return path;
-    }
+  /**
+   * Sets the value of this patch.
+   *
+   * @param value The value of this patch.
+   */
+  public void setValue(T value) {
+    this.value = value;
+  }
 
-    /**
-     * Set the path for this patch.
-     * @param path The path for this patch.
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
+  /**
+   * Returns the path for this patch.
+   *
+   * @return The path for this patch.
+   */
+  public String getPath() {
+    return path;
+  }
+
+  /**
+   * Set the path for this patch.
+   *
+   * @param path The path for this patch.
+   */
+  public void setPath(String path) {
+    this.path = path;
+  }
+
+  /**
+   * The possible operations for a PATCH request.
+   */
+  public enum Operation {
+    add, remove, test, copy, replace, move
+  }
 
 }

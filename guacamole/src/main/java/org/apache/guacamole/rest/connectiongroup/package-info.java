@@ -18,8 +18,7 @@
  */
 
 /**
- * Classes related to the connection group manipulation aspect
- * of the Guacamole REST API.
+ * Classes related to the connection group manipulation aspect of the Guacamole REST API.
  */
 package org.apache.guacamole.rest.connectiongroup;
 

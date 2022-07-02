@@ -25,44 +25,43 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 
 /**
- * Translator which converts between ConnectionGroup objects and
- * APIConnectionGroup objects.
+ * Translator which converts between ConnectionGroup objects and APIConnectionGroup objects.
  */
 public class ConnectionGroupObjectTranslator
-        extends DirectoryObjectTranslator<ConnectionGroup, APIConnectionGroup> {
+    extends DirectoryObjectTranslator<ConnectionGroup, APIConnectionGroup> {
 
-    @Override
-    public APIConnectionGroup toExternalObject(ConnectionGroup object)
-            throws GuacamoleException {
-        return new APIConnectionGroup(object);
-    }
+  @Override
+  public APIConnectionGroup toExternalObject(ConnectionGroup object)
+      throws GuacamoleException {
+    return new APIConnectionGroup(object);
+  }
 
-    @Override
-    public ConnectionGroup toInternalObject(APIConnectionGroup object) {
-        return new APIConnectionGroupWrapper(object);
-    }
+  @Override
+  public ConnectionGroup toInternalObject(APIConnectionGroup object) {
+    return new APIConnectionGroupWrapper(object);
+  }
 
-    @Override
-    public void applyExternalChanges(ConnectionGroup existingObject,
-            APIConnectionGroup object) {
+  @Override
+  public void applyExternalChanges(ConnectionGroup existingObject,
+      APIConnectionGroup object) {
 
-        // Update the connection group
-        existingObject.setName(object.getName());
-        existingObject.setParentIdentifier(object.getParentIdentifier());
-        existingObject.setType(object.getType());
-        existingObject.setAttributes(object.getAttributes());
+    // Update the connection group
+    existingObject.setName(object.getName());
+    existingObject.setParentIdentifier(object.getParentIdentifier());
+    existingObject.setType(object.getType());
+    existingObject.setAttributes(object.getAttributes());
 
-    }
+  }
 
-    @Override
-    public void filterExternalObject(UserContext userContext,
-            APIConnectionGroup object) throws GuacamoleException {
+  @Override
+  public void filterExternalObject(UserContext userContext,
+      APIConnectionGroup object) throws GuacamoleException {
 
-        // Filter object attributes by defined schema
-        object.setAttributes(filterAttributes(
-                userContext.getConnectionGroupAttributes(),
-                object.getAttributes()));
+    // Filter object attributes by defined schema
+    object.setAttributes(filterAttributes(
+        userContext.getConnectionGroupAttributes(),
+        object.getAttributes()));
 
-    }
+  }
 
 }

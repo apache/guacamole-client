@@ -23,120 +23,110 @@ import java.util.Date;
 import org.apache.guacamole.net.auth.ActiveConnection;
 
 /**
- * Information related to active connections which may be exposed through the
- * REST endpoints.
+ * Information related to active connections which may be exposed through the REST endpoints.
  */
 public class APIActiveConnection {
 
-    /**
-     * The identifier of the active connection itself.
-     */
-    private final String identifier;
+  /**
+   * The identifier of the active connection itself.
+   */
+  private final String identifier;
 
-    /**
-     * The identifier of the connection associated with this
-     * active connection.
-     */
-    private final String connectionIdentifier;
-    
-    /**
-     * The date and time the connection began.
-     */
-    private final Date startDate;
+  /**
+   * The identifier of the connection associated with this active connection.
+   */
+  private final String connectionIdentifier;
 
-    /**
-     * The host from which the connection originated, if known.
-     */
-    private final String remoteHost;
-    
-    /**
-     * The name of the user who used or is using the connection.
-     */
-    private final String username;
+  /**
+   * The date and time the connection began.
+   */
+  private final Date startDate;
 
-    /**
-     * Whether this active connection may be connected to.
-     */
-    private final boolean connectable;
+  /**
+   * The host from which the connection originated, if known.
+   */
+  private final String remoteHost;
 
-    /**
-     * Creates a new APIActiveConnection, copying the information from the given
-     * active connection.
-     *
-     * @param connection
-     *     The active connection to copy data from.
-     */
-    public APIActiveConnection(ActiveConnection connection) {
-        this.identifier           = connection.getIdentifier();
-        this.connectionIdentifier = connection.getConnectionIdentifier();
-        this.startDate            = connection.getStartDate();
-        this.remoteHost           = connection.getRemoteHost();
-        this.username             = connection.getUsername();
-        this.connectable          = connection.isConnectable();
-    }
+  /**
+   * The name of the user who used or is using the connection.
+   */
+  private final String username;
 
-    /**
-     * Returns the identifier of the connection associated with this tunnel.
-     *
-     * @return
-     *     The identifier of the connection associated with this tunnel.
-     */
-    public String getConnectionIdentifier() {
-        return connectionIdentifier;
-    }
-    
-    /**
-     * Returns the date and time the connection began.
-     *
-     * @return
-     *     The date and time the connection began.
-     */
-    public Date getStartDate() {
-        return startDate;
-    }
+  /**
+   * Whether this active connection may be connected to.
+   */
+  private final boolean connectable;
 
-    /**
-     * Returns the remote host from which this connection originated.
-     *
-     * @return
-     *     The remote host from which this connection originated.
-     */
-    public String getRemoteHost() {
-        return remoteHost;
-    }
+  /**
+   * Creates a new APIActiveConnection, copying the information from the given active connection.
+   *
+   * @param connection The active connection to copy data from.
+   */
+  public APIActiveConnection(ActiveConnection connection) {
+    this.identifier = connection.getIdentifier();
+    this.connectionIdentifier = connection.getConnectionIdentifier();
+    this.startDate = connection.getStartDate();
+    this.remoteHost = connection.getRemoteHost();
+    this.username = connection.getUsername();
+    this.connectable = connection.isConnectable();
+  }
 
-    /**
-     * Returns the name of the user who used or is using the connection at the
-     * times given by this tunnel.
-     *
-     * @return
-     *     The name of the user who used or is using the associated connection.
-     */
-    public String getUsername() {
-        return username;
-    }
+  /**
+   * Returns the identifier of the connection associated with this tunnel.
+   *
+   * @return The identifier of the connection associated with this tunnel.
+   */
+  public String getConnectionIdentifier() {
+    return connectionIdentifier;
+  }
 
-    /**
-     * Returns the identifier of the active connection itself. This is
-     * distinct from the connection identifier, and uniquely identifies a
-     * specific use of a connection.
-     *
-     * @return
-     *     The identifier of the active connection.
-     */
-    public String getIdentifier() {
-        return identifier;
-    }
+  /**
+   * Returns the date and time the connection began.
+   *
+   * @return The date and time the connection began.
+   */
+  public Date getStartDate() {
+    return startDate;
+  }
 
-    /***
-     * Returns whether this active connection may be connected to, just as a
-     * normal connection.
-     *
-     * @return
-     *     true if this active connection may be connected to, false otherwise.
-     */
-    public boolean isConnectable() {
-        return connectable;
-    }
+  /**
+   * Returns the remote host from which this connection originated.
+   *
+   * @return The remote host from which this connection originated.
+   */
+  public String getRemoteHost() {
+    return remoteHost;
+  }
+
+  /**
+   * Returns the name of the user who used or is using the connection at the times given by this
+   * tunnel.
+   *
+   * @return The name of the user who used or is using the associated connection.
+   */
+  public String getUsername() {
+    return username;
+  }
+
+  /**
+   * Returns the identifier of the active connection itself. This is distinct from the connection
+   * identifier, and uniquely identifies a specific use of a connection.
+   *
+   * @return The identifier of the active connection.
+   */
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  /***
+   * Returns whether this active connection may be connected to, just as a
+   * normal connection.
+   *
+   * @return
+   *     true if this active connection may be connected to, false otherwise.
+   */
+  public boolean isConnectable() {
+    return connectable;
+  }
 
 }

@@ -22,86 +22,83 @@ package org.apache.guacamole.net.auth;
 import java.util.Map;
 
 /**
- * SharingProfile implementation which simply delegates all function calls to an
- * underlying SharingProfile.
+ * SharingProfile implementation which simply delegates all function calls to an underlying
+ * SharingProfile.
  */
 public class DelegatingSharingProfile implements SharingProfile {
 
-    /**
-     * The wrapped SharingProfile.
-     */
-    private final SharingProfile sharingProfile;
+  /**
+   * The wrapped SharingProfile.
+   */
+  private final SharingProfile sharingProfile;
 
-    /**
-     * Wraps the given SharingProfile such that all function calls against this
-     * DelegatingSharingProfile will be delegated to it.
-     *
-     * @param sharingProfile
-     *     The SharingProfile to wrap.
-     */
-    public DelegatingSharingProfile(SharingProfile sharingProfile) {
-        this.sharingProfile = sharingProfile;
-    }
+  /**
+   * Wraps the given SharingProfile such that all function calls against this
+   * DelegatingSharingProfile will be delegated to it.
+   *
+   * @param sharingProfile The SharingProfile to wrap.
+   */
+  public DelegatingSharingProfile(SharingProfile sharingProfile) {
+    this.sharingProfile = sharingProfile;
+  }
 
-    /**
-     * Returns the underlying SharingProfile wrapped by this
-     * DelegatingSharingProfile.
-     *
-     * @return
-     *     The SharingProfile wrapped by this DelegatingSharingProfile.
-     */
-    protected SharingProfile getDelegateSharingProfile() {
-        return sharingProfile;
-    }
+  /**
+   * Returns the underlying SharingProfile wrapped by this DelegatingSharingProfile.
+   *
+   * @return The SharingProfile wrapped by this DelegatingSharingProfile.
+   */
+  protected SharingProfile getDelegateSharingProfile() {
+    return sharingProfile;
+  }
 
-    @Override
-    public String getIdentifier() {
-        return sharingProfile.getIdentifier();
-    }
+  @Override
+  public String getIdentifier() {
+    return sharingProfile.getIdentifier();
+  }
 
-    @Override
-    public void setIdentifier(String identifier) {
-        sharingProfile.setIdentifier(identifier);
-    }
+  @Override
+  public void setIdentifier(String identifier) {
+    sharingProfile.setIdentifier(identifier);
+  }
 
-    @Override
-    public String getName() {
-        return sharingProfile.getName();
-    }
+  @Override
+  public String getName() {
+    return sharingProfile.getName();
+  }
 
-    @Override
-    public void setName(String name) {
-        sharingProfile.setName(name);
-    }
+  @Override
+  public void setName(String name) {
+    sharingProfile.setName(name);
+  }
 
-    @Override
-    public String getPrimaryConnectionIdentifier() {
-        return sharingProfile.getPrimaryConnectionIdentifier();
-    }
+  @Override
+  public String getPrimaryConnectionIdentifier() {
+    return sharingProfile.getPrimaryConnectionIdentifier();
+  }
 
-    @Override
-    public void setPrimaryConnectionIdentifier(String identifier) {
-        sharingProfile.setPrimaryConnectionIdentifier(identifier);
-    }
+  @Override
+  public void setPrimaryConnectionIdentifier(String identifier) {
+    sharingProfile.setPrimaryConnectionIdentifier(identifier);
+  }
 
-    @Override
-    public Map<String, String> getParameters() {
-        return sharingProfile.getParameters();
-    }
+  @Override
+  public Map<String, String> getParameters() {
+    return sharingProfile.getParameters();
+  }
 
-    @Override
-    public void setParameters(Map<String, String> parameters) {
-        sharingProfile.setParameters(parameters);
-    }
+  @Override
+  public void setParameters(Map<String, String> parameters) {
+    sharingProfile.setParameters(parameters);
+  }
 
-    @Override
-    public Map<String, String> getAttributes() {
-        return sharingProfile.getAttributes();
-    }
+  @Override
+  public Map<String, String> getAttributes() {
+    return sharingProfile.getAttributes();
+  }
 
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        sharingProfile.setAttributes(attributes);
-    }
+  @Override
+  public void setAttributes(Map<String, String> attributes) {
+    sharingProfile.setAttributes(attributes);
+  }
 
 }

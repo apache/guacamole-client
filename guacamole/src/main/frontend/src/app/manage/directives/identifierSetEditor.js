@@ -24,80 +24,81 @@
  * identifiers.
  */
 angular.module('manage').directive('identifierSetEditor', ['$injector',
-    function identifierSetEditor($injector) {
+  function identifierSetEditor($injector) {
 
     var directive = {
 
-        // Element only
-        restrict: 'E',
-        replace: true,
+      // Element only
+      restrict: 'E',
+      replace: true,
 
-        scope: {
+      scope: {
 
-            /**
-             * The translation key of the text which should be displayed within
-             * the main header of the identifier set editor.
-             *
-             * @type String
-             */
-            header : '@',
+        /**
+         * The translation key of the text which should be displayed within
+         * the main header of the identifier set editor.
+         *
+         * @type String
+         */
+        header: '@',
 
-            /**
-             * The translation key of the text which should be displayed if no
-             * identifiers are currently present within the set.
-             *
-             * @type String
-             */
-            emptyPlaceholder : '@',
+        /**
+         * The translation key of the text which should be displayed if no
+         * identifiers are currently present within the set.
+         *
+         * @type String
+         */
+        emptyPlaceholder: '@',
 
-            /**
-             * The translation key of the text which should be displayed if no
-             * identifiers are available to be added within the set.
-             *
-             * @type String
-             */
-            unavailablePlaceholder : '@',
+        /**
+         * The translation key of the text which should be displayed if no
+         * identifiers are available to be added within the set.
+         *
+         * @type String
+         */
+        unavailablePlaceholder: '@',
 
-            /**
-             * All identifiers which are available to be added to or removed
-             * from the identifier set being edited.
-             *
-             * @type String[]
-             */
-            identifiersAvailable : '=',
+        /**
+         * All identifiers which are available to be added to or removed
+         * from the identifier set being edited.
+         *
+         * @type String[]
+         */
+        identifiersAvailable: '=',
 
-            /**
-             * The current state of the identifier set being manipulated. This
-             * array will be modified as changes are made through this
-             * identifier set editor.
-             *
-             * @type String[]
-             */
-            identifiers : '=',
+        /**
+         * The current state of the identifier set being manipulated. This
+         * array will be modified as changes are made through this
+         * identifier set editor.
+         *
+         * @type String[]
+         */
+        identifiers: '=',
 
-            /**
-             * The set of identifiers that have been added, relative to the
-             * initial state of the identifier set being manipulated.
-             *
-             * @type String[]
-             */
-            identifiersAdded : '=',
+        /**
+         * The set of identifiers that have been added, relative to the
+         * initial state of the identifier set being manipulated.
+         *
+         * @type String[]
+         */
+        identifiersAdded: '=',
 
-            /**
-             * The set of identifiers that have been removed, relative to the
-             * initial state of the identifier set being manipulated.
-             *
-             * @type String[]
-             */
-            identifiersRemoved : '='
+        /**
+         * The set of identifiers that have been removed, relative to the
+         * initial state of the identifier set being manipulated.
+         *
+         * @type String[]
+         */
+        identifiersRemoved: '='
 
-        },
+      },
 
-        templateUrl: 'app/manage/templates/identifierSetEditor.html'
+      templateUrl: 'app/manage/templates/identifierSetEditor.html'
 
     };
 
-    directive.controller = ['$scope', function identifierSetEditorController($scope) {
+    directive.controller = ['$scope',
+      function identifierSetEditorController($scope) {
 
         /**
          * Whether the full list of available identifiers should be displayed.
@@ -140,16 +141,17 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
          */
         var addIdentifier = function addIdentifier(arr, identifier) {
 
-            // Determine location that the identifier should be added to
-            // maintain sorted order
-            var index = _.sortedIndex(arr, identifier);
+          // Determine location that the identifier should be added to
+          // maintain sorted order
+          var index = _.sortedIndex(arr, identifier);
 
-            // Do not add if already present
-            if (arr[index] === identifier)
-                return;
+          // Do not add if already present
+          if (arr[index] === identifier) {
+            return;
+          }
 
-            // Insert identifier at determined location
-            arr.splice(index, 0, identifier);
+          // Insert identifier at determined location
+          arr.splice(index, 0, identifier);
 
         };
 
@@ -172,16 +174,17 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
          */
         var removeIdentifier = function removeIdentifier(arr, identifier) {
 
-            // Search for identifier in sorted array
-            var index = _.sortedIndexOf(arr, identifier);
+          // Search for identifier in sorted array
+          var index = _.sortedIndexOf(arr, identifier);
 
-            // Nothing to do if already absent
-            if (index === -1)
-                return false;
+          // Nothing to do if already absent
+          if (index === -1) {
+            return false;
+          }
 
-            // Remove identifier
-            arr.splice(index, 1);
-            return true;
+          // Remove identifier
+          arr.splice(index, 1);
+          return true;
 
         };
 
@@ -189,29 +192,33 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
         // or initially assigned
         $scope.$watch('identifiers', function identifiersChanged(identifiers) {
 
-            // Maintain identifiers in sorted order so additions and removals
-            // can be made more efficiently
-            if (identifiers)
-                identifiers.sort();
+          // Maintain identifiers in sorted order so additions and removals
+          // can be made more efficiently
+          if (identifiers) {
+            identifiers.sort();
+          }
 
-            // Convert array of identifiers into set of boolean
-            // presence/absence flags
-            $scope.identifierFlags = {};
-            angular.forEach(identifiers, function storeIdentifierFlag(identifier) {
+          // Convert array of identifiers into set of boolean
+          // presence/absence flags
+          $scope.identifierFlags = {};
+          angular.forEach(identifiers,
+              function storeIdentifierFlag(identifier) {
                 $scope.identifierFlags[identifier] = true;
-            });
+              });
 
         });
 
         // An identifier is editable iff it is available to be added or removed
         // from the identifier set being edited (iff it is within the
         // identifiersAvailable array)
-        $scope.$watch('identifiersAvailable', function availableIdentifiersChanged(identifiers) {
-            $scope.isEditable = {};
-            angular.forEach(identifiers, function storeEditableIdentifier(identifier) {
-                $scope.isEditable[identifier] = true;
+        $scope.$watch('identifiersAvailable',
+            function availableIdentifiersChanged(identifiers) {
+              $scope.isEditable = {};
+              angular.forEach(identifiers,
+                  function storeEditableIdentifier(identifier) {
+                    $scope.isEditable[identifier] = true;
+                  });
             });
-        });
 
         /**
          * Notifies the controller that a change has been made to the flag
@@ -226,27 +233,28 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
          */
         $scope.identifierChanged = function identifierChanged(identifier) {
 
-            // Determine status of modified identifier
-            var present = !!$scope.identifierFlags[identifier];
+          // Determine status of modified identifier
+          var present = !!$scope.identifierFlags[identifier];
 
-            // Add/remove identifier from added/removed sets depending on
-            // change in flag state
-            if (present) {
+          // Add/remove identifier from added/removed sets depending on
+          // change in flag state
+          if (present) {
 
-                addIdentifier($scope.identifiers, identifier);
+            addIdentifier($scope.identifiers, identifier);
 
-                if (!removeIdentifier($scope.identifiersRemoved, identifier))
-                    addIdentifier($scope.identifiersAdded, identifier);
-
+            if (!removeIdentifier($scope.identifiersRemoved, identifier)) {
+              addIdentifier($scope.identifiersAdded, identifier);
             }
-            else {
 
-                removeIdentifier($scope.identifiers, identifier);
+          } else {
 
-                if (!removeIdentifier($scope.identifiersAdded, identifier))
-                    addIdentifier($scope.identifiersRemoved, identifier);
+            removeIdentifier($scope.identifiers, identifier);
 
+            if (!removeIdentifier($scope.identifiersAdded, identifier)) {
+              addIdentifier($scope.identifiersRemoved, identifier);
             }
+
+          }
 
         };
 
@@ -259,8 +267,8 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
          *     The identifier to remove.
          */
         $scope.removeIdentifier = function removeIdentifier(identifier) {
-            $scope.identifierFlags[identifier] = false;
-            $scope.identifierChanged(identifier);
+          $scope.identifierFlags[identifier] = false;
+          $scope.identifierChanged(identifier);
         };
 
         /**
@@ -268,7 +276,7 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
          * already shown, this function has no effect.
          */
         $scope.expand = function expand() {
-            $scope.expanded = true;
+          $scope.expanded = true;
         };
 
         /**
@@ -276,7 +284,7 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
          * already hidden, this function has no effect.
          */
         $scope.collapse = function collapse() {
-            $scope.expanded = false;
+          $scope.expanded = false;
         };
 
         /**
@@ -289,12 +297,12 @@ angular.module('manage').directive('identifierSetEditor', ['$injector',
          *     editor, false otherwise.
          */
         $scope.isEmpty = function isEmpty() {
-            return _.isEmpty($scope.identifiers)
-                && _.isEmpty($scope.identifiersAvailable);
+          return _.isEmpty($scope.identifiers)
+              && _.isEmpty($scope.identifiersAvailable);
         };
 
-    }];
+      }];
 
     return directive;
 
-}]);
+  }]);

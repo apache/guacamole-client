@@ -21,11 +21,11 @@
  * The module for the administration functionality.
  */
 angular.module('manage', [
-    'form',
-    'groupList',
-    'list',
-    'locale',
-    'navigation',
-    'notification',
-    'rest'
+  'form',
+  'groupList',
+  'list',
+  'locale',
+  'navigation',
+  'notification',
+  'rest'
 ]);

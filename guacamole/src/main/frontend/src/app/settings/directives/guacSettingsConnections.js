@@ -20,33 +20,35 @@
 /**
  * A directive for managing all connections and connection groups in the system.
  */
-angular.module('settings').directive('guacSettingsConnections', [function guacSettingsConnections() {
-    
-    return {
+angular.module('settings').directive('guacSettingsConnections',
+    [function guacSettingsConnections() {
+
+      return {
         // Element only
         restrict: 'E',
         replace: true,
 
-        scope: {
-        },
+        scope: {},
 
         templateUrl: 'app/settings/templates/settingsConnections.html',
-        controller: ['$scope', '$injector', function settingsConnectionsController($scope, $injector) {
+        controller: ['$scope', '$injector',
+          function settingsConnectionsController($scope, $injector) {
 
             // Required types
             var ConnectionGroup = $injector.get('ConnectionGroup');
-            var GroupListItem   = $injector.get('GroupListItem');
-            var PermissionSet   = $injector.get('PermissionSet');
+            var GroupListItem = $injector.get('GroupListItem');
+            var PermissionSet = $injector.get('PermissionSet');
 
             // Required services
-            var $location              = $injector.get('$location');
-            var $routeParams           = $injector.get('$routeParams');
-            var authenticationService  = $injector.get('authenticationService');
-            var connectionGroupService = $injector.get('connectionGroupService');
-            var dataSourceService      = $injector.get('dataSourceService');
-            var guacNotification       = $injector.get('guacNotification');
-            var permissionService      = $injector.get('permissionService');
-            var requestService         = $injector.get('requestService');
+            var $location = $injector.get('$location');
+            var $routeParams = $injector.get('$routeParams');
+            var authenticationService = $injector.get('authenticationService');
+            var connectionGroupService = $injector.get(
+                'connectionGroupService');
+            var dataSourceService = $injector.get('dataSourceService');
+            var guacNotification = $injector.get('guacNotification');
+            var permissionService = $injector.get('permissionService');
+            var requestService = $injector.get('requestService');
 
             /**
              * The identifier of the current user.
@@ -83,8 +85,8 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              * @type String[]
              */
             $scope.filteredConnectionProperties = [
-                'name',
-                'protocol'
+              'name',
+              'protocol'
             ];
 
             /**
@@ -93,7 +95,7 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              * @type String[]
              */
             $scope.filteredConnectionGroupProperties = [
-                'name'
+              'name'
             ];
 
             /**
@@ -105,8 +107,8 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             $scope.isLoaded = function isLoaded() {
 
-                return $scope.rootGroup   !== null
-                    && $scope.permissions !== null;
+              return $scope.rootGroup !== null
+                  && $scope.permissions !== null;
 
             };
 
@@ -120,17 +122,21 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             $scope.canCreateConnections = function canCreateConnections() {
 
-                // Abort if permissions have not yet loaded
-                if (!$scope.permissions)
-                    return false;
-
-                // Can create connections if adminstrator or have explicit permission
-                if (PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                 || PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION))
-                     return true;
-
-                // No data sources allow connection creation
+              // Abort if permissions have not yet loaded
+              if (!$scope.permissions) {
                 return false;
+              }
+
+              // Can create connections if adminstrator or have explicit permission
+              if (PermissionSet.hasSystemPermission($scope.permissions,
+                      PermissionSet.SystemPermissionType.ADMINISTER)
+                  || PermissionSet.hasSystemPermission($scope.permissions,
+                      PermissionSet.SystemPermissionType.CREATE_CONNECTION)) {
+                return true;
+              }
+
+              // No data sources allow connection creation
+              return false;
 
             };
 
@@ -144,17 +150,21 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             $scope.canCreateConnectionGroups = function canCreateConnectionGroups() {
 
-                // Abort if permissions have not yet loaded
-                if (!$scope.permissions)
-                    return false;
-
-                // Can create connections groups if adminstrator or have explicit permission
-                if (PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                 || PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP))
-                     return true;
-
-                // No data sources allow connection group creation
+              // Abort if permissions have not yet loaded
+              if (!$scope.permissions) {
                 return false;
+              }
+
+              // Can create connections groups if adminstrator or have explicit permission
+              if (PermissionSet.hasSystemPermission($scope.permissions,
+                      PermissionSet.SystemPermissionType.ADMINISTER)
+                  || PermissionSet.hasSystemPermission($scope.permissions,
+                      PermissionSet.SystemPermissionType.CREATE_CONNECTION_GROUP)) {
+                return true;
+              }
+
+              // No data sources allow connection group creation
+              return false;
 
             };
 
@@ -168,17 +178,21 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             $scope.canCreateSharingProfiles = function canCreateSharingProfiles() {
 
-                // Abort if permissions have not yet loaded
-                if (!$scope.permissions)
-                    return false;
-
-                // Can create sharing profiles if adminstrator or have explicit permission
-                if (PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                 || PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.CREATE_SHARING_PROFILE))
-                     return true;
-
-                // Current data source does not allow sharing profile creation
+              // Abort if permissions have not yet loaded
+              if (!$scope.permissions) {
                 return false;
+              }
+
+              // Can create sharing profiles if adminstrator or have explicit permission
+              if (PermissionSet.hasSystemPermission($scope.permissions,
+                      PermissionSet.SystemPermissionType.ADMINISTER)
+                  || PermissionSet.hasSystemPermission($scope.permissions,
+                      PermissionSet.SystemPermissionType.CREATE_SHARING_PROFILE)) {
+                return true;
+              }
+
+              // Current data source does not allow sharing profile creation
+              return false;
 
             };
 
@@ -196,28 +210,37 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             $scope.canManageConnections = function canManageConnections() {
 
-                // Abort if permissions have not yet loaded
-                if (!$scope.permissions)
-                    return false;
-
-                // Creating connections/groups counts as management
-                if ($scope.canCreateConnections()
-                        || $scope.canCreateConnectionGroups()
-                        || $scope.canCreateSharingProfiles())
-                    return true;
-
-                // Can manage connections if granted explicit update or delete
-                if (PermissionSet.hasConnectionPermission($scope.permissions, PermissionSet.ObjectPermissionType.UPDATE)
-                 || PermissionSet.hasConnectionPermission($scope.permissions, PermissionSet.ObjectPermissionType.DELETE))
-                    return true;
-
-                // Can manage connections groups if granted explicit update or delete
-                if (PermissionSet.hasConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.UPDATE)
-                 || PermissionSet.hasConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.DELETE))
-                    return true;
-
-                // No data sources allow management of connections or groups
+              // Abort if permissions have not yet loaded
+              if (!$scope.permissions) {
                 return false;
+              }
+
+              // Creating connections/groups counts as management
+              if ($scope.canCreateConnections()
+                  || $scope.canCreateConnectionGroups()
+                  || $scope.canCreateSharingProfiles()) {
+                return true;
+              }
+
+              // Can manage connections if granted explicit update or delete
+              if (PermissionSet.hasConnectionPermission($scope.permissions,
+                      PermissionSet.ObjectPermissionType.UPDATE)
+                  || PermissionSet.hasConnectionPermission($scope.permissions,
+                      PermissionSet.ObjectPermissionType.DELETE)) {
+                return true;
+              }
+
+              // Can manage connections groups if granted explicit update or delete
+              if (PermissionSet.hasConnectionGroupPermission($scope.permissions,
+                      PermissionSet.ObjectPermissionType.UPDATE)
+                  || PermissionSet.hasConnectionGroupPermission(
+                      $scope.permissions,
+                      PermissionSet.ObjectPermissionType.DELETE)) {
+                return true;
+              }
+
+              // No data sources allow management of connections or groups
+              return false;
 
             };
 
@@ -235,17 +258,21 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             $scope.canUpdateConnection = function canUpdateConnection(identifier) {
 
-                // Abort if permissions have not yet loaded
-                if (!$scope.permissions)
-                    return false;
-
-                // Can update the connection if adminstrator or have explicit permission
-                if (PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                 || PermissionSet.hasConnectionPermission($scope.permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier))
-                     return true;
-
-                // Current data sources does not allow the connection to be updated
+              // Abort if permissions have not yet loaded
+              if (!$scope.permissions) {
                 return false;
+              }
+
+              // Can update the connection if adminstrator or have explicit permission
+              if (PermissionSet.hasSystemPermission($scope.permissions,
+                      PermissionSet.SystemPermissionType.ADMINISTER)
+                  || PermissionSet.hasConnectionPermission($scope.permissions,
+                      PermissionSet.ObjectPermissionType.UPDATE, identifier)) {
+                return true;
+              }
+
+              // Current data sources does not allow the connection to be updated
+              return false;
 
             };
 
@@ -263,17 +290,22 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             $scope.canUpdateConnectionGroup = function canUpdateConnectionGroup(identifier) {
 
-                // Abort if permissions have not yet loaded
-                if (!$scope.permissions)
-                    return false;
-
-                // Can update the connection if adminstrator or have explicit permission
-                if (PermissionSet.hasSystemPermission($scope.permissions, PermissionSet.SystemPermissionType.ADMINISTER)
-                 || PermissionSet.hasConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.UPDATE, identifier))
-                     return true;
-
-                // Current data sources does not allow the connection group to be updated
+              // Abort if permissions have not yet loaded
+              if (!$scope.permissions) {
                 return false;
+              }
+
+              // Can update the connection if adminstrator or have explicit permission
+              if (PermissionSet.hasSystemPermission($scope.permissions,
+                      PermissionSet.SystemPermissionType.ADMINISTER)
+                  || PermissionSet.hasConnectionGroupPermission(
+                      $scope.permissions,
+                      PermissionSet.ObjectPermissionType.UPDATE, identifier)) {
+                return true;
+              }
+
+              // Current data sources does not allow the connection group to be updated
+              return false;
 
             };
 
@@ -291,31 +323,36 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              *     The GroupListItem representing the connection group which
              *     contains the given array of GroupListItems, if known.
              */
-            var addConnectionGroupActions = function addConnectionGroupActions(items, parent) {
+            var addConnectionGroupActions = function addConnectionGroupActions(items,
+                parent) {
 
-                // Do nothing if we lack permission to modify the parent at all
-                if (parent && !$scope.canUpdateConnectionGroup(parent.identifier))
-                    return;
+              // Do nothing if we lack permission to modify the parent at all
+              if (parent && !$scope.canUpdateConnectionGroup(
+                  parent.identifier)) {
+                return;
+              }
 
-                // Add action for creating a child connection, if the user has
-                // permission to do so
-                if ($scope.canCreateConnections())
-                    items.push(new GroupListItem({
-                        type        : 'new-connection',
-                        dataSource  : $scope.dataSource,
-                        weight      : 1,
-                        wrappedItem : parent
-                    }));
+              // Add action for creating a child connection, if the user has
+              // permission to do so
+              if ($scope.canCreateConnections()) {
+                items.push(new GroupListItem({
+                  type: 'new-connection',
+                  dataSource: $scope.dataSource,
+                  weight: 1,
+                  wrappedItem: parent
+                }));
+              }
 
-                // Add action for creating a child connection group, if the user
-                // has permission to do so
-                if ($scope.canCreateConnectionGroups())
-                    items.push(new GroupListItem({
-                        type        : 'new-connection-group',
-                        dataSource  : $scope.dataSource,
-                        weight      : 1,
-                        wrappedItem : parent
-                    }));
+              // Add action for creating a child connection group, if the user
+              // has permission to do so
+              if ($scope.canCreateConnectionGroups()) {
+                items.push(new GroupListItem({
+                  type: 'new-connection-group',
+                  dataSource: $scope.dataSource,
+                  weight: 1,
+                  wrappedItem: parent
+                }));
+              }
 
             };
 
@@ -333,21 +370,24 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              *     The GroupListItem representing the connection which contains
              *     the given array of GroupListItems, if known.
              */
-            var addConnectionActions = function addConnectionActions(items, parent) {
+            var addConnectionActions = function addConnectionActions(items,
+                parent) {
 
-                // Do nothing if we lack permission to modify the parent at all
-                if (parent && !$scope.canUpdateConnection(parent.identifier))
-                    return;
+              // Do nothing if we lack permission to modify the parent at all
+              if (parent && !$scope.canUpdateConnection(parent.identifier)) {
+                return;
+              }
 
-                // Add action for creating a child sharing profile, if the user
-                // has permission to do so
-                if ($scope.canCreateSharingProfiles())
-                    items.push(new GroupListItem({
-                        type        : 'new-sharing-profile',
-                        dataSource  : $scope.dataSource,
-                        weight      : 1,
-                        wrappedItem : parent
-                    }));
+              // Add action for creating a child sharing profile, if the user
+              // has permission to do so
+              if ($scope.canCreateSharingProfiles()) {
+                items.push(new GroupListItem({
+                  type: 'new-sharing-profile',
+                  dataSource: $scope.dataSource,
+                  weight: 1,
+                  wrappedItem: parent
+                }));
+              }
 
             };
 
@@ -361,18 +401,18 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             var decorateItem = function decorateItem(item) {
 
-                // If the item is a connection group, add actions specific to
-                // connection groups
-                if (item.type === GroupListItem.Type.CONNECTION_GROUP)
-                    addConnectionGroupActions(item.children, item);
+              // If the item is a connection group, add actions specific to
+              // connection groups
+              if (item.type === GroupListItem.Type.CONNECTION_GROUP) {
+                addConnectionGroupActions(item.children, item);
+              }// If the item is a connection, add actions specific to
+              // connections
+              else if (item.type === GroupListItem.Type.CONNECTION) {
+                addConnectionActions(item.children, item);
+              }
 
-                // If the item is a connection, add actions specific to
-                // connections
-                else if (item.type === GroupListItem.Type.CONNECTION)
-                    addConnectionActions(item.children, item);
-
-                // Decorate all children
-                angular.forEach(item.children, decorateItem);
+              // Decorate all children
+              angular.forEach(item.children, decorateItem);
 
             };
 
@@ -387,39 +427,44 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
              */
             $scope.rootItemDecorator = function rootItemDecorator(items) {
 
-                // Decorate each root-level item
-                angular.forEach(items, decorateItem);
+              // Decorate each root-level item
+              angular.forEach(items, decorateItem);
 
             };
 
             // Retrieve current permissions
-            permissionService.getEffectivePermissions($scope.dataSource, currentUsername)
+            permissionService.getEffectivePermissions($scope.dataSource,
+                currentUsername)
             .then(function permissionsRetrieved(permissions) {
 
-                // Store retrieved permissions
-                $scope.permissions = permissions;
+              // Store retrieved permissions
+              $scope.permissions = permissions;
 
-                // Ignore permission to update root group
-                PermissionSet.removeConnectionGroupPermission($scope.permissions, PermissionSet.ObjectPermissionType.UPDATE, ConnectionGroup.ROOT_IDENTIFIER);
+              // Ignore permission to update root group
+              PermissionSet.removeConnectionGroupPermission($scope.permissions,
+                  PermissionSet.ObjectPermissionType.UPDATE,
+                  ConnectionGroup.ROOT_IDENTIFIER);
 
-                // Return to home if there's nothing to do here
-                if (!$scope.canManageConnections())
-                    $location.path('/');
+              // Return to home if there's nothing to do here
+              if (!$scope.canManageConnections()) {
+                $location.path('/');
+              }
 
-                // Retrieve all connections for which we have UPDATE or DELETE permission
-                dataSourceService.apply(
-                    connectionGroupService.getConnectionGroupTree,
-                    [$scope.dataSource],
-                    ConnectionGroup.ROOT_IDENTIFIER,
-                    [PermissionSet.ObjectPermissionType.UPDATE, PermissionSet.ObjectPermissionType.DELETE]
-                )
-                .then(function connectionGroupsReceived(rootGroups) {
-                    $scope.rootGroups = rootGroups;
-                }, requestService.DIE);
+              // Retrieve all connections for which we have UPDATE or DELETE permission
+              dataSourceService.apply(
+                  connectionGroupService.getConnectionGroupTree,
+                  [$scope.dataSource],
+                  ConnectionGroup.ROOT_IDENTIFIER,
+                  [PermissionSet.ObjectPermissionType.UPDATE,
+                    PermissionSet.ObjectPermissionType.DELETE]
+              )
+              .then(function connectionGroupsReceived(rootGroups) {
+                $scope.rootGroups = rootGroups;
+              }, requestService.DIE);
 
             }, requestService.DIE); // end retrieve permissions
 
-        }]
-    };
-    
-}]);
+          }]
+      };
+
+    }]);

@@ -20,19 +20,17 @@
 package org.apache.guacamole.form;
 
 /**
- * Represents a field which contains sensitive text information related to
- * authenticating a user.
+ * Represents a field which contains sensitive text information related to authenticating a user.
  */
 public class PasswordField extends Field {
 
-    /**
-     * Creates a new PasswordField with the given name.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     */
-    public PasswordField(String name) {
-        super(name, Field.Type.PASSWORD);
-    }
+  /**
+   * Creates a new PasswordField with the given name.
+   *
+   * @param name The unique name to associate with this field.
+   */
+  public PasswordField(String name) {
+    super(name, Field.Type.PASSWORD);
+  }
 
 }

@@ -18,7 +18,7 @@
  */
 
 /**
- * Classes related to manipulating arbitrary sets of unique identifiers using
- * the Guacamole REST API.
+ * Classes related to manipulating arbitrary sets of unique identifiers using the Guacamole REST
+ * API.
  */
 package org.apache.guacamole.rest.identifier;

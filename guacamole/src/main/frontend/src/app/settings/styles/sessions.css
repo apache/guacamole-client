@@ -18,14 +18,14 @@
  */
 
 .settings table.session-list {
-    width: 100%;
+  width: 100%;
 }
 
 .settings table.session-list tr.session:hover {
-    background: #CDA;
+  background: #CDA;
 }
 
 .settings table.session-list .select-session {
-    min-width: 2em;
-    text-align: center;
+  min-width: 2em;
+  text-align: center;
 }

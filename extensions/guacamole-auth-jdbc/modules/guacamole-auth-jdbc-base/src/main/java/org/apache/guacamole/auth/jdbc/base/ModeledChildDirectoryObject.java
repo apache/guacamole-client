@@ -22,53 +22,50 @@ package org.apache.guacamole.auth.jdbc.base;
 import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
 
 /**
- * Common base class for objects that will ultimately be made available through
- * the Directory class. All such objects will need the same base set of queries
- * to fulfill the needs of the Directory class.
+ * Common base class for objects that will ultimately be made available through the Directory class.
+ * All such objects will need the same base set of queries to fulfill the needs of the Directory
+ * class.
  *
- * @param <ModelType>
- *     The type of model object that corresponds to this object.
+ * @param <ModelType> The type of model object that corresponds to this object.
  */
 public abstract class ModeledChildDirectoryObject<ModelType extends ChildObjectModel>
     extends ModeledDirectoryObject<ModelType> {
 
-    /**
-     * Returns the identifier of the parent connection group, which cannot be
-     * null. If the parent is the root connection group, this will be
-     * RootConnectionGroup.IDENTIFIER.
-     *
-     * @return
-     *     The identifier of the parent connection group.
-     */
-    public String getParentIdentifier() {
+  /**
+   * Returns the identifier of the parent connection group, which cannot be null. If the parent is
+   * the root connection group, this will be RootConnectionGroup.IDENTIFIER.
+   *
+   * @return The identifier of the parent connection group.
+   */
+  public String getParentIdentifier() {
 
-        // Translate null parent to proper identifier
-        String parentIdentifier = getModel().getParentIdentifier();
-        if (parentIdentifier == null)
-            return RootConnectionGroup.IDENTIFIER;
-
-        return parentIdentifier;
-        
+    // Translate null parent to proper identifier
+    String parentIdentifier = getModel().getParentIdentifier();
+    if (parentIdentifier == null) {
+      return RootConnectionGroup.IDENTIFIER;
     }
 
-    /**
-     * Sets the identifier of the associated parent connection group. If the
-     * parent is the root connection group, this should be
-     * RootConnectionGroup.IDENTIFIER.
-     * 
-     * @param parentIdentifier
-     *     The identifier of the connection group to associate as this object's
-     *     parent.
-     */
-    public void setParentIdentifier(String parentIdentifier) {
+    return parentIdentifier;
 
-        // Translate root identifier back into null
-        if (parentIdentifier != null
-                && parentIdentifier.equals(RootConnectionGroup.IDENTIFIER))
-            parentIdentifier = null;
+  }
 
-        getModel().setParentIdentifier(parentIdentifier);
+  /**
+   * Sets the identifier of the associated parent connection group. If the parent is the root
+   * connection group, this should be RootConnectionGroup.IDENTIFIER.
+   *
+   * @param parentIdentifier The identifier of the connection group to associate as this object's
+   *                         parent.
+   */
+  public void setParentIdentifier(String parentIdentifier) {
 
+    // Translate root identifier back into null
+    if (parentIdentifier != null
+        && parentIdentifier.equals(RootConnectionGroup.IDENTIFIER)) {
+      parentIdentifier = null;
     }
+
+    getModel().setParentIdentifier(parentIdentifier);
+
+  }
 
 }

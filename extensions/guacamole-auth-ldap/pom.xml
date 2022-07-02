@@ -17,73 +17,73 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-auth-ldap</artifactId>
+  <dependencies>
+
+    <!-- Guacamole Extension API -->
+    <dependency>
+      <artifactId>guacamole-ext</artifactId>
+      <groupId>org.apache.guacamole</groupId>
+      <scope>provided</scope>
+      <version>1.4.0</version>
+    </dependency>
+
+    <!-- Apache Directory LDAP API -->
+    <dependency>
+      <artifactId>api-all</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>mina-core</artifactId>
+          <groupId>org.apache.mina</groupId>
+        </exclusion>
+      </exclusions>
+      <groupId>org.apache.directory.api</groupId>
+      <version>2.1.0</version>
+    </dependency>
+
+    <!-- Override version of Apache Mina specified by Apache Directory API
+        with latest compatible version -->
+    <dependency>
+      <artifactId>mina-core</artifactId>
+      <groupId>org.apache.mina</groupId>
+      <version>2.1.5</version>
+    </dependency>
+
+    <!-- Guice -->
+    <dependency>
+      <artifactId>guice</artifactId>
+      <groupId>com.google.inject</groupId>
+    </dependency>
+
+    <!-- Jackson and YAML support -->
+    <dependency>
+      <artifactId>jackson-databind</artifactId>
+      <groupId>com.fasterxml.jackson.core</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+    </dependency>
+
+  </dependencies>
+  <groupId>org.apache.guacamole</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-auth-ldap</name>
+  <packaging>jar</packaging>
+  <parent>
+    <artifactId>extensions</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-ldap</artifactId>
-    <packaging>jar</packaging>
+    <relativePath>../</relativePath>
     <version>1.4.0</version>
-    <name>guacamole-auth-ldap</name>
-    <url>http://guacamole.apache.org/</url>
+  </parent>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>extensions</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../</relativePath>
-    </parent>
+  <url>http://guacamole.apache.org/</url>
 
-    <dependencies>
-
-        <!-- Guacamole Extension API -->
-        <dependency>
-            <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-ext</artifactId>
-            <version>1.4.0</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Apache Directory LDAP API -->
-        <dependency>
-            <groupId>org.apache.directory.api</groupId>
-            <artifactId>api-all</artifactId>
-            <version>2.1.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.mina</groupId>
-                    <artifactId>mina-core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- Override version of Apache Mina specified by Apache Directory API
-            with latest compatible version -->
-        <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-core</artifactId>
-            <version>2.1.5</version>
-        </dependency>
-
-        <!-- Guice -->
-        <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-
-        <!-- Jackson and YAML support -->
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-        </dependency>
-
-    </dependencies>
+  <version>1.4.0</version>
 
 </project>

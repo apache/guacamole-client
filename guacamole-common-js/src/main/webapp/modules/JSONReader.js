@@ -24,91 +24,93 @@ var Guacamole = Guacamole || {};
  * received blobs into a JavaScript object by appending them to each other, in
  * order, and decoding the result as JSON. Note that this object will overwrite
  * any installed event handlers on the given Guacamole.InputStream.
- * 
+ *
  * @constructor
  * @param {Guacamole.InputStream} stream
  *     The stream that JSON will be read from.
  */
 Guacamole.JSONReader = function guacamoleJSONReader(stream) {
 
-    /**
-     * Reference to this Guacamole.JSONReader.
-     *
-     * @private
-     * @type {!Guacamole.JSONReader}
-     */
-    var guacReader = this;
+  /**
+   * Reference to this Guacamole.JSONReader.
+   *
+   * @private
+   * @type {!Guacamole.JSONReader}
+   */
+  var guacReader = this;
 
-    /**
-     * Wrapped Guacamole.StringReader.
-     *
-     * @private
-     * @type {!Guacamole.StringReader}
-     */
-    var stringReader = new Guacamole.StringReader(stream);
+  /**
+   * Wrapped Guacamole.StringReader.
+   *
+   * @private
+   * @type {!Guacamole.StringReader}
+   */
+  var stringReader = new Guacamole.StringReader(stream);
 
-    /**
-     * All JSON read thus far.
-     *
-     * @private
-     * @type {!string}
-     */
-    var json = '';
+  /**
+   * All JSON read thus far.
+   *
+   * @private
+   * @type {!string}
+   */
+  var json = '';
 
-    /**
-     * Returns the current length of this Guacamole.JSONReader, in characters.
-     *
-     * @return {!number}
-     *     The current length of this Guacamole.JSONReader.
-     */
-    this.getLength = function getLength() {
-        return json.length;
-    };
+  /**
+   * Returns the current length of this Guacamole.JSONReader, in characters.
+   *
+   * @return {!number}
+   *     The current length of this Guacamole.JSONReader.
+   */
+  this.getLength = function getLength() {
+    return json.length;
+  };
 
-    /**
-     * Returns the contents of this Guacamole.JSONReader as a JavaScript
-     * object.
-     *
-     * @return {object}
-     *     The contents of this Guacamole.JSONReader, as parsed from the JSON
-     *     contents of the input stream.
-     */
-    this.getJSON = function getJSON() {
-        return JSON.parse(json);
-    };
+  /**
+   * Returns the contents of this Guacamole.JSONReader as a JavaScript
+   * object.
+   *
+   * @return {object}
+   *     The contents of this Guacamole.JSONReader, as parsed from the JSON
+   *     contents of the input stream.
+   */
+  this.getJSON = function getJSON() {
+    return JSON.parse(json);
+  };
 
-    // Append all received text
-    stringReader.ontext = function ontext(text) {
+  // Append all received text
+  stringReader.ontext = function ontext(text) {
 
-        // Append received text
-        json += text;
+    // Append received text
+    json += text;
 
-        // Call handler, if present
-        if (guacReader.onprogress)
-            guacReader.onprogress(text.length);
+    // Call handler, if present
+    if (guacReader.onprogress) {
+      guacReader.onprogress(text.length);
+    }
 
-    };
+  };
 
-    // Simply call onend when end received
-    stringReader.onend = function onend() {
-        if (guacReader.onend)
-            guacReader.onend();
-    };
+  // Simply call onend when end received
+  stringReader.onend = function onend() {
+    if (guacReader.onend) {
+      guacReader.onend();
+    }
+  };
 
-    /**
-     * Fired once for every blob of data received.
-     * 
-     * @event
-     * @param {!number} length
-     *     The number of characters received.
-     */
-    this.onprogress = null;
+  /**
+   * Fired once for every blob of data received.
+   *
+   * @event
+   * @param {!number} length
+   *     The number of characters received.
+   */
+  this.onprogress = null;
 
-    /**
-     * Fired once this stream is finished and no further data will be written.
-     *
-     * @event
-     */
-    this.onend = null;
+  /**
+   * Fired once this stream is finished and no further data will be written.
+   *
+   * @event
+   */
+  this.onend = null;
 
 };

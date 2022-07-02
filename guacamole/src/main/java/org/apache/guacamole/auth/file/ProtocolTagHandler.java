@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.auth.file;
 
-import org.apache.guacamole.xml.TagHandler;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.apache.guacamole.xml.TagHandler;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -29,37 +29,36 @@ import org.xml.sax.SAXException;
  */
 public class ProtocolTagHandler implements TagHandler {
 
-    /**
-     * The GuacamoleConfiguration which will be populated with data from
-     * the tag handled by this tag handler.
-     */
-    private GuacamoleConfiguration config;
+  /**
+   * The GuacamoleConfiguration which will be populated with data from the tag handled by this tag
+   * handler.
+   */
+  private GuacamoleConfiguration config;
 
-    /**
-     * Creates a new handler for a "protocol" tag having the given
-     * attributes.
-     *
-     * @param config The GuacamoleConfiguration to update with the data parsed
-     *               from the "protocol" tag.
-     * @throws SAXException If the attributes given are not valid.
-     */
-    public ProtocolTagHandler(GuacamoleConfiguration config) throws SAXException {
-        this.config = config;
-    }
+  /**
+   * Creates a new handler for a "protocol" tag having the given attributes.
+   *
+   * @param config The GuacamoleConfiguration to update with the data parsed from the "protocol"
+   *               tag.
+   * @throws SAXException If the attributes given are not valid.
+   */
+  public ProtocolTagHandler(GuacamoleConfiguration config) throws SAXException {
+    this.config = config;
+  }
 
-    @Override
-    public void init(Attributes attributes) throws SAXException {
-        // Do nothing
-    }
+  @Override
+  public void init(Attributes attributes) throws SAXException {
+    // Do nothing
+  }
 
-    @Override
-    public TagHandler childElement(String localName) throws SAXException {
-        throw new SAXException("The 'protocol' tag can contain no elements.");
-    }
+  @Override
+  public TagHandler childElement(String localName) throws SAXException {
+    throw new SAXException("The 'protocol' tag can contain no elements.");
+  }
 
-    @Override
-    public void complete(String textContent) throws SAXException {
-        config.setProtocol(textContent);
-    }
+  @Override
+  public void complete(String textContent) throws SAXException {
+    config.setProtocol(textContent);
+  }
 
 }

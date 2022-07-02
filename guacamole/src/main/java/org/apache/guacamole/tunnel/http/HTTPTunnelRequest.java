@@ -32,55 +32,55 @@ import org.apache.guacamole.tunnel.TunnelRequest;
  */
 public class HTTPTunnelRequest extends TunnelRequest {
 
-    /**
-     * A copy of the parameters obtained from the HttpServletRequest used to
-     * construct the HTTPTunnelRequest.
-     */
-    private final Map<String, List<String>> parameterMap =
-            new HashMap<String, List<String>>();
+  /**
+   * A copy of the parameters obtained from the HttpServletRequest used to construct the
+   * HTTPTunnelRequest.
+   */
+  private final Map<String, List<String>> parameterMap =
+      new HashMap<String, List<String>>();
 
-    /**
-     * Creates a HTTPTunnelRequest which copies and exposes the parameters
-     * from the given HttpServletRequest.
-     *
-     * @param request
-     *     The HttpServletRequest to copy parameter values from.
-     */
-    @SuppressWarnings("unchecked") // getParameterMap() is defined as returning Map<String, String[]>
-    public HTTPTunnelRequest(HttpServletRequest request) {
+  /**
+   * Creates a HTTPTunnelRequest which copies and exposes the parameters from the given
+   * HttpServletRequest.
+   *
+   * @param request The HttpServletRequest to copy parameter values from.
+   */
+  @SuppressWarnings("unchecked") // getParameterMap() is defined as returning Map<String, String[]>
+  public HTTPTunnelRequest(HttpServletRequest request) {
 
-        // For each parameter
-        for (Map.Entry<String, String[]> mapEntry : ((Map<String, String[]>)
-                request.getParameterMap()).entrySet()) {
+    // For each parameter
+    for (Map.Entry<String, String[]> mapEntry : ((Map<String, String[]>)
+        request.getParameterMap()).entrySet()) {
 
-            // Get parameter name and corresponding values
-            String parameterName = mapEntry.getKey();
-            List<String> parameterValues = Arrays.asList(mapEntry.getValue());
+      // Get parameter name and corresponding values
+      String parameterName = mapEntry.getKey();
+      List<String> parameterValues = Arrays.asList(mapEntry.getValue());
 
-            // Store copy of all values in our own map
-            parameterMap.put(
-                parameterName,
-                new ArrayList<String>(parameterValues)
-            );
-
-        }
+      // Store copy of all values in our own map
+      parameterMap.put(
+          parameterName,
+          new ArrayList<String>(parameterValues)
+      );
 
     }
 
-    @Override
-    public String getParameter(String name) {
-        List<String> values = getParameterValues(name);
+  }
 
-        // Return the first value from the list if available
-        if (values != null && !values.isEmpty())
-            return values.get(0);
+  @Override
+  public String getParameter(String name) {
+    List<String> values = getParameterValues(name);
 
-        return null;
+    // Return the first value from the list if available
+    if (values != null && !values.isEmpty()) {
+      return values.get(0);
     }
 
-    @Override
-    public List<String> getParameterValues(String name) {
-        return parameterMap.get(name);
-    }
-    
+    return null;
+  }
+
+  @Override
+  public List<String> getParameterValues(String name) {
+    return parameterMap.get(name);
+  }
+
 }

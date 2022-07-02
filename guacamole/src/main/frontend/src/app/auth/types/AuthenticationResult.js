@@ -20,18 +20,19 @@
 /**
  * Service which defines the AuthenticationResult class.
  */
-angular.module('auth').factory('AuthenticationResult', [function defineAuthenticationResult() {
-            
-    /**
-     * The object returned by REST API calls when representing the successful
-     * result of an authentication attempt.
-     * 
-     * @constructor
-     * @param {AuthenticationResult|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     AuthenticationResult.
-     */
-    var AuthenticationResult = function AuthenticationResult(template) {
+angular.module('auth').factory('AuthenticationResult',
+    [function defineAuthenticationResult() {
+
+      /**
+       * The object returned by REST API calls when representing the successful
+       * result of an authentication attempt.
+       *
+       * @constructor
+       * @param {AuthenticationResult|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     AuthenticationResult.
+       */
+      var AuthenticationResult = function AuthenticationResult(template) {
 
         // Use empty object by default
         template = template || {};
@@ -66,16 +67,16 @@ angular.module('auth').factory('AuthenticationResult', [function defineAuthentic
          */
         this.availableDataSources = template.availableDataSources;
 
-    };
+      };
 
-    /**
-     * The username reserved by the Guacamole extension API for users which have
-     * authenticated anonymously.
-     *
-     * @type String
-     */
-    AuthenticationResult.ANONYMOUS_USERNAME = '';
+      /**
+       * The username reserved by the Guacamole extension API for users which have
+       * authenticated anonymously.
+       *
+       * @type String
+       */
+      AuthenticationResult.ANONYMOUS_USERNAME = '';
 
-    return AuthenticationResult;
+      return AuthenticationResult;
 
-}]);
+    }]);

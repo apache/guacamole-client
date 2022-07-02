@@ -21,12 +21,12 @@
  * A service for defining the ActiveConnectionWrapper class.
  */
 angular.module('settings').factory('ActiveConnectionWrapper', [
-    function defineActiveConnectionWrapper() {
+  function defineActiveConnectionWrapper() {
 
     /**
      * Wrapper for ActiveConnection which adds display-specific
      * properties, such as a checked option.
-     * 
+     *
      * @constructor
      * @param {ActiveConnectionWrapper|Object} template
      *     The object whose properties should be copied within the new
@@ -34,44 +34,44 @@ angular.module('settings').factory('ActiveConnectionWrapper', [
      */
     var ActiveConnectionWrapper = function ActiveConnectionWrapper(template) {
 
-        /**
-         * The identifier of the data source associated with the
-         * ActiveConnection wrapped by this ActiveConnectionWrapper.
-         *
-         * @type String
-         */
-        this.dataSource = template.dataSource;
+      /**
+       * The identifier of the data source associated with the
+       * ActiveConnection wrapped by this ActiveConnectionWrapper.
+       *
+       * @type String
+       */
+      this.dataSource = template.dataSource;
 
-        /**
-         * The display name of this connection.
-         *
-         * @type String
-         */
-        this.name = template.name;
+      /**
+       * The display name of this connection.
+       *
+       * @type String
+       */
+      this.name = template.name;
 
-        /**
-         * The date and time this session began, pre-formatted for display.
-         *
-         * @type String
-         */
-        this.startDate = template.startDate;
+      /**
+       * The date and time this session began, pre-formatted for display.
+       *
+       * @type String
+       */
+      this.startDate = template.startDate;
 
-        /**
-         * The wrapped ActiveConnection.
-         *
-         * @type ActiveConnection
-         */
-        this.activeConnection = template.activeConnection;
+      /**
+       * The wrapped ActiveConnection.
+       *
+       * @type ActiveConnection
+       */
+      this.activeConnection = template.activeConnection;
 
-        /**
-         * A flag indicating that the active connection has been selected.
-         *
-         * @type Boolean
-         */
-        this.checked = template.checked || false;
+      /**
+       * A flag indicating that the active connection has been selected.
+       *
+       * @type Boolean
+       */
+      this.checked = template.checked || false;
 
     };
 
     return ActiveConnectionWrapper;
 
-}]);
+  }]);

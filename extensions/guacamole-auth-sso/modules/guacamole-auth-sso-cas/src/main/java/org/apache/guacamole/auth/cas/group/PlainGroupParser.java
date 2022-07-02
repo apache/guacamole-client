@@ -24,9 +24,9 @@ package org.apache.guacamole.auth.cas.group;
  */
 public class PlainGroupParser implements GroupParser {
 
-    @Override
-    public String parse(String casGroup) {
-        return casGroup;
-    }
+  @Override
+  public String parse(String casGroup) {
+    return casGroup;
+  }
 
 }

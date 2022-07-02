@@ -22,27 +22,24 @@ package org.apache.guacamole.net.auth;
 import java.util.Map;
 
 /**
- * An object which is associated with a set of arbitrary attributes that may
- * be modifiable, defined as name/value pairs.
+ * An object which is associated with a set of arbitrary attributes that may be modifiable, defined
+ * as name/value pairs.
  */
 public interface Attributes extends ReadableAttributes {
 
-    /**
-     * Sets the given attributes. If an attribute within the map is not
-     * supported, it will simply be dropped. Any attributes not within the given
-     * map will be left untouched. Attributes which are not declared within the
-     * associated UserContext MUST NOT be submitted, but other extensions may
-     * manipulate the declared attributes through decorate() and redecorate().
-     *
-     * Implementations may optionally allow storage of unsupported attributes.
-     * Extensions which rely on other extensions to store their attribute
-     * values should verify that such storage is supported by first testing
-     * that the attribute value is retrievable via getAttributes() after being
-     * set.
-     *
-     * @param attributes
-     *     A map of all attribute identifiers to their corresponding values.
-     */
-    void setAttributes(Map<String, String> attributes);
+  /**
+   * Sets the given attributes. If an attribute within the map is not supported, it will simply be
+   * dropped. Any attributes not within the given map will be left untouched. Attributes which are
+   * not declared within the associated UserContext MUST NOT be submitted, but other extensions may
+   * manipulate the declared attributes through decorate() and redecorate().
+   * <p>
+   * Implementations may optionally allow storage of unsupported attributes. Extensions which rely
+   * on other extensions to store their attribute values should verify that such storage is
+   * supported by first testing that the attribute value is retrievable via getAttributes() after
+   * being set.
+   *
+   * @param attributes A map of all attribute identifiers to their corresponding values.
+   */
+  void setAttributes(Map<String, String> attributes);
 
 }

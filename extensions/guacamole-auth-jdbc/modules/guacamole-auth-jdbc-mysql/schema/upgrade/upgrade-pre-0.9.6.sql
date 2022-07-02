@@ -22,15 +22,11 @@
 --
 
 INSERT INTO guacamole_user_permission
-      (user_id, affected_user_id, permission)
-SELECT user_id, user_id,          'READ'
+    (user_id, affected_user_id, permission)
+SELECT user_id, user_id, 'READ'
 FROM guacamole_user
-WHERE
-    user_id NOT IN (
-        SELECT user_id
-        FROM guacamole_user_permission
-        WHERE
-            user_id = affected_user_id
-            AND permission = 'READ'
-    );
+WHERE user_id NOT IN (SELECT user_id
+                      FROM guacamole_user_permission
+                      WHERE user_id = affected_user_id
+                        AND permission = 'READ');
 

@@ -17,127 +17,127 @@
     specific language governing permissions and limitations
     under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <artifactId>guacamole-common-js</artifactId>
+  <build>
+    <plugins>
+
+      <!-- Assemble JS files into single .zip -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId>
+          <descriptors>
+            <descriptor>static.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <id>make-zip</id>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- JS/CSS Minification Plugin -->
+      <plugin>
+        <artifactId>minify-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+
+              <charset>UTF-8</charset>
+              <jsEngine>CLOSURE</jsEngine>
+
+              <jsFinalFile>all.js</jsFinalFile>
+              <jsSourceDir>/</jsSourceDir>
+              <jsSourceFiles>
+                <jsSourceFile>common/license.js</jsSourceFile>
+              </jsSourceFiles>
+
+              <jsSourceIncludes>
+                <jsSourceInclude>modules/**/*.js</jsSourceInclude>
+              </jsSourceIncludes>
+
+              <jsTargetDir>/</jsTargetDir>
+
+            </configuration>
+            <goals>
+              <goal>minify</goal>
+            </goals>
+            <id>default-minify</id>
+          </execution>
+        </executions>
+        <groupId>com.github.buckelieg</groupId>
+      </plugin>
+
+      <!-- Unit test using Jasmin and PhantomJS -->
+      <plugin>
+        <artifactId>jasmine-maven-plugin</artifactId>
+        <configuration>
+          <jsSrcDir>${project.build.directory}/${project.build.finalName}</jsSrcDir>
+          <phantomjs>
+            <version>2.1.1</version>
+          </phantomjs>
+          <sourceIncludes>
+            <sourceInclude>**/*.min.js</sourceInclude>
+          </sourceIncludes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test</goal>
+            </goals>
+          </execution>
+        </executions>
+        <groupId>com.github.searls</groupId>
+        <version>3.0-beta-02</version>
+      </plugin>
+
+    </plugins>
+  </build>
+  <description>
+    The base JavaScript API of the Guacamole project, providing JavaScript
+    support for the Guacamole stack, including a full client
+    implementation for the Guacamole protocol.
+  </description>
+  <groupId>org.apache.guacamole</groupId>
+  <licenses>
+    <license>
+      <distribution>repo</distribution>
+      <name>Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <modelVersion>4.0.0</modelVersion>
+  <name>guacamole-common-js</name>
+
+  <packaging>pom</packaging>
+
+  <parent>
+    <artifactId>guacamole-client</artifactId>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-common-js</artifactId>
-    <packaging>pom</packaging>
+    <relativePath>../</relativePath>
     <version>1.4.0</version>
-    <name>guacamole-common-js</name>
-    <url>http://guacamole.apache.org/</url>
+  </parent>
 
-    <parent>
-        <groupId>org.apache.guacamole</groupId>
-        <artifactId>guacamole-client</artifactId>
-        <version>1.4.0</version>
-        <relativePath>../</relativePath>
-    </parent>
+  <!-- All applicable licenses -->
+  <scm>
+    <connection>scm:git:https://git.wip-us.apache.org/repos/asf/guacamole-client.git</connection>
+    <url>https://github.com/apache/guacamole-client</url>
 
-    <description>
-        The base JavaScript API of the Guacamole project, providing JavaScript
-        support for the Guacamole stack, including a full client
-        implementation for the Guacamole protocol.
-    </description>
+  </scm>
 
-    <!-- All applicable licenses -->
-    <licenses>
-        <license>
-            <name>Apache License, Version 2.0</name>
-            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+  <!-- Git repository -->
+  <url>http://guacamole.apache.org/</url>
 
-    <!-- Git repository -->
-    <scm>
-        <url>https://github.com/apache/guacamole-client</url>
-        <connection>scm:git:https://git.wip-us.apache.org/repos/asf/guacamole-client.git</connection>
-
-    </scm>
-
-    <build>
-        <plugins>
-
-            <!-- Assemble JS files into single .zip -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <appendAssemblyId>false</appendAssemblyId>
-                    <descriptors>
-                        <descriptor>static.xml</descriptor>
-                    </descriptors>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>make-zip</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- JS/CSS Minification Plugin -->
-            <plugin>
-                <groupId>com.github.buckelieg</groupId>
-                <artifactId>minify-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-minify</id>
-                        <configuration>
-
-                            <charset>UTF-8</charset>
-                            <jsEngine>CLOSURE</jsEngine>
-
-                            <jsSourceDir>/</jsSourceDir>
-                            <jsTargetDir>/</jsTargetDir>
-                            <jsFinalFile>all.js</jsFinalFile>
-
-                            <jsSourceFiles>
-                                <jsSourceFile>common/license.js</jsSourceFile> 
-                            </jsSourceFiles>
-
-                            <jsSourceIncludes>
-                                <jsSourceInclude>modules/**/*.js</jsSourceInclude>
-                            </jsSourceIncludes>
-
-                        </configuration>
-                        <goals>
-                            <goal>minify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Unit test using Jasmin and PhantomJS -->
-            <plugin>
-                <groupId>com.github.searls</groupId>
-                <artifactId>jasmine-maven-plugin</artifactId>
-                <version>3.0-beta-02</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>test</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <phantomjs>
-                        <version>2.1.1</version>
-                    </phantomjs>
-                    <sourceIncludes>
-                        <sourceInclude>**/*.min.js</sourceInclude>
-                    </sourceIncludes>
-                    <jsSrcDir>${project.build.directory}/${project.build.finalName}</jsSrcDir>
-                </configuration>
-            </plugin>
-
-        </plugins>
-    </build>
+  <version>1.4.0</version>
 
 </project>

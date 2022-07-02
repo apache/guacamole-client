@@ -22,22 +22,18 @@ package org.apache.guacamole.form;
 import java.util.Collection;
 
 /**
- * Represents an arbitrary field with a finite, enumerated set of possible
- * values.
+ * Represents an arbitrary field with a finite, enumerated set of possible values.
  */
 public class EnumField extends Field {
 
-    /**
-     * Creates a new EnumField with the given name and possible values.
-     *
-     * @param name
-     *     The unique name to associate with this field.
-     *
-     * @param options
-     *     All possible legal options for this field.
-     */
-    public EnumField(String name, Collection<String> options) {
-        super(name, Field.Type.ENUM, options);
-    }
+  /**
+   * Creates a new EnumField with the given name and possible values.
+   *
+   * @param name    The unique name to associate with this field.
+   * @param options All possible legal options for this field.
+   */
+  public EnumField(String name, Collection<String> options) {
+    super(name, Field.Type.ENUM, options);
+  }
 
 }

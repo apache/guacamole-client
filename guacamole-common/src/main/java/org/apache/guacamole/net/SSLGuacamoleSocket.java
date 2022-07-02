@@ -39,106 +39,98 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides abstract socket-like access to a Guacamole connection over SSL to
- * a given hostname and port.
+ * Provides abstract socket-like access to a Guacamole connection over SSL to a given hostname and
+ * port.
  */
 public class SSLGuacamoleSocket implements GuacamoleSocket {
 
-    /**
-     * Logger for this class.
-     */
-    private Logger logger = LoggerFactory.getLogger(SSLGuacamoleSocket.class);
+  /**
+   * The number of milliseconds to wait for data on the TCP socket before timing out.
+   */
+  private static final int SOCKET_TIMEOUT = 15000;
+  /**
+   * Logger for this class.
+   */
+  private Logger logger = LoggerFactory.getLogger(SSLGuacamoleSocket.class);
+  /**
+   * The GuacamoleReader this socket should read from.
+   */
+  private GuacamoleReader reader;
+  /**
+   * The GuacamoleWriter this socket should write to.
+   */
+  private GuacamoleWriter writer;
+  /**
+   * The TCP socket that the GuacamoleReader and GuacamoleWriter exposed by this class should
+   * affect.
+   */
+  private Socket sock;
 
-    /**
-     * The GuacamoleReader this socket should read from.
-     */
-    private GuacamoleReader reader;
+  /**
+   * Creates a new SSLGuacamoleSocket which reads and writes instructions to the Guacamole
+   * instruction stream of the Guacamole proxy server running at the given hostname and port using
+   * SSL.
+   *
+   * @param hostname The hostname of the Guacamole proxy server to connect to.
+   * @param port     The port of the Guacamole proxy server to connect to.
+   * @throws GuacamoleException If an error occurs while connecting to the Guacamole proxy server.
+   */
+  public SSLGuacamoleSocket(String hostname, int port) throws GuacamoleException {
 
-    /**
-     * The GuacamoleWriter this socket should write to.
-     */
-    private GuacamoleWriter writer;
+    // Get factory for SSL sockets
+    SocketFactory socket_factory = SSLSocketFactory.getDefault();
 
-    /**
-     * The number of milliseconds to wait for data on the TCP socket before
-     * timing out.
-     */
-    private static final int SOCKET_TIMEOUT = 15000;
+    try {
 
-    /**
-     * The TCP socket that the GuacamoleReader and GuacamoleWriter exposed
-     * by this class should affect.
-     */
-    private Socket sock;
+      logger.debug("Connecting to guacd at {}:{} via SSL/TLS.",
+          hostname, port);
 
-    /**
-     * Creates a new SSLGuacamoleSocket which reads and writes instructions
-     * to the Guacamole instruction stream of the Guacamole proxy server
-     * running at the given hostname and port using SSL.
-     *
-     * @param hostname The hostname of the Guacamole proxy server to connect to.
-     * @param port The port of the Guacamole proxy server to connect to.
-     * @throws GuacamoleException If an error occurs while connecting to the
-     *                            Guacamole proxy server.
-     */
-    public SSLGuacamoleSocket(String hostname, int port) throws GuacamoleException {
+      // Get address
+      SocketAddress address = new InetSocketAddress(
+          InetAddress.getByName(hostname),
+          port
+      );
 
-        // Get factory for SSL sockets
-        SocketFactory socket_factory = SSLSocketFactory.getDefault();
-        
-        try {
+      // Connect with timeout
+      sock = socket_factory.createSocket();
+      sock.connect(address, SOCKET_TIMEOUT);
 
-            logger.debug("Connecting to guacd at {}:{} via SSL/TLS.",
-                    hostname, port);
+      // Set read timeout
+      sock.setSoTimeout(SOCKET_TIMEOUT);
 
-            // Get address
-            SocketAddress address = new InetSocketAddress(
-                InetAddress.getByName(hostname),
-                port
-            );
+      // On successful connect, retrieve I/O streams
+      reader = new ReaderGuacamoleReader(new InputStreamReader(sock.getInputStream(), "UTF-8"));
+      writer = new WriterGuacamoleWriter(new OutputStreamWriter(sock.getOutputStream(), "UTF-8"));
 
-            // Connect with timeout
-            sock = socket_factory.createSocket();
-            sock.connect(address, SOCKET_TIMEOUT);
-
-            // Set read timeout
-            sock.setSoTimeout(SOCKET_TIMEOUT);
-
-            // On successful connect, retrieve I/O streams
-            reader = new ReaderGuacamoleReader(new InputStreamReader(sock.getInputStream(),   "UTF-8"));
-            writer = new WriterGuacamoleWriter(new OutputStreamWriter(sock.getOutputStream(), "UTF-8"));
-
-        }
-        catch (IOException e) {
-            throw new GuacamoleServerException(e);
-        }
-
+    } catch (IOException e) {
+      throw new GuacamoleServerException(e);
     }
 
-    @Override
-    public void close() throws GuacamoleException {
-        try {
-            logger.debug("Closing socket to guacd.");
-            sock.close();
-        }
-        catch (IOException e) {
-            throw new GuacamoleServerException(e);
-        }
-    }
+  }
 
-    @Override
-    public GuacamoleReader getReader() {
-        return reader;
+  @Override
+  public void close() throws GuacamoleException {
+    try {
+      logger.debug("Closing socket to guacd.");
+      sock.close();
+    } catch (IOException e) {
+      throw new GuacamoleServerException(e);
     }
+  }
 
-    @Override
-    public GuacamoleWriter getWriter() {
-        return writer;
-    }
+  @Override
+  public GuacamoleReader getReader() {
+    return reader;
+  }
 
-    @Override
-    public boolean isOpen() {
-        return !sock.isClosed();
-    }
+  @Override
+  public GuacamoleWriter getWriter() {
+    return writer;
+  }
+
+  @Override
+  public boolean isOpen() {
+    return !sock.isClosed();
+  }
 
 }

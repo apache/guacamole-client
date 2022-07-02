@@ -22,38 +22,38 @@
  */
 
 .tiled-client-grid {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 }
 
 .tiled-client-grid,
 .tiled-client-grid .tiled-client-row,
 .tiled-client-grid .tiled-client-cell,
 .tiled-client-grid .client-tile {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-flex: 1;
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
 }
 
 .tiled-client-grid {
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: column;
-    -ms-flex-direction: column;
-    flex-direction: column;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
 }
 
 .tiled-client-grid .tiled-client-row {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: row;
-    -ms-flex-direction: row;
-    flex-direction: row;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
 }
 
 /*
@@ -61,78 +61,78 @@
  */
 
 .tiled-client-grid .client-tile {
-    position: relative;
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -webkit-flex-direction: column;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    line-height: 1.5;
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  line-height: 1.5;
 }
 
 .tiled-client-grid .client-tile .client-tile-header {
 
-    display: -webkit-box;
+  display: -webkit-box;
 
-    display: -webkit-flex;
+  display: -webkit-flex;
 
-    display: -ms-flexbox;
+  display: -ms-flexbox;
 
-    display: flex;
-    -webkit-box-align: center;
-    -webkit-align-items: center;
-    -ms-flex-align: center;
-    align-items: center;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
 
-    margin: 0;
-    background: #444;
-    padding: 0 0.25em;
-    font-size: 0.8em;
-    color: white;
-    z-index: 30;
-    min-height: 1.5em;
+  margin: 0;
+  background: #444;
+  padding: 0 0.25em;
+  font-size: 0.8em;
+  color: white;
+  z-index: 30;
+  min-height: 1.5em;
 
 }
 
 .tiled-client-grid .client-tile.focused .client-tile-header {
-    background-color: #3161a9;
+  background-color: #3161a9;
 }
 
 .tiled-client-grid .client-tile .client-tile-header > * {
-    -webkit-box-flex: 0;
-    -webkit-flex: 0;
-    -ms-flex: 0;
-    flex: 0;
+  -webkit-box-flex: 0;
+  -webkit-flex: 0;
+  -ms-flex: 0;
+  flex: 0;
 }
 
 .tiled-client-grid .client-tile .client-tile-header .client-tile-name {
-    -webkit-box-flex: 1;
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
 }
 
 .tiled-client-grid .client-tile .main {
-    -webkit-box-flex: 1;
-    -webkit-flex: 1;
-    -ms-flex: 1;
-    flex: 1;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  -ms-flex: 1;
+  flex: 1;
 }
 
 .tiled-client-grid .client-tile-disconnect,
 .tiled-client-grid .client-tile-shared-indicator {
-    max-height: 1em;
-    height: 100%;
+  max-height: 1em;
+  height: 100%;
 }
 
 .tiled-client-grid .client-tile-shared-indicator {
-    display: none;
+  display: none;
 }
 
 .tiled-client-grid .shared .client-tile-shared-indicator {
-    display: inline;
+  display: inline;
 }

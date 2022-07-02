@@ -26,54 +26,49 @@ import java.util.List;
 import org.apache.guacamole.resource.Resource;
 
 /**
- * Service which provides access to all HTML patches as resources, and allows
- * other patch resources to be added.
+ * Service which provides access to all HTML patches as resources, and allows other patch resources
+ * to be added.
  */
 public class PatchResourceService {
 
-    /**
-     * A list of all HTML patch resources currently defined, in the order they
-     * should be applied.
-     */
-    private final List<Resource> resources = new ArrayList<Resource>();
+  /**
+   * A list of all HTML patch resources currently defined, in the order they should be applied.
+   */
+  private final List<Resource> resources = new ArrayList<Resource>();
 
-    /**
-     * Adds the given HTML patch resource such that it will apply to the
-     * Guacamole UI. The patch will be applied by the JavaScript side of the
-     * web application in the order that addPatchResource() is invoked.
-     *
-     * @param resource
-     *     The HTML patch resource to add. This resource must have the mimetype
-     *     "text/html".
-     */
-    public void addPatchResource(Resource resource) {
-        resources.add(resource);
-    }
+  /**
+   * Adds the given HTML patch resource such that it will apply to the Guacamole UI. The patch will
+   * be applied by the JavaScript side of the web application in the order that addPatchResource()
+   * is invoked.
+   *
+   * @param resource The HTML patch resource to add. This resource must have the mimetype
+   *                 "text/html".
+   */
+  public void addPatchResource(Resource resource) {
+    resources.add(resource);
+  }
 
-    /**
-     * Adds the given HTML patch resources such that they will apply to the
-     * Guacamole UI. The patches will be applied by the JavaScript side of the
-     * web application in the order provided.
-     *
-     * @param resources
-     *     The HTML patch resources to add. Each resource must have the
-     *     mimetype "text/html".
-     */
-    public void addPatchResources(Collection<Resource> resources) {
-        for (Resource resource : resources)
-            addPatchResource(resource);
+  /**
+   * Adds the given HTML patch resources such that they will apply to the Guacamole UI. The patches
+   * will be applied by the JavaScript side of the web application in the order provided.
+   *
+   * @param resources The HTML patch resources to add. Each resource must have the mimetype
+   *                  "text/html".
+   */
+  public void addPatchResources(Collection<Resource> resources) {
+    for (Resource resource : resources) {
+      addPatchResource(resource);
     }
+  }
 
-    /**
-     * Returns a list of all HTML patches currently associated with this
-     * service, in the order they should be applied. The returned list cannot
-     * be modified.
-     *
-     * @return
-     *     A list of all HTML patches currently associated with this service.
-     */
-    public List<Resource> getPatchResources() {
-        return Collections.unmodifiableList(resources);
-    }
+  /**
+   * Returns a list of all HTML patches currently associated with this service, in the order they
+   * should be applied. The returned list cannot be modified.
+   *
+   * @return A list of all HTML patches currently associated with this service.
+   */
+  public List<Resource> getPatchResources() {
+    return Collections.unmodifiableList(resources);
+  }
 
 }

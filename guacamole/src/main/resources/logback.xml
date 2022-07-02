@@ -19,16 +19,16 @@
 -->
 <configuration>
 
-    <!-- Default appender -->
-    <appender name="GUAC-DEFAULT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
-        </encoder>
-    </appender>
+  <!-- Default appender -->
+  <appender class="ch.qos.logback.core.ConsoleAppender" name="GUAC-DEFAULT">
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+    </encoder>
+  </appender>
 
-    <!-- Log at INFO level -->
-    <root level="info">
-        <appender-ref ref="GUAC-DEFAULT" />
-    </root>
+  <!-- Log at INFO level -->
+  <root level="info">
+    <appender-ref ref="GUAC-DEFAULT"/>
+  </root>
 
 </configuration>

@@ -37,19 +37,21 @@ within the container.
 
 This is useful for specifying sensitive info, ie. passwords for
 the database, in secured files instead of plaintext environment variables. This
-is generally used for loading values from [Docker secrets](https://docs.docker.com/engine/swarm/secrets/#read-more-about-docker-secret-commands),
+is generally used for loading values
+from [Docker secrets](https://docs.docker.com/engine/swarm/secrets/#read-more-about-docker-secret-commands)
+,
 which are stored at `/run/secrets/<secret_name>` within the container.
 
 It is important to note that the startup script is configured such that:
 
 1. You may mix the use of Docker secrets and normal environment variables.
-For example, you may wish to use `MYSQL_USER_FILE` and `MYSQL_PASSWORD_FILE`,
-but wish to specify the database name with `MYSQL_DATABASE`
+   For example, you may wish to use `MYSQL_USER_FILE` and `MYSQL_PASSWORD_FILE`,
+   but wish to specify the database name with `MYSQL_DATABASE`
 
 2. If both a normal environment variable and its corresponding secret are defined
-in the same command line, or section within a [Compose](https://docs.docker.com/compose/) file,
-the secret will take precedence. For instance, if both `MYSQL_PASSWORD`
-and `MYSQL_PASSWORD_FILE` are given, `MYSQL_PASSWORD_FILE` will be used.
+   in the same command line, or section within a [Compose](https://docs.docker.com/compose/) file,
+   the secret will take precedence. For instance, if both `MYSQL_PASSWORD`
+   and `MYSQL_PASSWORD_FILE` are given, `MYSQL_PASSWORD_FILE` will be used.
 
 Deploying Guacamole with PostgreSQL authentication
 --------------------------------------------------
@@ -150,7 +152,8 @@ To generate a SQL script which can be used to initialize a fresh MySQL database
     docker run --rm guacamole/guacamole /opt/guacamole/bin/initdb.sh --mysql > initdb.sql
 
 Alternatively, you can use the SQL scripts included with
-[guacamole-auth-jdbc](https://github.com/apache/guacamole-client/tree/0.9.10-incubating/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema).
+[guacamole-auth-jdbc](https://github.com/apache/guacamole-client/tree/0.9.10-incubating/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema)
+.
 
 Once this script is generated, you must:
 
@@ -176,12 +179,12 @@ the image will stop:
 3. `SQLSERVER_PASSWORD` - The password that Guacamole will provide when
    connecting to SQLServer as `SQLSERVER_USER`.
 
-    docker run --name some-guacamole --link some-guacd:guacd \
-        --link some-sqlserver:sqlserver      \
-        -e SQLSERVER_DATABASE=guacamole_db  \
-        -e SQLSERVER_USER=guacamole_user    \
-        -e SQLSERVER_PASSWORD=some_password \
-        -d -p 8080:8080 guacamole/guacamole
+   docker run --name some-guacamole --link some-guacd:guacd \
+   --link some-sqlserver:sqlserver      \
+   -e SQLSERVER_DATABASE=guacamole_db  \
+   -e SQLSERVER_USER=guacamole_user    \
+   -e SQLSERVER_PASSWORD=some_password \
+   -d -p 8080:8080 guacamole/guacamole
 
 Alternatively, if you want to store database credentials using Docker secrets,
 the following three variables are required and replace the previous three:
@@ -194,12 +197,12 @@ the following three variables are required and replace the previous three:
    password that Guacamole will provide when connecting to SQLServer as
    `SQLSERVER_USER.
 
-    docker run --name some-guacamole --link some-guacd:guacd \
-        --link some-sqlserver:sqlserver      \
-        -e SQLSERVER_DATABASE_FILE=/run/secrets/<secret_name> \
-        -e SQLSERVER_USER_FILE=/run/secrets/<secret_name> \
-        -e SQLSERVER_PASSWORD_FILE=/run/secrets/<secret_name> \
-        -d -p 8080:8080 guacamole/guacamole
+   docker run --name some-guacamole --link some-guacd:guacd \
+   --link some-sqlserver:sqlserver      \
+   -e SQLSERVER_DATABASE_FILE=/run/secrets/<secret_name> \
+   -e SQLSERVER_USER_FILE=/run/secrets/<secret_name> \
+   -e SQLSERVER_PASSWORD_FILE=/run/secrets/<secret_name> \
+   -d -p 8080:8080 guacamole/guacamole
 
 ### Initializing the SQLServer database
 

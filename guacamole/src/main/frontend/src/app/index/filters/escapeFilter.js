@@ -23,13 +23,14 @@
  */
 angular.module('index').filter('escape', [function escapeFilter() {
 
-    return function escapeFilter(input) {
+  return function escapeFilter(input) {
 
-        if (input)
-            return window.encodeURIComponent(input);
-        
-        return '';
+    if (input) {
+      return window.encodeURIComponent(input);
+    }
 
-    };
+    return '';
+
+  };
 
 }]);

@@ -22,22 +22,16 @@ package org.apache.guacamole.rest.session;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
- * Factory which creates resources that expose the contents of a given
- * UserContext.
+ * Factory which creates resources that expose the contents of a given UserContext.
  */
 public interface UserContextResourceFactory {
 
-    /**
-     * Creates a new UserContextResource which exposes the contents of the
-     * given UserContext.
-     *
-     * @param userContext
-     *     The UserContext whose contents should be exposed.
-     *
-     * @return
-     *     A new UserContextResource which exposes the contents of the given
-     *     UserContext.
-     */
-    UserContextResource create(UserContext userContext);
+  /**
+   * Creates a new UserContextResource which exposes the contents of the given UserContext.
+   *
+   * @param userContext The UserContext whose contents should be exposed.
+   * @return A new UserContextResource which exposes the contents of the given UserContext.
+   */
+  UserContextResource create(UserContext userContext);
 
 }

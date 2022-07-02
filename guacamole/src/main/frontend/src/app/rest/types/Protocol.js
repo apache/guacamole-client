@@ -20,21 +20,22 @@
 /**
  * Service which defines the Protocol class.
  */
-angular.module('rest').factory('Protocol', ['$injector', function defineProtocol($injector) {
+angular.module('rest').factory('Protocol',
+    ['$injector', function defineProtocol($injector) {
 
-    // Required services
-    var translationStringService = $injector.get('translationStringService');
+      // Required services
+      var translationStringService = $injector.get('translationStringService');
 
-    /**
-     * The object returned by REST API calls when representing the data
-     * associated with a supported remote desktop protocol.
-     * 
-     * @constructor
-     * @param {Protocol|Object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     Protocol.
-     */
-    var Protocol = function Protocol(template) {
+      /**
+       * The object returned by REST API calls when representing the data
+       * associated with a supported remote desktop protocol.
+       *
+       * @constructor
+       * @param {Protocol|Object} [template={}]
+       *     The object whose properties should be copied within the new
+       *     Protocol.
+       */
+      var Protocol = function Protocol(template) {
 
         // Use empty object by default
         template = template || {};
@@ -65,55 +66,57 @@ angular.module('rest').factory('Protocol', ['$injector', function defineProtocol
          */
         this.sharingProfileForms = template.sharingProfileForms || [];
 
-    };
+      };
 
-    /**
-     * Returns the translation string namespace for the protocol having the
-     * given name. The namespace will be of the form:
-     *
-     * <code>PROTOCOL_NAME</code>
-     *
-     * where <code>NAME</code> is the protocol name transformed via
-     * translationStringService.canonicalize().
-     *
-     * @param {String} protocolName
-     *     The name of the protocol.
-     *
-     * @returns {String}
-     *     The translation namespace for the protocol specified, or null if no
-     *     namespace could be generated.
-     */
-    Protocol.getNamespace = function getNamespace(protocolName) {
+      /**
+       * Returns the translation string namespace for the protocol having the
+       * given name. The namespace will be of the form:
+       *
+       * <code>PROTOCOL_NAME</code>
+       *
+       * where <code>NAME</code> is the protocol name transformed via
+       * translationStringService.canonicalize().
+       *
+       * @param {String} protocolName
+       *     The name of the protocol.
+       *
+       * @returns {String}
+       *     The translation namespace for the protocol specified, or null if no
+       *     namespace could be generated.
+       */
+      Protocol.getNamespace = function getNamespace(protocolName) {
 
         // Do not generate a namespace if no protocol is selected
-        if (!protocolName)
-            return null;
+        if (!protocolName) {
+          return null;
+        }
 
-        return 'PROTOCOL_' + translationStringService.canonicalize(protocolName);
+        return 'PROTOCOL_' + translationStringService.canonicalize(
+            protocolName);
 
-    };
+      };
 
-    /**
-     * Given the internal name of a protocol, produces the translation string
-     * for the localized version of that protocol's name. The translation
-     * string will be of the form:
-     *
-     * <code>NAMESPACE.NAME<code>
-     *
-     * where <code>NAMESPACE</code> is the namespace generated from
-     * $scope.getNamespace().
-     *
-     * @param {String} protocolName
-     *     The name of the protocol.
-     *
-     * @returns {String}
-     *     The translation string which produces the localized name of the
-     *     protocol specified.
-     */
-    Protocol.getName = function getProtocolName(protocolName) {
+      /**
+       * Given the internal name of a protocol, produces the translation string
+       * for the localized version of that protocol's name. The translation
+       * string will be of the form:
+       *
+       * <code>NAMESPACE.NAME<code>
+       *
+       * where <code>NAMESPACE</code> is the namespace generated from
+       * $scope.getNamespace().
+       *
+       * @param {String} protocolName
+       *     The name of the protocol.
+       *
+       * @returns {String}
+       *     The translation string which produces the localized name of the
+       *     protocol specified.
+       */
+      Protocol.getName = function getProtocolName(protocolName) {
         return Protocol.getNamespace(protocolName) + '.NAME';
-    };
+      };
 
-    return Protocol;
+      return Protocol;
 
-}]);
+    }]);

@@ -23,16 +23,15 @@ import org.apache.guacamole.properties.GuacamoleProperties;
 import org.apache.guacamole.token.TokenName;
 
 /**
- * GuacamoleProperties implementation which reads all properties from
- * environment variables. The name of the environment variable corresponding to
- * any particular property is determined using
+ * GuacamoleProperties implementation which reads all properties from environment variables. The
+ * name of the environment variable corresponding to any particular property is determined using
  * {@link TokenName#canonicalize(java.lang.String)}.
  */
 public class SystemEnvironmentGuacamoleProperties implements GuacamoleProperties {
 
-    @Override
-    public String getProperty(String name) {
-        return System.getenv(TokenName.canonicalize(name));
-    }
+  @Override
+  public String getProperty(String name) {
+    return System.getenv(TokenName.canonicalize(name));
+  }
 
 }

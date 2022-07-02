@@ -20,113 +20,98 @@
 package org.apache.guacamole.net.auth;
 
 /**
- * Information which describes how the connection to guacd should be
- * established. This includes the hostname and port which guacd is listening on,
- * as well as the type of encryption required, if any.
+ * Information which describes how the connection to guacd should be established. This includes the
+ * hostname and port which guacd is listening on, as well as the type of encryption required, if
+ * any.
  *
  * @author Michael Jumper
  */
 public class GuacamoleProxyConfiguration {
 
-    /**
-     * All possible types of encryption used by guacd.
-     */
-    public enum EncryptionMethod {
+  /**
+   * The hostname or address of the machine where guacd is running.
+   */
+  private final String hostname;
+  /**
+   * The port that guacd is listening on.
+   */
+  private final int port;
+  /**
+   * The type of encryption required by guacd.
+   */
+  private final EncryptionMethod encryptionMethod;
 
-        /**
-         * Unencrypted (plaintext).
-         */
-        NONE,
+  /**
+   * Creates a new GuacamoleProxyConfiguration having the given hostname, port, and encryption
+   * method.
+   *
+   * @param hostname         The hostname or address of the machine where guacd is running.
+   * @param port             The port that guacd is listening on.
+   * @param encryptionMethod The type of encryption required by the instance of guacd running at the
+   *                         given hostname and port.
+   */
+  public GuacamoleProxyConfiguration(String hostname, int port,
+      EncryptionMethod encryptionMethod) {
+    this.hostname = hostname;
+    this.port = port;
+    this.encryptionMethod = encryptionMethod;
+  }
 
-        /**
-         * Encrypted with SSL or TLS.
-         */
-        SSL
-        
-    }
+  /**
+   * Creates a new GuacamoleProxyConfiguration having the given hostname and port, with encryption
+   * method being restricted to either NONE or SSL.
+   *
+   * @param hostname The hostname or address of the machine where guacd is running.
+   * @param port     The port that guacd is listening on.
+   * @param ssl      true if guacd requires SSL/TLS encryption, false if communication with guacd
+   *                 should be unencrypted.
+   */
+  public GuacamoleProxyConfiguration(String hostname, int port, boolean ssl) {
+    this(hostname, port, ssl ? EncryptionMethod.SSL : EncryptionMethod.NONE);
+  }
 
-    /**
-     * The hostname or address of the machine where guacd is running.
-     */
-    private final String hostname;
+  /**
+   * Returns the hostname or address of the machine where guacd is running.
+   *
+   * @return The hostname or address of the machine where guacd is running.
+   */
+  public String getHostname() {
+    return hostname;
+  }
 
-    /**
-     * The port that guacd is listening on.
-     */
-    private final int port;
+  /**
+   * Returns the port that guacd is listening on.
+   *
+   * @return The port that guacd is listening on.
+   */
+  public int getPort() {
+    return port;
+  }
 
-    /**
-     * The type of encryption required by guacd.
-     */
-    private final EncryptionMethod encryptionMethod;
+  /**
+   * Returns the type of encryption required by guacd.
+   *
+   * @return The type of encryption required by guacd.
+   */
+  public EncryptionMethod getEncryptionMethod() {
+    return encryptionMethod;
+  }
 
-    /**
-     * Creates a new GuacamoleProxyConfiguration having the given hostname,
-     * port, and encryption method.
-     *
-     * @param hostname
-     *     The hostname or address of the machine where guacd is running.
-     *
-     * @param port
-     *     The port that guacd is listening on.
-     *
-     * @param encryptionMethod
-     *     The type of encryption required by the instance of guacd running at
-     *     the given hostname and port.
-     */
-    public GuacamoleProxyConfiguration(String hostname, int port,
-            EncryptionMethod encryptionMethod) {
-        this.hostname = hostname;
-        this.port = port;
-        this.encryptionMethod = encryptionMethod;
-    }
-
-    /**
-     * Creates a new GuacamoleProxyConfiguration having the given hostname and
-     * port, with encryption method being restricted to either NONE or SSL.
-     *
-     * @param hostname
-     *     The hostname or address of the machine where guacd is running.
-     *
-     * @param port
-     *     The port that guacd is listening on.
-     *
-     * @param ssl
-     *     true if guacd requires SSL/TLS encryption, false if communication
-     *     with guacd should be unencrypted.
-     */
-    public GuacamoleProxyConfiguration(String hostname, int port, boolean ssl) {
-        this(hostname, port, ssl ? EncryptionMethod.SSL : EncryptionMethod.NONE);
-    }
-
-    /**
-     * Returns the hostname or address of the machine where guacd is running.
-     *
-     * @return
-     *     The hostname or address of the machine where guacd is running.
-     */
-    public String getHostname() {
-        return hostname;
-    }
+  /**
+   * All possible types of encryption used by guacd.
+   */
+  public enum EncryptionMethod {
 
     /**
-     * Returns the port that guacd is listening on.
-     *
-     * @return
-     *     The port that guacd is listening on.
+     * Unencrypted (plaintext).
      */
-    public int getPort() {
-        return port;
-    }
+    NONE,
 
     /**
-     * Returns the type of encryption required by guacd.
-     *
-     * @return
-     *     The type of encryption required by guacd.
+     * Encrypted with SSL or TLS.
      */
-    public EncryptionMethod getEncryptionMethod() {
-        return encryptionMethod;
-    }
+    SSL
+
+  }
 
 }
