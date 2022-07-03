@@ -66,9 +66,9 @@ cd "$BUILD_DIR"
 export OPENSSL_CONF=/etc/ssl
 
 if [ -z "$BUILD_PROFILE" ]; then
-    mvn package
+    mvn clean package -DskipTests
 else
-    mvn -P "$BUILD_PROFILE" package
+    mvn clean -P "$BUILD_PROFILE" package -DskipTests
 fi
 
 #
