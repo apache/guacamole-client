@@ -84,14 +84,12 @@ public class KsmSecretService implements VaultSecretService {
 
     /**
      * A map of base-64 encoded JSON KSM config blobs to associated KSM client instances.
-     * The `null` entry in this Map is associated with the KSM configuration parsed
-     * from the guacamole.properties config file. A distinct KSM client will exist for
-     * every KSM config.
+     * A distinct KSM client will exist for every KSM config.
      */
     private final ConcurrentMap<String, KsmClient> ksmClientMap = new ConcurrentHashMap<>();
 
     /**
-     * Create and return a KSM cache for the provided KSM config if not already
+     * Create and return a KSM client for the provided KSM config if not already
      * present in the cache map, otherwise return the existing cache entry.
      *
      * @param ksmConfig
@@ -100,11 +98,11 @@ public class KsmSecretService implements VaultSecretService {
      *     this configuration.
      *
      * @return
-     *     A KSM cache for the provided KSM config if not already present in the
+     *     A KSM client for the provided KSM config if not already present in the
      *     cache map, otherwise the existing cache entry.
      *
      * @throws GuacamoleException
-     *     If an error occurs while creating the KSM cache.
+     *     If an error occurs while creating the KSM client.
      */
     private KsmClient getClient(@Nonnull String ksmConfig)
             throws GuacamoleException {

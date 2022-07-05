@@ -215,7 +215,7 @@ public class KsmClient {
         cacheLock.writeLock().lock();
         try {
 
-            // Client may have been updated since the read-only check. Re-verify
+            // Cache may have been updated since the read-only check. Re-verify
             // that the cache has expired before continuing with a full refresh
             if (currentTime - cacheTimestamp < CACHE_INTERVAL)
                 return;
@@ -258,7 +258,7 @@ public class KsmClient {
 
             });
 
-            // Client has been refreshed
+            // Cache has been refreshed
             this.cacheTimestamp = System.currentTimeMillis();
 
         }

@@ -24,7 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.apache.guacamole.form.Form;
-import org.apache.guacamole.form.MultilineField;
+import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.vault.conf.VaultAttributeService;
 
 import com.google.inject.Singleton;
@@ -47,7 +47,7 @@ public class KsmAttributeService implements VaultAttributeService {
      * per-connection-group basis.
      */
     public static final Form KSM_CONFIGURATION_FORM = new Form("ksm-config",
-            Arrays.asList(new MultilineField(KSM_CONFIGURATION_ATTRIBUTE)));
+            Arrays.asList(new TextField(KSM_CONFIGURATION_ATTRIBUTE)));
 
     /**
      * All KSM-specific connection group attributes, organized by form.
