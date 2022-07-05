@@ -41,19 +41,12 @@ import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service for retrieving configuration information regarding the SAML
  * authentication module.
  */
 public class ConfigurationService {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
 
     /**
      * The URI of the file containing the XML Metadata associated with the
@@ -400,8 +393,8 @@ public class ConfigurationService {
 
     /**
      * Returns the contents of a small file, such as a private key or certificate into
-     * a String. If the file does not exist, or cannot be read for any reason, a warning
-     * will be logged and null will be returned.
+     * a String. If the file does not exist, or cannot be read for any reason, an exception
+     * will be thrown with the details of the failure.
      *
      * @param file
      *     The file to read into a string.
@@ -410,10 +403,12 @@ public class ConfigurationService {
      *     A human-readable name for the file, to be used when formatting log messages.
      *
      * @return
-     *     The contents of the file having the given path, or null if the file does not
-     *     exist or cannot be read.
+     *     The contents of the file having the given path.
+     *
+     * @throws GuacamoleException
+     *     If the provided file does not exist, or cannot be read for any reason.
      */
-    private String readFileContentsIntoString(File file, String name) {
+    private String readFileContentsIntoString(File file, String name) throws GuacamoleException {
 
         // Attempt to read the file directly into a String
         try {
@@ -422,9 +417,8 @@ public class ConfigurationService {
 
         // If the file cannot be read, log a warning and treat it as if it does not exist
         catch (IOException e) {
-            logger.warn("{} \"{}\" could not be read: {}.", name, file, e.getMessage());
-            logger.debug("{} \"{}\" could not be read.", name, file, e);
-            return null;
+            throw new GuacamoleServerException(
+                    name + " at \"" + file.getAbsolutePath() + "\" could not be read.", e);
         }
 
     }
