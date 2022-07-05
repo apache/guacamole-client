@@ -24,7 +24,12 @@ import com.onelogin.saml2.settings.IdPMetadataParser;
 import com.onelogin.saml2.settings.Saml2Settings;
 import com.onelogin.saml2.settings.SettingsBuilder;
 import com.onelogin.saml2.util.Constants;
+
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.UriBuilder;
@@ -32,6 +37,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.FileGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
@@ -159,6 +165,30 @@ public class ConfigurationService {
         @Override
         public String getName() { return "saml-auth-timeout"; }
                 
+    };
+
+    /**
+     * The file containing the X.509 cert to use when signing or encrypting
+     * requests to the SAML IdP.
+     */
+    private static final FileGuacamoleProperty SAML_X509_CERT_PATH =
+            new FileGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "saml-x509-cert-path"; }
+
+    };
+
+    /**
+     * The file containing the private key to use when signing or encrypting
+     * requests to the SAML IdP.
+     */
+    private static final FileGuacamoleProperty SAML_PRIVATE_KEY_PATH =
+            new FileGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "saml-private-key-path"; }
+
     };
 
     /**
@@ -330,6 +360,70 @@ public class ConfigurationService {
     }
 
     /**
+     * Returns the file containing the X.509 certificate to use when signing
+     * requests to the SAML IdP. If the property is not set, null will be
+     * returned.
+     *
+     * @return
+     *     The file containing the X.509 certificate to use when signing
+     *     requests to the SAML IdP, or null if not defined.
+     *
+     * @throws GuacamoleException
+     *     If the X.509 certificate cannot be parsed.
+     */
+    public File getCertificateFile() throws GuacamoleException {
+        return environment.getProperty(SAML_X509_CERT_PATH);
+    }
+
+    /**
+     * Returns the file containing the private key to use when signing
+     * requests to the SAML IdP. If the property is not set, null will be
+     * returned.
+     *
+     * @return
+     *     The file containing the private key to use when signing
+     *     requests to the SAML IdP, or null if not defined.
+     *
+     * @throws GuacamoleException
+     *     If the private key file cannot be parsed.
+     */
+    public File getPrivateKeyFile() throws GuacamoleException {
+        return environment.getProperty(SAML_PRIVATE_KEY_PATH);
+    }
+
+    /**
+     * Returns the contents of a small file, such as a private key or certificate into
+     * a String. If the file does not exist, or cannot be read for any reason, an exception
+     * will be thrown with the details of the failure.
+     *
+     * @param file
+     *     The file to read into a string.
+     *
+     * @param name
+     *     A human-readable name for the file, to be used when formatting log messages.
+     *
+     * @return
+     *     The contents of the file having the given path.
+     *
+     * @throws GuacamoleException
+     *     If the provided file does not exist, or cannot be read for any reason.
+     */
+    private String readFileContentsIntoString(File file, String name) throws GuacamoleException {
+
+        // Attempt to read the file directly into a String
+        try {
+            return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+        }
+
+        // If the file cannot be read, log a warning and treat it as if it does not exist
+        catch (IOException e) {
+            throw new GuacamoleServerException(
+                    name + " at \"" + file.getAbsolutePath() + "\" could not be read.", e);
+        }
+
+    }
+
+    /**
      * Returns the collection of SAML settings used to initialize the client.
      *
      * @return
@@ -379,6 +473,18 @@ public class ConfigurationService {
             samlMap.put(SettingsBuilder.SP_ASSERTION_CONSUMER_SERVICE_URL_PROPERTY_KEY,
                     UriBuilder.fromUri(getCallbackUrl()).path("api/ext/saml/callback").build().toString());
         }
+
+        // If a private key file is set, load the value into the builder now
+        File privateKeyFile = getPrivateKeyFile();
+        if (privateKeyFile != null)
+            samlMap.put(SettingsBuilder.SP_PRIVATEKEY_PROPERTY_KEY,
+                    readFileContentsIntoString(privateKeyFile, "Private Key"));
+
+        // If a certificate file is set, load the value into the builder now
+        File certificateFile = getCertificateFile();
+        if (certificateFile != null)
+            samlMap.put(SettingsBuilder.SP_X509CERT_PROPERTY_KEY,
+                    readFileContentsIntoString(certificateFile, "X.509 Certificate"));
 
         SettingsBuilder samlBuilder = new SettingsBuilder();
         Saml2Settings samlSettings = samlBuilder.fromValues(samlMap).build();
