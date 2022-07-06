@@ -90,16 +90,16 @@ public class KsmSecretService implements VaultSecretService {
 
     /**
      * Create and return a KSM client for the provided KSM config if not already
-     * present in the cache map, otherwise return the existing cache entry.
+     * present in the client map, otherwise return the existing client entry.
      *
      * @param ksmConfig
-     *     The base-64 encoded JSON KSM config blob associated with the cache entry.
+     *     The base-64 encoded JSON KSM config blob associated with the client entry.
      *     If an associated entry does not already exist, it will be created using
      *     this configuration.
      *
      * @return
      *     A KSM client for the provided KSM config if not already present in the
-     *     cache map, otherwise the existing cache entry.
+     *     client map, otherwise the existing client entry.
      *
      * @throws GuacamoleException
      *     If an error occurs while creating the KSM client.
@@ -107,17 +107,17 @@ public class KsmSecretService implements VaultSecretService {
     private KsmClient getClient(@Nonnull String ksmConfig)
             throws GuacamoleException {
 
-        // If a cache already exists for the provided config, use it
+        // If a client already exists for the provided config, use it
         KsmClient ksmClient = ksmClientMap.get(ksmConfig);
         if (ksmClient != null)
             return ksmClient;
 
-        // Create and store a new KSM cache instance for the provided KSM config blob
+        // Create and store a new KSM client instance for the provided KSM config blob
         SecretsManagerOptions options = confService.getSecretsManagerOptions(ksmConfig);
         ksmClient = ksmClientFactory.create(options);
         KsmClient prevClient = ksmClientMap.putIfAbsent(ksmConfig, ksmClient);
 
-        // If the cache was already set before this thread got there, use the existing one
+        // If the client was already set before this thread got there, use the existing one
         return prevClient != null ? prevClient : ksmClient;
     }
 

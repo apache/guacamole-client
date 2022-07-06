@@ -37,7 +37,6 @@ public interface VaultAttributeService {
      * @return
      *     All custom connection group attributes to be exposed through the
      *     admin UI for the current vault implementation.
-     *
      */
     public Collection<Form> getConnectionGroupAttributes();
 }
