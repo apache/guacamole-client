@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.form.Form;
@@ -425,7 +428,12 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
     @Override
     public Collection<Form> getConnectionGroupAttributes() {
-        return attributeService.getConnectionGroupAttributes();
+
+        // Add any custom attributes to any previously defined attributes
+        return Stream.concat(
+                super.getConnectionGroupAttributes().stream(),
+                attributeService.getConnectionGroupAttributes().stream()
+        ).collect(Collectors.toUnmodifiableList());
     }
 
 }

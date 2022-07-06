@@ -31,10 +31,13 @@ import org.apache.guacamole.form.Form;
 public interface VaultAttributeService {
 
     /**
-     * Return all connection group attributes to be exposed through the admin UI.
+     * Return all custom connection group attributes to be exposed through the
+     * admin UI for the current vault implementation.
      *
      * @return
-     *     All connection group attributes to be exposed through the admin UI.
+     *     All custom connection group attributes to be exposed through the
+     *     admin UI for the current vault implementation.
+     *
      */
     public Collection<Form> getConnectionGroupAttributes();
 }
