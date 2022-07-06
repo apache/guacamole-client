@@ -24,6 +24,7 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -430,10 +431,11 @@ public class VaultUserContext extends TokenInjectingUserContext {
     public Collection<Form> getConnectionGroupAttributes() {
 
         // Add any custom attributes to any previously defined attributes
-        return Stream.concat(
+        return Collections.unmodifiableCollection(Stream.concat(
                 super.getConnectionGroupAttributes().stream(),
                 attributeService.getConnectionGroupAttributes().stream()
-        ).collect(Collectors.toUnmodifiableList());
+        ).collect(Collectors.toList()));
+
     }
 
 }
