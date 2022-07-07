@@ -21,12 +21,17 @@ package org.apache.guacamole.vault.ksm;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.VaultAuthenticationProviderModule;
+import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
 import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.apache.guacamole.vault.ksm.secret.KsmSecretService;
+import org.apache.guacamole.vault.conf.VaultAttributeService;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.ksm.secret.KsmClient;
+import org.apache.guacamole.vault.ksm.secret.KsmClientFactory;
 import org.apache.guacamole.vault.ksm.secret.KsmRecordService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
+
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
  * Guice module which configures injections specific to Keeper Secrets
@@ -49,10 +54,15 @@ public class KsmAuthenticationProviderModule
     protected void configureVault() {
 
         // Bind services specific to Keeper Secrets Manager
-        bind(KsmClient.class);
         bind(KsmRecordService.class);
+        bind(VaultAttributeService.class).to(KsmAttributeService.class);
         bind(VaultConfigurationService.class).to(KsmConfigurationService.class);
         bind(VaultSecretService.class).to(KsmSecretService.class);
+
+        // Bind factory for creating KSM Clients
+        install(new FactoryModuleBuilder()
+                .implement(KsmClient.class, KsmClient.class)
+                .build(KsmClientFactory.class));
     }
 
 }

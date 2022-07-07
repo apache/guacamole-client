@@ -22,6 +22,8 @@ package org.apache.guacamole.vault.secret;
 import java.util.Map;
 import java.util.concurrent.Future;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.Connectable;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
 
@@ -55,7 +57,9 @@ public interface VaultSecretService {
     /**
      * Returns a Future which eventually completes with the value of the secret
      * having the given name. If no such secret exists, the Future will be
-     * completed with null.
+     * completed with null. The secrets retrieved from this method are independent
+     * of the context of the particular connection being established, or any
+     * associated user context.
      *
      * @param name
      *     The name of the secret to retrieve.
@@ -73,12 +77,47 @@ public interface VaultSecretService {
     Future<String> getValue(String name) throws GuacamoleException;
 
     /**
+     * Returns a Future which eventually completes with the value of the secret
+     * having the given name. If no such secret exists, the Future will be
+     * completed with null. The connection or connection group, as well as the
+     * user context associated with the request are provided for additional context.
+     *
+     * @param userContext
+     *     The user context associated with the connection or connection group for
+     *     which the secret is being retrieved.
+     *
+     * @param connectable
+     *     The connection or connection group for which the secret is being retrieved.
+     *
+     * @param name
+     *     The name of the secret to retrieve.
+     *
+     * @return
+     *     A Future which completes with value of the secret having the given
+     *     name. If no such secret exists, the Future will be completed with
+     *     null. If an error occurs asynchronously which prevents retrieval of
+     *     the secret, that error will be exposed through an ExecutionException
+     *     when an attempt is made to retrieve the value from the Future.
+     *
+     * @throws GuacamoleException
+     *     If the secret cannot be retrieved due to an error.
+     */
+    Future<String> getValue(UserContext userContext, Connectable connectable,
+            String name) throws GuacamoleException;
+
+    /**
      * Returns a map of token names to corresponding Futures which eventually
      * complete with the value of that token, where each token is dynamically
      * defined based on connection parameters. If a vault implementation allows
      * for predictable secrets based on the parameters of a connection, this
      * function should be implemented to provide automatic tokens for those
      * secrets and remove the need for manual mapping via YAML.
+     *
+     * @param userContext
+     *     The user context from which the connectable originated.
+     *
+     * @param connectable
+     *     The connection or connection group for which the tokens are being replaced.
      *
      * @param config
      *     The configuration of the Guacamole connection for which tokens are
@@ -99,7 +138,7 @@ public interface VaultSecretService {
      *     If an error occurs producing the tokens and values required for the
      *     given configuration.
      */
-    Map<String, Future<String>> getTokens(GuacamoleConfiguration config,
-            TokenFilter filter) throws GuacamoleException;
+    Map<String, Future<String>> getTokens(UserContext userContext, Connectable connectable,
+            GuacamoleConfiguration config, TokenFilter filter) throws GuacamoleException;
 
 }

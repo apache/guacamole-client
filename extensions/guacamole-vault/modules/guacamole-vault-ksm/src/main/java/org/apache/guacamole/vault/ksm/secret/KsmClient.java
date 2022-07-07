@@ -20,13 +20,16 @@
 package org.apache.guacamole.vault.ksm.secret;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 import com.keepersecurity.secretsManager.core.Hosts;
 import com.keepersecurity.secretsManager.core.KeeperRecord;
 import com.keepersecurity.secretsManager.core.KeeperSecrets;
 import com.keepersecurity.secretsManager.core.Login;
 import com.keepersecurity.secretsManager.core.Notation;
 import com.keepersecurity.secretsManager.core.SecretsManager;
+import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,8 +43,8 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,19 +56,12 @@ import org.slf4j.LoggerFactory;
  * information), it's not possible for the server to perform a search of
  * content on the client's behalf. The client has to perform its own search.
  */
-@Singleton
 public class KsmClient {
 
     /**
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(KsmClient.class);
-
-    /**
-     * Service for retrieving configuration information.
-     */
-    @Inject
-    private KsmConfigurationService confService;
 
     /**
      * Service for retrieving data from records.
@@ -93,6 +89,11 @@ public class KsmClient {
      * before being refreshed, in milliseconds.
      */
     private static final long CACHE_INTERVAL = 5000;
+
+    /**
+     * The KSM configuration associated with this client instance.
+     */
+    private final SecretsManagerOptions ksmConfig;
 
     /**
      * Read/write lock which guards access to all cached data, including the
@@ -179,6 +180,17 @@ public class KsmClient {
     private final Set<String> cachedAmbiguousUsernames = new HashSet<>();
 
     /**
+     * Create a new KSM client based around the provided KSM configuration.
+     *
+     * @param ksmConfig
+     *     The KSM configuration to use when retrieving properties from KSM.
+     */
+    @AssistedInject
+    public KsmClient(@Assisted SecretsManagerOptions ksmConfig) {
+        this.ksmConfig = ksmConfig;
+    }
+
+    /**
      * Validates that all cached data is current with respect to
      * {@link #CACHE_INTERVAL}, refreshing data from the server as needed.
      *
@@ -210,7 +222,7 @@ public class KsmClient {
 
             // Attempt to pull all records first, allowing that operation to
             // succeed/fail BEFORE we clear out the last cached success
-            KeeperSecrets secrets = SecretsManager.getSecrets(confService.getSecretsManagerOptions());
+            KeeperSecrets secrets = SecretsManager.getSecrets(ksmConfig);
             List<KeeperRecord> records = secrets.getRecords();
 
             // Store all secrets within cache

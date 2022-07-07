@@ -1,0 +1,12 @@
+{
+
+    "DATA_SOURCE_KEEPER_SECRETS_MANAGER" : {
+        "NAME" : "Keeper Secrets Manager"
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG" : "Keeper Secrets Manager",
+        "FIELD_HEADER_KSM_CONFIG"   : "KSM Service Configuration "
+    }
+
+}

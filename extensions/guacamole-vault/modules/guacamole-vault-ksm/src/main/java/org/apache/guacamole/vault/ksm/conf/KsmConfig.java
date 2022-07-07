@@ -23,21 +23,28 @@ import com.keepersecurity.secretsManager.core.InMemoryStorage;
 import com.keepersecurity.secretsManager.core.KeyValueStorage;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
- * A GuacamoleProperty whose value is Keeper Secrets Manager {@link KeyValueStorage}
- * object. The value of this property must be base64-encoded JSON, as output by
- * the Keeper Commander CLI tool via the "sm client add" command.
+ * A utility for parsing base64-encoded JSON, as output by the Keeper Commander
+ * CLI tool via the "sm client add" command into a Keeper Secrets Manager
+ * {@link KeyValueStorage} object.
  */
-public abstract class KsmConfigProperty implements GuacamoleProperty<KeyValueStorage> {
+public class KsmConfig {
 
-    @Override
-    public KeyValueStorage parseValue(String value) throws GuacamoleException {
-
-        // If no property provided, return null.
-        if (value == null)
-            return null;
+    /**
+     * Given a base64-encoded JSON KSM configuration, parse and return a
+     * KeyValueStorage object.
+     *
+     * @param value
+     *     The base64-encoded JSON KSM configuration to parse.
+     *
+     * @return
+     *     The KeyValueStorage that is a result of the parsing operation
+     *
+     * @throws GuacamoleException
+     *     If the provided value is not valid base-64 encoded JSON KSM configuration.
+     */
+    public static KeyValueStorage parseKsmConfig(String value) throws GuacamoleException {
 
         // Parse base64 value as KSM config storage
         try {
