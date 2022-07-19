@@ -89,4 +89,14 @@
         </div>
     </div>
 
+    <!-- User attributes section -->
+    <h2 class="header" ng-show="attributes.length">{{'SETTINGS_PREFERENCES.SECTION_HEADER_UPDATE_ATTRIBUTES' | translate}}</h2>
+    <div class="attributes" ng-show="attributes.length">
+        <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
+                   model="user.attributes"></guac-form>
+
+        <!-- User attributes save button -->
+        <button ng-show="attributes.length" ng-click="saveUser()" class="save">{{'SETTINGS_PREFERENCES.ACTION_SAVE' | translate}}</button>
+    </div>
+
 </div>

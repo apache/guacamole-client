@@ -21,7 +21,7 @@
  * A directive for managing preferences local to the current user.
  */
 angular.module('settings').directive('guacSettingsPreferences', [function guacSettingsPreferences() {
-    
+
     return {
         // Element only
         restrict: 'E',
@@ -33,16 +33,18 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
         controller: ['$scope', '$injector', function settingsPreferencesController($scope, $injector) {
 
             // Get required types
-            var PermissionSet = $injector.get('PermissionSet');
+            const Form          = $injector.get('Form');
+            const PermissionSet = $injector.get('PermissionSet');
 
             // Required services
-            var $translate            = $injector.get('$translate');
-            var authenticationService = $injector.get('authenticationService');
-            var guacNotification      = $injector.get('guacNotification');
-            var permissionService     = $injector.get('permissionService');
-            var preferenceService     = $injector.get('preferenceService');
-            var requestService        = $injector.get('requestService');
-            var userService           = $injector.get('userService');
+            const $translate            = $injector.get('$translate');
+            const authenticationService = $injector.get('authenticationService');
+            const guacNotification      = $injector.get('guacNotification');
+            const permissionService     = $injector.get('permissionService');
+            const preferenceService     = $injector.get('preferenceService');
+            const requestService        = $injector.get('requestService');
+            const schemaService         = $injector.get('schemaService');
+            const userService           = $injector.get('userService');
 
             /**
              * An action to be provided along with the object sent to
@@ -55,6 +57,13 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                     guacNotification.showStatus(false);
                 }
             };
+
+            /**
+             * The user being modified.
+             *
+             * @type User
+             */
+            $scope.user = null;
 
             /**
              * The username of the current user.
@@ -77,6 +86,26 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              * @type Object.<String, Object>
              */
             $scope.preferences = preferenceService.preferences;
+
+            /**
+             * All available user attributes, as a mapping of form name to form
+             * object. The form object contains a name, as well as a Map of fields.
+             *
+             * The Map type is used here to maintain form/name uniqueness, as well as
+             * insertion order, to ensure a consistent UI experience.
+             *
+             * @type Map<String, Object>
+             */
+            $scope.attributeMap = new Map();
+
+            /**
+             * All available user attributes. This is only the set of attribute
+             * definitions, organized as logical groupings of attributes, not attribute
+             * values.
+             *
+             * @type Form[]
+             */
+            $scope.attributes = null;
 
             /**
              * The fields which should be displayed for choosing locale
@@ -197,7 +226,82 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
 
             };
 
+
+            /**
+             * Saves the current user, displaying an acknowledgement message if
+             * saving was successful, or an error if the save failed.
+             */
+            $scope.saveUser = function saveUser() {
+                return userService.saveUser(dataSource, $scope.user)
+                    .then(() =>  guacNotification.showStatus({
+                        text    : {
+                            key : 'SETTINGS_PREFERENCES.INFO_PREFERENCE_ATTRIBUTES_CHANGED'
+                        },
+                        actions : [ ACKNOWLEDGE_ACTION ]
+                    }),
+                    guacNotification.SHOW_REQUEST_ERROR);
+            };
+
+            // Fetch the user record
+            userService.getUser(dataSource, username).then(function saveUserData(user) {
+                $scope.user = user;
+            })
+
+            // Get all datasources that are available for this user
+            authenticationService.getAvailableDataSources().forEach(function loadAttributesForDataSource(dataSource) {
+
+                // Fetch all user attribute forms defined for the datasource
+                schemaService.getUserPreferenceAttributes(dataSource).then(function saveAttributes(attributes) {
+
+                    // Iterate through all attribute forms
+                    attributes.forEach(function addAttribute(attributeForm) {
+
+                        // If the form with the retrieved name already exists
+                        if ($scope.attributeMap.has(attributeForm.name)) {
+                            const existingFields = $scope.attributeMap.get(attributeForm.name).fields;
+
+                            // Add each field to the existing list for this form
+                            attributeForm.fields.forEach(function addAllFieldsToExistingMap(field) {
+                                existingFields.set(field.name, field);
+                            })
+                        }
+
+                        else {
+
+                            // Create a new entry for the form
+                            $scope.attributeMap.set(attributeForm.name, {
+                                name: attributeForm.name,
+
+                                // With the field array from the API converted into a Map
+                                fields: attributeForm.fields.reduce(
+                                    function addFieldToMap(currentFieldMap, field) {
+                                        currentFieldMap.set(field.name, field);
+                                        return currentFieldMap;
+                                    }, new Map()
+                                )
+
+                            })
+                        }
+
+                    });
+
+                    // Re-generate the attributes array every time
+                    $scope.attributes = Array.of(...$scope.attributeMap.values()).map(function convertFieldsToArray(formObject) {
+
+                        // Convert each temporary form object to a Form type
+                        return new Form({
+                            name: formObject.name,
+
+                            // Convert the field map to a simple array of fields
+                            fields: Array.of(...formObject.fields.values())
+                        })
+                    });
+
+                });
+
+            });
+
         }]
     };
-    
+
 }]);

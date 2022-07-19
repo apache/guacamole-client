@@ -128,6 +128,11 @@ public class DelegatingUserContext implements UserContext {
     }
 
     @Override
+    public Collection<Form> getUserPreferenceAttributes() {
+        return userContext.getUserPreferenceAttributes();
+    }
+
+    @Override
     public Collection<Form> getUserGroupAttributes() {
         return userContext.getUserGroupAttributes();
     }

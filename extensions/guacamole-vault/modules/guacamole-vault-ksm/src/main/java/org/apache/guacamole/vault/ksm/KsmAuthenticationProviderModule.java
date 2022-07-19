@@ -57,6 +57,7 @@ public class KsmAuthenticationProviderModule
 
         // Bind services specific to Keeper Secrets Manager
         bind(KsmRecordService.class);
+        bind(KsmAttributeService.class);
         bind(VaultAttributeService.class).to(KsmAttributeService.class);
         bind(VaultConfigurationService.class).to(KsmConfigurationService.class);
         bind(VaultSecretService.class).to(KsmSecretService.class);

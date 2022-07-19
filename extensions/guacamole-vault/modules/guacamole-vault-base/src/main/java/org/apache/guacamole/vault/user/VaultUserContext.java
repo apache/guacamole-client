@@ -241,7 +241,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *
      * @throws GuacamoleException
      *     If the value for any applicable secret cannot be retrieved from the
-     *     vault due to an error.
+     *     vault due to an error.1
      */
     private Map<String, Future<String>> getTokens(
             Connectable connectable, Map<String, String> tokenMapping,
@@ -407,7 +407,6 @@ public class VaultUserContext extends TokenInjectingUserContext {
         TokenFilter filter = createFilter();
         filter.setToken(CONNECTION_NAME_TOKEN, connection.getName());
         filter.setToken(CONNECTION_IDENTIFIER_TOKEN, identifier);
-
         // Add hostname and username tokens if available (implementations are
         // not required to expose connection configuration details)
 
@@ -436,17 +435,6 @@ public class VaultUserContext extends TokenInjectingUserContext {
         // those secrets as parameter tokens
         tokens.putAll(resolve(getTokens(connection, confService.getTokenMapping(),
                 filter, config, new TokenFilter(tokens))));
-
-    }
-
-    @Override
-    public Collection<Form> getConnectionGroupAttributes() {
-
-        // Add any custom attributes to any previously defined attributes
-        return Collections.unmodifiableCollection(Stream.concat(
-                super.getConnectionGroupAttributes().stream(),
-                attributeService.getConnectionGroupAttributes().stream()
-        ).collect(Collectors.toList()));
 
     }
 
@@ -490,6 +478,51 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Defer to the vault-specific directory service
         return directoryService.getSharingProfileDirectory(super.getSharingProfileDirectory());
+
+    }
+
+    @Override
+    public Collection<Form> getUserAttributes() {
+
+        // Add any custom attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getUserAttributes().stream(),
+                attributeService.getUserAttributes().stream()
+        ).collect(Collectors.toList()));
+
+    }
+
+    @Override
+    public Collection<Form> getUserPreferenceAttributes() {
+
+        // Add any custom preference attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getUserPreferenceAttributes().stream(),
+                attributeService.getUserPreferenceAttributes().stream()
+        ).collect(Collectors.toList()));
+
+    }
+
+    @Override
+    public Collection<Form> getConnectionAttributes() {
+
+        // Add any custom attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getConnectionAttributes().stream(),
+                attributeService.getConnectionAttributes().stream()
+        ).collect(Collectors.toList()));
+
+    }
+
+    @Override
+    public Collection<Form> getConnectionGroupAttributes() {
+
+        // Add any custom attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getConnectionGroupAttributes().stream(),
+                attributeService.getConnectionGroupAttributes().stream()
+        ).collect(Collectors.toList()));
+
     }
 
 }

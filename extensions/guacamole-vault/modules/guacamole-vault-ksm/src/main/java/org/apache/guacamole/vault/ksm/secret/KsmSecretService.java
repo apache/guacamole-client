@@ -26,8 +26,11 @@ import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -304,6 +307,34 @@ public class KsmSecretService implements VaultSecretService {
 
     }
 
+    /**
+     * Returns true if user-level KSM configuration is enabled for the given
+     * Connectable, false otherwise.
+     *
+     * @param connectable
+     *     The connectable to check for whether user-level KSM configs are
+     *     enabled.
+     *
+     * @return
+     *     True if user-level KSM configuration is enabled for the given
+     *     Connectable, false otherwise.
+     */
+    private boolean isKsmUserConfigEnabled(Connectable connectable) {
+
+        // If it's a connection, user-level config is enabled IFF the appropriate
+        // attribute is set to true
+        if (connectable instanceof Connection)
+            return KsmAttributeService.TRUTH_VALUE.equals(((Connection) connectable).getAttributes().get(
+                KsmAttributeService.KSM_USER_CONFIG_ENABLED_ATTRIBUTE));
+
+        // KSM token replacement is not enabled for balancing groups, so for
+        // now, user-level KSM configs will be explicitly disabled.
+        // TODO: If token replacement is implemented for balancing groups,
+        // implement this functionality for them as well.
+        return false;
+
+    }
+
     @Override
     public Map<String, Future<String>> getTokens(UserContext userContext, Connectable connectable,
             GuacamoleConfiguration config, TokenFilter filter) throws GuacamoleException {
@@ -314,78 +345,92 @@ public class KsmSecretService implements VaultSecretService {
         // Attempt to find a KSM config for this connection or group
         String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
 
-        // Get a client instance for this KSM config
-        KsmClient ksm = getClient(ksmConfig);
+        // Create a list containing just the global / connection group config
+        List<KsmClient> ksmClients = new ArrayList<>(2);
+        ksmClients.add(getClient(ksmConfig));
 
-        // Retrieve and define server-specific tokens, if any
-        String hostname = parameters.get("hostname");
-        if (hostname != null && !hostname.isEmpty())
-            addRecordTokens(tokens, "KEEPER_SERVER_",
-                    ksm.getRecordByHost(filter.filter(hostname)));
+        // Only use the user-specific KSM config if explicitly enabled in the global
+        // configuration, AND for the specific connectable being connected to
+        if (confService.getAllowUserConfig() && isKsmUserConfigEnabled(connectable)) {
 
-        // Tokens specific to RDP
-        if ("rdp".equals(config.getProtocol())) {
+            // Find a user-specific KSM config, if one exists
+            String userKsmConfig = userContext.self().getAttributes().get(
+                    KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
 
-            // Retrieve and define gateway server-specific tokens, if any
-            String gatewayHostname = parameters.get("gateway-hostname");
-            if (gatewayHostname != null && !gatewayHostname.isEmpty())
-                addRecordTokens(tokens, "KEEPER_GATEWAY_",
-                        ksm.getRecordByHost(filter.filter(gatewayHostname)));
-
-            // Retrieve and define domain tokens, if any
-            String domain = parameters.get("domain");
-            String filteredDomain = null;
-            if (domain != null && !domain.isEmpty()) {
-                filteredDomain = filter.filter(domain);
-                addRecordTokens(tokens, "KEEPER_DOMAIN_",
-                        ksm.getRecordByDomain(filteredDomain));
-            }
-
-            // Retrieve and define gateway domain tokens, if any
-            String gatewayDomain = parameters.get("gateway-domain");
-            String filteredGatewayDomain = null;
-            if (gatewayDomain != null && !gatewayDomain.isEmpty()) {
-                filteredGatewayDomain = filter.filter(gatewayDomain);
-                addRecordTokens(tokens, "KEEPER_GATEWAY_DOMAIN_",
-                        ksm.getRecordByDomain(filteredGatewayDomain));
-            }
-
-            // If domain matching is disabled for user records,
-            // explicitly set the domains to null when storing
-            // user records to enable username-only matching
-            if (!confService.getMatchUserRecordsByDomain()) {
-                filteredDomain = null;
-                filteredGatewayDomain = null;
-            }
-
-            // Retrieve and define user-specific tokens, if any
-            String username = parameters.get("username");
-            if (username != null && !username.isEmpty())
-                addRecordTokens(tokens, "KEEPER_USER_",
-                        ksm.getRecordByLogin(filter.filter(username),
-                        filteredDomain));
-
-            // Retrieve and define gateway user-specific tokens, if any
-            String gatewayUsername = parameters.get("gateway-username");
-            if (gatewayUsername != null && !gatewayUsername.isEmpty())
-                addRecordTokens(tokens, "KEEPER_GATEWAY_USER_",
-                        ksm.getRecordByLogin(
-                            filter.filter(gatewayUsername),
-                            filteredGatewayDomain));
-
+            // If a user-specific config exsts, process it first
+            if (userKsmConfig != null && !userKsmConfig.trim().isEmpty())
+                ksmClients.add(0, getClient(userKsmConfig));
         }
 
-        else {
+        // Iterate through the KSM clients, processing using the user-specific
+        // config first (if it exists), to ensure that any admin-defined values
+        // will override the user-speicifc values
+        Iterator<KsmClient> ksmIterator = ksmClients.iterator();
+        while (ksmIterator.hasNext()) {
 
-            // Retrieve and define user-specific tokens, if any
-            // NOTE that non-RDP connections do not have a domain
-            // field in the connection parameters, so the domain
-            // will always be null
-            String username = parameters.get("username");
-            if (username != null && !username.isEmpty())
-                addRecordTokens(tokens, "KEEPER_USER_",
-                        ksm.getRecordByLogin(filter.filter(username), null));
-        }
+            KsmClient ksm = ksmIterator.next();
+
+            // Retrieve and define server-specific tokens, if any
+            String hostname = parameters.get("hostname");
+            if (hostname != null && !hostname.isEmpty())
+                addRecordTokens(tokens, "KEEPER_SERVER_",
+                        ksm.getRecordByHost(filter.filter(hostname)));
+
+            // Tokens specific to RDP
+            if ("rdp".equals(config.getProtocol())) {
+                // Retrieve and define domain tokens, if any
+                String domain = parameters.get("domain");
+                String filteredDomain = null;
+                if (domain != null && !domain.isEmpty()) {
+                    filteredDomain = filter.filter(domain);
+                    addRecordTokens(tokens, "KEEPER_DOMAIN_",
+                            ksm.getRecordByDomain(filteredDomain));
+                }
+
+                // Retrieve and define gateway domain tokens, if any
+                String gatewayDomain = parameters.get("gateway-domain");
+                String filteredGatewayDomain = null;
+                if (gatewayDomain != null && !gatewayDomain.isEmpty()) {
+                    filteredGatewayDomain = filter.filter(gatewayDomain);
+                    addRecordTokens(tokens, "KEEPER_GATEWAY_DOMAIN_",
+                            ksm.getRecordByDomain(filteredGatewayDomain));
+                }
+
+                // If domain matching is disabled for user records,
+                // explicitly set the domains to null when storing
+                // user records to enable username-only matching
+                if (!confService.getMatchUserRecordsByDomain()) {
+                    filteredDomain = null;
+                    filteredGatewayDomain = null;
+                }
+
+                // Retrieve and define user-specific tokens, if any
+                String username = parameters.get("username");
+                if (username != null && !username.isEmpty())
+                    addRecordTokens(tokens, "KEEPER_USER_",
+                            ksm.getRecordByLogin(filter.filter(username),
+                            filteredDomain));
+
+                // Retrieve and define gateway user-specific tokens, if any
+                String gatewayUsername = parameters.get("gateway-username");
+                if (gatewayUsername != null && !gatewayUsername.isEmpty())
+                    addRecordTokens(tokens, "KEEPER_GATEWAY_USER_",
+                            ksm.getRecordByLogin(
+                                filter.filter(gatewayUsername),
+                                filteredGatewayDomain));
+            }
+
+            else {
+
+                // Retrieve and define user-specific tokens, if any
+                // NOTE that non-RDP connections do not have a domain
+                // field in the connection parameters, so the domain
+                // will always be null
+                String username = parameters.get("username");
+                if (username != null && !username.isEmpty())
+                    addRecordTokens(tokens, "KEEPER_USER_",
+                            ksm.getRecordByLogin(filter.filter(username), null));
+            }
 
         return tokens;
 

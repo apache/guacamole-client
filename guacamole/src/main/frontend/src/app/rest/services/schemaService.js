@@ -59,6 +59,34 @@ angular.module('rest').factory('schemaService', ['$injector',
     };
 
     /**
+     * Makes a request to the REST API to get the list of available user preference
+     * attributes, returning a promise that provides an array of @link{Form} objects
+     * if successful. Each element of the array describes a logical grouping of
+     * possible user preference attributes.
+     *
+     * @param {String} dataSource
+     *     The unique identifier of the data source containing the users whose
+     *     available user preference attributes are to be retrieved. This
+     *     identifier corresponds to an AuthenticationProvider within the
+     *     Guacamole web application.
+     *
+     * @returns {Promise.<Form[]>}
+     *     A promise which will resolve with an array of @link{Form}
+     *     objects, where each @link{Form} describes a logical grouping of
+     *     possible attributes.
+     */
+    service.getUserPreferenceAttributes = function getUserPreferenceAttributes(dataSource) {
+
+        // Retrieve available user attributes
+        return authenticationService.request({
+            cache   : cacheService.schema,
+            method  : 'GET',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userPreferenceAttributes'
+        });
+
+    };
+
+    /**
      * Makes a request to the REST API to get the list of available attributes
      * for user group objects, returning a promise that provides an array of
      * @link{Form} objects if successful. Each element of the array describes
