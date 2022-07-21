@@ -276,9 +276,10 @@ public class KsmSecretService implements VaultSecretService {
             if (group == null)
                 break;
 
-            // If the current connection group has the KSM configuration attribute, return immediately
+            // If the current connection group has the KSM configuration attribute
+            // set to a non-empty value, return immediately
             String ksmConfig = group.getAttributes().get(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
-            if (ksmConfig != null)
+            if (ksmConfig != null && !ksmConfig.trim().isEmpty())
                 return ksmConfig;
 
             // Otherwise, keep searching up the tree until an appropriate configuration is found
@@ -287,6 +288,7 @@ public class KsmSecretService implements VaultSecretService {
 
         // If no KSM configuration was ever found, use the default value
         return confService.getKsmConfig();
+
     }
 
     @Override
