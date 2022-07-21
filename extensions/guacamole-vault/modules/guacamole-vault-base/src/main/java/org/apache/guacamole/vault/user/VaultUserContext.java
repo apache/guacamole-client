@@ -35,11 +35,16 @@ import java.util.stream.Stream;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.form.Form;
+import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.Connectable;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
+import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.TokenInjectingUserContext;
+import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.GuacamoleTokenUndefinedException;
 import org.apache.guacamole.token.TokenFilter;
@@ -136,6 +141,13 @@ public class VaultUserContext extends TokenInjectingUserContext {
      */
     @Inject
     private VaultAttributeService attributeService;
+
+    /**
+     * Service for modifying any underlying directories for the current
+     * vault implementation.
+     */
+    @Inject
+    private VaultDirectoryService directoryService;
 
     /**
      * Creates a new VaultUserContext which automatically injects tokens
@@ -436,6 +448,48 @@ public class VaultUserContext extends TokenInjectingUserContext {
                 attributeService.getConnectionGroupAttributes().stream()
         ).collect(Collectors.toList()));
 
+    }
+
+    @Override
+    public Directory<User> getUserDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getUserDirectory(super.getUserDirectory());
+    }
+
+    @Override
+    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getUserGroupDirectory(super.getUserGroupDirectory());
+    }
+
+    @Override
+    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getConnectionDirectory(super.getConnectionDirectory());
+    }
+
+    @Override
+    public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getConnectionGroupDirectory(super.getConnectionGroupDirectory());
+    }
+
+    @Override
+    public Directory<ActiveConnection> getActiveConnectionDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getActiveConnectionDirectory(super.getActiveConnectionDirectory());
+    }
+
+    @Override
+    public Directory<SharingProfile> getSharingProfileDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getSharingProfileDirectory(super.getSharingProfileDirectory());
     }
 
 }
