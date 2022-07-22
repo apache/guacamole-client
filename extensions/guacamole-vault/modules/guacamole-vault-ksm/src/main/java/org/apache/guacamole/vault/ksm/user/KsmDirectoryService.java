@@ -31,7 +31,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.net.auth.Attributes;
 import org.apache.guacamole.net.auth.ConnectionGroup;
-import org.apache.guacamole.net.auth.DelegatingDirectory;
+import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
 import org.apache.guacamole.vault.ksm.conf.KsmConfig;
@@ -227,8 +227,10 @@ public class KsmDirectoryService extends VaultDirectoryService {
             Directory<ConnectionGroup> underlyingDirectory) throws GuacamoleException {
 
         // A ConnectionGroup directory that will intercept add and update calls to
-        // validate KSM configurations, and translate one-time-tokens, if possible
-        return new DelegatingDirectory<ConnectionGroup>(underlyingDirectory) {
+        // validate KSM configurations, and translate one-time-tokens, if possible,
+        // as well as ensuring that all ConnectionGroups returned include the
+        // KSM_CONFIGURATION_ATTRIBUTE attribute, so it will be available in the UI.
+        return new DecoratingDirectory<ConnectionGroup>(underlyingDirectory) {
 
             @Override
             public void add(ConnectionGroup connectionGroup) throws GuacamoleException {
@@ -246,6 +248,23 @@ public class KsmDirectoryService extends VaultDirectoryService {
                 // if possible before updating
                 processAttributes(connectionGroup);
                 super.update(connectionGroup);
+            }
+
+            @Override
+            protected ConnectionGroup decorate(ConnectionGroup connectionGroup) throws GuacamoleException {
+
+                // Wrap the existing connection group in a KsmConnection to ensure the presence of the
+                // KSM_CONFIGURATION_ATTRIBUTE attribute
+                return new KsmConnectionGroup(connectionGroup);
+
+            }
+
+            @Override
+            protected ConnectionGroup undecorate(ConnectionGroup connectionGroup) throws GuacamoleException {
+
+                // Return the underlying connection group that the KsmConnectionGroup wraps
+                return ((KsmConnectionGroup) connectionGroup).getUnderlyConnectionGroup();
+
             }
 
         };
