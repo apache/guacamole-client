@@ -1856,7 +1856,7 @@ Guacamole.Client.Message = {
     
     /**
      * A client message that indicates that a user has joined an existing
-     * connection. This message xpects a single additional argument - the
+     * connection. This message expects a single additional argument - the
      * username of the user who has joined the connection.
      * 
      * @type {!number}
