@@ -94,8 +94,7 @@ public class InputStreamInterceptingFilter
     /**
      * Reads the next chunk of data from the InputStream associated with an
      * intercepted stream, sending that data as a "blob" instruction over the
-     * GuacamoleTunnel associated with this filter. If the end of the
-     * InputStream is reached, an "end" instruction will automatically be sent.
+     * GuacamoleTunnel associated with this filter.
      *
      * @param stream
      *     The stream from which the next chunk of data should be read.
@@ -112,9 +111,8 @@ public class InputStreamInterceptingFilter
             // End stream if no more data
             if (length == -1) {
 
-                // Close stream, send end if the stream is still valid
-                if (closeInterceptedStream(stream))
-                    sendEnd(stream.getIndex());
+                // Close stream
+                closeInterceptedStream(stream);
 
                 return;
 
