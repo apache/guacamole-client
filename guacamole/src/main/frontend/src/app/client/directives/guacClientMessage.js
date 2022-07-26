@@ -62,7 +62,7 @@ angular.module('client').directive('guacClientMessage', [function guacClientMess
             /**
              * Returns a set of key/value object pairs that represent the
              * arguments provided as part of the message in the form
-             * ARGS[0] = value. Guacamole's translation system relies on
+             * "ARGS_0 = value". Guacamole's translation system relies on
              * the arguments being available in this format in order to be able
              * to handle substituting values for an arbitrary list of arguments.
              * 
@@ -71,7 +71,7 @@ angular.module('client').directive('guacClientMessage', [function guacClientMess
             $scope.getMessageArgs = function getMessageArgs() {
                 return $scope.message.args.reduce(
                     function(acc, value, index) {
-                        acc[`ARGS[${index}]`] = value;
+                        acc[`ARGS_${index}`] = value;
                         return acc;
                     },
                     {}

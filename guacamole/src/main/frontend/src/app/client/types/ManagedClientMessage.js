@@ -39,12 +39,16 @@ angular.module('client').factory('ManagedClientMessage', [function defineManaged
         /**
          * The message code sent by the server that will be used to locate the
          * message within the Guacamole translation framework.
+         * 
+         * @type Number
          */
         this.msgcode = template.msgcode;
         
         /**
          * Any arguments that should be passed through the translation system
          * and displayed as part of the message.
+         * 
+         * @type String[]
          */
         this.args = template.args;
         
