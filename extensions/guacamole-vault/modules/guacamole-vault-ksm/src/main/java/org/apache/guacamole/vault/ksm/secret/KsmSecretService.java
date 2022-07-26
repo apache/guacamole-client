@@ -27,7 +27,9 @@ import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -268,6 +270,12 @@ public class KsmSecretService implements VaultSecretService {
                 ? ((Connection) connectable).getParentIdentifier()
                 : ((ConnectionGroup) connectable).getIdentifier();
 
+        // Keep track of all group identifiers seen while recursing up the tree
+        // in case there's a cycle - if the same identifier is ever seen twice,
+        // the search is over.
+        Set<String> observedIdentifiers = new HashSet<>();
+        observedIdentifiers.add(parentIdentifier);
+
         Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
         while (true) {
 
@@ -284,6 +292,11 @@ public class KsmSecretService implements VaultSecretService {
 
             // Otherwise, keep searching up the tree until an appropriate configuration is found
             parentIdentifier = group.getParentIdentifier();
+
+            // If the parent is a group that's already been seen, this is a cycle, so there's no
+            // need to search any further
+            if (!observedIdentifiers.add(parentIdentifier))
+                break;
         }
 
         // If no KSM configuration was ever found, use the default value
