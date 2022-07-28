@@ -393,7 +393,11 @@ angular.module('rest').factory('tunnelService', ['$injector',
         };
 
         /**
-         * Handler for the upload process. 
+         * Handles the recursive upload process. Each time it is called, a 
+         * chunk is made with createChunk(), starting at the offset parameter.
+         * The chunk is then sent by uploadChunk(), which recursively calls 
+         * this handler until the upload process is either completed and the 
+         * promise is resolved, or fails and the promise is rejected.
          * 
          * @param {Number} offset
          *      The byte at which to begin the chunk.
