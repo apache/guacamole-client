@@ -910,6 +910,58 @@ associate_json() {
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/json/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 }
+##
+## Sets up Tomcat's remote IP valve that allows gathering the remote IP
+## from headers set by a remote proxy
+## Upstream documentation: https://tomcat.apache.org/tomcat-8.5-doc/api/org/apache/catalina/valves/RemoteIpValve.html
+##
+enable_remote_ip_valve() {
+    # Add <Valve> element
+    xmlstarlet edit --inplace \
+        --insert '/Server/Service/Engine/Host/*' --type elem -n Valve \
+        --insert '/Server/Service/Engine/Host/Valve[not(@className)]' --type attr -n className -v org.apache.catalina.valves.RemoteIpValve \
+        $CATALINA_BASE/conf/server.xml
+
+    # Allowed IPs
+    if [ -z "$PROXY_ALLOWED_IPS_REGEX" ]; then
+        echo "Using default Tomcat allowed IPs regex"
+    else
+        xmlstarlet edit --inplace \
+            --insert '/Server/Service/Engine/Host/Valve[@className="org.apache.catalina.valves.RemoteIpValve"]' \
+            --type attr -n internalProxies -v "$PROXY_ALLOWED_IPS_REGEX" \
+            $CATALINA_BASE/conf/server.xml
+    fi
+
+    # X-Forwarded-For
+    if [ -z "$PROXY_IP_HEADER" ]; then
+        echo "Using default Tomcat proxy IP header"
+    else
+        xmlstarlet edit --inplace \
+            --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
+            --type attr -n remoteIpHeader -v "$PROXY_IP_HEADER" \
+            $CATALINA_BASE/conf/server.xml
+    fi
+
+    # X-Forwarded-Proto
+    if [ -z "$PROXY_PROTOCOL_HEADER" ]; then
+        echo "Using default Tomcat proxy protocol header"
+    else
+        xmlstarlet edit --inplace \
+            --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
+            --type attr -n protocolHeader -v "$PROXY_PROTOCOL_HEADER" \
+            $CATALINA_BASE/conf/server.xml
+    fi
+
+    # X-Forwarded-By
+    if [ -z "$PROXY_BY_HEADER" ]; then
+        echo "Using default Tomcat proxy forwarded by header"
+    else
+        xmlstarlet edit --inplace \
+            --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
+            --type attr -n remoteIpProxiesHeader -v "$PROXY_BY_HEADER" \
+            $CATALINA_BASE/conf/server.xml
+    fi
+}
 
 ##
 ## Adds api-session-timeout to guacamole.properties
@@ -931,6 +983,11 @@ start_guacamole() {
         mkdir -p $CATALINA_BASE/$dir
     done
     cp -R /usr/local/tomcat/conf $CATALINA_BASE
+
+    # Set up Tomcat RemoteIPValve
+    if [ "$REMOTE_IP_VALVE_ENABLED" = "true" ]; then
+        enable_remote_ip_valve
+    fi
 
     # Install webapp
     ln -sf /opt/guacamole/guacamole.war $CATALINA_BASE/webapps/${WEBAPP_CONTEXT:-guacamole}.war
