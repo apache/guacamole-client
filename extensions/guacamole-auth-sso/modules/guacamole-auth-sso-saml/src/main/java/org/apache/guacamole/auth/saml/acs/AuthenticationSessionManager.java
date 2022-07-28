@@ -126,6 +126,8 @@ public class AuthenticationSessionManager {
      * call to resume(). If authentication is never resumed, the session will
      * automatically be cleaned up after it ceases to be valid.
      *
+     * This method will automatically generate a new identifier.
+     *
      * @param session
      *     The {@link AuthenticationSession} representing the in-progress SAML
      *     authentication attempt.
@@ -138,6 +140,27 @@ public class AuthenticationSessionManager {
         String identifier = idGenerator.generateIdentifier();
         sessions.put(identifier, session);
         return identifier;
+    }
+
+    /**
+     * Defers the Guacamole side of authentication for the user having the
+     * given authentication session such that it may be later resumed through a
+     * call to resume(). If authentication is never resumed, the session will
+     * automatically be cleaned up after it ceases to be valid.
+     *
+     * This method accepts an externally generated ID, which should be a UUID
+     * or similar unique identifier.
+     *
+     * @param session
+     *     The {@link AuthenticationSession} representing the in-progress SAML
+     *     authentication attempt.
+     *
+     * @param identifier
+     *     A unique and unpredictable string that may be used to represent the
+     *     given session when calling resume().
+     */
+    public void defer(AuthenticationSession session, String identifier) {
+        sessions.put(identifier, session);
     }
 
     /**

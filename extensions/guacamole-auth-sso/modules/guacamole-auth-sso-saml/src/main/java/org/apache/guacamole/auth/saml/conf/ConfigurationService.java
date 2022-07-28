@@ -492,7 +492,15 @@ public class ConfigurationService {
         samlSettings.setDebug(getDebug());
         samlSettings.setCompressRequest(getCompressRequest());
         samlSettings.setCompressResponse(getCompressResponse());
-    
+
+        // Request that the SAML library sign everything that it can, if
+        // both private key and certificate are specified
+        if (privateKeyFile != null && certificateFile != null) {
+            samlSettings.setAuthnRequestsSigned(true);
+            samlSettings.setLogoutRequestSigned(true);
+            samlSettings.setLogoutResponseSigned(true);
+        }
+
         return samlSettings;
     }
 
