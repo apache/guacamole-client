@@ -163,17 +163,19 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
 
                 // Upload complete
                 managedFileUpload.progress = file.size;
+
+                // Close the stream
+                stream.sendEnd();
                 ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
                     ManagedFileTransferState.StreamState.CLOSED);
 
                 // Notify of upload completion
                 $rootScope.$broadcast('guacUploadComplete', file.name);
-
             },
 
             // Notify if upload fails
             requestService.createErrorCallback(function uploadFailed(error) {
-
+                
                 // Use provide status code if the error is coming from the stream
                 if (error.type === Error.Type.STREAM_ERROR)
                     ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
@@ -185,11 +187,15 @@ angular.module('client').factory('ManagedFileUpload', ['$rootScope', '$injector'
                     ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
                         ManagedFileTransferState.StreamState.ERROR,
                         Guacamole.Status.Code.INTERNAL_ERROR);
+                
+                // Close the stream
+                stream.sendEnd();
 
             }));
 
             // Ignore all further acks
             stream.onack = null;
+    
 
         };
 

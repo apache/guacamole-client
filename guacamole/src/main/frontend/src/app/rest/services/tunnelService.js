@@ -55,6 +55,15 @@ angular.module('rest').factory('tunnelService', ['$injector',
     var DOWNLOAD_CLEANUP_WAIT = 5000;
 
     /**
+     * The maximum size a chunk may be during uploadToStream() in bytes.
+     * 
+     * @private
+     * @constant
+     * @type Number
+     */
+    const CHUNK_SIZE = 1024 * 1024 * 4;
+
+    /**
      * Makes a request to the REST API to get the list of all tunnels
      * associated with in-progress connections, returning a promise that
      * provides an array of their UUIDs (strings) if successful.
@@ -301,51 +310,103 @@ angular.module('rest').factory('tunnelService', ['$injector',
                 + '/' + encodeURIComponent(sanitizeFilename(file.name))
                 + '?token=' + encodeURIComponent(authenticationService.getCurrentToken());
 
-        var xhr = new XMLHttpRequest();
+        /**
+         * Creates a chunk of the inputted file to be uploaded.
+         * 
+         * @param {Number} offset
+         *      The byte at which to begin the chunk. 
+         * 
+         * @return {File}
+         *      The file chunk created by this function.
+         */
+        const createChunk = (offset) => {
+            var chunkEnd = Math.min(offset + CHUNK_SIZE, file.size);
+            const chunk = file.slice(offset, chunkEnd);
+            return chunk;
+        };
 
-        // Invoke provided callback if upload tracking is supported
-        if (progressCallback && xhr.upload) {
-            xhr.upload.addEventListener('progress', function updateProgress(e) {
-                progressCallback(e.loaded);
-            });
-        }
+        /**
+         * POSTs the inputted chunks and recursively calls uploadHandler()
+         * until the upload is complete.
+         * 
+         * @param {File} chunk
+         *      The chunk to be uploaded to the stream.
+         * 
+         * @param {Number} offset
+         *      The byte at which the inputted chunk begins.
+         */ 
+        const uploadChunk = (chunk, offset) => {
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', url, true);
 
-        // Resolve/reject promise once upload has stopped
-        xhr.onreadystatechange = function uploadStatusChanged() {
+            // Invoke provided callback if upload tracking is supported.
+            if (progressCallback && xhr.upload) {
+                xhr.upload.addEventListener('progress', function updateProgress(e) {
+                    progressCallback(e.loaded + offset);
+                });
+            };
 
-            // Ignore state changes prior to completion
-            if (xhr.readyState !== 4)
-                return;
+            // Continue to next chunk, resolve, or reject promise as appropriate
+            // once upload has stopped
+            xhr.onreadystatechange = function uploadStatusChanged() {
 
-            // Resolve if HTTP status code indicates success
-            if (xhr.status >= 200 && xhr.status < 300)
-                deferred.resolve();
+                // Ignore state changes prior to completion.
+                if (xhr.readyState !== 4)
+                    return;
 
-            // Parse and reject with resulting JSON error
-            else if (xhr.getResponseHeader('Content-Type') === 'application/json')
-                deferred.reject(new Error(angular.fromJson(xhr.responseText)));
+                // Resolve if last chunk or begin next chunk if HTTP status
+                // code indicates success.
+                if (xhr.status >= 200 && xhr.status < 300) {
+                    offset += CHUNK_SIZE;
 
-            // Warn of lack of permission of a proxy rejects the upload
-            else if (xhr.status >= 400 && xhr.status < 500)
-                deferred.reject(new Error({
-                    'type'       : Error.Type.STREAM_ERROR,
-                    'statusCode' : Guacamole.Status.Code.CLIENT_FORBIDDEN,
-                    'message'    : 'HTTP ' + xhr.status
-                }));
+                    if (offset < file.size)
+                        uploadHandler(offset);
+                    else
+                        deferred.resolve();
+                }
 
-            // Assume internal error for all other cases
-            else
-                deferred.reject(new Error({
-                    'type'       : Error.Type.STREAM_ERROR,
-                    'statusCode' : Guacamole.Status.Code.INTERNAL_ERROR,
-                    'message'    : 'HTTP ' + xhr.status
-                }));
+                // Parse and reject with resulting JSON error
+                else if (xhr.getResponseHeader('Content-Type') === 'application/json')
+                    deferred.reject(new Error(angular.fromJson(xhr.responseText)));
+
+                // Warn of lack of permission of a proxy rejects the upload
+                else if (xhr.status >= 400 && xhr.status < 500)
+                    deferred.reject(new Error({
+                        'type': Error.Type.STREAM_ERROR,
+                        'statusCode': Guacamole.Status.Code.CLIENT_FORBIDDEN,
+                        'message': 'HTTP ' + xhr.status
+                    }));
+
+                // Assume internal error for all other cases
+                else
+                    deferred.reject(new Error({
+                        'type': Error.Type.STREAM_ERROR,
+                        'statusCode': Guacamole.Status.Code.INTERNAL_ERROR,
+                        'message': 'HTTP ' + xhr.status
+                    }));
+
+            };
+
+            // Perform upload
+            xhr.send(chunk);
 
         };
 
-        // Perform upload
-        xhr.open('POST', url, true);
-        xhr.send(file);
+        /**
+         * Handles the recursive upload process. Each time it is called, a 
+         * chunk is made with createChunk(), starting at the offset parameter.
+         * The chunk is then sent by uploadChunk(), which recursively calls 
+         * this handler until the upload process is either completed and the 
+         * promise is resolved, or fails and the promise is rejected.
+         * 
+         * @param {Number} offset
+         *      The byte at which to begin the chunk.
+         */
+        const uploadHandler = (offset) => {
+            uploadChunk(createChunk(offset), offset);
+        };
+
+        uploadHandler(0);
 
         return deferred.promise;
 
