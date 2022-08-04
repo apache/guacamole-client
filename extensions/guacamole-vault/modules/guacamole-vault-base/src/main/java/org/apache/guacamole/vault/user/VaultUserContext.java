@@ -241,7 +241,7 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *
      * @throws GuacamoleException
      *     If the value for any applicable secret cannot be retrieved from the
-     *     vault due to an error.1
+     *     vault due to an error.
      */
     private Map<String, Future<String>> getTokens(
             Connectable connectable, Map<String, String> tokenMapping,
