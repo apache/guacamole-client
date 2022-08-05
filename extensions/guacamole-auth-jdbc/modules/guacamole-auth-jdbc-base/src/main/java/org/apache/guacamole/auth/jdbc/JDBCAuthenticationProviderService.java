@@ -89,9 +89,31 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
 
     }
 
-    @Override
-    public ModeledUserContext getUserContext(AuthenticationProvider authenticationProvider,
-            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+    /**
+     * Gets a user context for the given authentication provider and user. If
+     * forceRefresh is set to true, the user record will be re-fetched even if
+     * it has already been loaded from the database. If not, the existing
+     * user will be used.
+     *
+     * @param authenticationProvider
+     *     The authentication provider to use when loading or refreshing the user.
+     *
+     * @param authenticatedUser
+     *     The user for which the user context is being fetched.
+     *
+     * @param forceRefresh
+     *     A flag that, when set to true, will force the authenticated user to
+     *     refreshed from the database. If false, an existing DB user will be
+     *     reused.
+     *
+     * @return
+     *     The fetched user context.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while fetching or refreshing the user context.
+     */
+    private ModeledUserContext getUserContext(AuthenticationProvider authenticationProvider,
+            AuthenticatedUser authenticatedUser, boolean forceRefresh) throws GuacamoleException {
 
         // Always allow but provide no data for users authenticated via our own
         // connection sharing links
@@ -102,8 +124,9 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         boolean databaseCredentialsUsed = (authenticatedUser instanceof ModeledAuthenticatedUser);
         boolean databaseRestrictionsApplicable = (databaseCredentialsUsed || environment.isUserRequired());
 
-        // Retrieve user account for already-authenticated user
-        ModeledUser user = userService.retrieveUser(authenticationProvider, authenticatedUser);
+        // Retrieve user account for already-authenticated user, forcing a refresh if requested
+        ModeledUser user = userService.retrieveUser(
+                authenticationProvider, authenticatedUser, forceRefresh);
         ModeledUserContext context = userContextProvider.get();
         if (user != null && !user.isDisabled()) {
 
@@ -160,12 +183,20 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
     }
 
     @Override
+    public ModeledUserContext getUserContext(AuthenticationProvider authenticationProvider,
+            AuthenticatedUser authenticatedUser) throws GuacamoleException {
+
+        // Do not force refresh unless updateUserContext is explicitly called
+        return getUserContext(authenticationProvider, authenticatedUser, false);
+    }
+
+    @Override
     public UserContext updateUserContext(AuthenticationProvider authenticationProvider,
             UserContext context, AuthenticatedUser authenticatedUser,
             Credentials credentials) throws GuacamoleException {
 
-        // No need to update the context
-        return context;
+        // Force-refresh the user context
+        return getUserContext(authenticationProvider, authenticatedUser, true);
 
     }
 

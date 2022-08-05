@@ -501,6 +501,4 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
         return userService.deleteUser($scope.dataSource, $scope.user);
     };
 
-    console.log($scope);
-
 }]);

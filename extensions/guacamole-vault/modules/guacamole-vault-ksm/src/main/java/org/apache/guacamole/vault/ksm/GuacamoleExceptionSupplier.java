@@ -39,4 +39,5 @@ public abstract class GuacamoleExceptionSupplier<T> {
      *    If an error occurs while attemping to calculate the return value.
      */
     public abstract T get() throws GuacamoleException;
+
 }
