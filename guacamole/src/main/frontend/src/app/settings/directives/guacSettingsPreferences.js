@@ -59,6 +59,20 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             };
 
             /**
+             * An action which closes the current dialog, and refreshes
+             * the user data on dialog close.
+             */
+            const ACKNOWLEDGE_ACTION_RELOAD = {
+                name        : 'SETTINGS_PREFERENCES.ACTION_ACKNOWLEDGE',
+                // Handle action
+                callback    : function acknowledgeCallback() {
+                    userService.getUser(dataSource, username)
+                        .then(user => $scope.user = user)
+                        .then(guacNotification.showStatus(false))
+                }
+            };
+
+            /**
              * The user being modified.
              *
              * @type User
@@ -237,7 +251,9 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                         text    : {
                             key : 'SETTINGS_PREFERENCES.INFO_PREFERENCE_ATTRIBUTES_CHANGED'
                         },
-                        actions : [ ACKNOWLEDGE_ACTION ]
+
+                        // Reload the user on successful save in case any attributes changed
+                        actions : [ ACKNOWLEDGE_ACTION_RELOAD ]
                     }),
                     guacNotification.SHOW_REQUEST_ERROR);
             };
