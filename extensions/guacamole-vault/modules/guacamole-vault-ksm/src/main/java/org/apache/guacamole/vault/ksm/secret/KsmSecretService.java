@@ -48,6 +48,7 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
+import org.apache.guacamole.vault.ksm.GuacamoleExceptionSupplier;
 import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
 import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
@@ -147,7 +148,24 @@ public class KsmSecretService implements VaultSecretService {
         // Attempt to find a KSM config for this connection or group
         String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
 
-        return getClient(ksmConfig).getSecret(name);
+        return getClient(ksmConfig).getSecret(name, new GuacamoleExceptionSupplier<Future<String>>() {
+
+            @Override
+            public Future<String> get() throws GuacamoleException {
+
+                // Get the user-supplied KSM config, if allowed by config and
+                // set by the user
+                String userKsmConfig = getUserKSMConfig(userContext, connectable);
+
+                // If the user config happens to be the same as admin-defined one,
+                // don't bother trying again
+                if (userKsmConfig != ksmConfig)
+                    return getClient(userKsmConfig).getSecret(name);
+
+                return CompletableFuture.completedFuture(null);
+            }
+
+        });
     }
 
     @Override
@@ -335,6 +353,44 @@ public class KsmSecretService implements VaultSecretService {
 
     }
 
+    /**
+     * Return the KSM config blob for the current user IFF user KSM configs
+     * are enabled globally, and are enabled for the given connectable. If no
+     * KSM config exists for the given user or KSM configs are not enabled,
+     * null will be returned.
+     *
+     * @param userContext
+     *    The user context from which the current user should be fetched.
+     *
+     * @param connectable
+     *    The connectable to which the connection is being established. This
+     *    is the conneciton which will be checked to see if user KSM configs
+     *    are enabled.
+     *
+     * @return
+     *    The base64 encoded KSM config blob for the current user if one
+     *    exists, and if user KSM configs are enabled globally and for the
+     *    provided connectable.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while attempting to fetch the KSM config.
+     */
+    private String getUserKSMConfig(
+            UserContext userContext, Connectable connectable) throws GuacamoleException {
+
+        // Check if user KSM configs are enabled globally, and for the given connectable
+        if (confService.getAllowUserConfig() && isKsmUserConfigEnabled(connectable))
+
+            // Return the user-specific KSM config, if one exists
+            return userContext.self().getAttributes().get(
+                    KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
+
+
+        // If user-specific KSM config is disabled globally or for the given
+        // connectable, return null to indicate that no user config exists
+        return null;
+    }
+
     @Override
     public Map<String, Future<String>> getTokens(UserContext userContext, Connectable connectable,
             GuacamoleConfiguration config, TokenFilter filter) throws GuacamoleException {
@@ -351,16 +407,9 @@ public class KsmSecretService implements VaultSecretService {
 
         // Only use the user-specific KSM config if explicitly enabled in the global
         // configuration, AND for the specific connectable being connected to
-        if (confService.getAllowUserConfig() && isKsmUserConfigEnabled(connectable)) {
-
-            // Find a user-specific KSM config, if one exists
-            String userKsmConfig = userContext.self().getAttributes().get(
-                    KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
-
-            // If a user-specific config exsts, process it first
-            if (userKsmConfig != null && !userKsmConfig.trim().isEmpty())
-                ksmClients.add(0, getClient(userKsmConfig));
-        }
+        String userKsmConfig = getUserKSMConfig(userContext, connectable);
+        if (userKsmConfig != null && !userKsmConfig.trim().isEmpty())
+            ksmClients.add(0, getClient(userKsmConfig));
 
         // Iterate through the KSM clients, processing using the user-specific
         // config first (if it exists), to ensure that any admin-defined values
@@ -431,6 +480,7 @@ public class KsmSecretService implements VaultSecretService {
                     addRecordTokens(tokens, "KEEPER_USER_",
                             ksm.getRecordByLogin(filter.filter(username), null));
             }
+        }
 
         return tokens;
 
