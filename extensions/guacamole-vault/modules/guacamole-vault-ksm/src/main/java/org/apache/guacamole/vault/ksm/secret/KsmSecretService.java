@@ -344,6 +344,18 @@ public class KsmSecretService implements VaultSecretService {
                 addRecordTokens(tokens, "KEEPER_GATEWAY_USER_",
                         ksm.getRecordByLogin(filter.filter(gatewayUsername)));
 
+            // Retrieve and define domain tokens, if any
+            String domain = parameters.get("domain");
+            if (domain != null && !domain.isEmpty())
+                addRecordTokens(tokens, "KEEPER_DOMAIN_",
+                        ksm.getRecordByDomain(filter.filter(domain)));
+
+            // Retrieve and define gateway domain tokens, if any
+            String gatewayDomain = parameters.get("gateway-domain");
+            if (gatewayDomain != null && !gatewayDomain.isEmpty())
+                addRecordTokens(tokens, "KEEPER_GATEWAY_DOMAIN_",
+                        ksm.getRecordByDomain(filter.filter(gatewayDomain)));
+
         }
 
         return tokens;

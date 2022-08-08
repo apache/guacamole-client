@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,6 +46,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
+import org.apache.guacamole.vault.secret.WindowsUsername;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,6 +65,12 @@ public class KsmClient {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(KsmClient.class);
+
+    /**
+     * Service for retrieving configuration information.
+     */
+    @Inject
+    private KsmConfigurationService confService;
 
     /**
      * Service for retrieving data from records.
@@ -180,6 +189,30 @@ public class KsmClient {
     private final Set<String> cachedAmbiguousUsernames = new HashSet<>();
 
     /**
+     * All records retrieved from Keeper Secrets Manager, where each key is the
+     * domain of the corresponding record. The domain of a record is
+     * determined by {@link Login} fields, thus a record may be associated with
+     * multiple domains. If a record is associated with multiple domains, there
+     * will be multiple references to that record within this Map. The contents
+     * of this Map are automatically updated if {@link #validateCache()}
+     * refreshes the cache. This Map must not be accessed without
+     * {@link #cacheLock} acquired appropriately. Before using a value from
+     * this Map, {@link #cachedAmbiguousDomains} must first be checked to
+     * verify that there is indeed only one record associated with that domain.
+     */
+    private final Map<String, KeeperRecord> cachedRecordsByDomain = new HashMap<>();
+
+    /**
+     * The set of all domains that are associated with multiple records, and
+     * thus cannot uniquely identify a record. The contents of this Set are
+     * automatically updated if {@link #validateCache()} refreshes the cache.
+     * This Set must not be accessed without {@link #cacheLock} acquired
+     * appropriately. This Set must be checked before using a value retrieved
+     * from {@link #cachedRecordsByDomain}.
+     */
+    private final Set<String> cachedAmbiguousDomains = new HashSet<>();
+
+    /**
      * Create a new KSM client based around the provided KSM configuration.
      *
      * @param ksmConfig
@@ -239,9 +272,17 @@ public class KsmClient {
             cachedAmbiguousUsernames.clear();
             cachedRecordsByUsername.clear();
 
-            // Store all records, sorting each into host-based and login-based
-            // buckets
-            records.forEach(record -> {
+            // Clear cache of domain-based records
+            cachedAmbiguousDomains.clear();
+            cachedRecordsByDomain.clear();
+
+            // Store all records, sorting each into host-based, login-based,
+            // and domain-based buckets
+            Iterator<KeeperRecord> recordIterator = records.iterator();
+            while(recordIterator.hasNext()) {
+
+                // Go through records one at a time
+                KeeperRecord record = recordIterator.next();
 
                 // Store based on UID ...
                 cachedRecordsByUid.put(record.getRecordUid(), record);
@@ -250,13 +291,38 @@ public class KsmClient {
                 String hostname = recordService.getHostname(record);
                 addRecordForHost(record, hostname);
 
+                // ... and domain
+                String domain = recordService.getDomain(record);
+                addRecordForDomain(record, domain);
+
+                // Fetch the username
+                String username = recordService.getUsername(record);
+
+                // If domains should be split out from usernames
+                if (username != null && confService.getSplitWindowsUsernames()) {
+
+                    // Attempt to split the domain of the username
+                    WindowsUsername usernameAndDomain = (
+                            WindowsUsername.splitWindowsUsernameFromDomain(username));
+
+                    if (usernameAndDomain.hasDomain()) {
+
+                        // Update the username if a domain has been stripped off
+                        username = usernameAndDomain.getUsername();
+
+                        // Use the username-split domain if not already set explicitly
+                        if (domain == null)
+                            addRecordForDomain(record, usernameAndDomain.getDomain());
+                    }
+                }
+
                 // Store based on username ONLY if no hostname (will otherwise
                 // result in ambiguous entries for servers tied to identical
                 // accounts)
                 if (hostname == null)
-                    addRecordForLogin(record, recordService.getUsername(record));
+                    addRecordForLogin(record, username);
 
-            });
+            }
 
             // Cache has been refreshed
             this.cacheTimestamp = System.currentTimeMillis();
@@ -265,6 +331,30 @@ public class KsmClient {
         finally {
             cacheLock.writeLock().unlock();
         }
+
+    }
+
+    /**
+     * Associates the given record with the given domain. The domain may be
+     * null. Both {@link #cachedRecordsByDomain} and {@link #cachedAmbiguousDomains}
+     * are updated appropriately. The write lock of {@link #cacheLock} must
+     * already be acquired before invoking this function.
+     *
+     * @param record
+     *     The record to associate with the domains in the given field.
+     *
+     * @param domain
+     *     The domain that the given record should be associated with.
+     *     This may be null.
+     */
+    private void addRecordForDomain(KeeperRecord record, String domain) {
+
+        if (domain == null)
+            return;
+
+        KeeperRecord existing = cachedRecordsByDomain.putIfAbsent(domain, record);
+        if (existing != null && record != existing)
+            cachedAmbiguousDomains.add(domain);
 
     }
 
@@ -425,6 +515,40 @@ public class KsmClient {
             }
 
             return cachedRecordsByUsername.get(username);
+
+        }
+        finally {
+            cacheLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Returns the record associated with the given domain. If no such record
+     * exists, or there are multiple such records, null is returned.
+     *
+     * @param domain
+     *     The domain of the record to return.
+     *
+     * @return
+     *     The record associated with the given domain, or null if there is
+     *     no such record or multiple such records.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs that prevents the record from being retrieved.
+     */
+    public KeeperRecord getRecordByDomain(String domain) throws GuacamoleException {
+        validateCache();
+        cacheLock.readLock().lock();
+        try {
+
+            if (cachedAmbiguousDomains.contains(domain)) {
+                logger.debug("The domain \"{}\" is referenced by multiple "
+                        + "Keeper records and cannot be used to locate "
+                        + "individual secrets.", domain);
+                return null;
+            }
+
+            return cachedRecordsByDomain.get(domain);
 
         }
         finally {
