@@ -404,11 +404,6 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * @param authenticatedUser
      *     The AuthenticatedUser to retrieve the corresponding ModeledUser of.
      *
-     * @param forceRefresh
-     *     Whether the user should be force-refreshed: i.e. re-queried from the
-     *     database. If false, and the user has already been queried, it will
-     *     be returned as-is.
-     *
      * @return
      *     The ModeledUser which corresponds to the given AuthenticatedUser, or
      *     null if no such user exists.
@@ -418,12 +413,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      *     AuthenticatedUser cannot be created.
      */
     public ModeledUser retrieveUser(AuthenticationProvider authenticationProvider,
-            AuthenticatedUser authenticatedUser, boolean forceRefresh) throws GuacamoleException {
-
-        // If refresh is not being forced, and we already queried this user,
-        // return that rather than querying again
-        if (!forceRefresh && (authenticatedUser instanceof ModeledAuthenticatedUser))
-            return ((ModeledAuthenticatedUser) authenticatedUser).getUser();
+            AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
         // Retrieve corresponding user model, if such a user exists
         UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier());
