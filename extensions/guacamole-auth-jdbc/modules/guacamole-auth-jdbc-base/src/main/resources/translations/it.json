@@ -2,7 +2,6 @@
 
     "LOGIN" : {
 
-        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
         "ERROR_PASSWORD_SAME"     : "La nuova password deve essere diversa dalla password scaduta.",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
         "ERROR_NOT_VALID"         : "Questo account utente non è attualmente valido.",

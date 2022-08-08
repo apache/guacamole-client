@@ -4,10 +4,6 @@
         "NAME" : "TOTP TFA Backend"
     },
 
-    "LOGIN" : {
-        "FIELD_HEADER_GUAC_TOTP" : ""
-    },
-
     "TOTP" : {
 
         "ACTION_HIDE_DETAILS" : "Nascondere",
