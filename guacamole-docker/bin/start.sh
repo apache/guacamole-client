@@ -252,13 +252,13 @@ to the environment variable, and setting the value to the path of the
 corresponding secret:
 
     POSTGRESQL_USER      The user to authenticate as when connecting to
-                       PostgreSQL.
+                         PostgreSQL.
 
     POSTGRESQL_PASSWORD  The password to use when authenticating with PostgreSQL
-                       as POSTGRESQL_USER.
+                         as POSTGRESQL_USER.
 
     POSTGRESQL_DATABASE  The name of the PostgreSQL database to use for Guacamole
-                       authentication.
+                         authentication.
 END
     exit 1;
 }
