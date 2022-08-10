@@ -323,12 +323,6 @@ public class KsmSecretService implements VaultSecretService {
             addRecordTokens(tokens, "KEEPER_SERVER_",
                     ksm.getRecordByHost(filter.filter(hostname)));
 
-        // Retrieve and define user-specific tokens, if any
-        String username = parameters.get("username");
-        if (username != null && !username.isEmpty())
-            addRecordTokens(tokens, "KEEPER_USER_",
-                    ksm.getRecordByLogin(filter.filter(username)));
-
         // Tokens specific to RDP
         if ("rdp".equals(config.getProtocol())) {
 
@@ -338,24 +332,57 @@ public class KsmSecretService implements VaultSecretService {
                 addRecordTokens(tokens, "KEEPER_GATEWAY_",
                         ksm.getRecordByHost(filter.filter(gatewayHostname)));
 
+            // Retrieve and define domain tokens, if any
+            String domain = parameters.get("domain");
+            String filteredDomain = null;
+            if (domain != null && !domain.isEmpty()) {
+                filteredDomain = filter.filter(domain);
+                addRecordTokens(tokens, "KEEPER_DOMAIN_",
+                        ksm.getRecordByDomain(filteredDomain));
+            }
+
+            // Retrieve and define gateway domain tokens, if any
+            String gatewayDomain = parameters.get("gateway-domain");
+            String filteredGatewayDomain = null;
+            if (gatewayDomain != null && !gatewayDomain.isEmpty()) {
+                filteredGatewayDomain = filter.filter(gatewayDomain);
+                addRecordTokens(tokens, "KEEPER_GATEWAY_DOMAIN_",
+                        ksm.getRecordByDomain(filteredGatewayDomain));
+            }
+
+            // If domain matching is disabled for user records,
+            // explicitly set the domains to null when storing
+            // user records to enable username-only matching
+            if (!confService.getMatchUserRecordsByDomain()) {
+                filteredDomain = null;
+                filteredGatewayDomain = null;
+            }
+
+            // Retrieve and define user-specific tokens, if any
+            String username = parameters.get("username");
+            if (username != null && !username.isEmpty())
+                addRecordTokens(tokens, "KEEPER_USER_",
+                        ksm.getRecordByLogin(filter.filter(username),
+                        filteredDomain));
+
             // Retrieve and define gateway user-specific tokens, if any
             String gatewayUsername = parameters.get("gateway-username");
             if (gatewayUsername != null && !gatewayUsername.isEmpty())
                 addRecordTokens(tokens, "KEEPER_GATEWAY_USER_",
-                        ksm.getRecordByLogin(filter.filter(gatewayUsername)));
+                        ksm.getRecordByLogin(
+                            filter.filter(gatewayUsername),
+                            filteredGatewayDomain));
 
-            // Retrieve and define domain tokens, if any
-            String domain = parameters.get("domain");
-            if (domain != null && !domain.isEmpty())
-                addRecordTokens(tokens, "KEEPER_DOMAIN_",
-                        ksm.getRecordByDomain(filter.filter(domain)));
+        } else {
 
-            // Retrieve and define gateway domain tokens, if any
-            String gatewayDomain = parameters.get("gateway-domain");
-            if (gatewayDomain != null && !gatewayDomain.isEmpty())
-                addRecordTokens(tokens, "KEEPER_GATEWAY_DOMAIN_",
-                        ksm.getRecordByDomain(filter.filter(gatewayDomain)));
-
+            // Retrieve and define user-specific tokens, if any
+            // NOTE that non-RDP connections do not have a domain
+            // field in the connection parameters, so the domain
+            // will always be null
+            String username = parameters.get("username");
+            if (username != null && !username.isEmpty())
+                addRecordTokens(tokens, "KEEPER_USER_",
+                        ksm.getRecordByLogin(filter.filter(username), null));
         }
 
         return tokens;

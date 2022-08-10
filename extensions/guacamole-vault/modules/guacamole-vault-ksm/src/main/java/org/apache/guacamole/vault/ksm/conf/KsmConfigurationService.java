@@ -97,6 +97,19 @@ public class KsmConfigurationService extends VaultConfigurationService {
     };
 
     /**
+     * Whether domains should be considered when matching login records in the KSM vault.
+     * If true, both the domain and username must match for a record to match when using
+     * tokens like "KEEPER_USER_*". If false, only the username must match.
+     */
+    private static final BooleanGuacamoleProperty MATCH_USER_DOMAINS = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+            return "ksm-match-domains-for-users";
+        }
+    };
+
+    /**
      * Creates a new KsmConfigurationService which reads the configuration
      * from "ksm-token-mapping.yml" and properties from
      * "guacamole.properties.ksm". The token mapping is a YAML file which lists
@@ -128,6 +141,11 @@ public class KsmConfigurationService extends VaultConfigurationService {
     @Override
     public boolean getSplitWindowsUsernames() throws GuacamoleException {
         return environment.getProperty(STRIP_WINDOWS_DOMAINS, false);
+    }
+
+    @Override
+    public boolean getMatchUserRecordsByDomain() throws GuacamoleException {
+        return environment.getProperty(MATCH_USER_DOMAINS, false);
     }
 
 
