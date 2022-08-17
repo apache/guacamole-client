@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.vault.ksm.secret;
 
+import java.util.Objects;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -29,7 +31,7 @@ import javax.annotation.Nullable;
  * actually be identified by both the user and domain, if the appropriate
  * settings are enabled.
  */
-class UserDomain {
+class UserLogin {
 
     /**
      * The username associated with the user record.
@@ -44,17 +46,17 @@ class UserDomain {
     private final String domain;
 
     /**
-     * Create a new UserDomain instance with the provided username and
+     * Create a new UserLogin instance with the provided username and
      * domain. The domain may be null, but the username should never be.
      *
      * @param username
-     *    The username to create the UserDomain instance with. This should
+     *    The username to create the UserLogin instance with. This should
      *    never be null.
      *
      * @param domain
-     *    The domain to create the UserDomain instance with. This can be null.
+     *    The domain to create the UserLogin instance with. This can be null.
      */
-    UserDomain(@Nonnull String username, @Nullable String domain) {
+    UserLogin(@Nonnull String username, @Nullable String domain) {
         this.username = username;
         this.domain = domain;
     }
@@ -62,13 +64,7 @@ class UserDomain {
     @Override
     public int hashCode() {
 
-        final int prime = 31;
-
-        int result = 1;
-        result = prime * result + ((domain == null) ? 0 : domain.hashCode());
-        result = prime * result + ((username == null) ? 0 : username.hashCode());
-
-        return result;
+        return Objects.hash(domain, username);
 
     }
 
@@ -83,33 +79,23 @@ class UserDomain {
         if (obj == null)
             return false;
 
-        // Check if the other object is also a UserDomain
+        // Check if the other object is also a UserLogin
         if (getClass() != obj.getClass())
             return false;
 
-        // If it is a UserDomain, it must have the same username...
-        UserDomain other = (UserDomain) obj;
-        if (username == null) {
-            if (other.username != null)
-                return false;
-        } else if (!username.equals(other.username))
-            return false;
+        // If the other object is also a UserLogin, it must
+        // have the same username and domain
+        UserLogin other = (UserLogin) obj;
+        return Objects.equals(username, other.username)
+                && Objects.equals(domain, other.domain);
 
-        // .. and the same domain
-        if (domain == null) {
-            if (other.domain != null)
-                return false;
-        } else if (!domain.equals(other.domain))
-            return false;
-
-        return true;
     }
 
     /**
-     * Get the username associated with this UserDomain.
+     * Get the username associated with this UserLogin.
      *
      * @return
-     *     The username associated with this UserDomain.
+     *     The username associated with this UserLogin.
      */
     public String getUsername() {
         return username;
@@ -117,10 +103,10 @@ class UserDomain {
 
 
     /**
-     * Get the domain associated with this UserDomain.
+     * Get the domain associated with this UserLogin.
      *
      * @return
-     *     The domain associated with this UserDomain.
+     *     The domain associated with this UserLogin.
      */
     public String getDomain() {
         return domain;

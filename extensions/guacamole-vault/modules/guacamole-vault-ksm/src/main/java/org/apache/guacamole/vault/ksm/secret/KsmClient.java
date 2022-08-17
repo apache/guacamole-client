@@ -177,7 +177,7 @@ public class KsmClient {
      * this Map, {@link #cachedAmbiguousUsers} must first be checked to
      * verify that there is indeed only one record associated with that user.
      */
-    private final Map<UserDomain, KeeperRecord> cachedRecordsByUser = new HashMap<>();
+    private final Map<UserLogin, KeeperRecord> cachedRecordsByUser = new HashMap<>();
 
     /**
      * The set of all username/domain combos that are associated with multiple
@@ -187,7 +187,7 @@ public class KsmClient {
      * acquired appropriately. This Set must be checked before using a value
      * retrieved from {@link #cachedRecordsByUser}.
      */
-    private final Set<UserDomain> cachedAmbiguousUsers = new HashSet<>();
+    private final Set<UserLogin> cachedAmbiguousUsers = new HashSet<>();
 
     /**
      * All records retrieved from Keeper Secrets Manager, where each key is the
@@ -307,10 +307,12 @@ public class KsmClient {
                     WindowsUsername usernameAndDomain = (
                             WindowsUsername.splitWindowsUsernameFromDomain(username));
 
-                    // Use the username-split domain if not already set explicitly
-                    if (usernameAndDomain.hasDomain())
+                    // Use the username-split domain if available
+                    if (usernameAndDomain.hasDomain()) {
                         domain = usernameAndDomain.getDomain();
+                        username = usernameAndDomain.getUsername();
                         addRecordForDomain(record, domain);
+                    }
 
                 }
 
@@ -407,7 +409,7 @@ public class KsmClient {
         if (username == null)
             return;
 
-        UserDomain userDomain = new UserDomain(username, domain);
+        UserLogin userDomain = new UserLogin(username, domain);
         KeeperRecord existing = cachedRecordsByUser.putIfAbsent(
                 userDomain, record);
         if (existing != null && record != existing)
@@ -504,7 +506,7 @@ public class KsmClient {
      *     The username of the record to return.
      *
      * @param domain
-     *     The domain of the record to return.
+     *     The domain of the record to return, or null if no domain exists.
      *
      * @return
      *     The record associated with the given username and domain, or null
@@ -519,7 +521,7 @@ public class KsmClient {
         validateCache();
         cacheLock.readLock().lock();
 
-        UserDomain userDomain = new UserDomain(username, domain);
+        UserLogin userDomain = new UserLogin(username, domain);
 
         try {
 

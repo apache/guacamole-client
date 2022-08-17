@@ -373,7 +373,9 @@ public class KsmSecretService implements VaultSecretService {
                             filter.filter(gatewayUsername),
                             filteredGatewayDomain));
 
-        } else {
+        }
+
+        else {
 
             // Retrieve and define user-specific tokens, if any
             // NOTE that non-RDP connections do not have a domain
