@@ -145,7 +145,7 @@ public class DecoratedUserContext extends DelegatingUserContext {
         if (authProvider != userContext.getAuthenticationProvider()) {
 
             // Apply next layer of wrapping around UserContext
-            UserContext redecorated = authProvider.redecorate(decorated,
+            UserContext redecorated = authProvider.redecorate(decorated.getDelegateUserContext(),
                     userContext, authenticatedUser, credentials);
 
             // Do not allow misbehaving extensions to wipe out the
