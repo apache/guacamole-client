@@ -198,12 +198,16 @@ angular.module('auth').factory('authenticationService', ['$injector',
         ['catch'](requestService.createErrorCallback(function authenticationFailed(error) {
 
             // Request credentials if provided credentials were invalid
-            if (error.type === Error.Type.INVALID_CREDENTIALS)
+            if (error.type === Error.Type.INVALID_CREDENTIALS) {
                 $rootScope.$broadcast('guacInvalidCredentials', parameters, error);
+                clearAuthenticationResult();
+            }
 
             // Request more credentials if provided credentials were not enough 
-            else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS)
+            else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS) {
                 $rootScope.$broadcast('guacInsufficientCredentials', parameters, error);
+                clearAuthenticationResult();
+            }
 
             // Abort rendering of page if an internal error occurs
             else if (error.type === Error.Type.INTERNAL_ERROR)

@@ -23,7 +23,6 @@ import java.util.Iterator;
 import java.util.List;
 import javax.inject.Inject;
 
-import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -65,12 +64,12 @@ public class DecorationService {
      *     A new DecoratedUserContext which has been decorated by all
      *     AuthenticationProviders.
      *
-     * @throws GuacamoleException
+     * @throws GuacamoleAuthenticationProcessException
      *     If any AuthenticationProvider fails while decorating the UserContext.
      */
     public DecoratedUserContext decorate(UserContext userContext,
             AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
+            throws GuacamoleAuthenticationProcessException {
 
         // Get first AuthenticationProvider in list
         Iterator<AuthenticationProvider> current = authProviders.iterator();
@@ -119,12 +118,12 @@ public class DecorationService {
      *     A new DecoratedUserContext which has been decorated by all
      *     AuthenticationProviders.
      *
-     * @throws GuacamoleException
+     * @throws GuacamoleAuthenticationProcessException
      *     If any AuthenticationProvider fails while decorating the UserContext.
      */
     public DecoratedUserContext redecorate(DecoratedUserContext decorated,
             UserContext userContext, AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
+            Credentials credentials) throws GuacamoleAuthenticationProcessException {
 
         // If the given DecoratedUserContext contains further decorated layers,
         // redecorate those first

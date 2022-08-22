@@ -198,3 +198,13 @@ if [ -f extensions/guacamole-auth-json/target/guacamole-auth-json*.jar ]; then
     mkdir -p "$DESTINATION/json"
     cp extensions/guacamole-auth-json/target/guacamole-auth-json*.jar "$DESTINATION/json"
 fi
+
+#
+# Copy automatic brute-force banning auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-ban/target/guacamole-auth-ban*.jar ]; then
+    mkdir -p "$DESTINATION/ban"
+    cp extensions/guacamole-auth-ban/target/guacamole-auth-ban*.jar "$DESTINATION/ban"
+fi
+

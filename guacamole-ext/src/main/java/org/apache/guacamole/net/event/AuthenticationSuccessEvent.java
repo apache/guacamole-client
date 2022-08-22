@@ -20,6 +20,7 @@
 package org.apache.guacamole.net.event;
 
 import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
@@ -32,7 +33,8 @@ import org.apache.guacamole.net.auth.Credentials;
  * is effectively <em>vetoed</em> and will be subsequently processed as though the
  * authentication failed.
  */
-public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
+public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent,
+        AuthenticationProviderEvent {
 
     /**
      * The AuthenticatedUser identifying the user that successfully
@@ -60,7 +62,12 @@ public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
 
     @Override
     public Credentials getCredentials() {
-        return authenticatedUser.getCredentials();
+        return getAuthenticatedUser().getCredentials();
+    }
+
+    @Override
+    public AuthenticationProvider getAuthenticationProvider() {
+        return getAuthenticatedUser().getAuthenticationProvider();
     }
 
 }
