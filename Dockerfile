@@ -30,6 +30,9 @@ ARG TOMCAT_JRE=jdk8
 # Use official maven image for the build
 FROM maven:3-jdk-8 AS builder
 
+# Install chromium-driver for sake of JavaScript unit tests
+RUN apt-get update && apt-get install -y chromium-driver
+
 # Use args to build radius auth extension such as
 # `--build-arg BUILD_PROFILE=lgpl-extensions`
 ARG BUILD_PROFILE
