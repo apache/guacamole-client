@@ -11,6 +11,10 @@
 
     "listeners" : [
         "org.apache.guacamole.auth.ban.BanningAuthenticationListener"
+    ],
+
+    "translations" : [
+        "translations/en.json"
     ]
 
 }

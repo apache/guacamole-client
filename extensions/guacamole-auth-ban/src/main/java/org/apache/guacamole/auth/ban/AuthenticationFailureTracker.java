@@ -22,9 +22,9 @@ package org.apache.guacamole.auth.ban;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.GuacamoleClientTooManyException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.language.TranslatableGuacamoleClientTooManyException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -207,8 +207,9 @@ public class AuthenticationFailureTracker {
             // if too many failures have occurred
             if (status.isBlocked()) {
                 logger.debug("Blocking authentication attempt from address \"{}\" due to number of authentication failures.", address);
-                throw new GuacamoleClientTooManyException("Too many failed "
-                        + "authentication attempts. Please try again later.");
+                throw new TranslatableGuacamoleClientTooManyException("Too "
+                        + "many failed authentication attempts.",
+                        "LOGIN.ERROR_TOO_MANY_ATTEMPTS");
             }
 
             // Clean up tracking of failures if the address is no longer
