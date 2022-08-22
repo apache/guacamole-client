@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ban;
+package org.apache.guacamole.auth.ban.status;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -30,15 +30,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Provides automated tracking and blocking of IP addresses that repeatedly
- * fail authentication.
+ * AuthenticationFailureTracker implementation that tracks the failure status
+ * of each IP address in memory. The maximum amount of memory consumed is
+ * bounded by the configured maximum number of addresses tracked.
  */
-public class AuthenticationFailureTracker {
+public class InMemoryAuthenticationFailureTracker implements AuthenticationFailureTracker {
 
     /**
      * Logger for this class.
      */
-    private static final Logger logger = LoggerFactory.getLogger(AuthenticationFailureTracker.class);
+    private static final Logger logger = LoggerFactory.getLogger(InMemoryAuthenticationFailureTracker.class);
 
     /**
      * All authentication failures currently being tracked, stored by the
@@ -74,37 +75,16 @@ public class AuthenticationFailureTracker {
      *     The maximum number of unique IP addresses that should be tracked
      *     before discarding older tracked failures.
      */
-    public AuthenticationFailureTracker(int maxAttempts, int banDuration,
+    public InMemoryAuthenticationFailureTracker(int maxAttempts, int banDuration,
             long maxAddresses) {
 
         this.maxAttempts = maxAttempts;
         this.banDuration = banDuration;
 
-        // Inform administrator of configured behavior
-        if (maxAttempts <= 0) {
-            logger.info("Maximum failed authentication attempts has been set "
-                    + "to {}. Automatic banning of brute-force authentication "
-                    + "attempts will be disabled.", maxAttempts);
-        }
-        else if (banDuration <= 0) {
-            logger.info("Ban duration for addresses that repeatedly fail "
-                    + "authentication has been set to {}. Automatic banning "
-                    + "of brute-force authentication attempts will be "
-                    + "disabled.", banDuration);
-        }
-        else {
-            logger.info("Addresses will be automatically banned for {} "
-                    + "seconds after {} failed authentication attempts.",
-                    banDuration, maxAttempts);
-        }
-
         // Limit maximum number of tracked addresses to configured upper bound
         this.failures = Caffeine.newBuilder()
                 .maximumSize(maxAddresses)
                 .build();
-
-        logger.info("Up to {} unique addresses will be tracked/banned at any "
-                + " given time.", maxAddresses);
 
     }
 
@@ -187,10 +167,6 @@ public class AuthenticationFailureTracker {
     private void notifyAuthenticationStatus(Credentials credentials,
             boolean failed) throws GuacamoleException {
 
-        // Do not track/ban if tracking or banning are disabled
-        if (maxAttempts <= 0 || banDuration <= 0)
-            return;
-
         // Ignore requests that do not contain explicit parameters of any kind
         if (isEmpty(credentials))
             return;
@@ -234,54 +210,19 @@ public class AuthenticationFailureTracker {
 
     }
 
-    /**
-     * Reports that an authentication request has been received, but it is
-     * either not yet known whether the request has succeeded or failed. If the
-     * associated address is currently being blocked, an exception will be
-     * thrown.
-     *
-     * @param credentials
-     *     The credentials associated with the authentication request.
-     *
-     * @throws GuacamoleException
-     *     If the authentication request is being blocked due to brute force
-     *     prevention rules.
-     */
+    @Override
     public void notifyAuthenticationRequestReceived(Credentials credentials)
             throws GuacamoleException {
         notifyAuthenticationStatus(credentials, false);
     }
 
-    /**
-     * Reports that an authentication request has been received and has
-     * succeeded. If the associated address is currently being blocked, an
-     * exception will be thrown.
-     *
-     * @param credentials
-     *     The credentials associated with the successful authentication
-     *     request.
-     *
-     * @throws GuacamoleException
-     *     If the authentication request is being blocked due to brute force
-     *     prevention rules.
-     */
+    @Override
     public void notifyAuthenticationSuccess(Credentials credentials)
             throws GuacamoleException {
         notifyAuthenticationStatus(credentials, false);
     }
 
-    /**
-     * Reports that an authentication request has been received and has
-     * failed. If the associated address is currently being blocked, an
-     * exception will be thrown.
-     *
-     * @param credentials
-     *     The credentials associated with the failed authentication request.
-     *
-     * @throws GuacamoleException
-     *     If the authentication request is being blocked due to brute force
-     *     prevention rules.
-     */
+    @Override
     public void notifyAuthenticationFailed(Credentials credentials)
             throws GuacamoleException {
         notifyAuthenticationStatus(credentials, true);

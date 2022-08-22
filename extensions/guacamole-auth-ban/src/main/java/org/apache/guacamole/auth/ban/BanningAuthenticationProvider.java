@@ -19,8 +19,11 @@
 
 package org.apache.guacamole.auth.ban;
 
+import org.apache.guacamole.auth.ban.status.InMemoryAuthenticationFailureTracker;
+import org.apache.guacamole.auth.ban.status.AuthenticationFailureTracker;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.auth.ban.status.NullAuthenticationFailureTracker;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
@@ -29,6 +32,8 @@ import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.LongGuacamoleProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AuthenticationProvider implementation that blocks further authentication
@@ -36,6 +41,11 @@ import org.apache.guacamole.properties.LongGuacamoleProperty;
  * {@link BanningAuthenticationListener}.
  */
 public class BanningAuthenticationProvider extends AbstractAuthenticationProvider {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(BanningAuthenticationProvider.class);
 
     /**
      * The maximum number of failed authentication attempts allowed before an
@@ -126,7 +136,29 @@ public class BanningAuthenticationProvider extends AbstractAuthenticationProvide
                     + "\"" +  MAX_ADDRESSES.getName() + "\" property, must be "
                     + "greater than zero.");
 
-        tracker = new AuthenticationFailureTracker(maxAttempts, banDuration, maxAddresses);
+        // Configure auth failure tracking behavior and inform administrator of
+        // ultimate result
+        if (maxAttempts <= 0) {
+            this.tracker = new NullAuthenticationFailureTracker();
+            logger.info("Maximum failed authentication attempts has been set "
+                    + "to {}. Automatic banning of brute-force authentication "
+                    + "attempts will be disabled.", maxAttempts);
+        }
+        else if (banDuration <= 0) {
+            this.tracker = new NullAuthenticationFailureTracker();
+            logger.info("Ban duration for addresses that repeatedly fail "
+                    + "authentication has been set to {}. Automatic banning "
+                    + "of brute-force authentication attempts will be "
+                    + "disabled.", banDuration);
+        }
+        else {
+            this.tracker = new InMemoryAuthenticationFailureTracker(maxAttempts, banDuration, maxAddresses);
+            logger.info("Addresses will be automatically banned for {} "
+                    + "seconds after {} failed authentication attempts. Up "
+                    + "to {} unique addresses will be tracked/banned at any "
+                    + "given time.", banDuration, maxAttempts, maxAddresses);
+        }
+
         BanningAuthenticationListener.setAuthenticationFailureTracker(tracker);
 
     }

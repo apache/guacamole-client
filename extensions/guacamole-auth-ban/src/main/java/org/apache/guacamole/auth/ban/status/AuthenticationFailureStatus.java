@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ban;
+package org.apache.guacamole.auth.ban.status;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;

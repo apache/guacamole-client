@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.ban;
 
+import org.apache.guacamole.auth.ban.status.AuthenticationFailureTracker;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.event.AuthenticationFailureEvent;
