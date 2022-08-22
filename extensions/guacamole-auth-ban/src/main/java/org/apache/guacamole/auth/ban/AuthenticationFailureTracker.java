@@ -206,7 +206,7 @@ public class AuthenticationFailureTracker {
         AuthenticationFailureStatus status;
         if (failed) {
             status = getAuthenticationFailure(address);
-            logger.debug("Authentication has failed for address \"{}\" (current total failures: {}/{}).",
+            logger.info("Authentication has failed for address \"{}\" (current total failures: {}/{}).",
                     address, status.getFailures(), maxAttempts);
         }
         else
@@ -217,7 +217,7 @@ public class AuthenticationFailureTracker {
             // Explicitly block further processing of authentication/authorization
             // if too many failures have occurred
             if (status.isBlocked()) {
-                logger.debug("Blocking authentication attempt from address \"{}\" due to number of authentication failures.", address);
+                logger.warn("Blocking authentication attempt from address \"{}\" due to number of authentication failures.", address);
                 throw new TranslatableGuacamoleClientTooManyException("Too "
                         + "many failed authentication attempts.",
                         "LOGIN.ERROR_TOO_MANY_ATTEMPTS");
