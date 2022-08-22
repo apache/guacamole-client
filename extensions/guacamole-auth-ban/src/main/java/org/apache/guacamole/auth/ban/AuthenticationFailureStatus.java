@@ -53,9 +53,9 @@ public class AuthenticationFailureStatus {
     private final long duration;
 
     /**
-     * Creates an AuthenticationFailureStatus that represents a single failure
-     * and is subject to the given restrictions. Additional failures may be
-     * flagged after creation with {@link #notifyFailed()}.
+     * Creates an AuthenticationFailureStatus that is initialized to zero
+     * failures and is subject to the given restrictions. Additional failures
+     * may be flagged after creation with {@link #notifyFailed()}.
      *
      * @param maxAttempts
      *     The maximum number of failures that may occur before the
@@ -67,7 +67,7 @@ public class AuthenticationFailureStatus {
      */
     public AuthenticationFailureStatus(int maxAttempts, int duration) {
         this.lastFailure = System.nanoTime();
-        this.failureCount = new AtomicInteger(1);
+        this.failureCount = new AtomicInteger(0);
         this.maxAttempts = maxAttempts;
         this.duration = TimeUnit.SECONDS.toNanos(duration);
     }

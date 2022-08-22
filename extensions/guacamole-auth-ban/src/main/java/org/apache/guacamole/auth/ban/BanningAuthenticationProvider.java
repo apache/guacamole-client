@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.ban;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
@@ -27,6 +28,7 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
+import org.apache.guacamole.properties.LongGuacamoleProperty;
 
 /**
  * AuthenticationProvider implementation that blocks further authentication
@@ -62,6 +64,20 @@ public class BanningAuthenticationProvider extends AbstractAuthenticationProvide
     };
 
     /**
+     * The maximum number of failed authentication attempts tracked at any
+     * given time. Once this number of addresses is exceeded, the oldest
+     * authentication attempts are rotated off on an LRU basis.
+     */
+    private static final LongGuacamoleProperty MAX_ADDRESSES = new LongGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+            return "ban-max-addresses";
+        }
+
+    };
+
+    /**
      * The default maximum number of failed authentication attempts allowed
      * before an address is temporarily banned.
      */
@@ -73,6 +89,13 @@ public class BanningAuthenticationProvider extends AbstractAuthenticationProvide
      * seconds.
      */
     private static final int DEFAULT_IP_BAN_DURATION = 300;
+
+    /**
+     * The maximum number of failed authentication attempts tracked at any
+     * given time. Once this number of addresses is exceeded, the oldest
+     * authentication attempts are rotated off on an LRU basis.
+     */
+    private static final long DEFAULT_MAX_ADDRESSES = 10485760;
 
     /**
      * Shared tracker of addresses that have repeatedly failed authentication.
@@ -95,8 +118,15 @@ public class BanningAuthenticationProvider extends AbstractAuthenticationProvide
         Environment environment = LocalEnvironment.getInstance();
         int maxAttempts = environment.getProperty(MAX_ATTEMPTS, DEFAULT_MAX_ATTEMPTS);
         int banDuration = environment.getProperty(IP_BAN_DURATION, DEFAULT_IP_BAN_DURATION);
+        long maxAddresses = environment.getProperty(MAX_ADDRESSES, DEFAULT_MAX_ADDRESSES);
 
-        tracker = new AuthenticationFailureTracker(maxAttempts, banDuration);
+        if (maxAddresses <= 0)
+            throw new GuacamoleServerException("The maximum number of "
+                    + "addresses tracked, as specified by the "
+                    + "\"" +  MAX_ADDRESSES.getName() + "\" property, must be "
+                    + "greater than zero.");
+
+        tracker = new AuthenticationFailureTracker(maxAttempts, banDuration, maxAddresses);
         BanningAuthenticationListener.setAuthenticationFailureTracker(tracker);
 
     }

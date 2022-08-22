@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.auth.ban;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -44,8 +44,7 @@ public class AuthenticationFailureTracker {
      * All authentication failures currently being tracked, stored by the
      * associated IP address.
      */
-    private final ConcurrentMap<String, AuthenticationFailureStatus> failures =
-            new ConcurrentHashMap<>();
+    private final Cache<String, AuthenticationFailureStatus> failures;
 
     /**
      * The maximum number of failed authentication attempts allowed before an
@@ -70,8 +69,14 @@ public class AuthenticationFailureTracker {
      * @param banDuration
      *     The length of time that each address should be banned after reaching
      *     the maximum number of failed authentication attempts, in seconds.
+     *
+     * @param maxAddresses
+     *     The maximum number of unique IP addresses that should be tracked
+     *     before discarding older tracked failures.
      */
-    public AuthenticationFailureTracker(int maxAttempts, int banDuration) {
+    public AuthenticationFailureTracker(int maxAttempts, int banDuration,
+            long maxAddresses) {
+
         this.maxAttempts = maxAttempts;
         this.banDuration = banDuration;
 
@@ -92,6 +97,14 @@ public class AuthenticationFailureTracker {
                     + "seconds after {} failed authentication attempts.",
                     banDuration, maxAttempts);
         }
+
+        // Limit maximum number of tracked addresses to configured upper bound
+        this.failures = Caffeine.newBuilder()
+                .maximumSize(maxAddresses)
+                .build();
+
+        logger.info("Up to {} unique addresses will be tracked/banned at any "
+                + " given time.", maxAddresses);
 
     }
 
@@ -147,10 +160,8 @@ public class AuthenticationFailureTracker {
      */
     private AuthenticationFailureStatus getAuthenticationFailure(String address) {
 
-        AuthenticationFailureStatus newFailure = new AuthenticationFailureStatus(maxAttempts, banDuration);
-        AuthenticationFailureStatus status = failures.putIfAbsent(address, newFailure);
-        if (status == null)
-            return newFailure;
+        AuthenticationFailureStatus status = failures.get(address,
+                (addr) -> new AuthenticationFailureStatus(maxAttempts, banDuration));
 
         status.notifyFailed();
         return status;
@@ -199,7 +210,7 @@ public class AuthenticationFailureTracker {
                     address, status.getFailures(), maxAttempts);
         }
         else
-            status = failures.get(address);
+            status = failures.getIfPresent(address);
 
         if (status != null) {
 
@@ -216,7 +227,7 @@ public class AuthenticationFailureTracker {
             // relevant (all failures are sufficiently old)
             else if (!status.isValid()) {
                 logger.debug("Removing address \"{}\" from tracking as there are no recent authentication failures.", address);
-                failures.remove(address);
+                failures.invalidate(address);
             }
 
         }

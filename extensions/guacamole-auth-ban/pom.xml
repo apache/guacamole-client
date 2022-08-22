@@ -53,6 +53,27 @@
             <artifactId>guacamole-ext</artifactId>
             <version>1.4.0</version>
             <scope>provided</scope>
+
+            <!-- Exclude transitive dependencies that will be overridden by
+                newer versions required by Caffeine -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.errorprone</groupId>
+                    <artifactId>error_prone_annotations</artifactId>
+                </exclusion>
+            </exclusions>
+
+        </dependency>
+
+        <!-- Guava Base Libraries -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.9.3</version>
         </dependency>
 
     </dependencies>
