@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.ban;
 import org.apache.guacamole.auth.ban.status.InMemoryAuthenticationFailureTracker;
 import org.apache.guacamole.auth.ban.status.AuthenticationFailureTracker;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ban.status.NullAuthenticationFailureTracker;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
@@ -130,12 +129,6 @@ public class BanningAuthenticationProvider extends AbstractAuthenticationProvide
         int banDuration = environment.getProperty(IP_BAN_DURATION, DEFAULT_IP_BAN_DURATION);
         long maxAddresses = environment.getProperty(MAX_ADDRESSES, DEFAULT_MAX_ADDRESSES);
 
-        if (maxAddresses <= 0)
-            throw new GuacamoleServerException("The maximum number of "
-                    + "addresses tracked, as specified by the "
-                    + "\"" +  MAX_ADDRESSES.getName() + "\" property, must be "
-                    + "greater than zero.");
-
         // Configure auth failure tracking behavior and inform administrator of
         // ultimate result
         if (maxAttempts <= 0) {
@@ -150,6 +143,12 @@ public class BanningAuthenticationProvider extends AbstractAuthenticationProvide
                     + "authentication has been set to {}. Automatic banning "
                     + "of brute-force authentication attempts will be "
                     + "disabled.", banDuration);
+        }
+        else if (maxAddresses <= 0) {
+            this.tracker = new NullAuthenticationFailureTracker();
+            logger.info("Maximum number of tracked addresses has been set to "
+                    + "{}. Automatic banning of brute-force authentication "
+                    + "attempts will be disabled.", maxAddresses);
         }
         else {
             this.tracker = new InMemoryAuthenticationFailureTracker(maxAttempts, banDuration, maxAddresses);
