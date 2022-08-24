@@ -322,8 +322,11 @@ public class KsmClient {
                 if (!confService.getMatchUserRecordsByDomain())
                     domain = null;
 
-                // Store the login by username and domain
-                addRecordForLogin(record, username, domain);
+                // Store based on login ONLY if no hostname (will otherwise
+                // result in ambiguous entries for servers tied to identical
+                // accounts)
+                if (hostname == null)
+                    addRecordForLogin(record, username, domain);
 
             }
 
