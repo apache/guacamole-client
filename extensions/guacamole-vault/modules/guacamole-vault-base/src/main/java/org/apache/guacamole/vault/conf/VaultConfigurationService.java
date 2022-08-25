@@ -206,4 +206,21 @@ public abstract class VaultConfigurationService {
      */
     public abstract boolean getSplitWindowsUsernames() throws GuacamoleException;
 
+    /**
+     * Return whether domains should be considered when matching user records
+     * that are fetched from the vault.
+     *
+     * If set to true, the username and domain must both match when matching
+     * records from the vault. If false, only the username will be considered.
+     *
+     * @return
+     *     true if both the username and domain should be considered when
+     *     matching user records from the vault.
+     *
+     * @throws GuacamoleException
+     *     If the value specified within guacamole.properties cannot be
+     *     parsed.
+     */
+    public abstract boolean getMatchUserRecordsByDomain() throws GuacamoleException;
+
 }
