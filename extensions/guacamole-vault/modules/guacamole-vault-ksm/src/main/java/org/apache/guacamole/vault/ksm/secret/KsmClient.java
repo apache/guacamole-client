@@ -277,13 +277,13 @@ public class KsmClient {
             cachedAmbiguousDomains.clear();
             cachedRecordsByDomain.clear();
 
+            // Parse configuration
+            final boolean shouldSplitUsernames = confService.getSplitWindowsUsernames();
+            final boolean shouldMatchByDomain = confService.getMatchUserRecordsByDomain();
+
             // Store all records, sorting each into host-based, login-based,
             // and domain-based buckets
-            Iterator<KeeperRecord> recordIterator = records.iterator();
-            while(recordIterator.hasNext()) {
-
-                // Go through records one at a time
-                KeeperRecord record = recordIterator.next();
+            records.forEach(record -> {
 
                 // Store based on UID ...
                 cachedRecordsByUid.put(record.getRecordUid(), record);
@@ -300,8 +300,7 @@ public class KsmClient {
                 String username = recordService.getUsername(record);
 
                 // If we have a username, and there isn't already a domain explicitly defined
-                if (username != null && domain == null
-                        && confService.getSplitWindowsUsernames()) {
+                if (username != null && domain == null && shouldSplitUsernames) {
 
                     // Attempt to split out the domain of the username
                     WindowsUsername usernameAndDomain = (
@@ -319,7 +318,7 @@ public class KsmClient {
                 // If domain matching is not enabled for user records,
                 // explicitly set all domains to null to allow matching
                 // on username only
-                if (!confService.getMatchUserRecordsByDomain())
+                if (!shouldMatchByDomain)
                     domain = null;
 
                 // Store based on login ONLY if no hostname (will otherwise
@@ -328,7 +327,7 @@ public class KsmClient {
                 if (hostname == null)
                     addRecordForLogin(record, username, domain);
 
-            }
+            });
 
             // Cache has been refreshed
             this.cacheTimestamp = System.currentTimeMillis();
