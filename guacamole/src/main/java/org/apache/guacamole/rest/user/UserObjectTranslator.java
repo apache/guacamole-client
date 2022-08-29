@@ -59,9 +59,22 @@ public class UserObjectTranslator
     public void filterExternalObject(UserContext userContext, APIUser object)
             throws GuacamoleException {
 
-        // Filter object attributes by defined schema
-        object.setAttributes(filterAttributes(userContext.getUserAttributes(),
-                object.getAttributes()));
+        // If a user is editing themselves ...
+        if (object.getUsername().equals(userContext.self().getIdentifier())) {
+
+            // ... they may only edit preference attributes
+            object.setAttributes(filterAttributes(userContext.getUserPreferenceAttributes(),
+                    object.getAttributes()));
+
+        }
+
+        else {
+
+            // In all other cases, filter object attributes by defined schema
+            object.setAttributes(filterAttributes(userContext.getUserAttributes(),
+                    object.getAttributes()));
+
+        }
 
     }
 

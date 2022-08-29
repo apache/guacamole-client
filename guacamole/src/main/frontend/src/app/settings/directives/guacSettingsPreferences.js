@@ -68,7 +68,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                 callback    : function acknowledgeCallback() {
                     userService.getUser(dataSource, username)
                         .then(user => $scope.user = user)
-                        .then(guacNotification.showStatus(false))
+                        .then(() => guacNotification.showStatus(false));
                 }
             };
 
@@ -100,17 +100,6 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              * @type Object.<String, Object>
              */
             $scope.preferences = preferenceService.preferences;
-
-            /**
-             * All available user attributes, as a mapping of form name to form
-             * object. The form object contains a name, as well as a Map of fields.
-             *
-             * The Map type is used here to maintain form/name uniqueness, as well as
-             * insertion order, to ensure a consistent UI experience.
-             *
-             * @type Map<String, Object>
-             */
-            $scope.attributeMap = new Map();
 
             /**
              * All available user attributes. This is only the set of attribute
@@ -263,61 +252,10 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                 $scope.user = user;
             })
 
-            // Get all datasources that are available for this user
-            authenticationService.getAvailableDataSources().forEach(function loadAttributesForDataSource(dataSource) {
-
-                // Fetch all user attribute forms defined for the datasource
-                schemaService.getUserPreferenceAttributes(dataSource).then(function saveAttributes(attributes) {
-
-                    // Iterate through all attribute forms
-                    attributes.forEach(function addAttribute(attributeForm) {
-
-                        // If the form with the retrieved name already exists
-                        if ($scope.attributeMap.has(attributeForm.name)) {
-                            const existingFields = $scope.attributeMap.get(attributeForm.name).fields;
-
-                            // Add each field to the existing list for this form
-                            attributeForm.fields.forEach(function addAllFieldsToExistingMap(field) {
-                                existingFields.set(field.name, field);
-                            })
-                        }
-
-                        else {
-
-                            // Create a new entry for the form
-                            $scope.attributeMap.set(attributeForm.name, {
-                                name: attributeForm.name,
-
-                                // With the field array from the API converted into a Map
-                                fields: attributeForm.fields.reduce(
-                                    function addFieldToMap(currentFieldMap, field) {
-                                        currentFieldMap.set(field.name, field);
-                                        return currentFieldMap;
-                                    }, new Map()
-                                )
-
-                            })
-                        }
-
-                    });
-
-                    // Re-generate the attributes array every time
-                    $scope.attributes = Array.of(...$scope.attributeMap.values()).map(function convertFieldsToArray(formObject) {
-
-                        // Convert each temporary form object to a Form type
-                        return new Form({
-                            name: formObject.name,
-
-                            // Convert the field map to a simple array of fields
-                            fields: Array.of(...formObject.fields.values())
-                        })
-                    });
-
-                });
-
+            // Fetch all user preference attribute forms defined
+            schemaService.getUserPreferenceAttributes(dataSource).then(function saveAttributes(attributes) {
+                $scope.attributes = attributes;
             });
-
         }]
     };
-
 }]);

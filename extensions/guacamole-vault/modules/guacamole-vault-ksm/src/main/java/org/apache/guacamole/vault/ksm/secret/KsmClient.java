@@ -605,7 +605,7 @@ public class KsmClient {
      * value of a specific field, custom field, or file associated with a
      * specific record. See: https://docs.keeper.io/secrets-manager/secrets-manager/about/keeper-notation
      * If a fallbackFunction is provided, it will be invoked to generate
-     * a return value in the case where no secrest is found with the given
+     * a return value in the case where no secret is found with the given
      * keeper notation.
      *
      * @param notation

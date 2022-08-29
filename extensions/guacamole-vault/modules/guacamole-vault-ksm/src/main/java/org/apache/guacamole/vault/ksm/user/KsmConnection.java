@@ -19,24 +19,20 @@
 
 package org.apache.guacamole.vault.ksm.user;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.guacamole.net.auth.DelegatingConnection;
+import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
 import org.apache.guacamole.net.auth.Connection;
 
 import com.google.common.collect.Maps;
 
 /**
- * A Connection that explicitly adds a blank entry for any defined
- * KSM connection attributes.
+ * A Connection that explicitly adds a blank entry for any defined KSM
+ * connection attributes. This ensures that any such field will always
+ * be displayed to the user when editing a connection through the UI.
  */
 public class KsmConnection extends DelegatingConnection {
-
-    /**
-     * The names of all connection attributes defined for the vault.
-     */
-    private List<String> connectionAttributeNames;
 
     /**
      * Create a new Vault connection wrapping the provided Connection record. Any
@@ -45,15 +41,9 @@ public class KsmConnection extends DelegatingConnection {
      *
      * @param connection
      *     The connection record to wrap.
-     *
-     * @param connectionAttributeNames
-     *     The names of all connection attributes to automatically expose.
      */
-    KsmConnection(Connection connection, List<String> connectionAttributeNames) {
-
+    KsmConnection(Connection connection) {
         super(connection);
-        this.connectionAttributeNames = connectionAttributeNames;
-
     }
 
     /**
@@ -70,13 +60,12 @@ public class KsmConnection extends DelegatingConnection {
     public Map<String, String> getAttributes() {
 
         // Make a copy of the existing map
-        Map<String, String> attributeMap = Maps.newHashMap(super.getAttributes());
+        Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
 
-        // Add every defined attribute
-        connectionAttributeNames.forEach(
-                attributeName -> attributeMap.putIfAbsent(attributeName, null));
+        // Add the configuration attribute
+        attributes.putIfAbsent(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE, null);
+        return attributes;
 
-        return attributeMap;
     }
 
 }

@@ -19,12 +19,13 @@
 
 package org.apache.guacamole.vault.ksm.user;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DelegatingConnectionGroup;
 import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
+
+import com.google.common.collect.Maps;
 
  /**
   * A KSM-specific connection group implementation that always exposes
@@ -50,17 +51,11 @@ import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
     @Override
     public Map<String, String> getAttributes() {
 
-        // All attributes defined on the underlying connection group
-        Map<String, String> attributes = super.getAttributes();
+        // Make a copy of the existing map
+        Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
 
-        // If the attribute is already present, there's no need to add it - return
-        // the existing attributes as they are
-        if (attributes.containsKey(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE))
-            return attributes;
-
-        // Make a copy of the existing attributes and add KSM_CONFIGURATION_ATTRIBUTE
-        attributes = new HashMap<>(attributes);
-        attributes.put(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE, null);
+        // Add the configuration attribute
+        attributes.putIfAbsent(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE, null);
         return attributes;
 
     }

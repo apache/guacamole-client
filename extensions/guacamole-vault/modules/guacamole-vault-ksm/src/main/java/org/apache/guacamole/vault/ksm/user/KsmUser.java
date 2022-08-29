@@ -19,11 +19,11 @@
 
 package org.apache.guacamole.vault.ksm.user;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.guacamole.net.auth.DelegatingUser;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
 
 import com.google.common.collect.Maps;
 
@@ -34,26 +34,15 @@ import com.google.common.collect.Maps;
 public class KsmUser extends DelegatingUser {
 
     /**
-     * The names of all user attributes defined for the vault.
-     */
-    private List<String> userAttributeNames;
-
-    /**
      * Create a new Vault user wrapping the provided User record. Any
-     * attributes defined in the provided user attribute forms will have empty
-     * values automatically populated when getAttributes() is called.
+     * KSM-specific attribute forms will have empty values automatically
+     * populated when getAttributes() is called.
      *
      * @param user
      *     The user record to wrap.
-     *
-     * @param userAttributeNames
-     *     The names of all user attributes to automatically expose.
      */
-    KsmUser(User user, List<String> userAttributeNames) {
-
+    KsmUser(User user) {
         super(user);
-        this.userAttributeNames = userAttributeNames;
-
     }
 
     /**
@@ -70,13 +59,11 @@ public class KsmUser extends DelegatingUser {
     public Map<String, String> getAttributes() {
 
         // Make a copy of the existing map
-        Map<String, String> attributeMap = Maps.newHashMap(super.getAttributes());
+        Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
 
-        // Add every defined attribute
-        userAttributeNames.forEach(
-                attributeName -> attributeMap.putIfAbsent(attributeName, null));
-
-        return attributeMap;
+        // Add the configuration attribute
+        attributes.putIfAbsent(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE, null);
+        return attributes;
     }
 
 }

@@ -26,8 +26,12 @@ import org.apache.guacamole.GuacamoleException;
  * Java, except that the get() function can throw GuacamoleException, which
  * is impossible with any of the standard Java lambda type classes, since
  * none of them can handle checked exceptions
+ *
+ * @param <T>
+ *     The type of object which will be returned as a result of calling
+ *     get().
  */
-public abstract class GuacamoleExceptionSupplier<T> {
+public interface GuacamoleExceptionSupplier<T> {
 
     /**
      * Returns a value of the declared type.
@@ -38,6 +42,6 @@ public abstract class GuacamoleExceptionSupplier<T> {
      * @throws GuacamoleException
      *    If an error occurs while attemping to calculate the return value.
      */
-    public abstract T get() throws GuacamoleException;
+    public T get() throws GuacamoleException;
 
 }

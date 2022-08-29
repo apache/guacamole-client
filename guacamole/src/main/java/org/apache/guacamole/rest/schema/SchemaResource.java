@@ -89,7 +89,7 @@ public class SchemaResource {
      */
     @GET
     @Path("userPreferenceAttributes")
-    public Collection<Form> getUserAttrigetUserPreferenceAttributesbutes()
+    public Collection<Form> getUserPreferenceAttributes()
             throws GuacamoleException {
 
         // Retrieve all possible user preference attributes

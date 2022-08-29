@@ -28,6 +28,8 @@ import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.vault.conf.VaultAttributeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -39,7 +41,14 @@ import com.google.inject.Singleton;
 @Singleton
 public class KsmAttributeService implements VaultAttributeService {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(KsmAttributeService.class);
 
+    /**
+     * Service for retrieving KSM configuration details.
+     */
     @Inject
     private KsmConfigurationService configurationService;
 
@@ -57,7 +66,7 @@ public class KsmAttributeService implements VaultAttributeService {
             Arrays.asList(new TextField(KSM_CONFIGURATION_ATTRIBUTE)));
 
     /**
-     * All KSM-specific attributes for users or connection groups, organized by form.
+     * All KSM-specific attributes for users, connections, or connection groups, organized by form.
      */
     public static final Collection<Form> KSM_ATTRIBUTES =
             Collections.unmodifiableCollection(Arrays.asList(KSM_CONFIGURATION_FORM));
@@ -108,7 +117,16 @@ public class KsmAttributeService implements VaultAttributeService {
             // Expose the user attributes IFF user-level KSM configuration is enabled
             return configurationService.getAllowUserConfig() ? KSM_ATTRIBUTES : Collections.emptyList();
 
-        } catch (GuacamoleException e) {
+        }
+
+        catch (GuacamoleException e) {
+
+            logger.warn(
+                    "Unable to determine if user preference attributes "
+                    + "should be exposed due to config parsing error: {}.", e.getMessage());
+            logger.debug(
+                    "Config parsing error prevented checking user preference configuration",
+                    e);
 
             // If the configuration can't be parsed, default to not exposing the attribute
             return Collections.emptyList();

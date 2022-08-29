@@ -26,7 +26,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.language.TranslatableGuacamoleClientException;
@@ -59,12 +58,6 @@ public class KsmDirectoryService extends VaultDirectoryService {
      */
     @Inject
     private KsmConfigurationService configurationService;
-
-    /**
-     * Service for retrieving KSM-specific attributes.
-     */
-    @Inject
-    private KsmAttributeService ksmAttributeService;
 
     /**
      * A singleton ObjectMapper for converting a Map to a JSON string when
@@ -235,8 +228,9 @@ public class KsmDirectoryService extends VaultDirectoryService {
     public Directory<Connection> getConnectionDirectory(
             Directory<Connection> underlyingDirectory) throws GuacamoleException {
 
-        // A Connection directory that will intercept add and update calls to
-        // validate KSM configurations, and translate one-time-tokens, if possible
+        // A Connection directory that will decorate all connections with a
+        // KsmConnection wrapper to ensure that all defined KSM fields will
+        // be exposed in the connection group attributes.
         return new DecoratingDirectory<Connection>(underlyingDirectory) {
 
             @Override
@@ -244,17 +238,13 @@ public class KsmDirectoryService extends VaultDirectoryService {
 
                 // Wrap in a KsmConnection class to ensure that all defined KSM fields will be
                 // present
-                return new KsmConnection(
-                        connection,
-                        ksmAttributeService.getConnectionAttributes().stream().flatMap(
-                                form -> form.getFields().stream().map(field -> field.getName())
-                        ).collect(Collectors.toList()));
+                return new KsmConnection(connection);
             }
 
             @Override
             protected Connection undecorate(Connection connection) throws GuacamoleException {
 
-                // Unwrap the KsmUser
+                // Unwrap the KsmConnection
                 return ((KsmConnection) connection).getUnderlyingConnection();
             }
 
@@ -315,6 +305,9 @@ public class KsmDirectoryService extends VaultDirectoryService {
 
         // A User directory that will intercept add and update calls to
         // validate KSM configurations, and translate one-time-tokens, if possible
+        // Additionally, this directory will will decorate all users with a
+        // KsmUser wrapper to ensure that all defined KSM fields will be exposed
+        // in the user attributes.
         return new DecoratingDirectory<User>(underlyingDirectory) {
 
             @Override
@@ -340,11 +333,7 @@ public class KsmDirectoryService extends VaultDirectoryService {
 
                 // Wrap in a KsmUser class to ensure that all defined KSM fields will be
                 // present
-                return new KsmUser(
-                        user,
-                        ksmAttributeService.getUserAttributes().stream().flatMap(
-                                form -> form.getFields().stream().map(field -> field.getName())
-                        ).collect(Collectors.toList()));
+                return new KsmUser(user);
             }
 
             @Override

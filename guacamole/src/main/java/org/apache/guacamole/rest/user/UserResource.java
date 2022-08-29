@@ -22,10 +22,6 @@ package org.apache.guacamole.rest.user;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -150,50 +146,14 @@ public class UserResource
     @Override
     public void updateObject(APIUser modifiedObject) throws GuacamoleException {
 
+        // A user may not use this endpoint to update their password
         User currentUser = userContext.self();
-
-        // A user may not use this endpoint to modify themself, except in the case
-        // that they are modifying one of the user attributes explicitly exposed
-        // in the user preferences form
-        if (currentUser.getIdentifier().equals(modifiedObject.getUsername())) {
-
-            // A user may not use this endpoint to update their password
-            if (currentUser.getPassword() != null)
-                throw new GuacamoleSecurityException(
-                        "Permission denied. The password update endpoint must"
-                        + " be used to change the current user's password.");
-
-            // All attributes exposed in the preferences forms
-            Set<String> preferenceAttributes = (
-                    userContext.getUserPreferenceAttributes().stream()
-                    .flatMap(form -> form.getFields().stream().map(
-                            field -> field.getName())))
-                    .collect(Collectors.toSet());
-
-            // Go through every attribute value and check if it's changed
-            Iterator<String> keyIterator = modifiedObject.getAttributes().keySet().iterator();
-            while(keyIterator.hasNext()) {
-
-                String key = keyIterator.next();
-                String newValue = modifiedObject.getAttributes().get(key);
-
-                // If it's not a preference attribute, editing is not allowed
-                if (!preferenceAttributes.contains(key)) {
-
-                    String currentValue = currentUser.getAttributes().get(key);
-
-                    // If the value of the attribute has been modified
-                    if (
-                            !(currentValue == null && newValue == null) && (
-                                (currentValue == null && newValue != null) ||
-                                !currentValue.equals(newValue)
-                            )
-                    )
-                        throw new GuacamoleSecurityException(
-                            "Permission denied. Only user preference attributes"
-                            + " can be modified for the current user.");
-                }
-            }
+        if (
+                currentUser.getIdentifier().equals(modifiedObject.getUsername())
+                && modifiedObject.getPassword() != null) {
+            throw new GuacamoleSecurityException(
+                    "Permission denied. The password update endpoint must"
+                    + " be used to change the current user's password.");
         }
 
         super.updateObject(modifiedObject);
