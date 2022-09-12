@@ -1165,12 +1165,12 @@ set_optional_property "ban-address-duration" "$BAN_ADDRESS_DURATION"
 set_optional_property "ban-max-addresses" "$BAN_MAX_ADDRESSES"
 set_optional_property "ban-max-invalid-attempts" "$BAN_MAX_INVALID_ATTEMPTS"
 
-# Ensure guacamole-auth-ban always loads before other extensions unless
-# explicitly overridden via naming or EXTENSION_PRIORITY (allowing other
-# extensions to attempt authentication before guacamole-auth-ban has a chance
-# to enforce any bans could allow credentials to continue to be guessed even
-# after the address has been blocked via timing attacks)
-ln -s /opt/guacamole/ban/guacamole-auth-*.jar "$GUACAMOLE_EXT/_guacamole-auth-ban.jar"
+# Always load guacamole-auth-ban extension (automatic banning can be disabled
+# through seting BAN_ADDRESS_DURATION to 0). As guacamole-auth-ban performs
+# its banning by handling a pre-authentication event, it is guaranteed to
+# perform its checks before all other auth processing and load order does not
+# matter.
+ln -s /opt/guacamole/ban/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 
 # Set logback level if specified
 if [ -n "$LOGBACK_LEVEL" ]; then
