@@ -38,6 +38,7 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.net.event.AuthenticationFailureEvent;
+import org.apache.guacamole.net.event.AuthenticationRequestReceivedEvent;
 import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
 import org.apache.guacamole.rest.event.ListenerService;
 import org.glassfish.jersey.server.ContainerRequest;
@@ -411,6 +412,9 @@ public class AuthenticationService {
      */
     public String authenticate(Credentials credentials, String token)
             throws GuacamoleException {
+
+        // Fire pre-authentication event before ANY authn/authz occurs at all
+        listenerService.handleEvent((AuthenticationRequestReceivedEvent) () -> credentials);
 
         // Pull existing session if token provided
         GuacamoleSession existingSession;
