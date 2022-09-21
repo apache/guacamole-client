@@ -29,6 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
@@ -46,19 +47,11 @@ public class ConnectionGroupResource
         extends DirectoryObjectResource<ConnectionGroup, APIConnectionGroup> {
 
     /**
-     * The UserContext associated with the Directory which contains the
-     * ConnectionGroup exposed by this resource.
-     */
-    private final UserContext userContext;
-
-    /**
-     * The ConnectionGroup object represented by this ConnectionGroupResource.
-     */
-    private final ConnectionGroup connectionGroup;
-
-    /**
      * Creates a new ConnectionGroupResource which exposes the operations and
      * subresources available for the given ConnectionGroup.
+     *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
      *
      * @param userContext
      *     The UserContext associated with the given Directory.
@@ -75,13 +68,13 @@ public class ConnectionGroupResource
      *     object given.
      */
     @AssistedInject
-    public ConnectionGroupResource(@Assisted UserContext userContext,
+    public ConnectionGroupResource(
+            @Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserContext userContext,
             @Assisted Directory<ConnectionGroup> directory,
             @Assisted ConnectionGroup connectionGroup,
             DirectoryObjectTranslator<ConnectionGroup, APIConnectionGroup> translator) {
-        super(userContext, directory, connectionGroup, translator);
-        this.userContext = userContext;
-        this.connectionGroup = connectionGroup;
+        super(authenticatedUser, userContext, ConnectionGroup.class, directory, connectionGroup, translator);
     }
 
     /**
@@ -107,8 +100,8 @@ public class ConnectionGroupResource
             throws GuacamoleException {
 
         // Retrieve the requested tree, filtering by the given permissions
-        ConnectionGroupTree tree = new ConnectionGroupTree(userContext,
-                connectionGroup, permissions);
+        ConnectionGroupTree tree = new ConnectionGroupTree(getUserContext(),
+                getInternalObject(), permissions);
 
         // Return tree as a connection group
         return tree.getRootAPIConnectionGroup();

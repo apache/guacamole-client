@@ -26,6 +26,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.UserContext;
@@ -48,6 +49,9 @@ public class ActiveConnectionDirectoryResource
      * operations and subresources available for the given ActiveConnection
      * Directory.
      *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
+     *
      * @param userContext
      *     The UserContext associated with the given Directory.
      *
@@ -63,11 +67,13 @@ public class ActiveConnectionDirectoryResource
      *     representing ActiveConnections.
      */
     @AssistedInject
-    public ActiveConnectionDirectoryResource(@Assisted UserContext userContext,
+    public ActiveConnectionDirectoryResource(
+            @Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserContext userContext,
             @Assisted Directory<ActiveConnection> directory,
             DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> translator,
             DirectoryObjectResourceFactory<ActiveConnection, APIActiveConnection> resourceFactory) {
-        super(userContext, directory, translator, resourceFactory);
+        super(authenticatedUser, userContext, ActiveConnection.class, directory, translator, resourceFactory);
     }
 
     @Override

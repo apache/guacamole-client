@@ -30,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
@@ -48,17 +49,6 @@ public class ActiveConnectionResource
         extends DirectoryObjectResource<ActiveConnection, APIActiveConnection> {
 
     /**
-     * The UserContext associated with the Directory which contains the
-     * Connection exposed by this resource.
-     */
-    private final UserContext userContext;
-
-    /**
-     * The ActiveConnection exposed by this ActiveConnectionResource.
-     */
-    private final ActiveConnection activeConnection;
-
-    /**
      * A factory which can be used to create instances of resources representing
      * Connection.
      */
@@ -69,6 +59,9 @@ public class ActiveConnectionResource
     /**
      * Creates a new ActiveConnectionResource which exposes the operations and
      * subresources available for the given ActiveConnection.
+     *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
      *
      * @param userContext
      *     The UserContext associated with the given Directory.
@@ -85,13 +78,12 @@ public class ActiveConnectionResource
      *     ActiveConnections.
      */
     @AssistedInject
-    public ActiveConnectionResource(@Assisted UserContext userContext,
+    public ActiveConnectionResource(@Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserContext userContext,
             @Assisted Directory<ActiveConnection> directory,
             @Assisted ActiveConnection activeConnection,
             DirectoryObjectTranslator<ActiveConnection, APIActiveConnection> translator) {
-        super(userContext, directory, activeConnection, translator);
-        this.userContext = userContext;
-        this.activeConnection = activeConnection;
+        super(authenticatedUser, userContext, ActiveConnection.class, directory, activeConnection, translator);
     }
 
     /**
@@ -109,9 +101,12 @@ public class ActiveConnectionResource
     public DirectoryObjectResource<Connection, APIConnection> getConnection()
             throws GuacamoleException {
 
+        UserContext userContext = getUserContext();
+        ActiveConnection activeConnection = getInternalObject();
+        
         // Return the underlying connection as a resource
         return connectionDirectoryResourceFactory
-                .create(userContext, userContext.getConnectionDirectory())
+                .create(getAuthenticatedUser(), userContext, userContext.getConnectionDirectory())
                 .getObjectResource(activeConnection.getConnectionIdentifier());
 
     }
@@ -137,7 +132,7 @@ public class ActiveConnectionResource
             throws GuacamoleException {
 
         // Generate and return sharing credentials for the active connection
-        return new APIUserCredentials(activeConnection.getSharingCredentials(sharingProfileIdentifier));
+        return new APIUserCredentials(getInternalObject().getSharingCredentials(sharingProfileIdentifier));
 
     }
 

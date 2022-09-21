@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PATCH;
@@ -36,6 +37,8 @@ import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.Permissions;
@@ -44,7 +47,11 @@ import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
+import org.apache.guacamole.net.event.DirectoryEvent;
+import org.apache.guacamole.net.event.DirectoryFailureEvent;
+import org.apache.guacamole.net.event.DirectorySuccessEvent;
 import org.apache.guacamole.rest.APIPatch;
+import org.apache.guacamole.rest.event.ListenerService;
 
 /**
  * A REST resource which abstracts the operations available on all Guacamole
@@ -69,10 +76,21 @@ import org.apache.guacamole.rest.APIPatch;
 public abstract class DirectoryResource<InternalType extends Identifiable, ExternalType> {
 
     /**
+     * The user that is accessing this resource.
+     */
+    private final AuthenticatedUser authenticatedUser;
+    
+    /**
      * The UserContext associated with the Directory being exposed by this
      * DirectoryResource.
      */
     private final UserContext userContext;
+
+    /**
+     * The type of object contained within the Directory exposed by this
+     * DirectoryResource.
+     */
+    private final Class<InternalType> internalType;
 
     /**
      * The Directory being exposed by this DirectoryResource.
@@ -93,11 +111,23 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
     private final DirectoryObjectResourceFactory<InternalType, ExternalType> resourceFactory;
 
     /**
+     * Service for dispatching events to registered listeners.
+     */
+    @Inject
+    private ListenerService listenerService;
+
+    /**
      * Creates a new DirectoryResource which exposes the operations available
      * for the given Directory.
      *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
+     *
      * @param userContext
      *     The UserContext associated with the given Directory.
+     *
+     * @param internalType
+     *     The type of object contained within the given Directory.
      *
      * @param directory
      *     The Directory being exposed by this DirectoryResource.
@@ -110,11 +140,15 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
      *     A factory which can be used to create instances of resources
      *     representing individual objects contained within the given Directory.
      */
-    public DirectoryResource(UserContext userContext, Directory<InternalType> directory,
+    public DirectoryResource(AuthenticatedUser authenticatedUser,
+            UserContext userContext, Class<InternalType> internalType,
+            Directory<InternalType> directory,
             DirectoryObjectTranslator<InternalType, ExternalType> translator,
             DirectoryObjectResourceFactory<InternalType, ExternalType> resourceFactory) {
+        this.authenticatedUser = authenticatedUser;
         this.userContext = userContext;
         this.directory = directory;
+        this.internalType = internalType;
         this.translator = translator;
         this.resourceFactory = resourceFactory;
     }
@@ -138,6 +172,174 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
      */
     protected abstract ObjectPermissionSet getObjectPermissions(
             Permissions permissions) throws GuacamoleException;
+
+    /**
+     * Notifies all registered listeners that the given operation has succeeded
+     * against the object having the given identifier within the Directory
+     * represented by this resource.
+     * 
+     * @param operation
+     *     The operation that was performed.
+     *
+     * @param identifier
+     *     The identifier of the object affected by the operation.
+     *
+     * @param object
+     *     The specific object affected by the operation, if available. If not
+     *     available, this may be null.
+     *
+     * @throws GuacamoleException
+     *     If a listener throws a GuacamoleException from its event handler.
+     */
+    protected void fireDirectorySuccessEvent(DirectoryEvent.Operation operation,
+                String identifier, InternalType object)
+            throws GuacamoleException {
+        listenerService.handleEvent(new DirectorySuccessEvent<InternalType>() {
+
+            @Override
+            public Directory.Type getDirectoryType() {
+                return Directory.Type.of(internalType);
+            }
+
+            @Override
+            public DirectoryEvent.Operation getOperation() {
+                return operation;
+            }
+
+            @Override
+            public String getObjectIdentifier() {
+                return identifier;
+            }
+
+            @Override
+            public InternalType getObject() {
+                return object;
+            }
+
+            @Override
+            public AuthenticatedUser getAuthenticatedUser() {
+                return authenticatedUser;
+            }
+
+            @Override
+            public AuthenticationProvider getAuthenticationProvider() {
+                return userContext.getAuthenticationProvider();
+            }
+
+        });
+    }
+
+    /**
+     * Notifies all registered listeners that the given operation has failed
+     * against the object having the given identifier within the Directory
+     * represented by this resource.
+     *
+     * @param operation
+     *     The operation that failed.
+     *
+     * @param identifier
+     *     The identifier of the object that would have been affected by the
+     *     operation had it succeeded.
+     *
+     * @param object
+     *     The specific object would have been affected by the operation, if
+     *     available, had it succeeded, including any changes that were
+     *     intended to be applied to the object. If not available, this may be
+     *     null.
+     *
+     * @param failure
+     *     The failure that occurred.
+     *
+     * @throws GuacamoleException
+     *     If a listener throws a GuacamoleException from its event handler.
+     */
+    protected void fireDirectoryFailureEvent(DirectoryEvent.Operation operation,
+                String identifier, InternalType object, Throwable failure)
+            throws GuacamoleException {
+        listenerService.handleEvent(new DirectoryFailureEvent<InternalType>() {
+
+            @Override
+            public Directory.Type getDirectoryType() {
+                return Directory.Type.of(internalType);
+            }
+
+            @Override
+            public DirectoryEvent.Operation getOperation() {
+                return operation;
+            }
+
+            @Override
+            public String getObjectIdentifier() {
+                return identifier;
+            }
+
+            @Override
+            public InternalType getObject() {
+                return object;
+            }
+
+            @Override
+            public AuthenticatedUser getAuthenticatedUser() {
+                return authenticatedUser;
+            }
+
+            @Override
+            public AuthenticationProvider getAuthenticationProvider() {
+                return userContext.getAuthenticationProvider();
+            }
+
+            @Override
+            public Throwable getFailure() {
+                return failure;
+            }
+
+        });
+    }
+
+    /**
+     * Returns the user accessing this resource.
+     *
+     * @return
+     *     The user accessing this resource.
+     */
+    protected AuthenticatedUser getAuthenticatedUser() {
+        return authenticatedUser;
+    }
+
+    /**
+     * Returns the UserContext providing the Directory exposed by this
+     * resource.
+     *
+     * @return 
+     *     The UserContext providing the Directory exposed by this resource.
+     */
+    protected UserContext getUserContext() {
+        return userContext;
+    }
+
+    /**
+     * Returns the Directory exposed by this resource.
+     *
+     * @return 
+     *     The Directory exposed by this resource.
+     */
+    protected Directory<InternalType> getDirectory() {
+        return directory;
+    }
+
+    /**
+     * Returns a factory that can be used to create instances of resources
+     * representing individual objects contained within the Directory exposed
+     * by this resource.
+     *
+     * @return 
+     *     A factory that can be used to create instances of resources
+     *     representing individual objects contained within the Directory
+     *     exposed by this resource.
+     */
+    public DirectoryObjectResourceFactory<InternalType, ExternalType> getResourceFactory() {
+        return resourceFactory;
+    }
 
     /**
      * Returns a map of all objects available within this DirectoryResource,
@@ -213,7 +415,15 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                 throw new GuacamoleClientException("Patch paths must start with \"/\".");
 
             // Remove specified object
-            directory.remove(path.substring(1));
+            String identifier = path.substring(1);
+            try {
+                directory.remove(identifier);
+                fireDirectorySuccessEvent(DirectoryEvent.Operation.REMOVE, identifier, null);
+            }
+            catch (GuacamoleException | RuntimeException | Error e) {
+                fireDirectoryFailureEvent(DirectoryEvent.Operation.REMOVE, identifier, null, e);
+                throw e;
+            }
 
         }
 
@@ -244,11 +454,18 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
         // Filter/sanitize object contents
         translator.filterExternalObject(userContext, object);
+        InternalType internal = translator.toInternalObject(object);
 
         // Create the new object within the directory
-        directory.add(translator.toInternalObject(object));
-
-        return object;
+        try {
+            directory.add(internal);
+            fireDirectorySuccessEvent(DirectoryEvent.Operation.ADD, internal.getIdentifier(), internal);
+            return object;
+        }
+        catch (GuacamoleException | RuntimeException | Error e) {
+            fireDirectoryFailureEvent(DirectoryEvent.Operation.ADD, internal.getIdentifier(), internal, e);
+            throw e;
+        }
 
     }
 
@@ -272,12 +489,21 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
             throws GuacamoleException {
 
         // Retrieve the object having the given identifier
-        InternalType object = directory.get(identifier);
-        if (object == null)
-            throw new GuacamoleResourceNotFoundException("Not found: \"" + identifier + "\"");
+        InternalType object;
+        try {
+            object = directory.get(identifier);
+            if (object == null)
+                throw new GuacamoleResourceNotFoundException("Not found: \"" + identifier + "\"");
+        }
+        catch (GuacamoleException | RuntimeException | Error e) {
+            fireDirectoryFailureEvent(DirectoryEvent.Operation.GET, identifier, null, e);
+            throw e;
+        }
 
         // Return a resource which provides access to the retrieved object
-        return resourceFactory.create(userContext, directory, object);
+        DirectoryObjectResource<InternalType, ExternalType> resource = resourceFactory.create(authenticatedUser, userContext, directory, object);
+        fireDirectorySuccessEvent(DirectoryEvent.Operation.GET, identifier, object);
+        return resource;
 
     }
 

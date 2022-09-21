@@ -26,6 +26,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
@@ -44,13 +45,11 @@ public class UserGroupResource
         extends DirectoryObjectResource<UserGroup, APIUserGroup> {
 
     /**
-     * The UserGroup object represented by this UserGroupResource.
-     */
-    private final UserGroup userGroup;
-
-    /**
      * Creates a new UserGroupResource which exposes the operations and
      * subresources available for the given UserGroup.
+     *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
      *
      * @param userContext
      *     The UserContext associated with the given Directory.
@@ -65,12 +64,12 @@ public class UserGroupResource
      *     A DirectoryObjectTranslator implementation which handles Users.
      */
     @AssistedInject
-    public UserGroupResource(@Assisted UserContext userContext,
+    public UserGroupResource(@Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserContext userContext,
             @Assisted Directory<UserGroup> directory,
             @Assisted UserGroup userGroup,
             DirectoryObjectTranslator<UserGroup, APIUserGroup> translator) {
-        super(userContext, directory, userGroup, translator);
-        this.userGroup = userGroup;
+        super(authenticatedUser, userContext, UserGroup.class, directory, userGroup, translator);
     }
 
     /**
@@ -87,7 +86,7 @@ public class UserGroupResource
      */
     @Path("userGroups")
     public RelatedObjectSetResource getUserGroups() throws GuacamoleException {
-        return new RelatedObjectSetResource(userGroup.getUserGroups());
+        return new RelatedObjectSetResource(getInternalObject().getUserGroups());
     }
 
     /**
@@ -104,7 +103,7 @@ public class UserGroupResource
      */
     @Path("memberUsers")
     public RelatedObjectSetResource getMemberUsers() throws GuacamoleException {
-        return new RelatedObjectSetResource(userGroup.getMemberUsers());
+        return new RelatedObjectSetResource(getInternalObject().getMemberUsers());
     }
 
     /**
@@ -121,7 +120,7 @@ public class UserGroupResource
      */
     @Path("memberUserGroups")
     public RelatedObjectSetResource getMemberUserGroups() throws GuacamoleException {
-        return new RelatedObjectSetResource(userGroup.getMemberUserGroups());
+        return new RelatedObjectSetResource(getInternalObject().getMemberUserGroups());
     }
 
     /**
@@ -135,7 +134,7 @@ public class UserGroupResource
      */
     @Path("permissions")
     public PermissionSetResource getPermissions() {
-        return new PermissionSetResource(userGroup);
+        return new PermissionSetResource(getInternalObject());
     }
 
 }

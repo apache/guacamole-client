@@ -105,7 +105,7 @@ public class TunnelCollectionResource {
             throw new GuacamoleResourceNotFoundException("No such tunnel.");
 
         // Return corresponding tunnel resource
-        return tunnelResourceFactory.create(tunnel);
+        return tunnelResourceFactory.create(session.getAuthenticatedUser(), tunnel);
 
     }
 

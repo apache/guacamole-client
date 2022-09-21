@@ -25,6 +25,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.SharingProfile;
@@ -48,6 +49,9 @@ public class SharingProfileDirectoryResource
      * operations and subresources available for the given SharingProfile
      * Directory.
      *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
+     *
      * @param userContext
      *     The UserContext associated with the given Directory.
      *
@@ -63,11 +67,13 @@ public class SharingProfileDirectoryResource
      *     representing SharingProfiles.
      */
     @AssistedInject
-    public SharingProfileDirectoryResource(@Assisted UserContext userContext,
+    public SharingProfileDirectoryResource(
+            @Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserContext userContext,
             @Assisted Directory<SharingProfile> directory,
             DirectoryObjectTranslator<SharingProfile, APISharingProfile> translator,
             DirectoryObjectResourceFactory<SharingProfile, APISharingProfile> resourceFactory) {
-        super(userContext, directory, translator, resourceFactory);
+        super(authenticatedUser, userContext, SharingProfile.class, directory, translator, resourceFactory);
     }
 
     @Override

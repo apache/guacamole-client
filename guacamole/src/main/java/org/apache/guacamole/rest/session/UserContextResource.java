@@ -30,6 +30,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.SharingProfile;
@@ -58,6 +59,11 @@ public class UserContextResource {
      * The UserContext being exposed through this resource.
      */
     private final UserContext userContext;
+
+    /**
+     * The user that is accessing this resource.
+     */
+    private final AuthenticatedUser authenticatedUser;
 
     /**
      * Factory for creating DirectoryObjectResources which expose a given User.
@@ -115,12 +121,17 @@ public class UserContextResource {
      * Creates a new UserContextResource which exposes the data within the
      * given UserContext.
      *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
+     *
      * @param userContext
      *     The UserContext which should be exposed through this
      *     UserContextResource.
      */
     @AssistedInject
-    public UserContextResource(@Assisted UserContext userContext) {
+    public UserContextResource(@Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserContext userContext) {
+        this.authenticatedUser = authenticatedUser;
         this.userContext = userContext;
     }
 
@@ -140,7 +151,7 @@ public class UserContextResource {
     @Path("self")
     public DirectoryObjectResource<User, APIUser> getSelfResource()
             throws GuacamoleException {
-        return userResourceFactory.create(userContext,
+        return userResourceFactory.create(authenticatedUser, userContext,
                 userContext.getUserDirectory(), userContext.self());
     }
 
@@ -158,8 +169,8 @@ public class UserContextResource {
     @Path("activeConnections")
     public DirectoryResource<ActiveConnection, APIActiveConnection>
         getActiveConnectionDirectoryResource() throws GuacamoleException {
-        return activeConnectionDirectoryResourceFactory.create(userContext,
-                userContext.getActiveConnectionDirectory());
+        return activeConnectionDirectoryResourceFactory.create(authenticatedUser,
+                userContext, userContext.getActiveConnectionDirectory());
     }
 
     /**
@@ -176,8 +187,8 @@ public class UserContextResource {
     @Path("connections")
     public DirectoryResource<Connection, APIConnection> getConnectionDirectoryResource()
             throws GuacamoleException {
-        return connectionDirectoryResourceFactory.create(userContext,
-                userContext.getConnectionDirectory());
+        return connectionDirectoryResourceFactory.create(authenticatedUser,
+                userContext, userContext.getConnectionDirectory());
     }
 
     /**
@@ -194,8 +205,8 @@ public class UserContextResource {
     @Path("connectionGroups")
     public DirectoryResource<ConnectionGroup, APIConnectionGroup> getConnectionGroupDirectoryResource()
             throws GuacamoleException {
-        return connectionGroupDirectoryResourceFactory.create(userContext,
-                userContext.getConnectionGroupDirectory());
+        return connectionGroupDirectoryResourceFactory.create(authenticatedUser,
+                userContext, userContext.getConnectionGroupDirectory());
     }
 
     /**
@@ -212,8 +223,8 @@ public class UserContextResource {
     @Path("sharingProfiles")
     public DirectoryResource<SharingProfile, APISharingProfile>
         getSharingProfileDirectoryResource() throws GuacamoleException {
-        return sharingProfileDirectoryResourceFactory.create(userContext,
-                userContext.getSharingProfileDirectory());
+        return sharingProfileDirectoryResourceFactory.create(authenticatedUser,
+                userContext, userContext.getSharingProfileDirectory());
     }
 
     /**
@@ -230,8 +241,8 @@ public class UserContextResource {
     @Path("users")
     public DirectoryResource<User, APIUser> getUserDirectoryResource()
             throws GuacamoleException {
-        return userDirectoryResourceFactory.create(userContext,
-                userContext.getUserDirectory());
+        return userDirectoryResourceFactory.create(authenticatedUser,
+                userContext, userContext.getUserDirectory());
     }
 
     /**
@@ -248,8 +259,8 @@ public class UserContextResource {
     @Path("userGroups")
     public DirectoryResource<UserGroup, APIUserGroup> getUserGroupDirectoryResource()
             throws GuacamoleException {
-        return userGroupDirectoryResourceFactory.create(userContext,
-                userContext.getUserGroupDirectory());
+        return userGroupDirectoryResourceFactory.create(authenticatedUser,
+                userContext, userContext.getUserGroupDirectory());
     }
 
     /**

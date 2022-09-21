@@ -35,6 +35,104 @@ import org.apache.guacamole.GuacamoleException;
 public interface Directory<ObjectType extends Identifiable> {
 
     /**
+     * All Directory types that may be found on the {@link UserContext}
+     * interface.
+     */
+    public enum Type {
+
+        /**
+         * The type of a Directory that contains {@link ActiveConnection}
+         * objects.
+         */
+        ACTIVE_CONNECTION(ActiveConnection.class),
+
+        /**
+         * The type of a Directory that contains {@link Connection}
+         * objects.
+         */
+        CONNECTION(Connection.class),
+
+        /**
+         * The type of a Directory that contains {@link ConnectionGroup}
+         * objects.
+         */
+        CONNECTION_GROUP(ConnectionGroup.class),
+
+        /**
+         * The type of a Directory that contains {@link SharingProfile}
+         * objects.
+         */
+        SHARING_PROFILE(SharingProfile.class),
+
+        /**
+         * The type of a Directory that contains {@link User} objects.
+         */
+        USER(User.class),
+
+        /**
+         * The type of a Directory that contains {@link UserGroup}
+         * objects.
+         */
+        USER_GROUP(UserGroup.class);
+
+        /**
+         * The base class of the type of object stored within the type of
+         * Directory represented by this Directory.Type.
+         */
+        private final Class<? extends Identifiable> objectType;
+
+        /**
+         * Creates a new Directory.Type representing the type of a Directory
+         * that contains only subclasses of the given class.
+         *
+         * @param objectType
+         *     The base class of the type of object stored within the type of
+         *     Directory represented by this Directory.Type.
+         */
+        private Type(Class<? extends Identifiable> objectType) {
+            this.objectType = objectType;
+        }
+
+        /**
+         * Returns the base class of the type of object stored within a
+         * {@link Directory} of this type.
+         *
+         * @return
+         *     The base class of the type of object stored within a
+         *     {@link Directory} of this type.
+         */
+        public Class<? extends Identifiable> getObjectType() {
+            return objectType;
+        }
+
+        /**
+         * Returns the Directory.Type representing the type of a Directory that
+         * could contain an object having the given class. The class may be a
+         * subclass of the overall base class of the objects stored within the
+         * Directory.
+         *
+         * @param objectType
+         *     The class to determine the Directory.Type of.
+         *
+         * @return
+         *     The Directory.Type representing the type of a Directory that
+         *     could contain an object having the given class, or null if there
+         *     is no such Directory available via the UserContext interface.
+         */
+        public static Type of(Class<? extends Identifiable> objectType) {
+
+            for (Type type : Type.values()) {
+                if (type.getObjectType().isAssignableFrom(objectType))
+                    return type;
+            }
+
+            return null;
+
+        }
+
+    }
+
+    /**
      * Returns the object having the given identifier. Note that changes to
      * the object returned will not necessarily affect the object stored within
      * the Directory. To update an object stored within an

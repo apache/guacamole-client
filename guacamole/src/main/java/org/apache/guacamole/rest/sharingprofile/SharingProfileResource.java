@@ -29,6 +29,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.SharingProfile;
@@ -50,19 +51,11 @@ public class SharingProfileResource
         extends DirectoryObjectResource<SharingProfile, APISharingProfile> {
 
     /**
-     * The UserContext associated with the Directory which contains the
-     * SharingProfile exposed by this resource.
-     */
-    private final UserContext userContext;
-
-    /**
-     * The SharingProfile object represented by this SharingProfileResource.
-     */
-    private final SharingProfile sharingProfile;
-
-    /**
      * Creates a new SharingProfileResource which exposes the operations and
      * subresources available for the given SharingProfile.
+     *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
      *
      * @param userContext
      *     The UserContext associated with the given Directory.
@@ -78,13 +71,12 @@ public class SharingProfileResource
      *     object given.
      */
     @AssistedInject
-    public SharingProfileResource(@Assisted UserContext userContext,
+    public SharingProfileResource(@Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserContext userContext,
             @Assisted Directory<SharingProfile> directory,
             @Assisted SharingProfile sharingProfile,
             DirectoryObjectTranslator<SharingProfile, APISharingProfile> translator) {
-        super(userContext, directory, sharingProfile, translator);
-        this.userContext = userContext;
-        this.sharingProfile = sharingProfile;
+        super(authenticatedUser, userContext, SharingProfile.class, directory, sharingProfile, translator);
     }
 
     /**
@@ -103,8 +95,10 @@ public class SharingProfileResource
     public Map<String, String> getParameters()
             throws GuacamoleException {
 
+        SharingProfile sharingProfile = getInternalObject();
+        
         // Pull effective permissions
-        Permissions effective = userContext.self().getEffectivePermissions();
+        Permissions effective = getUserContext().self().getEffectivePermissions();
 
         // Retrieve permission sets
         SystemPermissionSet systemPermissions = effective.getSystemPermissions();

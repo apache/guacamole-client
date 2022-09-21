@@ -33,6 +33,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.User;
@@ -64,25 +65,11 @@ public class UserResource
     private static final Logger logger = LoggerFactory.getLogger(UserResource.class);
     
     /**
-     * The UserContext associated with the Directory which contains the User
-     * exposed by this resource.
-     */
-    private final UserContext userContext;
-
-    /**
-     * The Directory which contains the User object represented by this
-     * UserResource.
-     */
-    private final Directory<User> directory;
-
-    /**
-     * The User object represented by this UserResource.
-     */
-    private final User user;
-
-    /**
      * Creates a new UserResource which exposes the operations and subresources
      * available for the given User.
+     *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
      *
      * @param userContext
      *     The UserContext associated with the given Directory.
@@ -97,14 +84,12 @@ public class UserResource
      *     A DirectoryObjectTranslator implementation which handles Users.
      */
     @AssistedInject
-    public UserResource(@Assisted UserContext userContext,
+    public UserResource(@Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserContext userContext,
             @Assisted Directory<User> directory,
             @Assisted User user,
             DirectoryObjectTranslator<User, APIUser> translator) {
-        super(userContext, directory, user, translator);
-        this.userContext = userContext;
-        this.directory = directory;
-        this.user = user;
+        super(authenticatedUser, userContext, User.class, directory, user, translator);
     }
 
     /**
@@ -121,6 +106,8 @@ public class UserResource
     @Path("history")
     public UserHistoryResource getUserHistory()
             throws GuacamoleException {
+
+        User user = getInternalObject();
 
         // First try to retrieve history using the current getUserHistory() method.
         try {
@@ -147,7 +134,7 @@ public class UserResource
     public void updateObject(APIUser modifiedObject) throws GuacamoleException {
 
         // A user may not use this endpoint to update their password
-        User currentUser = userContext.self();
+        User currentUser = getUserContext().self();
         if (
                 currentUser.getIdentifier().equals(modifiedObject.getUsername())
                 && modifiedObject.getPassword() != null) {
@@ -178,13 +165,15 @@ public class UserResource
     public void updatePassword(APIUserPasswordUpdate userPasswordUpdate,
             @Context HttpServletRequest request) throws GuacamoleException {
 
+        User user = getInternalObject();
+
         // Build credentials
         Credentials credentials = new Credentials(user.getIdentifier(),
                 userPasswordUpdate.getOldPassword(), request);
 
         // Verify that the old password was correct
         try {
-            AuthenticationProvider authProvider = userContext.getAuthenticationProvider();
+            AuthenticationProvider authProvider = getUserContext().getAuthenticationProvider();
             if (authProvider.authenticateUser(credentials) == null)
                 throw new GuacamoleSecurityException("Permission denied.");
         }
@@ -196,7 +185,7 @@ public class UserResource
 
         // Set password to the newly provided one
         user.setPassword(userPasswordUpdate.getNewPassword());
-        directory.update(user);
+        getDirectory().update(user);
 
     }
 
@@ -211,7 +200,7 @@ public class UserResource
      */
     @Path("permissions")
     public PermissionSetResource getPermissions() {
-        return new PermissionSetResource(user);
+        return new PermissionSetResource(getInternalObject());
     }
 
     /**
@@ -228,7 +217,7 @@ public class UserResource
     @GET
     @Path("effectivePermissions")
     public APIPermissionSet getEffectivePermissions() throws GuacamoleException {
-        return new APIPermissionSet(user.getEffectivePermissions());
+        return new APIPermissionSet(getInternalObject().getEffectivePermissions());
     }
 
     /**
@@ -245,7 +234,7 @@ public class UserResource
      */
     @Path("userGroups")
     public RelatedObjectSetResource getUserGroups() throws GuacamoleException {
-        return new RelatedObjectSetResource(user.getUserGroups());
+        return new RelatedObjectSetResource(getInternalObject().getUserGroups());
     }
 
 }

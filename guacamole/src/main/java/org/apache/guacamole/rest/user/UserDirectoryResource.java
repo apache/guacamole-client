@@ -25,6 +25,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Permissions;
@@ -46,6 +47,9 @@ public class UserDirectoryResource extends DirectoryResource<User, APIUser> {
      * Creates a new UserDirectoryResource which exposes the operations and
      * subresources available for the given User Directory.
      *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
+     *
      * @param userContext
      *     The UserContext associated with the given Directory.
      *
@@ -61,11 +65,12 @@ public class UserDirectoryResource extends DirectoryResource<User, APIUser> {
      *     representing Users.
      */
     @AssistedInject
-    public UserDirectoryResource(@Assisted UserContext userContext,
+    public UserDirectoryResource(@Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserContext userContext,
             @Assisted Directory<User> directory,
             DirectoryObjectTranslator<User, APIUser> translator,
             DirectoryObjectResourceFactory<User, APIUser> resourceFactory) {
-        super(userContext, directory, translator, resourceFactory);
+        super(authenticatedUser, userContext, User.class, directory, translator, resourceFactory);
     }
 
     @Override

@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.rest.directory;
 
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.UserContext;
@@ -41,6 +42,9 @@ public interface DirectoryObjectResourceFactory<InternalType extends Identifiabl
     /**
      * Creates a new DirectoryObjectResource which exposes the given object.
      *
+     * @param authenticatedUser
+     *     The user that is accessing the resource.
+     *
      * @param userContext
      *     The UserContext which contains the given Directory.
      *
@@ -55,7 +59,7 @@ public interface DirectoryObjectResourceFactory<InternalType extends Identifiabl
      *     A new DirectoryObjectResource which exposes the given object.
      */
     DirectoryObjectResource<InternalType, ExternalType>
-        create(UserContext userContext, Directory<InternalType> directory,
-                InternalType object);
+        create(AuthenticatedUser authenticatedUser, UserContext userContext,
+                Directory<InternalType> directory, InternalType object);
 
 }
