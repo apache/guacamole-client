@@ -25,23 +25,7 @@ import java.util.Map;
  * Represents the semantics which apply to an existing connection when shared,
  * along with a human-readable name and unique identifier.
  */
-public interface SharingProfile extends Identifiable, Attributes {
-
-    /**
-     * Returns the human-readable name assigned to this SharingProfile.
-     *
-     * @return
-     *     The name assigned to this SharingProfile.
-     */
-    public String getName();
-
-    /**
-     * Sets the human-readable name assigned to this SharingProfile.
-     *
-     * @param name
-     *     The name to assign.
-     */
-    public void setName(String name);
+public interface SharingProfile extends Identifiable, Attributes, Nameable {
 
     /**
      * Returns the identifier of the primary connection associated with this
