@@ -35,6 +35,7 @@ import org.apache.guacamole.auth.file.FileAuthenticationProvider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.event.EventLoggingListener;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.event.listener.Listener;
 import org.apache.guacamole.properties.StringSetProperty;
@@ -628,8 +629,9 @@ public class ExtensionModule extends ServletModule {
         final Set<String> toleratedAuthProviders = getToleratedAuthenticationProviders();
         loadExtensions(javaScriptResources, cssResources, toleratedAuthProviders);
 
-        // Always bind default file-driven auth last
+        // Always bind default file-driven auth and event logging last
         bindAuthenticationProvider(FileAuthenticationProvider.class, toleratedAuthProviders);
+        bindListener(EventLoggingListener.class);
 
         // Dynamically generate app.js and app.css from extensions
         serve("/app.js").with(new ResourceServlet(new SequenceResource(javaScriptResources)));
