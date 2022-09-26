@@ -27,6 +27,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.environment.Environment;
@@ -480,6 +481,18 @@ public class AuthenticationService {
                         getLoggableAddress(request));
 
             // Rethrow exception
+            e.rethrowCause();
+
+            // This line SHOULD be unreachable unless a bug causes
+            // rethrowCause() to not actually rethrow the underlying failure
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                logger.warn("An underlying internal error was not correctly rethrown by rethrowCause(): {}", cause.getMessage());
+                logger.debug("Internal error not rethrown by rethrowCause().", cause);
+            }
+            else
+                logger.warn("An underlying internal error was not correctly rethrown by rethrowCause().");
+
             throw e.getCauseAsGuacamoleException();
 
         }

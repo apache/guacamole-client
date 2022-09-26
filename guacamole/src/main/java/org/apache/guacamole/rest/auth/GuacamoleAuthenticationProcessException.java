@@ -146,6 +146,38 @@ public class GuacamoleAuthenticationProcessException extends GuacamoleException 
         return guacCause;
     }
 
+    /**
+     * Rethrows the original GuacamoleException wrapped within this
+     * GuacamoleAuthenticationProcessException. If there is no such exception,
+     * and the cause of this failure is an unchecked RuntimeException or Error,
+     * that unchecked exception/error is rethrown as-is.
+     *
+     * @throws GuacamoleException
+     *     If the underlying cause of this exception is a checked
+     *     GuacamoleException subclass.
+     *
+     * @throws RuntimeException
+     *     If the underlying cause of this exception is an unchecked
+     *     RuntimeException.
+     *
+     * @throws Error
+     *     If the underlying cause of this exception is an unchecked Error.
+     */
+    public void rethrowCause() throws GuacamoleException, RuntimeException, Error {
+
+        // Rethrow any unchecked exceptions/errors as-is
+        Throwable cause = getCause();
+        if (cause instanceof RuntimeException)
+            throw (RuntimeException) cause;
+        if (cause instanceof Error)
+            throw (Error) cause;
+
+        // Pass through all other exceptions as normal GuacamoleException
+        // subclassses
+        throw getCauseAsGuacamoleException();
+
+    }
+
     @Override
     public GuacamoleStatus getStatus() {
         return getCauseAsGuacamoleException().getStatus();
