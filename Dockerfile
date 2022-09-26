@@ -27,15 +27,15 @@
 ARG TOMCAT_VERSION=8.5
 ARG TOMCAT_JRE=jdk8
 
+# Use args to build radius auth extension such as
+# `--build-arg BUILD_PROFILE=lgpl-extensions`
+ARG BUILD_PROFILE
+
 # Use official maven image for the build
 FROM maven:3-jdk-8 AS builder
 
 # Install chromium-driver for sake of JavaScript unit tests
 RUN apt-get update && apt-get install -y chromium-driver
-
-# Use args to build radius auth extension such as
-# `--build-arg BUILD_PROFILE=lgpl-extensions`
-ARG BUILD_PROFILE
 
 # Build environment variables
 ENV \
@@ -67,8 +67,8 @@ COPY --from=builder /opt/guacamole/ .
 # Create a new user guacamole
 ARG UID=1001
 ARG GID=1001
-RUN groupadd --gid $GID guacamole
-RUN useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $GID guacamole
+RUN groupadd --gid $GID guacamole && \
+    useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $GID guacamole
 
 # Run with user guacamole
 USER guacamole
