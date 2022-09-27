@@ -844,13 +844,13 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     var unstableTimeout = null;
 
     /**
-     * The current connection stability test ping interval ID, if any. This
+     * The current connection stability test ping timeout ID, if any. This
      * will only be set upon successful connection.
      *
      * @private
      * @type {number}
      */
-    var pingInterval = null;
+    var pingTimeout = null;
 
     /**
      * The WebSocket protocol corresponding to the protocol used for the current
@@ -873,6 +873,16 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
      * @type {!number}
      */
     var PING_FREQUENCY = 500;
+
+    /**
+     * The timestamp of the point in time that the last connection stability
+     * test ping was sent, in milliseconds elapsed since midnight of January 1,
+     * 1970 UTC.
+     *
+     * @private
+     * @type {!number}
+     */
+    var lastSentPing = 0;
 
     // Transform current URL to WebSocket URL
 
@@ -908,6 +918,20 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     }
 
     /**
+     * Sends an internal "ping" instruction to the Guacamole WebSocket
+     * endpoint, verifying network connection stability. If the network is
+     * stable, the Guacamole server will receive this instruction and respond
+     * with an identical ping.
+     *
+     * @private
+     */
+    var sendPing = function sendPing() {
+        var currentTime = new Date().getTime();
+        tunnel.sendMessage(Guacamole.Tunnel.INTERNAL_DATA_OPCODE, 'ping', currentTime);
+        lastSentPing = currentTime;
+    };
+
+    /**
      * Initiates a timeout which, if data is not received, causes the tunnel
      * to close with an error.
      * 
@@ -918,6 +942,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         // Get rid of old timeouts (if any)
         window.clearTimeout(receive_timeout);
         window.clearTimeout(unstableTimeout);
+        window.clearTimeout(pingTimeout);
 
         // Clear unstable status
         if (tunnel.state === Guacamole.Tunnel.State.UNSTABLE)
@@ -932,6 +957,16 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         unstableTimeout = window.setTimeout(function() {
             tunnel.setState(Guacamole.Tunnel.State.UNSTABLE);
         }, tunnel.unstableThreshold);
+
+        var currentTime = new Date().getTime();
+        var pingDelay = Math.max(lastSentPing + PING_FREQUENCY - currentTime, 0);
+
+        // Ping tunnel endpoint regularly to test connection stability, sending
+        // the ping immediately if enough time has already elapsed
+        if (pingDelay > 0)
+            pingTimeout = window.setTimeout(sendPing, pingDelay);
+        else
+            sendPing();
 
     }
 
@@ -949,9 +984,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         // Get rid of old timeouts (if any)
         window.clearTimeout(receive_timeout);
         window.clearTimeout(unstableTimeout);
-
-        // Cease connection test pings
-        window.clearInterval(pingInterval);
+        window.clearTimeout(pingTimeout);
 
         // Ignore if already closed
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
@@ -1020,13 +1053,6 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
         socket.onopen = function(event) {
             reset_timeout();
-
-            // Ping tunnel endpoint regularly to test connection stability
-            pingInterval = setInterval(function sendPing() {
-                tunnel.sendMessage(Guacamole.Tunnel.INTERNAL_DATA_OPCODE,
-                    "ping", new Date().getTime());
-            }, PING_FREQUENCY);
-
         };
 
         socket.onclose = function(event) {

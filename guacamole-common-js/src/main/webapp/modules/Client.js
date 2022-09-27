@@ -42,7 +42,36 @@ Guacamole.Client = function(tunnel) {
     var currentState = STATE_IDLE;
     
     var currentTimestamp = 0;
-    var pingInterval = null;
+
+    /**
+     * The rough number of milliseconds to wait between sending keep-alive
+     * pings. This may vary depending on how frequently the browser allows
+     * timers to run, as well as how frequently the client receives messages
+     * from the server.
+     *
+     * @private
+     * @constant
+     * @type {!number}
+     */
+    var KEEP_ALIVE_FREQUENCY = 5000;
+
+    /**
+     * The current keep-alive ping timeout ID, if any. This will only be set
+     * upon connecting.
+     *
+     * @private
+     * @type {number}
+     */
+    var keepAliveTimeout = null;
+
+    /**
+     * The timestamp of the point in time that the last keep-live ping was
+     * sent, in milliseconds elapsed since midnight of January 1, 1970 UTC.
+     *
+     * @private
+     * @type {!number}
+     */
+    var lastSentKeepAlive = 0;
 
     /**
      * Translation from Guacamole protocol line caps to Layer line caps.
@@ -1649,11 +1678,62 @@ Guacamole.Client = function(tunnel) {
 
     };
 
+    /**
+     * Sends a keep-alive ping to the Guacamole server, advising the server
+     * that the client is still connected and responding. The lastSentKeepAlive
+     * timestamp is automatically updated as a result of calling this function.
+     *
+     * @private
+     */
+    var sendKeepAlive = function sendKeepAlive() {
+        tunnel.sendMessage('nop');
+        lastSentKeepAlive = new Date().getTime();
+    };
+
+    /**
+     * Schedules the next keep-alive ping based on the KEEP_ALIVE_FREQUENCY and
+     * the time that the last ping was sent, if ever. If enough time has
+     * elapsed that a ping should have already been sent, calling this function
+     * will send that ping immediately.
+     *
+     * @private
+     */
+    var scheduleKeepAlive = function scheduleKeepAlive() {
+
+        window.clearTimeout(keepAliveTimeout);
+
+        var currentTime = new Date().getTime();
+        var keepAliveDelay = Math.max(lastSentKeepAlive + KEEP_ALIVE_FREQUENCY - currentTime, 0);
+
+        // Ping server regularly to keep connection alive, but send the ping
+        // immediately if enough time has elapsed that it should have already
+        // been sent
+        if (keepAliveDelay > 0)
+            keepAliveTimeout = window.setTimeout(sendKeepAlive, keepAliveDelay);
+        else
+            sendKeepAlive();
+
+    };
+
+    /**
+     * Stops sending any further keep-alive pings. If a keep-alive ping was
+     * scheduled to be sent, that ping is cancelled.
+     *
+     * @private
+     */
+    var stopKeepAlive = function stopKeepAlive() {
+        window.clearTimeout(keepAliveTimeout);
+    };
+
     tunnel.oninstruction = function(opcode, parameters) {
 
         var handler = instructionHandlers[opcode];
         if (handler)
             handler(parameters);
+
+        // Leverage network activity to ensure the next keep-alive ping is
+        // sent, even if the browser is currently throttling timers
+        scheduleKeepAlive();
 
     };
 
@@ -1668,9 +1748,8 @@ Guacamole.Client = function(tunnel) {
 
             setState(STATE_DISCONNECTING);
 
-            // Stop ping
-            if (pingInterval)
-                window.clearInterval(pingInterval);
+            // Stop sending keep-alive messages
+            stopKeepAlive();
 
             // Send disconnect message and disconnect
             tunnel.sendMessage("disconnect");
@@ -1704,10 +1783,9 @@ Guacamole.Client = function(tunnel) {
             throw status;
         }
 
-        // Ping every 5 seconds (ensure connection alive)
-        pingInterval = window.setInterval(function() {
-            tunnel.sendMessage("nop");
-        }, 5000);
+        // Regularly send keep-alive ping to ensure the server knows we're
+        // still here, even if not active
+        scheduleKeepAlive();
 
         setState(STATE_WAITING);
     };
