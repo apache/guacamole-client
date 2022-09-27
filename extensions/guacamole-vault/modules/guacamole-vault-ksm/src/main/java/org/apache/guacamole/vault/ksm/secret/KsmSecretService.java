@@ -47,12 +47,14 @@ import org.apache.guacamole.net.auth.Connectable;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
 import org.apache.guacamole.vault.ksm.GuacamoleExceptionSupplier;
 import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
 import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
+import org.apache.guacamole.vault.ksm.user.KsmDirectory;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.secret.WindowsUsername;
 import org.slf4j.Logger;
@@ -299,7 +301,12 @@ public class KsmSecretService implements VaultSecretService {
         Set<String> observedIdentifiers = new HashSet<>();
         observedIdentifiers.add(parentIdentifier);
 
-        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
+        // Use the unwrapped connection group directory to avoid KSM config
+        // value sanitization
+        Directory<ConnectionGroup> connectionGroupDirectory = (
+                (KsmDirectory<ConnectionGroup>) userContext.getConnectionGroupDirectory()
+                ).getUnderlyingDirectory();
+
         while (true) {
 
             // Fetch the parent group, if one exists
@@ -378,10 +385,16 @@ public class KsmSecretService implements VaultSecretService {
 
         // If user KSM configs are enabled globally, and for the given connectable,
         // return the user-specific KSM config, if one exists
-        if (confService.getAllowUserConfig() && isKsmUserConfigEnabled(connectable))
+        if (confService.getAllowUserConfig() && isKsmUserConfigEnabled(connectable)) {
 
-            return userContext.self().getAttributes().get(
+            // Get the underlying user, to avoid the KSM config sanitization
+            User self = (
+                    ((KsmDirectory<User>) userContext.getUserDirectory())
+                    .getUnderlyingDirectory().get(userContext.self().getIdentifier()));
+
+            return self.getAttributes().get(
                     KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
+        }
 
 
         // If user-specific KSM config is disabled globally or for the given

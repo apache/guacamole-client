@@ -30,34 +30,31 @@ import com.google.common.collect.Maps;
  /**
   * A KSM-specific connection group implementation that always exposes
   * the KSM_CONFIGURATION_ATTRIBUTE attribute, even when no value is set.
-  * This ensures that the attribute will always show up in the UI, even
-  * for connection groups that don't already have it set.
+  * The value of the attribute will be sanitized if non-empty. This ensures
+  * that the attribute will always show up in the UI, even for connection
+  * groups that don't already have it set, and that any sensitive information
+  * in the attribute value will not be exposed.
   */
  public class KsmConnectionGroup extends DelegatingConnectionGroup {
 
     /**
-     * Create a new KsmConnectionGroup instance, wrapping the provided
-     * ConnectionGroup.
+     * Create a new KsmConnectionGroup wrapping the provided ConnectionGroup record.
      *
      * @param connectionGroup
-     *     The ConnectionGroup instance to wrap.
+     *     The ConnectionGroup record to wrap.
      */
-    public KsmConnectionGroup(ConnectionGroup connectionGroup) {
-
-        // Wrap the provided connection group
+    KsmConnectionGroup(ConnectionGroup connectionGroup) {
         super(connectionGroup);
     }
 
-    @Override
-    public Map<String, String> getAttributes() {
-
-        // Make a copy of the existing map
-        Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
-
-        // Add the configuration attribute
-        attributes.putIfAbsent(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE, null);
-        return attributes;
-
+    /**
+     * Return the underlying wrapped connection group record.
+     *
+     * @return
+     *     The wrapped connection group record.
+     */
+    ConnectionGroup getUnderlyingConnectionGroup() {
+        return getDelegateConnectionGroup();
     }
 
     /**
@@ -68,6 +65,22 @@ import com.google.common.collect.Maps;
      */
     ConnectionGroup getUnderlyConnectionGroup() {
         return getDelegateConnectionGroup();
+    }
+
+    @Override
+    public Map<String, String> getAttributes() {
+
+        // Make a copy of the existing map
+        Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
+
+        // Sanitize the KSM configuration attribute, and ensure the attribute
+        // is always present
+        attributes.put(
+                KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE,
+                KsmAttributeService.sanitizeKsmAttributeValue(
+                    attributes.get(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE)));
+
+        return attributes;
     }
 
  }

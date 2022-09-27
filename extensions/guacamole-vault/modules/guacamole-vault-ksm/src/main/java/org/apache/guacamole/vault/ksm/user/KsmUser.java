@@ -21,27 +21,49 @@ package org.apache.guacamole.vault.ksm.user;
 
 import java.util.Map;
 
-import org.apache.guacamole.net.auth.DelegatingUser;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.net.auth.DelegatingUser;
 import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
+import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Maps;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
 
-/**
- * A User that explicitly adds a blank entry for any defined
- * KSM user attributes.
- */
-public class KsmUser extends DelegatingUser {
+ /**
+  * A KSM-specific user implementation that exposes the
+  * KSM_CONFIGURATION_ATTRIBUTE attribute even if no value is set. but only
+  * if user-specific KSM configuration is enabled. The value of the attribute
+  * will be sanitized if non-empty. This ensures that the attribute will always
+  * show up in the UI when the feature is enabled, even for users that don't
+  * already have it set, and that any sensitive information in the attribute
+  * value will not be exposed.
+  */
+ public class KsmUser extends DelegatingUser {
 
     /**
-     * Create a new Vault user wrapping the provided User record. Any
-     * KSM-specific attribute forms will have empty values automatically
-     * populated when getAttributes() is called.
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(KsmUser.class);
+
+    /**
+     * Service for retrieving KSM configuration details.
+     */
+    @Inject
+    private KsmConfigurationService configurationService;
+
+    /**
+     * Create a new Ksmuser wrapping the provided User record.
      *
      * @param user
-     *     The user record to wrap.
+     *     The User record to wrap.
      */
-    KsmUser(User user) {
+    @AssistedInject
+    KsmUser(@Assisted User user) {
         super(user);
     }
 
@@ -61,9 +83,33 @@ public class KsmUser extends DelegatingUser {
         // Make a copy of the existing map
         Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
 
-        // Add the configuration attribute
-        attributes.putIfAbsent(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE, null);
+        // Figure out if user-level KSM config is enabled
+        boolean userKsmConfigEnabled = false;
+        try {
+            userKsmConfigEnabled = configurationService.getAllowUserConfig();
+        } catch (GuacamoleException e) {
+
+            logger.warn(
+                    "Disabling user KSM config due to exception: {}"
+                    , e.getMessage());
+            logger.debug("Error looking up if user KSM config is enabled.", e);
+
+        }
+
+        // If user-specific KSM configuration is not enabled, do not expose the
+        // attribute at all
+        if (!userKsmConfigEnabled)
+            attributes.remove(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
+
+        else
+            // Sanitize the KSM configuration attribute, and ensure the attribute
+            // is always present
+            attributes.put(
+                    KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE,
+                    KsmAttributeService.sanitizeKsmAttributeValue(
+                        attributes.get(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE)));
+
         return attributes;
     }
 
-}
+ }

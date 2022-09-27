@@ -62,10 +62,9 @@ public class KsmConnection extends DelegatingConnection {
         // Make a copy of the existing map
         Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
 
-        // Add the configuration attribute
-        attributes.putIfAbsent(KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE, null);
+        // Add the user-config-enabled configuration attribute
+        attributes.putIfAbsent(KsmAttributeService.KSM_USER_CONFIG_ENABLED_ATTRIBUTE, null);
         return attributes;
-
     }
 
 }
