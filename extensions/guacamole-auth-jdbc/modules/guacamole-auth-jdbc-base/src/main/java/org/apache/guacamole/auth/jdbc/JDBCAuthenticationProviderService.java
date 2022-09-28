@@ -164,8 +164,8 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
             UserContext context, AuthenticatedUser authenticatedUser,
             Credentials credentials) throws GuacamoleException {
 
-        // No need to update the context
-        return context;
+        // Refresh the user context
+        return getUserContext(authenticationProvider, authenticatedUser);
 
     }
 

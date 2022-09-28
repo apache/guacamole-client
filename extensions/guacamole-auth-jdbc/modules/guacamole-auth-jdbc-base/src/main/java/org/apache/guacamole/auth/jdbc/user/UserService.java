@@ -415,10 +415,6 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     public ModeledUser retrieveUser(AuthenticationProvider authenticationProvider,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
-        // If we already queried this user, return that rather than querying again
-        if (authenticatedUser instanceof ModeledAuthenticatedUser)
-            return ((ModeledAuthenticatedUser) authenticatedUser).getUser();
-
         // Retrieve corresponding user model, if such a user exists
         UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier());
         if (userModel == null)

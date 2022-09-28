@@ -24,7 +24,10 @@ import org.apache.guacamole.vault.VaultAuthenticationProviderModule;
 import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
 import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.apache.guacamole.vault.ksm.secret.KsmSecretService;
+import org.apache.guacamole.vault.ksm.user.KsmConnectionGroup;
 import org.apache.guacamole.vault.ksm.user.KsmDirectoryService;
+import org.apache.guacamole.vault.ksm.user.KsmUserFactory;
+import org.apache.guacamole.vault.ksm.user.KsmUser;
 import org.apache.guacamole.vault.conf.VaultAttributeService;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.ksm.secret.KsmClient;
@@ -57,6 +60,7 @@ public class KsmAuthenticationProviderModule
 
         // Bind services specific to Keeper Secrets Manager
         bind(KsmRecordService.class);
+        bind(KsmAttributeService.class);
         bind(VaultAttributeService.class).to(KsmAttributeService.class);
         bind(VaultConfigurationService.class).to(KsmConfigurationService.class);
         bind(VaultSecretService.class).to(KsmSecretService.class);
@@ -66,6 +70,11 @@ public class KsmAuthenticationProviderModule
         install(new FactoryModuleBuilder()
                 .implement(KsmClient.class, KsmClient.class)
                 .build(KsmClientFactory.class));
+
+        // Bind factory for creating KsmUsers
+        install(new FactoryModuleBuilder()
+                .implement(KsmUser.class, KsmUser.class)
+                .build(KsmUserFactory.class));
     }
 
 }

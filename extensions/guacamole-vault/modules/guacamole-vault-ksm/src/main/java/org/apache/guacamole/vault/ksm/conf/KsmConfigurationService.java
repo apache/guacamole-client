@@ -85,6 +85,17 @@ public class KsmConfigurationService extends VaultConfigurationService {
     };
 
     /**
+     * Whether users should be able to supply their own KSM configurations.
+     */
+    private static final BooleanGuacamoleProperty ALLOW_USER_CONFIG = new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+            return "ksm-allow-user-config";
+        }
+    };
+
+    /**
      * Whether windows domains should be stripped off from usernames that are
      * read from the KSM vault.
      */
@@ -136,6 +147,21 @@ public class KsmConfigurationService extends VaultConfigurationService {
      */
     public boolean getAllowUnverifiedCertificate() throws GuacamoleException {
         return environment.getProperty(ALLOW_UNVERIFIED_CERT, false);
+    }
+
+    /**
+     * Return whether users should be able to provide their own KSM configs.
+     *
+     * @return
+     *     true if users should be able to provide their own KSM configs,
+     *     false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If the value specified within guacamole.properties cannot be
+     *     parsed.
+     */
+    public boolean getAllowUserConfig() throws GuacamoleException {
+        return environment.getProperty(ALLOW_USER_CONFIG, false);
     }
 
     @Override

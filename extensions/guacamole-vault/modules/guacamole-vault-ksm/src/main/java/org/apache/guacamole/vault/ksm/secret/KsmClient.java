@@ -34,7 +34,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -45,10 +44,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.apache.guacamole.vault.secret.WindowsUsername;
+import org.apache.guacamole.vault.ksm.GuacamoleExceptionSupplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -595,6 +596,38 @@ public class KsmClient {
      *     is invalid.
      */
     public Future<String> getSecret(String notation) throws GuacamoleException {
+        return getSecret(notation, null);
+    }
+
+    /**
+     * Returns the value of the secret stored within Keeper Secrets Manager and
+     * represented by the given Keeper notation. Keeper notation locates the
+     * value of a specific field, custom field, or file associated with a
+     * specific record. See: https://docs.keeper.io/secrets-manager/secrets-manager/about/keeper-notation
+     * If a fallbackFunction is provided, it will be invoked to generate
+     * a return value in the case where no secret is found with the given
+     * keeper notation.
+     *
+     * @param notation
+     *     The Keeper notation of the secret to retrieve.
+     *
+     * @param fallbackFunction
+     *     A function to invoke in order to produce a Future for return,
+     *     if the requested secret is not found. If the provided Function
+     *     is null, it will not be run.
+     *
+     * @return
+     *     A Future which completes with the value of the secret represented by
+     *     the given Keeper notation, or null if there is no such secret.
+     *
+     * @throws GuacamoleException
+     *     If the requested secret cannot be retrieved or the Keeper notation
+     *     is invalid.
+     */
+    public Future<String> getSecret(
+            String notation,
+            @Nullable GuacamoleExceptionSupplier<Future<String>> fallbackFunction)
+            throws GuacamoleException {
         validateCache();
         cacheLock.readLock().lock();
         try {
@@ -614,6 +647,11 @@ public class KsmClient {
         catch (Error e) {
             logger.warn("Record \"{}\" does not exist.", notation);
             logger.debug("Retrieval of record by Keeper notation failed.", e);
+
+            // If the secret is not found, invoke the fallback function
+            if (fallbackFunction != null)
+                return fallbackFunction.get();
+
             return CompletableFuture.completedFuture(null);
         }
 

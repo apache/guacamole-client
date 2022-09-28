@@ -916,6 +916,7 @@
 
         "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
         "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
 
         "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
@@ -942,6 +943,7 @@
         "HELP_UPDATE_PASSWORD"      : "If you wish to change your password, enter your current password and the desired new password below, and click \"Update Password\". The change will take effect immediately.",
 
         "INFO_PASSWORD_CHANGED" : "Password changed.",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "User settings saved.",
 
         "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
         "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",

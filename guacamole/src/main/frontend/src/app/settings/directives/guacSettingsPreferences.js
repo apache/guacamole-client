@@ -21,7 +21,7 @@
  * A directive for managing preferences local to the current user.
  */
 angular.module('settings').directive('guacSettingsPreferences', [function guacSettingsPreferences() {
-    
+
     return {
         // Element only
         restrict: 'E',
@@ -33,16 +33,18 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
         controller: ['$scope', '$injector', function settingsPreferencesController($scope, $injector) {
 
             // Get required types
-            var PermissionSet = $injector.get('PermissionSet');
+            const Form          = $injector.get('Form');
+            const PermissionSet = $injector.get('PermissionSet');
 
             // Required services
-            var $translate            = $injector.get('$translate');
-            var authenticationService = $injector.get('authenticationService');
-            var guacNotification      = $injector.get('guacNotification');
-            var permissionService     = $injector.get('permissionService');
-            var preferenceService     = $injector.get('preferenceService');
-            var requestService        = $injector.get('requestService');
-            var userService           = $injector.get('userService');
+            const $translate            = $injector.get('$translate');
+            const authenticationService = $injector.get('authenticationService');
+            const guacNotification      = $injector.get('guacNotification');
+            const permissionService     = $injector.get('permissionService');
+            const preferenceService     = $injector.get('preferenceService');
+            const requestService        = $injector.get('requestService');
+            const schemaService         = $injector.get('schemaService');
+            const userService           = $injector.get('userService');
 
             /**
              * An action to be provided along with the object sent to
@@ -55,6 +57,27 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
                     guacNotification.showStatus(false);
                 }
             };
+
+            /**
+             * An action which closes the current dialog, and refreshes
+             * the user data on dialog close.
+             */
+            const ACKNOWLEDGE_ACTION_RELOAD = {
+                name        : 'SETTINGS_PREFERENCES.ACTION_ACKNOWLEDGE',
+                // Handle action
+                callback    : function acknowledgeCallback() {
+                    userService.getUser(dataSource, username)
+                        .then(user => $scope.user = user)
+                        .then(() => guacNotification.showStatus(false));
+                }
+            };
+
+            /**
+             * The user being modified.
+             *
+             * @type User
+             */
+            $scope.user = null;
 
             /**
              * The username of the current user.
@@ -77,6 +100,15 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              * @type Object.<String, Object>
              */
             $scope.preferences = preferenceService.preferences;
+
+            /**
+             * All available user attributes. This is only the set of attribute
+             * definitions, organized as logical groupings of attributes, not attribute
+             * values.
+             *
+             * @type Form[]
+             */
+            $scope.attributes = null;
 
             /**
              * The fields which should be displayed for choosing locale
@@ -197,7 +229,33 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
 
             };
 
+
+            /**
+             * Saves the current user, displaying an acknowledgement message if
+             * saving was successful, or an error if the save failed.
+             */
+            $scope.saveUser = function saveUser() {
+                return userService.saveUser(dataSource, $scope.user)
+                    .then(() =>  guacNotification.showStatus({
+                        text    : {
+                            key : 'SETTINGS_PREFERENCES.INFO_PREFERENCE_ATTRIBUTES_CHANGED'
+                        },
+
+                        // Reload the user on successful save in case any attributes changed
+                        actions : [ ACKNOWLEDGE_ACTION_RELOAD ]
+                    }),
+                    guacNotification.SHOW_REQUEST_ERROR);
+            };
+
+            // Fetch the user record
+            userService.getUser(dataSource, username).then(function saveUserData(user) {
+                $scope.user = user;
+            })
+
+            // Fetch all user preference attribute forms defined
+            schemaService.getUserPreferenceAttributes(dataSource).then(function saveAttributes(attributes) {
+                $scope.attributes = attributes;
+            });
         }]
     };
-    
 }]);

@@ -21,6 +21,7 @@ package org.apache.guacamole.rest.user;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -145,9 +146,15 @@ public class UserResource
     @Override
     public void updateObject(APIUser modifiedObject) throws GuacamoleException {
 
-        // A user may not use this endpoint to modify himself
-        if (userContext.self().getIdentifier().equals(modifiedObject.getUsername()))
-            throw new GuacamoleSecurityException("Permission denied.");
+        // A user may not use this endpoint to update their password
+        User currentUser = userContext.self();
+        if (
+                currentUser.getIdentifier().equals(modifiedObject.getUsername())
+                && modifiedObject.getPassword() != null) {
+            throw new GuacamoleSecurityException(
+                    "Permission denied. The password update endpoint must"
+                    + " be used to change the current user's password.");
+        }
 
         super.updateObject(modifiedObject);
 

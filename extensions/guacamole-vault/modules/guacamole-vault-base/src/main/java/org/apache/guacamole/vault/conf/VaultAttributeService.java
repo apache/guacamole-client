@@ -31,6 +31,16 @@ import org.apache.guacamole.form.Form;
 public interface VaultAttributeService {
 
     /**
+     * Return all custom connection attributes to be exposed through the
+     * admin UI for the current vault implementation.
+     *
+     * @return
+     *     All custom connection attributes to be exposed through the
+     *     admin UI for the current vault implementation.
+     */
+    public Collection<Form> getConnectionAttributes();
+
+    /**
      * Return all custom connection group attributes to be exposed through the
      * admin UI for the current vault implementation.
      *
@@ -39,4 +49,24 @@ public interface VaultAttributeService {
      *     admin UI for the current vault implementation.
      */
     public Collection<Form> getConnectionGroupAttributes();
+
+    /**
+     * Return all custom user attributes to be exposed through the admin UI for
+     * the current vault implementation.
+     *
+     * @return
+     *     All custom user attributes to be exposed through the admin UI for
+     *     the current vault implementation.
+     */
+    public Collection<Form> getUserAttributes();
+
+    /**
+     * Return all user preference attributes to be exposed through the user
+     * preferences UI for the current vault implementation.
+     *
+     * @return
+     *     All user preference attributes to be exposed through the user
+     *     preferences UI for the current vault implementation.
+     */
+    public Collection<Form> getUserPreferenceAttributes();
 }

@@ -20,6 +20,8 @@
 package org.apache.guacamole.net.auth;
 
 import java.util.Collection;
+import java.util.Collections;
+
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;
 
@@ -210,6 +212,21 @@ public interface UserContext {
      *     A collection of all attributes applicable to users.
      */
     Collection<Form> getUserAttributes();
+
+    /**
+     * Retrieves a collection of user attributes, specific to the user preferences
+     * page in the UI. Unlike standard user attributes, these should be self-editable.
+     *
+     * @return
+     *     A collection of form of user attributes, specific to the user preferences
+     *     page in the UI.
+     */
+    default Collection<Form> getUserPreferenceAttributes() {
+
+        // By default, a user context does not expose any preference user attributes
+        return Collections.emptyList();
+
+    }
 
     /**
      * Retrieves a collection of all attributes applicable to user groups. This

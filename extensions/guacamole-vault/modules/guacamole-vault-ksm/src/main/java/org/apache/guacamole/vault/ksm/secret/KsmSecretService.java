@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.vault.ksm.secret;
 
+import com.google.common.base.Objects;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.keepersecurity.secretsManager.core.KeeperRecord;
@@ -26,8 +27,11 @@ import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -38,15 +42,19 @@ import java.util.concurrent.Future;
 import javax.annotation.Nonnull;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.Attributes;
 import org.apache.guacamole.net.auth.Connectable;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
+import org.apache.guacamole.vault.ksm.GuacamoleExceptionSupplier;
 import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
 import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
+import org.apache.guacamole.vault.ksm.user.KsmDirectory;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.secret.WindowsUsername;
 import org.slf4j.Logger;
@@ -144,7 +152,24 @@ public class KsmSecretService implements VaultSecretService {
         // Attempt to find a KSM config for this connection or group
         String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
 
-        return getClient(ksmConfig).getSecret(name);
+        return getClient(ksmConfig).getSecret(name, new GuacamoleExceptionSupplier<Future<String>>() {
+
+            @Override
+            public Future<String> get() throws GuacamoleException {
+
+                // Get the user-supplied KSM config, if allowed by config and
+                // set by the user
+                String userKsmConfig = getUserKSMConfig(userContext, connectable);
+
+                // If the user config happens to be the same as admin-defined one,
+                // don't bother trying again
+                if (!Objects.equal(userKsmConfig, ksmConfig))
+                    return getClient(userKsmConfig).getSecret(name);
+
+                return CompletableFuture.completedFuture(null);
+            }
+
+        });
     }
 
     @Override
@@ -276,7 +301,12 @@ public class KsmSecretService implements VaultSecretService {
         Set<String> observedIdentifiers = new HashSet<>();
         observedIdentifiers.add(parentIdentifier);
 
-        Directory<ConnectionGroup> connectionGroupDirectory = userContext.getConnectionGroupDirectory();
+        // Use the unwrapped connection group directory to avoid KSM config
+        // value sanitization
+        Directory<ConnectionGroup> connectionGroupDirectory = (
+                (KsmDirectory<ConnectionGroup>) userContext.getConnectionGroupDirectory()
+                ).getUnderlyingDirectory();
+
         while (true) {
 
             // Fetch the parent group, if one exists
@@ -304,18 +334,103 @@ public class KsmSecretService implements VaultSecretService {
 
     }
 
-    @Override
-    public Map<String, Future<String>> getTokens(UserContext userContext, Connectable connectable,
-            GuacamoleConfiguration config, TokenFilter filter) throws GuacamoleException {
+    /**
+     * Returns true if user-level KSM configuration is enabled for the given
+     * Connectable, false otherwise.
+     *
+     * @param connectable
+     *     The connectable to check for whether user-level KSM configs are
+     *     enabled.
+     *
+     * @return
+     *     True if user-level KSM configuration is enabled for the given
+     *     Connectable, false otherwise.
+     */
+    private boolean isKsmUserConfigEnabled(Connectable connectable) {
 
-        Map<String, Future<String>> tokens = new HashMap<>();
-        Map<String, String> parameters = config.getParameters();
+        // User-level config is enabled IFF the appropriate attribute is set to true
+        if (connectable instanceof Attributes)
+            return KsmAttributeService.TRUTH_VALUE.equals(((Attributes) connectable).getAttributes().get(
+                KsmAttributeService.KSM_USER_CONFIG_ENABLED_ATTRIBUTE));
 
-        // Attempt to find a KSM config for this connection or group
-        String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
+        // If there's no attributes to check, the user config cannot be enabled
+        return false;
 
-        // Get a client instance for this KSM config
-        KsmClient ksm = getClient(ksmConfig);
+    }
+
+    /**
+     * Return the KSM config blob for the current user IFF user KSM configs
+     * are enabled globally, and are enabled for the given connectable. If no
+     * KSM config exists for the given user or KSM configs are not enabled,
+     * null will be returned.
+     *
+     * @param userContext
+     *    The user context from which the current user should be fetched.
+     *
+     * @param connectable
+     *    The connectable to which the connection is being established. This
+     *    is the conneciton which will be checked to see if user KSM configs
+     *    are enabled.
+     *
+     * @return
+     *    The base64 encoded KSM config blob for the current user if one
+     *    exists, and if user KSM configs are enabled globally and for the
+     *    provided connectable.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while attempting to fetch the KSM config.
+     */
+    private String getUserKSMConfig(
+            UserContext userContext, Connectable connectable) throws GuacamoleException {
+
+        // If user KSM configs are enabled globally, and for the given connectable,
+        // return the user-specific KSM config, if one exists
+        if (confService.getAllowUserConfig() && isKsmUserConfigEnabled(connectable)) {
+
+            // Get the underlying user, to avoid the KSM config sanitization
+            User self = (
+                    ((KsmDirectory<User>) userContext.getUserDirectory())
+                    .getUnderlyingDirectory().get(userContext.self().getIdentifier()));
+
+            return self.getAttributes().get(
+                    KsmAttributeService.KSM_CONFIGURATION_ATTRIBUTE);
+        }
+
+
+        // If user-specific KSM config is disabled globally or for the given
+        // connectable, return null to indicate that no user config exists
+        return null;
+    }
+
+    /**
+     * Use the provided KSM client to add parameter tokens tokens to the
+     * provided token map. The supplied filter will be used to replace
+     * existing tokens in the provided connection parameters before KSM
+     * record lookup. The supplied GuacamoleConfiguration instance will
+     * be used to check the protocol, in case RDP-specific behavior is
+     * needed.
+
+     * @param config
+     *    The GuacamoleConfiguration associated with the Connectable for which
+     *    tokens are being added.
+     *
+     * @param ksm
+     *     The KSM client to use when fetching records.
+     *
+     * @param tokens
+     *     The tokens to which any fetched KSM record values should be added.
+     *
+     * @param parameters
+     *     The connection parameters associated with the Connectable for which
+     *     tokens are being added.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while attempting to fetch KSM records or check
+     *     configuration settings.
+     */
+    private void addConnectableTokens(
+            GuacamoleConfiguration config, KsmClient ksm, Map<String, Future<String>> tokens,
+            Map<String, String> parameters, TokenFilter filter) throws GuacamoleException {
 
         // Retrieve and define server-specific tokens, if any
         String hostname = parameters.get("hostname");
@@ -372,7 +487,6 @@ public class KsmSecretService implements VaultSecretService {
                         ksm.getRecordByLogin(
                             filter.filter(gatewayUsername),
                             filteredGatewayDomain));
-
         }
 
         else {
@@ -386,6 +500,27 @@ public class KsmSecretService implements VaultSecretService {
                 addRecordTokens(tokens, "KEEPER_USER_",
                         ksm.getRecordByLogin(filter.filter(username), null));
         }
+    }
+
+    @Override
+    public Map<String, Future<String>> getTokens(UserContext userContext, Connectable connectable,
+            GuacamoleConfiguration config, TokenFilter filter) throws GuacamoleException {
+
+        Map<String, Future<String>> tokens = new HashMap<>();
+        Map<String, String> parameters = config.getParameters();
+
+        // Only use the user-specific KSM config if explicitly enabled in the global
+        // configuration, AND for the specific connectable being connected to
+        String userKsmConfig = getUserKSMConfig(userContext, connectable);
+        if (userKsmConfig != null && !userKsmConfig.trim().isEmpty())
+            addConnectableTokens(
+                    config, getClient(userKsmConfig), tokens, parameters, filter);
+
+        // Add connection group or globally defined tokens after the user-specific
+        // ones to ensure that the user config will be overriden on collision
+        String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
+        addConnectableTokens(
+            config, getClient(ksmConfig), tokens, parameters, filter);
 
         return tokens;
 
