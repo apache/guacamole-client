@@ -163,7 +163,7 @@ public class KsmSecretService implements VaultSecretService {
 
                 // If the user config happens to be the same as admin-defined one,
                 // don't bother trying again
-                if (!Objects.equal(userKsmConfig, ksmConfig))
+                if (userKsmConfig != null && !Objects.equal(userKsmConfig, ksmConfig))
                     return getClient(userKsmConfig).getSecret(name);
 
                 return CompletableFuture.completedFuture(null);
