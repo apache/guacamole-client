@@ -27,15 +27,15 @@
 ARG TOMCAT_VERSION=8.5
 ARG TOMCAT_JRE=jdk8
 
+# Use args to build radius auth extension such as
+# `--build-arg BUILD_PROFILE=lgpl-extensions`
+ARG BUILD_PROFILE
+
 # Use official maven image for the build
 FROM maven:3-jdk-8 AS builder
 
 # Install chromium-driver for sake of JavaScript unit tests
 RUN apt-get update && apt-get install -y chromium-driver
-
-# Use args to build radius auth extension such as
-# `--build-arg BUILD_PROFILE=lgpl-extensions`
-ARG BUILD_PROFILE
 
 # Build environment variables
 ENV \
@@ -53,22 +53,20 @@ RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole "$BUILD_PR
 # For the runtime image, we start with the official Tomcat distribution
 FROM tomcat:${TOMCAT_VERSION}-${TOMCAT_JRE}
 
-# Install XMLStarlet for server.xml alterations
-RUN apt-get update -qq \
-    && apt-get install -y xmlstarlet \
-    && rm -rf /var/lib/apt/lists/*
+# Install XMLStarlet for server.xml alterations and create a new user guacamole
+ARG UID=1001
+ARG GID=1001
+RUN apt-get update -qq && \
+    apt-get install -y xmlstarlet && \
+    rm -rf /var/lib/apt/lists/*; \
+    groupadd --gid $GID guacamole && \
+    useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $GID guacamole
 
 # This is where the build artifacts go in the runtime image
 WORKDIR /opt/guacamole
 
 # Copy artifacts from builder image into this image
 COPY --from=builder /opt/guacamole/ .
-
-# Create a new user guacamole
-ARG UID=1001
-ARG GID=1001
-RUN groupadd --gid $GID guacamole
-RUN useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $GID guacamole
 
 # Run with user guacamole
 USER guacamole
