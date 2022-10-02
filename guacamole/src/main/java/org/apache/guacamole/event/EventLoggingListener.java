@@ -22,6 +22,8 @@ package org.apache.guacamole.event;
 import javax.annotation.Nonnull;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
+import org.apache.guacamole.net.event.ApplicationShutdownEvent;
+import org.apache.guacamole.net.event.ApplicationStartedEvent;
 import org.apache.guacamole.net.event.DirectoryEvent;
 import org.apache.guacamole.net.event.DirectoryFailureEvent;
 import org.apache.guacamole.net.event.DirectorySuccessEvent;
@@ -115,12 +117,19 @@ public class EventLoggingListener implements Listener {
     @Override
     public void handleEvent(@Nonnull Object event) throws GuacamoleException {
 
+        // General object creation/modification/deletion
         if (event instanceof DirectorySuccessEvent)
             logSuccess((DirectorySuccessEvent<?>) event);
-
         else if (event instanceof DirectoryFailureEvent)
             logFailure((DirectoryFailureEvent<?>) event);
 
+        // Application startup/shutdown
+        else if (event instanceof ApplicationStartedEvent)
+            logger.info("The Apache Guacamole web application has started.");
+        else if (event instanceof ApplicationShutdownEvent)
+            logger.info("The Apache Guacamole web application has shut down.");
+
+        // Unknown events
         else
             logger.debug("Ignoring unknown/unimplemented event type: {}",
                     event.getClass());
