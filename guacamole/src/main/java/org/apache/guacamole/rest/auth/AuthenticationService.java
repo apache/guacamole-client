@@ -30,7 +30,6 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.GuacamoleSession;
-import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -55,12 +54,6 @@ public class AuthenticationService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
-
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
 
     /**
      * All configured authentication providers which can be used to
@@ -443,7 +436,7 @@ public class AuthenticationService {
             // If no existing session, generate a new token/session pair
             else {
                 authToken = authTokenGenerator.getToken();
-                tokenSessionMap.put(authToken, new GuacamoleSession(environment, authenticatedUser, userContexts));
+                tokenSessionMap.put(authToken, new GuacamoleSession(listenerService, authenticatedUser, userContexts));
                 logger.debug("Login was successful for user \"{}\".", authenticatedUser.getIdentifier());
             }
 

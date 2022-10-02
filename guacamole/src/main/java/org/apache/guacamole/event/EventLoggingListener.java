@@ -27,6 +27,7 @@ import org.apache.guacamole.net.event.ApplicationStartedEvent;
 import org.apache.guacamole.net.event.DirectoryEvent;
 import org.apache.guacamole.net.event.DirectoryFailureEvent;
 import org.apache.guacamole.net.event.DirectorySuccessEvent;
+import org.apache.guacamole.net.event.UserSessionInvalidatedEvent;
 import org.apache.guacamole.net.event.listener.Listener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -122,6 +123,11 @@ public class EventLoggingListener implements Listener {
             logSuccess((DirectorySuccessEvent<?>) event);
         else if (event instanceof DirectoryFailureEvent)
             logFailure((DirectoryFailureEvent<?>) event);
+
+        // Logout / session expiration
+        else if (event instanceof UserSessionInvalidatedEvent)
+            logger.info("{} has logged out, or their session has expired or "
+                    + "been terminated.", new RequestingUser((UserSessionInvalidatedEvent) event));
 
         // Application startup/shutdown
         else if (event instanceof ApplicationStartedEvent)

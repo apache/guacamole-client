@@ -23,12 +23,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.event.UserSessionInvalidatedEvent;
 import org.apache.guacamole.rest.auth.DecoratedUserContext;
+import org.apache.guacamole.rest.event.ListenerService;
 import org.apache.guacamole.tunnel.UserTunnel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +59,12 @@ public class GuacamoleSession {
     /**
      * All currently-active tunnels, indexed by tunnel UUID.
      */
-    private final Map<String, UserTunnel> tunnels =
-            new ConcurrentHashMap<String, UserTunnel>();
+    private final Map<String, UserTunnel> tunnels = new ConcurrentHashMap<>();
+
+    /**
+     * Service for dispatching events to registered event listeners.
+     */
+    private final ListenerService listenerService;
 
     /**
      * The last time this session was accessed.
@@ -70,9 +75,9 @@ public class GuacamoleSession {
      * Creates a new Guacamole session associated with the given
      * AuthenticatedUser and UserContexts.
      *
-     * @param environment
-     *     The environment of the Guacamole server associated with this new
-     *     session.
+     * @param listenerService
+     *     The service to use to notify registered event listeners when this
+     *     session is invalidated.
      *
      * @param authenticatedUser
      *     The authenticated user to associate this session with.
@@ -83,11 +88,12 @@ public class GuacamoleSession {
      * @throws GuacamoleException
      *     If an error prevents the session from being created.
      */
-    public GuacamoleSession(Environment environment,
+    public GuacamoleSession(ListenerService listenerService,
             AuthenticatedUser authenticatedUser,
             List<DecoratedUserContext> userContexts)
             throws GuacamoleException {
         this.lastAccessedTime = System.currentTimeMillis();
+        this.listenerService = listenerService;
         this.authenticatedUser = authenticatedUser;
         this.userContexts = userContexts;
     }
@@ -259,6 +265,23 @@ public class GuacamoleSession {
 
         // Invalidate the authenticated user object
         authenticatedUser.invalidate();
+
+        // Advise any registered listeners that the user's session is now
+        // invalidated
+        try {
+            listenerService.handleEvent(new UserSessionInvalidatedEvent() {
+
+                @Override
+                public AuthenticatedUser getAuthenticatedUser() {
+                    return authenticatedUser;
+                }
+
+            });
+        }
+        catch (GuacamoleException e) {
+            logger.error("An extension listening for session invalidation failed: {}", e.getMessage());
+            logger.debug("Extension failed internally while handling the session invalidation event.", e);
+        }
 
     }
     

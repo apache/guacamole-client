@@ -20,7 +20,7 @@
 package org.apache.guacamole.event;
 
 import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.event.DirectoryEvent;
+import org.apache.guacamole.net.event.UserEvent;
 
 /**
  * Loggable representation of the user that requested an operation.
@@ -30,7 +30,7 @@ public class RequestingUser implements LoggableDetail {
     /**
      * The event representing the requested operation.
      */
-    private final DirectoryEvent<?> event;
+    private final UserEvent event;
 
     /**
      * Creates a new RequestingUser that represents the user that requested the
@@ -39,7 +39,7 @@ public class RequestingUser implements LoggableDetail {
      * @param event
      *     The event representing the requested operation.
      */
-    public RequestingUser(DirectoryEvent<?> event) {
+    public RequestingUser(UserEvent event) {
         this.event = event;
     }
 
