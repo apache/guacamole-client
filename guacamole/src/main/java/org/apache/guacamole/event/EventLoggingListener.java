@@ -22,8 +22,12 @@ package org.apache.guacamole.event;
 import javax.annotation.Nonnull;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
+import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.event.ApplicationShutdownEvent;
 import org.apache.guacamole.net.event.ApplicationStartedEvent;
+import org.apache.guacamole.net.event.AuthenticationFailureEvent;
+import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
 import org.apache.guacamole.net.event.DirectoryEvent;
 import org.apache.guacamole.net.event.DirectoryFailureEvent;
 import org.apache.guacamole.net.event.DirectorySuccessEvent;
@@ -115,6 +119,52 @@ public class EventLoggingListener implements Listener {
         }
     }
 
+    /**
+     * Logs that authentication succeeded for a user.
+     *
+     * @param event
+     *     The event describing the authentication attempt that succeeded.
+     */
+    private void logSuccess(AuthenticationSuccessEvent event) {
+        if (!event.isExistingSession())
+            logger.info("{} successfully authenticated from {}",
+                    new RequestingUser(event),
+                    new RemoteAddress(event.getCredentials()));
+        else
+            logger.debug("{} successfully re-authenticated their existing "
+                    + "session from {}", new RequestingUser(event),
+                    new RemoteAddress(event.getCredentials()));
+    }
+
+    /**
+     * Logs that authentication failed for a user.
+     *
+     * @param event
+     *     The event describing the authentication attempt that failed.
+     */
+    private void logFailure(AuthenticationFailureEvent event) {
+
+        Credentials creds = event.getCredentials();
+        String username = creds.getUsername();
+
+        if (creds.isEmpty())
+            logger.debug("Empty authentication attempt (login screen "
+                    + "initialization) from {} failed: {}",
+                    new RemoteAddress(creds), new Failure(event));
+        else if (username == null || username.isEmpty())
+            logger.debug("Anonymous authentication attempt from {} failed: {}",
+                    new RemoteAddress(creds), new Failure(event));
+        else if (event.getFailure() instanceof GuacamoleInsufficientCredentialsException)
+            logger.debug("Authentication attempt from {} for user \"{}\" "
+                    + "requires additional credentials to continue: {}",
+                    new RemoteAddress(creds), username, new Failure(event));
+        else
+            logger.warn("Authentication attempt from {} for user \"{}\" "
+                    + "failed: {}", new RemoteAddress(creds), username,
+                    new Failure(event));
+
+    }
+
     @Override
     public void handleEvent(@Nonnull Object event) throws GuacamoleException {
 
@@ -124,7 +174,11 @@ public class EventLoggingListener implements Listener {
         else if (event instanceof DirectoryFailureEvent)
             logFailure((DirectoryFailureEvent<?>) event);
 
-        // Logout / session expiration
+        // Login / logout / session expiration
+        else if (event instanceof AuthenticationSuccessEvent)
+            logSuccess((AuthenticationSuccessEvent) event);
+        else if (event instanceof AuthenticationFailureEvent)
+            logFailure((AuthenticationFailureEvent) event);
         else if (event instanceof UserSessionInvalidatedEvent)
             logger.info("{} has logged out, or their session has expired or "
                     + "been terminated.", new RequestingUser((UserSessionInvalidatedEvent) event));
