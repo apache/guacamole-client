@@ -22,6 +22,7 @@ package org.apache.guacamole.event;
 import javax.annotation.Nonnull;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.event.ApplicationShutdownEvent;
@@ -144,6 +145,8 @@ public class EventLoggingListener implements Listener {
      */
     private void logFailure(AuthenticationFailureEvent event) {
 
+        AuthenticationProvider authProvider = event.getAuthenticationProvider();
+
         Credentials creds = event.getCredentials();
         String username = creds.getUsername();
 
@@ -154,14 +157,27 @@ public class EventLoggingListener implements Listener {
         else if (username == null || username.isEmpty())
             logger.debug("Anonymous authentication attempt from {} failed: {}",
                     new RemoteAddress(creds), new Failure(event));
-        else if (event.getFailure() instanceof GuacamoleInsufficientCredentialsException)
-            logger.debug("Authentication attempt from {} for user \"{}\" "
-                    + "requires additional credentials to continue: {}",
-                    new RemoteAddress(creds), username, new Failure(event));
-        else
-            logger.warn("Authentication attempt from {} for user \"{}\" "
-                    + "failed: {}", new RemoteAddress(creds), username,
-                    new Failure(event));
+        else if (event.getFailure() instanceof GuacamoleInsufficientCredentialsException) {
+            if (authProvider != null)
+                logger.debug("Authentication attempt from {} for user \"{}\" "
+                        + "requires additional credentials to continue: {} "
+                        + "(requested by \"{}\")", new RemoteAddress(creds),
+                        username, new Failure(event), authProvider.getIdentifier());
+            else
+                logger.debug("Authentication attempt from {} for user \"{}\" "
+                        + "requires additional credentials to continue: {}",
+                        new RemoteAddress(creds), username, new Failure(event));
+        }
+        else {
+            if (authProvider != null)
+                logger.warn("Authentication attempt from {} for user \"{}\" "
+                        + "failed: {} (rejected by \"{}\")", new RemoteAddress(creds),
+                        username, new Failure(event), authProvider.getIdentifier());
+            else
+                logger.warn("Authentication attempt from {} for user \"{}\" "
+                        + "failed: {}", new RemoteAddress(creds), username,
+                        new Failure(event));
+        }
 
     }
 
