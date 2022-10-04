@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.net.event;
 
+import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.Identifiable;
 
@@ -31,6 +33,18 @@ import org.apache.guacamole.net.auth.Identifiable;
  */
 public interface DirectoryObjectEvent<ObjectType extends Identifiable>
         extends AuthenticationProviderEvent, UserEvent {
+
+    /**
+     * {@inheritDoc}
+     * <p>
+     * NOTE: For subclasses of {@link DirectoryObjectEvent}, this will be the
+     * AuthenticationProvider associated with the affected object. This is not
+     * necessarily the same as the AuthenticationProvider that authenticated
+     * the user performing the operation, which can be retrieved via
+     * {@link #getAuthenticatedUser()} and {@link AuthenticatedUser#getAuthenticationProvider()}.
+     */
+    @Override
+    AuthenticationProvider getAuthenticationProvider();
 
     /**
      * Returns the type of {@link Directory} that contains the object affected
