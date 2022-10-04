@@ -24,13 +24,14 @@ import org.apache.guacamole.net.auth.Identifiable;
 
 /**
  * Abstract basis for events which involve a modification made to the objects
- * within a {@link Directory}.
+ * within a {@link Directory} through the operations exposed by the Directory
+ * interface.
  *
  * @param <ObjectType>
  *     The type of object stored within the {@link Directory}.
  */
 public interface DirectoryEvent<ObjectType extends Identifiable>
-        extends AuthenticationProviderEvent, UserEvent {
+        extends DirectoryObjectEvent<ObjectType> {
 
     /**
      * The types of directory operations that may be represented by a
@@ -71,15 +72,6 @@ public interface DirectoryEvent<ObjectType extends Identifiable>
     }
 
     /**
-     * Returns the type of objects stored within the {@link Directory}
-     * affected by the operation.
-     *
-     * @return
-     *     The type of objects stored within the {@link Directory}.
-     */
-    Directory.Type getDirectoryType();
-
-    /**
      * Returns the operation that was performed/attempted.
      *
      * @return
@@ -88,24 +80,25 @@ public interface DirectoryEvent<ObjectType extends Identifiable>
     Operation getOperation();
 
     /**
-     * Returns the identifier of the object affected by the operation. If the
-     * object was just created, this will be the identifier of the new object.
-     *
-     * @return
-     *     The identifier of the object affected by the operation.
+     * {@inheritDoc}
+     * <p>
+     * If the object was just created, this will be the identifier of the new
+     * object.
      */
+    @Override
     String getObjectIdentifier();
 
     /**
-     * Returns the object affected by the operation, if available. For
-     * deletions, there is no guarantee that the affected object will be
-     * available within this event. If the object is not available, null is
-     * returned.
-     *
-     * @return
-     *     The object affected by the operation performed, or null if that
-     *     object is not available in the context of this event.
+     * {@inheritDoc}
+     * <p>
+     * Currently, for object creation ({@link Operation#ADD}), retrieval
+     * ({@link Operation#GET}), modification and ({@link Operation#UPDATE}),
+     * it can be expected that the affected object will be available, however
+     * the caller should verify this regardless. For deletions
+     * ({@link Operation#REMOVE}), the object can only be made available for
+     * single deletions, and cannot be made available for batch deletions.
      */
+    @Override
     ObjectType getObject();
 
 }
