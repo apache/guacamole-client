@@ -55,6 +55,7 @@ public class AffectedObject implements LoggableDetail {
 
         Object object = event.getObject();
         String identifier = event.getObjectIdentifier();
+        String dataSource = event.getAuthenticationProvider().getIdentifier();
 
         String objectType;
         String name = null; // Not all objects have names
@@ -95,8 +96,8 @@ public class AffectedObject implements LoggableDetail {
             // Users
             case USER:
 
-                if (identifier.equals(event.getAuthenticatedUser().getIdentifier()))
-                    return "their own user account";
+                if (identifier != null && identifier.equals(event.getAuthenticatedUser().getIdentifier()))
+                    return "their own user account within \"" + dataSource + "\"";
 
                 objectType = "user";
                 break;
@@ -116,12 +117,12 @@ public class AffectedObject implements LoggableDetail {
         // including the name of the object, as well, if available
         if (identifier != null) {
             if (name != null)
-                return objectType + " \"" + identifier + "\" (currently named \"" + name + "\")";
+                return objectType + " \"" + identifier + "\" within \"" + dataSource + "\" (currently named \"" + name + "\")";
             else
-                return objectType + " \"" + identifier + "\"";
+                return objectType + " \"" + identifier + "\" within \"" + dataSource + "\"";
         }
         else
-            return objectType;
+            return objectType + " within \"" + dataSource + "\"";
 
     }
     
