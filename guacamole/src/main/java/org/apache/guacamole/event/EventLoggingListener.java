@@ -30,6 +30,7 @@ import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredential
 import org.apache.guacamole.net.event.ApplicationShutdownEvent;
 import org.apache.guacamole.net.event.ApplicationStartedEvent;
 import org.apache.guacamole.net.event.AuthenticationFailureEvent;
+import org.apache.guacamole.net.event.AuthenticationRequestReceivedEvent;
 import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
 import org.apache.guacamole.net.event.DirectoryEvent;
 import org.apache.guacamole.net.event.DirectoryFailureEvent;
@@ -227,6 +228,9 @@ public class EventLoggingListener implements Listener {
         else if (event instanceof UserSessionInvalidatedEvent)
             logger.info("{} has logged out, or their session has expired or "
                     + "been terminated.", new RequestingUser((UserSessionInvalidatedEvent) event));
+        else if (event instanceof AuthenticationRequestReceivedEvent)
+            logger.trace("Authentication request received from {}",
+                    new RemoteAddress(((AuthenticationRequestReceivedEvent) event).getCredentials()));
 
         // Application startup/shutdown
         else if (event instanceof ApplicationStartedEvent)
