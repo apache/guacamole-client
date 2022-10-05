@@ -94,6 +94,10 @@ public class AffectedObject implements LoggableDetail {
 
             // Users
             case USER:
+
+                if (identifier.equals(event.getAuthenticatedUser().getIdentifier()))
+                    return "their own user account";
+
                 objectType = "user";
                 break;
 

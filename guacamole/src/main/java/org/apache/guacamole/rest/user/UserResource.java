@@ -41,6 +41,7 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.net.auth.simple.SimpleActivityRecordSet;
+import org.apache.guacamole.net.event.DirectoryEvent;
 import org.apache.guacamole.rest.directory.DirectoryObjectResource;
 import org.apache.guacamole.rest.directory.DirectoryObjectTranslator;
 import org.apache.guacamole.rest.history.UserHistoryResource;
@@ -134,13 +135,19 @@ public class UserResource
     public void updateObject(APIUser modifiedObject) throws GuacamoleException {
 
         // A user may not use this endpoint to update their password
-        User currentUser = getUserContext().self();
-        if (
-                currentUser.getIdentifier().equals(modifiedObject.getUsername())
-                && modifiedObject.getPassword() != null) {
-            throw new GuacamoleSecurityException(
-                    "Permission denied. The password update endpoint must"
-                    + " be used to change the current user's password.");
+        try {
+            User currentUser = getUserContext().self();
+            if (
+                    currentUser.getIdentifier().equals(modifiedObject.getUsername())
+                    && modifiedObject.getPassword() != null) {
+                throw new GuacamoleSecurityException(
+                        "Permission denied. The password update endpoint must"
+                        + " be used to change the current user's password.");
+            }
+        }
+        catch (GuacamoleException | RuntimeException | Error e) {
+            fireDirectoryFailureEvent(DirectoryEvent.Operation.UPDATE, e);
+            throw e;
         }
 
         super.updateObject(modifiedObject);
@@ -184,8 +191,15 @@ public class UserResource
         }
 
         // Set password to the newly provided one
-        user.setPassword(userPasswordUpdate.getNewPassword());
-        getDirectory().update(user);
+        try {
+            user.setPassword(userPasswordUpdate.getNewPassword());
+            getDirectory().update(user);
+            fireDirectorySuccessEvent(DirectoryEvent.Operation.UPDATE);
+        }
+        catch (GuacamoleException | RuntimeException | Error e) {
+            fireDirectoryFailureEvent(DirectoryEvent.Operation.UPDATE, e);
+            throw e;
+        }
 
     }
 

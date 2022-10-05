@@ -24,6 +24,8 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.Identifiable;
+import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.event.ApplicationShutdownEvent;
 import org.apache.guacamole.net.event.ApplicationStartedEvent;
@@ -32,6 +34,7 @@ import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
 import org.apache.guacamole.net.event.DirectoryEvent;
 import org.apache.guacamole.net.event.DirectoryFailureEvent;
 import org.apache.guacamole.net.event.DirectorySuccessEvent;
+import org.apache.guacamole.net.event.IdentifiableObjectEvent;
 import org.apache.guacamole.net.event.UserSessionInvalidatedEvent;
 import org.apache.guacamole.net.event.listener.Listener;
 import org.slf4j.Logger;
@@ -47,6 +50,26 @@ public class EventLoggingListener implements Listener {
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(EventLoggingListener.class);
+
+    /**
+     * Returns whether the given event affects the password of a User object.
+     *
+     * @param event
+     *     The event to check.
+     *
+     * @return
+     *     true if a user's password is specifically set or modified by the
+     *     given event, false otherwise.
+     */
+    private boolean isPasswordAffected(IdentifiableObjectEvent<?> event) {
+
+        Identifiable object = event.getObject();
+        if (!(object instanceof User))
+            return false;
+
+        return ((User) object).getPassword() != null;
+        
+    }
 
     /**
      * Logs that an operation was performed on an object within a Directory
@@ -65,11 +88,17 @@ public class EventLoggingListener implements Listener {
                 break;
 
             case ADD:
-                logger.info("{} successfully created {}", new RequestingUser(event), new AffectedObject(event));
+                if (isPasswordAffected(event))
+                    logger.info("{} successfully created {}, setting their password", new RequestingUser(event), new AffectedObject(event));
+                else
+                    logger.info("{} successfully created {}", new RequestingUser(event), new AffectedObject(event));
                 break;
 
             case UPDATE:
-                logger.info("{} successfully updated {}", new RequestingUser(event), new AffectedObject(event));
+                if (isPasswordAffected(event))
+                    logger.info("{} successfully updated {}, changing their password", new RequestingUser(event), new AffectedObject(event));
+                else
+                    logger.info("{} successfully updated {}", new RequestingUser(event), new AffectedObject(event));
                 break;
 
             case REMOVE:
