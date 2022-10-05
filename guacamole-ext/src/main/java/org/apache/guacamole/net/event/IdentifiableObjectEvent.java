@@ -26,29 +26,30 @@ import org.apache.guacamole.net.auth.Identifiable;
 
 /**
  * Abstract basis for events which affect or directly relate to objects that
- * may be stored within a {@link Directory}.
+ * are {@link Identifiable} and may be stored within a {@link Directory}.
  *
  * @param <ObjectType>
- *     The type of object stored within the {@link Directory}.
+ *     The type of object affected or related to the event.
  */
-public interface DirectoryObjectEvent<ObjectType extends Identifiable>
+public interface IdentifiableObjectEvent<ObjectType extends Identifiable>
         extends AuthenticationProviderEvent, UserEvent {
 
     /**
      * {@inheritDoc}
      * <p>
-     * NOTE: For subclasses of {@link DirectoryObjectEvent}, this will be the
-     * AuthenticationProvider associated with the affected object. This is not
-     * necessarily the same as the AuthenticationProvider that authenticated
-     * the user performing the operation, which can be retrieved via
-     * {@link #getAuthenticatedUser()} and {@link AuthenticatedUser#getAuthenticationProvider()}.
+     * NOTE: For subclasses of {@link IdentifiableObjectEvent}, this will be the
+     * AuthenticationProvider associated with the affected, {@link Identifiable}
+     * object. This is not necessarily the same as the AuthenticationProvider
+     * that authenticated the user performing the operation, which can be
+     * retrieved via {@link #getAuthenticatedUser()} and
+     * {@link AuthenticatedUser#getAuthenticationProvider()}.
      */
     @Override
     AuthenticationProvider getAuthenticationProvider();
 
     /**
-     * Returns the type of {@link Directory} that contains the object affected
-     * by the operation.
+     * Returns the type of {@link Directory} that may contains the object
+     * affected by the operation.
      *
      * @return
      *     The type of objects stored within the {@link Directory}.

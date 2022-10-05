@@ -31,7 +31,7 @@ import org.apache.guacamole.net.auth.Identifiable;
  *     The type of object stored within the {@link Directory}.
  */
 public interface DirectoryEvent<ObjectType extends Identifiable>
-        extends DirectoryObjectEvent<ObjectType> {
+        extends IdentifiableObjectEvent<ObjectType> {
 
     /**
      * The types of directory operations that may be represented by a

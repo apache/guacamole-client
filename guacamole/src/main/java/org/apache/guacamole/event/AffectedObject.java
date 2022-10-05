@@ -22,7 +22,7 @@ package org.apache.guacamole.event;
 import org.apache.guacamole.net.auth.Nameable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.guacamole.net.event.DirectoryObjectEvent;
+import org.apache.guacamole.net.event.IdentifiableObjectEvent;
 
 /**
  * Loggable representation of the object affected by an operation.
@@ -37,7 +37,7 @@ public class AffectedObject implements LoggableDetail {
     /**
      * The event representing the requested operation.
      */
-    private final DirectoryObjectEvent<?> event;
+    private final IdentifiableObjectEvent<?> event;
 
     /**
      * Creates a new AffectedObject representing the object affected by the
@@ -46,7 +46,7 @@ public class AffectedObject implements LoggableDetail {
      * @param event
      *     The event representing the operation.
      */
-    public AffectedObject(DirectoryObjectEvent<?> event) {
+    public AffectedObject(IdentifiableObjectEvent<?> event) {
         this.event = event;
     }
 
