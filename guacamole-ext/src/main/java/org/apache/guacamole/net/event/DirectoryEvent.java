@@ -91,11 +91,11 @@ public interface DirectoryEvent<ObjectType extends Identifiable>
     /**
      * {@inheritDoc}
      * <p>
-     * Currently, for object creation ({@link Operation#ADD}), retrieval
-     * ({@link Operation#GET}), modification and ({@link Operation#UPDATE}),
+     * Currently, for object creation ({@link Operation#ADD ADD}), retrieval
+     * ({@link Operation#GET GET}), and modification ({@link Operation#UPDATE UPDATE}),
      * it can be expected that the affected object will be available, however
      * the caller should verify this regardless. For deletions
-     * ({@link Operation#REMOVE}), the object can only be made available for
+     * ({@link Operation#REMOVE REMOVE}), the object can only be made available for
      * single deletions, and cannot be made available for batch deletions.
      */
     @Override
