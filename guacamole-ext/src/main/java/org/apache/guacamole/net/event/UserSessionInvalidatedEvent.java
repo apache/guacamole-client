@@ -17,30 +17,11 @@
  * under the License.
  */
 
-package org.apache.guacamole.rest.tunnel;
-
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.tunnel.UserTunnel;
+package org.apache.guacamole.net.event;
 
 /**
- * Factory which creates resources that expose the contents of a given
- * tunnel.
+ * Event that is dispatched when a user has logged out or their session has
+ * expired.
  */
-public interface TunnelResourceFactory {
-
-    /**
-     * Creates a new TunnelResource which exposes the contents of the
-     * given tunnel.
-     *
-     * @param authenticatedUser
-     *     The user that is accessing the resource.
-     *
-     * @param tunnel
-     *     The tunnel whose contents should be exposed.
-     *
-     * @return
-     *     A new TunnelResource which exposes the contents of the given tunnel.
-     */
-    TunnelResource create(AuthenticatedUser authenticatedUser, UserTunnel tunnel);
-
+public interface UserSessionInvalidatedEvent extends UserEvent {
 }

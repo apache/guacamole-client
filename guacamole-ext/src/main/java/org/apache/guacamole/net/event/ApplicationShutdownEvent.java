@@ -17,30 +17,20 @@
  * under the License.
  */
 
-package org.apache.guacamole.rest.tunnel;
+package org.apache.guacamole.net.event;
 
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.tunnel.UserTunnel;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.event.listener.Listener;
 
 /**
- * Factory which creates resources that expose the contents of a given
- * tunnel.
+ * Event that is dispatched when the web application has nearly completely shut
+ * down, including the authentication/authorization portion of extensions. Any
+ * installed extensions are still loaded (such that they may receive this event
+ * via {@link Listener#handleEvent(java.lang.Object)}, but their authentication
+ * providers will have been shut down via {@link AuthenticationProvider#shutdown()},
+ * and resources from user sessions will have been closed and released via
+ * {@link UserContext#invalidate()}.
  */
-public interface TunnelResourceFactory {
-
-    /**
-     * Creates a new TunnelResource which exposes the contents of the
-     * given tunnel.
-     *
-     * @param authenticatedUser
-     *     The user that is accessing the resource.
-     *
-     * @param tunnel
-     *     The tunnel whose contents should be exposed.
-     *
-     * @return
-     *     A new TunnelResource which exposes the contents of the given tunnel.
-     */
-    TunnelResource create(AuthenticatedUser authenticatedUser, UserTunnel tunnel);
-
+public interface ApplicationShutdownEvent {
 }

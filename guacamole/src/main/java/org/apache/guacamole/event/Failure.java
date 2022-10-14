@@ -17,30 +17,40 @@
  * under the License.
  */
 
-package org.apache.guacamole.rest.tunnel;
+package org.apache.guacamole.event;
 
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.tunnel.UserTunnel;
+import org.apache.guacamole.net.event.FailureEvent;
 
 /**
- * Factory which creates resources that expose the contents of a given
- * tunnel.
+ * Loggable representation of a failure that occurred.
  */
-public interface TunnelResourceFactory {
+public class Failure implements LoggableDetail {
 
     /**
-     * Creates a new TunnelResource which exposes the contents of the
-     * given tunnel.
-     *
-     * @param authenticatedUser
-     *     The user that is accessing the resource.
-     *
-     * @param tunnel
-     *     The tunnel whose contents should be exposed.
-     *
-     * @return
-     *     A new TunnelResource which exposes the contents of the given tunnel.
+     * The event representing the failure.
      */
-    TunnelResource create(AuthenticatedUser authenticatedUser, UserTunnel tunnel);
+    private final FailureEvent event;
 
+    /**
+     * Creates a new Failure representing the failure described by the given
+     * event.
+     *
+     * @param event 
+     *     The event representing the failure.
+     */
+    public Failure(FailureEvent event) {
+        this.event = event;
+    }
+
+    @Override
+    public String toString() {
+
+        Throwable failure = event.getFailure();
+        if (failure == null)
+            return "unknown error (no specific failure recorded)";
+
+        return failure.getMessage();
+        
+    }
+    
 }

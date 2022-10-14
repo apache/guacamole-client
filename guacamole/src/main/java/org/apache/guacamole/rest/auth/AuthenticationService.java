@@ -21,16 +21,13 @@ package org.apache.guacamole.rest.auth;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.GuacamoleSession;
-import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -55,12 +52,6 @@ public class AuthenticationService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
-
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
 
     /**
      * All configured authentication providers which can be used to
@@ -104,57 +95,6 @@ public class AuthenticationService {
      * token used by the Guacamole REST API.
      */
     public static final String TOKEN_PARAMETER_NAME = "token";
-
-    /**
-     * Regular expression which matches any IPv4 address.
-     */
-    private static final String IPV4_ADDRESS_REGEX = "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})";
-
-    /**
-     * Regular expression which matches any IPv6 address.
-     */
-    private static final String IPV6_ADDRESS_REGEX = "([0-9a-fA-F]*(:[0-9a-fA-F]*){0,7})";
-
-    /**
-     * Regular expression which matches any IP address, regardless of version.
-     */
-    private static final String IP_ADDRESS_REGEX = "(" + IPV4_ADDRESS_REGEX + "|" + IPV6_ADDRESS_REGEX + ")";
-
-    /**
-     * Regular expression which matches any Port Number.
-     */
-    private static final String PORT_NUMBER_REGEX = "(:[0-9]{1,5})?";
-    
-    /**
-     * Pattern which matches valid values of the de-facto standard
-     * "X-Forwarded-For" header.
-     */
-    private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + PORT_NUMBER_REGEX + "(, " + IP_ADDRESS_REGEX + PORT_NUMBER_REGEX + ")*$");
-
-    /**
-     * Returns a formatted string containing an IP address, or list of IP
-     * addresses, which represent the HTTP client and any involved proxies. As
-     * the headers used to determine proxies can easily be forged, this data is
-     * superficially validated to ensure that it at least looks like a list of
-     * IPs.
-     *
-     * @param request
-     *     The HTTP request to format.
-     *
-     * @return
-     *     A formatted string containing one or more IP addresses.
-     */
-    private String getLoggableAddress(HttpServletRequest request) {
-
-        // Log X-Forwarded-For, if present and valid
-        String header = request.getHeader("X-Forwarded-For");
-        if (header != null && X_FORWARDED_FOR.matcher(header).matches())
-            return "[" + header + ", " + request.getRemoteAddr() + "]";
-
-        // If header absent or invalid, just use source IP
-        return request.getRemoteAddr();
-
-    }
 
     /**
      * Attempts authentication against all AuthenticationProviders, in order,
@@ -443,13 +383,13 @@ public class AuthenticationService {
             // If no existing session, generate a new token/session pair
             else {
                 authToken = authTokenGenerator.getToken();
-                tokenSessionMap.put(authToken, new GuacamoleSession(environment, authenticatedUser, userContexts));
-                logger.debug("Login was successful for user \"{}\".", authenticatedUser.getIdentifier());
+                tokenSessionMap.put(authToken, new GuacamoleSession(listenerService, authenticatedUser, userContexts));
             }
 
             // Report authentication success
             try {
-                listenerService.handleEvent(new AuthenticationSuccessEvent(authenticatedUser));
+                listenerService.handleEvent(new AuthenticationSuccessEvent(authenticatedUser,
+                        existingSession != null));
             }
             catch (GuacamoleException e) {
                 throw new GuacamoleAuthenticationProcessException("User "
@@ -461,24 +401,8 @@ public class AuthenticationService {
         // Log and rethrow any authentication errors
         catch (GuacamoleAuthenticationProcessException e) {
 
-            // Get request and username for sake of logging
-            HttpServletRequest request = credentials.getRequest();
-            String username = credentials.getUsername();
-
             listenerService.handleEvent(new AuthenticationFailureEvent(credentials,
                     e.getAuthenticationProvider(), e.getCause()));
-
-            // Log authentication failures with associated usernames
-            if (username != null) {
-                if (logger.isWarnEnabled())
-                    logger.warn("Authentication attempt from {} for user \"{}\" failed.",
-                            getLoggableAddress(request), username);
-            }
-
-            // Log anonymous authentication failures
-            else if (logger.isDebugEnabled())
-                logger.debug("Anonymous authentication attempt from {} failed.",
-                        getLoggableAddress(request));
 
             // Rethrow exception
             e.rethrowCause();
@@ -496,11 +420,6 @@ public class AuthenticationService {
             throw e.getCauseAsGuacamoleException();
 
         }
-
-        if (logger.isInfoEnabled())
-            logger.info("User \"{}\" successfully authenticated from {}.",
-                    authenticatedUser.getIdentifier(),
-                    getLoggableAddress(credentials.getRequest()));
 
         return authToken;
 

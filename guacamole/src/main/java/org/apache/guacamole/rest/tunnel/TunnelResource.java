@@ -34,6 +34,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocols.ProtocolInfo;
 import org.apache.guacamole.rest.activeconnection.APIActiveConnection;
@@ -55,6 +56,11 @@ public class TunnelResource {
      */
     private static final String DEFAULT_MEDIA_TYPE = MediaType.APPLICATION_OCTET_STREAM;
 
+    /**
+     * The user that is accessing this resource.
+     */
+    private final AuthenticatedUser authenticatedUser;
+    
     /**
      * The tunnel that this TunnelResource represents.
      */
@@ -78,11 +84,16 @@ public class TunnelResource {
      * Creates a new TunnelResource which exposes the operations and
      * subresources available for the given tunnel.
      *
+     * @param authenticatedUser
+     *     The user that is accessing this resource.
+     *
      * @param tunnel
      *     The tunnel that this TunnelResource should represent.
      */
     @AssistedInject
-    public TunnelResource(@Assisted UserTunnel tunnel) {
+    public TunnelResource(@Assisted AuthenticatedUser authenticatedUser,
+            @Assisted UserTunnel tunnel) {
+        this.authenticatedUser = authenticatedUser;
         this.tunnel = tunnel;
     }
 
@@ -110,7 +121,7 @@ public class TunnelResource {
             throw new GuacamoleResourceNotFoundException("No readable active connection for tunnel.");
 
         // Return the associated ActiveConnection as a resource
-        return activeConnectionResourceFactory.create(userContext,
+        return activeConnectionResourceFactory.create(authenticatedUser, userContext,
                 userContext.getActiveConnectionDirectory(), activeConnection);
 
     }

@@ -17,30 +17,19 @@
  * under the License.
  */
 
-package org.apache.guacamole.rest.tunnel;
+package org.apache.guacamole.net.event;
 
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.tunnel.UserTunnel;
+import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.Identifiable;
 
 /**
- * Factory which creates resources that expose the contents of a given
- * tunnel.
+ * Event that is dispatched whenever a REST API request to create/modify/delete
+ * an object within a {@link Directory} succeeds.
+ *
+ * @param <ObjectType>
+ *     The type of object stored within the {@link Directory}.
  */
-public interface TunnelResourceFactory {
-
-    /**
-     * Creates a new TunnelResource which exposes the contents of the
-     * given tunnel.
-     *
-     * @param authenticatedUser
-     *     The user that is accessing the resource.
-     *
-     * @param tunnel
-     *     The tunnel whose contents should be exposed.
-     *
-     * @return
-     *     A new TunnelResource which exposes the contents of the given tunnel.
-     */
-    TunnelResource create(AuthenticatedUser authenticatedUser, UserTunnel tunnel);
+public interface DirectorySuccessEvent<ObjectType extends Identifiable>
+        extends DirectoryEvent<ObjectType> {
 
 }

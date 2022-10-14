@@ -17,30 +17,23 @@
  * under the License.
  */
 
-package org.apache.guacamole.rest.tunnel;
-
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.tunnel.UserTunnel;
+package org.apache.guacamole.event;
 
 /**
- * Factory which creates resources that expose the contents of a given
- * tunnel.
+ * Provides a {@link #toString()} implementation that returns a human-readable
+ * string that is intended to be logged and which describes a particular detail
+ * of an event.
  */
-public interface TunnelResourceFactory {
+public interface LoggableDetail {
 
     /**
-     * Creates a new TunnelResource which exposes the contents of the
-     * given tunnel.
-     *
-     * @param authenticatedUser
-     *     The user that is accessing the resource.
-     *
-     * @param tunnel
-     *     The tunnel whose contents should be exposed.
-     *
-     * @return
-     *     A new TunnelResource which exposes the contents of the given tunnel.
+     * {@inheritDoc}
+     * <p>
+     * A LoggableDetail implementation of toString() is required to return a
+     * string that is human-readable, describes a detail of a provided event,
+     * and that is intended to be logged.
      */
-    TunnelResource create(AuthenticatedUser authenticatedUser, UserTunnel tunnel);
+    @Override
+    String toString();
 
 }

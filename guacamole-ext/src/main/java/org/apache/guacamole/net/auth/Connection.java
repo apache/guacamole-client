@@ -34,20 +34,7 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
  * backing GuacamoleConfiguration may be intentionally obfuscated or tokenized
  * to protect sensitive configuration information.
  */
-public interface Connection extends Identifiable, Connectable, Attributes {
-
-    /**
-     * Returns the name assigned to this Connection.
-     * @return The name assigned to this Connection.
-     */
-    public String getName();
-
-    /**
-     * Sets the name assigned to this Connection.
-     *
-     * @param name The name to assign.
-     */
-    public void setName(String name);
+public interface Connection extends Identifiable, Connectable, Attributes, Nameable {
 
     /**
      * Returns the unique identifier of the parent ConnectionGroup for

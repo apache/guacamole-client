@@ -17,30 +17,29 @@
  * under the License.
  */
 
-package org.apache.guacamole.rest.tunnel;
-
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.tunnel.UserTunnel;
+package org.apache.guacamole.net.auth;
 
 /**
- * Factory which creates resources that expose the contents of a given
- * tunnel.
+ * An object which has a human-readable, arbitrary name. No requirement is
+ * imposed by this interface regarding whether this name must be unique,
+ * however implementations are free to impose such restrictions.
  */
-public interface TunnelResourceFactory {
+public interface Nameable {
 
     /**
-     * Creates a new TunnelResource which exposes the contents of the
-     * given tunnel.
-     *
-     * @param authenticatedUser
-     *     The user that is accessing the resource.
-     *
-     * @param tunnel
-     *     The tunnel whose contents should be exposed.
+     * Returns the human-readable name assigned to this object.
      *
      * @return
-     *     A new TunnelResource which exposes the contents of the given tunnel.
+     *     The name assigned to this object.
      */
-    TunnelResource create(AuthenticatedUser authenticatedUser, UserTunnel tunnel);
+    String getName();
+
+    /**
+     * Sets the human-readable name assigned to this object.
+     *
+     * @param name
+     *     The name to assign.
+     */
+    void setName(String name);
 
 }

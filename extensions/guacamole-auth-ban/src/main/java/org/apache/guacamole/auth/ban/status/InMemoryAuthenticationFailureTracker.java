@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.ban.status;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.language.TranslatableGuacamoleClientTooManyException;
@@ -89,40 +88,6 @@ public class InMemoryAuthenticationFailureTracker implements AuthenticationFailu
     }
 
     /**
-     * Returns whether the given Credentials do not contain any specific
-     * authentication parameters, including HTTP parameters. An authentication
-     * request that contains no parameters whatsoever will tend to be the
-     * first, anonymous, credential-less authentication attempt that results in
-     * the initial login screen rendering.
-     *
-     * @param credentials
-     *     The Credentials object to test.
-     *
-     * @return
-     *     true if the given Credentials contain no authentication parameters
-     *     whatsoever, false otherwise.
-     */
-    private boolean isEmpty(Credentials credentials) {
-
-        // An authentication request that contains an explicit username or
-        // password (even if blank) is non-empty, regardless of how the values
-        // were passed
-        if (credentials.getUsername() != null || credentials.getPassword() != null)
-            return false;
-
-        // All further tests depend on HTTP request details
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return true;
-
-        // An authentication request is non-empty if it contains any HTTP
-        // parameters at all or contains an authentication token
-        return !request.getParameterNames().hasMoreElements()
-                && request.getHeader("Guacamole-Token") == null;
-
-    }
-
-    /**
      * Reports that the given address has just failed to authenticate and
      * returns the AuthenticationFailureStatus that represents that failure. If
      * the address isn't already being tracked, it will begin being tracked as
@@ -168,7 +133,7 @@ public class InMemoryAuthenticationFailureTracker implements AuthenticationFailu
             boolean failed) throws GuacamoleException {
 
         // Ignore requests that do not contain explicit parameters of any kind
-        if (isEmpty(credentials))
+        if (credentials.isEmpty())
             return;
 
         // Determine originating address of the authentication request

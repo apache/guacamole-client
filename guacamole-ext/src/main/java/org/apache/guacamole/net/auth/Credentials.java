@@ -236,4 +236,36 @@ public class Credentials implements Serializable {
         this.remoteHostname = remoteHostname;
     }
 
+    /**
+     * Returns whether this Credentials object does not contain any specific
+     * authentication parameters, including HTTP parameters and the HTTP header
+     * used for the authentication token. An authentication request that
+     * contains no parameters whatsoever will tend to be the first, anonymous,
+     * credential-less authentication attempt that results in the initial login
+     * screen rendering.
+     *
+     * @return
+     *     true if this Credentials object contains no authentication
+     *     parameters whatsoever, false otherwise.
+     */
+    public boolean isEmpty() {
+
+        // An authentication request that contains an explicit username or
+        // password (even if blank) is non-empty, regardless of how the values
+        // were passed
+        if (getUsername() != null || getPassword() != null)
+            return false;
+
+        // All further tests depend on HTTP request details
+        HttpServletRequest httpRequest = getRequest();
+        if (httpRequest == null)
+            return true;
+
+        // An authentication request is non-empty if it contains any HTTP
+        // parameters at all or contains an authentication token
+        return !httpRequest.getParameterNames().hasMoreElements()
+                && httpRequest.getHeader("Guacamole-Token") == null;
+
+    }
+
 }

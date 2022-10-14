@@ -116,7 +116,7 @@ public class SessionResource {
         UserContext userContext = session.getUserContext(authProviderIdentifier);
 
         // Return a resource exposing the retrieved UserContext
-        return userContextResourceFactory.create(userContext);
+        return userContextResourceFactory.create(session.getAuthenticatedUser(), userContext);
 
     }
 
