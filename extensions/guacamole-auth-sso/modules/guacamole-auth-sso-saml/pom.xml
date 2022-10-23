@@ -73,24 +73,7 @@
         <dependency>
             <groupId>com.onelogin</groupId>
             <artifactId>java-saml</artifactId>
-            <version>2.8.0</version>
-            <exclusions>
-
-                <!-- Force consistent version of commons-codec (see below) -->
-                <exclusion>
-                    <groupId>commons-codec</groupId>
-                    <artifactId>commons-codec</artifactId>
-                </exclusion>
-
-            </exclusions>
-        </dependency>
-
-        <!-- Force single, specific version of commons-codec (multiple
-            dependencies reference multiple versions of this). -->
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.15</version>
+            <version>2.9.0</version>
         </dependency>
 
     </dependencies>
