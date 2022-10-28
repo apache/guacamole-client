@@ -59,10 +59,11 @@
             <exclusions>
 
                 <!-- Resolve version conflict (see below - transitive
-                    dependencies of cas-client-core disagree on 2.3.0 vs. 2.3.1) -->
+                dependencies of cas-client-core disagree on 2.3.0.1 vs.
+                2.3.1) -->
                 <exclusion>
-                    <groupId>javax.xml.bind</groupId>
-                    <artifactId>jaxb-api</artifactId>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-core</artifactId>
                 </exclusion>
 
             </exclusions>
