@@ -1,7 +1,7 @@
-Jackson-databind (https://github.com/FasterXML/jackson-databind)
+Jackson (https://github.com/FasterXML/jackson)
 ----------------------------------------------
 
-    Version: 2.13.4.2
+    Version: 2.14.0
     From: 'FasterXML, LLC' (https://github.com/FasterXML)
     License(s):
         Apache v2.0
