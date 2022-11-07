@@ -61,6 +61,12 @@
                     <artifactId>commons-lang3</artifactId>
                 </exclusion>
 
+                <!-- Use latest version of commons-text -->
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-text</artifactId>
+                </exclusion>
+
             </exclusions>
         </dependency>
 
@@ -70,6 +76,14 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
+        </dependency>
+
+        <!-- Force latest version of commons-text (transitive dependency from
+        Apache Directory API -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.10.0</version>
         </dependency>
 
         <!-- Guice -->
