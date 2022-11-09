@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.7.4</version>
+            <version>5.7.5</version>
         </dependency>
 
     </dependencies>
