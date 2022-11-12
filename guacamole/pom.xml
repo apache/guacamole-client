@@ -231,6 +231,15 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <exclusions>
+
+                <!-- Exclude optional dependency on JavaMail -->
+                <exclusion>
+                    <groupId>com.sun.mail</groupId>
+                    <artifactId>javax.mail</artifactId>
+                </exclusion>
+
+            </exclusions>
         </dependency>
 
         <!-- Guacamole Extension API -->
