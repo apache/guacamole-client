@@ -182,7 +182,7 @@ public class ExtensionModule extends ServletModule {
             return ExtensionModule.class.getClassLoader();
 
         // Return classloader which loads classes from all .jars within the lib directory
-        return DirectoryClassLoader.getInstance(libDir);
+        return new DirectoryClassLoader(libDir);
 
     }
 
