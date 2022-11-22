@@ -143,12 +143,13 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             $scope.newPasswordMatch = null;
 
             /**
-             * Whether the current user can change their own password, or null
-             * if this is not yet known.
+             * Whether the current user can edit themselves - i.e. update their
+             * password or change user preference attributes, or null if this
+             * is not yet known.
              *
              * @type Boolean
              */
-            $scope.canChangePassword = null;
+            $scope.canUpdateSelf = null;
 
             /**
              * Update the current user's password to the password currently set within
@@ -206,13 +207,13 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             permissionService.getEffectivePermissions(dataSource, username)
             .then(function permissionsRetrieved(permissions) {
 
-                // Add action for changing password if permission is granted
-                $scope.canChangePassword = PermissionSet.hasUserPermission(permissions,
+                // Add action for updaing password or user preferences if permission is granted
+                $scope.canUpdateSelf = PermissionSet.hasUserPermission(permissions,
                         PermissionSet.ObjectPermissionType.UPDATE, username);
                         
             })
             ['catch'](requestService.createErrorCallback(function permissionsFailed(error) {
-                $scope.canChangePassword = false;
+                $scope.canUpdateSelf = false;
             }));
 
             /**
@@ -224,8 +225,8 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
              */
             $scope.isLoaded = function isLoaded() {
 
-                return $scope.canChangePassword !== null
-                    && $scope.languages         !== null;
+                return $scope.canUpdateSelf !== null
+                    && $scope.languages     !== null;
 
             };
 
