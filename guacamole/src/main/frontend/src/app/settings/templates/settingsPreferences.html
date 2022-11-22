@@ -7,8 +7,8 @@
     </div>
     
     <!-- Password update -->
-    <h2 class="header" ng-show="canChangePassword">{{'SETTINGS_PREFERENCES.SECTION_HEADER_UPDATE_PASSWORD' | translate}}</h2>
-    <div class="settings section update-password" ng-show="canChangePassword">
+    <h2 class="header" ng-show="canUpdateSelf">{{'SETTINGS_PREFERENCES.SECTION_HEADER_UPDATE_PASSWORD' | translate}}</h2>
+    <div class="settings section update-password" ng-show="canUpdateSelf">
         <p>{{'SETTINGS_PREFERENCES.HELP_UPDATE_PASSWORD' | translate}}</p>
 
         <!-- Password editor -->
@@ -90,7 +90,7 @@
     </div>
 
     <!-- User attributes section -->
-    <div class="attributes" ng-show="attributes.length">
+    <div class="attributes" ng-show="canUpdateSelf && attributes.length">
         <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
                    model="user.attributes"></guac-form>
 

@@ -23,7 +23,6 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
-import org.apache.guacamole.net.auth.DelegatingDirectory;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;

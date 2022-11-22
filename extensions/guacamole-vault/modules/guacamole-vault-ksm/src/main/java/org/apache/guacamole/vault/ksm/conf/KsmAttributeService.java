@@ -145,11 +145,6 @@ public class KsmAttributeService implements VaultAttributeService {
 
     @Override
     public Collection<Form> getUserAttributes() {
-        return KSM_ATTRIBUTES;
-    }
-
-    @Override
-    public Collection<Form> getUserPreferenceAttributes() {
 
         try {
 
@@ -161,15 +156,24 @@ public class KsmAttributeService implements VaultAttributeService {
         catch (GuacamoleException e) {
 
             logger.warn(
-                    "Unable to determine if user preference attributes "
+                    "Unable to determine if KSM user attributes "
                     + "should be exposed due to config parsing error: {}.", e.getMessage());
             logger.debug(
-                    "Config parsing error prevented checking user preference configuration",
+                    "Config parsing error prevented checking user attribute configuration",
                     e);
 
-            // If the configuration can't be parsed, default to not exposing the attribute
+            // If the configuration can't be parsed, default to not exposing the attributes
             return Collections.emptyList();
         }
+
+    }
+
+    @Override
+    public Collection<Form> getUserPreferenceAttributes() {
+
+        // KSM-specific user preference attributes have the same semantics as
+        // user attributes
+        return getUserAttributes();
     }
 
     /**
