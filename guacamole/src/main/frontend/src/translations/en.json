@@ -73,8 +73,8 @@
         "ACTION_UPLOAD_FILES"              : "Upload Files",
 
         "CLIENT_MESSAGE_DEFAULT" : "",
-        "CLIENT_MESSAGE_JOINED"  : "User {ARGS_0} has joined the connection.",
-        "CLIENT_MESSAGE_LEFT"    : "User {ARGS_0} has left the connection.",
+        "CLIENT_MESSAGE_JOINED"  : "User {ARGS_1} has joined the connection.",
+        "CLIENT_MESSAGE_LEFT"    : "User {ARGS_1} has left the connection.",
         
         "DIALOG_HEADER_CONNECTING"       : "Connecting",
         "DIALOG_HEADER_CONNECTION_ERROR" : "Connection Error",
