@@ -96,12 +96,6 @@ public class KsmClient {
     private static final Pattern KEEPER_FILE_NOTATION = Pattern.compile("^(keeper://)?[^/]*/file/.+");
 
     /**
-     * The maximum amount of time that an entry will be stored in the cache
-     * before being refreshed, in milliseconds.
-     */
-    private static final long CACHE_INTERVAL = 5000;
-
-    /**
      * The KSM configuration associated with this client instance.
      */
     private final SecretsManagerOptions ksmConfig;
@@ -114,6 +108,13 @@ public class KsmClient {
      * write lock.
      */
     private final ReadWriteLock cacheLock = new ReentrantReadWriteLock();
+
+    /**
+     * The maximum amount of time that an entry will be stored in the cache
+     * before being refreshed, in milliseconds. This is also the shortest
+     * possible interval between API calls to KSM.
+     */
+    private final long cacheInterval;
 
     /**
      * The timestamp that the cache was last refreshed, in milliseconds, as
@@ -215,19 +216,27 @@ public class KsmClient {
     private final Set<String> cachedAmbiguousDomains = new HashSet<>();
 
     /**
-     * Create a new KSM client based around the provided KSM configuration.
+     * Create a new KSM client based around the provided KSM configuration and
+     * API timeout setting.
      *
      * @param ksmConfig
      *     The KSM configuration to use when retrieving properties from KSM.
+     *
+     * @param apiInterval
+     *     The minimum number of milliseconds that must elapse between KSM API
+     *     calls.
      */
     @AssistedInject
-    public KsmClient(@Assisted SecretsManagerOptions ksmConfig) {
+    public KsmClient(
+            @Assisted SecretsManagerOptions ksmConfig,
+            @Assisted long apiInterval) {
         this.ksmConfig = ksmConfig;
+        this.cacheInterval = apiInterval;
     }
 
     /**
      * Validates that all cached data is current with respect to
-     * {@link #CACHE_INTERVAL}, refreshing data from the server as needed.
+     * {@link #cacheInterval}, refreshing data from the server as needed.
      *
      * @throws GuacamoleException
      *     If an error occurs preventing the cached data from being refreshed.
@@ -240,7 +249,7 @@ public class KsmClient {
         // continuing
         cacheLock.readLock().lock();
         try {
-            if (currentTime - cacheTimestamp < CACHE_INTERVAL)
+            if (currentTime - cacheTimestamp < cacheInterval)
                 return;
         }
         finally {
@@ -252,7 +261,7 @@ public class KsmClient {
 
             // Cache may have been updated since the read-only check. Re-verify
             // that the cache has expired before continuing with a full refresh
-            if (currentTime - cacheTimestamp < CACHE_INTERVAL)
+            if (currentTime - cacheTimestamp < cacheInterval)
                 return;
 
             // Attempt to pull all records first, allowing that operation to

@@ -124,7 +124,7 @@ public class KsmSecretService implements VaultSecretService {
 
         // Create and store a new KSM client instance for the provided KSM config blob
         SecretsManagerOptions options = confService.getSecretsManagerOptions(ksmConfig);
-        ksmClient = ksmClientFactory.create(options);
+        ksmClient = ksmClientFactory.create(options, confService.getKsmApiInterval());
         KsmClient prevClient = ksmClientMap.putIfAbsent(ksmConfig, ksmClient);
 
         // If the client was already set before this thread got there, use the existing one
@@ -274,6 +274,7 @@ public class KsmSecretService implements VaultSecretService {
      *     no KSM config is found in the connection group tree, and the value is also not
      *     defined in the config file.
      */
+    @Nonnull
     private String getConnectionGroupKsmConfig(
             UserContext userContext, Connectable connectable) throws GuacamoleException {
 
