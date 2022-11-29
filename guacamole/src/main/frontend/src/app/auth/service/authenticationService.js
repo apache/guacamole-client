@@ -61,17 +61,20 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var cachedResult = null;
 
     /**
-     * The unique identifier of the local storage key which stores the result
-     * of the last authentication attempt.
+     * The unique identifier of the local storage key which stores the latest
+     * authentication token.
      *
      * @type String
      */
-    var AUTH_STORAGE_KEY = 'GUAC_AUTH';
+    var AUTH_TOKEN_STORAGE_KEY = 'GUAC_AUTH_TOKEN';
 
     /**
-     * Retrieves the last successful authentication result. If the user has not
+     * Retrieves the authentication result cached in memory. If the user has not
      * yet authenticated, the user has logged out, or the last authentication
      * attempt failed, null is returned.
+     *
+     * NOTE: setAuthenticationResult() will be called upon page load, so the
+     * cache should always be populated after the page has successfully loaded.
      *
      * @returns {AuthenticationResult}
      *     The last successful authentication result, or null if the user is not
@@ -84,12 +87,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
             return cachedResult;
 
         // Return explicit null if no auth data is currently stored
-        var data = localStorageService.getItem(AUTH_STORAGE_KEY);
-        if (!data)
-            return null;
-
-        // Update cache and return retrieved auth result
-        return (cachedResult = new AuthenticationResult(data));
+        return null;
 
     };
 
@@ -103,21 +101,28 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     var setAuthenticationResult = function setAuthenticationResult(data) {
 
-        // Clear the currently-stored result if the last attempt failed
+        // Clear the currently-stored result and auth token if the last
+        // attempt failed
         if (!data) {
             cachedResult = null;
-            localStorageService.removeItem(AUTH_STORAGE_KEY);
+            localStorageService.removeItem(AUTH_TOKEN_STORAGE_KEY);
         }
 
-        // Otherwise store the authentication attempt directly
+        // Otherwise, store the authentication attempt directly.
+        // Note that only the auth token is stored in persistent local storage.
+        // To re-obtain an autentication result upon a fresh page load,
+        // reauthenticate with the persistent token, which can be obtained by
+        // calling getCurrentToken().
         else {
 
             // Always store in cache
             cachedResult = data;
 
-            // Persist result past tab/window closure ONLY if not anonymous
+            // Persist only the auth token past tab/window closure, and only
+            // if not anonymous
             if (data.username !== AuthenticationResult.ANONYMOUS_USERNAME)
-                localStorageService.setItem(AUTH_STORAGE_KEY, data);
+                localStorageService.setItem(
+                        AUTH_TOKEN_STORAGE_KEY, data.authToken);
 
         }
 
@@ -363,13 +368,13 @@ angular.module('auth').factory('authenticationService', ['$injector',
      */
     service.getCurrentToken = function getCurrentToken() {
 
-        // Return auth token, if available
+        // Return cached auth token, if available
         var authData = getAuthenticationResult();
         if (authData)
             return authData.authToken;
 
-        // No auth data present
-        return null;
+        // Fall back to the value from local storage if not found in cache
+        return localStorageService.getItem(AUTH_TOKEN_STORAGE_KEY);
 
     };
 
