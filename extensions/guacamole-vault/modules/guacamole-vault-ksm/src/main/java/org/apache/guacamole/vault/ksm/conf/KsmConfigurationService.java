@@ -28,6 +28,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.LongGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
 
@@ -121,6 +122,17 @@ public class KsmConfigurationService extends VaultConfigurationService {
     };
 
     /**
+     * The minimum number of milliseconds between KSM API calls.
+     */
+    private static final LongGuacamoleProperty KSM_API_CALL_INTERVAL = new LongGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+            return "ksm-api-call-interval";
+        }
+    };
+
+    /**
      * Creates a new KsmConfigurationService which reads the configuration
      * from "ksm-token-mapping.yml" and properties from
      * "guacamole.properties.ksm". The token mapping is a YAML file which lists
@@ -176,6 +188,20 @@ public class KsmConfigurationService extends VaultConfigurationService {
         return environment.getProperty(MATCH_USER_DOMAINS, false);
     }
 
+    /**
+     * Return the minimum number of milliseconds between KSM API calls. If not
+     * otherwise configured, this value will be 10 seconds.
+     *
+     * @return
+     *     The minimum number of milliseconds between KSM API calls.
+     *
+     * @throws GuacamoleException
+     *     If the value specified within guacamole.properties cannot be
+     *     parsed or does not exist.
+     */
+    public long getKsmApiInterval() throws GuacamoleException {
+        return environment.getProperty(KSM_API_CALL_INTERVAL, 10000L);
+    }
 
     /**
      * Return the globally-defined base-64-encoded JSON KSM configuration blob
@@ -189,7 +215,12 @@ public class KsmConfigurationService extends VaultConfigurationService {
      *     If the value specified within guacamole.properties cannot be
      *     parsed or does not exist.
      */
+    @Nonnull
+    @SuppressWarnings("null")
     public String getKsmConfig() throws GuacamoleException {
+
+        // This will always return a non-null value; an exception would be
+        // thrown if the required value is not set
         return environment.getRequiredProperty(KSM_CONFIG);
     }
 
@@ -235,6 +266,7 @@ public class KsmConfigurationService extends VaultConfigurationService {
      * @throws GuacamoleException
      *     If an invalid ksmConfig parameter is provided.
      */
+    @Nonnull
     public SecretsManagerOptions getSecretsManagerOptions(@Nonnull String ksmConfig) throws GuacamoleException {
 
         return new SecretsManagerOptions(

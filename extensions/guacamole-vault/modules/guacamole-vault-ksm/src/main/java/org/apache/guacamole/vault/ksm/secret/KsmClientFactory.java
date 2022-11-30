@@ -30,16 +30,21 @@ public interface KsmClientFactory {
 
     /**
      * Returns a new instance of a KsmClient instance associated with
-     * the provided KSM configuration options.
+     * the provided KSM configuration options and API interval.
      *
      * @param ksmConfigOptions
      *     The KSM config options to use when constructing the KsmClient
      *     object.
      *
+     * @param apiInterval
+     *     The minimum number of milliseconds that must elapse between KSM API
+     *     calls.
+     *
      * @return
      *     A new KsmClient instance associated with the provided KSM config
      *     options.
      */
-    KsmClient create(@Nonnull SecretsManagerOptions ksmConfigOptions);
+    KsmClient create(
+            @Nonnull SecretsManagerOptions ksmConfigOptions, long apiInterval);
 
 }
