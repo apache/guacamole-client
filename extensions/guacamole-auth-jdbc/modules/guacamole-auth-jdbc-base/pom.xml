@@ -94,6 +94,12 @@
             <artifactId>guice</artifactId>
         </dependency>
 
+        <!-- Guice Assisted Inject Extension -->
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-assistedinject</artifactId>
+        </dependency>
+
         <!-- Guava - Utility Library -->
         <dependency>
             <groupId>com.google.guava</groupId>

@@ -44,12 +44,14 @@ public class SharingProfileDirectory extends RestrictedObject
 
     @Override
     public SharingProfile get(String identifier) throws GuacamoleException {
+        validateUserAccess();
         return sharingProfileService.retrieveObject(getCurrentUser(), identifier);
     }
 
     @Override
     @Transactional
     public Collection<SharingProfile> getAll(Collection<String> identifiers) throws GuacamoleException {
+        validateUserAccess();
         return Collections.<SharingProfile>unmodifiableCollection(
             sharingProfileService.retrieveObjects(getCurrentUser(), identifiers)
         );
@@ -58,18 +60,21 @@ public class SharingProfileDirectory extends RestrictedObject
     @Override
     @Transactional
     public Set<String> getIdentifiers() throws GuacamoleException {
+        validateUserAccess();
         return sharingProfileService.getIdentifiers(getCurrentUser());
     }
 
     @Override
     @Transactional
     public void add(SharingProfile object) throws GuacamoleException {
+        validateUserAccess();
         sharingProfileService.createObject(getCurrentUser(), object);
     }
 
     @Override
     @Transactional
     public void update(SharingProfile object) throws GuacamoleException {
+        validateUserAccess();
         ModeledSharingProfile sharingProfile = (ModeledSharingProfile) object;
         sharingProfileService.updateObject(getCurrentUser(), sharingProfile);
     }
@@ -77,6 +82,7 @@ public class SharingProfileDirectory extends RestrictedObject
     @Override
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
+        validateUserAccess();
         sharingProfileService.deleteObject(getCurrentUser(), identifier);
     }
 

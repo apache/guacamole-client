@@ -268,4 +268,13 @@ public class SQLServerEnvironment extends JDBCEnvironment {
                 true);
     }
 
+    @Override
+    public boolean enforceAccessWindowsForActiveSessions() throws GuacamoleException {
+
+        // Enforce access window restrictions for active sessions unless explicitly disabled
+        return getProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS,
+                true);
+    }
+
 }

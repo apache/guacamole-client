@@ -44,12 +44,14 @@ public class UserGroupDirectory extends RestrictedObject
 
     @Override
     public UserGroup get(String identifier) throws GuacamoleException {
+        validateUserAccess();
         return userGroupService.retrieveObject(getCurrentUser(), identifier);
     }
 
     @Override
     @Transactional
     public Collection<UserGroup> getAll(Collection<String> identifiers) throws GuacamoleException {
+        validateUserAccess();
         Collection<ModeledUserGroup> objects = userGroupService.retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<UserGroup>unmodifiableCollection(objects);
     }
@@ -57,18 +59,21 @@ public class UserGroupDirectory extends RestrictedObject
     @Override
     @Transactional
     public Set<String> getIdentifiers() throws GuacamoleException {
+        validateUserAccess();
         return userGroupService.getIdentifiers(getCurrentUser());
     }
 
     @Override
     @Transactional
     public void add(UserGroup object) throws GuacamoleException {
+        validateUserAccess();
         userGroupService.createObject(getCurrentUser(), object);
     }
 
     @Override
     @Transactional
     public void update(UserGroup object) throws GuacamoleException {
+        validateUserAccess();
         ModeledUserGroup group = (ModeledUserGroup) object;
         userGroupService.updateObject(getCurrentUser(), group);
     }
@@ -76,6 +81,7 @@ public class UserGroupDirectory extends RestrictedObject
     @Override
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
+        validateUserAccess();
         userGroupService.deleteObject(getCurrentUser(), identifier);
     }
 

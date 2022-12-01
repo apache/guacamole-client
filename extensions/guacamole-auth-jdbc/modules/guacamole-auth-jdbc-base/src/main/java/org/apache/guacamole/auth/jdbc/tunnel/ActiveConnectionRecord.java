@@ -21,6 +21,9 @@ package org.apache.guacamole.auth.jdbc.tunnel;
 
 import java.util.Date;
 import java.util.UUID;
+
+import javax.annotation.Nonnull;
+
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnectionRecord;
@@ -377,6 +380,8 @@ public class ActiveConnectionRecord extends ModeledConnectionRecord {
      * @return
      *     The newly-created tunnel associated with this connection record.
      */
+    @Nonnull
+    @SuppressWarnings("null")
     public GuacamoleTunnel assignGuacamoleTunnel(final GuacamoleSocket socket,
             String connectionID) {
 
@@ -400,6 +405,8 @@ public class ActiveConnectionRecord extends ModeledConnectionRecord {
             this.connectionID = connectionID;
 
         // Return newly-created tunnel
+        // NOTE: Guaranteed to be non-null since it was just set in this
+        // method, and there is no functionality to set it to null
         return this.tunnel;
         
     }

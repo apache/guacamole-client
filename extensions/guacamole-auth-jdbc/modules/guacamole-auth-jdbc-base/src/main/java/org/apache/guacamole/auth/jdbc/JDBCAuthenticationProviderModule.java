@@ -20,6 +20,8 @@
 package org.apache.guacamole.auth.jdbc;
 
 import com.google.inject.Scopes;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
+
 import javax.sql.DataSource;
 import org.apache.guacamole.auth.jdbc.user.ModeledUserContext;
 import org.apache.guacamole.auth.jdbc.connectiongroup.RootConnectionGroup;
@@ -38,6 +40,8 @@ import org.apache.guacamole.auth.jdbc.permission.SystemPermissionMapper;
 import org.apache.guacamole.auth.jdbc.user.UserMapper;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupService;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionService;
+import org.apache.guacamole.auth.jdbc.tunnel.AccessEnforcingDelegatingTunnel;
+import org.apache.guacamole.auth.jdbc.tunnel.AccessEnforcingDelegatingTunnelFactory;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.jdbc.security.SHA256PasswordEncryptionService;
@@ -196,7 +200,14 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(UserGroupPermissionService.class);
         bind(UserPermissionService.class);
         bind(UserService.class);
-        
+
+        // Bind Factories
+        install(new FactoryModuleBuilder()
+                .implement(
+                        AccessEnforcingDelegatingTunnel.class,
+                        AccessEnforcingDelegatingTunnel.class)
+                .build(AccessEnforcingDelegatingTunnelFactory.class));
+
     }
 
 }
