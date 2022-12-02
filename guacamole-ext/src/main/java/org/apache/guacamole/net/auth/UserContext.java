@@ -41,6 +41,27 @@ public interface UserContext {
     User self();
 
     /**
+     * Returns true if the session for the User associated with this user
+     * context is valid, or false otherwise. If the session is not valid,
+     * the webapp can be expected to terminate the session within a short
+     * period of time.
+     *
+     * NOTE: The webapp currently checks once a minute, and terminates any
+     * session marked as invalid.
+     *
+     * @return
+     *     true if the session for the User associated with this user
+     *     context is valid, or false otherwise.
+     */
+    default boolean isValid() {
+
+        // A user context is always valid unless explicitly updated by an
+        // implementation
+        return true;
+
+    }
+
+    /**
      * Returns an arbitrary REST resource representing this UserContext. The
      * REST resource returned must be properly annotated with JSR-311
      * annotations, and may serve as the root resource for any number of

@@ -44,40 +44,34 @@ public class ActiveConnectionDirectory extends RestrictedObject
 
     @Override
     public ActiveConnection get(String identifier) throws GuacamoleException {
-        validateUserAccess();
         return activeConnectionService.retrieveObject(getCurrentUser(), identifier);
     }
 
     @Override
     public Collection<ActiveConnection> getAll(Collection<String> identifiers)
             throws GuacamoleException {
-        validateUserAccess();
         Collection<TrackedActiveConnection> objects = activeConnectionService.retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<ActiveConnection>unmodifiableCollection(objects);
     }
 
     @Override
     public Set<String> getIdentifiers() throws GuacamoleException {
-        validateUserAccess();
         return activeConnectionService.getIdentifiers(getCurrentUser());
     }
 
     @Override
     public void add(ActiveConnection object) throws GuacamoleException {
-        validateUserAccess();
         activeConnectionService.createObject(getCurrentUser(), object);
     }
 
     @Override
     public void update(ActiveConnection object) throws GuacamoleException {
-        validateUserAccess();
         TrackedActiveConnection connection = (TrackedActiveConnection) object;
         activeConnectionService.updateObject(getCurrentUser(), connection);
     }
 
     @Override
     public void remove(String identifier) throws GuacamoleException {
-        validateUserAccess();
         activeConnectionService.deleteObject(getCurrentUser(), identifier);
     }
 

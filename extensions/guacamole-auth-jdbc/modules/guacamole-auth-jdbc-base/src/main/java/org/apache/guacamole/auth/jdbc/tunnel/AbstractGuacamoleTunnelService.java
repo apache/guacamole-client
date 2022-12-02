@@ -46,7 +46,6 @@ import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUpstreamException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionMapper;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -64,7 +63,6 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMapper;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterModel;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.user.UserService;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.protocol.FailoverGuacamoleSocket;
 import org.slf4j.Logger;
@@ -118,24 +116,6 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      */
     @Inject
     private SharedConnectionMap connectionMap;
-
-    /**
-     * Service for fetching users.
-     */
-    @Inject
-    private UserService userService;
-
-    /**
-     * The environment of the Guacamole server.
-     */
-    @Inject
-    private JDBCEnvironment environment;
-
-    /**
-     * Provider for creating AccessEnforcingDelegatingTunnel instances.
-     */
-    @Inject
-    private AccessEnforcingDelegatingTunnelFactory accessEnforcingTunnelFactory;
 
     /**
      * All active connections through the tunnel having a given UUID.
@@ -405,20 +385,12 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * connection, which MUST already be acquired via acquire(). The given
      * client information will be passed to guacd when the connection is
      * established.
-     *
+     * 
      * The connection will be automatically released when it closes, or if it
      * fails to establish entirely.
      *
-     * If user access window restrictions are enabled for active sessions,
-     * they will be automatically enforced for any valid database users as the
-     * tunnel is used.
-     *
      * @param activeConnection
      *     The active connection record of the connection in use.
-     *
-     * @param user
-     *     The user record in the database for the user connecting to the
-     *     connection, if any.
      *
      * @param info
      *     Information describing the Guacamole client connecting to the given
@@ -440,10 +412,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     If an error occurs while the connection is being established, or
      *     while connection configuration information is being retrieved.
      */
-    private GuacamoleTunnel assignGuacamoleTunnel(
-            ActiveConnectionRecord activeConnection,
-            ModeledAuthenticatedUser user, GuacamoleClientInformation info,
-            Map<String, String> tokens,
+    private GuacamoleTunnel assignGuacamoleTunnel(ActiveConnectionRecord activeConnection,
+            GuacamoleClientInformation info, Map<String, String> tokens,
             boolean interceptErrors) throws GuacamoleException {
 
         // Record new active connection
@@ -506,21 +476,12 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 getUnconfiguredGuacamoleSocket(connection.getGuacamoleProxyConfiguration(),
                         cleanupTask), config, info);
 
-            // Assign new tunnel
-            GuacamoleTunnel tunnel;
+            // Assign and return new tunnel
             if (interceptErrors)
-                tunnel = activeConnection.assignGuacamoleTunnel(new FailoverGuacamoleSocket(socket), socket.getConnectionID());
+                return activeConnection.assignGuacamoleTunnel(new FailoverGuacamoleSocket(socket), socket.getConnectionID());
             else
-                tunnel = activeConnection.assignGuacamoleTunnel(socket, socket.getConnectionID());
-
-            // If there is an associated database user, and access window
-            // restrictions are enabled for active sessions, wrap the tunnel
-            // in order to check user login validity on every instruction read
-            if (user != null && environment.enforceAccessWindowsForActiveSessions()) {
-                tunnel = accessEnforcingTunnelFactory.create(tunnel, user);
-            }
-
-            return tunnel;
+                return activeConnection.assignGuacamoleTunnel(socket, socket.getConnectionID());
+            
         }
 
         // Execute cleanup if socket could not be created
@@ -670,10 +631,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         acquire(user, Collections.singletonList(connection), true);
 
         // Connect only if the connection was successfully acquired
-        ActiveConnectionRecord connectionRecord = new ActiveConnectionRecord(
-                connectionMap, user, connection);
-        return assignGuacamoleTunnel(
-                connectionRecord, user, info, tokens, false);
+        ActiveConnectionRecord connectionRecord = new ActiveConnectionRecord(connectionMap, user, connection);
+        return assignGuacamoleTunnel(connectionRecord, info, tokens, false);
 
     }
 
@@ -718,10 +677,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             try {
 
                 // Connect to acquired child
-                ActiveConnectionRecord connectionRecord = new ActiveConnectionRecord(
-                        connectionMap, user, connectionGroup, connection);
-                GuacamoleTunnel tunnel = assignGuacamoleTunnel(
-                        connectionRecord, user, info, tokens, connections.size() > 1);
+                ActiveConnectionRecord connectionRecord = new ActiveConnectionRecord(connectionMap, user, connectionGroup, connection);
+                GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord,
+                        info, tokens, connections.size() > 1);
 
                 // If session affinity is enabled, prefer this connection going forward
                 if (connectionGroup.isSessionAffinityEnabled())
@@ -778,10 +736,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 user, definition.getActiveConnection(), definition.getSharingProfile());
 
         // Connect to shared connection described by the created record
-        GuacamoleTunnel tunnel = assignGuacamoleTunnel(
-                connectionRecord, userService.retrieveAuthenticatedUser(
-                    user.getAuthenticationProvider(), user.getCredentials()),
-                info, tokens, false);
+        GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord, info, tokens, false);
 
         // Register tunnel, such that it is closed when the
         // SharedConnectionDefinition is invalidated

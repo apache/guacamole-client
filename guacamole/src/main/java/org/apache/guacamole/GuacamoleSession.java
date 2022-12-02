@@ -133,6 +133,22 @@ public class GuacamoleSession {
     }
 
     /**
+     * Returns true if all user contexts associated with this session are
+     * valid, or false if any user context is not valid. If a session is not
+     * valid, it may no longer be used, and invalidate() should be invoked.
+     *
+     * @return
+     *     true if all user contexts associated with this session are
+     *     valid, or false if any user context is not valid.
+     */
+    public boolean isValid() {
+
+        // Immediately return false if any user context is not valid
+        return !userContexts.stream().anyMatch(
+                userContext -> !userContext.isValid());
+    }
+
+    /**
      * Returns the UserContext associated with this session that originated
      * from the AuthenticationProvider with the given identifier. If no such
      * UserContext exists, an exception is thrown.

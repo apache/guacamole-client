@@ -230,12 +230,11 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
     /**
      * Returns a boolean value representing whether access time windows should
      * be enforced for active connections - i.e. whether a currently-connected
-     * user should be disconnected upon the closure of an access window, or
-     * when the user is disabled.
+     * user should be disconnected upon the closure of an access window.
      *
      * @return
-     *     True if a connected user should be disconnected upon an access time
-     *     window closing, or the user being disabled.
+     *     true if a connected user should be disconnected upon an access time
+     *     window closing, false otherwise.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.

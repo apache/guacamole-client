@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Date;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordSet;
@@ -50,6 +51,8 @@ import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.UserGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * UserContext implementation which is driven by an arbitrary, underlying
@@ -57,6 +60,11 @@ import org.apache.guacamole.net.auth.UserGroup;
  */
 public class ModeledUserContext extends RestrictedObject
     implements org.apache.guacamole.net.auth.UserContext {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(ModeledUserContext.class);
 
     /**
      * User directory restricted by the permissions of the user associated
@@ -129,6 +137,12 @@ public class ModeledUserContext extends RestrictedObject
      */
     @Inject
     private UserRecordMapper userRecordMapper;
+
+    /**
+     * The environment of the Guacamole server.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * The activity record associated with this user's Guacamole session. If
@@ -293,6 +307,33 @@ public class ModeledUserContext extends RestrictedObject
             userRecord.setEndDate(new Date());
             userRecordMapper.updateEndDate(userRecord);
         }
+
+    }
+
+    @Override
+    public boolean isValid() {
+
+        try {
+            // If access window enforcement is disabled for active sessions,
+            // skip validity checks entirely
+            if (!environment.enforceAccessWindowsForActiveSessions())
+                return true;
+        }
+
+        catch (GuacamoleException e) {
+
+            logger.warn(
+                    "Unable to determine if access window enforcement is"
+                    + " enabled for active sessions; enforcing by default: {}"
+                    , e.getMessage());
+            logger.debug("Unable to determine access window enforcement policy.", e);
+
+        }
+
+        // A user context is valid if the associated user's account is valid
+        // for the current date, and the user is within an access time window
+        ModeledUser user = getCurrentUser().getUser();
+        return user.isAccountValid() && user.isAccountAccessible();
 
     }
 

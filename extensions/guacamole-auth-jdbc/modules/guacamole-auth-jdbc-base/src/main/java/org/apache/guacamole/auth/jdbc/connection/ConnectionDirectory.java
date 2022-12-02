@@ -45,14 +45,12 @@ public class ConnectionDirectory extends RestrictedObject
 
     @Override
     public Connection get(String identifier) throws GuacamoleException {
-        validateUserAccess();
         return connectionService.retrieveObject(getCurrentUser(), identifier);
     }
 
     @Override
     @Transactional
     public Collection<Connection> getAll(Collection<String> identifiers) throws GuacamoleException {
-        validateUserAccess();
         Collection<ModeledConnection> objects = connectionService.retrieveObjects(getCurrentUser(), identifiers);
         return Collections.<Connection>unmodifiableCollection(objects);
     }
@@ -60,21 +58,18 @@ public class ConnectionDirectory extends RestrictedObject
     @Override
     @Transactional
     public Set<String> getIdentifiers() throws GuacamoleException {
-        validateUserAccess();
         return connectionService.getIdentifiers(getCurrentUser());
     }
 
     @Override
     @Transactional
     public void add(Connection object) throws GuacamoleException {
-        validateUserAccess();
         connectionService.createObject(getCurrentUser(), object);
     }
 
     @Override
     @Transactional
     public void update(Connection object) throws GuacamoleException {
-        validateUserAccess();
         ModeledConnection connection = (ModeledConnection) object;
         connectionService.updateObject(getCurrentUser(), connection);
     }
@@ -82,7 +77,6 @@ public class ConnectionDirectory extends RestrictedObject
     @Override
     @Transactional
     public void remove(String identifier) throws GuacamoleException {
-        validateUserAccess();
         connectionService.deleteObject(getCurrentUser(), identifier);
     }
 

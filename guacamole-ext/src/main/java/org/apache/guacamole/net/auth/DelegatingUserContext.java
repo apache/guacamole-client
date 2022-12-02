@@ -162,4 +162,9 @@ public class DelegatingUserContext implements UserContext {
         return userContext.getPrivileged();
     }
 
+    @Override
+    public boolean isValid() {
+        return userContext.isValid();
+    }
+
 }
