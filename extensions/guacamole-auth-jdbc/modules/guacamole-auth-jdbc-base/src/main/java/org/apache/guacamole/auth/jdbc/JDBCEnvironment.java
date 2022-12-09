@@ -227,4 +227,18 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
      */
     public abstract boolean trackExternalConnectionHistory() throws GuacamoleException;
 
+    /**
+     * Returns a boolean value representing whether access time windows should
+     * be enforced for active connections - i.e. whether a currently-connected
+     * user should be disconnected upon the closure of an access window.
+     *
+     * @return
+     *     true if a connected user should be disconnected upon an access time
+     *     window closing, false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public abstract boolean enforceAccessWindowsForActiveSessions() throws GuacamoleException;
+
 }

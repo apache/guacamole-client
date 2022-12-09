@@ -220,4 +220,17 @@ public class SQLServerGuacamoleProperties {
 
     };
 
+    /**
+     * Whether or not user-specific access time windows should be enforced for active sessions,
+     * i.e. whether users with active sessions should be logged out immediately when an access
+     * window closes.
+     */
+    public static final BooleanGuacamoleProperty SQLSERVER_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-enforce-access-windows-for-active-sessions"; }
+
+    };
+
 }
