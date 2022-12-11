@@ -183,6 +183,20 @@ public interface LDAPConfiguration {
      *     If the encryption method cannot be retrieved.
      */
     EncryptionMethod getEncryptionMethod() throws GuacamoleException;
+    
+    /**
+     * Returns the SSL protocol that should be used when making a secure
+     * connection to the LDAP server. By default the latest available TLS
+     * version will be used.
+     * 
+     * @return
+     *     The SSL protocol that should be used when making a secure connection
+     *     to the LDAP server.
+     * 
+     * @throws GuacamoleException 
+     *     If the SSL protocol cannot be retrieved.
+     */
+    LDAPSSLProtocol getSslProtocol() throws GuacamoleException;
 
     /**
      * Returns maximum number of results a LDAP query can return.

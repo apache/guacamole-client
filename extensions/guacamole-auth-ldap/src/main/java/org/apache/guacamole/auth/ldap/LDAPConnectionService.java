@@ -35,6 +35,7 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.ldap.conf.EncryptionMethod;
 import org.apache.guacamole.auth.ldap.conf.LDAPConfiguration;
+import org.apache.guacamole.auth.ldap.conf.LDAPSSLProtocol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +52,91 @@ public class LDAPConnectionService {
     /**
      * Creates a new instance of LdapNetworkConnection, configured as required
      * to use the given encryption method to communicate with the LDAP server
-     * at the given hostname and port. The returned LdapNetworkConnection is
+     * at the given hostname and port, with the specified encryption method,
+     * SSL protocol version, and timeout. The returned LdapNetworkConnection is
      * configured for use but is not yet connected nor bound to the LDAP
      * server. It will not be bound until a bind operation is explicitly
      * requested, and will not be connected until it is used in an LDAP
      * operation (such as a bind).
+     *
+     * @param host
+     *     The hostname or IP address of the LDAP server.
+     *
+     * @param port
+     *     The TCP port that the LDAP server is listening on.
+     *
+     * @param encryptionMethod
+     *     The encryption method that should be used to communicate with the
+     *     LDAP server.
+     * 
+     * @param sslProtocol
+     *     The SSL protocol version to use to make a secure LDAP configuration,
+     *     if SSL or STARTTLS is used.
+     *
+     * @param timeout
+     *     The maximum number of milliseconds to wait for a response from the
+     *     LDAP server.
+     *
+     * @return
+     *     A new instance of LdapNetworkConnection which uses the given
+     *     encryption method to communicate with the LDAP server at the given
+     *     hostname and port.
+     *
+     * @throws GuacamoleException
+     *     If the requested encryption method is actually not implemented (a
+     *     bug).
+     */
+    private LdapNetworkConnection createLDAPConnection(String host, int port,
+            EncryptionMethod encryptionMethod, LDAPSSLProtocol sslProtocol,
+            int timeout)
+            throws GuacamoleException {
+
+        LdapConnectionConfig config = new LdapConnectionConfig();
+        config.setLdapHost(host);
+        config.setLdapPort(port);
+        config.setTimeout(timeout);
+
+        // Map encryption method to proper connection and socket factory
+        switch (encryptionMethod) {
+
+            // Unencrypted LDAP connection
+            case NONE:
+                logger.debug("Connection to LDAP server without encryption.");
+                break;
+
+            // LDAP over SSL (LDAPS)
+            case SSL:
+                logger.debug("Connecting to LDAP server using SSL/TLS.");
+                config.setUseSsl(true);
+                config.setSslProtocol(sslProtocol.toString());
+                break;
+
+            // LDAP + STARTTLS
+            case STARTTLS:
+                logger.debug("Connecting to LDAP server using STARTTLS.");
+                config.setUseTls(true);
+                config.setSslProtocol(sslProtocol.toString());
+                break;
+
+            // The encryption method, though known, is not actually
+            // implemented. If encountered, this would be a bug.
+            default:
+                throw new GuacamoleUnsupportedException("Unimplemented encryption method: " + encryptionMethod);
+
+        }
+
+        return new LdapNetworkConnection(config);
+
+    }
+    
+    /**
+     * Creates a new instance of LdapNetworkConnection, configured as required
+     * to use the given encryption method to communicate with the LDAP server
+     * at the given hostname and port with the encryption method and timeout
+     * specified, as well. The returned LdapNetworkConnection is configured
+     * for use but is not yet connected nor bound to the LDAP server. It will
+     * not be bound until a bind operation is explicitly requested, and will
+     * not be connected until it is used in an LDAP operation (such as a bind).
      *
      * @param host
      *     The hostname or IP address of the LDAP server.
@@ -83,41 +164,8 @@ public class LDAPConnectionService {
     private LdapNetworkConnection createLDAPConnection(String host, int port,
             EncryptionMethod encryptionMethod, int timeout)
             throws GuacamoleException {
-
-        LdapConnectionConfig config = new LdapConnectionConfig();
-        config.setLdapHost(host);
-        config.setLdapPort(port);
-        config.setTimeout(timeout);
-
-        // Map encryption method to proper connection and socket factory
-        switch (encryptionMethod) {
-
-            // Unencrypted LDAP connection
-            case NONE:
-                logger.debug("Connection to LDAP server without encryption.");
-                break;
-
-            // LDAP over SSL (LDAPS)
-            case SSL:
-                logger.debug("Connecting to LDAP server using SSL/TLS.");
-                config.setUseSsl(true);
-                break;
-
-            // LDAP + STARTTLS
-            case STARTTLS:
-                logger.debug("Connecting to LDAP server using STARTTLS.");
-                config.setUseTls(true);
-                break;
-
-            // The encryption method, though known, is not actually
-            // implemented. If encountered, this would be a bug.
-            default:
-                throw new GuacamoleUnsupportedException("Unimplemented encryption method: " + encryptionMethod);
-
-        }
-
-        return new LdapNetworkConnection(config);
-
+        return createLDAPConnection(host, port, encryptionMethod,
+                LDAPSSLProtocol.TLSv1_3, timeout);
     }
 
     /**
@@ -147,6 +195,7 @@ public class LDAPConnectionService {
                 config.getServerHostname(),
                 config.getServerPort(),
                 config.getEncryptionMethod(),
+                config.getSslProtocol(),
                 config.getNetworkTimeout());
     }
 
@@ -217,7 +266,7 @@ public class LDAPConnectionService {
             port = encryptionMethod.DEFAULT_PORT;
 
         return createLDAPConnection(host, port, encryptionMethod,
-                config.getNetworkTimeout());
+                config.getSslProtocol(), config.getNetworkTimeout());
 
     }
 

@@ -27,6 +27,7 @@ import org.apache.directory.ldap.client.api.LdapNetworkConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.conf.EncryptionMethod;
 import org.apache.guacamole.auth.ldap.conf.LDAPConfiguration;
+import org.apache.guacamole.auth.ldap.conf.LDAPSSLProtocol;
 import org.apache.guacamole.auth.ldap.conf.MemberAttributeType;
 
 /**
@@ -160,6 +161,11 @@ public class ConnectedLDAPConfiguration implements LDAPConfiguration, AutoClosea
     @Override
     public EncryptionMethod getEncryptionMethod() throws GuacamoleException {
         return config.getEncryptionMethod();
+    }
+    
+    @Override
+    public LDAPSSLProtocol getSslProtocol() throws GuacamoleException {
+        return config.getSslProtocol();
     }
 
     @Override
