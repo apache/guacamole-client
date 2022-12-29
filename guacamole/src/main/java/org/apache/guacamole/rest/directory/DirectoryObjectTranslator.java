@@ -145,8 +145,9 @@ public abstract class DirectoryObjectTranslator<InternalType extends Identifiabl
                 String attributeValue = attributes.get(attributeName);
 
                 // Include attribute value within filtered map only if
-                // (1) defined and (2) present within provided map
-                if (attributeValue != null)
+                // defined or present within provided map
+                if (attributeValue != null || 
+                        attributes.containsKey(attributeName))
                     filtered.put(attributeName, attributeValue);
 
             }
