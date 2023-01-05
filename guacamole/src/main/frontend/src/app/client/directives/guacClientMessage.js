@@ -44,6 +44,9 @@ angular.module('client').directive('guacClientMessage', [function guacClientMess
             // Required types
             const ManagedClientMessage = $injector.get('ManagedClientMessage');
             
+            // Required services
+            var translationStringService = $injector.get('translationStringService');
+            
             /**
              * Uses the msgcode to retrieve the correct translation key for
              * the client message.
@@ -56,7 +59,7 @@ angular.module('client').directive('guacClientMessage', [function guacClientMess
                 if (Object.values(Guacamole.Client.Message).includes($scope.message.msgcode))
                     msgString = Object.keys(Guacamole.Client.Message).find(key => Guacamole.Client.Message[key] === $scope.message.msgcode);
                 
-                return "CLIENT.CLIENT_MESSAGE_" + msgString.toUpperCase();
+                return "CLIENT.MESSAGE_" + translationStringService.canonicalize(msgString);
             };
             
             /**
