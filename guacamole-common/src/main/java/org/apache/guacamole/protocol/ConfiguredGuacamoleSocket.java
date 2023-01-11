@@ -293,7 +293,14 @@ public class ConfiguredGuacamoleSocket extends DelegatingGuacamoleSocket {
         if (GuacamoleProtocolCapability.TIMEZONE_HANDSHAKE.isSupported(protocolVersion)) {
             String timezone = info.getTimezone();
             if (timezone != null)
-                writer.writeInstruction(new GuacamoleInstruction("timezone", info.getTimezone()));
+                writer.writeInstruction(new GuacamoleInstruction("timezone", timezone));
+        }
+        
+        // Send client name, if supported and available
+        if (GuacamoleProtocolCapability.NAME_HANDSHAKE.isSupported(protocolVersion)) {
+            String name = info.getName();
+            if (name != null)
+                writer.writeInstruction(new GuacamoleInstruction("name", name));
         }
 
         // Send args
