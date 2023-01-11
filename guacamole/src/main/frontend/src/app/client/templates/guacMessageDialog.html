@@ -1,0 +1,21 @@
+<div class="message-dialog-box">
+    
+    <!-- Message dialog header -->
+    <div class="header">
+        <h2>{{'CLIENT.SECTION_HEADER_CLIENT_MESSAGES' | translate}}</h2>
+        <button ng-click="clearAllMessages()">{{'CLIENT.ACTION_CLEAR_CLIENT_MESSAGES' | translate}}</button>
+    </div>
+
+    <!-- Received messages -->
+    <div class="client-messages-body">
+        <div class="client-messages-body-section" ng-repeat="client in clientGroup.clients" ng-show="hasMessages(client)">
+            <h3 ng-show="hasMultipleClients(clientGroup)">{{ client.name }}</h3>
+            <div class="messages">
+                <guac-client-message
+                    message="message"
+                    ng-repeat="message in client.messages">
+                </guac-client-message>
+            </div>
+        </div>
+    </div>
+</div>

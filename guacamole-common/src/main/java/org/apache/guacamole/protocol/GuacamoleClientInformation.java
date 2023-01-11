@@ -47,17 +47,22 @@ public class GuacamoleClientInformation {
     /**
      * The list of audio mimetypes reported by the client to be supported.
      */
-    private final List<String> audioMimetypes = new ArrayList<String>();
+    private final List<String> audioMimetypes = new ArrayList<>();
 
     /**
      * The list of video mimetypes reported by the client to be supported.
      */
-    private final List<String> videoMimetypes = new ArrayList<String>();
+    private final List<String> videoMimetypes = new ArrayList<>();
 
     /**
      * The list of image mimetypes reported by the client to be supported.
      */
-    private final List<String> imageMimetypes = new ArrayList<String>();
+    private final List<String> imageMimetypes = new ArrayList<>();
+    
+    /**
+     * The name of the user reported by the client.
+     */
+    private String name;
     
     /**
      * The timezone reported by the client.
@@ -151,6 +156,17 @@ public class GuacamoleClientInformation {
     }
     
     /**
+     * Returns the name of the Guacamole user as reported by the client, or null
+     * if the user name is not set.
+     * 
+     * @return 
+     *     A string value of the human-readable name reported by the client.
+     */
+    public String getName() {
+        return name;
+    }
+    
+    /**
      * Return the timezone as reported by the client, or null if the timezone
      * is not set.  Valid timezones are specified in IANA zone key format,
      * also known as Olson time zone database or TZ Database.
@@ -160,6 +176,16 @@ public class GuacamoleClientInformation {
      */
     public String getTimezone() {
         return timezone;
+    }
+    
+    /**
+     * Set the human-readable name of the user associated with this client.
+     * 
+     * @param name 
+     *     The human-readable name of the user associated with this client.
+     */
+    public void setName(String name) {
+        this.name = name;
     }
     
     /**
