@@ -749,17 +749,18 @@ END
 ## authentication provider, and configure it to connect to the specified SAML
 ## provider.
 ##
+
 associate_saml() {
 
     # Verify required parameters are present
     if [ -z "$SAML_IDP_METADATA_URL" ] && \
-       [ -z "$SAML_ENTITY_ID" -o -z "$SAML_CALLBACK_URL" ]
+       [ -z "$SAML_ENTITY_ID" -o -z "$SAML_CALLBACK_URL" -o -z "$SAML_IDP_URL" ]
     then
         cat <<END
 FATAL: Missing required environment variables
 -------------------------------------------------------------------------------
 If using a SAML authentication, you must provide either SAML_IDP_METADATA_URL
-or both SAML_ENTITY_ID and SAML_CALLBACK_URL environment variables:
+or SAML_IDP_URL,  SAML_ENTITY_ID and SAML_CALLBACK_URL environment variables:
 
     SAML_IDP_METADATA_URL   The URI of the XML metadata file that from the SAML Identity
                             Provider that contains all of the information the SAML
@@ -767,8 +768,11 @@ or both SAML_ENTITY_ID and SAML_CALLBACK_URL environment variables:
                             the IdP. This URI can either be a remote server (e.g. https://)
                             or a local file on the filesystem (e.g. file://).
 
+    SAML_IDP_URL            The URL of the Identity Provider (IdP), which the user
+                            will be redirected to in order to authenticate.
+
     SAML_ENTITY_ID          The entity ID of the Guacamole SAML client, which is
-                            generally the URL of the Guacamole server
+                            generally the URL of the Guacamole server.
 
     SAML_CALLBACK_URL       The URL that the IdP will use once authentication has
                             succeeded to return to the Guacamole web application and
