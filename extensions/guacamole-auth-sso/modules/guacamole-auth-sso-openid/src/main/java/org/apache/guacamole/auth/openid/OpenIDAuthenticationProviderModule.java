@@ -21,7 +21,7 @@ package org.apache.guacamole.auth.openid;
 
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
-import org.apache.guacamole.auth.openid.token.NonceService;
+import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
 
 /**

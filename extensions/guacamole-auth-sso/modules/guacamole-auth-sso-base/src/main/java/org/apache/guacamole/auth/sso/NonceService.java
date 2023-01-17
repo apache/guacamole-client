@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.openid.token;
+package org.apache.guacamole.auth.sso;
 
 import com.google.inject.Singleton;
 import java.math.BigInteger;
