@@ -20,6 +20,7 @@
 package org.apache.guacamole.net.auth;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 
@@ -199,6 +200,29 @@ public interface Directory<ObjectType extends Identifiable> {
             throws GuacamoleException;
 
     /**
+     * Adds the given objects to the overall set. If new identifiers are
+     * created for any of the the added objects, the identifiers will be
+     * automatically assigned via setIdentifier().
+     *
+     * @param objects
+     *     The objects to add.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while adding any of the objects, or if adding
+     *     the objects is not allowed.
+     */
+    default void add(Collection<ObjectType> objects)
+            throws GuacamoleException {
+
+        // Add each object individually by default
+        Iterator<ObjectType> iterator = objects.iterator();
+        while (iterator.hasNext()) {
+            add(iterator.next());
+        }
+
+    }
+
+    /**
      * Updates the stored object with the data contained in the given object.
      *
      * @param object The object which will supply the data for the update.
@@ -210,13 +234,72 @@ public interface Directory<ObjectType extends Identifiable> {
             throws GuacamoleException;
 
     /**
+     * Updates the stored objects with the data contained in the given objects.
+     *
+     * @param objects The objects which will supply the data for the update.
+     *
+     * @throws GuacamoleException If an error occurs while updating the objects,
+     *                            or if updating an object is not allowed.
+     */
+    default void update(Collection<ObjectType> objects)
+            throws GuacamoleException {
+
+        // Update each object individually by default
+        Iterator<ObjectType> iterator = objects.iterator();
+        while (iterator.hasNext()) {
+            update(iterator.next());
+        }
+
+    }
+
+    /**
      * Removes the object with the given identifier from the overall set.
      *
      * @param identifier The identifier of the object to remove.
      *
      * @throws GuacamoleException If an error occurs while removing the object,
-     *                            or if removing object is not allowed.
+     *                            or if removing the object is not allowed.
      */
     void remove(String identifier) throws GuacamoleException;
+
+    /**
+     * Removes all object with any of the given identifier from the overall set.
+     *
+     * @param identifiers The identifiers of the objects to remove.
+     *
+     * @throws GuacamoleException If an error occurs while removing an object,
+     *                            or if removing an object is not allowed.
+     */
+    default void remove(Collection<String> identifiers)
+            throws GuacamoleException {
+
+        // Remove each object individually by default
+        Iterator<String> iterator = identifiers.iterator();
+        while (iterator.hasNext()) {
+            remove(iterator.next());
+        }
+
+    }
+
+    /**
+     * Attempt to perform the provided operation atomically if possible. If the
+     * operation can be performed atomically, the atomic flag will be set to
+     * true, and the directory passed to the provided operation callback will
+     * peform directory operations atomically within the operation callback.
+     *
+     * @param operation
+     *     The directory operation that should be performed atomically.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs during execution of the provided operation.
+     */
+    default void tryAtomically(AtomicDirectoryOperation<ObjectType> operation)
+            throws GuacamoleException {
+
+        // By default, perform the operation non-atomically. If atomic operation
+        // is supported by an implementation, it must be implemented there.
+        operation.executeOperation(false, this);
+
+    }
 
 }

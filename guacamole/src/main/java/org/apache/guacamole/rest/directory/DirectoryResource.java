@@ -19,8 +19,10 @@
 
 package org.apache.guacamole.rest.directory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.inject.Inject;
@@ -37,6 +39,7 @@ import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.net.auth.AtomicDirectoryOperation;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Directory;
@@ -341,6 +344,17 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
         return resourceFactory;
     }
 
+
+    private InternalType filterAndTranslate(ExternalType object)
+            throws GuacamoleException {
+
+        // Filter and sanitize the external object
+        translator.filterExternalObject(userContext, object);
+
+        // Translate to the internal type
+        return translator.toInternalObject(object);
+    }
+
     /**
      * Returns a map of all objects available within this DirectoryResource,
      * filtering the returned map by the given permission, if specified.
@@ -386,44 +400,121 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
     /**
      * Applies the given object patches, updating the underlying directory
-     * accordingly. This operation currently only supports deletion of objects
-     * through the "remove" patch operation. The path of each patch operation is
-     * of the form "/ID" where ID is the identifier of the object being
-     * modified.
+     * accordingly. This operation supports addition, update, and removal of
+     * objects through the "add", "replace", and "remove" patch operation.
+     * The path of each patch operation is of the form "/ID" where ID is the
+     * identifier of the object being modified. In the case of object creation,
+     * the identifier is ignored, as the identifier will be automatically
+     * provided. This operation is atomic.
      *
      * @param patches
      *     The patches to apply for this request.
      *
      * @throws GuacamoleException
-     *     If an error occurs while deleting the objects.
+     *     If an error occurs while adding, updating, or removing objects.
      */
     @PATCH
-    public void patchObjects(List<APIPatch<String>> patches)
+    public void patchObjects(List<APIPatch<ExternalType>> patches)
             throws GuacamoleException {
 
-        // Apply each operation specified within the patch
-        for (APIPatch<String> patch : patches) {
+        // Objects will be add, updated, and removed atomically
+        Collection<InternalType> objectsToAdd = new ArrayList<>();
+        Collection<InternalType> objectsToUpdate = new ArrayList<>();
+        Collection<String> identifiersToRemove = new ArrayList<>();
 
-            // Only remove is supported
-            if (patch.getOp() != APIPatch.Operation.remove)
-                throw new GuacamoleUnsupportedException("Only the \"remove\" "
-                        + "operation is supported.");
+        // Apply each operation specified within the patch
+        for (APIPatch<ExternalType> patch : patches) {
 
             // Retrieve and validate path
             String path = patch.getPath();
             if (!path.startsWith("/"))
                 throw new GuacamoleClientException("Patch paths must start with \"/\".");
 
-            // Remove specified object
-            String identifier = path.substring(1);
-            try {
-                directory.remove(identifier);
-                fireDirectorySuccessEvent(DirectoryEvent.Operation.REMOVE, identifier, null);
+            // Append each provided object to the list, to be added atomically
+            if(patch.getOp() == APIPatch.Operation.add) {
+
+                // Filter/sanitize object contents
+                InternalType internal = filterAndTranslate(patch.getValue());
+
+                // Add to the list of objects to create
+                objectsToAdd.add(internal);
             }
-            catch (GuacamoleException | RuntimeException | Error e) {
-                fireDirectoryFailureEvent(DirectoryEvent.Operation.REMOVE, identifier, null, e);
-                throw e;
+
+            // Append each provided object to the list, to be updated atomically
+            else if (patch.getOp() == APIPatch.Operation.replace) {
+
+                // Filter/sanitize object contents
+                InternalType internal = filterAndTranslate(patch.getValue());
+
+                // Add to the list of objects to update
+                objectsToUpdate.add(internal);
             }
+
+            // Append each identifier to the list, to be removed atomically
+            else if (patch.getOp() == APIPatch.Operation.remove) {
+
+                String identifier = path.substring(1);
+                identifiersToRemove.add(identifier);
+
+            }
+
+        }
+
+        // Perform all requested operations atomically
+        directory.tryAtomically(new AtomicDirectoryOperation<InternalType>() {
+
+            @Override
+            public void executeOperation(boolean atomic, Directory<InternalType> directory)
+                    throws GuacamoleException {
+
+                // If the underlying directory implentation does not support
+                // atomic operations, abort the patch operation. This REST
+                // endpoint requires that operations be performed atomically.
+                if (!atomic)
+                    throw new GuacamoleUnsupportedException(
+                            "Atomic operations are not supported. " +
+                            "The patch cannot be executed.");
+
+                // First, create every object from the patch
+                directory.add(objectsToAdd);
+
+                // Next, update every object from the patch
+                directory.update(objectsToUpdate);
+
+                // Finally, remove every object from the patch
+                directory.remove(identifiersToRemove);
+
+            }
+
+        });
+
+        // Fire directory success events for each created object
+        Iterator<InternalType> addedIterator = objectsToAdd.iterator();
+        while (addedIterator.hasNext()) {
+
+            InternalType internal = addedIterator.next();
+            fireDirectorySuccessEvent(
+                    DirectoryEvent.Operation.ADD, internal.getIdentifier(), internal);
+
+        }
+
+        // Fire directory success events for each updated object
+        Iterator<InternalType> updatedIterator = objectsToUpdate.iterator();
+        while (updatedIterator.hasNext()) {
+
+            InternalType internal = updatedIterator.next();
+            fireDirectorySuccessEvent(
+                    DirectoryEvent.Operation.UPDATE, internal.getIdentifier(), internal);
+
+        }
+
+        // Fire directory success events for each removed object
+        Iterator<String> removedIterator = identifiersToRemove.iterator();
+        while (removedIterator.hasNext()) {
+
+            String identifier = removedIterator.next();
+            fireDirectorySuccessEvent(
+                    DirectoryEvent.Operation.UPDATE, identifier, null);
 
         }
 
@@ -453,8 +544,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
             throw new GuacamoleClientException("Data must be submitted when creating objects.");
 
         // Filter/sanitize object contents
-        translator.filterExternalObject(userContext, object);
-        InternalType internal = translator.toInternalObject(object);
+        InternalType internal = filterAndTranslate(object);
 
         // Create the new object within the directory
         try {
