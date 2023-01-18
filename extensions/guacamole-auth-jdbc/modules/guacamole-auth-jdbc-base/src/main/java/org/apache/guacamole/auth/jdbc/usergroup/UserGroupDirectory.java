@@ -24,8 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
-import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.auth.jdbc.base.JDBCDirectory;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.mybatis.guice.transactional.Transactional;
 
@@ -33,8 +32,7 @@ import org.mybatis.guice.transactional.Transactional;
  * Implementation of the UserGroup Directory which is driven by an underlying,
  * arbitrary database.
  */
-public class UserGroupDirectory extends RestrictedObject
-    implements Directory<UserGroup> {
+public class UserGroupDirectory extends JDBCDirectory<UserGroup> {
 
     /**
      * Service for managing user group objects.

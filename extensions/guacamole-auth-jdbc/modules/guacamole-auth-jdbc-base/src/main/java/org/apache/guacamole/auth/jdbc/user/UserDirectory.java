@@ -25,8 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
-import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.auth.jdbc.base.JDBCDirectory;
 import org.apache.guacamole.net.auth.User;
 import org.mybatis.guice.transactional.Transactional;
 
@@ -34,8 +33,7 @@ import org.mybatis.guice.transactional.Transactional;
  * Implementation of the User Directory which is driven by an underlying,
  * arbitrary database.
  */
-public class UserDirectory extends RestrictedObject
-    implements Directory<User> {
+public class UserDirectory extends JDBCDirectory<User> {
 
     /**
      * Service for managing user objects.

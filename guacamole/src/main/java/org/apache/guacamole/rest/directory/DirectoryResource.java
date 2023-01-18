@@ -417,49 +417,6 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
     public void patchObjects(List<APIPatch<ExternalType>> patches)
             throws GuacamoleException {
 
-        // Objects will be add, updated, and removed atomically
-        Collection<InternalType> objectsToAdd = new ArrayList<>();
-        Collection<InternalType> objectsToUpdate = new ArrayList<>();
-        Collection<String> identifiersToRemove = new ArrayList<>();
-
-        // Apply each operation specified within the patch
-        for (APIPatch<ExternalType> patch : patches) {
-
-            // Retrieve and validate path
-            String path = patch.getPath();
-            if (!path.startsWith("/"))
-                throw new GuacamoleClientException("Patch paths must start with \"/\".");
-
-            // Append each provided object to the list, to be added atomically
-            if(patch.getOp() == APIPatch.Operation.add) {
-
-                // Filter/sanitize object contents
-                InternalType internal = filterAndTranslate(patch.getValue());
-
-                // Add to the list of objects to create
-                objectsToAdd.add(internal);
-            }
-
-            // Append each provided object to the list, to be updated atomically
-            else if (patch.getOp() == APIPatch.Operation.replace) {
-
-                // Filter/sanitize object contents
-                InternalType internal = filterAndTranslate(patch.getValue());
-
-                // Add to the list of objects to update
-                objectsToUpdate.add(internal);
-            }
-
-            // Append each identifier to the list, to be removed atomically
-            else if (patch.getOp() == APIPatch.Operation.remove) {
-
-                String identifier = path.substring(1);
-                identifiersToRemove.add(identifier);
-
-            }
-
-        }
-
         // Perform all requested operations atomically
         directory.tryAtomically(new AtomicDirectoryOperation<InternalType>() {
 
@@ -475,48 +432,139 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                             "Atomic operations are not supported. " +
                             "The patch cannot be executed.");
 
-                // First, create every object from the patch
-                directory.add(objectsToAdd);
 
-                // Next, update every object from the patch
-                directory.update(objectsToUpdate);
+                // Keep a list of all objects that have been successfully
+                // added, updated, or removed
+                Collection<InternalType> addedObjects = new ArrayList<>();
+                Collection<InternalType> updatedObjects = new ArrayList<>();
+                Collection<String> removedIdentifiers = new ArrayList<>();
 
-                // Finally, remove every object from the patch
-                directory.remove(identifiersToRemove);
+                // True if any operation in the patch failed. Any failure will
+                // fail the request, though won't result in immediate stoppage
+                // since more errors may yet be uncovered.
+                boolean failed = false;
+
+                // Apply each operation specified within the patch
+                for (APIPatch<ExternalType> patch : patches) {
+
+                    // Retrieve and validate path
+                    String path = patch.getPath();
+                    if (!path.startsWith("/"))
+                        throw new GuacamoleClientException("Patch paths must start with \"/\".");
+
+                    if(patch.getOp() == APIPatch.Operation.add) {
+
+                        // Filter/sanitize object contents
+                        InternalType internal = filterAndTranslate(patch.getValue());
+
+                        try {
+
+                            // Attempt to add the new object
+                            directory.add(internal);
+
+                            // Add the object to the list if addition was successful
+                            addedObjects.add(internal);
+
+                        }
+                        catch (GuacamoleException | RuntimeException | Error e) {
+                            fireDirectoryFailureEvent(
+                                    DirectoryEvent.Operation.ADD,
+                                    internal.getIdentifier(), internal, e);
+
+                            // TODO: Save the error for later inclusion in a big JSON error response
+                            failed = true;
+                        }
+
+                    }
+
+                    else if (patch.getOp() == APIPatch.Operation.replace) {
+
+                        // Filter/sanitize object contents
+                        InternalType internal = filterAndTranslate(patch.getValue());
+
+                        try {
+
+                            // Attempt to update the object
+                            directory.update(internal);
+
+                            // Add the object to the list if the update was successful
+                            updatedObjects.add(internal);
+                        }
+                        catch (GuacamoleException | RuntimeException | Error e) {
+                            fireDirectoryFailureEvent(
+                                    DirectoryEvent.Operation.UPDATE,
+                                    internal.getIdentifier(), internal, e);
+
+                            // TODO: Save the error for later inclusion in a big JSON error response
+                            failed = true;
+                        }
+                    }
+
+                    // Append each identifier to the list, to be removed atomically
+                    else if (patch.getOp() == APIPatch.Operation.remove) {
+
+                        String identifier = path.substring(1);
+
+                        try {
+
+                            // Attempt to remove the object
+                            directory.remove(identifier);
+
+                            // Add the object to the list if the removal was successful
+                            removedIdentifiers.add(identifier);
+                        }
+                        catch (GuacamoleException | RuntimeException | Error e) {
+                            fireDirectoryFailureEvent(
+                                    DirectoryEvent.Operation.UPDATE, identifier, null, e);
+
+                            // TODO: Save the error for later inclusion in a big JSON error response
+                            failed = true;
+                        }
+                    }
+
+                }
+
+                // If any operation failed, fail now
+                if (failed) {
+                    throw new GuacamoleClientException(
+                            "oh noes the patch batch failed");
+                }
+
+                // Fire directory success events for each created object
+                Iterator<InternalType> addedIterator = addedObjects.iterator();
+                while (addedIterator.hasNext()) {
+
+                    InternalType internal = addedIterator.next();
+                    fireDirectorySuccessEvent(
+                            DirectoryEvent.Operation.ADD, internal.getIdentifier(), internal);
+
+                }
+
+                // Fire directory success events for each updated object
+                Iterator<InternalType> updatedIterator = updatedObjects.iterator();
+                while (updatedIterator.hasNext()) {
+
+                    InternalType internal = updatedIterator.next();
+                    fireDirectorySuccessEvent(
+                            DirectoryEvent.Operation.UPDATE, internal.getIdentifier(), internal);
+
+                }
+
+                // Fire directory success events for each removed object
+                Iterator<String> removedIterator = removedIdentifiers.iterator();
+                while (removedIterator.hasNext()) {
+
+                    String identifier = removedIterator.next();
+                    fireDirectorySuccessEvent(
+                            DirectoryEvent.Operation.UPDATE, identifier, null);
+
+                }
 
             }
 
         });
 
-        // Fire directory success events for each created object
-        Iterator<InternalType> addedIterator = objectsToAdd.iterator();
-        while (addedIterator.hasNext()) {
-
-            InternalType internal = addedIterator.next();
-            fireDirectorySuccessEvent(
-                    DirectoryEvent.Operation.ADD, internal.getIdentifier(), internal);
-
-        }
-
-        // Fire directory success events for each updated object
-        Iterator<InternalType> updatedIterator = objectsToUpdate.iterator();
-        while (updatedIterator.hasNext()) {
-
-            InternalType internal = updatedIterator.next();
-            fireDirectorySuccessEvent(
-                    DirectoryEvent.Operation.UPDATE, internal.getIdentifier(), internal);
-
-        }
-
-        // Fire directory success events for each removed object
-        Iterator<String> removedIterator = identifiersToRemove.iterator();
-        while (removedIterator.hasNext()) {
-
-            String identifier = removedIterator.next();
-            fireDirectorySuccessEvent(
-                    DirectoryEvent.Operation.UPDATE, identifier, null);
-
-        }
+        // TODO: JSON response with failures or success
 
     }
 
