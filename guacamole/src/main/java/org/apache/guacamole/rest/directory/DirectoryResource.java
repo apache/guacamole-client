@@ -564,7 +564,9 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
         });
 
-        // TODO: JSON response with failures or success
+        // TODO: JSON response indicating which things were changed
+        // NOTE: IDs are assigned at creation time so a user of the API
+        // needs this response if they want to be able to actually use them
 
     }
 

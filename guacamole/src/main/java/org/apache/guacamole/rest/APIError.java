@@ -202,6 +202,8 @@ public class APIError {
             this.translatableMessage = translatable.getTranslatableMessage();
         }
 
+        // TODO: Handle patch exceptions, need a bunch of JSON saying which things failed
+
         // Use generic translation string if message is not translated
         else
             this.translatableMessage = new TranslatableMessage(UNTRANSLATED_MESSAGE_KEY,
