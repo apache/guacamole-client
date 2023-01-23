@@ -17,11 +17,11 @@
  * under the License.
  */
 
-package org.apache.guacamole.rest;
+package org.apache.guacamole.rest.jsonpatch;
 
 /**
- * An object for representing the body of a HTTP PATCH method.
- * See https://tools.ietf.org/html/rfc6902
+ * An object for representing an entry within the body of a
+ * JSON PATCH request. See https://tools.ietf.org/html/rfc6902
  *
  * @param <T>
  *     The type of object being patched.

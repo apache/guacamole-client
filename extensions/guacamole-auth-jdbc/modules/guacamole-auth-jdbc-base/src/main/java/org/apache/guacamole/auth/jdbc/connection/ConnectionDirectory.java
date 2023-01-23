@@ -68,8 +68,19 @@ public class ConnectionDirectory extends JDBCDirectory<Connection> {
     @Override
     @Transactional
     public void update(Connection object) throws GuacamoleException {
-        ModeledConnection connection = (ModeledConnection) object;
-        connectionService.updateObject(getCurrentUser(), connection);
+
+        // If the provided connection is already an internal type, update
+        // using the internal method
+        if (object instanceof ModeledConnection) {
+            ModeledConnection connection = (ModeledConnection) object;
+            connectionService.updateObject(getCurrentUser(), connection);
+        }
+
+        // If the type is not already the expected internal type, use the
+        // external update method
+        else {
+            connectionService.updateExternalObject(getCurrentUser(), object);
+        }
     }
 
     @Override

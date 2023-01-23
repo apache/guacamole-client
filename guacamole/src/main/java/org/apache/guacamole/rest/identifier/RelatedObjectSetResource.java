@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
-import org.apache.guacamole.rest.APIPatch;
+import org.apache.guacamole.rest.jsonpatch.APIPatch;
 
 /**
  * A REST resource which abstracts the operations available on arbitrary sets

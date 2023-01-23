@@ -21,6 +21,8 @@ package org.apache.guacamole.rest;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
@@ -31,6 +33,8 @@ import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.apache.guacamole.rest.jsonpatch.APIPatchFailureException;
+import org.apache.guacamole.rest.jsonpatch.APIPatchOutcome;
 import org.apache.guacamole.tunnel.GuacamoleStreamException;
 
 /**
@@ -70,6 +74,12 @@ public class APIError {
      * All expected request parameters, if any, as a collection of fields.
      */
     private final Collection<Field> expected;
+
+    /**
+     * The outcome of each patch in the associated request, if this was a
+     * JSON Patch request. Otherwise null.
+     */
+    private List<APIPatchOutcome> patches = null;
 
     /**
      * The type of error that occurred.
@@ -202,12 +212,13 @@ public class APIError {
             this.translatableMessage = translatable.getTranslatableMessage();
         }
 
-        // TODO: Handle patch exceptions, need a bunch of JSON saying which things failed
-
         // Use generic translation string if message is not translated
         else
             this.translatableMessage = new TranslatableMessage(UNTRANSLATED_MESSAGE_KEY,
                     Collections.singletonMap(UNTRANSLATED_MESSAGE_VARIABLE_NAME, this.message));
+
+        if (exception instanceof APIPatchFailureException)
+            this.patches = ((APIPatchFailureException) exception).getPatches();
 
     }
 
@@ -243,6 +254,18 @@ public class APIError {
      */
     public Collection<Field> getExpected() {
         return expected;
+    }
+
+    /**
+     * Return the outcome for every patch in the request, if the request was
+     * a JSON patch request. Otherwise, null.
+     *
+     * @return
+     *     The outcome for every patch if responding to a JSON Patch request,
+     *     otherwise null.
+     */
+    public List<APIPatchOutcome> getPatches() {
+        return patches;
     }
 
     /**

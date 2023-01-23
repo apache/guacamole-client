@@ -53,8 +53,12 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 import org.apache.guacamole.net.event.DirectoryEvent;
 import org.apache.guacamole.net.event.DirectoryFailureEvent;
 import org.apache.guacamole.net.event.DirectorySuccessEvent;
-import org.apache.guacamole.rest.APIPatch;
 import org.apache.guacamole.rest.event.ListenerService;
+import org.apache.guacamole.rest.jsonpatch.APIPatch;
+import org.apache.guacamole.rest.jsonpatch.APIPatchError;
+import org.apache.guacamole.rest.jsonpatch.APIPatchFailureException;
+import org.apache.guacamole.rest.jsonpatch.APIPatchOutcome;
+import org.apache.guacamole.rest.jsonpatch.APIPatchResponse;
 
 /**
  * A REST resource which abstracts the operations available on all Guacamole
@@ -344,7 +348,20 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
         return resourceFactory;
     }
 
-
+    /**
+     * Filter and sanitize the provided external object, translate to the
+     * internal type, and return the translated internal object.
+     *
+     * @param object
+     *     The external object to filter and translate.
+     *
+     * @return
+     *     The filtered and translated internal object.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while filtering or translating the external
+     *     object.
+     */
     private InternalType filterAndTranslate(ExternalType object)
             throws GuacamoleException {
 
@@ -412,10 +429,21 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
      *
      * @throws GuacamoleException
      *     If an error occurs while adding, updating, or removing objects.
+     *
+     * @return
+     *     A response describing the outcome of each patch. Only the identifier
+     *     of each patched object will be included in the response, not the
+     *     full object.
      */
     @PATCH
-    public void patchObjects(List<APIPatch<ExternalType>> patches)
+    public APIPatchResponse patchObjects(List<APIPatch<ExternalType>> patches)
             throws GuacamoleException {
+
+        // An outcome for each patch included in the request. This list
+        // may include both success and failure responses, though the
+        // presense of any failure would indicated that the entire
+        // request has failed and no changes have been made.
+        List<APIPatchOutcome> patchOutcomes = new ArrayList<>();
 
         // Perform all requested operations atomically
         directory.tryAtomically(new AtomicDirectoryOperation<InternalType>() {
@@ -432,12 +460,15 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                             "Atomic operations are not supported. " +
                             "The patch cannot be executed.");
 
-
                 // Keep a list of all objects that have been successfully
                 // added, updated, or removed
                 Collection<InternalType> addedObjects = new ArrayList<>();
                 Collection<InternalType> updatedObjects = new ArrayList<>();
                 Collection<String> removedIdentifiers = new ArrayList<>();
+
+                // A list of all responses associated with the successful
+                // creation of new objects
+                List<APIPatchOutcome> creationSuccesses = new ArrayList<>();
 
                 // True if any operation in the patch failed. Any failure will
                 // fail the request, though won't result in immediate stoppage
@@ -465,14 +496,33 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                             // Add the object to the list if addition was successful
                             addedObjects.add(internal);
 
+                            // Add a success outcome describing the object creation
+                            APIPatchOutcome response = new APIPatchOutcome(
+                                    patch.getOp(), internal.getIdentifier(), path);
+                            patchOutcomes.add(response);
+                            creationSuccesses.add(response);
+
                         }
+
                         catch (GuacamoleException | RuntimeException | Error e) {
+                            failed = true;
                             fireDirectoryFailureEvent(
                                     DirectoryEvent.Operation.ADD,
                                     internal.getIdentifier(), internal, e);
 
-                            // TODO: Save the error for later inclusion in a big JSON error response
-                            failed = true;
+                            /*
+                             * If the failure represents an understood issue,
+                             * create a failure outcome for this failed patch.
+                             */
+                            if (e instanceof GuacamoleException)
+                                patchOutcomes.add(new APIPatchError(
+                                        patch.getOp(), null, path,
+                                        ((GuacamoleException) e).getMessage()));
+
+                            // If an unexpected failure occurs, fall through to the
+                            // standard API error handling
+                            else
+                                throw e;
                         }
 
                     }
@@ -489,14 +539,33 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                             // Add the object to the list if the update was successful
                             updatedObjects.add(internal);
+
+                            // Add a success outcome describing the object update
+                            APIPatchOutcome response = new APIPatchOutcome(
+                                    patch.getOp(), internal.getIdentifier(), path);
+                            patchOutcomes.add(response);
+                            creationSuccesses.add(response);
                         }
+
                         catch (GuacamoleException | RuntimeException | Error e) {
+                            failed = true;
                             fireDirectoryFailureEvent(
                                     DirectoryEvent.Operation.UPDATE,
                                     internal.getIdentifier(), internal, e);
 
-                            // TODO: Save the error for later inclusion in a big JSON error response
-                            failed = true;
+                            /*
+                             * If the failure represents an understood issue,
+                             * create a failure outcome for this failed patch.
+                             */
+                            if (e instanceof GuacamoleException)
+                                patchOutcomes.add(new APIPatchError(
+                                        patch.getOp(), internal.getIdentifier(), path,
+                                        ((GuacamoleException) e).getMessage()));
+
+                            // If an unexpected failure occurs, fall through to the
+                            // standard API error handling
+                            else
+                                throw e;
                         }
                     }
 
@@ -512,22 +581,51 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                             // Add the object to the list if the removal was successful
                             removedIdentifiers.add(identifier);
+
+                            // Add a success outcome describing the object removal
+                            APIPatchOutcome response = new APIPatchOutcome(
+                                    patch.getOp(), identifier, path);
+                            patchOutcomes.add(response);
+                            creationSuccesses.add(response);
                         }
                         catch (GuacamoleException | RuntimeException | Error e) {
-                            fireDirectoryFailureEvent(
-                                    DirectoryEvent.Operation.UPDATE, identifier, null, e);
-
-                            // TODO: Save the error for later inclusion in a big JSON error response
                             failed = true;
+                            fireDirectoryFailureEvent(
+                                    DirectoryEvent.Operation.REMOVE,
+                                    identifier, null, e);
+
+                            /*
+                             * If the failure represents an understood issue,
+                             * create a failure outcome for this failed patch.
+                             */
+                            if (e instanceof GuacamoleException)
+                                patchOutcomes.add(new APIPatchError(
+                                        patch.getOp(), identifier, path,
+                                        ((GuacamoleException) e).getMessage()));
+
+                            // If an unexpected failure occurs, fall through to the
+                            // standard API error handling
+                            else
+                                throw e;
                         }
                     }
 
                 }
 
-                // If any operation failed, fail now
+                // If any operation failed
                 if (failed) {
-                    throw new GuacamoleClientException(
-                            "oh noes the patch batch failed");
+
+                    // Any identifiers for objects created during this request
+                    // will no longer be valid, since the creation of those
+                    // objects will be rolled back.
+                    creationSuccesses.forEach(
+                            response -> response.clearIdentifier());
+
+                    // Return an error response, including any failures that
+                    // caused the failure of any patch in the request
+                    throw new APIPatchFailureException(
+                            "The provided patches failed to apply.", patchOutcomes);
+
                 }
 
                 // Fire directory success events for each created object
@@ -536,7 +634,8 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                     InternalType internal = addedIterator.next();
                     fireDirectorySuccessEvent(
-                            DirectoryEvent.Operation.ADD, internal.getIdentifier(), internal);
+                            DirectoryEvent.Operation.ADD,
+                            internal.getIdentifier(), internal);
 
                 }
 
@@ -546,7 +645,8 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                     InternalType internal = updatedIterator.next();
                     fireDirectorySuccessEvent(
-                            DirectoryEvent.Operation.UPDATE, internal.getIdentifier(), internal);
+                            DirectoryEvent.Operation.UPDATE,
+                            internal.getIdentifier(), internal);
 
                 }
 
@@ -556,7 +656,8 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                     String identifier = removedIterator.next();
                     fireDirectorySuccessEvent(
-                            DirectoryEvent.Operation.UPDATE, identifier, null);
+                            DirectoryEvent.Operation.UPDATE,
+                            identifier, null);
 
                 }
 
@@ -564,9 +665,8 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
         });
 
-        // TODO: JSON response indicating which things were changed
-        // NOTE: IDs are assigned at creation time so a user of the API
-        // needs this response if they want to be able to actually use them
+        // Return a list of outcomes, one for each patch in the request
+        return new APIPatchResponse(patchOutcomes);
 
     }
 
