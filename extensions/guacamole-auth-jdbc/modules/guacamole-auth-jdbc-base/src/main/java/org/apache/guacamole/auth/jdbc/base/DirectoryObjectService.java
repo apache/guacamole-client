@@ -117,6 +117,24 @@ public interface DirectoryObjectService<InternalType, ExternalType> {
         throws GuacamoleException;
 
     /**
+     * Updates the object corresponding to the given external representation,
+     * applying any changes that have been made. If no such object exists,
+     * this function has no effect.
+     *
+     * @param user
+     *     The user updating the object.
+     *
+     * @param object
+     *     The external object to apply updates from.
+     *
+     * @throws GuacamoleException
+     *     If the user lacks permission to update the object, or an error
+     *     occurs while updating the object.
+     */
+    void updateExternalObject(ModeledAuthenticatedUser user, ExternalType object)
+            throws GuacamoleException;
+
+    /**
      * Updates the given object, applying any changes that have been made. If
      * no such object exists, this function has no effect.
      *

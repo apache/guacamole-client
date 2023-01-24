@@ -21,6 +21,8 @@ package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Collection;
 
+import org.apache.guacamole.GuacamoleException;
+
 /**
  * Object representation of a Guacamole object, such as a user or connection,
  * as represented in the database.
@@ -75,7 +77,7 @@ public abstract class ObjectModel {
      *
      * @return
      *     The ID of this object in the database, or null if this object was
-     *     not retrieved from the database.
+     *     not retrieved from or intended to update the database.
      */
     public Integer getObjectID() {
         return objectID;
@@ -89,6 +91,31 @@ public abstract class ObjectModel {
      */
     public void setObjectID(Integer objectID) {
         this.objectID = objectID;
+    }
+
+    /**
+     * Given a text identifier, attempt to convert to an integer database ID.
+     * If the identifier is valid, the database ID will be set to this value.
+     * Otherwise, a GuacamoleException will be thrown.
+     *
+     * @param identifier
+     *     The identifier to convert to an integer and set on the database
+     *     model, if valid.
+     *
+     * @throws GuacamoleException
+     *     If the provided identifier is not a valid integer.
+     */
+    public void setObjectID(String identifier) throws GuacamoleException {
+
+        // Try to convert the provided identifier to an integer ID
+        try {
+            setObjectID(Integer.parseInt(identifier));
+        }
+
+        catch (NumberFormatException e) {
+            throw new GuacamoleException(
+                    "Database identifiers must be integers.");
+        }
     }
 
     /**

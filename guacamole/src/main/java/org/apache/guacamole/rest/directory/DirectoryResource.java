@@ -534,6 +534,22 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                         try {
 
+                            // Set the model to the supplied identifier from the PATH
+                            String identifier = path.substring(1);
+
+                            if (identifier == null)
+                                throw new GuacamoleClientException(
+                                        "An identifier is required when updating.");
+
+                            // If there's an identiifer provided in the value,
+                            // make sure it matches the one from the path
+                            String valueId = internal.getIdentifier();
+                            if (valueId != null && !valueId.equals(identifier))
+                                throw new GuacamoleClientException(
+                                        "Identifier mismatch between path and value.");
+
+                            internal.setIdentifier(identifier);
+
                             // Attempt to update the object
                             directory.update(internal);
 

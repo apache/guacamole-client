@@ -92,14 +92,19 @@ public class ConnectionGroupService extends ModeledChildDirectoryObjectService<M
 
     @Override
     protected ConnectionGroupModel getModelInstance(ModeledAuthenticatedUser currentUser,
-            final ConnectionGroup object) {
+            final ConnectionGroup object) throws GuacamoleException {
 
         // Create new ModeledConnectionGroup backed by blank model
         ConnectionGroupModel model = new ConnectionGroupModel();
         ModeledConnectionGroup connectionGroup = getObjectInstance(currentUser, model);
 
+        // If the provided connection has an identifier, set it on the model
+        if (object.getIdentifier() != null)
+            model.setObjectID(object.getIdentifier());
+
         // Set model contents through ModeledConnectionGroup, copying the provided connection group
         connectionGroup.setParentIdentifier(object.getParentIdentifier());
+        connectionGroup.setIdentifier(object.getIdentifier());
         connectionGroup.setName(object.getName());
         connectionGroup.setType(object.getType());
         connectionGroup.setAttributes(object.getAttributes());

@@ -166,6 +166,14 @@ public class ActiveConnectionService
 
     }
 
+    @Override
+    public void updateExternalObject(ModeledAuthenticatedUser user, ActiveConnection object) throws GuacamoleException {
+
+        // Updating active connections is not implemented
+        throw new GuacamoleSecurityException("Permission denied.");
+
+    }
+
     /**
      * Retrieve the permission set for the specified user that relates
      * to access to active connections.

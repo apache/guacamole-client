@@ -71,10 +71,4 @@ public class SharingProfileModel extends ChildObjectModel {
 
     }
 
-    @Override
-    public void setIdentifier(String identifier) {
-        throw new UnsupportedOperationException("Sharing profile identifiers "
-                + "are derived from IDs. They cannot be set.");
-    }
-
 }

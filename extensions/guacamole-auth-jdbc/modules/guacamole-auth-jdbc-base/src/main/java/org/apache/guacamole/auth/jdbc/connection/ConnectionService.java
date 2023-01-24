@@ -110,14 +110,19 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
     @Override
     protected ConnectionModel getModelInstance(ModeledAuthenticatedUser currentUser,
-            final Connection object) {
+            final Connection object) throws GuacamoleException {
 
         // Create new ModeledConnection backed by blank model
         ConnectionModel model = new ConnectionModel();
         ModeledConnection connection = getObjectInstance(currentUser, model);
 
+        // If the provided connection has an identifier, set it on the model
+        if (object.getIdentifier() != null)
+            model.setObjectID(object.getIdentifier());
+
         // Set model contents through ModeledConnection, copying the provided connection
         connection.setParentIdentifier(object.getParentIdentifier());
+        connection.setIdentifier(object.getIdentifier());
         connection.setName(object.getName());
         connection.setConfiguration(object.getConfiguration());
         connection.setAttributes(object.getAttributes());

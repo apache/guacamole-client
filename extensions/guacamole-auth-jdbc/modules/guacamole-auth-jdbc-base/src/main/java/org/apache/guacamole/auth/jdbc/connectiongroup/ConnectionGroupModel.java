@@ -266,10 +266,4 @@ public class ConnectionGroupModel extends ChildObjectModel {
         return id.toString();
 
     }
-
-    @Override
-    public void setIdentifier(String identifier) {
-        throw new UnsupportedOperationException("Connection group identifiers are derived from IDs. They cannot be set.");
-    }
-
 }

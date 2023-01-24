@@ -107,6 +107,10 @@ public class UserGroupService extends ModeledDirectoryObjectService<ModeledUserG
         UserGroupModel model = new UserGroupModel();
         ModeledUserGroup group = getObjectInstance(currentUser, model);
 
+        // If the provided connection has an identifier, set it on the model
+        if (object.getIdentifier() != null)
+            model.setObjectID(object.getIdentifier());
+
         // Set model contents through ModeledUser, copying the provided group
         group.setIdentifier(object.getIdentifier());
         group.setAttributes(object.getAttributes());
