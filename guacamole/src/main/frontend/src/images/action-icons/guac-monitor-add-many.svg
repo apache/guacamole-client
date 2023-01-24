@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="64"
+   height="64"
+   viewBox="0 0 64 64"
+   version="1.1"
+   id="svg3828"
+   sodipodi:docname="guac-monitor-add-many.svg"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs3832" />
+  <sodipodi:namedview
+     id="namedview3830"
+     pagecolor="#5b5b5b"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0"
+     inkscape:pagecheckerboard="true"
+     showgrid="false"
+     inkscape:zoom="6.546875"
+     inkscape:cx="33.603819"
+     inkscape:cy="22.377088"
+     inkscape:window-width="2048"
+     inkscape:window-height="1025"
+     inkscape:window-x="0"
+     inkscape:window-y="28"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3828" />
+  <g
+     transform="translate(-19.073 1.734) scale(.10947)"
+     style="fill:#fff"
+     id="g3822">
+    <path
+       style="fill:#fff;fill-opacity:1;stroke:#000;stroke-width:.00956892;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       d="M4 .656c-2.215 0-4 1.927-4 4.313V48.03c0 2.386 1.785 4.282 4 4.282h56c2.215 0 4-1.896 4-4.282V4.97c0-2.386-1.785-4.313-4-4.313H4zm10.313 10.938h35.374c1.4 0 2.532 1.093 2.532 2.469v24.843c0 1.376-1.132 2.469-2.532 2.469H14.313c-1.4 0-2.532-1.093-2.532-2.469V14.063c0-1.376 1.132-2.47 2.531-2.47z"
+       transform="translate(174.22 231.813) scale(5.22525)"
+       id="path3818" />
+    <rect
+       ry="18"
+       rx="18"
+       y="524.187"
+       x="244.268"
+       height="38.636"
+       width="197.179"
+       style="fill:#fff;fill-opacity:1;stroke:#000;stroke-width:.05000001;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3820" />
+  </g>
+  <path
+     style="fill:#ffffff;stroke:none"
+     d="m 48.309,0.865 h 7.518 V 23 h -7.518 z"
+     id="path3824" />
+  <path
+     style="fill:#ffffff;stroke:none"
+     d="m 63.135,8.173 v 7.518 H 41 V 8.173 Z"
+     id="path3826" />
+  <path
+     style="fill:#ffffff;stroke:none"
+     d="m 48.309,27 h 7.518 v 22.135 h -7.518 z"
+     id="path3824-2" />
+  <path
+     style="fill:#ffffff;stroke:none"
+     d="m 63.135,34.308 v 7.518 H 41 v -7.518 z"
+     id="path3826-8" />
+  <path
+     style="fill:#ffffff;stroke:none"
+     d="m 22.174,0.865 h 7.518 V 23 h -7.518 z"
+     id="path3824-4" />
+  <path
+     style="fill:#ffffff;stroke:none"
+     d="m 37,8.173 v 7.518 H 14.865 V 8.173 Z"
+     id="path3826-7" />
+</svg>

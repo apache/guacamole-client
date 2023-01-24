@@ -20,7 +20,7 @@
 /**
  * The controller for the general settings page.
  */
-angular.module('manage').controller('settingsController', ['$scope', '$injector', 
+angular.module('settings').controller('settingsController', ['$scope', '$injector',
         function settingsController($scope, $injector) {
 
     // Required services

@@ -126,6 +126,15 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { routeToUserHomePage: routeToUserHomePage }
         })
 
+        // Connection import page
+        .when('/settings/:dataSource/import', {
+            title         : 'APP.NAME',
+            bodyClassName : 'settings',
+            templateUrl   : 'app/settings/templates/settingsImport.html',
+            controller    : 'importConnectionsController',
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
         // Management screen
         .when('/settings/:dataSource?/:tab', {
             title         : 'APP.NAME',

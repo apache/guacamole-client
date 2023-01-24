@@ -5,7 +5,7 @@
     "APP" : {
 
         "NAME"    : "Apache Guacamole",
-        "VERSION" : "${project.version}",
+        "VERSION" : "1.5.0",
 
         "ACTION_ACKNOWLEDGE"        : "OK",
         "ACTION_CANCEL"             : "Cancel",
@@ -906,6 +906,7 @@
     "SETTINGS_CONNECTIONS" : {
 
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_IMPORT_CONNECTIONS"   : "Import",
         "ACTION_NEW_CONNECTION"       : "New Connection",
         "ACTION_NEW_CONNECTION_GROUP" : "New Group",
         "ACTION_NEW_SHARING_PROFILE"  : "New Sharing Profile",
@@ -920,6 +921,13 @@
 
         "SECTION_HEADER_CONNECTIONS"     : "Connections"
 
+    },
+
+    "SETTINGS_CONNECTION_IMPORT": {
+
+        "HEADER": "Connection Import",
+
+        "ERROR_ARRAY_REQUIRED": "The provided file must contain a list of connections"
     },
 
     "SETTINGS_PREFERENCES" : {

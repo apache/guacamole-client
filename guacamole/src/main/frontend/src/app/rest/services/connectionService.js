@@ -154,6 +154,46 @@ angular.module('rest').factory('connectionService', ['$injector',
         }
 
     };
+
+    /**
+     * Makes a request to the REST API to create multiple connections, returning a
+     * a promise that can be used for processing the results of the call. This
+     * operation is atomic - if any errors are encountered during the connection
+     * creation process, the entire request will fail, and no connections will be
+     * created.
+     *
+     * @param {Connection[]} connections The connections to create.
+     *
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     create operation is successful.
+     */
+    service.createConnections = function createConnections(dataSource, connections) {
+
+        // An object containing a PATCH operation to create each connection
+        const patchBody = connections.map(connection => ({
+            op: "add",
+            path: "/",
+            value: connection
+        }));
+
+        // Make a PATCH request to create the connections
+        return authenticationService.request({
+            method  : 'PATCH',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections',
+            data    : patchBody
+        })
+
+        // Clear the cache
+        .then(function connectionUpdated(){
+            cacheService.connections.removeAll();
+
+            // Clear users cache to force reload of permissions for this
+            // newly updated connection
+            cacheService.users.removeAll();
+        });
+
+    }
     
     /**
      * Makes a request to the REST API to delete a connection,
