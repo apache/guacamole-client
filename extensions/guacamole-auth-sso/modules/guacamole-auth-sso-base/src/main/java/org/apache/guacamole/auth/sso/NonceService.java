@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.sso;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
@@ -30,7 +29,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * Service for generating and validating single-use random tokens (nonces).
  * Each generated nonce is at least 128 bits and case-insensitive.
  */
-@Singleton
 public class NonceService {
 
     /**
