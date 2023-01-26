@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.sso;
 
 import com.google.common.io.BaseEncoding;
 import com.google.inject.Singleton;
+import java.math.BigInteger;
 import java.security.SecureRandom;
 
 /**
@@ -40,7 +41,8 @@ public class IdentifierGenerator {
     /**
      * Generates a unique and unpredictable identifier. Each identifier is at
      * least 256-bit and produced using a cryptographically-secure random
-     * number generator.
+     * number generator. The identifier may contain characters that differ only
+     * in case.
      *
      * @return
      *     A unique and unpredictable identifier with at least 256 bits of
@@ -53,7 +55,8 @@ public class IdentifierGenerator {
     /**
      * Generates a unique and unpredictable identifier having at least the
      * given number of bits of entropy. The resulting identifier may have more
-     * than the number of bits required.
+     * than the number of bits required. The identifier may contain characters
+     * that differ only in case.
      *
      * @param minBits
      *     The number of bits of entropy that the identifier should contain.
@@ -63,9 +66,41 @@ public class IdentifierGenerator {
      *     of bits of entropy.
      */
     public String generateIdentifier(int minBits) {
-        byte[] bytes = new byte[(minBits + 23) / 24 * 3]; // Round up to nearest multiple of 3 bytes, as base64 encodes blocks of 3 bytes at a time
-        secureRandom.nextBytes(bytes);
-        return BaseEncoding.base64().encode(bytes);
+        return generateIdentifier(minBits, true);
+    }
+
+    /**
+     * Generates a unique and unpredictable identifier having at least the
+     * given number of bits of entropy. The resulting identifier may have more
+     * than the number of bits required. The identifier may contain characters
+     * that differ only in case.
+     *
+     * @param minBits
+     *     The number of bits of entropy that the identifier should contain.
+     *
+     * @param caseSensitive
+     *     Whether identifiers are permitted to contain characters that vary
+     *     by case. If false, all characters that may vary by case will be
+     *     lowercase, and the generated identifier will be longer.
+     *
+     * @return
+     *     A unique and unpredictable identifier with at least the given number
+     *     of bits of entropy.
+     */
+    public String generateIdentifier(int minBits, boolean caseSensitive) {
+
+        // Generate a base64 identifier if we're allowed to vary by case
+        if (caseSensitive) {
+            int minBytes = (minBits + 23) / 24 * 3; // Round up to nearest multiple of 3 bytes, as base64 encodes blocks of 3 bytes at a time
+            byte[] bytes = new byte[minBytes];
+            secureRandom.nextBytes(bytes);
+            return BaseEncoding.base64().encode(bytes);
+        }
+
+        // Generate base32 identifiers if we cannot vary by case
+        minBits = (minBits + 4) / 5 * 5; // Round up to nearest multiple of 5 bits, as base32 encodes 5 bits at a time
+        return new BigInteger(minBits, secureRandom).toString(32);
+
     }
 
 }

@@ -22,11 +22,13 @@ package org.apache.guacamole.auth.sso;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Service for generating and validating single-use random tokens (nonces).
+ * Each generated nonce is at least 128 bits and case-insensitive.
  */
 @Singleton
 public class NonceService {
@@ -98,7 +100,8 @@ public class NonceService {
      *     valid, in milliseconds.
      *
      * @return
-     *     A cryptographically-secure nonce value.
+     *     A cryptographically-secure nonce value. Generated nonces are at
+     *     least 128-bit and are case-insensitive.
      */
     public String generate(long maxAge) {
 
@@ -106,7 +109,7 @@ public class NonceService {
         sweepExpiredNonces();
 
         // Generate and store nonce, along with expiration timestamp
-        String nonce = idGenerator.generateIdentifier(NONCE_BITS);
+        String nonce = idGenerator.generateIdentifier(NONCE_BITS, false);
         nonces.put(nonce, System.currentTimeMillis() + maxAge);
         return nonce;
 
@@ -119,7 +122,7 @@ public class NonceService {
      * invalidates that nonce.
      *
      * @param nonce
-     *     The nonce value to test.
+     *     The nonce value to test. Comparisons are case-insensitive.
      *
      * @return
      *     true if the provided nonce is valid, false otherwise.
@@ -127,7 +130,7 @@ public class NonceService {
     public boolean isValid(String nonce) {
 
         // Remove nonce, verifying whether it was present at all
-        Long expires = nonces.remove(nonce);
+        Long expires = nonces.remove(nonce.toLowerCase(Locale.US));
         if (expires == null)
             return false;
 
