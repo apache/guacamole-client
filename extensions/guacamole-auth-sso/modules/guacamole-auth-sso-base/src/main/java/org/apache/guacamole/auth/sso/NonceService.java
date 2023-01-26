@@ -19,9 +19,8 @@
 
 package org.apache.guacamole.auth.sso;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -33,22 +32,27 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NonceService {
 
     /**
-     * Cryptographically-secure random number generator for generating the
-     * required nonce.
+     * Generator of arbitrary, unique, unpredictable identifiers.
      */
-    private final SecureRandom random = new SecureRandom();
+    @Inject
+    private IdentifierGenerator idGenerator;
 
     /**
      * Map of all generated nonces to their corresponding expiration timestamps.
      * This Map must be periodically swept of expired nonces to avoid growing
      * without bound.
      */
-    private final Map<String, Long> nonces = new ConcurrentHashMap<String, Long>();
+    private final Map<String, Long> nonces = new ConcurrentHashMap<>();
 
     /**
      * The timestamp of the last expired nonce sweep.
      */
     private long lastSweep = System.currentTimeMillis();
+
+    /**
+     * The minimum number of bits of entropy to include in each nonce.
+     */
+    private static final int NONCE_BITS = 128;
 
     /**
      * The minimum amount of time to wait between sweeping expired nonces from
@@ -102,7 +106,7 @@ public class NonceService {
         sweepExpiredNonces();
 
         // Generate and store nonce, along with expiration timestamp
-        String nonce = new BigInteger(130, random).toString(32);
+        String nonce = idGenerator.generateIdentifier(NONCE_BITS);
         nonces.put(nonce, System.currentTimeMillis() + maxAge);
         return nonce;
 

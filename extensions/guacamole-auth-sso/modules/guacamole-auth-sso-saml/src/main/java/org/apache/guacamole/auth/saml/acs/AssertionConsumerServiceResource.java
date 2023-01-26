@@ -56,7 +56,7 @@ public class AssertionConsumerServiceResource extends SSOResource {
      * Manager of active SAML authentication attempts.
      */
     @Inject
-    private AuthenticationSessionManager sessionManager;
+    private SAMLAuthenticationSessionManager sessionManager;
 
     /**
      * Service for processing SAML requests/responses.
@@ -107,7 +107,7 @@ public class AssertionConsumerServiceResource extends SSOResource {
         try {
 
             // Validate and parse identity asserted by SAML IdP
-            AuthenticationSession session = saml.processResponse(
+            SAMLAuthenticationSession session = saml.processResponse(
                     consumedRequest.getRequestURL().toString(),
                     relayState, samlResponse);
 

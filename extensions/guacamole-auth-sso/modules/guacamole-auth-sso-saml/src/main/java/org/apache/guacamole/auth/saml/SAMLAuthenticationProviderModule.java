@@ -22,8 +22,7 @@ package org.apache.guacamole.auth.saml;
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 import org.apache.guacamole.auth.saml.acs.AssertionConsumerServiceResource;
-import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
-import org.apache.guacamole.auth.saml.acs.IdentifierGenerator;
+import org.apache.guacamole.auth.saml.acs.SAMLAuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
 
 /**
@@ -34,9 +33,8 @@ public class SAMLAuthenticationProviderModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(AssertionConsumerServiceResource.class);
-        bind(AuthenticationSessionManager.class);
         bind(ConfigurationService.class);
-        bind(IdentifierGenerator.class);
+        bind(SAMLAuthenticationSessionManager.class);
         bind(SAMLService.class);
     }
 

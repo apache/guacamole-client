@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.saml.acs;
+package org.apache.guacamole.auth.sso;
 
 import com.google.common.io.BaseEncoding;
 import com.google.inject.Singleton;
@@ -26,7 +26,7 @@ import java.security.SecureRandom;
 /**
  * Generator of unique and unpredictable identifiers. Each generated identifier
  * is an arbitrary, random string produced using a cryptographically-secure
- * random number generator and consists of at least 256 bits.
+ * random number generator.
  */
 @Singleton
 public class IdentifierGenerator {
@@ -43,10 +43,27 @@ public class IdentifierGenerator {
      * number generator.
      *
      * @return
-     *     A unique and unpredictable identifier.
+     *     A unique and unpredictable identifier with at least 256 bits of
+     *     entropy.
      */
     public String generateIdentifier() {
-        byte[] bytes = new byte[33];
+        return generateIdentifier(256);
+    }
+
+    /**
+     * Generates a unique and unpredictable identifier having at least the
+     * given number of bits of entropy. The resulting identifier may have more
+     * than the number of bits required.
+     *
+     * @param minBits
+     *     The number of bits of entropy that the identifier should contain.
+     *
+     * @return
+     *     A unique and unpredictable identifier with at least the given number
+     *     of bits of entropy.
+     */
+    public String generateIdentifier(int minBits) {
+        byte[] bytes = new byte[(minBits + 23) / 24 * 3]; // Round up to nearest multiple of 3 bytes, as base64 encodes blocks of 3 bytes at a time
         secureRandom.nextBytes(bytes);
         return BaseEncoding.base64().encode(bytes);
     }

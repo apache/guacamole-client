@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
-import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
+import org.apache.guacamole.auth.saml.acs.SAMLAuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
 import org.apache.guacamole.form.Field;
@@ -61,7 +61,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
      * Manager of active SAML authentication attempts.
      */
     @Inject
-    private AuthenticationSessionManager sessionManager;
+    private SAMLAuthenticationSessionManager sessionManager;
 
     /**
      * Service for processing SAML requests/responses.
