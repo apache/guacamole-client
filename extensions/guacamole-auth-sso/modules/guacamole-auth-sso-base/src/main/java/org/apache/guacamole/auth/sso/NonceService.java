@@ -120,12 +120,17 @@ public class NonceService {
      * invalidates that nonce.
      *
      * @param nonce
-     *     The nonce value to test. Comparisons are case-insensitive.
+     *     The nonce value to test. This value may be null, which will be
+     *     considered an invalid nonce. Comparisons are case-insensitive.
      *
      * @return
      *     true if the provided nonce is valid, false otherwise.
      */
     public boolean isValid(String nonce) {
+
+        // All null nonces are invalid.
+        if (nonce == null)
+            return false;
 
         // Remove nonce, verifying whether it was present at all
         Long expires = nonces.remove(nonce.toLowerCase(Locale.US));
