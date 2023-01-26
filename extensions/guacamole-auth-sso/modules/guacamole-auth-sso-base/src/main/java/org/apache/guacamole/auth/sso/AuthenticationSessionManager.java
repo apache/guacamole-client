@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.sso;
 
 import com.google.common.base.Predicates;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -38,7 +37,6 @@ import java.util.concurrent.TimeUnit;
  * @param <T>
  *     The type of sessions managed by this session manager.
  */
-@Singleton
 public class AuthenticationSessionManager<T extends AuthenticationSession> {
 
     /**
