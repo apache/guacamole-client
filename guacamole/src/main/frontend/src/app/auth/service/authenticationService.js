@@ -18,25 +18,45 @@
  */
 
 /**
- * A service for authenticating a user against the REST API.
+ * A service for authenticating a user against the REST API. Invoking the
+ * authenticate() or login() functions of this service will automatically
+ * affect the login dialog, if visible.
  *
- * This service broadcasts two events on $rootScope depending on the result of
- * authentication operations: 'guacLogin' if authentication was successful and
- * a new token was created, and 'guacLogout' if an existing token is being
- * destroyed or replaced. Both events will be passed the related token as their
- * sole parameter.
+ * This service broadcasts events on $rootScope depending on the status and
+ * result of authentication operations:
  *
- * If a login attempt results in an existing token being replaced, 'guacLogout'
- * will be broadcast first for the token being replaced, followed by
- * 'guacLogin' for the new token.
- * 
- * Failed logins may also result in guacInsufficientCredentials or
- * guacInvalidCredentials events, if the provided credentials were rejected for
- * being insufficient or invalid respectively. Both events will be provided
- * the set of parameters originally given to authenticate() and the error that
- * rejected the credentials. The Error object provided will contain set of
- * expected credentials returned by the REST endpoint. This set of credentials
- * will be in the form of a Field array.
+ *  "guacLoginPending"
+ *      An authentication request was submitted and we are awaiting the result.
+ *      This event receives an object containing the HTTP parameters submitted
+ *      as its sole parameter.
+ *
+ *  "guacLogin"
+ *      Authentication was successful and a new token was created. This event
+ *      receives the authentication token as its sole parameter.
+ *
+ *  "guacLogout"
+ *      An existing token is being destroyed. This event receives the
+ *      authentication token as its sole parameter. If the existing token for
+ *      the current session is being replaced without destroying that session,
+ *      this event is not fired.
+ *
+ *  "guacLoginFailed"
+ *      An authentication request has failed for any reason. This event is
+ *      broadcast before any other events that are specific to the nature of
+ *      the failure, and may be used to detect login failures in lieu of those
+ *      events. This event receives two parameters: the HTTP parameters
+ *      submitted and the Error object received from the REST endpoint.
+ *
+ *  "guacInsufficientCredentials"
+ *      An authentication request failed because additional credentials are
+ *      needed before the request can be processed. This event receives two
+ *      parameters: the HTTP parameters submitted and the Error object received
+ *      from the REST endpoint.
+ *
+ *  "guacInvalidCredentials"
+ *      An authentication request failed because the credentials provided are
+ *      invalid. This event receives two parameters: the HTTP parameters
+ *      submitted and the Error object received from the REST endpoint.
  */
 angular.module('auth').factory('authenticationService', ['$injector',
         function authenticationService($injector) {
@@ -141,7 +161,8 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * and given arbitrary parameters, returning a promise that succeeds only
      * if the authentication operation was successful. The resulting
      * authentication data can be retrieved later via getCurrentToken() or
-     * getCurrentUsername().
+     * getCurrentUsername(). Invoking this function will affect the UI,
+     * including the login screen if visible.
      * 
      * The provided parameters can be virtually any object, as each property
      * will be sent as an HTTP parameter in the authentication request.
@@ -158,6 +179,9 @@ angular.module('auth').factory('authenticationService', ['$injector',
      *     A promise which succeeds only if the login operation was successful.
      */
     service.authenticate = function authenticate(parameters) {
+
+        // Notify that a fresh authentication request is being submitted
+        $rootScope.$broadcast('guacLoginPending', parameters);
 
         // Attempt authentication
         return requestService({
@@ -201,6 +225,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
         // If authentication fails, propogate failure to returned promise
         ['catch'](requestService.createErrorCallback(function authenticationFailed(error) {
+
+            // Notify of generic login failure, for any event consumers that
+            // wish to handle all types of failures at once
+            $rootScope.$broadcast('guacLoginFailed', parameters, error);
 
             // Request credentials if provided credentials were invalid
             if (error.type === Error.Type.INVALID_CREDENTIALS) {
@@ -321,7 +349,8 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * with a username and password, ignoring any currently-stored token, 
      * returning a promise that succeeds only if the login operation was
      * successful. The resulting authentication data can be retrieved later
-     * via getCurrentToken() or getCurrentUsername().
+     * via getCurrentToken() or getCurrentUsername(). Invoking this function
+     * will affect the UI, including the login screen if visible.
      * 
      * @param {String} username
      *     The username to log in with.
@@ -342,7 +371,9 @@ angular.module('auth').factory('authenticationService', ['$injector',
     /**
      * Makes a request to logout a user using the token REST API endpoint,
      * returning a promise that succeeds only if the logout operation was
-     * successful.
+     * successful. Invoking this function will affect the UI, causing the
+     * visible components of the application to be replaced with a status
+     * message noting that the user has been logged out.
      * 
      * @returns {Promise}
      *     A promise which succeeds only if the logout operation was
