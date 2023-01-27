@@ -26,9 +26,11 @@
  * result of authentication operations:
  *
  *  "guacLoginPending"
- *      An authentication request was submitted and we are awaiting the result.
- *      This event receives an object containing the HTTP parameters submitted
- *      as its sole parameter.
+ *      An authentication request is being submitted and we are awaiting the
+ *      result. The request may not yet have been submitted if the parameters
+ *      for that request are not ready. This event receives a promise that
+ *      resolves with the HTTP parameters that were ultimately submitted as its
+ *      sole parameter.
  *
  *  "guacLogin"
  *      Authentication was successful and a new token was created. This event
@@ -66,6 +68,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var Error                = $injector.get('Error');
 
     // Required services
+    var $q                  = $injector.get('$q');
     var $rootScope          = $injector.get('$rootScope');
     var localStorageService = $injector.get('localStorageService');
     var requestService      = $injector.get('requestService');
@@ -172,58 +175,69 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * 
      * If a token is provided, it will be reused if possible.
      * 
-     * @param {Object} parameters 
-     *     Arbitrary parameters to authenticate with.
+     * @param {Object|Promise} parameters
+     *     Arbitrary parameters to authenticate with. If a Promise is provided,
+     *     that Promise must resolve with the parameters to be submitted when
+     *     those parameters are available, and any error will be handled as if
+     *     from the authentication endpoint of the REST API itself.
      *
      * @returns {Promise}
      *     A promise which succeeds only if the login operation was successful.
      */
     service.authenticate = function authenticate(parameters) {
 
-        // Notify that a fresh authentication request is being submitted
+        // Coerce received parameters object into a Promise, if it isn't
+        // already a Promise
+        parameters = $q.resolve(parameters);
+
+        // Notify that a fresh authentication request is underway
         $rootScope.$broadcast('guacLoginPending', parameters);
 
-        // Attempt authentication
-        return requestService({
-            method: 'POST',
-            url: 'api/tokens',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            data: $.param(parameters)
-        })
+        // Attempt authentication after auth parameters are available ...
+        return parameters.then(function requestParametersReady(requestParams) {
 
-        // If authentication succeeds, handle received auth data
-        .then(function authenticationSuccessful(data) {
+            return requestService({
+                method: 'POST',
+                url: 'api/tokens',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                data: $.param(requestParams)
+            })
 
-            var currentToken = service.getCurrentToken();
+            // ... if authentication succeeds, handle received auth data ...
+            .then(function authenticationSuccessful(data) {
 
-            // If a new token was received, ensure the old token is invalidated,
-            // if any, and notify listeners of the new token
-            if (data.authToken !== currentToken) {
+                var currentToken = service.getCurrentToken();
 
-                // If an old token existed, request that the token be revoked
-                if (currentToken) {
-                    service.revokeToken(currentToken).catch(angular.noop);
+                // If a new token was received, ensure the old token is invalidated,
+                // if any, and notify listeners of the new token
+                if (data.authToken !== currentToken) {
+
+                    // If an old token existed, request that the token be revoked
+                    if (currentToken) {
+                        service.revokeToken(currentToken).catch(angular.noop);
+                    }
+
+                    // Notify of login and new token
+                    setAuthenticationResult(new AuthenticationResult(data));
+                    $rootScope.$broadcast('guacLogin', data.authToken);
+
                 }
 
-                // Notify of login and new token
-                setAuthenticationResult(new AuthenticationResult(data));
-                $rootScope.$broadcast('guacLogin', data.authToken);
+                // Update cached authentication result, even if the token remains
+                // the same
+                else
+                    setAuthenticationResult(new AuthenticationResult(data));
 
-            }
+                // Authentication was successful
+                return data;
 
-            // Update cached authentication result, even if the token remains
-            // the same
-            else
-                setAuthenticationResult(new AuthenticationResult(data));
-
-            // Authentication was successful
-            return data;
+            });
 
         })
 
-        // If authentication fails, propogate failure to returned promise
+        // ... if authentication fails, propogate failure to returned promise
         ['catch'](requestService.createErrorCallback(function authenticationFailed(error) {
 
             // Notify of generic login failure, for any event consumers that
