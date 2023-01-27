@@ -1,0 +1,325 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.apache.guacamole.auth.ssl.conf;
+
+import com.google.inject.Inject;
+import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.IntegerGuacamoleProperty;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.URIGuacamoleProperty;
+
+/**
+ * Service for retrieving configuration information regarding SSO using SSL/TLS
+ * authentication.
+ */
+public class ConfigurationService {
+
+    /**
+     * The default name of the header to use to retrieve the URL-encoded client
+     * certificate from an HTTP request received from an SSL termination
+     * service providing SSL/TLS client authentication.
+     */
+    private static String DEFAULT_CLIENT_CERTIFICATE_HEADER = "X-Client-Certificate";
+
+    /**
+     * The default name of the header to use to retrieve the verification
+     * status of the certificate an HTTP request received from an SSL
+     * termination service providing SSL/TLS client authentication.
+     */
+    private static String DEFAULT_CLIENT_VERIFIED_HEADER = "X-Client-Verified";
+
+    /**
+     * The default amount of time that a temporary authentication token for
+     * SSL/TLS authentication may remain valid, in minutes.
+     */
+    private static int DEFAULT_MAX_TOKEN_VALIDITY = 5;
+
+    /**
+     * The default amount of time that the temporary, unique subdomain
+     * generated for SSL/TLS authentication may remain valid, in minutes.
+     */
+    private static int DEFAULT_MAX_DOMAIN_VALIDITY = 5;
+
+    /**
+     * The property representing the URI that should be used to authenticate
+     * users with SSL/TLS client authentication. This must be a URI that points
+     * to THIS instance of Guacamole, but behind SSL termination that requires
+     * SSL/TLS client authentication.
+     */
+    private static final WildcardURIGuacamoleProperty SSL_CLIENT_AUTH_URI =
+            new WildcardURIGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ssl-client-auth-uri"; }
+
+    };
+
+    /**
+     * The property representing the URI of this instance without SSL/TLS
+     * client authentication required. This must be a URI that points
+     * to THIS instance of Guacamole, but behind SSL termination that DOES NOT
+     * require or request SSL/TLS client authentication.
+     */
+    private static final URIGuacamoleProperty SSL_REDIRECT_URI =
+            new URIGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ssl-redirect-uri"; }
+
+    };
+
+    /**
+     * The property representing the name of the header to use to retrieve the
+     * URL-encoded client certificate from an HTTP request received from an
+     * SSL termination service providing SSL/TLS client authentication.
+     */
+    private static final StringGuacamoleProperty SSL_CLIENT_CERTIFICATE_HEADER =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ssl-client-certificate-header"; }
+
+    };
+
+    /**
+     * The property representing the name of the header to use to retrieve the
+     * verification status of the certificate an HTTP request received from an
+     * SSL termination service providing SSL/TLS client authentication. This
+     * value of this header must be "SUCCESS" (all uppercase) if the
+     * certificate was successfully verified.
+     */
+    private static final StringGuacamoleProperty SSL_CLIENT_VERIFIED_HEADER =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ssl-client-verified-header"; }
+
+    };
+
+    /**
+     * The property representing the amount of time that a temporary
+     * authentication token for SSL/TLS authentication may remain valid, in
+     * minutes. This token is used to represent the user's asserted identity
+     * after it has been verified by the SSL termination service. This interval
+     * must be long enough to allow for network delays in redirecting the user
+     * back to the main Guacamole URL, but short enough that unused tokens do
+     * not consume unnecessary server resources and cannot potentially be
+     * guessed while the token is still valid. These tokens are 256-bit secure
+     * random values.
+     */
+    private static final IntegerGuacamoleProperty SSL_MAX_TOKEN_VALIDITY =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ssl-max-token-validity"; }
+
+    };
+
+    /**
+     * The property representing the amount of time that the temporary, unique
+     * subdomain generated for SSL/TLS authentication may remain valid, in
+     * minutes. This subdomain is used to ensure each SSL/TLS authentication
+     * attempt is fresh and does not potentially reuse a previous
+     * authentication attempt that was cached by the browser or OS. This
+     * interval must be long enough to allow for network delays in redirecting
+     * the user to the SSL termination service enforcing SSL/TLS
+     * authentication, but short enough that an unused domain does not consume
+     * unnecessary server resources and cannot potentially be guessed while
+     * that subdomain is still valid. These subdomains are 128-bit secure
+     * random values.
+     */
+    private static final IntegerGuacamoleProperty SSL_MAX_DOMAIN_VALIDITY =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ssl-max-domain-validity"; }
+
+    };
+
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
+
+    /**
+     * Returns a URI that should be used to authenticate users with SSL/TLS
+     * client authentication. The returned URI will consist of the configured
+     * client authentication URI with the wildcard portion ("*.") replaced with
+     * the given subdomain.
+     *
+     * @param subdomain
+     *     The subdomain that should replace the wildcard portion of the
+     *     configured client authentication URI.
+     *
+     * @return
+     *     A URI that should be used to authenticate users with SSL/TLS
+     *     client authentication.
+     *
+     * @throws GuacamoleException
+     *     If the required property for configuring the client authentication
+     *     URI is missing or cannot be parsed.
+     */
+    public URI getClientAuthenticationURI(String subdomain) throws GuacamoleException {
+
+        URI authURI = environment.getRequiredProperty(SSL_CLIENT_AUTH_URI);
+        String baseHostname = authURI.getHost();
+
+        // Add provided subdomain to auth URI
+        return UriBuilder.fromUri(authURI)
+                .host(subdomain + "." + baseHostname)
+                .build();
+
+    }
+
+    /**
+     * Given a hostname that was used by a user for SSL/TLS client
+     * authentication, returns the subdomain at the beginning of that hostname.
+     * If the hostname does not match the pattern of hosts represented by the
+     * configured client authentication URI, null is returned.
+     *
+     * @param hostname
+     *     The hostname to extract the subdomain from.
+     *
+     * @return
+     *     The subdomain at the beginning of the provided hostname, if that
+     *     hostname matches the pattern of hosts represented by the
+     *     configured client authentication URI, or null otherwise.
+     *
+     * @throws GuacamoleException
+     *     If the required property for configuring the client authentication
+     *     URI is missing or cannot be parsed.
+     */
+    public String getClientAuthenticationSubdomain(String hostname) throws GuacamoleException {
+
+        URI authURI = environment.getRequiredProperty(SSL_CLIENT_AUTH_URI);
+        String baseHostname = authURI.getHost();
+
+        // Verify the first domain component is at least one character in
+        // length
+        int firstPeriod = hostname.indexOf('.');
+        if (firstPeriod <= 0)
+            return null;
+
+        // Verify domain matches the configured auth URI except for the leading
+        // subdomain
+        if (!hostname.regionMatches(true, firstPeriod + 1, baseHostname, 0, baseHostname.length()))
+            return null;
+
+        // Extract subdomain
+        return hostname.substring(0, firstPeriod);
+
+    }
+
+    /**
+     * Returns the URI of this instance without SSL/TLS client authentication
+     * required.
+     *
+     * @return
+     *     The URI of this instance without SSL/TLS client authentication
+     *     required.
+     *
+     * @throws GuacamoleException
+     *     If the required property for configuring the redirect URI is missing
+     *     or cannot be parsed.
+     */
+    public URI getRedirectURI() throws GuacamoleException {
+        return environment.getRequiredProperty(SSL_REDIRECT_URI);
+    }
+
+    /**
+     * Returns the name of the header to use to retrieve the URL-encoded client
+     * certificate from an HTTP request received from an SSL termination
+     * service providing SSL/TLS client authentication.
+     *
+     * @return
+     *     The name of the header to use to retrieve the URL-encoded client
+     *     certificate from an HTTP request received from an SSL termination
+     *     service providing SSL/TLS client authentication.
+     *
+     * @throws GuacamoleException
+     *     If the property for configuring the client certificate header cannot
+     *     be parsed.
+     */
+    public String getClientCertificateHeader() throws GuacamoleException {
+        return environment.getProperty(SSL_CLIENT_CERTIFICATE_HEADER, DEFAULT_CLIENT_CERTIFICATE_HEADER);
+    }
+
+    /**
+     * Returns the name of the header to use to retrieve the verification
+     * status of the certificate an HTTP request received from an SSL
+     * termination service providing SSL/TLS client authentication.
+     *
+     * @return
+     *     The name of the header to use to retrieve the verification
+     *     status of the certificate an HTTP request received from an SSL
+     *     termination service providing SSL/TLS client authentication.
+     *
+     * @throws GuacamoleException
+     *     If the property for configuring the client verification header
+     *     cannot be parsed.
+     */
+    public String getClientVerifiedHeader() throws GuacamoleException {
+        return environment.getProperty(SSL_CLIENT_VERIFIED_HEADER, DEFAULT_CLIENT_VERIFIED_HEADER);
+    }
+
+    /**
+     * Returns the maximum amount of time that the token generated by the
+     * Guacamole server representing current SSL authentication state should
+     * remain valid, in minutes. This imposes an upper limit on the amount of
+     * time any particular authentication request can result in successful
+     * authentication within Guacamole when SSL/TLS client authentication is
+     * configured. By default, this will be 5.
+     *
+     * @return
+     *     The maximum amount of time that an SSL authentication token
+     *     generated by the Guacamole server should remain valid, in minutes.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public int getMaxTokenValidity() throws GuacamoleException {
+        return environment.getProperty(SSL_MAX_TOKEN_VALIDITY, DEFAULT_MAX_TOKEN_VALIDITY);
+    }
+
+    /**
+     * Returns the maximum amount of time that a unique client authentication
+     * subdomain generated by the Guacamole server should remain valid, in
+     * minutes. This imposes an upper limit on the amount of time any
+     * particular authentication request can result in successful
+     * authentication within Guacamole when SSL/TLS client authentication is
+     * configured. By default, this will be 5.
+     *
+     * @return
+     *     The maximum amount of time that a unique client authentication
+     *     subdomain generated by the Guacamole server should remain valid, in
+     *     minutes.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public int getMaxDomainValidity() throws GuacamoleException {
+        return environment.getProperty(SSL_MAX_DOMAIN_VALIDITY, DEFAULT_MAX_DOMAIN_VALIDITY);
+    }
+
+}
