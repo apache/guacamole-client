@@ -17,24 +17,13 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.ssl;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
-import org.apache.guacamole.auth.sso.NonceService;
-
 /**
- * Guice module which configures injections specific to SSO using SSL/TLS
- * client authentication.
+ * The module for code implementing SSO using SSL/TLS client authentication.
  */
-public class SSLAuthenticationProviderModule extends AbstractModule {
+angular.module('guacSsoSsl', [
+    'auth',
+    'rest'
+]);
 
-    @Override
-    protected void configure() {
-        bind(ConfigurationService.class);
-        bind(NonceService.class).in(Scopes.SINGLETON);
-        bind(SSLAuthenticationSessionManager.class);
-    }
-
-}
+// Ensure the guacSsoSsl module is loaded along with the rest of the app
+angular.module('index').requires.push('guacSsoSsl');

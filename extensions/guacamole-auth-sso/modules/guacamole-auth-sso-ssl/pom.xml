@@ -37,6 +37,56 @@
         <relativePath>../../</relativePath>
     </parent>
 
+    <build>
+        <plugins>
+
+            <!-- JS/CSS Minification Plugin -->
+            <plugin>
+                <groupId>com.github.buckelieg</groupId>
+                <artifactId>minify-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <configuration>
+                            <charset>UTF-8</charset>
+
+                            <webappSourceDir>${basedir}/src/main/resources</webappSourceDir>
+                            <webappTargetDir>${project.build.directory}/classes</webappTargetDir>
+
+                            <jsSourceDir>/</jsSourceDir>
+                            <jsTargetDir>/</jsTargetDir>
+                            <jsFinalFile>ssl.js</jsFinalFile>
+
+                            <jsSourceFiles>
+                                <jsSourceFile>license.txt</jsSourceFile>
+                            </jsSourceFiles>
+
+                            <jsSourceIncludes>
+                                <jsSourceInclude>**/*.js</jsSourceInclude>
+                            </jsSourceIncludes>
+
+                            <!-- Do not minify and include tests -->
+                            <jsSourceExcludes>
+                                <jsSourceExclude>**/*.test.js</jsSourceExclude>
+                            </jsSourceExcludes>
+                            <jsEngine>CLOSURE</jsEngine>
+
+                            <!-- Disable warnings for JSDoc annotations -->
+                            <closureWarningLevels>
+                                <misplacedTypeAnnotation>OFF</misplacedTypeAnnotation>
+                                <nonStandardJsDocs>OFF</nonStandardJsDocs>
+                            </closureWarningLevels>
+
+                        </configuration>
+                        <goals>
+                            <goal>minify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
     <dependencies>
 
         <!-- Guacamole Extension API -->

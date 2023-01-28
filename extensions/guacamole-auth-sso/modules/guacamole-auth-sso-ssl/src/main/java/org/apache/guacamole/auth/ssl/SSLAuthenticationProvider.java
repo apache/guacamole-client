@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.ssl;
 
 import org.apache.guacamole.auth.sso.SSOAuthenticationProvider;
-import org.apache.guacamole.auth.sso.SSOResource;
 
 /**
  * Guacamole authentication backend which authenticates users using SSL/TLS
@@ -37,7 +36,7 @@ public class SSLAuthenticationProvider extends SSOAuthenticationProvider {
      * an external SSL termination system using SSL/TLS client authentication.
      */
     public SSLAuthenticationProvider() {
-        super(AuthenticationProviderService.class, SSOResource.class,
+        super(AuthenticationProviderService.class, SSLClientAuthenticationResource.class,
                 new SSLAuthenticationProviderModule());
     }
 

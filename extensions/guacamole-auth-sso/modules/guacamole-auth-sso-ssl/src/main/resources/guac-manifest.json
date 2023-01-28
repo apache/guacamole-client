@@ -13,6 +13,8 @@
         "styles/sso-providers.css"
     ],
 
+    "js" : [ "ssl.min.js" ],
+
     "html" : [
         "html/sso-providers.html",
         "html/sso-provider-ssl.html"

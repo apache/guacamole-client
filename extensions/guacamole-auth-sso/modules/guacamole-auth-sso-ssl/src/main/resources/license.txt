@@ -16,25 +16,3 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-package org.apache.guacamole.auth.ssl;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
-import org.apache.guacamole.auth.sso.NonceService;
-
-/**
- * Guice module which configures injections specific to SSO using SSL/TLS
- * client authentication.
- */
-public class SSLAuthenticationProviderModule extends AbstractModule {
-
-    @Override
-    protected void configure() {
-        bind(ConfigurationService.class);
-        bind(NonceService.class).in(Scopes.SINGLETON);
-        bind(SSLAuthenticationSessionManager.class);
-    }
-
-}

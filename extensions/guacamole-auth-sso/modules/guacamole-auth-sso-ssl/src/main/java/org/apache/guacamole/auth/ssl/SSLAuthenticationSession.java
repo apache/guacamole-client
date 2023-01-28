@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.ssl;
 
 import org.apache.guacamole.auth.sso.AuthenticationSession;
-import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 
 /**
  * Representation of an in-progress SSL/TLS authentication attempt.
@@ -30,7 +29,7 @@ public class SSLAuthenticationSession extends AuthenticationSession {
     /**
      * The identity asserted by the external SSL termination service.
      */
-    private final SSOAuthenticatedUser identity;
+    private final String identity;
 
     /**
      * Creates a new AuthenticationSession representing an in-progress SSL/TLS
@@ -44,7 +43,7 @@ public class SSLAuthenticationSession extends AuthenticationSession {
      *     The number of milliseconds that may elapse before this session must
      *     be considered invalid.
      */
-    public SSLAuthenticationSession(SSOAuthenticatedUser identity, long expires) {
+    public SSLAuthenticationSession(String identity, long expires) {
         super(expires);
         this.identity = identity;
     }
@@ -58,7 +57,7 @@ public class SSLAuthenticationSession extends AuthenticationSession {
      * @return
      *     The identity asserted by the external SSL termination service.
      */
-    public SSOAuthenticatedUser getIdentity() {
+    public String getIdentity() {
         return identity;
     }
 

@@ -21,8 +21,10 @@ package org.apache.guacamole.auth.ssl.conf;
 
 import com.google.inject.Inject;
 import java.net.URI;
+import java.net.URISyntaxException;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
@@ -80,11 +82,11 @@ public class ConfigurationService {
      * to THIS instance of Guacamole, but behind SSL termination that DOES NOT
      * require or request SSL/TLS client authentication.
      */
-    private static final URIGuacamoleProperty SSL_REDIRECT_URI =
+    private static final URIGuacamoleProperty SSL_PRIMARY_URI =
             new URIGuacamoleProperty() {
 
         @Override
-        public String getName() { return "ssl-redirect-uri"; }
+        public String getName() { return "ssl-primary-uri"; }
 
     };
 
@@ -121,11 +123,10 @@ public class ConfigurationService {
      * authentication token for SSL/TLS authentication may remain valid, in
      * minutes. This token is used to represent the user's asserted identity
      * after it has been verified by the SSL termination service. This interval
-     * must be long enough to allow for network delays in redirecting the user
-     * back to the main Guacamole URL, but short enough that unused tokens do
-     * not consume unnecessary server resources and cannot potentially be
-     * guessed while the token is still valid. These tokens are 256-bit secure
-     * random values.
+     * must be long enough to allow for network delays in receiving the token,
+     * but short enough that unused tokens do not consume unnecessary server
+     * resources and cannot potentially be guessed while the token is still
+     * valid. These tokens are 256-bit secure random values.
      */
     private static final IntegerGuacamoleProperty SSL_MAX_TOKEN_VALIDITY =
             new IntegerGuacamoleProperty() {
@@ -141,12 +142,12 @@ public class ConfigurationService {
      * minutes. This subdomain is used to ensure each SSL/TLS authentication
      * attempt is fresh and does not potentially reuse a previous
      * authentication attempt that was cached by the browser or OS. This
-     * interval must be long enough to allow for network delays in redirecting
-     * the user to the SSL termination service enforcing SSL/TLS
-     * authentication, but short enough that an unused domain does not consume
-     * unnecessary server resources and cannot potentially be guessed while
-     * that subdomain is still valid. These subdomains are 128-bit secure
-     * random values.
+     * interval must be long enough to allow for network delays in
+     * authenticating the user with the SSL termination service that enforces
+     * SSL/TLS client authentication, but short enough that an unused domain
+     * does not consume unnecessary server resources and cannot potentially be
+     * guessed while that subdomain is still valid. These subdomains are
+     * 128-bit secure random values.
      */
     private static final IntegerGuacamoleProperty SSL_MAX_DOMAIN_VALIDITY =
             new IntegerGuacamoleProperty() {
@@ -212,6 +213,11 @@ public class ConfigurationService {
      */
     public String getClientAuthenticationSubdomain(String hostname) throws GuacamoleException {
 
+        // Any hostname that matches the explicitly-specific primary URI is not
+        // a client auth subdomain
+        if (isPrimaryHostname(hostname))
+            return null;
+
         URI authURI = environment.getRequiredProperty(SSL_CLIENT_AUTH_URI);
         String baseHostname = authURI.getHost();
 
@@ -240,11 +246,57 @@ public class ConfigurationService {
      *     required.
      *
      * @throws GuacamoleException
-     *     If the required property for configuring the redirect URI is missing
+     *     If the required property for configuring the primary URI is missing
      *     or cannot be parsed.
      */
-    public URI getRedirectURI() throws GuacamoleException {
-        return environment.getRequiredProperty(SSL_REDIRECT_URI);
+    public URI getPrimaryURI() throws GuacamoleException {
+        return environment.getRequiredProperty(SSL_PRIMARY_URI);
+    }
+
+    /**
+     * Returns the HTTP request origin for requests originating from this
+     * instance via the primary URI (as returned by {@link #getPrimaryURI()}.
+     * This value is essentially the same as the primary URI but with only the
+     * scheme, host, and port present.
+     *
+     * @return
+     *     The HTTP request origin for requests originating from this instance
+     *     via the primary URI.
+     *
+     * @throws GuacamoleException
+     *     If the required property for configuring the primary URI is missing
+     *     or cannot be parsed.
+     */
+    public URI getPrimaryOrigin() throws GuacamoleException {
+        URI primaryURI = getPrimaryURI();
+        try {
+            return new URI(primaryURI.getScheme(), null, primaryURI.getHost(), primaryURI.getPort(), null, null, null);
+        }
+        catch (URISyntaxException e) {
+            throw new GuacamoleServerException("Request origin could not be "
+                    + "derived from the configured primary URI.", e);
+        }
+    }
+
+    /**
+     * Returns whether the given hostname is the same as the hostname in the
+     * primary URI (as returned by {@link #getPrimaryURI()}. Hostnames are
+     * case-insensitive.
+     *
+     * @param hostname
+     *     The hostname to test.
+     *
+     * @return
+     *     true if the hostname is the same as the hostname in the primary URI,
+     *     false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If the required property for configuring the primary URI is missing
+     *     or cannot be parsed.
+     */
+    public boolean isPrimaryHostname(String hostname) throws GuacamoleException {
+        URI primaryURI = getPrimaryURI();
+        return hostname.equalsIgnoreCase(primaryURI.getHost());
     }
 
     /**

@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.ssl;
 
 import com.google.inject.Singleton;
 import org.apache.guacamole.auth.sso.AuthenticationSessionManager;
-import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 
 /**
  * Manager service that temporarily stores SSL/TLS authentication attempts
@@ -48,7 +47,7 @@ public class SSLAuthenticationSessionManager
      *     session with the given identifier, or null if there is no such
      *     identity.
      */
-    public SSOAuthenticatedUser getIdentity(String identifier) {
+    public String getIdentity(String identifier) {
 
         SSLAuthenticationSession session = resume(identifier);
         if (session != null)
