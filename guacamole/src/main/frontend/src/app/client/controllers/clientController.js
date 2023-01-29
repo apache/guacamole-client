@@ -793,24 +793,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
     
     /**
-     * Determines whether the attached client group has any associated client
-     * messages to display.
-     * 
-     * @returns {Boolean}
-     *     true if there are messages to display; otherwise false.
-     */
-    $scope.hasMessages = function hasMessages() {
-        
-        // No client group means no messages
-        if (!$scope.clientGroup)
-            return false;
-        
-        // Otherwise, find messages within the clients in the group.
-        return _.findIndex($scope.clientGroup.clients, ManagedClient.hasMessages) !== -1;
-        
-    };
-
-    /**
      * Determines whether the attached client group has any associated file
      * transfers, regardless of those file transfers' state.
      *

@@ -17,6 +17,8 @@
  * under the License.
  */
 
+/* global Guacamole, _ */
+
 /**
  * Provides the ManagedClient class used by the guacClientManager service.
  */
@@ -28,7 +30,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     const ClientIdentifier       = $injector.get('ClientIdentifier');
     const ClipboardData          = $injector.get('ClipboardData');
     const ManagedArgument        = $injector.get('ManagedArgument');
-    const ManagedClientMessage   = $injector.get('ManagedClientMessage');
     const ManagedClientState     = $injector.get('ManagedClientState');
     const ManagedClientThumbnail = $injector.get('ManagedClientThumbnail');
     const ManagedDisplay         = $injector.get('ManagedDisplay');
@@ -174,14 +175,25 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type ManagedFilesystem[]
          */
         this.filesystems = template.filesystems || [];
-        
+
         /**
-         * All messages that have been sent to the client that should be
-         * displayed.
-         * 
-         * @type ManagedClientMessage[]
+         * The current number of users sharing this connection, excluding the
+         * user that originally started the connection. Duplicate connections
+         * from the same user are included in this total.
          */
-        this.messages = template.messages || [];
+        this.userCount = template.userCount || 0;
+
+        /**
+         * All users currently sharing this connection, excluding the user that
+         * originally started the connection. If the connection is not shared,
+         * this object will be empty. This map consists of key/value pairs
+         * where each key is the user's username and each value is an object
+         * tracking the unique connections currently used by that user (a map
+         * of Guacamole protocol user IDs to boolean values).
+         *
+         * @type Object.<string, Object.<string, boolean>>
+         */
+        this.users = template.users || {};
 
         /**
          * All available share links generated for the this ManagedClient via
@@ -498,15 +510,44 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         
         // Handle messages received from guacd to display to the client.
         client.onmsg = function clientMessage(msgcode, args) {
-            
-            msg = new ManagedClientMessage();
-            msg.msgcode = msgcode;
-            msg.args = args;
-            
-            $rootScope.$apply(function updateMessages() {
-                managedClient.messages.push(msg);
-            });
-            
+            switch (msgcode) {
+
+                // Update current users on connection when a user joins/leaves
+                case Guacamole.Client.Message.USER_JOINED:
+                case Guacamole.Client.Message.USER_LEFT:
+
+                    var userID = args[0];
+                    var username = args[1];
+
+                    var connections = managedClient.users[username] || {};
+                    managedClient.users[username] = connections;
+
+                    $rootScope.$apply(function usersChanged() {
+
+                        // Add/remove user
+                        if (msgcode === Guacamole.Client.Message.USER_JOINED) {
+                            managedClient.userCount++;
+                            connections[userID] = true;
+                        }
+                        else {
+                            managedClient.userCount--;
+                            delete connections[userID];
+                        }
+
+                        // Delete user entry after no connections remain
+                        if (_.isEmpty(connections))
+                            delete managedClient.users[username];
+
+                    });
+
+                    break;
+
+                default:
+                    // Ignore - we only handle join/leave messages, which are
+                    // currently the only messages defined at the protocol
+                    // level.
+
+            }
         };
 
         // Automatically update the client thumbnail
@@ -915,19 +956,6 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
     };
     
-    /**
-     * Returns whether the given client has any associated messages to display.
-     * 
-     * @param {GuacamoleClient} client
-     *     The client for which messages should be checked.
-     *     
-     * @returns {Boolean}
-     *     true if the given client has any messages, otherwise false.
-     */
-    ManagedClient.hasMessages = function hasMessages(client) {
-        return !!(client && client.messages && client.messages.length);
-    };
-
     /**
      * Returns whether the given client has any associated file transfers,
      * regardless of those file transfers' state.
