@@ -507,47 +507,35 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
             });
         };
-        
-        // Handle messages received from guacd to display to the client.
-        client.onmsg = function clientMessage(msgcode, args) {
-            switch (msgcode) {
 
-                // Update current users on connection when a user joins/leaves
-                case Guacamole.Client.Message.USER_JOINED:
-                case Guacamole.Client.Message.USER_LEFT:
+        // Update user count when a new user joins
+        client.onjoin = function userJoined(id, username) {
+            $rootScope.$apply(function usersChanged() {
 
-                    var userID = args[0];
-                    var username = args[1];
+                var connections = managedClient.users[username] || {};
+                managedClient.users[username] = connections;
 
-                    var connections = managedClient.users[username] || {};
-                    managedClient.users[username] = connections;
+                managedClient.userCount++;
+                connections[id] = true;
 
-                    $rootScope.$apply(function usersChanged() {
+            });
+        };
 
-                        // Add/remove user
-                        if (msgcode === Guacamole.Client.Message.USER_JOINED) {
-                            managedClient.userCount++;
-                            connections[userID] = true;
-                        }
-                        else {
-                            managedClient.userCount--;
-                            delete connections[userID];
-                        }
+        // Update user count when a user leaves
+        client.onleave = function userLeft(id, username) {
+            $rootScope.$apply(function usersChanged() {
 
-                        // Delete user entry after no connections remain
-                        if (_.isEmpty(connections))
-                            delete managedClient.users[username];
+                var connections = managedClient.users[username] || {};
+                managedClient.users[username] = connections;
 
-                    });
+                managedClient.userCount--;
+                delete connections[id];
 
-                    break;
+                // Delete user entry after no connections remain
+                if (_.isEmpty(connections))
+                    delete managedClient.users[username];
 
-                default:
-                    // Ignore - we only handle join/leave messages, which are
-                    // currently the only messages defined at the protocol
-                    // level.
-
-            }
+            });
         };
 
         // Automatically update the client thumbnail
