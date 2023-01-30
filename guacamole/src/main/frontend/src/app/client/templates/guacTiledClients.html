@@ -12,7 +12,7 @@
                 <h3 class="client-tile-header" ng-if="hasMultipleClients(clientGroup)">
                     <img class="client-tile-shared-indicator" src="images/share-white.svg">
                     <span class="client-tile-name">{{ client.title }}</span>
-                    <span class="client-user-count">{{ client.userCount }}</span>
+                    <guac-client-user-count client="client"></guac-client-user-count>
                     <img ng-click="onClose({ '$client' : client })"
                          class="client-tile-disconnect"
                          ng-attr-alt="{{ 'CLIENT.ACTION_DISCONNECT' | translate }}"
@@ -24,9 +24,7 @@
                 <!-- Client-specific status/error dialog -->
                 <guac-client-notification client="client"></guac-client-notification>
 
-                <div class="client-user-count" ng-if="!hasMultipleClients(clientGroup)">
-                    {{ client.userCount }}
-                </div>
+                <guac-client-user-count client="client" ng-if="!hasMultipleClients(clientGroup)"></guac-client-user-count>
 
             </div>
 

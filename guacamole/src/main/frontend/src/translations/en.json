@@ -128,10 +128,7 @@
 
         "INFO_CONNECTION_SHARED" : "This connection is now shared.",
         "INFO_NO_FILE_TRANSFERS" : "No file transfers.",
-
-        "MESSAGE_DEFAULT"      : "",
-        "MESSAGE_USER_JOINED"  : "User {ARGS_1} has joined the connection.",
-        "MESSAGE_USER_LEFT"    : "User {ARGS_1} has left the connection.",
+        "INFO_USER_COUNT"        : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
 
         "NAME_INPUT_METHOD_NONE"   : "None",
         "NAME_INPUT_METHOD_OSK"    : "On-screen keyboard",
@@ -158,6 +155,8 @@
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "You have been disconnected.",
         "TEXT_CLIENT_STATUS_UNSTABLE"     : "The network connection to the Guacamole server appears unstable.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Connected to Guacamole. Waiting for response...",
+        "TEXT_USER_JOINED"                : "{USERNAME} has joined the connection.",
+        "TEXT_USER_LEFT"                  : "{USERNAME} has left the connection.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
