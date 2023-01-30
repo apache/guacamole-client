@@ -1451,6 +1451,9 @@ Guacamole.Client = function(tunnel) {
         
         "msg" : function(parameters) {
 
+            var userID;
+            var username;
+
             var msgid = parseInt(parameters[0]);
             if (guac_client.onmsg)
                 guac_client.onmsg(msgid, parameters.slice(1));
@@ -1458,13 +1461,17 @@ Guacamole.Client = function(tunnel) {
             switch (msgid) {
 
                 case Guacamole.Client.Message.USER_JOINED:
+                    userID = parameters[1];
+                    username = parameters[2];
                     if (guac_client.onjoin)
-                        guac_client.onjoin(parameters[1] /* User ID */, parameters[2] /* Name */);
+                        guac_client.onjoin(userID, username);
                     break;
 
                 case Guacamole.Client.Message.USER_LEFT:
+                    userID = parameters[1];
+                    username = parameters[2];
                     if (guac_client.onleave)
-                        guac_client.onleave(parameters[1] /* User ID */, parameters[2] /* Name */);
+                        guac_client.onleave(userID, username);
                     break;
 
             }
