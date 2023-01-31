@@ -690,7 +690,10 @@ Guacamole.Client = function(tunnel) {
     
     /**
      * Fired when an arbitrary message is received from the tunnel that should
-     * be processed by the client.
+     * be processed by the client. By default, additional message-specific
+     * events such as "onjoin" and "onleave" will fire for the received message
+     * after this event has been processed. An event handler for "onmsg" need
+     * not be supplied if "onjoin" and/or "onleave" will be used.
      * 
      * @event
      * @param {!number} msgcode
@@ -700,6 +703,12 @@ Guacamole.Client = function(tunnel) {
      * @param {string[]} args
      *     An array of arguments to be processed with the message sent to the
      *     client.
+     *
+     * @return {boolean}
+     *     true if message-specific events such as "onjoin" and
+     *     "onleave" should be fired for this message, false otherwise. If
+     *     no value is returned, message-specific events will be allowed to
+     *     fire.
      */
     this.onmsg = null;
 
@@ -1454,26 +1463,35 @@ Guacamole.Client = function(tunnel) {
             var userID;
             var username;
 
+            // Fire general message handling event first
+            var allowDefault = true;
             var msgid = parseInt(parameters[0]);
-            if (guac_client.onmsg)
-                guac_client.onmsg(msgid, parameters.slice(1));
+            if (guac_client.onmsg) {
+                allowDefault = guac_client.onmsg(msgid, parameters.slice(1));
+                if (allowDefault === undefined)
+                    allowDefault = true;
+            }
 
-            switch (msgid) {
+            // Fire message-specific convenience events if not prevented by the
+            // "onmsg" handler
+            if (allowDefault) {
+                switch (msgid) {
 
-                case Guacamole.Client.Message.USER_JOINED:
-                    userID = parameters[1];
-                    username = parameters[2];
-                    if (guac_client.onjoin)
-                        guac_client.onjoin(userID, username);
-                    break;
+                    case Guacamole.Client.Message.USER_JOINED:
+                        userID = parameters[1];
+                        username = parameters[2];
+                        if (guac_client.onjoin)
+                            guac_client.onjoin(userID, username);
+                        break;
 
-                case Guacamole.Client.Message.USER_LEFT:
-                    userID = parameters[1];
-                    username = parameters[2];
-                    if (guac_client.onleave)
-                        guac_client.onleave(userID, username);
-                    break;
+                    case Guacamole.Client.Message.USER_LEFT:
+                        userID = parameters[1];
+                        username = parameters[2];
+                        if (guac_client.onleave)
+                            guac_client.onleave(userID, username);
+                        break;
 
+                }
             }
             
         },
