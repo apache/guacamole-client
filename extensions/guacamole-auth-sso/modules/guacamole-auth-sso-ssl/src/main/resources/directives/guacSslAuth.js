@@ -24,8 +24,7 @@
 angular.module('element').directive('guacSslAuth', ['$injector', function guacSslAuth($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
-    var authenticationService = $injector.get('authenticationService');
+    var clientAuthService = $injector.get('clientAuthService');
 
     var directive = {
         restrict: 'A'
@@ -42,23 +41,7 @@ angular.module('element').directive('guacSslAuth', ['$injector', function guacSs
 
         // Attempt SSL/TLS client authentication upon click
         element.addEventListener('click', function elementClicked() {
-
-            // Transform SSL/TLS identity into an opaque "state" value and
-            // attempt authentication using that value
-            authenticationService.authenticate(
-                requestService({
-                    method: 'GET',
-                    headers : {
-                        'Cache-Control' : undefined, // Avoid sending headers that would result in a pre-flight OPTIONS request for CORS
-                        'Pragma'        : undefined
-                    },
-                    url: 'api/ext/ssl/identity'
-                })
-                .then(function identityRetrieved(data) {
-                    return { 'state' : data.state || '' };
-                })
-            )['catch'](requestService.IGNORE);
-
+            clientAuthService.authenticate();
         });
 
     };
