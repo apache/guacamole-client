@@ -156,41 +156,38 @@ angular.module('rest').factory('connectionService', ['$injector',
     };
 
     /**
-     * Makes a request to the REST API to create multiple connections, returning a
-     * a promise that can be used for processing the results of the call. This
-     * operation is atomic - if any errors are encountered during the connection
-     * creation process, the entire request will fail, and no connections will be
-     * created.
+     * Makes a request to the REST API to apply a supplied list of connection
+     * patches, returning a promise that can be used for processing the results 
+     * of the  call. 
+     * 
+     * This operation is atomic - if any errors are encountered during the 
+     * connection patching process, the entire request will fail, and no 
+     * changes will be persisted.
      *
-     * @param {Connection[]} connections The connections to create.
+     * @param {DirectoryPatch.<Connection>[]} patches 
+     *     An array of patches to apply.
      *
      * @returns {Promise}
      *     A promise for the HTTP call which will succeed if and only if the
-     *     create operation is successful.
+     *     patch operation is successful.
      */
-    service.createConnections = function createConnections(dataSource, connections) {
+    service.patchConnections = function patchConnections(dataSource, patches) {
 
-        // An object containing a PATCH operation to create each connection
-        const patchBody = connections.map(connection => ({
-            op: "add",
-            path: "/",
-            value: connection
-        }));
-
-        // Make a PATCH request to create the connections
+        // Make the PATCH request
         return authenticationService.request({
             method  : 'PATCH',
             url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections',
-            data    : patchBody
+            data    : patches
         })
 
         // Clear the cache
-        .then(function connectionUpdated(){
+        .then(function connectionsPatched(){
             cacheService.connections.removeAll();
 
-            // Clear users cache to force reload of permissions for this
-            // newly updated connection
+            // Clear users cache to force reload of permissions for any
+            // newly created or replaced connections
             cacheService.users.removeAll();
+            
         });
 
     }

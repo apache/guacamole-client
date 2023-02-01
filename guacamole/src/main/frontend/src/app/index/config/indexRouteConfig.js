@@ -127,10 +127,10 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
         })
 
         // Connection import page
-        .when('/settings/:dataSource/import', {
+        .when('/import/:dataSource/connection', {
             title         : 'APP.NAME',
             bodyClassName : 'settings',
-            templateUrl   : 'app/settings/templates/settingsImport.html',
+            templateUrl   : 'app/import/templates/connectionImport.html',
             controller    : 'importConnectionsController',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })

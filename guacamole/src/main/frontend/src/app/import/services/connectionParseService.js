@@ -26,8 +26,8 @@ import { parse as parseYAMLData } from 'yaml'
  * A service for parsing user-provided JSON, YAML, or JSON connection data into
  * an appropriate format for bulk uploading using the PATCH REST endpoint.
  */
-angular.module('settings').factory('connectionImportParseService',
-        ['$injector', function connectionImportParseService($injector) {
+angular.module('import').factory('connectionParseService',
+        ['$injector', function connectionParseService($injector) {
 
     // Required types
     const Connection          = $injector.get('Connection');
@@ -71,35 +71,6 @@ angular.module('settings').factory('connectionImportParseService',
                 })
             });
     }
-
-    /**
-     * Convert a provided YAML representation of a connection list into a JSON
-     * string to be submitted to the PATCH REST endpoint. The returned JSON
-     * string will contain a PATCH operation to create each connection in the
-     * provided list.
-     *
-     * @param {String} yamlData
-     *     The YAML-encoded connection list to convert to a PATCH request body.
-     *
-     * @return {Promise.<Connection[]>}
-     *     A promise resolving to an array of Connection objects, one for each 
-     *     connection in the provided CSV.
-     */
-    service.parseYAML = function parseYAML(yamlData) {
-
-        // Parse from YAML into a javascript array
-        const parsedData = parseYAMLData(yamlData);
-        
-        // Check that the data is the correct format, and not empty
-        performBasicChecks(parsedData);
-        
-        // Convert to an array of Connection objects and return
-        const deferredConnections = $q.defer();
-        deferredConnections.resolve(
-                parsedData.map(connection => new Connection(connection)));
-        return deferredConnections.promise;
-
-    };
     
     /**
      * Returns a promise that resolves to an object detailing the connection
@@ -317,6 +288,35 @@ angular.module('settings').factory('connectionImportParseService',
             deferredConnections.resolve(connectionData);
         });
         
+        return deferredConnections.promise;
+
+    };
+
+    /**
+     * Convert a provided YAML representation of a connection list into a JSON
+     * string to be submitted to the PATCH REST endpoint. The returned JSON
+     * string will contain a PATCH operation to create each connection in the
+     * provided list.
+     *
+     * @param {String} yamlData
+     *     The YAML-encoded connection list to convert to a PATCH request body.
+     *
+     * @return {Promise.<Connection[]>}
+     *     A promise resolving to an array of Connection objects, one for each 
+     *     connection in the provided CSV.
+     */
+    service.parseYAML = function parseYAML(yamlData) {
+
+        // Parse from YAML into a javascript array
+        const parsedData = parseYAMLData(yamlData);
+        
+        // Check that the data is the correct format, and not empty
+        performBasicChecks(parsedData);
+        
+        // Convert to an array of Connection objects and return
+        const deferredConnections = $q.defer();
+        deferredConnections.resolve(
+                parsedData.map(connection => new Connection(connection)));
         return deferredConnections.promise;
 
     };

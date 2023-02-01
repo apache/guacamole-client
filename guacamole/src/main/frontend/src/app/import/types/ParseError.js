@@ -20,7 +20,7 @@
 /**
  * Service which defines the ParseError class.
  */
-angular.module('settings').factory('ParseError', [function defineParseError() {
+angular.module('import').factory('ParseError', [function defineParseError() {
 
     /**
      * An error representing a parsing failure when attempting to convert

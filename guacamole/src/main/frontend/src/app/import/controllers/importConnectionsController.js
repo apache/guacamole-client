@@ -20,11 +20,11 @@
 /**
  * The controller for the connection import page.
  */
-angular.module('settings').controller('importConnectionsController', ['$scope', '$injector',
+angular.module('import').controller('importConnectionsController', ['$scope', '$injector',
         function importConnectionsController($scope, $injector) {
 
     // Required services
-    const connectionImportParseService = $injector.get('connectionImportParseService');
+    const connectionParseService = $injector.get('connectionParseService');
     const connectionService = $injector.get('connectionService');
 
     function processData(type, data) {
@@ -36,18 +36,18 @@ angular.module('settings').controller('importConnectionsController', ['$scope', 
 
             case "application/json":
             case "text/json":
-                requestBody = connectionImportParseService.parseJSON(data);
+                requestBody = connectionParseService.parseJSON(data);
                 break;
 
             case "text/csv":
-                requestBody = connectionImportParseService.parseCSV(data);
+                requestBody = connectionParseService.parseCSV(data);
                 break;
 
             case "application/yaml":
             case "application/x-yaml":
             case "text/yaml":
             case "text/x-yaml":
-                requestBody = connectionImportParseService.parseYAML(data);
+                requestBody = connectionParseService.parseYAML(data);
                 break;
 
         }
