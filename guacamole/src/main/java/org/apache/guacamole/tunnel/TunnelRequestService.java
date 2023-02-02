@@ -340,6 +340,11 @@ public class TunnelRequestService {
         GuacamoleSession session = authenticationService.getGuacamoleSession(authToken);
         AuthenticatedUser authenticatedUser = session.getAuthenticatedUser();
         UserContext userContext = session.getUserContext(authProviderIdentifier);
+        
+        // Attempt to get the user's name and set it for the tunnel client.
+        String name = authenticatedUser.getIdentifier();
+        if (name != null)
+            info.setName(name);
 
         try {
 

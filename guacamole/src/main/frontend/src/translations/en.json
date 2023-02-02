@@ -60,6 +60,7 @@
 
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_CLIENT_MESSAGES"     : "Clear",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Clear",
         "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
         "ACTION_DISCONNECT"                : "Disconnect",
@@ -128,6 +129,10 @@
         "INFO_CONNECTION_SHARED" : "This connection is now shared.",
         "INFO_NO_FILE_TRANSFERS" : "No file transfers.",
 
+        "MESSAGE_DEFAULT"      : "",
+        "MESSAGE_USER_JOINED"  : "User {ARGS_1} has joined the connection.",
+        "MESSAGE_USER_LEFT"    : "User {ARGS_1} has left the connection.",
+
         "NAME_INPUT_METHOD_NONE"   : "None",
         "NAME_INPUT_METHOD_OSK"    : "On-screen keyboard",
         "NAME_INPUT_METHOD_TEXT"   : "Text input",
@@ -138,11 +143,13 @@
         "NAME_MOUSE_MODE_ABSOLUTE" : "Touchscreen",
         "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
 
-        "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
-        "SECTION_HEADER_DEVICES"        : "Devices",
-        "SECTION_HEADER_DISPLAY"        : "Display",
-        "SECTION_HEADER_FILE_TRANSFERS" : "File Transfers",
-        "SECTION_HEADER_INPUT_METHOD"   : "Input method",
+        "SECTION_HEADER_CLIENT_MESSAGES" : "Messages",
+        "SECTION_HEADER_CLIPBOARD"       : "Clipboard",
+        "SECTION_HEADER_DEVICES"         : "Devices",
+        "SECTION_HEADER_DISPLAY"         : "Display",
+        "SECTION_HEADER_FILE_TRANSFERS"  : "File Transfers",
+        "SECTION_HEADER_INPUT_METHOD"    : "Input method",
+        
         "SECTION_HEADER_MOUSE_MODE"     : "Mouse emulation mode",
 
         "TEXT_ZOOM_AUTO_FIT"              : "Automatically fit to browser window",
