@@ -734,7 +734,10 @@ END
     set_property          "openid-redirect-uri"              "$OPENID_REDIRECT_URI"
     set_optional_property "openid-username-claim-type"       "$OPENID_USERNAME_CLAIM_TYPE"
     set_optional_property "openid-groups-claim-type"         "$OPENID_GROUPS_CLAIM_TYPE"
+    set_optional_property "openid-scope"                     "$OPENID_SCOPE"
+    set_optional_property "openid-allowed-clock-skew"        "$OPENID_ALLOWED_CLOCK_SKEW"
     set_optional_property "openid-max-token-validity"        "$OPENID_MAX_TOKEN_VALIDITY"
+    set_optional_property "openid-max-nonce-validity"        "$OPENID_MAX_NONCE_VALIDITY"
 
     # Add required .jar files to GUACAMOLE_EXT
     # "1-{}" make it sorted as a first provider (only authentication)
