@@ -19,16 +19,26 @@
 
 /* global _ */
 
+// A suffix that indicates that a particular header refers to a parameter
+const PARAMETER_SUFFIX = ' (parameter)';
+
+// A suffix that indicates that a particular header refers to an attribute
+const ATTRIBUTE_SUFFIX = ' (attribute)';
+
 /**
  * A service for parsing user-provided CSV connection data for bulk import.
  */
 angular.module('import').factory('connectionCSVService',
         ['$injector', function connectionCSVService($injector) {
+                
+    // Required types
+    const ParseError          = $injector.get('ParseError');
+    const TranslatableMessage = $injector.get('TranslatableMessage');
     
     // Required services
-    const $q                     = $injector.get('$q');
-    const $routeParams           = $injector.get('$routeParams');
-    const schemaService          = $injector.get('schemaService');
+    const $q            = $injector.get('$q');
+    const $routeParams  = $injector.get('$routeParams');
+    const schemaService = $injector.get('schemaService');
     
     const service = {};
     
@@ -88,14 +98,254 @@ angular.module('import').factory('connectionCSVService',
     }
     
     /**
+     * Given a CSV header row, create and return a promise that will resolve to
+     * a function that can take a CSV data row and return a connection object.
+     * If an error occurs while parsing a particular row, the resolved function
+     * will throw a ParseError describing the failure.
      * 
+     * The provided CSV must contain columns for name and protocol. Optionally,
+     * the parentIdentifier of the target parent connection group, or a connection
+     * name path e.g. "ROOT/parent/child" may be included. Additionallty, 
+     * connection parameters or attributes can be included.
+     * 
+     * The names of connection attributes and parameters are not guaranteed to
+     * be mutually exclusive, so the CSV import format supports a distinguishing
+     * suffix. A column may be explicitly declared to be a parameter using a
+     * " (parameter)" suffix, or an attribute using an " (attribute)" suffix.
+     * No suffix is required if the name is unique across connections and
+     * attributes.
+     *
+     * If a parameter or attribute name conflicts with the standard
+     * "name", "protocol", "group", or "parentIdentifier" fields, the suffix is
+     * required.
+     * 
+     * This returned object will be very similar to the Connection type, with
+     * the exception that a human-readable "group" field may be present.
+     * 
+     * If a failure occurs while attempting to create the transformer function,
+     * the promise will be rejected with a ParseError describing the failure.
      * 
      * @returns {Promise.<Function.<String[], Object>>}
      *     A promise that will resolve to a function that translates a CSV data
-     *     row (array of strings) to a connection object.
+     *     row (array of strings) to a connection object. 
      */
     service.getCSVTransformer = function getCSVTransformer(headerRow) {
         
+        // A promise that will be resolved with the transformer or rejected if
+        // an error occurs
+        const deferred = $q.defer();
+        
+        getFieldLookups().then(({attributes, protocolParameters}) => {
+            
+            // All configuration required to generate a function that can
+            // transform a row of CSV into a connection object.
+            // NOTE: This is a single object instead of a collection of variables
+            // to ensure that no stale references are used - e.g. when one getter
+            // invokes another getter
+            const transformConfig = {
+                
+                // Callbacks for required fields
+                nameGetter: undefined,
+                protocolGetter: undefined,
+                
+                // Callbacks for a parent group ID or group path
+                groupGetter: _.noop,
+                parentIdentifierGetter: _.noop,
+
+                // Callbacks that will generate either connection attributes or 
+                // parameters. These callbacks will return a {type, name, value}
+                // object containing the type ("parameter" or "attribute"),
+                // the name of the attribute or parameter, and the corresponding
+                // value.
+                parameterOrAttributeGetters: []
+                
+            };
+            
+            // A set of all headers that have been seen so far. If any of these
+            // are duplicated, the CSV is invalid.
+            const headerSet = {};
+            
+            // Iterate through the headers one by one
+            headerRow.forEach((rawHeader, index) => {
+                
+                // Trim to normalize all headers
+                const header = rawHeader.trim();
+                
+                // Check if the header is duplicated
+                if (headerSet[header]) {
+                    deferred.reject(new ParseError({
+                        message: 'Duplicate CSV Header: ' + header,
+                        translatableMessage: new TranslatableMessage({
+                            key: 'CONNECTION_IMPORT.ERROR_DUPLICATE_CSV_HEADER',
+                            variables: { HEADER: header }
+                        })
+                    }));
+                    return;
+                }
+                
+                // Mark that this particular header has already been seen
+                headerSet[header] = true;
+                
+                // A callback that returns the field at the current index
+                const fetchFieldAtIndex = row => row[index];
+                
+                // Set up the name callback
+                if (header == 'name')
+                    transformConfig.nameGetter = fetchFieldAtIndex;
+                
+                // Set up the protocol callback
+                else if (header == 'protocol') 
+                    transformConfig.protocolGetter = fetchFieldAtIndex;
+                
+                // Set up the group callback
+                else if (header == 'group')
+                    transformConfig.groupGetter = fetchFieldAtIndex;
+                
+                // Set up the group parent ID callback
+                else if (header == 'parentIdentifier')
+                    transformConfig.parentIdentifierGetter = fetchFieldAtIndex;
+
+                // At this point, any other header might refer to a connection 
+                // parameter or to an attribute
+
+                // A field may be explicitly specified as a parameter
+                else if (header.endsWith(PARAMETER_SUFFIX)) {
+
+                    // Push as an explicit parameter getter
+                    const parameterName = header.replace(PARAMETER_SUFFIX);
+                    transformConfig.parameterOrAttributeGetters.push(
+                        row => ({
+                            type: 'parameter',
+                            name: parameterName,
+                            value: fetchFieldAtIndex(row)
+                        })
+                    );
+                }
+
+                // A field may be explicitly specified as a parameter
+                else if (header.endsWith(ATTRIBUTE_SUFFIX)) {
+
+                    // Push as an explicit attribute getter
+                    const attributeName = header.replace(ATTRIBUTE_SUFFIX);
+                    transformConfig.parameterOrAttributeGetters.push(
+                        row => ({
+                            type: 'attribute',
+                            name: parameterName,
+                            value: fetchFieldAtIndex(row)
+                        })
+                    );
+                }
+                
+                // The field is ambiguous, either an attribute or parameter,
+                // so the getter will have to determine this for every row
+                else 
+                    transformConfig.parameterOrAttributeGetters.push(row => {
+                        
+                        // The name is just the value of the current header
+                        const name = header;
+                        
+                        // The value is at the index that matches the position
+                        // of the header
+                        const value = fetchFieldAtIndex(row);
+                           
+                        // The protocol may determine whether a field is
+                        // a parameter or an attribute (or both)
+                        const protocol = transformConfig.protocolGetter(row);
+                        
+                        // Determine if the field refers to an attribute or a
+                        // parameter (or both, which is an error)
+                        const isAttribute = !!attributes[name];
+                        const isParameter = !!_.get(
+                                protocolParameters, [protocol, name]);
+                        
+                        // If there is both an attribute and a protocol-specific
+                        // parameter with the provided name, it's impossible to
+                        // figure out which this should be
+                        if (isAttribute && isParameter)
+                            throw new ParseError({
+                                message: 'Ambiguous CSV Header: ' + header,
+                                key: 'CONNECTION_IMPORT.ERROR_AMBIGUOUS_CSV_HEADER',
+                                variables: { HEADER: header }
+                            });
+                        
+                        // It's neither an attribute or a parameter
+                        else if (!isAttribute && !isParameter)
+                            throw new ParseError({
+                                message: 'Invalid CSV Header: ' + header,
+                                key: 'CONNECTION_IMPORT.ERROR_INVALID_CSV_HEADER',
+                                variables: { HEADER: header }
+                            });
+                        
+                        // Choose the appropriate type
+                        const type = isAttribute ? 'attributes' : 'parameters';
+                      
+                        return { type, name, value };
+                    });
+            });
+            
+            // Fail if the name wasn't provided
+            if (!transformConfig.nameGetter) 
+                return deferred.reject(new ParseError({
+                    message: 'The connection name must be provided',
+                    key: 'CONNECTION_IMPORT.ERROR_REQUIRED_NAME'
+                }));
+            
+            // Fail if the protocol wasn't provided
+            if (!transformConfig.protocolGetter)
+                return deferred.reject(new ParseError({
+                    message: 'The connection protocol must be provided',
+                    key: 'CONNECTION_IMPORT.ERROR_REQUIRED_PROTOCOL'
+                }));
+            
+            // The function to transform a CSV row into a connection object
+            deferred.resolve(function transformCSVRow(row) {
+                    
+                const {
+                    nameGetter, protocolGetter, 
+                    parentIdentifierGetter, groupGetter,
+                    parameterOrAttributeGetters
+                } = transformConfig;
+                
+                // Set name and protocol
+                const name = nameGetter(row);
+                const protocol = protocolGetter(row);
+                
+                // Set the parent group ID and/or group path
+                const group = groupGetter && groupGetter(row);
+                const parentIdentifier = (
+                        parentIdentifierGetter && parentIdentifierGetter(row));
+               
+                return { 
+                    
+                    // Simple fields that are not protocol-specific
+                    ...{
+                        name,
+                        protocol,
+                        parentIdentifier,
+                        group
+                    },
+                    
+                    // Fields that might potentially be either attributes or
+                    // parameters, depending on the protocol
+                    ...parameterOrAttributeGetters.reduce((values, getter) => {
+                        
+                        // Determine the type, name, and value
+                        const { type, name, value } = getter(row);
+                        
+                        // Set the value and continue on to the next attribute
+                        // or parameter
+                        values[type][name] = value;
+                        return values;
+                        
+                    }, {parameters: {}, attributes: {}})
+                   
+                }
+                
+            });
+            
+        });
+        
+        return deferred.promise;
     };
     
     return service;

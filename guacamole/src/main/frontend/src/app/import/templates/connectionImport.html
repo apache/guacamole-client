@@ -1,11 +1,23 @@
 <div class="settings-view import">
 
     <div class="header">
-        <h2>{{'SETTINGS_CONNECTION_IMPORT.HEADER' | translate}}</h2>
+        <h2>{{'CONNECTION_IMPORT.HEADER' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
 
     <input type="file" id="file" name="file"/>
     <button ng-click="upload()">Add</button>
+    
+    <!-- The translatable error message, if one is set -->
+    <p 
+        class="parseError" ng-show="error.key" 
+        translate="{{error.key}}" translate-values="{{error.variables}}"
+    ></p>
+    
+    <!-- The base message, if no translatable message is available -->
+    <p class="parseError" ng-show="!error.key && error.message">
+        {{error.message}}
+    </p>
+
 
 </div>

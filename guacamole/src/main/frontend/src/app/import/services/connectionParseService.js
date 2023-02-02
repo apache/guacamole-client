@@ -38,15 +38,17 @@ angular.module('import').factory('connectionParseService',
     const $q                     = $injector.get('$q');
     const $routeParams           = $injector.get('$routeParams');
     const schemaService          = $injector.get('schemaService');
+    const connectionCSVService   = $injector.get('connectionCSVService');
     const connectionGroupService = $injector.get('connectionGroupService');
 
     const service = {};
     
     /**
      * Perform basic checks, common to all file types - namely that the parsed
-     * data is an array, and contains at least one connection entry.
+     * data is an array, and contains at least one connection entry. Returns an 
+     * error if any of these basic checks fails.
      * 
-     * @throws {ParseError}
+     * returns {ParseError}
      *     An error describing the parsing failure, if one of the basic checks
      *     fails.
      */
@@ -54,78 +56,18 @@ angular.module('import').factory('connectionParseService',
         
         // Make sure that the file data parses to an array (connection list)
         if (!(parsedData instanceof Array))
-            throw new ParseError({
+            return new ParseError({
                 message: 'Import data must be a list of connections',
-                translatableMessage: new TranslatableMessage({
-                    key: 'SETTINGS_CONNECTION_IMPORT.ERROR_ARRAY_REQUIRED'
-                })
+                key: 'CONNECTION_IMPORT.ERROR_ARRAY_REQUIRED'
             });
 
         // Make sure that the connection list is not empty - contains at least
         // one connection
         if (!parsedData.length)
-            throw new ParseError({
-                message: 'The provided CSV file is empty',
-                translatableMessage: new TranslatableMessage({
-                    key: 'SETTINGS_CONNECTION_IMPORT.ERROR_EMPTY_FILE'
-                })
+            return new ParseError({
+                message: 'The provided file is empty',
+                key: 'CONNECTION_IMPORT.ERROR_EMPTY_FILE'
             });
-    }
-    
-    /**
-     * Returns a promise that resolves to an object detailing the connection
-     * attributes for the current data source, as well as the connection
-     * paremeters for every protocol, for the current data source.
-     * 
-     * The object that the promise will contain an "attributes" key that maps to
-     * a set of attribute names, and a "protocolParameters" key that maps to an
-     * object mapping protocol names to sets of parameter names for that protocol.
-     * 
-     * The intended use case for this object is to determine if there is a
-     * connection parameter or attribute with a given name, by e.g. checking the
-     * path `.protocolParameters[protocolName]` to see if a protocol exists,
-     * checking the path `.protocolParameters[protocolName][fieldName]` to see
-     * if a parameter exists for a given protocol, or checking the path
-     * `.attributes[fieldName]` to check if a connection attribute exists.
-     * 
-     * @returns {Promise.<Object>}
-     */
-    function getFieldLookups() {
-        
-        // The current data source - the one that the connections will be
-        // imported into
-        const dataSource = $routeParams.dataSource;
-        
-        // Fetch connection attributes and protocols for the current data source
-        return $q.all({
-            attributes : schemaService.getConnectionAttributes(dataSource),
-            protocols  : schemaService.getProtocols(dataSource)
-        })
-        .then(function connectionStructureRetrieved({attributes, protocols}) {
-            
-            return {
-                
-                // Translate the forms and fields into a flat map of attribute
-                // name to `true` boolean value
-                attributes: attributes.reduce(
-                    (attributeMap, form) => {
-                        form.fields.forEach(
-                            field => attributeMap[field.name] = true); 
-                        return attributeMap
-                    }, {}),
-                  
-                // Translate the protocol definitions into a map of protocol
-                // name to map of field name to `true` boolean value
-                protocolParameters: _.mapValues(
-                    protocols, protocol => protocol.connectionForms.reduce(
-                        (protocolFieldMap, form) => {
-                            form.fields.forEach(
-                                field => protocolFieldMap[field.name] = true); 
-                            return protocolFieldMap;
-                        }, {}))
-            };
-        });
-            
     }
     
     
@@ -181,68 +123,9 @@ angular.module('import').factory('connectionParseService',
         
         return deferredGroupLookups.promise;
     }
-    
-/*
-// Example Connection JSON
-{
-   "attributes": {
-       "failover-only": "true",
-       "guacd-encryption": "none",
-       "guacd-hostname": "potato",
-       "guacd-port": "1234",
-       "ksm-user-config-enabled": "true",
-       "max-connections": "1",
-       "max-connections-per-user": "1",
-       "weight": "1"
-   },
-   "name": "Bloatato",
-   "parameters": {
-       "audio-servername": "heyoooooooo",
-       "clipboard-encoding": "",
-       "color-depth": "",
-       "create-recording-path": "",
-       "cursor": "remote",
-       "dest-host": "pooootato",
-       "dest-port": "4444",
-       "disable-copy": "",
-       "disable-paste": "true",
-       "enable-audio": "true",
-       "enable-sftp": "true",
-       "force-lossless": "true",
-       "hostname": "potato",
-       "password": "taste",
-       "port": "4321",
-       "read-only": "",
-       "recording-exclude-mouse": "",
-       "recording-exclude-output": "",
-       "recording-include-keys": "",
-       "recording-name": "heyoooooo",
-       "recording-path": "/path/to/goo",
-       "sftp-disable-download": "",
-       "sftp-disable-upload": "",
-       "sftp-hostname": "what what good sir",
-       "sftp-port": "",
-       "sftp-private-key": "lol i'll never tell",
-       "sftp-server-alive-interval": "",
-       "swap-red-blue": "true",
-       "username": "test",
-       "wol-send-packet": "",
-       "wol-udp-port": "",
-       "wol-wait-time": ""
-   },
-                
-   // or a numeric identifier - we will probably want to offer a way to allow
-   // them to specify a path like "ROOT/parent/child" or just "/parent/child" or
-   // something like that
-   // TODO: Call the 
-   "parentIdentifier": "ROOT",
-   "protocol": "vnc"
-                
-}
-*/
 
     /**
-     * Convert a provided JSON representation of a connection list into a JSON
+     * Convert a provided CSV representation of a connection list into a JSON
      * string to be submitted to the PATCH REST endpoint. The returned JSON
      * string will contain a PATCH operation to create each connection in the
      * provided list.
@@ -259,36 +142,44 @@ angular.module('import').factory('connectionParseService',
      */
     service.parseCSV = function parseCSV(csvData) {
         
-        const deferredConnections = $q.defer();
+        // Convert to an array of arrays, one per CSV row (including the header)
+        // NOTE: skip_empty_lines is required, or a trailing newline will error
+        let parsedData;
+        try {
+            parsedData = parseCSVData(csvData, {skip_empty_lines: true});
+        } 
         
-        return $q.all({
-            fieldLookups : getFieldLookups(),
-            groupLookups : getGroupLookups()
-        })
-        .then(function lookupsReady({fieldLookups, groupLookups}) {
+        // If the CSV parser throws an error, reject with that error. No
+        // translation key will be available here.
+        catch(error) {
+            console.error(error);
+            const deferred = $q.defer();
+            deferred.reject(error);
+            return deferred.promise;
+        }
+
+        // Slice off the header row to get the data rows
+        const connectionData = parsedData.slice(1);
+
+        // Check that the provided CSV is not empty (the parser always
+        // returns an array)
+        const checkError = performBasicChecks(connectionData);
+        if (checkError) {
+            const deferred = $q.defer();
+            deferred.reject(checkError);
+            return deferred.promise;
+        }
         
-            const {attributes, protocolParameters} = fieldLookups;
-    
-            console.log({attributes, protocolParameters}, groupLookups);
-            
-            // Convert to an array of arrays, one per CSV row (including the header)
-            const parsedData = parseCSVData(csvData);
-
-            // Slice off the header row to get the data rows
-            const connectionData = parsedData.slice(1);
-
-            // Check that the provided CSV is not empty (the parser always
-            // returns an array)
-            performBasicChecks(connectionData);
-
-            // The header row - an array of string header values
-            const header = parsedData[0];
-            
-            // TODO: Connectionify this
-            deferredConnections.resolve(connectionData);
-        });
+        // The header row - an array of string header values
+        const header = parsedData[0];
         
-        return deferredConnections.promise;
+        return connectionCSVService.getCSVTransformer(header).then(
+                
+            // If the transformer was successfully generated, apply it to the
+            // data rows
+            // TODO: Also apply the group -> parentIdentifier transform
+            csvTransformer => connectionData.map(csvTransformer)
+        );
 
     };
 
@@ -303,7 +194,7 @@ angular.module('import').factory('connectionParseService',
      *
      * @return {Promise.<Connection[]>}
      *     A promise resolving to an array of Connection objects, one for each 
-     *     connection in the provided CSV.
+     *     connection in the provided YAML.
      */
     service.parseYAML = function parseYAML(yamlData) {
 
@@ -311,7 +202,9 @@ angular.module('import').factory('connectionParseService',
         const parsedData = parseYAMLData(yamlData);
         
         // Check that the data is the correct format, and not empty
-        performBasicChecks(parsedData);
+        const checkError = performBasicChecks(connectionData);
+        if (checkError)
+            return $q.defer().reject(checkError);
         
         // Convert to an array of Connection objects and return
         const deferredConnections = $q.defer();
@@ -332,7 +225,7 @@ angular.module('import').factory('connectionParseService',
      *
      * @return {Promise.<Connection[]>}
      *     A promise resolving to an array of Connection objects, one for each 
-     *     connection in the provided CSV.
+     *     connection in the provided JSON.
      */
     service.parseJSON = function parseJSON(jsonData) {
 
@@ -340,7 +233,9 @@ angular.module('import').factory('connectionParseService',
         const parsedData = JSON.parse(yamlData);
         
         // Check that the data is the correct format, and not empty
-        performBasicChecks(parsedData);
+        const checkError = performBasicChecks(connectionData);
+        if (checkError)
+            return $q.defer().reject(checkError);
         
         // Convert to an array of Connection objects and return
         const deferredConnections = $q.defer();

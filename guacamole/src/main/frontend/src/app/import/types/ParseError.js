@@ -44,13 +44,22 @@ angular.module('import').factory('ParseError', [function defineParseError() {
         this.message = template.message;
 
         /**
-         * A message which can be translated using the translation service,
-         * consisting of a translation key and optional set of substitution
-         * variables.
+         * The key associated with the translation string that used when
+         * displaying this message.
          *
-         * @type TranslatableMessage
+         * @type String
          */
-        this.translatableMessage = template.translatableMessage;
+        this.key = template.key;
+
+        /**
+         * The object which should be passed through to the translation service
+         * for the sake of variable substitution. Each property of the provided
+         * object will be substituted for the variable of the same name within
+         * the translation string.
+         *
+         * @type Object
+         */
+        this.variables = template.variables;
 
     };
 

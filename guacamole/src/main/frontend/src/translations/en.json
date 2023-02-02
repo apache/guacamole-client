@@ -184,6 +184,31 @@
 
     },
 
+    "CONNECTION_IMPORT": {
+
+        "HEADER": "Connection Import",
+
+        "ERROR_AMBIGUOUS_CSV_HEADER": 
+            "Ambiguous CSV Header \"{HEADER}\" could be either a connection attribute or parameter",
+        "ERROR_ARRAY_REQUIRED": 
+            "The provided file must contain a list of connections",
+        "ERROR_DUPLICATE_CSV_HEADER": 
+            "Duplicate CSV Header: {HEADER}",
+        "ERROR_EMPTY_FILE": "The provided file is empty",
+        "ERROR_INVALID_CSV_HEADER": 
+            "Invalid CSV Header \"{HEADER}\" is neither an attribute or parameter",
+        "ERROR_INVALID_FILE_TYPE": 
+            "Invalid import file type \"{TYPE}\"",
+        "ERROR_NO_FILE_SUPPLIED": "Please select a file to import",
+        "ERROR_REQUIRED_GROUP": 
+            "Either group or parentIdentifier must be specified, but not both",
+        "ERROR_REQUIRED_PROTOCOL": 
+            "No connection protocol found in the provided file",
+        "ERROR_REQUIRED_NAME": 
+            "No connection name found in the provided file"
+        
+    },
+
     "DATA_SOURCE_DEFAULT" : {
         "NAME" : "Default (XML)"
     },
@@ -921,13 +946,6 @@
 
         "SECTION_HEADER_CONNECTIONS"     : "Connections"
 
-    },
-
-    "SETTINGS_CONNECTION_IMPORT": {
-
-        "HEADER": "Connection Import",
-
-        "ERROR_ARRAY_REQUIRED": "The provided file must contain a list of connections"
     },
 
     "SETTINGS_PREFERENCES" : {

@@ -25,42 +25,81 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
     // Required services
     const connectionParseService = $injector.get('connectionParseService');
-    const connectionService = $injector.get('connectionService');
+    const connectionService      = $injector.get('connectionService');
+    
+    // Required types
+    const ParseError          = $injector.get('ParseError');
+    const TranslatableMessage = $injector.get('TranslatableMessage');
+    
+    function handleSuccess(data) {
+        console.log("OMG SUCCESS: ", data)
+    }
+    
+    // Set any caught error message to the scope for display
+    const handleError = error => {
+        console.error(error);
+        $scope.error = error;
+    }
+    
+    // Clear the current error
+    const clearError = () => delete $scope.error;
 
     function processData(type, data) {
-
-        let requestBody;
+        
+        // The function that will process all the raw data and return a list of
+        // patches to be submitted to the API
+        let processDataCallback;
 
         // Parse the data based on the provided mimetype
         switch(type) {
 
             case "application/json":
             case "text/json":
-                requestBody = connectionParseService.parseJSON(data);
+                processDataCallback = connectionParseService.parseJSON;
                 break;
 
             case "text/csv":
-                requestBody = connectionParseService.parseCSV(data);
+                processDataCallback = connectionParseService.parseCSV;
                 break;
 
             case "application/yaml":
             case "application/x-yaml":
             case "text/yaml":
             case "text/x-yaml":
-                requestBody = connectionParseService.parseYAML(data);
+                processDataCallback = connectionParseService.parseYAML;
                 break;
-
+                
+            default:
+                handleError(new ParseError({
+                    message: 'Invalid file type: ' + type,
+                    key: 'CONNECTION_IMPORT.INVALID_FILE_TYPE',
+                    variables: { TYPE: type } 
+                }));
+                return;
         }
+        
+        // Make the call to process the data into a series of patches
+        processDataCallback(data)
 
-        console.log(requestBody);
+            // Send the data off to be imported if parsing is successful
+            .then(handleSuccess)
+
+            // Display any error found while parsing the file
+            .catch(handleError);
     }
 
     $scope.upload = function() {
+        
+        // Clear any error message from the previous upload attempt
+        clearError();
 
         const files = angular.element('#file')[0].files;
 
         if (files.length <= 0) {
-            console.error("TODO: This should be a proper error tho");
+            handleError(new ParseError({
+                message: 'No file supplied',
+                key: 'CONNECTION_IMPORT.ERROR_NO_FILE_SUPPLIED'
+            }));
             return;
         }
 
