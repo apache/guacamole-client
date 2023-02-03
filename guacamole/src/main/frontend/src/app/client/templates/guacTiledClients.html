@@ -5,12 +5,14 @@
             <div class="client-tile" ng-if="client"
                 ng-class="{
                     'focused' : client.clientProperties.focused,
-                    'shared'  : isShared(client)
+                    'shared'  : isShared(client),
+                    'joined'  : client.userCount
                 }"
                 guac-click="getFocusAssignmentCallback(client)">
                 <h3 class="client-tile-header" ng-if="hasMultipleClients(clientGroup)">
                     <img class="client-tile-shared-indicator" src="images/share-white.svg">
                     <span class="client-tile-name">{{ client.title }}</span>
+                    <guac-client-user-count client="client"></guac-client-user-count>
                     <img ng-click="onClose({ '$client' : client })"
                          class="client-tile-disconnect"
                          ng-attr-alt="{{ 'CLIENT.ACTION_DISCONNECT' | translate }}"
@@ -21,6 +23,9 @@
 
                 <!-- Client-specific status/error dialog -->
                 <guac-client-notification client="client"></guac-client-notification>
+
+                <guac-client-user-count client="client" ng-if="!hasMultipleClients(clientGroup)"></guac-client-user-count>
+
             </div>
 
         </div>
