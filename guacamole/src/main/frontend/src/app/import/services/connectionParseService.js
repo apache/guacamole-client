@@ -31,6 +31,7 @@ angular.module('import').factory('connectionParseService',
 
     // Required types
     const Connection          = $injector.get('Connection');
+    const DirectoryPatch      = $injector.get('DirectoryPatch');
     const ParseError          = $injector.get('ParseError');
     const TranslatableMessage = $injector.get('TranslatableMessage');
     
@@ -125,6 +126,62 @@ angular.module('import').factory('connectionParseService',
     }
 
     /**
+     * Returns a promise that will resolve to a transformer function that will
+     * take an object that may a "group" field, replacing it if present with a
+     * "parentIdentifier". If both a "group" and "parentIdentifier" field are
+     * present on the provided object, or if no group exists at the specified
+     * path, the function will throw a ParseError describing the failure.
+     *
+     * @returns {Promise.<Function<Object, Object>>}
+     *     A promise that will resolve to a function that will transform a
+     *     "group" field into a "parentIdentifier" field if possible.
+     */
+    function getGroupTransformer() {
+        return getGroupLookups().then(lookups => connection => {
+
+            // If there's no group to translate, do nothing
+            if (!connection.group)
+                return;
+
+            // If both are specified, the parent group is ambigious
+            if (connection.parentIdentifier)
+                throw new ParseError({
+                    message: 'Only one of group or parentIdentifier can be set',
+                    key: 'CONNECTION_IMPORT.ERROR_AMBIGUOUS_PARENT_GROUP'
+                });
+
+            // Look up the parent identifier for the specified group path
+            const identifier = lookups[connection.group];
+
+            // If the group doesn't match anything in the tree
+            if (!identifier)
+                throw new ParseError({
+                    message: 'No group found named: ' + connection.group,
+                    key: 'CONNECTION_IMPORT.ERROR_INVALID_GROUP',
+                    variables: { GROUP: connection.group }
+                });
+
+            // Set the parent identifier now that it's known
+            return {
+                ...connection,
+                parentIdentifier: identifier
+            };
+
+        });
+    }
+
+    // Translate a given javascript object to a full-fledged Connection
+    const connectionTransformer = connection => new Connection(connection);
+
+    // Translate a Connection object to a patch requesting the creation of said
+    // Connection
+    const patchTransformer = connection => new DirectoryPatch({
+       op: 'add',
+       path: '/',
+       value: connection
+    });
+
+    /**
      * Convert a provided CSV representation of a connection list into a JSON
      * string to be submitted to the PATCH REST endpoint. The returned JSON
      * string will contain a PATCH operation to create each connection in the
@@ -172,14 +229,29 @@ angular.module('import').factory('connectionParseService',
         
         // The header row - an array of string header values
         const header = parsedData[0];
-        
-        return connectionCSVService.getCSVTransformer(header).then(
-                
-            // If the transformer was successfully generated, apply it to the
-            // data rows
-            // TODO: Also apply the group -> parentIdentifier transform
-            csvTransformer => connectionData.map(csvTransformer)
-        );
+
+        return $q.all({
+            csvTransformer   : connectionCSVService.getCSVTransformer(header),
+            groupTransformer : getGroupTransformer()
+        })
+
+        // Transform the rows from the CSV file to an array of API patches
+        .then(({csvTransformer, groupTransformer}) => connectionData.map(
+                dataRow => {
+
+            // Translate the raw CSV data to a javascript object
+            let connectionObject = csvTransformer(dataRow);
+
+            // Translate the group on the object to a parentIdentifier
+            connectionObject = groupTransformer(connectionObject);
+
+            // Translate to a full-fledged Connection
+            const connection = connectionTransformer(connectionObject);
+
+            // Finally, translate to a patch for creating the connection
+            return patchTransformer(connection);
+
+        }));
 
     };
 
@@ -203,14 +275,26 @@ angular.module('import').factory('connectionParseService',
         
         // Check that the data is the correct format, and not empty
         const checkError = performBasicChecks(connectionData);
-        if (checkError)
-            return $q.defer().reject(checkError);
-        
-        // Convert to an array of Connection objects and return
-        const deferredConnections = $q.defer();
-        deferredConnections.resolve(
-                parsedData.map(connection => new Connection(connection)));
-        return deferredConnections.promise;
+        if (checkError) {
+            const deferred = $q.defer();
+            deferred.reject(checkError);
+            return deferred.promise;
+        }
+
+        // Transform the data from the YAML file to an array of API patches
+        return getGroupTransformer().then(
+                groupTransformer => parsedData.map(connectionObject => {
+
+            // Translate the group on the object to a parentIdentifier
+            connectionObject = groupTransformer(connectionObject);
+
+            // Translate to a full-fledged Connection
+            const connection = connectionTransformer(connectionObject);
+
+            // Finally, translate to a patch for creating the connection
+            return patchTransformer(connection);
+
+        }));
 
     };
 
@@ -231,17 +315,29 @@ angular.module('import').factory('connectionParseService',
 
         // Parse from JSON into a javascript array
         const parsedData = JSON.parse(yamlData);
-        
+
         // Check that the data is the correct format, and not empty
         const checkError = performBasicChecks(connectionData);
-        if (checkError)
-            return $q.defer().reject(checkError);
-        
-        // Convert to an array of Connection objects and return
-        const deferredConnections = $q.defer();
-        deferredConnections.resolve(
-                parsedData.map(connection => new Connection(connection)));
-        return deferredConnections.promise;
+        if (checkError) {
+            const deferred = $q.defer();
+            deferred.reject(checkError);
+            return deferred.promise;
+        }
+
+        // Transform the data from the YAML file to an array of API patches
+        return getGroupTransformer().then(
+                groupTransformer => parsedData.map(connectionObject => {
+
+            // Translate the group on the object to a parentIdentifier
+            connectionObject = groupTransformer(connectionObject);
+
+            // Translate to a full-fledged Connection
+            const connection = connectionTransformer(connectionObject);
+
+            // Finally, translate to a patch for creating the connection
+            return patchTransformer(connection);
+
+        }));
         
     };
 
