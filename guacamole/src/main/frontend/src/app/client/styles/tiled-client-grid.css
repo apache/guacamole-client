@@ -244,6 +244,11 @@
     display: inline-block;
 }
 
+.tiled-client-grid .client-user-count .client-user-count-user.anonymous {
+    font-style: italic;
+    opacity: 0.5;
+}
+
 .tiled-client-grid .client-user-count .client-user-count-users {
     width: 256px;
     max-width: 75vw;

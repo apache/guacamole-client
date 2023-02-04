@@ -45,6 +45,9 @@ angular.module('client').directive('guacClientUserCount', [function guacClientUs
     directive.controller = ['$scope', '$injector', '$element',
         function guacClientUserCountController($scope, $injector, $element) {
 
+        // Required types
+        var AuthenticationResult = $injector.get('AuthenticationResult');
+
         // Required services
         var $translate = $injector.get('$translate');
 
@@ -117,7 +120,10 @@ angular.module('client').directive('guacClientUserCount', [function guacClientUs
          *     The username of the user that joined.
          */
         var notifyUserJoined = function notifyUserJoined(username) {
-            notify('CLIENT.TEXT_USER_JOINED', username);
+            if ($scope.isAnonymous(username))
+                notify('CLIENT.TEXT_ANONYMOUS_USER_JOINED', username);
+            else
+                notify('CLIENT.TEXT_USER_JOINED', username);
         };
 
         /**
@@ -128,7 +134,10 @@ angular.module('client').directive('guacClientUserCount', [function guacClientUs
          *     The username of the user that left.
          */
         var notifyUserLeft = function notifyUserLeft(username) {
-            notify('CLIENT.TEXT_USER_LEFT', username);
+            if ($scope.isAnonymous(username))
+                notify('CLIENT.TEXT_ANONYMOUS_USER_LEFT', username);
+            else
+                notify('CLIENT.TEXT_USER_LEFT', username);
         };
 
         /**
@@ -142,6 +151,38 @@ angular.module('client').directive('guacClientUserCount', [function guacClientUs
          * @type ManagedClient
          */
         var oldClient = null;
+
+        /**
+         * Returns whether the given username represents an anonymous user.
+         *
+         * @param {!string} username
+         *     The username of the user to check.
+         *
+         * @returns {!boolean}
+         *     true if the given username represents an anonymous user, false
+         *     otherwise.
+         */
+        $scope.isAnonymous = function isAnonymous(username) {
+            return username === AuthenticationResult.ANONYMOUS_USERNAME;
+        };
+
+        /**
+         * Returns the translation key of the translation string that should be
+         * used to render the number of connections a user with the given
+         * username has to the current connection. The appropriate string will
+         * vary by whether the user is anonymous.
+         *
+         * @param {!string} username
+         *     The username of the user to check.
+         *
+         * @returns {!string}
+         *     The translation key of the translation string that should be
+         *     used to render the number of connections the user with the given
+         *     username has to the current connection.
+         */
+        $scope.getUserCountTranslationKey = function getUserCountTranslationKey(username) {
+            return $scope.isAnonymous(username) ? 'CLIENT.INFO_ANONYMOUS_USER_COUNT' : 'CLIENT.INFO_USER_COUNT';
+        };
 
         // Update visible notifications as users join/leave
         $scope.$watchGroup([ 'client', 'client.userCount' ], function usersChanged() {
