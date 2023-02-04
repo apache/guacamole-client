@@ -11,6 +11,7 @@
 
     "translations" : [
         "translations/en.json"
+        "translations/pl.json"
     ]
 
 }
