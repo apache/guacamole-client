@@ -126,9 +126,10 @@
         "HELP_MOUSE_MODE_RELATIVE" : "Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.",
         "HELP_SHARE_LINK"          : "The current connection is being shared, and can be accessed by anyone with the following {LINKS, plural, one{link} other{links}}:",
 
-        "INFO_CONNECTION_SHARED" : "This connection is now shared.",
-        "INFO_NO_FILE_TRANSFERS" : "No file transfers.",
-        "INFO_USER_COUNT"        : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
+        "INFO_ANONYMOUS_USER_COUNT" : "Anonymous{COUNT, plural, one{} other{ (#)}}",
+        "INFO_CONNECTION_SHARED"    : "This connection is now shared.",
+        "INFO_NO_FILE_TRANSFERS"    : "No file transfers.",
+        "INFO_USER_COUNT"           : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
 
         "NAME_INPUT_METHOD_NONE"   : "None",
         "NAME_INPUT_METHOD_OSK"    : "On-screen keyboard",
@@ -149,6 +150,8 @@
         
         "SECTION_HEADER_MOUSE_MODE"     : "Mouse emulation mode",
 
+        "TEXT_ANONYMOUS_USER_JOINED"      : "An anonymous user has joined the connection.",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "An anonymous user has left the connection.",
         "TEXT_ZOOM_AUTO_FIT"              : "Automatically fit to browser window",
         "TEXT_CLIENT_STATUS_IDLE"         : "Idle.",
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Connecting to Guacamole...",
