@@ -110,10 +110,15 @@
 }
 
 .tiled-client-grid .client-tile .client-tile-header .client-tile-name {
+
     -webkit-box-flex: 1;
     -webkit-flex: 1;
     -ms-flex: 1;
     flex: 1;
+
+    padding: 0 0.5em;
+    margin-bottom: -0.125em;
+
 }
 
 .tiled-client-grid .client-tile .main {
@@ -135,4 +140,138 @@
 
 .tiled-client-grid .shared .client-tile-shared-indicator {
     display: inline;
+}
+
+.tiled-client-grid .client-user-count {
+
+    visibility: hidden;
+
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 1;
+
+    border-radius: 0.25em;
+    padding: 0.125em 0.75em;
+    margin: 0.5em;
+
+    background: #055;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8em;
+
+}
+
+.tiled-client-grid .client-user-count::before {
+
+    content: ' ';
+    display: inline-block;
+
+    margin-bottom: -0.2em;
+    padding-right: 0.25em;
+    width: 1em;
+    height: 1em;
+
+    background: center / contain no-repeat url('images/user-icons/guac-user-white.svg');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
+
+.tiled-client-grid .client-user-count .client-user-count-users,
+.tiled-client-grid .client-user-count .client-user-count-messages {
+
+    position: absolute;
+    right: 0;
+
+    margin: 0;
+    padding: 0;
+    margin-top: 0.5em;
+    list-style: none;
+
+}
+
+.tiled-client-grid .client-user-count .client-user-count-users,
+.tiled-client-grid .client-user-count .client-user-count-message {
+    border-radius: 0.25em;
+    background: black;
+    color: white;
+    padding: 0.5em;
+}
+
+.tiled-client-grid .client-user-count .client-user-count-message {
+    white-space: nowrap;
+    animation: 1s linear 3s fadeout;
+}
+
+.tiled-client-grid .client-tile-header .client-user-count {
+    display: inline-block;
+    position: relative;
+    white-space: nowrap;
+    background: black;
+    padding-left: 0.5em;
+    padding-right: 0.75em;
+}
+
+.tiled-client-grid .client-tile-header .client-user-count::before {
+    padding-right: 0.75em;
+}
+
+.tiled-client-grid .joined .client-user-count {
+    visibility: visible;
+}
+
+.tiled-client-grid .client-user-count .client-user-count-users {
+    display: none;
+}
+
+.tiled-client-grid .client-user-count:hover .client-user-count-users {
+    display: block;
+}
+
+.tiled-client-grid .client-user-count .client-user-count-user::after {
+    content: ', ';
+    margin-right: 0.25em;
+}
+
+.tiled-client-grid .client-user-count .client-user-count-user:last-child::after {
+    content: none;
+}
+
+.tiled-client-grid .client-user-count .client-user-count-user {
+    display: inline-block;
+}
+
+.tiled-client-grid .client-user-count .client-user-count-user.anonymous {
+    font-style: italic;
+    opacity: 0.5;
+}
+
+.tiled-client-grid .client-user-count .client-user-count-users {
+    width: 256px;
+    max-width: 75vw;
+    white-space: normal;
+    border: 1px solid #333;
+}
+
+.tiled-client-grid .client-user-count .client-user-count-users::before {
+
+    content: ' ';
+    display: block;
+
+    position: absolute;
+    right: 0.5em;
+    top: -0.5em;
+
+    width: 1em;
+    height: 1em;
+
+    background: black;
+    border: 1px solid #333;
+    border-right: none;
+    border-bottom: none;
+    transform: rotate(45deg);
+
 }
