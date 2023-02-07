@@ -387,4 +387,9 @@ public class ConnectionModel extends ChildObjectModel {
 
     }
 
+    @Override
+    public void setIdentifier(String identifier) {
+        throw new UnsupportedOperationException("Connection identifiers are derived from IDs. They cannot be set.");
+    }
+
 }

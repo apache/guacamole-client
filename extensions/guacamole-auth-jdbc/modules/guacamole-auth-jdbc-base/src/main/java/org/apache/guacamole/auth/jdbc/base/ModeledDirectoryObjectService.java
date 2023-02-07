@@ -512,20 +512,6 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
     }
 
     @Override
-    @Transactional
-    public void updateExternalObject(ModeledAuthenticatedUser user, ExternalType object)
-        throws GuacamoleException {
-
-        // Convert to the internal type
-        InternalType internalObject = getObjectInstance(
-                user, getModelInstance(user, object));
-
-        // Delegate to the standard internal update functionality
-        updateObject(user, internalObject);
-
-    }
-
-    @Override
     public Set<String> getIdentifiers(ModeledAuthenticatedUser user)
         throws GuacamoleException {
 

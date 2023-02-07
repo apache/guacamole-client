@@ -202,10 +202,6 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         UserModel model = new UserModel();
         ModeledUser user = getObjectInstance(currentUser, model);
 
-        // If the provided connection has an identifier, set it on the model
-        if (object.getIdentifier() != null)
-            model.setObjectID(object.getIdentifier());
-
         // Set model contents through ModeledUser, copying the provided user
         user.setIdentifier(object.getIdentifier());
         user.setPassword(object.getPassword());

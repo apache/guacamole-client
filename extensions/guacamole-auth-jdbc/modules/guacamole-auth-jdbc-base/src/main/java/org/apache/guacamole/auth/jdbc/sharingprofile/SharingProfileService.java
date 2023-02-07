@@ -90,20 +90,15 @@ public class SharingProfileService
 
     @Override
     protected SharingProfileModel getModelInstance(ModeledAuthenticatedUser currentUser,
-            final SharingProfile object) throws GuacamoleException {
+            final SharingProfile object) {
 
         // Create new ModeledSharingProfile backed by blank model
         SharingProfileModel model = new SharingProfileModel();
         ModeledSharingProfile sharingProfile = getObjectInstance(currentUser, model);
 
-        // If the provided connection has an identifier, set it on the model
-        if (object.getIdentifier() != null)
-            model.setObjectID(object.getIdentifier());
-
         // Set model contents through ModeledSharingProfile, copying the
         // provided sharing profile
         sharingProfile.setPrimaryConnectionIdentifier(object.getPrimaryConnectionIdentifier());
-        sharingProfile.setIdentifier(object.getIdentifier());
         sharingProfile.setName(object.getName());
         sharingProfile.setParameters(object.getParameters());
         sharingProfile.setAttributes(object.getAttributes());
