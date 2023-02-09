@@ -33,6 +33,7 @@ angular.module('import').factory('connectionParseService',
     const Connection          = $injector.get('Connection');
     const DirectoryPatch      = $injector.get('DirectoryPatch');
     const ParseError          = $injector.get('ParseError');
+    const ParseResult         = $injector.get('ParseResult');
     const TranslatableMessage = $injector.get('TranslatableMessage');
     
     // Required services
@@ -41,8 +42,81 @@ angular.module('import').factory('connectionParseService',
     const schemaService          = $injector.get('schemaService');
     const connectionCSVService   = $injector.get('connectionCSVService');
     const connectionGroupService = $injector.get('connectionGroupService');
+    const userService            = $injector.get('userService');
+    const userGroupService       = $injector.get('userGroupService');
 
     const service = {};
+
+    /**
+     * Resolves to an object whose keys are all valid identifiers in the current
+     * data source. The provided `requestFunction` should resolve to such an
+     * object when provided with the current data source.
+     *
+     * @param {Function.<String<Object.<String, *>>} requestFunction
+     *     A function that, given a data source, will return a promise resolving
+     *     to an object with keys that are unique identifiers for entities in
+     *     that data source.
+     *
+     * @returns {Promise.<Function[String[], String[]>>}
+     *     A promise that will resolve to an function that, given an array of
+     *     identifiers, will return all identifiers that do not exist as keys in
+     *     the object returned by `requestFunction`, i.e. all identifiers that
+     *     do not exist in the current data source.
+     */
+    function getIdentifierMap(requestFunction) {
+
+        // The current data source to which all the identifiers will belong
+        const dataSource = $routeParams.dataSource;
+
+        // Make the request and return the response, which should be an object
+        // whose keys are all valid identifiers for the current data source
+        return requestFunction(dataSource);
+    }
+
+    /**
+     * Return a promise that resolves to a function that takes an array of
+     * identifiers, returning a ParseError describing the invalid identifiers
+     * from the list. The provided `requestFunction` should resolve to such an
+     * object whose keys are all valid identifiers when provided with the
+     * current data source.
+     *
+     * @param {Function.<String<Object.<String, *>>} requestFunction
+     *     A function that, given a data source, will return a promise resolving
+     *     to an object with keys that are unique identifiers for entities in
+     *     that data source.
+     *
+     * @returns {Promise.<Function.<String[], ParseError?>>}
+     *     A promise that will resolve to a function to check the validity of
+     *     each identifier in a provided array, returning a ParseError 
+     *     describing the problem if any are not valid.
+     */
+    function getInvalidIdentifierErrorChecker(requestFunction) {
+
+        // Fetch all the valid user identifiers in the system, and
+        return getIdentifierMap(requestFunction).then(validIdentifiers =>
+
+            // The resolved function that takes a list of user group identifiers
+            allIdentifiers => {
+
+                // Filter to only include invalid identifiers
+                const invalidIdentifiers = _.filter(allIdentifiers,
+                    identifier => !validIdentifiers[identifier]);
+
+                if (invalidIdentifiers.length) {
+
+                    // Quote and comma-seperate for display
+                    const identifierList = invalidIdentifiers.map(
+                        identifier => '"' + identifier + '"').join(', ');
+
+                    return new ParseError({
+                        message: 'Invalid User Group Identifiers: ' + identifierList,
+                        key: 'CONNECTION_IMPORT.ERROR_INVALID_USER_GROUP_IDENTIFIERS',
+                        variables: { IDENTIFIER_LIST: identifierList }
+                    });
+                }
+
+            });
+    }
     
     /**
      * Perform basic checks, common to all file types - namely that the parsed
@@ -127,9 +201,9 @@ angular.module('import').factory('connectionParseService',
 
     /**
      * Returns a promise that will resolve to a transformer function that will
-     * take an object that may a "group" field, replacing it if present with a
-     * "parentIdentifier". If both a "group" and "parentIdentifier" field are
-     * present on the provided object, or if no group exists at the specified
+     * take an object that may contain a "group" field, replacing it if present 
+     * with a "parentIdentifier". If both a "group" and "parentIdentifier" field
+     * are present on the provided object, or if no group exists at the specified
      * path, the function will throw a ParseError describing the failure.
      *
      * @returns {Promise.<Function<Object, Object>>}
@@ -170,32 +244,109 @@ angular.module('import').factory('connectionParseService',
         });
     }
 
-    // Translate a given javascript object to a full-fledged Connection
-    const connectionTransformer = connection => new Connection(connection);
+    /**
+     * Convert a provided ProtoConnection array into a ParseResult. Any provided
+     * transform functions will be run on each entry in `connectionData` before
+     * any other processing is done.
+     *
+     * @param {*[]} connectionData
+     *     An arbitrary array of data. This must evaluate to a ProtoConnection
+     *     object after being run through all functions in `transformFunctions`.
+     *
+     * @param {Function[]} transformFunctions
+     *     An array of transformation functions to run on each entry in
+     *     `connection` data.
+     *
+     * @return {Promise.<Object>}
+     *     A promise resolving to ParseResult object representing the result of
+     *     parsing all provided connection data.
+     */
+    function parseConnectionData(connectionData, transformFunctions) {
+        
+        // Check that the provided connection data array is not empty
+        const checkError = performBasicChecks(connectionData);
+        if (checkError) {
+            const deferred = $q.defer();
+            deferred.reject(checkError);
+            return deferred.promise;
+        }
 
-    // Translate a Connection object to a patch requesting the creation of said
-    // Connection
-    const patchTransformer = connection => new DirectoryPatch({
-       op: 'add',
-       path: '/',
-       value: connection
-    });
+        return $q.all({
+            groupTransformer           : getGroupTransformer(),
+            invalidUserIdErrorDetector : getInvalidIdentifierErrorChecker(
+                    userService.getUsers),
+            invalidGroupIDErrorDetector : getInvalidIdentifierErrorChecker(
+                    userGroupService.getUserGroups),
+        })
+
+        // Transform the rows from the CSV file to an array of API patches
+        // and lists of user and group identifiers
+        .then(({groupTransformer,
+                invalidUserIdErrorDetector, invalidGroupIDErrorDetector}) =>
+                    connectionData.reduce((parseResult, data) => {
+
+            const { patches, identifiers, users, groups } = parseResult;
+
+            // Run the array data through each provided transform
+            let connectionObject = data;
+            _.forEach(transformFunctions, transform => {
+                connectionObject = transform(connectionObject);
+            });
+
+            // All errors found while parsing this connection
+            const connectionErrors = [];
+            parseResult.errors.push(connectionErrors);
+
+            // Translate the group on the object to a parentIdentifier
+            try {
+                connectionObject = groupTransformer(connectionObject);
+            }
+
+            // If there was a problem with the group or parentIdentifier
+            catch (error) {
+                connectionErrors.push(error);
+            }
+
+            // Push any errors for invalid user or user group identifiers
+            const pushError = error => error && connectionErrors.push(error);
+            pushError(invalidUserIdErrorDetector(connectionObject.users));
+            pushError(invalidGroupIDErrorDetector(connectionObject.userGroups));
+
+            // Add the user and group identifiers for this connection
+            users.push(connectionObject.users);
+            groups.push(connectionObject.groups);
+
+            // Translate to a full-fledged Connection
+            const connection = new Connection(connectionObject);
+
+            // Finally, add a patch for creating the connection
+            patches.push(new DirectoryPatch({
+                op: 'add',
+                path: '/',
+                value: connection
+            }));
+
+            // If there are any errors for this connection fail the whole batch 
+            if (connectionErrors.length)
+                parseResult.hasErrors = true;
+
+            return parseResult;
+
+        }, new ParseResult()));
+    }
 
     /**
      * Convert a provided CSV representation of a connection list into a JSON
-     * string to be submitted to the PATCH REST endpoint. The returned JSON
-     * string will contain a PATCH operation to create each connection in the
-     * provided list.
-     *
-     * TODO: Describe disambiguation suffixes, e.g. hostname (parameter), and
-     * that we will accept without the suffix if it's unambigous. (or not? how about not?)
+     * object to be submitted to the PATCH REST endpoint, as well as a list of
+     * objects containing lists of user and user group identifiers to be granted
+     * to each connection.
      *
      * @param {String} csvData
-     *     The JSON-encoded connection list to convert to a PATCH request body.
+     *     The CSV-encoded connection list to process.
      *
-     * @return {Promise.<Connection[]>}
-     *     A promise resolving to an array of Connection objects, one for each 
-     *     connection in the provided CSV.
+     * @return {Promise.<Object>}
+     *     A promise resolving to ParseResult object representing the result of
+     *     parsing all provided connection data.
      */
     service.parseCSV = function parseCSV(csvData) {
         
@@ -211,134 +362,69 @@ angular.module('import').factory('connectionParseService',
         catch(error) {
             console.error(error);
             const deferred = $q.defer();
-            deferred.reject(error);
+            deferred.reject(new ParseError({ message: error.message }));
             return deferred.promise;
         }
+
+        // The header row - an array of string header values
+        const header = parsedData.length ? parsedData[0] : [];
 
         // Slice off the header row to get the data rows
         const connectionData = parsedData.slice(1);
 
-        // Check that the provided CSV is not empty (the parser always
-        // returns an array)
-        const checkError = performBasicChecks(connectionData);
-        if (checkError) {
-            const deferred = $q.defer();
-            deferred.reject(checkError);
-            return deferred.promise;
-        }
-        
-        // The header row - an array of string header values
-        const header = parsedData[0];
+        // Generate the CSV transform function, and apply it to every row
+        // before applying all the rest of the standard transforms
+        return connectionCSVService.getCSVTransformer(header).then(
+            csvTransformer =>
 
-        return $q.all({
-            csvTransformer   : connectionCSVService.getCSVTransformer(header),
-            groupTransformer : getGroupTransformer()
-        })
-
-        // Transform the rows from the CSV file to an array of API patches
-        .then(({csvTransformer, groupTransformer}) => connectionData.map(
-                dataRow => {
-
-            // Translate the raw CSV data to a javascript object
-            let connectionObject = csvTransformer(dataRow);
-
-            // Translate the group on the object to a parentIdentifier
-            connectionObject = groupTransformer(connectionObject);
-
-            // Translate to a full-fledged Connection
-            const connection = connectionTransformer(connectionObject);
-
-            // Finally, translate to a patch for creating the connection
-            return patchTransformer(connection);
-
-        }));
+                // Apply the CSV transform to every row
+                parseConnectionData(connectionData, [csvTransformer]));
 
     };
 
     /**
      * Convert a provided YAML representation of a connection list into a JSON
-     * string to be submitted to the PATCH REST endpoint. The returned JSON
-     * string will contain a PATCH operation to create each connection in the
-     * provided list.
+     * object to be submitted to the PATCH REST endpoint, as well as a list of
+     * objects containing lists of user and user group identifiers to be granted
+     * to each connection.
      *
      * @param {String} yamlData
-     *     The YAML-encoded connection list to convert to a PATCH request body.
+     *     The YAML-encoded connection list to process.
      *
-     * @return {Promise.<Connection[]>}
-     *     A promise resolving to an array of Connection objects, one for each 
-     *     connection in the provided YAML.
+     * @return {Promise.<Object>}
+     *     A promise resolving to ParseResult object representing the result of
+     *     parsing all provided connection data.
      */
     service.parseYAML = function parseYAML(yamlData) {
 
         // Parse from YAML into a javascript array
-        const parsedData = parseYAMLData(yamlData);
+        const connectionData = parseYAMLData(yamlData);
         
-        // Check that the data is the correct format, and not empty
-        const checkError = performBasicChecks(connectionData);
-        if (checkError) {
-            const deferred = $q.defer();
-            deferred.reject(checkError);
-            return deferred.promise;
-        }
-
-        // Transform the data from the YAML file to an array of API patches
-        return getGroupTransformer().then(
-                groupTransformer => parsedData.map(connectionObject => {
-
-            // Translate the group on the object to a parentIdentifier
-            connectionObject = groupTransformer(connectionObject);
-
-            // Translate to a full-fledged Connection
-            const connection = connectionTransformer(connectionObject);
-
-            // Finally, translate to a patch for creating the connection
-            return patchTransformer(connection);
-
-        }));
-
+        // Produce a ParseResult
+        return parseConnectionData(connectionData);
     };
 
     /**
-     * Convert a provided JSON representation of a connection list into a JSON
-     * string to be submitted to the PATCH REST endpoint. The returned JSON
-     * string will contain a PATCH operation to create each connection in the
-     * provided list.
+     * Convert a provided JSON-encoded representation of a connection list into
+     * an array of patches to be submitted to the PATCH REST endpoint, as well
+     * as a list of objects containing lists of user and user group identifiers
+     * to be granted to each connection.
      *
      * @param {String} jsonData
-     *     The JSON-encoded connection list to convert to a PATCH request body.
+     *     The JSON-encoded connection list to process.
      *
-     * @return {Promise.<Connection[]>}
-     *     A promise resolving to an array of Connection objects, one for each 
-     *     connection in the provided JSON.
+     * @return {Promise.<Object>}
+     *     A promise resolving to ParseResult object representing the result of
+     *     parsing all provided connection data.
      */
     service.parseJSON = function parseJSON(jsonData) {
 
         // Parse from JSON into a javascript array
-        const parsedData = JSON.parse(yamlData);
+        const connectionData = JSON.parse(jsonData);
 
-        // Check that the data is the correct format, and not empty
-        const checkError = performBasicChecks(connectionData);
-        if (checkError) {
-            const deferred = $q.defer();
-            deferred.reject(checkError);
-            return deferred.promise;
-        }
+        // Produce a ParseResult
+        return parseConnectionData(connectionData);
 
-        // Transform the data from the YAML file to an array of API patches
-        return getGroupTransformer().then(
-                groupTransformer => parsedData.map(connectionObject => {
-
-            // Translate the group on the object to a parentIdentifier
-            connectionObject = groupTransformer(connectionObject);
-
-            // Translate to a full-fledged Connection
-            const connection = connectionTransformer(connectionObject);
-
-            // Finally, translate to a patch for creating the connection
-            return patchTransformer(connection);
-
-        }));
-        
     };
 
     return service;

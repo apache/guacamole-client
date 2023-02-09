@@ -33,6 +33,7 @@ angular.module('import').factory('connectionCSVService',
                 
     // Required types
     const ParseError          = $injector.get('ParseError');
+    const ProtoConnection     = $injector.get('ProtoConnection');
     const TranslatableMessage = $injector.get('TranslatableMessage');
     
     // Required services
@@ -43,7 +44,7 @@ angular.module('import').factory('connectionCSVService',
     const service = {};
     
     /**
-     * Returns a promise that resolves to an object detailing the connection
+     * Returns a promise that resolves to a object detailing the connection
      * attributes for the current data source, as well as the connection
      * paremeters for every protocol, for the current data source.
      * 
@@ -96,12 +97,66 @@ angular.module('import').factory('connectionCSVService',
             };
         }); 
     }
+
+    /**
+     * Split a raw user-provided, semicolon-seperated list of identifiers into
+     * an array of identifiers. If identifiers contain semicolons, they can be
+     * escaped with backslashes, and backslashes can also be escaped using other
+     * backslashes.
+     *
+     * @param {type} rawIdentifiers
+     *     The raw string value as fetched from the CSV.
+     *
+     * @returns {Array.<String>}
+     *     An array of identifier values.
+     */
+    function splitIdentifiers(rawIdentifiers) {
+
+        // Keep track of whether a backslash was seen
+        let escaped = false;
+
+        return _.reduce(rawIdentifiers, (identifiers, ch) => {
+
+            // The current identifier will be the last one in the final list
+            let identifier = identifiers[identifiers.length - 1];
+
+            // If a semicolon is seen, set the "escaped" flag and continue
+            // to the next character
+            if (!escaped && ch == '\\') {
+                escaped = true;
+                return identifiers;
+            }
+
+            // End the current identifier and start a new one if there's an
+            // unescaped semicolon
+            else if (!escaped && ch == ';') {
+                identifiers.push('');
+                return identifiers;
+            }
+
+            // In all other cases, just append to the identifier
+            else {
+                identifier += ch;
+                escaped = false;
+            }
+
+            // Save the updated identifier to the list
+            identifiers[identifiers.length - 1] = identifier;
+
+            return identifiers;
+
+        }, [''])
+
+        // Filter out any 0-length (empty) identifiers
+        .filter(identifier => identifier.length);
+
+    }
     
     /**
      * Given a CSV header row, create and return a promise that will resolve to
-     * a function that can take a CSV data row and return a connection object.
-     * If an error occurs while parsing a particular row, the resolved function
-     * will throw a ParseError describing the failure.
+     * a function that can take a CSV data row and return a ProtoConnection
+     * object. If an error occurs while parsing a particular row, the resolved 
+     * function will throw a ParseError describing the failure.
      * 
      * The provided CSV must contain columns for name and protocol. Optionally,
      * the parentIdentifier of the target parent connection group, or a connection
@@ -120,14 +175,17 @@ angular.module('import').factory('connectionCSVService',
      * required.
      * 
      * This returned object will be very similar to the Connection type, with
-     * the exception that a human-readable "group" field may be present.
+     * the exception that a human-readable "group" field may be present, in
+     * addition to "user" and "userGroup" fields containing arrays of user and
+     * user group identifiers for whom read access should be granted to this
+     * connection.
      * 
      * If a failure occurs while attempting to create the transformer function,
      * the promise will be rejected with a ParseError describing the failure.
      * 
      * @returns {Promise.<Function.<String[], Object>>}
      *     A promise that will resolve to a function that translates a CSV data
-     *     row (array of strings) to a connection object. 
+     *     row (array of strings) to a ProtoConnection object.
      */
     service.getCSVTransformer = function getCSVTransformer(headerRow) {
         
@@ -149,8 +207,12 @@ angular.module('import').factory('connectionCSVService',
                 protocolGetter: undefined,
                 
                 // Callbacks for a parent group ID or group path
-                groupGetter: _.noop,
-                parentIdentifierGetter: _.noop,
+                groupGetter: undefined,
+                parentIdentifierGetter: undefined,
+
+                // Callbacks for user and user group identifiers
+                usersGetter: () => [],
+                userGroupsGetter: () => [],
 
                 // Callbacks that will generate either connection attributes or 
                 // parameters. These callbacks will return a {type, name, value}
@@ -188,6 +250,11 @@ angular.module('import').factory('connectionCSVService',
                 
                 // A callback that returns the field at the current index
                 const fetchFieldAtIndex = row => row[index];
+
+                // A callback that splits identifier lists by semicolon
+                // characters into a javascript list of identifiers
+                const identifierListCallback = row => 
+                    splitIdentifiers(fetchFieldAtIndex(row));
                 
                 // Set up the name callback
                 if (header == 'name')
@@ -203,7 +270,18 @@ angular.module('import').factory('connectionCSVService',
                 
                 // Set up the group parent ID callback
                 else if (header == 'parentIdentifier')
-                    transformConfig.parentIdentifierGetter = fetchFieldAtIndex;
+                    transformConfig.parentIdentifierGetter = (
+                        identifierListCallback);
+
+                // Set the user identifiers callback
+                else if (header == 'users')
+                    transformConfig.usersGetter = (
+                        identifierListCallback);
+
+                // Set the user group identifiers callback
+                else if (header == 'groups')
+                    transformConfig.userGroupsGetter = (
+                        identifierListCallback);
 
                 // At this point, any other header might refer to a connection 
                 // parameter or to an attribute
@@ -282,47 +360,61 @@ angular.module('import').factory('connectionCSVService',
                         return { type, name, value };
                     });
             });
+
+            const {
+                nameGetter, protocolGetter,
+                parentIdentifierGetter, groupGetter,
+                usersGetter, userGroupsGetter,
+                parameterOrAttributeGetters
+            } = transformConfig;
             
             // Fail if the name wasn't provided
-            if (!transformConfig.nameGetter) 
+            if (!nameGetter) 
                 return deferred.reject(new ParseError({
                     message: 'The connection name must be provided',
                     key: 'CONNECTION_IMPORT.ERROR_REQUIRED_NAME'
                 }));
             
             // Fail if the protocol wasn't provided
-            if (!transformConfig.protocolGetter)
+            if (!protocolGetter)
                 return deferred.reject(new ParseError({
                     message: 'The connection protocol must be provided',
                     key: 'CONNECTION_IMPORT.ERROR_REQUIRED_PROTOCOL'
                 }));
+
+            // If both are specified, the parent group is ambigious
+            if (parentIdentifierGetter && groupGetter)
+                throw new ParseError({
+                    message: 'Only one of group or parentIdentifier can be set',
+                    key: 'CONNECTION_IMPORT.ERROR_AMBIGUOUS_PARENT_GROUP'
+                });
             
             // The function to transform a CSV row into a connection object
             deferred.resolve(function transformCSVRow(row) {
-                    
-                const {
-                    nameGetter, protocolGetter, 
-                    parentIdentifierGetter, groupGetter,
-                    parameterOrAttributeGetters
-                } = transformConfig;
                 
-                // Set name and protocol
+                // Get name and protocol
                 const name = nameGetter(row);
                 const protocol = protocolGetter(row);
+
+                // Get any users or user groups who should be granted access
+                const users = usersGetter(row);
+                const groups = userGroupsGetter(row);
                 
-                // Set the parent group ID and/or group path
+                // Get the parent group ID and/or group path
                 const group = groupGetter && groupGetter(row);
                 const parentIdentifier = (
                         parentIdentifierGetter && parentIdentifierGetter(row));
                
-                return { 
+                return new ProtoConnection({
                     
-                    // Simple fields that are not protocol-specific
+                    // Fields that are not protocol-specific
                     ...{
                         name,
                         protocol,
                         parentIdentifier,
-                        group
+                        group,
+                        users,
+                        groups
                     },
                     
                     // Fields that might potentially be either attributes or
@@ -339,7 +431,7 @@ angular.module('import').factory('connectionCSVService',
                         
                     }, {parameters: {}, attributes: {}})
                    
-                }
+                });
                 
             });
             

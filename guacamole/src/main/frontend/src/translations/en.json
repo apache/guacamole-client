@@ -200,6 +200,10 @@
         "ERROR_INVALID_GROUP": "No group matching \"{GROUP}\" found",
         "ERROR_INVALID_FILE_TYPE": 
             "Invalid import file type \"{TYPE}\"",
+        "ERROR_INVALID_USER_IDENTIFIERS":
+            "Users not found: {IDENTIFIER_LIST}",
+        "ERROR_INVALID_USER_GROUP_IDENTIFIERS":
+            "User Groups not found: {IDENTIFIER_LIST}",
         "ERROR_NO_FILE_SUPPLIED": "Please select a file to import",
         "ERROR_AMBIGUOUS_PARENT_GROUP":
             "Both group and parentIdentifier may be not specified at the same time",

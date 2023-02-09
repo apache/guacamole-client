@@ -31,7 +31,7 @@ angular.module('import').factory('ParseError', [function defineParseError() {
      *     The object whose properties should be copied within the new
      *     ParseError.
      */
-    var ParseError = function ParseError(template) {
+    const ParseError = function ParseError(template) {
 
         // Use empty object by default
         template = template || {};
