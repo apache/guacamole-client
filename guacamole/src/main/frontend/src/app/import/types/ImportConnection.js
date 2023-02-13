@@ -18,21 +18,21 @@
  */
 
 /**
- * Service which defines the Connection class.
+ * Service which defines the ImportConnection class.
  */
-angular.module('import').factory('ProtoConnection', [
-        function defineProtoConnection() {
+angular.module('import').factory('ImportConnection', [
+        function defineImportConnection() {
 
     /**
      * A representation of a connection to be imported, as parsed from an
      * user-supplied import file.
      *
      * @constructor
-     * @param {Connection|Object} [template={}]
+     * @param {ImportConnection|Object} [template={}]
      *     The object whose properties should be copied within the new
      *     Connection.
      */
-    var ProtoConnection = function ProtoConnection(template) {
+    var ImportConnection = function ImportConnection(template) {
 
         // Use empty object by default
         template = template || {};
@@ -106,6 +106,6 @@ angular.module('import').factory('ProtoConnection', [
 
     };
 
-    return ProtoConnection;
+    return ImportConnection;
 
 }]);

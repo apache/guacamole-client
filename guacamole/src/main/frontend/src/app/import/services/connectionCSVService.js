@@ -33,7 +33,7 @@ angular.module('import').factory('connectionCSVService',
                 
     // Required types
     const ParseError          = $injector.get('ParseError');
-    const ProtoConnection     = $injector.get('ProtoConnection');
+    const ImportConnection     = $injector.get('ImportConnection');
     const TranslatableMessage = $injector.get('TranslatableMessage');
     
     // Required services
@@ -154,7 +154,7 @@ angular.module('import').factory('connectionCSVService',
     
     /**
      * Given a CSV header row, create and return a promise that will resolve to
-     * a function that can take a CSV data row and return a ProtoConnection
+     * a function that can take a CSV data row and return a ImportConnection
      * object. If an error occurs while parsing a particular row, the resolved 
      * function will throw a ParseError describing the failure.
      * 
@@ -185,7 +185,7 @@ angular.module('import').factory('connectionCSVService',
      * 
      * @returns {Promise.<Function.<String[], Object>>}
      *     A promise that will resolve to a function that translates a CSV data
-     *     row (array of strings) to a ProtoConnection object.
+     *     row (array of strings) to a ImportConnection object.
      */
     service.getCSVTransformer = function getCSVTransformer(headerRow) {
         
@@ -405,7 +405,7 @@ angular.module('import').factory('connectionCSVService',
                 const parentIdentifier = (
                         parentIdentifierGetter && parentIdentifierGetter(row));
                
-                return new ProtoConnection({
+                return new ImportConnection({
                     
                     // Fields that are not protocol-specific
                     ...{

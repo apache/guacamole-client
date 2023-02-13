@@ -42,81 +42,8 @@ angular.module('import').factory('connectionParseService',
     const schemaService          = $injector.get('schemaService');
     const connectionCSVService   = $injector.get('connectionCSVService');
     const connectionGroupService = $injector.get('connectionGroupService');
-    const userService            = $injector.get('userService');
-    const userGroupService       = $injector.get('userGroupService');
 
     const service = {};
-
-    /**
-     * Resolves to an object whose keys are all valid identifiers in the current
-     * data source. The provided `requestFunction` should resolve to such an
-     * object when provided with the current data source.
-     *
-     * @param {Function.<String<Object.<String, *>>} requestFunction
-     *     A function that, given a data source, will return a promise resolving
-     *     to an object with keys that are unique identifiers for entities in
-     *     that data source.
-     *
-     * @returns {Promise.<Function[String[], String[]>>}
-     *     A promise that will resolve to an function that, given an array of
-     *     identifiers, will return all identifiers that do not exist as keys in
-     *     the object returned by `requestFunction`, i.e. all identifiers that
-     *     do not exist in the current data source.
-     */
-    function getIdentifierMap(requestFunction) {
-
-        // The current data source to which all the identifiers will belong
-        const dataSource = $routeParams.dataSource;
-
-        // Make the request and return the response, which should be an object
-        // whose keys are all valid identifiers for the current data source
-        return requestFunction(dataSource);
-    }
-
-    /**
-     * Return a promise that resolves to a function that takes an array of
-     * identifiers, returning a ParseError describing the invalid identifiers
-     * from the list. The provided `requestFunction` should resolve to such an
-     * object whose keys are all valid identifiers when provided with the
-     * current data source.
-     *
-     * @param {Function.<String<Object.<String, *>>} requestFunction
-     *     A function that, given a data source, will return a promise resolving
-     *     to an object with keys that are unique identifiers for entities in
-     *     that data source.
-     *
-     * @returns {Promise.<Function.<String[], ParseError?>>}
-     *     A promise that will resolve to a function to check the validity of
-     *     each identifier in a provided array, returning a ParseError 
-     *     describing the problem if any are not valid.
-     */
-    function getInvalidIdentifierErrorChecker(requestFunction) {
-
-        // Fetch all the valid user identifiers in the system, and
-        return getIdentifierMap(requestFunction).then(validIdentifiers =>
-
-            // The resolved function that takes a list of user group identifiers
-            allIdentifiers => {
-
-                // Filter to only include invalid identifiers
-                const invalidIdentifiers = _.filter(allIdentifiers,
-                    identifier => !validIdentifiers[identifier]);
-
-                if (invalidIdentifiers.length) {
-
-                    // Quote and comma-seperate for display
-                    const identifierList = invalidIdentifiers.map(
-                        identifier => '"' + identifier + '"').join(', ');
-
-                    return new ParseError({
-                        message: 'Invalid User Group Identifiers: ' + identifierList,
-                        key: 'CONNECTION_IMPORT.ERROR_INVALID_USER_GROUP_IDENTIFIERS',
-                        variables: { IDENTIFIER_LIST: identifierList }
-                    });
-                }
-
-            });
-    }
     
     /**
      * Perform basic checks, common to all file types - namely that the parsed
@@ -245,12 +172,12 @@ angular.module('import').factory('connectionParseService',
     }
 
     /**
-     * Convert a provided ProtoConnection array into a ParseResult. Any provided
+     * Convert a provided ImportConnection array into a ParseResult. Any provided
      * transform functions will be run on each entry in `connectionData` before
      * any other processing is done.
      *
      * @param {*[]} connectionData
-     *     An arbitrary array of data. This must evaluate to a ProtoConnection
+     *     An arbitrary array of data. This must evaluate to a ImportConnection
      *     object after being run through all functions in `transformFunctions`.
      *
      * @param {Function[]} transformFunctions
@@ -271,21 +198,10 @@ angular.module('import').factory('connectionParseService',
             return deferred.promise;
         }
 
-        return $q.all({
-            groupTransformer           : getGroupTransformer(),
-            invalidUserIdErrorDetector : getInvalidIdentifierErrorChecker(
-                    userService.getUsers),
-            invalidGroupIDErrorDetector : getInvalidIdentifierErrorChecker(
-                    userGroupService.getUserGroups),
-        })
+        return getGroupTransformer().then(groupTransformer =>
+                connectionData.reduce((parseResult, data) => {
 
-        // Transform the rows from the CSV file to an array of API patches
-        // and lists of user and group identifiers
-        .then(({groupTransformer,
-                invalidUserIdErrorDetector, invalidGroupIDErrorDetector}) =>
-                    connectionData.reduce((parseResult, data) => {
-
-            const { patches, identifiers, users, groups } = parseResult;
+            const { patches, users, groups, allUsers, allGroups } = parseResult;
 
             // Run the array data through each provided transform
             let connectionObject = data;
@@ -307,14 +223,15 @@ angular.module('import').factory('connectionParseService',
                 connectionErrors.push(error);
             }
 
-            // Push any errors for invalid user or user group identifiers
-            const pushError = error => error && connectionErrors.push(error);
-            pushError(invalidUserIdErrorDetector(connectionObject.users));
-            pushError(invalidGroupIDErrorDetector(connectionObject.userGroups));
-
             // Add the user and group identifiers for this connection
-            users.push(connectionObject.users);
-            groups.push(connectionObject.groups);
+            const connectionUsers = connectionObject.users || [];
+            const connectionGroups = connectionObject.groups || [];
+            users.push(connectionUsers);
+            groups.push(connectionGroups);
+
+            // Add all user and user group identifiers to the overall sets
+            connectionUsers.forEach(identifier => allUsers[identifier] = true);
+            connectionGroups.forEach(identifier => allGroups[identifier] = true);
 
             // Translate to a full-fledged Connection
             const connection = new Connection(connectionObject);
@@ -398,7 +315,18 @@ angular.module('import').factory('connectionParseService',
     service.parseYAML = function parseYAML(yamlData) {
 
         // Parse from YAML into a javascript array
-        const connectionData = parseYAMLData(yamlData);
+        try {
+            const connectionData = parseYAMLData(yamlData);
+        }
+
+        // If the YAML parser throws an error, reject with that error. No
+        // translation key will be available here.
+        catch(error) {
+            console.error(error);
+            const deferred = $q.defer();
+            deferred.reject(new ParseError({ message: error.message }));
+            return deferred.promise;
+        }
         
         // Produce a ParseResult
         return parseConnectionData(connectionData);
@@ -420,7 +348,18 @@ angular.module('import').factory('connectionParseService',
     service.parseJSON = function parseJSON(jsonData) {
 
         // Parse from JSON into a javascript array
-        const connectionData = JSON.parse(jsonData);
+        try {
+            const connectionData = JSON.parse(jsonData);
+        }
+
+        // If the JSON parse attempt throws an error, reject with that error.
+        // No translation key will be available here.
+        catch(error) {
+            console.error(error);
+            const deferred = $q.defer();
+            deferred.reject(new ParseError({ message: error.message }));
+            return deferred.promise;
+        }
 
         // Produce a ParseResult
         return parseConnectionData(connectionData);

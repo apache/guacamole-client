@@ -30,15 +30,11 @@ angular.module('rest').factory('DirectoryPatchOutcome', [
      * response. The error field is only meaningful for unsuccessful patches.
      * @constructor
      * 
-     * @template DirectoryObject
-     *     The directory-based object type that this DirectoryPatchOutcome
-     *     represents a patch outcome for.
-     * 
-     * @param {DirectoryObject|Object} [template={}]
+     * @param {DirectoryPatchOutcome|Object} [template={}]
      *     The object whose properties should be copied within the new
      *     DirectoryPatchOutcome.
      */
-    var DirectoryPatchOutcome = function DirectoryPatchOutcome(template) {
+    const DirectoryPatchOutcome = function DirectoryPatchOutcome(template) {
 
         // Use empty object by default
         template = template || {};
@@ -78,6 +74,6 @@ angular.module('rest').factory('DirectoryPatchOutcome', [
 
     };
 
-    return DirectoryPatch;
+    return DirectoryPatchOutcome;
 
 }]);

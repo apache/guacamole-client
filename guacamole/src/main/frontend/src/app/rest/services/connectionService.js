@@ -158,7 +158,7 @@ angular.module('rest').factory('connectionService', ['$injector',
     /**
      * Makes a request to the REST API to apply a supplied list of connection
      * patches, returning a promise that can be used for processing the results 
-     * of the  call. 
+     * of the call. 
      * 
      * This operation is atomic - if any errors are encountered during the 
      * connection patching process, the entire request will fail, and no 
@@ -181,12 +181,14 @@ angular.module('rest').factory('connectionService', ['$injector',
         })
 
         // Clear the cache
-        .then(function connectionsPatched(){
+        .then(function connectionsPatched(patchResponse){
             cacheService.connections.removeAll();
 
             // Clear users cache to force reload of permissions for any
             // newly created or replaced connections
             cacheService.users.removeAll();
+
+            return patchResponse;
             
         });
 

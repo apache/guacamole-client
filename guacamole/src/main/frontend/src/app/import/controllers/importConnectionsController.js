@@ -24,19 +24,73 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         function importConnectionsController($scope, $injector) {
 
     // Required services
+    const $routeParams           = $injector.get('$routeParams');
     const connectionParseService = $injector.get('connectionParseService');
     const connectionService      = $injector.get('connectionService');
     
     // Required types
+    const DirectoryPatch      = $injector.get('DirectoryPatch');
     const ParseError          = $injector.get('ParseError');
     const TranslatableMessage = $injector.get('TranslatableMessage');
+
+    /**
+     * Given a successful response to an import PATCH request, make another
+     * request to delete every created connection in the provided request, i.e.
+     * clean up every connection that was created.
+     *
+     * @param {DirectoryPatchResponse} creationResponse
+     */
+    function cleanUpConnections(creationResponse) {
+
+        // The patches to delete - one delete per initial creation
+        const deletionPatches = creationResponse.patches.map(patch =>
+            new DirectoryPatch({
+                op: 'remove',
+                path: '/' + patch.identifier
+            }));
+
+        console.log("Deletion Patches", deletionPatches);
+
+        connectionService.patchConnections(
+            $routeParams.dataSource, deletionPatches)
     
-    function handleSuccess(data) {
-        console.log("OMG SUCCESS: ", data)
+            .then(deletionResponse =>
+                console.log("Deletion response", deletionResponse))
+            .catch(handleParseError);
+
+    }
+
+    /**
+     * Process a successfully parsed import file, creating any specified
+     * connections, creating and granting permissions to any specified users
+     * and user groups.
+     * 
+     * TODO:
+     * - Do batch import of connections
+     * - Create all users/groups not already present
+     * - Grant permissions to all users/groups as defined in the import file
+     * - On failure: Roll back everything (maybe ask the user first):
+     *   - Attempt to delete all created connections
+     *   - Attempt to delete any created users / groups
+     *
+     * @param {ParseResult} parseResult
+     *     The result of parsing the user-supplied import file.
+     *
+     */
+    function handleParseSuccess(parseResult) {
+        connectionService.patchConnections(
+                $routeParams.dataSource, parseResult.patches)
+        
+                .then(response => {
+            console.log("Creation Response", response);
+
+            // TODON'T: Delete connections so we can test over and over
+            cleanUpConnections(response);
+        });
     }
     
     // Set any caught error message to the scope for display
-    const handleError = error => {
+    const handleParseError = error => {
         console.error(error);
         $scope.error = error;
     }
@@ -44,14 +98,25 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     // Clear the current error
     const clearError = () => delete $scope.error;
 
-    function processData(type, data) {
+    /**
+     * Process the uploaded import file, importing the connections, granting
+     * connection permissions, or displaying errors to the user if there are 
+     * problems with the provided file.
+     *
+     * @param {String} mimeType
+     *     The MIME type of the uploaded data file.
+     * 
+     * @param {String} data
+     *     The raw string contents of the import file.
+     */
+    function processData(mimeType, data) {
         
         // The function that will process all the raw data and return a list of
         // patches to be submitted to the API
         let processDataCallback;
 
         // Parse the data based on the provided mimetype
-        switch(type) {
+        switch(mimeType) {
 
             case "application/json":
             case "text/json":
@@ -82,10 +147,10 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         processDataCallback(data)
 
             // Send the data off to be imported if parsing is successful
-            .then(handleSuccess)
+            .then(handleParseSuccess)
 
             // Display any error found while parsing the file
-            .catch(handleError);
+            .catch(handleParseError);
     }
 
     $scope.upload = function() {

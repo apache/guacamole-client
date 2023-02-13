@@ -64,6 +64,23 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
         this.groups = template.groups || [];
 
         /**
+         * An object whose keys are the user identifiers of every user specified
+         * in the batch import. i.e. a set of all user identifiers.
+         *
+         * @type {Object.<String, Boolean>}
+         */
+        this.allUsers = template.allUsers || {};
+
+        /**
+         * An object whose keys are the user group identifiers of every user
+         * group specified in the batch import. i.e. a set of all user group
+         * identifiers.
+         *
+         * @type {Object.<String, Boolean>}
+         */
+        this.allGroups = template.allGroups || {};
+
+        /**
          * An array of errors encountered while parsing the corresponding
          * connection (at the same array index). Each connection should have a
          * an array of errors. If empty, no errors occured for this connection.

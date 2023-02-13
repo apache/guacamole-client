@@ -59,10 +59,9 @@ angular.module('rest').factory('DirectoryPatch', [function defineDirectoryPatch(
         this.path = template.path || '/';
 
         /**
-         * The object being added or replaced, or the identifier of the object
-         * being removed.
+         * The object being added, or undefined if deleting.
          *
-         * @type {DirectoryObject|String}
+         * @type {DirectoryObject}
          */
         this.value = template.value;
 
@@ -77,11 +76,6 @@ angular.module('rest').factory('DirectoryPatch', [function defineDirectoryPatch(
          * Adds the specified object to the relation.
          */
         ADD : "add",
-
-        /**
-         * Removes the specified object from the relation.
-         */
-        REPLACE : "replace",
 
         /**
          * Removes the specified object from the relation.
