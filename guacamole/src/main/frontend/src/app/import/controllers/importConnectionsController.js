@@ -17,6 +17,8 @@
  * under the License.
  */
 
+/* global _ */
+
 /**
  * The controller for the connection import page.
  */
@@ -24,14 +26,21 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         function importConnectionsController($scope, $injector) {
 
     // Required services
+    const $q                     = $injector.get('$q');
     const $routeParams           = $injector.get('$routeParams');
     const connectionParseService = $injector.get('connectionParseService');
     const connectionService      = $injector.get('connectionService');
+    const permissionService      = $injector.get('permissionService');
+    const userService            = $injector.get('userService');
+    const userGroupService       = $injector.get('userGroupService');
     
     // Required types
     const DirectoryPatch      = $injector.get('DirectoryPatch');
     const ParseError          = $injector.get('ParseError');
+    const PermissionSet       = $injector.get('PermissionSet');
     const TranslatableMessage = $injector.get('TranslatableMessage');
+    const User                = $injector.get('User');
+    const UserGroup           = $injector.get('UserGroup');
 
     /**
      * Given a successful response to an import PATCH request, make another
@@ -56,8 +65,131 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     
             .then(deletionResponse =>
                 console.log("Deletion response", deletionResponse))
-            .catch(handleParseError);
+            .catch(handleError);
 
+    }
+
+    /**
+     * Create all users and user groups mentioned in the import file that don't
+     * already exist in the current data source.
+     *
+     * @param {ParseResult} parseResult
+     *     The result of parsing the user-supplied import file.
+     *
+     * @return {Object}
+     *     An object containing the results of the calls to create the users
+     *     and groups.
+     */
+    function createUsersAndGroups(parseResult) {
+
+        const dataSource = $routeParams.dataSource;
+
+        return $q.all({
+            existingUsers : userService.getUsers(dataSource),
+            existingGroups : userGroupService.getUserGroups(dataSource)
+        }).then(({existingUsers, existingGroups}) => {
+
+            const userPatches = Object.keys(parseResult.users)
+
+                // Filter out any existing users
+                .filter(identifier => !existingUsers[identifier])
+
+                // A patch to create each new user
+                .map(username => new DirectoryPatch({
+                    op: 'add',
+                    path: '/',
+                    value: new User({ username })
+                }));
+
+            const groupPatches = Object.keys(parseResult.groups)
+
+                // Filter out any existing groups
+                .filter(identifier => !existingGroups[identifier])
+
+                // A patch to create each new user group
+                .map(identifier => new DirectoryPatch({
+                    op: 'add',
+                    path: '/',
+                    value: new UserGroup({ identifier })
+                }));
+
+            return $q.all({
+                createdUsers: userService.patchUsers(dataSource, userPatches),
+                createdGroups: userGroupService.patchUserGroups(dataSource, groupPatches)
+            });
+            
+        });
+        
+    }
+
+    /**
+     * Grant read permissions for each user and group in the supplied parse
+     * result to each connection in their connection list. Note that there will
+     * be a seperate request for each user and group.
+     *
+     * @param {ParseResult} parseResult
+     *     The result of successfully parsing a user-supplied import file.
+     *
+     * @param {Object} response
+     *     The response from the PATCH API request.
+     *
+     * @returns {Promise.<Object>}
+     *     A promise that will resolve with the result of every permission
+     *     granting request.
+     */
+    function grantConnectionPermissions(parseResult, response) {
+
+        const dataSource = $routeParams.dataSource;
+
+        // All connection grant requests, one per user/group
+        const userRequests = {};
+        const groupRequests = {};
+
+        // Create a PermissionSet granting access to all connections at
+        // the provided indices within the provided parse result
+        const createPermissionSet = indices =>
+            new PermissionSet({ connectionPermissions: indices.reduce(
+                    (permissions, index) => {
+                const connectionId = response.patches[index].identifier;
+                permissions[connectionId] = [
+                        PermissionSet.ObjectPermissionType.READ];
+                return permissions;
+            }, {}) });
+        
+        // Now that we've created all the users, grant access to each
+        _.forEach(parseResult.users, (connectionIndices, identifier) => 
+
+            // Grant the permissions - note the group flag is `false`
+            userRequests[identifier] = permissionService.patchPermissions(
+                dataSource, identifier,
+
+                // Create the permissions to these connections for this user
+                createPermissionSet(connectionIndices),
+
+                // Do not remove any permissions
+                new PermissionSet(),
+
+                // This call is not for a group
+                false));
+
+        // Now that we've created all the groups, grant access to each
+        _.forEach(parseResult.groups, (connectionIndices, identifier) => 
+
+            // Grant the permissions - note the group flag is `true`
+            groupRequests[identifier] = permissionService.patchPermissions(
+                dataSource, identifier,
+
+                // Create the permissions to these connections for this user
+                createPermissionSet(connectionIndices),
+
+                // Do not remove any permissions
+                new PermissionSet(),
+
+                // This call is for a group
+                true));
+
+        // Return the result from all the permission granting calls
+        return $q.all({ ...userRequests, ...groupRequests });
     }
 
     /**
@@ -78,19 +210,32 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      *
      */
     function handleParseSuccess(parseResult) {
-        connectionService.patchConnections(
-                $routeParams.dataSource, parseResult.patches)
-        
-                .then(response => {
-            console.log("Creation Response", response);
 
-            // TODON'T: Delete connections so we can test over and over
-            cleanUpConnections(response);
+        const dataSource = $routeParams.dataSource;
+
+        console.log("parseResult", parseResult);
+
+        // First, attempt to create the connections
+        connectionService.patchConnections(dataSource, parseResult.patches)
+                .then(response => {
+
+            // If connection creation is successful, create users and groups
+            createUsersAndGroups(parseResult).then(() => {
+
+                grantConnectionPermissions(parseResult, response).then(results => {
+                    console.log("permission requests", results);
+                   
+                    // TODON'T: Delete connections so we can test over and over
+                    cleanUpConnections(response);
+                })
+
+
+            });
         });
     }
     
     // Set any caught error message to the scope for display
-    const handleParseError = error => {
+    const handleError = error => {
         console.error(error);
         $scope.error = error;
     }
@@ -150,7 +295,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
             .then(handleParseSuccess)
 
             // Display any error found while parsing the file
-            .catch(handleParseError);
+            .catch(handleError);
     }
 
     $scope.upload = function() {

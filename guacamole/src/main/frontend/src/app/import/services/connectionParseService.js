@@ -199,9 +199,9 @@ angular.module('import').factory('connectionParseService',
         }
 
         return getGroupTransformer().then(groupTransformer =>
-                connectionData.reduce((parseResult, data) => {
+                connectionData.reduce((parseResult, data, index) => {
 
-            const { patches, users, groups, allUsers, allGroups } = parseResult;
+            const { patches, users, groups } = parseResult;
 
             // Run the array data through each provided transform
             let connectionObject = data;
@@ -223,15 +223,33 @@ angular.module('import').factory('connectionParseService',
                 connectionErrors.push(error);
             }
 
-            // Add the user and group identifiers for this connection
+            // The users and user groups that should be granted access
             const connectionUsers = connectionObject.users || [];
             const connectionGroups = connectionObject.groups || [];
-            users.push(connectionUsers);
-            groups.push(connectionGroups);
 
-            // Add all user and user group identifiers to the overall sets
-            connectionUsers.forEach(identifier => allUsers[identifier] = true);
-            connectionGroups.forEach(identifier => allGroups[identifier] = true);
+            // Add this connection index to the list for each user
+            connectionUsers.forEach(identifier => {
+
+                // If there's an existing list, add the index to that
+                if (users[identifier])
+                    users[identifier].push(index);
+
+                // Otherwise, create a new list with just this index
+                else
+                    users[identifier] = [index];
+            });
+
+            // Add this connection index to the list for each group
+            connectionGroups.forEach(identifier => {
+
+                // If there's an existing list, add the index to that
+                if (groups[identifier])
+                    groups[identifier].push(index);
+
+                // Otherwise, create a new list with just this index
+                else
+                    groups[identifier] = [index];
+            });
 
             // Translate to a full-fledged Connection
             const connection = new Connection(connectionObject);

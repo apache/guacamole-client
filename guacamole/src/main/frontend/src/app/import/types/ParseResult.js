@@ -48,28 +48,13 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
         this.patches = template.patches || [];
 
         /**
-         * A list of user identifiers that should be granted read access to the
-         * the corresponding connection (at the same array index).
+         * An object whose keys are the user identifiers of users specified
+         * in the batch import. and the keys are an array of indices of
+         * connections to which those users should be granted access.
          *
-         * @type {String[]}
+         * @type {Object.<String, Integer[]>}
          */
-        this.users = template.users || [];
-
-        /**
-         * A list of user group identifiers that should be granted read access
-         * to the corresponding connection (at the same array index).
-         *
-         * @type {String[]}
-         */
-        this.groups = template.groups || [];
-
-        /**
-         * An object whose keys are the user identifiers of every user specified
-         * in the batch import. i.e. a set of all user identifiers.
-         *
-         * @type {Object.<String, Boolean>}
-         */
-        this.allUsers = template.allUsers || {};
+        this.users = template.users || {};
 
         /**
          * An object whose keys are the user group identifiers of every user
@@ -78,7 +63,7 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
          *
          * @type {Object.<String, Boolean>}
          */
-        this.allGroups = template.allGroups || {};
+        this.groups = template.users || {};
 
         /**
          * An array of errors encountered while parsing the corresponding

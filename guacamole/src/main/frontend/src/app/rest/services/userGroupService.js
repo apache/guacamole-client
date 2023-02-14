@@ -190,6 +190,39 @@ angular.module('rest').factory('userGroupService', ['$injector',
 
     };
 
+    /**
+     * Makes a request to the REST API to apply a supplied list of user group
+     * patches, returning a promise that can be used for processing the results
+     * of the call.
+     *
+     * This operation is atomic - if any errors are encountered during the
+     * connection patching process, the entire request will fail, and no
+     * changes will be persisted.
+     *
+     * @param {DirectoryPatch.<UserGroup>[]} patches
+     *     An array of patches to apply.
+     *
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     patch operation is successful.
+     */
+    service.patchUserGroups = function patchUserGroups(dataSource, patches) {
+
+        // Make the PATCH request
+        return authenticationService.request({
+            method  : 'PATCH',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups',
+            data    : patches
+        })
+
+        // Clear the cache
+        .then(function userGroupsPatched(patchResponse){
+            cacheService.users.removeAll();
+            return patchResponse;
+        });
+
+    }
+
     return service;
 
 }]);
