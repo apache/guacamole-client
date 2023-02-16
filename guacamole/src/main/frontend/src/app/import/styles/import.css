@@ -20,3 +20,12 @@
 .import .parseError {
     color: red;
 }
+
+.import .import-buttons {
+
+    margin-top: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    
+}

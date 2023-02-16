@@ -186,6 +186,9 @@
 
     "CONNECTION_IMPORT": {
 
+        "BUTTON_CANCEL": "Cancel",
+        "BUTTON_IMPORT": "Import Connections",
+
         "HEADER": "Connection Import",
 
         "ERROR_AMBIGUOUS_CSV_HEADER": 
@@ -199,7 +202,7 @@
             "Invalid CSV Header \"{HEADER}\" is neither an attribute or parameter",
         "ERROR_INVALID_GROUP": "No group matching \"{GROUP}\" found",
         "ERROR_INVALID_FILE_TYPE": 
-            "Invalid import file type \"{TYPE}\"",
+            "Unsupported file type: \"{TYPE}\"",
         "ERROR_INVALID_USER_IDENTIFIERS":
             "Users not found: {IDENTIFIER_LIST}",
         "ERROR_INVALID_USER_GROUP_IDENTIFIERS":
@@ -210,7 +213,14 @@
         "ERROR_REQUIRED_PROTOCOL": 
             "No connection protocol found in the provided file",
         "ERROR_REQUIRED_NAME": 
-            "No connection name found in the provided file"
+            "No connection name found in the provided file",
+
+        "UPLOAD_FILE_TYPES": "CSV, JSON, or YAML",
+        "UPLOAD_HELP_LINK": "View Format Tips",
+        "UPLOAD_DROP_TITLE": "Drop a File Here",
+        "UPLOAD_BROWSE_LINK": "Browse for File",
+
+        "ERROR_FILE_SINGLE_ONLY": "Please upload only a single file at a time"
         
     },
 

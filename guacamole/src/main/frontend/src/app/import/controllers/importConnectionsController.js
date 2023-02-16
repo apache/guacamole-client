@@ -43,6 +43,70 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const UserGroup           = $injector.get('UserGroup');
 
     /**
+     * Any error that may have occured during import file parsing.
+     *
+     * @type {ParseError}
+     */
+    $scope.error = null;
+
+    /**
+     * True if the file is fully uploaded and ready to be processed, or false
+     * otherwise.
+     *
+     * @type {Boolean}
+     */
+    $scope.dataReady = false;
+
+    /**
+     * True if the file upload has been aborted mid-upload, or false otherwise.
+     */
+    $scope.aborted = false;
+
+    /**
+     * True if fully-uploaded data is being processed, or false otherwise.
+     */
+    $scope.processing = false;
+
+    /**
+     * The MIME type of the uploaded file, if any.
+     *
+     * @type {String}
+     */
+    $scope.mimeType = null;
+
+    /**
+     * The raw string contents of the uploaded file, if any.
+     *
+     * @type {String}
+     */
+    $scope.fileData = null;
+
+    /**
+     * The file reader currently being used to upload the file, if any. If
+     * null, no file upload is currently in progress.
+     *
+     * @type {FileReader}
+     */
+    $scope.fileReader = null;
+
+    /**
+     * Clear all file upload state.
+     */
+    function resetUploadState() {
+
+        $scope.aborted = false;
+        $scope.dataReady = false;
+        $scope.processing = false;
+        $scope.fileData = null;
+        $scope.mimeType = null;
+        $scope.fileReader = null;
+
+        // Broadcast an event to clear the file upload UI
+        $scope.$broadcast('clearFile');
+        
+    }
+
+    /**
      * Given a successful response to an import PATCH request, make another
      * request to delete every created connection in the provided request, i.e.
      * clean up every connection that was created.
@@ -227,20 +291,35 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                    
                     // TODON'T: Delete connections so we can test over and over
                     cleanUpConnections(response);
-                })
 
+                    resetUploadState();
+                })
 
             });
         });
     }
     
-    // Set any caught error message to the scope for display
+    /**
+     * Set any caught error message to the scope for display.
+     *
+     * @argument {ParseError} error
+     *     The error to display.
+     */
     const handleError = error => {
+
+        // Any error indicates that processing of the file has failed, so clear
+        // all upload state to allow for a fresh retry
+        resetUploadState();
+
+        // Set the error for display
         console.error(error);
         $scope.error = error;
+        
     }
     
-    // Clear the current error
+    /**
+     * Clear the current displayed error.
+     */
     const clearError = () => delete $scope.error;
 
     /**
@@ -255,39 +334,35 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      *     The raw string contents of the import file.
      */
     function processData(mimeType, data) {
+
+        // Data processing has begun
+        $scope.processing = true;
         
         // The function that will process all the raw data and return a list of
         // patches to be submitted to the API
         let processDataCallback;
 
-        // Parse the data based on the provided mimetype
-        switch(mimeType) {
+        // Choose the appropriate parse function based on the mimetype
+        if (mimeType.endsWith("json"))
+            processDataCallback = connectionParseService.parseJSON;
 
-            case "application/json":
-            case "text/json":
-                processDataCallback = connectionParseService.parseJSON;
-                break;
+        else if (mimeType.endsWith("csv"))
+            processDataCallback = connectionParseService.parseCSV;
 
-            case "text/csv":
-                processDataCallback = connectionParseService.parseCSV;
-                break;
+        else if (mimeType.endsWith("yaml"))
+            processDataCallback = connectionParseService.parseYAML;
 
-            case "application/yaml":
-            case "application/x-yaml":
-            case "text/yaml":
-            case "text/x-yaml":
-                processDataCallback = connectionParseService.parseYAML;
-                break;
-                
-            default:
-                handleError(new ParseError({
-                    message: 'Invalid file type: ' + type,
-                    key: 'CONNECTION_IMPORT.INVALID_FILE_TYPE',
-                    variables: { TYPE: type } 
-                }));
-                return;
+        // We don't expect this to happen - the file upload directive should
+        // have already have filtered out any invalid file types
+        else {
+            handleError(new ParseError({
+                message: 'Invalid file type: ' + type,
+                key: 'CONNECTION_IMPORT.INVALID_FILE_TYPE',
+                variables: { TYPE: type }
+            }));
+            return;
         }
-        
+
         // Make the call to process the data into a series of patches
         processDataCallback(data)
 
@@ -298,30 +373,109 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
             .catch(handleError);
     }
 
-    $scope.upload = function() {
+    /**
+     * Process the uploaded import data. Only usuable if the upload is fully
+     * complete.
+     */
+    $scope.import = () => processData($scope.mimeType, $scope.fileData);
+
+    /**
+     * @return {Boolean}
+     *     True if import should be disabled, or false if cancellation
+     *     should be allowed.
+     */
+    $scope.importDisabled = () =>
+        
+        // Disable import if no data is ready
+        !$scope.dataReady ||
+
+        // Disable import if the file is currently being processed
+        $scope.processing;
+
+    /**
+     * Cancel any in-progress upload, or clear any uploaded-but
+     */
+    $scope.cancel = function() {
+
+        // Clear any error message
+        clearError();
+
+        // If the upload is in progress, stop it now; the FileReader will
+        // reset the upload state when it stops
+        if ($scope.fileReader) {
+            $scope.aborted = true;
+            $scope.fileReader.abort();
+        }
+
+        // Clear any upload state - there's no FileReader handler to do it
+        else 
+            resetUploadState();
+
+    };
+
+    /**
+     * @return {Boolean}
+     *     True if cancellation should be disabled, or false if cancellation
+     *     should be allowed.
+     */
+    $scope.cancelDisabled = () =>
+
+        // Disable cancellation if the import has already been cancelled
+        $scope.aborted ||
+
+        // Disable cancellation if the file is currently being processed
+        $scope.processing ||
+
+        // Disable cancellation if no data is ready or being uploaded
+        !($scope.fileReader || $scope.dataReady);
+
+    /**
+     * Handle a provided File upload, reading all data onto the scope for
+     * import processing, should the user request an import.
+     *
+     * @argument {File} file
+     *     The file to upload onto the scope for further processing.
+     */
+    $scope.handleFile = function(file) {
         
         // Clear any error message from the previous upload attempt
         clearError();
 
-        const files = angular.element('#file')[0].files;
+        // Initialize upload state
+        $scope.aborted = false;
+        $scope.dataReady = false;
+        $scope.processing = false;
+        $scope.uploadStarted = true;
 
-        if (files.length <= 0) {
-            handleError(new ParseError({
-                message: 'No file supplied',
-                key: 'CONNECTION_IMPORT.ERROR_NO_FILE_SUPPLIED'
-            }));
-            return;
-        }
+        // Save the MIME type to the scope
+        $scope.mimeType = file.type;
 
-        // The file that the user uploaded
-        const file = files[0];
+        // Save the file to the scope when ready
+        $scope.fileReader = new FileReader();
+        $scope.fileReader.onloadend = (e => {
 
-        // Call processData when the data is ready
-        const reader = new FileReader();
-        reader.onloadend = (e => processData(file.type, e.target.result));
+            // If the upload was explicitly aborted, clear any upload state and
+            // do not process the data
+            if ($scope.aborted) 
+                resetUploadState();
 
-        // Read all the data into memory and call processData when done
-        reader.readAsBinaryString(file);
+            else {
+                
+                // Save the uploaded data
+                $scope.fileData = e.target.result;
+
+                // Mark the data as ready
+                $scope.dataReady = true;
+                
+                // Clear the file reader from the scope now that this file is
+                // fully uploaded
+                $scope.fileReader = null;
+
+            }
+        });
+
+        // Read all the data into memory 
+        $scope.fileReader.readAsBinaryString(file);
     }
 
 }]);

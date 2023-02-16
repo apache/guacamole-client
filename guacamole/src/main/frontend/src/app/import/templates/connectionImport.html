@@ -5,9 +5,19 @@
         <guac-user-menu></guac-user-menu>
     </div>
 
-    <input type="file" id="file" name="file"/>
-    <button ng-click="upload()">Add</button>
-    
+    <connection-import-file-upload on-file="handleFile(file)"></connection-import-file-upload>
+
+    <div class="import-buttons">
+        <button 
+            ng-click="import()" ng-disabled="importDisabled()" class="import">
+                {{'CONNECTION_IMPORT.BUTTON_IMPORT' | translate}}
+        </button>
+        <button
+            ng-click="cancel()" ng-disabled="cancelDisabled()" class="cancel">
+                {{'CONNECTION_IMPORT.BUTTON_CANCEL' | translate}}
+        </button>
+    </div>
+
     <!-- The translatable error message, if one is set -->
     <p 
         class="parseError" ng-show="error.key" 
