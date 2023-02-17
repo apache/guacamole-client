@@ -664,19 +664,21 @@ END
     fi
 
     # Update config file
-    set_optional_property "radius-hostname"         "$RADIUS_HOSTNAME"
-    set_optional_property "radius-auth-port"        "$RADIUS_AUTH_PORT"
-    set_property          "radius-shared-secret"    "$RADIUS_SHARED_SECRET"
-    set_property          "radius-auth-protocol"    "$RADIUS_AUTH_PROTOCOL"
-    set_optional_property "radius-key-file"         "$RADIUS_KEY_FILE"
-    set_optional_property "radius-key-type"         "$RADIUS_KEY_TYPE"
-    set_optional_property "radius-key-password"     "$RADIUS_KEY_PASSWORD"
-    set_optional_property "radius-ca-file"          "$RADIUS_CA_FILE"
-    set_optional_property "radius-ca-type"          "$RADIUS_CA_TYPE"
-    set_optional_property "radius-ca-password"      "$RADIUS_CA_PASSWORD"
-    set_optional_property "radius-trust-all"        "$RADIUS_TRUST_ALL"
-    set_optional_property "radius-retries"          "$RADIUS_RETRIES"
-    set_optional_property "radius-timeout"          "$RADIUS_TIMEOUT"
+    set_optional_property "radius-hostname"                 "$RADIUS_HOSTNAME"
+    set_optional_property "radius-auth-port"                "$RADIUS_AUTH_PORT"
+    set_property          "radius-shared-secret"            "$RADIUS_SHARED_SECRET"
+    set_property          "radius-auth-protocol"            "$RADIUS_AUTH_PROTOCOL"
+    set_optional_property "radius-key-file"                 "$RADIUS_KEY_FILE"
+    set_optional_property "radius-key-type"                 "$RADIUS_KEY_TYPE"
+    set_optional_property "radius-key-password"             "$RADIUS_KEY_PASSWORD"
+    set_optional_property "radius-ca-file"                  "$RADIUS_CA_FILE"
+    set_optional_property "radius-ca-type"                  "$RADIUS_CA_TYPE"
+    set_optional_property "radius-ca-password"              "$RADIUS_CA_PASSWORD"
+    set_optional_property "radius-trust-all"                "$RADIUS_TRUST_ALL"
+    set_optional_property "radius-retries"                  "$RADIUS_RETRIES"
+    set_optional_property "radius-timeout"                  "$RADIUS_TIMEOUT"
+    set_optional_property "radius-eap-ttls-inner-protocol"  "$RADIUS_EAP_TTLS_INNER_PROTOCOL"
+    set_optional_property "radius-nas-ip"                   "$RADIUS_NAS_IP"
 
     set_optional_property \
        "radius-eap-ttls-inner-protocol" \
@@ -734,7 +736,10 @@ END
     set_property          "openid-redirect-uri"              "$OPENID_REDIRECT_URI"
     set_optional_property "openid-username-claim-type"       "$OPENID_USERNAME_CLAIM_TYPE"
     set_optional_property "openid-groups-claim-type"         "$OPENID_GROUPS_CLAIM_TYPE"
+    set_optional_property "openid-scope"                     "$OPENID_SCOPE"
+    set_optional_property "openid-allowed-clock-skew"        "$OPENID_ALLOWED_CLOCK_SKEW"
     set_optional_property "openid-max-token-validity"        "$OPENID_MAX_TOKEN_VALIDITY"
+    set_optional_property "openid-max-nonce-validity"        "$OPENID_MAX_NONCE_VALIDITY"
 
     # Add required .jar files to GUACAMOLE_EXT
     # "1-{}" make it sorted as a first provider (only authentication)
@@ -1064,6 +1069,11 @@ fi
 set_property "guacd-hostname" "$GUACD_HOSTNAME"
 set_property "guacd-port"     "$GUACD_PORT"
 
+# A comma-separated list of the identifiers of authentication providers that
+# should be allowed to fail internally without aborting the authentication process
+set_optional_property "skip-if-unavailable"     "$SKIP_IF_UNAVAILABLE"
+
+
 #
 # Track which authentication backends are installed
 #
@@ -1163,6 +1173,19 @@ set_optional_property "extension-priority" "$EXTENSION_PRIORITY"
 if [ -n "$API_SESSION_TIMEOUT" ]; then
     associate_apisessiontimeout
 fi
+
+# Maximum number of bytes to accept within the entity body of any particular HTTP request
+set_optional_property "api-max-request-size" "$API_MAX_REQUEST_SIZE"
+
+# A comma-separated list of language keys to allow as display language 
+# choices within the Guacamole interface
+set_optional_property "allowed-languages" "$ALLOWED_LANGUAGES"
+
+# If set to “true”, Guacamole will first evaluate its environment to obtain the value
+# for any given configuration property, before using a value specified in 
+# guacamole.properties or falling back to a default value
+set_optional_property "enable-environment-properties" "$ENABLE_ENVIRONMENT_PROPERTIES"
+
 
 # Apply any overrides for default address ban behavior
 set_optional_property "ban-address-duration" "$BAN_ADDRESS_DURATION"
