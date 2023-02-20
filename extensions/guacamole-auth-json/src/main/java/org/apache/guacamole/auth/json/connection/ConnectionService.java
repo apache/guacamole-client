@@ -40,6 +40,7 @@ import org.apache.guacamole.net.InetGuacamoleSocket;
 import org.apache.guacamole.net.SSLGuacamoleSocket;
 import org.apache.guacamole.net.SimpleGuacamoleTunnel;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
+import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration.EncryptionMethod;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -176,6 +177,22 @@ public class ConnectionService {
         String hostname = proxyConfig.getHostname();
         int port = proxyConfig.getPort();
 
+        // handle guacd-[hostname/port/ssl] overrides
+        Map<String, String> params = connection.getParameters();
+        String overrideGuacdHostname = params.get(Environment.GUACD_HOSTNAME.getName());
+        if (overrideGuacdHostname != null && !overrideGuacdHostname.isEmpty()) {
+            hostname = overrideGuacdHostname;
+        }
+        String overrideGuacdPort = params.get(Environment.GUACD_PORT.getName());
+        if (overrideGuacdPort != null && !overrideGuacdPort.isEmpty()) {
+            port = Integer.parseInt(overrideGuacdPort);
+        }
+        EncryptionMethod proxyMethod = proxyConfig.getEncryptionMethod();
+        String overrideGuacdSSL = params.get(Environment.GUACD_SSL.getName());
+        if (overrideGuacdSSL != null && !overrideGuacdSSL.isEmpty()) {
+            proxyMethod = Boolean.getBoolean(overrideGuacdSSL) ? EncryptionMethod.SSL : EncryptionMethod.NONE;
+        }
+
         // Generate and verify connection configuration
         GuacamoleConfiguration filteredConfig = getConfiguration(connection);
         if (filteredConfig == null) {
@@ -190,7 +207,7 @@ public class ConnectionService {
 
         // Determine socket type based on required encryption method
         final ConfiguredGuacamoleSocket socket;
-        switch (proxyConfig.getEncryptionMethod()) {
+        switch (proxyMethod) {
 
             // If guacd requires SSL, use it
             case SSL:
