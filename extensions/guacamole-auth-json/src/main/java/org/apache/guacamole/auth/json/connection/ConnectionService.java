@@ -178,19 +178,18 @@ public class ConnectionService {
         int port = proxyConfig.getPort();
 
         // handle guacd-[hostname/port/ssl] overrides
-        Map<String, String> params = connection.getParameters();
-        String overrideGuacdHostname = params.get(Environment.GUACD_HOSTNAME.getName());
+        String overrideGuacdHostname = connection.getGuacdHostname();
         if (overrideGuacdHostname != null && !overrideGuacdHostname.isEmpty()) {
             hostname = overrideGuacdHostname;
         }
-        String overrideGuacdPort = params.get(Environment.GUACD_PORT.getName());
-        if (overrideGuacdPort != null && !overrideGuacdPort.isEmpty()) {
-            port = Integer.parseInt(overrideGuacdPort);
+        Integer overrideGuacdPort = connection.getGuacdPort();
+        if (overrideGuacdPort != null) {
+            port = overrideGuacdPort;
         }
         EncryptionMethod proxyMethod = proxyConfig.getEncryptionMethod();
-        String overrideGuacdSSL = params.get(Environment.GUACD_SSL.getName());
-        if (overrideGuacdSSL != null && !overrideGuacdSSL.isEmpty()) {
-            proxyMethod = Boolean.getBoolean(overrideGuacdSSL) ? EncryptionMethod.SSL : EncryptionMethod.NONE;
+        Boolean overrideGuacdSSL = connection.getGuacdSsl();
+        if (overrideGuacdSSL != null) {
+            proxyMethod = overrideGuacdSSL ? EncryptionMethod.SSL : EncryptionMethod.NONE;
         }
 
         // Generate and verify connection configuration
