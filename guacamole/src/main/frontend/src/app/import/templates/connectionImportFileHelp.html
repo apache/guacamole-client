@@ -1,0 +1,93 @@
+<div class="import help">
+
+    <div class="header">
+        <h2>{{'CONNECTION_IMPORT.HELP_HEADER' | translate}}</h2>
+        <guac-user-menu></guac-user-menu>
+    </div>
+
+    <h2>{{'CONNECTION_IMPORT.HELP_FILE_TYPE_HEADER' | translate}}</h2>
+    <p>{{'CONNECTION_IMPORT.HELP_FILE_TYPE_DESCRIPTION' | translate}}</p>
+
+    <h2>{{'CONNECTION_IMPORT.HELP_CSV_HEADER' | translate}}</h2>
+    <p>{{'CONNECTION_IMPORT.HELP_CSV_DESCRIPTION' | translate}}</p>
+    <p>{{'CONNECTION_IMPORT.HELP_CSV_MORE_DETAILS' | translate}}</p>
+    <pre>name,protocol,hostname,group,users,groups,guacd-encryption (attribute)
+conn1,vnc,conn1.web.com,ROOT,guac user 1;guac user 2,Connection 1 Users,none
+conn2,rdp,conn2.web.com,ROOT/Parent Group,guac user 1,,ssl
+conn3,ssh,conn3.web.com,ROOT/Parent Group/Child Group,guac user 2;guac user 3,,
+conn4,kubernetes,,,,,</pre>
+
+    <h2>{{'CONNECTION_IMPORT.HELP_JSON_HEADER' | translate}}</h2>
+    <p>{{'CONNECTION_IMPORT.HELP_JSON_DESCRIPTION' | translate}}</p>
+    <p>{{'CONNECTION_IMPORT.HELP_JSON_MORE_DETAILS' | translate}}</p>
+    <pre>[
+  {
+    "name": "conn1",
+    "protocol": "vnc",
+    "parameters": { "hostname": "conn1.web.com" },
+    "parentIdentifier": "ROOT",
+    "users": [ "guac user 1", "guac user 2" ],
+    "groups": [ "Connection 1 Users" ],
+    "attributes": { "guacd-encryption": "none" }
+  },
+  {
+    "name": "conn2",
+    "protocol": "rdp",
+    "parameters": { "hostname": "conn2.web.com" },
+    "group": "ROOT/Parent Group",
+    "users": [ "guac user 1" ],
+    "attributes": { "guacd-encryption": "none" }
+  },
+  {
+    "name": "conn3",
+    "protocol": "ssh",
+    "parameters": { "hostname": "conn3.web.com" },
+    "group": "ROOT/Parent Group/Child Group",
+    "users": [ "guac user 2", "guac user 3" ],
+  },
+  {
+    "name": "conn4",
+    "protocol": "kubernetes",
+  }
+]</pre>
+
+    <h2>{{'CONNECTION_IMPORT.HELP_YAML_HEADER' | translate}}</h2>
+    <p>{{'CONNECTION_IMPORT.HELP_YAML_DESCRIPTION' | translate}}</p>
+    <pre>---
+  - name: conn1
+    protocol: vnc
+    parameters:
+      hostname: conn1.web.com
+    group: ROOT
+    users:
+    - guac user 1
+    - guac user 2
+    groups:
+    - AWS EC2 Administrators
+    attributes:
+      guacd-encryption: none
+  - name: conn2
+    protocol: rdp
+    parameters:
+      hostname: conn2.web.com
+    group: ROOT/Parent Group
+    users:
+    - guac user 1
+    attributes:
+      guacd-encryption: none
+  - name: conn3
+    protocol: ssh
+    parameters:
+      hostname: conn3.web.com
+    group: ROOT/Parent Group/Child Group
+    users:
+    - guac user 2
+    - guac user 3
+  - name: conn4
+    protocol: kubernetes</pre>
+
+    <ol class="footnotes">
+        <li>{{'CONNECTION_IMPORT.HELP_SEMICOLON_FOOTNOTE' | translate}}</li>
+    </ol>
+
+</div>

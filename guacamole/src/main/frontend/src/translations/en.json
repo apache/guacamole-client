@@ -191,6 +191,24 @@
 
         "HEADER": "Connection Import",
 
+        "HELP_HEADER": "Connection Import File Format",
+
+        "HELP_FILE_TYPE_HEADER": "File Types",
+        "HELP_FILE_TYPE_DESCRIPTION" : "Three file types are supported for connection import: CSV, JSON, and YAML. The same data may be specified by each file type. This must include the connection name and protocol. Optionally, a connection group location, a list of users and/or user groups to grant access, connection parameters, or connection protocols may also be specified.",
+
+        "HELP_CSV_HEADER": "CSV Format",
+        "HELP_CSV_DESCRIPTION": "A connection import CSV file has one connection record per row. Each column will specify a connection field. At minimum the connection name and protocol must be specified.",
+        "HELP_CSV_MORE_DETAILS": "The CSV header for each row specifies the connection field. The connection group ID that the connection should be imported into may be directly specified with \"parentIdentifier\", or the path to the parent group may be specified using \"group\" as shown below. In most cases, there should be no conflict between fields, but if needed, an \" (attribute)\" or \" (parameter)\" suffix may be added to disambiguate. Lists of user or user group identifiers must be semicolon-seperated.¹",
+
+        "HELP_JSON_HEADER": "JSON Format",
+        "HELP_JSON_DESCRIPTION": "A connection import JSON file is a list of connection objects. At minimum the connection name and protocol must be specified in each connection object.",
+        "HELP_JSON_MORE_DETAILS": "The connection group ID that the connection should be imported into may be directly specified with a \"parentIdentifier\" field, or the path to the parent group may be specified using a \"group\" field as shown below. An array of user and user group identifiers to grant access to may be specified per connection.",
+
+        "HELP_YAML_HEADER": "YAML Format",
+        "HELP_YAML_DESCRIPTION": "A connection import YAML file is a list of connection objects with exactly the same structure as the JSON format.",
+        
+        "HELP_SEMICOLON_FOOTNOTE": "If needed, semicolons can be escaped with a backslash, e.g. \"first\\\\;last\"",
+
         "ERROR_AMBIGUOUS_CSV_HEADER": 
             "Ambiguous CSV Header \"{HEADER}\" could be either a connection attribute or parameter",
         "ERROR_ARRAY_REQUIRED": 
