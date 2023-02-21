@@ -20,16 +20,15 @@
 /* global _ */
 
 /**
- * A directive that allows for file upload, either through drag-and-drop or
- * a file browser.
- */
-
-/**
  * All legal import file types. Any file not belonging to one of these types
  * must be rejected.
  */
 const LEGAL_FILE_TYPES = ["csv", "json", "yaml"];
 
+/**
+ * A directive that allows for file upload, either through drag-and-drop or
+ * a file browser.
+ */
 angular.module('import').directive('connectionImportFileUpload', [
         function connectionImportFileUpload() {
 

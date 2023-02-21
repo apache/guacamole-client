@@ -107,33 +107,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     }
 
     /**
-     * Given a successful response to an import PATCH request, make another
-     * request to delete every created connection in the provided request, i.e.
-     * clean up every connection that was created.
-     *
-     * @param {DirectoryPatchResponse} creationResponse
-     */
-    function cleanUpConnections(creationResponse) {
-
-        // The patches to delete - one delete per initial creation
-        const deletionPatches = creationResponse.patches.map(patch =>
-            new DirectoryPatch({
-                op: 'remove',
-                path: '/' + patch.identifier
-            }));
-
-        console.log("Deletion Patches", deletionPatches);
-
-        connectionService.patchConnections(
-            $routeParams.dataSource, deletionPatches)
-    
-            .then(deletionResponse =>
-                console.log("Deletion response", deletionResponse))
-            .catch(handleError);
-
-    }
-
-    /**
      * Create all users and user groups mentioned in the import file that don't
      * already exist in the current data source.
      *
@@ -178,8 +151,8 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                 }));
 
             return $q.all({
-                createdUsers: userService.patchUsers(dataSource, userPatches),
-                createdGroups: userGroupService.patchUserGroups(dataSource, groupPatches)
+                userResponse: userService.patchUsers(dataSource, userPatches),
+                groupResponse: userGroupService.patchUserGroups(dataSource, groupPatches)
             });
             
         });
@@ -256,22 +229,126 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         return $q.all({ ...userRequests, ...groupRequests });
     }
 
+    // Given a PATCH API response, create an array of patches to delete every
+    // entity created in the original request that generated this response
+    const createDeletionPatches = creationResponse =>
+        creationResponse.patches.map(patch =>
+
+            // Add one deletion patch per original creation patch
+            new DirectoryPatch({
+                op: 'remove',
+                path: '/' + patch.identifier
+            }));
+
+    /**
+     * Given a successful response to a connection PATCH request, make another
+     * request to delete every created connection in the provided request, i.e.
+     * clean up every connection that was created.
+     *
+     * @param {DirectoryPatchResponse} creationResponse
+     *     The response to the connection PATCH request.
+     *
+     * @returns {DirectoryPatchResponse}
+     *     The response to the PATCH deletion request.
+     */
+    function cleanUpConnections(creationResponse) {
+
+        return connectionService.patchConnections(
+            $routeParams.dataSource, createDeletionPatches(creationResponse))
+
+            // TODO: Better error handling? Make additional cleanup requests?
+            .catch(handleError);
+
+    }
+
+    /**
+     * Given a successful response to a user PATCH request, make another
+     * request to delete every created user in the provided request.
+     *
+     * @param {DirectoryPatchResponse} creationResponse
+     *     The response to the user PATCH request.
+     *
+     * @returns {DirectoryPatchResponse}
+     *     The response to the PATCH deletion request.
+     */
+    function cleanUpUsers(creationResponse) {
+
+        return userService.patchUsers(
+            $routeParams.dataSource, createDeletionPatches(creationResponse))
+
+            // TODO: Better error handling? Make additional cleanup requests?
+            .catch(handleError);
+
+    }
+
+    /**
+     * Given a successful response to a user group PATCH request, make another
+     * request to delete every created user group in the provided request.
+     *
+     * @param {DirectoryPatchResponse} creationResponse
+     *     The response to the user group PATCH creation request.
+     *
+     * @returns {DirectoryPatchResponse}
+     *     The response to the PATCH deletion request.
+     */
+    function cleanUpUserGroups(creationResponse) {
+
+        return userGroupService.patchUserGroups(
+            $routeParams.dataSource, createDeletionPatches(creationResponse))
+
+            // TODO: Better error handling? Make additional cleanup requests?
+            .catch(handleError);
+
+    }
+
+    /**
+     * Make requests to delete all connections, users, and/or groups from any
+     * provided PATCH API responses. If any responses are not provided, no
+     * cleanup will be attempted.
+     *
+     * @param {DirectoryPatchResponse} connectionResponse
+     *     The response to the connection PATCH creation request.
+     *
+     * @param {DirectoryPatchResponse} userResponse
+     *     The response to the user PATCH creation request.
+     *
+     * @param {DirectoryPatchResponse} userGroupResponse
+     *     The response to the user group PATCH creation request.
+     * 
+     * @returns {Object}
+     *     An object containing PATCH deletion responses corresponding to any
+     *     provided connection, user, and/or user group creation responses.
+     */
+    function cleanUpAll(connectionResponse, userResponse, userGroupResponse) {
+
+        // All cleanup requests that need to be made
+        const requests = {};
+
+        // If the connection response was provided, clean up connections
+        if (connectionResponse)
+            requests.connectionCleanup = cleanUpConnections(connectionResponse);
+
+        // If the user response was provided, clean up users
+        if (userResponse)
+            requests.userCleanup = cleanUpUsers(userResponse);
+
+        // If the user group response was provided, clean up user groups
+        if (connectionResponse)
+            requests.userGroupCleanup = cleanUpUserGroups(userGroupResponse);
+
+        // Return when all cleanup is complete
+        return $q.all(requests);
+    }
+
     /**
      * Process a successfully parsed import file, creating any specified
      * connections, creating and granting permissions to any specified users
-     * and user groups.
-     * 
-     * TODO:
-     * - Do batch import of connections
-     * - Create all users/groups not already present
-     * - Grant permissions to all users/groups as defined in the import file
-     * - On failure: Roll back everything (maybe ask the user first):
-     *   - Attempt to delete all created connections
-     *   - Attempt to delete any created users / groups
+     * and user groups. If successful, the user will be shown a success message.
+     * If not, any errors will be displayed, and the user will be given ???an
+     * option??? to roll back any already-created entities.
      *
      * @param {ParseResult} parseResult
      *     The result of parsing the user-supplied import file.
-     *
      */
     function handleParseSuccess(parseResult) {
 
@@ -281,21 +358,20 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
         // First, attempt to create the connections
         connectionService.patchConnections(dataSource, parseResult.patches)
-                .then(response => {
+                .then(connectionResponse => {
 
             // If connection creation is successful, create users and groups
-            createUsersAndGroups(parseResult).then(() => {
+            createUsersAndGroups(parseResult).then(
+                    ({userResponse, groupResponse}) => 
 
-                grantConnectionPermissions(parseResult, response).then(results => {
-                    console.log("permission requests", results);
+                grantConnectionPermissions(parseResult, connectionResponse)
+                        .then(() =>
                    
-                    // TODON'T: Delete connections so we can test over and over
-                    cleanUpConnections(response);
+                    // TODON'T: Delete the stuff so we can test over and over
+                    cleanUpAll(connectionResponse, userResponse, groupResponse)
+                        .then(resetUploadState)
 
-                    resetUploadState();
-                })
-
-            });
+                ));
         });
     }
     
@@ -315,7 +391,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         console.error(error);
         $scope.error = error;
         
-    }
+    };
     
     /**
      * Clear the current displayed error.
@@ -356,14 +432,16 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // have already have filtered out any invalid file types
         else {
             handleError(new ParseError({
-                message: 'Invalid file type: ' + type,
+                message: 'Invalid file type: ' + mimeType,
                 key: 'CONNECTION_IMPORT.INVALID_FILE_TYPE',
-                variables: { TYPE: type }
+                variables: { TYPE: mimeType }
             }));
             return;
         }
 
         // Make the call to process the data into a series of patches
+        // TODO: Check if there's errors, and if so, display those rather than
+        // just YOLOing a create call
         processDataCallback(data)
 
             // Send the data off to be imported if parsing is successful
@@ -476,6 +554,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
         // Read all the data into memory 
         $scope.fileReader.readAsBinaryString(file);
-    }
+    };
 
 }]);

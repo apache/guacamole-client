@@ -194,7 +194,8 @@
         "HELP_HEADER": "Connection Import File Format",
 
         "HELP_FILE_TYPE_HEADER": "File Types",
-        "HELP_FILE_TYPE_DESCRIPTION" : "Three file types are supported for connection import: CSV, JSON, and YAML. The same data may be specified by each file type. This must include the connection name and protocol. Optionally, a connection group location, a list of users and/or user groups to grant access, connection parameters, or connection protocols may also be specified.",
+        "HELP_FILE_TYPE_DESCRIPTION" : "Three file types are supported for connection import: CSV, JSON, and YAML. The same data may be specified by each file type. This must include the connection name and protocol. Optionally, a connection group location, a list of users and/or user groups to grant access, connection parameters, or connection protocols may also be specified. Any users or user groups that do not exist in the current data source will be automatically created.",
+
 
         "HELP_CSV_HEADER": "CSV Format",
         "HELP_CSV_DESCRIPTION": "A connection import CSV file has one connection record per row. Each column will specify a connection field. At minimum the connection name and protocol must be specified.",
@@ -207,7 +208,7 @@
         "HELP_YAML_HEADER": "YAML Format",
         "HELP_YAML_DESCRIPTION": "A connection import YAML file is a list of connection objects with exactly the same structure as the JSON format.",
         
-        "HELP_SEMICOLON_FOOTNOTE": "If needed, semicolons can be escaped with a backslash, e.g. \"first\\\\;last\"",
+        "HELP_SEMICOLON_FOOTNOTE": "If present, semicolons can be escaped with a backslash, e.g. \"first\\\\;last\"",
 
         "ERROR_AMBIGUOUS_CSV_HEADER": 
             "Ambiguous CSV Header \"{HEADER}\" could be either a connection attribute or parameter",

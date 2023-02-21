@@ -43,11 +43,11 @@ conn4,kubernetes,,,,,</pre>
     "protocol": "ssh",
     "parameters": { "hostname": "conn3.web.com" },
     "group": "ROOT/Parent Group/Child Group",
-    "users": [ "guac user 2", "guac user 3" ],
+    "users": [ "guac user 2", "guac user 3" ]
   },
   {
     "name": "conn4",
-    "protocol": "kubernetes",
+    "protocol": "kubernetes"
   }
 ]</pre>
 
@@ -63,7 +63,7 @@ conn4,kubernetes,,,,,</pre>
     - guac user 1
     - guac user 2
     groups:
-    - AWS EC2 Administrators
+    - Connection 1 Users
     attributes:
       guacd-encryption: none
   - name: conn2

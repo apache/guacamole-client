@@ -142,7 +142,7 @@ angular.module('import').factory('connectionParseService',
 
             // If there's no group to translate, do nothing
             if (!connection.group)
-                return;
+                return connection;
 
             // If both are specified, the parent group is ambigious
             if (connection.parentIdentifier)
@@ -333,8 +333,9 @@ angular.module('import').factory('connectionParseService',
     service.parseYAML = function parseYAML(yamlData) {
 
         // Parse from YAML into a javascript array
+        let connectionData;
         try {
-            const connectionData = parseYAMLData(yamlData);
+            connectionData = parseYAMLData(yamlData);
         }
 
         // If the YAML parser throws an error, reject with that error. No
@@ -366,8 +367,9 @@ angular.module('import').factory('connectionParseService',
     service.parseJSON = function parseJSON(jsonData) {
 
         // Parse from JSON into a javascript array
+        let connectionData;
         try {
-            const connectionData = JSON.parse(jsonData);
+            connectionData = JSON.parse(jsonData);
         }
 
         // If the JSON parse attempt throws an error, reject with that error.
