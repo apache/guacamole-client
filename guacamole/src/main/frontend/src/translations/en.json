@@ -162,6 +162,7 @@
         "TEXT_USER_LEFT"                  : "{USERNAME} has left the connection.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+        "TEXT_CLIPBOARD_AWAITING_FOCUS"   : "Click to view clipboard data...",
 
         "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
 
