@@ -22,12 +22,15 @@ package org.apache.guacamole.auth.ssl.conf;
 import com.google.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import javax.naming.ldap.LdapName;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.StringListProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 
 /**
@@ -133,6 +136,34 @@ public class ConfigurationService {
 
         @Override
         public String getName() { return "ssl-max-token-validity"; }
+
+    };
+
+    /**
+     * The property defining the LDAP attribute or attributes that may be used
+     * to represent a username within the subject DN of a user's X.509
+     * certificate. If the least-significant attribute of the subject DN is not
+     * one of these attributes, the certificate will be rejected. By default,
+     * any attribute is accepted.
+     */
+    private static final StringListProperty SSL_SUBJECT_USERNAME_ATTRIBUTE =
+            new StringListProperty () {
+
+        @Override
+        public String getName() { return "ssl-subject-username-attribute"; }
+
+    };
+
+    /**
+     * The property defining the base DN containing all valid subject DNs. If
+     * specified, only certificates asserting subject DNs beneath this base DN
+     * will be accepted. By default, all DNs are accepted.
+     */
+    private static final LdapNameGuacamoleProperty SSL_SUBJECT_BASE_DN =
+            new LdapNameGuacamoleProperty () {
+
+        @Override
+        public String getName() { return "ssl-subject-base-dn"; }
 
     };
 
@@ -372,6 +403,38 @@ public class ConfigurationService {
      */
     public int getMaxDomainValidity() throws GuacamoleException {
         return environment.getProperty(SSL_MAX_DOMAIN_VALIDITY, DEFAULT_MAX_DOMAIN_VALIDITY);
+    }
+
+    /**
+     * Returns the base DN that contains all valid subject DNs. If there is no
+     * such base DN (and all subject DNs are valid), null is returned.
+     *
+     * @return
+     *     The base DN that contains all valid subject DNs, or null if all
+     *     subject DNs are valid.
+     *
+     * @throws GuacamoleException
+     *     If the configured base DN cannot be read or is not a valid LDAP DN.
+     */
+    public LdapName getSubjectBaseDN() throws GuacamoleException {
+        return environment.getProperty(SSL_SUBJECT_BASE_DN);
+    }
+
+    /**
+     * Returns a list of all attributes that may be used to represent a user's
+     * username within their subject DN. If all attributes may be accepted,
+     * null is returned.
+     *
+     * @return
+     *     A list of all attributes that may be used to represent a user's
+     *     username within their subject DN, or null if any attribute may be
+     *     used.
+     *
+     * @throws GuacamoleException
+     *     If the configured set of username attributes cannot be read.
+     */
+    public List<String> getSubjectUsernameAttributes() throws GuacamoleException {
+        return environment.getProperty(SSL_SUBJECT_USERNAME_ATTRIBUTE);
     }
 
 }

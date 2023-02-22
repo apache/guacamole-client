@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.ws.rs.GET;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.HeaderParam;
@@ -45,10 +46,11 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.sso.SSOResource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * REST API resource that allows the user to retrieve an opaque state value
@@ -65,6 +67,25 @@ public class SSLClientAuthenticationResource extends SSOResource {
      * verified.
      */
     private static final String CLIENT_VERIFIED_HEADER_SUCCESS_VALUE = "SUCCESS";
+
+    /**
+     * The string value that the SSL termination service uses for its client
+     * verification header to represent that the client certificate is absent.
+     */
+    private static final String CLIENT_VERIFIED_HEADER_NONE_VALUE = "NONE";
+
+    /**
+     * The string prefix that the SSL termination service uses for its client
+     * verification header to represent that the client certificate has failed
+     * validation. The error message describing the nature of the failure is
+     * provided by the SSL termination service after this prefix.
+     */
+    private static final String CLIENT_VERIFIED_HEADER_FAILED_PREFIX = "FAILED:";
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(SSLClientAuthenticationResource.class);
 
     /**
      * Service for retrieving configuration information.
@@ -144,6 +165,67 @@ public class SSLClientAuthenticationResource extends SSOResource {
     }
 
     /**
+     * Extracts a user's username from the X.509 subject name, which should be
+     * in LDAP DN format. If specific username attributes are configured, only
+     * those username attributes are used to determine the name. If a specific
+     * base DN is configured, only subject names that are formatted as LDAP DNs
+     * within that base DN will be accepted.
+     *
+     * @param name
+     *     The subject name to extract the username from.
+     *
+     * @return
+     *     The username of the user represented by the given subject name.
+     *
+     * @throws GuacamoleException
+     *     If any configuration parameters related to retrieving certificates
+     *     from HTTP request cannot be parsed, or if the provided subject name
+     *     cannot be parsed or is not acceptable (wrong base DN or wrong
+     *     username attribute).
+     */
+    public String getUsername(String name) throws GuacamoleException {
+
+        // Extract user's DN from their X.509 certificate
+        LdapName dn;
+        try {
+            dn = new LdapName(name);
+        }
+        catch (InvalidNameException e) {
+            throw new GuacamoleClientException("Subject \"" + name + "\" is "
+                    + "not a valid DN: " + e.getMessage(), e);
+        }
+
+        // Verify DN actually contains components
+        int numComponents = dn.size();
+        if (numComponents < 1)
+            throw new GuacamoleClientException("Subject DN is empty.");
+
+        // Verify DN is within configured base DN (if any)
+        LdapName baseDN = confService.getSubjectBaseDN();
+        if (baseDN != null && !(numComponents > baseDN.size() && dn.startsWith(baseDN)))
+            throw new GuacamoleClientException("Subject DN \"" + dn + "\" is "
+                    + "not within the configured base DN.");
+
+        // Retrieve the least significant attribute from the parsed DN - this
+        // will be the username
+        Rdn nameRdn = dn.getRdn(numComponents - 1);
+
+        // Verify that the username is specified with one of the allowed
+        // attributes
+        List<String> usernameAttributes = confService.getSubjectUsernameAttributes();
+        if (usernameAttributes != null && !usernameAttributes.stream().anyMatch(nameRdn.getType()::equalsIgnoreCase))
+            throw new GuacamoleClientException("Subject DN \"" + dn + "\" "
+                    + "does not contain an acceptable username attribute.");
+
+        // The DN is valid - extract the username from the least significant
+        // component
+        String username = nameRdn.getValue().toString();
+        logger.debug("Username \"{}\" extracted from subject DN \"{}\".", username, dn);
+        return username;
+
+    }
+
+    /**
      * Authenticates a user using HTTP headers containing that user's verified
      * X.509 certificate. It is assumed that this certificate is being passed
      * to Guacamole from an SSL termination service that has already verified
@@ -154,15 +236,13 @@ public class SSLClientAuthenticationResource extends SSOResource {
      *     The raw bytes of the X.509 certificate retrieved from the request.
      *
      * @return
-     *     A new SSOAuthenticatedUser representing the identity of the user
-     *     asserted by the SSL termination service via that user's X.509
-     *     certificate.
+     *     The username of the user asserted by the SSL termination service via
+     *     that user's X.509 certificate.
      *
      * @throws GuacamoleException
-     *     If the provided X.509 certificate is not valid or cannot be parsed.
-     *     It is expected that the SSL termination service will already have
-     *     validated the certificate; this function validates only the
-     *     certificate timestamps.
+     *     If any configuration parameters related to retrieving certificates
+     *     from HTTP request cannot be parsed, or if the certificate is not
+     *     valid/present.
      */
     public String getUsername(byte[] certificate) throws GuacamoleException {
 
@@ -179,36 +259,15 @@ public class SSLClientAuthenticationResource extends SSOResource {
 
         }
         catch (CertificateException e) {
-            throw new GuacamoleClientException("The X.509 certificate "
-                    + "presented is not valid.", e);
+            throw new GuacamoleClientException("Certificate is not valid: " + e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new GuacamoleServerException("Provided X.509 certificate "
-                    + "could not be read.", e);
+            throw new GuacamoleClientException("Certificate could not be read: " + e.getMessage(), e);
         }
 
         // Extract user's DN from their X.509 certificate
-        LdapName dn;
-        try {
-            Principal principal = cert.getSubjectX500Principal();
-            dn = new LdapName(principal.getName());
-        }
-        catch (InvalidNameException e) {
-            throw new GuacamoleClientException("The X.509 certificate "
-                    + "presented does not contain a valid subject DN.", e);
-        }
-
-        // Verify DN actually contains components
-        int numComponents = dn.size();
-        if (numComponents < 1)
-            throw new GuacamoleClientException("The X.509 certificate "
-                    + "presented contains an empty subject DN.");
-
-        // Simply use first component of DN as username (TODO: Enforce
-        // requirements on the attribute providing the username and the base DN,
-        // and consider using components following the username to determine
-        // group memberships)
-        return dn.getRdn(numComponents - 1).getValue().toString();
+        Principal principal = cert.getSubjectX500Principal();
+        return getUsername(principal.getName());
 
     }
 
@@ -216,7 +275,7 @@ public class SSLClientAuthenticationResource extends SSOResource {
      * Processes the X.509 certificate in the headers of the given HTTP
      * request, returning an authentication session token representing the
      * identity in that certificate. If the certificate is invalid or not
-     * present, null is returned.
+     * present, an invalid session token is returned.
      *
      * @param credentials
      *     The credentials submitted in the HTTP request being processed.
@@ -226,14 +285,10 @@ public class SSLClientAuthenticationResource extends SSOResource {
      *
      * @return
      *     An authentication session token representing the identity in the
-     *     certificate in the given HTTP request, or null if the request does
-     *     not contain a valid certificate.
-     *
-     * @throws GuacamoleException
-     *     If any configuration parameters related to retrieving certificates
-     *     from HTTP request cannot be parsed.
+     *     certificate in the given HTTP request, or an invalid session token
+     *     if no valid identity was asserted.
      */
-    private String processCertificate(HttpHeaders headers) throws GuacamoleException {
+    private String processCertificate(HttpHeaders headers) {
 
         //
         // NOTE: A result with an associated state is ALWAYS returned by
@@ -245,18 +300,46 @@ public class SSLClientAuthenticationResource extends SSOResource {
         // failures.
         //
 
-        // Verify that SSL termination has already verified the certificate
-        String verified = getHeader(headers, confService.getClientVerifiedHeader());
-        if (!CLIENT_VERIFIED_HEADER_SUCCESS_VALUE.equals(verified))
-            return sessionManager.generateInvalid();
+        try {
 
-        String certificate = getHeader(headers, confService.getClientCertificateHeader());
-        if (certificate == null)
-            return sessionManager.generateInvalid();
+            // Verify that SSL termination has already verified the certificate
+            String verified = getHeader(headers, confService.getClientVerifiedHeader());
+            if (verified != null && verified.startsWith(CLIENT_VERIFIED_HEADER_FAILED_PREFIX)) {
+                String message = verified.substring(CLIENT_VERIFIED_HEADER_FAILED_PREFIX.length());
+                throw new GuacamoleClientException("Client certificate did "
+                        + "not pass validation. SSL termination reports the "
+                        + "following failure: \"" + message + "\"");
+            }
+            else if (CLIENT_VERIFIED_HEADER_NONE_VALUE.equals(verified)) {
+                throw new GuacamoleClientException("No client certificate was presented.");
+            }
+            else if (!CLIENT_VERIFIED_HEADER_SUCCESS_VALUE.equals(verified)) {
+                throw new GuacamoleClientException("Client certificate did not pass validation.");
+            }
 
-        String username = getUsername(decode(certificate));
-        long validityDuration = TimeUnit.MINUTES.toMillis(confService.getMaxTokenValidity());
-        return sessionManager.defer(new SSLAuthenticationSession(username, validityDuration));
+            String certificate = getHeader(headers, confService.getClientCertificateHeader());
+            if (certificate == null)
+                throw new GuacamoleClientException("Client certificate missing from request.");
+
+            String username = getUsername(decode(certificate));
+            long validityDuration = TimeUnit.MINUTES.toMillis(confService.getMaxTokenValidity());
+            return sessionManager.defer(new SSLAuthenticationSession(username, validityDuration));
+
+        }
+        catch (GuacamoleClientException e) {
+            logger.warn("SSL/TLS client authentication attempt rejected: {}", e.getMessage());
+            logger.debug("SSL/TLS client authentication failed.", e);
+        }
+        catch (GuacamoleException e) {
+            logger.error("SSL/TLS client authentication attempt could not be processed: {}", e.getMessage());
+            logger.debug("SSL/TLS client authentication failed.", e);
+        }
+        catch (RuntimeException | Error e) {
+            logger.error("SSL/TLS client authentication attempt failed internally: {}", e.getMessage());
+            logger.debug("Internal failure processing SSL/TLS client authentication attempt.", e);
+        }
+
+        return sessionManager.generateInvalid();
 
     }
 
