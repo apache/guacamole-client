@@ -1,7 +1,7 @@
 <div class="settings-view import">
 
     <div class="header">
-        <h2>{{'CONNECTION_IMPORT.HEADER' | translate}}</h2>
+        <h2>{{'IMPORT.HEADER' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
 
@@ -10,11 +10,11 @@
     <div class="import-buttons">
         <button 
             ng-click="import()" ng-disabled="importDisabled()" class="import">
-                {{'CONNECTION_IMPORT.BUTTON_IMPORT' | translate}}
+                {{'IMPORT.BUTTON_IMPORT' | translate}}
         </button>
         <button
             ng-click="cancel()" ng-disabled="cancelDisabled()" class="cancel">
-                {{'CONNECTION_IMPORT.BUTTON_CANCEL' | translate}}
+                {{'IMPORT.BUTTON_CANCEL' | translate}}
         </button>
     </div>
 
@@ -28,6 +28,9 @@
     <p class="parseError" ng-show="!error.key && error.message">
         {{error.message}}
     </p>
+
+    <!-- Connection specific errors, if there are any -->
+    <connection-import-errors parse-result="parseResult" patch-failure="patchFailure" />
 
 
 </div>

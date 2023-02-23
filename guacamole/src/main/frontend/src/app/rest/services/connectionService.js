@@ -24,9 +24,11 @@ angular.module('rest').factory('connectionService', ['$injector',
         function connectionService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
+
+    // Required types
+    const Error = $injector.get('Error');
     
     var service = {};
     

@@ -18,10 +18,13 @@
  */
 
 /**
- * Service which defines the ImportConnection class.
+ * Service which defines the ImportConnectionError class.
  */
-angular.module('import').factory('ImportConnection', [
-        function defineImportConnection() {
+angular.module('import').factory('ImportConnectionError', ['$injector',
+        function defineImportConnectionError($injector) {
+
+    // Required types
+    const DisplayErrorList = $injector.get('DisplayErrorList');
 
     /**
      * A representation of a connection to be imported, as parsed from an
@@ -32,10 +35,16 @@ angular.module('import').factory('ImportConnection', [
      *     The object whose properties should be copied within the new
      *     Connection.
      */
-    const ImportConnection = function ImportConnection(template) {
+    const ImportConnectionError = function ImportConnectionError(template) {
 
         // Use empty object by default
         template = template || {};
+
+        /**
+         * The row number within the original connection import file for this
+         * connection. This should be 1-indexed.
+         */
+        this.rowNumber = template.rowNumber;
 
         /**
          * The unique identifier of the connection group that contains this
@@ -70,25 +79,6 @@ angular.module('import').factory('ImportConnection', [
         this.protocol = template.protocol;
 
         /**
-         * Connection configuration parameters, as dictated by the protocol in
-         * use, arranged as name/value pairs. This information may not be
-         * available until directly queried. If this information is
-         * unavailable, this property will be null or undefined.
-         *
-         * @type Object.<String, String>
-         */
-        this.parameters = template.parameters || {};
-
-        /**
-         * Arbitrary name/value pairs which further describe this connection.
-         * The semantics and validity of these attributes are dictated by the
-         * extension which defines them.
-         *
-         * @type Object.<String, String>
-         */
-        this.attributes = template.attributes || {};
-
-        /**
          * The identifiers of all users who should be granted read access to
          * this connection.
          *
@@ -104,8 +94,15 @@ angular.module('import').factory('ImportConnection', [
          */
         this.groups = template.groups || [];
 
+        /**
+         * The error messages associated with this particular connection, if any.
+         *
+         * @type ImportConnectionError
+         */
+        this.errors = template.errors || new DisplayErrorList();
+
     };
 
-    return ImportConnection;
+    return ImportConnectionError;
 
 }]);

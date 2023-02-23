@@ -238,7 +238,7 @@ angular.module('import').factory('connectionCSVService',
                     deferred.reject(new ParseError({
                         message: 'Duplicate CSV Header: ' + header,
                         translatableMessage: new TranslatableMessage({
-                            key: 'CONNECTION_IMPORT.ERROR_DUPLICATE_CSV_HEADER',
+                            key: 'IMPORT.ERROR_DUPLICATE_CSV_HEADER',
                             variables: { HEADER: header }
                         })
                     }));
@@ -342,7 +342,7 @@ angular.module('import').factory('connectionCSVService',
                         if (isAttribute && isParameter)
                             throw new ParseError({
                                 message: 'Ambiguous CSV Header: ' + header,
-                                key: 'CONNECTION_IMPORT.ERROR_AMBIGUOUS_CSV_HEADER',
+                                key: 'IMPORT.ERROR_AMBIGUOUS_CSV_HEADER',
                                 variables: { HEADER: header }
                             });
                         
@@ -350,7 +350,7 @@ angular.module('import').factory('connectionCSVService',
                         else if (!isAttribute && !isParameter)
                             throw new ParseError({
                                 message: 'Invalid CSV Header: ' + header,
-                                key: 'CONNECTION_IMPORT.ERROR_INVALID_CSV_HEADER',
+                                key: 'IMPORT.ERROR_INVALID_CSV_HEADER',
                                 variables: { HEADER: header }
                             });
                         
@@ -372,21 +372,21 @@ angular.module('import').factory('connectionCSVService',
             if (!nameGetter) 
                 return deferred.reject(new ParseError({
                     message: 'The connection name must be provided',
-                    key: 'CONNECTION_IMPORT.ERROR_REQUIRED_NAME'
+                    key: 'IMPORT.ERROR_REQUIRED_NAME'
                 }));
             
             // Fail if the protocol wasn't provided
             if (!protocolGetter)
                 return deferred.reject(new ParseError({
                     message: 'The connection protocol must be provided',
-                    key: 'CONNECTION_IMPORT.ERROR_REQUIRED_PROTOCOL'
+                    key: 'IMPORT.ERROR_REQUIRED_PROTOCOL'
                 }));
 
             // If both are specified, the parent group is ambigious
             if (parentIdentifierGetter && groupGetter)
                 throw new ParseError({
                     message: 'Only one of group or parentIdentifier can be set',
-                    key: 'CONNECTION_IMPORT.ERROR_AMBIGUOUS_PARENT_GROUP'
+                    key: 'IMPORT.ERROR_AMBIGUOUS_PARENT_GROUP'
                 });
             
             // The function to transform a CSV row into a connection object

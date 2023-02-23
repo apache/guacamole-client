@@ -27,5 +27,18 @@
     display: flex;
     gap: 10px;
     justify-content: center;
-    
+
+}
+
+
+.import .errors table {
+    width: 100%;
+}
+
+.import .errors .error-message {
+    color: red;
+}
+
+.import .errors .error-message ul {
+    margin: 0px;
 }

@@ -170,7 +170,7 @@ angular.module('import').directive('connectionImportFileUpload', [
 
                 // If the provided file is not one of the supported types,
                 // display an error and abort processing
-                setError('CONNECTION_IMPORT.ERROR_INVALID_FILE_TYPE',
+                setError('IMPORT.ERROR_INVALID_FILE_TYPE',
                         { TYPE: mimeType });
                 return;
             }
@@ -204,7 +204,7 @@ angular.module('import').directive('connectionImportFileUpload', [
 
                 // If more than one file was provided, print an error explaining
                 // that only a single file is allowed and abort processing
-                setError('CONNECTION_IMPORT.ERROR_FILE_SINGLE_ONLY');
+                setError('IMPORT.ERROR_FILE_SINGLE_ONLY');
                 return;
             }
 

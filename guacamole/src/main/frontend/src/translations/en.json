@@ -184,10 +184,12 @@
 
     },
 
-    "CONNECTION_IMPORT": {
+    "IMPORT": {
 
         "BUTTON_CANCEL": "Cancel",
         "BUTTON_IMPORT": "Import Connections",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "HEADER": "Connection Import",
 
@@ -195,7 +197,6 @@
 
         "HELP_FILE_TYPE_HEADER": "File Types",
         "HELP_FILE_TYPE_DESCRIPTION" : "Three file types are supported for connection import: CSV, JSON, and YAML. The same data may be specified by each file type. This must include the connection name and protocol. Optionally, a connection group location, a list of users and/or user groups to grant access, connection parameters, or connection protocols may also be specified. Any users or user groups that do not exist in the current data source will be automatically created.",
-
 
         "HELP_CSV_HEADER": "CSV Format",
         "HELP_CSV_DESCRIPTION": "A connection import CSV file has one connection record per row. Each column will specify a connection field. At minimum the connection name and protocol must be specified.",
@@ -234,12 +235,17 @@
         "ERROR_REQUIRED_NAME": 
             "No connection name found in the provided file",
 
+        "ERROR_FILE_SINGLE_ONLY": "Please upload only a single file at a time",
+
+        "TABLE_HEADER_NAME" : "Name",
+        "TABLE_HEADER_PROTOCOL" : "Protocol",
+        "TABLE_HEADER_ERRORS" : "Errors",
+        "TABLE_HEADER_ROW_NUMBER": "Row Number",
+
         "UPLOAD_FILE_TYPES": "CSV, JSON, or YAML",
         "UPLOAD_HELP_LINK": "View Format Tips",
         "UPLOAD_DROP_TITLE": "Drop a File Here",
-        "UPLOAD_BROWSE_LINK": "Browse for File",
-
-        "ERROR_FILE_SINGLE_ONLY": "Please upload only a single file at a time"
+        "UPLOAD_BROWSE_LINK": "Browse for File"
         
     },
 

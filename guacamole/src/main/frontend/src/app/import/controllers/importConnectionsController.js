@@ -50,6 +50,21 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     $scope.error = null;
 
     /**
+     * The result of parsing the current upload, if successful.
+     *
+     * @type {ParseResult}
+     */
+    $scope.parseResult = null;
+
+    /**
+     * The failure associated with the current attempt to create connections
+     * through the API, if any.
+     *
+     * @type {Error}
+     */
+    $scope.patchFailure = null;;
+
+    /**
      * True if the file is fully uploaded and ready to be processed, or false
      * otherwise.
      *
@@ -100,6 +115,8 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         $scope.fileData = null;
         $scope.mimeType = null;
         $scope.fileReader = null;
+        $scope.parseResult = null;
+        $scope.patchFailure = null;
 
         // Broadcast an event to clear the file upload UI
         $scope.$broadcast('clearFile');
@@ -254,10 +271,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     function cleanUpConnections(creationResponse) {
 
         return connectionService.patchConnections(
-            $routeParams.dataSource, createDeletionPatches(creationResponse))
-
-            // TODO: Better error handling? Make additional cleanup requests?
-            .catch(handleError);
+            $routeParams.dataSource, createDeletionPatches(creationResponse));
 
     }
 
@@ -274,10 +288,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     function cleanUpUsers(creationResponse) {
 
         return userService.patchUsers(
-            $routeParams.dataSource, createDeletionPatches(creationResponse))
-
-            // TODO: Better error handling? Make additional cleanup requests?
-            .catch(handleError);
+            $routeParams.dataSource, createDeletionPatches(creationResponse));
 
     }
 
@@ -294,10 +305,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     function cleanUpUserGroups(creationResponse) {
 
         return userGroupService.patchUserGroups(
-            $routeParams.dataSource, createDeletionPatches(creationResponse))
-
-            // TODO: Better error handling? Make additional cleanup requests?
-            .catch(handleError);
+            $routeParams.dataSource, createDeletionPatches(creationResponse));
 
     }
 
@@ -352,6 +360,15 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      */
     function handleParseSuccess(parseResult) {
 
+        $scope.processing = false;
+        $scope.parseResult = parseResult;
+
+        // If errors were encounted during file parsing, abort further
+        // processing - the user will have a chance to fix the errors and try
+        // again
+        if (parseResult.hasErrors) 
+            return;
+
         const dataSource = $routeParams.dataSource;
 
         console.log("parseResult", parseResult);
@@ -372,7 +389,12 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                         .then(resetUploadState)
 
                 ));
-        });
+        })
+
+        // If an error occured when the call to create the connections was made,
+        // skip any further processing - the user will have a chance to fix the
+        // problems and try again
+        .catch(patchFailure => { $scope.patchFailure = patchFailure; });
     }
     
     /**
@@ -433,7 +455,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         else {
             handleError(new ParseError({
                 message: 'Invalid file type: ' + mimeType,
-                key: 'CONNECTION_IMPORT.INVALID_FILE_TYPE',
+                key: 'IMPORT.INVALID_FILE_TYPE',
                 variables: { TYPE: mimeType }
             }));
             return;
@@ -459,8 +481,8 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
     /**
      * @return {Boolean}
-     *     True if import should be disabled, or false if cancellation
-     *     should be allowed.
+     *     True if import should be disabled, or false if import should be
+     *     allowed.
      */
     $scope.importDisabled = () =>
         
@@ -471,7 +493,8 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         $scope.processing;
 
     /**
-     * Cancel any in-progress upload, or clear any uploaded-but
+     * Cancel any in-progress upload, or clear any uploaded-but-errored-out
+     * batch.
      */
     $scope.cancel = function() {
 

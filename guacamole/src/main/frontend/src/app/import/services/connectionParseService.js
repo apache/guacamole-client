@@ -60,7 +60,7 @@ angular.module('import').factory('connectionParseService',
         if (!(parsedData instanceof Array))
             return new ParseError({
                 message: 'Import data must be a list of connections',
-                key: 'CONNECTION_IMPORT.ERROR_ARRAY_REQUIRED'
+                key: 'IMPORT.ERROR_ARRAY_REQUIRED'
             });
 
         // Make sure that the connection list is not empty - contains at least
@@ -68,7 +68,7 @@ angular.module('import').factory('connectionParseService',
         if (!parsedData.length)
             return new ParseError({
                 message: 'The provided file is empty',
-                key: 'CONNECTION_IMPORT.ERROR_EMPTY_FILE'
+                key: 'IMPORT.ERROR_EMPTY_FILE'
             });
     }
     
@@ -148,7 +148,7 @@ angular.module('import').factory('connectionParseService',
             if (connection.parentIdentifier)
                 throw new ParseError({
                     message: 'Only one of group or parentIdentifier can be set',
-                    key: 'CONNECTION_IMPORT.ERROR_AMBIGUOUS_PARENT_GROUP'
+                    key: 'IMPORT.ERROR_AMBIGUOUS_PARENT_GROUP'
                 });
 
             // Look up the parent identifier for the specified group path
@@ -158,7 +158,7 @@ angular.module('import').factory('connectionParseService',
             if (!identifier)
                 throw new ParseError({
                     message: 'No group found named: ' + connection.group,
-                    key: 'CONNECTION_IMPORT.ERROR_INVALID_GROUP',
+                    key: 'IMPORT.ERROR_INVALID_GROUP',
                     variables: { GROUP: connection.group }
                 });
 
