@@ -70,11 +70,22 @@ angular.module('storage').factory('sessionStorageFactory', ['$injector', functio
         if (typeof template === 'function')
             getter = template;
 
-        // Otherwise, always create a deep copy
-        else
-            getter = function getCopy() {
-                return angular.copy(template);
+        // Otherwise, create and maintain a deep copy (automatically cached to
+        // avoid "infdig" errors)
+        else {
+            var cached = angular.copy(template);
+            getter = function getIndependentCopy() {
+
+                // Reset to template only if changed externally, such that
+                // session storage values can be safely used in scope watches
+                // even if not logged in
+                if (!_.isEqual(cached, template))
+                    cached = angular.copy(template);
+
+                return cached;
+
             };
+        }
 
         /**
          * The current value of this storage, or undefined if not yet set.
