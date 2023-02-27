@@ -132,7 +132,8 @@
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "切断されました。",
         "TEXT_CLIENT_STATUS_UNSTABLE"     : "Guacamoleサーバへのネットワーク接続が不安定です。",
         "TEXT_CLIENT_STATUS_WAITING"      : "Guacamoleサーバに接続しました。応答を待っています",
-        "TEXT_RECONNECT_COUNTDOWN"        : "再接続しています... {REMAINING} {REMAINING, plural, one{second} other{seconds}}..."
+        "TEXT_RECONNECT_COUNTDOWN"        : "再接続しています... {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
+        "TEXT_CLIPBOARD_AWAITING_FOCUS"   : "クリックをしてコピー/カットされたテキストが表示されます..."
 
     },
 

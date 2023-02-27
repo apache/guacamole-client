@@ -1,1 +1,4 @@
-<textarea class="clipboard"></textarea>
+<div>
+    <textarea ng-show="isActive" class="clipboard active"></textarea>
+    <textarea ng-show="!isActive" class="clipboard inactive" ng-focus="setActive()">{{'CLIENT.TEXT_CLIPBOARD_AWAITING_FOCUS' | translate}}</textarea>
+</div>
