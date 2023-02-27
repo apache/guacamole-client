@@ -208,12 +208,12 @@ public class HashTokenSessionMap implements TokenSessionMap {
         if (authToken == null)
             return null;
 
-        // Update the last access time and return the GuacamoleSession
-        GuacamoleSession session = sessionMap.get(authToken);
-        if (session != null)
-            session.access();
-
-        return session;
+        // Return the GuacamoleSession having the given auth token (NOTE: We
+        // do not update the access time here, as it is necessary to be able
+        // to retrieve and check the session without causing that session to
+        // be marked as active. Instead, those updates occur as needed when
+        // functions within the GuacamoleSession are invoked.)
+        return sessionMap.get(authToken);
 
     }
 

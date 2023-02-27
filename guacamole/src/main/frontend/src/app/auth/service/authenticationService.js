@@ -262,6 +262,43 @@ angular.module('auth').factory('authenticationService', ['$injector',
     };
 
     /**
+     * Determines whether the session associated with a particular token is
+     * still valid, without performing an operation that would result in that
+     * session being marked as active. If no token is provided, the session of
+     * the current user is checked.
+     *
+     * @param {string} [token]
+     *     The authentication token to pass with the "Guacamole-Token" header.
+     *     If omitted, and the user is logged in, the user's current
+     *     authentication token will be used.
+     *
+     * @returns {Promise.<!boolean>}
+     *     A promise that resolves with the boolean value "true" if the session
+     *     is valid, and resolves with the boolean value "false" otherwise,
+     *     including if an error prevents session validity from being
+     *     determined. The promise is never rejected.
+     */
+    service.getValidity = function getValidity(token) {
+
+        // NOTE: Because this is a HEAD request, we will not receive a JSON
+        // response body. We will only have a simple yes/no regarding whether
+        // the auth token can be expected to be usable.
+        return service.request({
+            method: 'HEAD',
+            url: 'api/session'
+        }, token)
+
+        .then(function sessionIsValid() {
+            return true;
+        })
+
+        ['catch'](function sessionIsNotValid() {
+            return false;
+        });
+
+    };
+
+    /**
      * Makes a request to revoke an authentication token using the token REST
      * API endpoint, returning a promise that succeeds only if the token was
      * successfully revoked.
