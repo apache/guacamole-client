@@ -252,7 +252,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // that connection activity will already automatically check session
     // validity.
     $interval(function cleanUpViewIfSessionInvalid() {
-        if ($scope.applicationState === ApplicationState.READY && !hasActiveTunnel()) {
+        if (!!authenticationService.getCurrentToken() && !hasActiveTunnel()) {
             authenticationService.getValidity().then(function validityDetermined(valid) {
                 if (!valid)
                     $scope.reAuthenticate();
