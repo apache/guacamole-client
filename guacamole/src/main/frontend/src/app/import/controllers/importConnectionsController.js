@@ -25,9 +25,14 @@
 angular.module('import').controller('importConnectionsController', ['$scope', '$injector',
         function importConnectionsController($scope, $injector) {
 
+    // The file types supported for connection import
+    const LEGAL_FILE_TYPES = ['csv', 'json', 'yaml'];
+
     // Required services
+    const $document              = $injector.get('$document');
     const $q                     = $injector.get('$q');
     const $routeParams           = $injector.get('$routeParams');
+    const $timeout               = $injector.get('$timeout');
     const connectionParseService = $injector.get('connectionParseService');
     const connectionService      = $injector.get('connectionService');
     const permissionService      = $injector.get('permissionService');
@@ -112,11 +117,13 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         $scope.aborted = false;
         $scope.dataReady = false;
         $scope.processing = false;
+        $scope.error = null;
         $scope.fileData = null;
         $scope.mimeType = null;
         $scope.fileReader = null;
         $scope.parseResult = null;
         $scope.patchFailure = null;
+        $scope.fileName = null;
 
         // Broadcast an event to clear the file upload UI
         $scope.$broadcast('clearFile');
@@ -410,7 +417,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         resetUploadState();
 
         // Set the error for display
-        console.error(error);
         $scope.error = error;
         
     };
@@ -462,8 +468,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         }
 
         // Make the call to process the data into a series of patches
-        // TODO: Check if there's errors, and if so, display those rather than
-        // just YOLOing a create call
         processDataCallback(data)
 
             // Send the data off to be imported if parsing is successful
@@ -537,7 +541,30 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      * @argument {File} file
      *     The file to upload onto the scope for further processing.
      */
-    $scope.handleFile = function(file) {
+    const handleFile = file => {
+
+        // Clear any error from a previous attempted file upload
+        clearError();
+
+        // The MIME type of the provided file
+        const mimeType = file.type;
+
+        // Check if the mimetype ends with one of the supported types,
+        // e.g. "application/json" or "text/csv"
+        if (_.every(LEGAL_FILE_TYPES.map(
+                type => !mimeType.endsWith(type)))) {
+
+            // If the provided file is not one of the supported types,
+            // display an error and abort processing
+            handleError(new ParseError({
+                message: "Invalid file type: " + type,
+                key: 'IMPORT.ERROR_INVALID_FILE_TYPE',
+                variables: { TYPE: mimeType }
+            }));
+            return;
+        }
+
+        $scope.fileName = file.name;
         
         // Clear any error message from the previous upload attempt
         clearError();
@@ -578,5 +605,148 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // Read all the data into memory 
         $scope.fileReader.readAsBinaryString(file);
     };
+   
+    /**
+     * Whether a drag/drop operation is currently in progress (the user has
+     * dragged a file over the Guacamole connection but has not yet
+     * dropped it).
+     *
+     * @type boolean
+     */
+    $scope.dropPending = false;
+
+    /**
+     * The name of the file that's currently being uploaded, or has yet to
+     * be imported, if any.
+     */
+    $scope.fileName = null;
+
+    /**
+     * The container for the file upload UI.
+     *
+     * @type Element
+     *
+     */
+    const uploadContainer = angular.element(
+            $document.find('.file-upload-container'));
+
+    /**
+     * The location where files can be dragged-and-dropped to.
+     *
+     * @type Element
+     */
+    const dropTarget = uploadContainer.find('.drop-target');
+
+    /**
+     * Displays a visual indication that dropping the file currently
+     * being dragged is possible. Further propagation and default behavior
+     * of the given event is automatically prevented.
+     *
+     * @param {Event} e
+     *     The event related to the in-progress drag/drop operation.
+     */
+    const notifyDragStart = function notifyDragStart(e) {
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        $scope.$apply(() => {
+            $scope.dropPending = true;
+        });
+
+    };
+
+    /**
+     * Removes the visual indication that dropping the file currently
+     * being dragged is possible. Further propagation and default behavior
+     * of the given event is automatically prevented.
+     *
+     * @param {Event} e
+     *     The event related to the end of the former drag/drop operation.
+     */
+    const notifyDragEnd = function notifyDragEnd(e) {
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        $scope.$apply(() => {
+            $scope.dropPending = false;
+        });
+
+    };
+
+    // Add listeners to the drop target to ensure that the visual state
+    // stays up to date
+    dropTarget.on('dragenter', notifyDragStart);
+    dropTarget.on('dragover',  notifyDragStart);
+    dropTarget.on('dragleave', notifyDragEnd);
+
+    /**
+     * Drop target event listener that will be invoked if the user drops
+     * anything onto the drop target. If a valid file is provided, the
+     * onFile callback provided to this directive will be called; otherwise
+     * an error will be displayed, if appropriate.
+     *
+     * @param {Event} e
+     *     The drop event that triggered this handler.
+     */
+    dropTarget.on('drop', e => {
+
+        notifyDragEnd(e);
+
+        const files = e.originalEvent.dataTransfer.files;
+
+        // Ignore any non-files that are dragged into the drop area
+        if (files.length < 1)
+            return;
+
+        if (files.length >= 2) {
+
+            // If more than one file was provided, print an error explaining
+            // that only a single file is allowed and abort processing
+            handleError(new ParseError({
+                message: 'Only a single file may be imported at once',
+                key: 'IMPORT.ERROR_FILE_SINGLE_ONLY'
+            }));
+            return;
+        }
+
+        handleFile(files[0]);
+
+    });
+
+    /**
+     * The hidden file input used to create a file browser.
+     *
+     * @type Element
+     */
+    const fileUploadInput = uploadContainer.find('.file-upload-input');
+
+    /**
+     * A function that will click on the hidden file input to open a file
+     * browser to allow the user to select a file for upload.
+     */
+    $scope.openFileBrowser = () =>
+            $timeout(() => fileUploadInput.click(), 0, false);
+
+    /**
+     * A handler that will be invoked when a user selectes a file in the
+     * file browser. After some error checking, the file will be passed to
+     * the onFile callback provided to this directive.
+     *
+     * @param {Event} e
+     *     The event that was triggered when the user selected a file in
+     *     their file browser.
+     */
+    fileUploadInput.on('change', e => {
+
+        // Process the uploaded file
+        handleFile(e.target.files[0]);
+
+        // Clear the value to ensure that the change event will be fired
+        // if the user selects the same file again
+        fileUploadInput.value = null;
+
+    });
 
 }]);

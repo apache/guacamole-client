@@ -42,3 +42,104 @@
 .import .errors .error-message ul {
     margin: 0px;
 }
+
+.file-upload-container {
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 24px 24px;
+
+    width: fit-content;
+
+    border: 1px solid rgba(0,0,0,.25);
+    box-shadow: 1px 1px 2px rgb(0 0 0 / 25%);
+
+    margin-left: auto;
+    margin-right: auto;
+
+}
+
+.file-upload-container .upload-header {
+
+    display: flex;
+    flex-direction: row;
+    width: 500px;
+    margin-bottom: 5px;
+    justify-content: space-between;
+
+}
+
+.file-upload-container .file-error {
+
+    color: red;
+
+}
+
+.file-upload-container .file-options {
+
+    font-weight: bold;
+
+}
+
+.file-upload-container .file-upload-input {
+
+    display: none;
+
+}
+
+.file-upload-container .drop-target {
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: space-evenly;
+
+    width: 500px;
+    height: 200px;
+
+    background: rgba(0,0,0,.04);
+    border: 1px solid black;
+
+}
+
+.file-upload-container .drop-target.file-present {
+
+    background: rgba(0,0,0,.15);
+
+}
+
+
+.file-upload-container .drop-target .file-name {
+
+    font-weight: bold;
+    font-size: 1.5em;
+
+}
+
+.file-upload-container .drop-target.drop-pending {
+
+    background: #3161a9;
+
+}
+
+.file-upload-container .drop-target.drop-pending > * {
+
+    opacity: 0.5;
+
+}
+
+.file-upload-container .drop-target .title {
+
+    font-weight: bold;
+    font-size: 1.25em;
+
+}
+
+.file-upload-container .drop-target .browse-link {
+
+    text-decoration: underline;
+    cursor: pointer;
+
+}

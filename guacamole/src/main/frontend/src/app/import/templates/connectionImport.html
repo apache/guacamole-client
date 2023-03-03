@@ -4,8 +4,32 @@
         <h2>{{'IMPORT.HEADER' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
+    
+    <div class="file-upload-container">
 
-    <connection-import-file-upload on-file="handleFile(file)"></connection-import-file-upload>
+        <div class="upload-header">
+            <span class="file-options">{{'IMPORT.UPLOAD_FILE_TYPES' | translate}}</span>
+            <a
+                href="#/import/connection/file-format-help" target="_blank"
+                class="file-help-link">{{'IMPORT.UPLOAD_HELP_LINK' | translate}}
+            </a>
+        </div>
+
+        <div class="drop-target" ng-class="{ 'drop-pending': dropPending, 'file-present': fileName}">
+
+            <div ng-show="!fileName" class="title">{{'IMPORT.UPLOAD_DROP_TITLE' | translate}}</div>
+
+            <input type="file" class="file-upload-input"/>
+            <a ng-show="!fileName" ng-click="openFileBrowser()" class="browse-link">
+                {{'IMPORT.UPLOAD_BROWSE_LINK' | translate}}
+            </a>
+
+            <div ng-show="fileName" class="file-name"> {{fileName}} </div>
+
+        </div>
+
+    </div>
+
 
     <div class="import-buttons">
         <button 
