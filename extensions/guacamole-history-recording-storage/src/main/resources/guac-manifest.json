@@ -10,7 +10,7 @@
     ],
 
     "translations" : [
-        "translations/en.json"
+        "translations/en.json",
         "translations/pl.json"
     ]
 
