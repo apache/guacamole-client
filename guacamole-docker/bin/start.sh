@@ -1041,6 +1041,9 @@ fi
 # Use default guacd port if none specified
 GUACD_PORT="${GUACD_PORT-4822}"
 
+# guacd ssl is disabled by default
+GUACD_SSL="${GUACD_SSL-false}"
+
 # Verify required guacd connection information is present
 if [ -z "$GUACD_HOSTNAME" -o -z "$GUACD_PORT" ]; then
     cat <<END
@@ -1068,6 +1071,15 @@ fi
 # Update config file
 set_property "guacd-hostname" "$GUACD_HOSTNAME"
 set_property "guacd-port"     "$GUACD_PORT"
+set_property "guacd-ssl"      "$GUACD_SSL"
+
+# guacd ssl keystore
+if [ -n "$GUACD_SSL_KEYSTORE_FILE" ]; then
+    export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=${GUACD_SSL_KEYSTORE_FILE}"
+fi
+if [ -n "$GUACD_SSL_KEYSTORE_PASS" ]; then
+    export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStorePassword=${GUACD_SSL_KEYSTORE_PASS}"
+fi
 
 # A comma-separated list of the identifiers of authentication providers that
 # should be allowed to fail internally without aborting the authentication process
