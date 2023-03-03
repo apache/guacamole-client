@@ -21,4 +21,4 @@
  * The module for code supporting importing user-supplied files. Currently, only
  * connection import is supported.
  */
-angular.module('import', ['rest', 'list']);
+angular.module('import', ['rest', 'list', 'notification']);

@@ -43,7 +43,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const DirectoryPatch      = $injector.get('DirectoryPatch');
     const ParseError          = $injector.get('ParseError');
     const PermissionSet       = $injector.get('PermissionSet');
-    const TranslatableMessage = $injector.get('TranslatableMessage');
     const User                = $injector.get('User');
     const UserGroup           = $injector.get('UserGroup');
 
@@ -424,7 +423,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     /**
      * Clear the current displayed error.
      */
-    const clearError = () => delete $scope.error;
+    $scope.clearError = () => delete $scope.error;
 
     /**
      * Process the uploaded import file, importing the connections, granting
@@ -503,7 +502,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     $scope.cancel = function() {
 
         // Clear any error message
-        clearError();
+        $scope.clearError();
 
         // If the upload is in progress, stop it now; the FileReader will
         // reset the upload state when it stops
@@ -544,7 +543,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const handleFile = file => {
 
         // Clear any error from a previous attempted file upload
-        clearError();
+        $scope.clearError();
 
         // The MIME type of the provided file
         const mimeType = file.type;
@@ -567,7 +566,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         $scope.fileName = file.name;
         
         // Clear any error message from the previous upload attempt
-        clearError();
+        $scope.clearError();
 
         // Initialize upload state
         $scope.aborted = false;

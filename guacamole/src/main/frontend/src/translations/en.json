@@ -187,7 +187,11 @@
     "IMPORT": {
 
         "BUTTON_CANCEL": "Cancel",
+        "BUTTON_CLEAR" : "Clear",
+        "BUTTON_CLEAR_ERROR": "✖",
         "BUTTON_IMPORT": "Import Connections",
+
+        "ERROR_HEADER": "Error",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
@@ -240,7 +244,7 @@
         "TABLE_HEADER_NAME" : "Name",
         "TABLE_HEADER_PROTOCOL" : "Protocol",
         "TABLE_HEADER_ERRORS" : "Errors",
-        "TABLE_HEADER_ROW_NUMBER": "Row Number",
+        "TABLE_HEADER_ROW_NUMBER": "Row #",
 
         "UPLOAD_FILE_TYPES": "CSV, JSON, or YAML",
         "UPLOAD_HELP_LINK": "View Format Tips",

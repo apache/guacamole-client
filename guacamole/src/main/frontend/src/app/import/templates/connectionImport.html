@@ -4,8 +4,32 @@
         <h2>{{'IMPORT.HEADER' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
+
+    <div ng-show="error" class="parseError notification error">
+
+        <!-- The translatable error message, if one is set -->
+        <span
+            class="message" ng-show="error.key"
+            translate="{{error.key}}" translate-values="{{error.variables}}"
+        ></span>
+
+        <!-- The base message, if no translatable message is available -->
+        <span class="message" ng-show="!error.key && error.message">
+            {{error.message}}
+        </span>
+
+        <span class="clear" ng-click="clearError()"> {{'IMPORT.BUTTON_CLEAR_ERROR' | translate}} </span>
+
+    </div>
+
+    <div ng-show="fileName" class="file-upload-container file-selected">
+        <div class="file-name"> {{fileName}} </div>
+        <button class="danger clear" ng-click="cancel()">
+            {{'IMPORT.BUTTON_CLEAR' | translate}}
+        </button>
+    </div>
     
-    <div class="file-upload-container">
+    <div ng-show="!fileName" class="file-upload-container">
 
         <div class="upload-header">
             <span class="file-options">{{'IMPORT.UPLOAD_FILE_TYPES' | translate}}</span>
@@ -17,19 +41,18 @@
 
         <div class="drop-target" ng-class="{ 'drop-pending': dropPending, 'file-present': fileName}">
 
-            <div ng-show="!fileName" class="title">{{'IMPORT.UPLOAD_DROP_TITLE' | translate}}</div>
+            <div class="title">{{'IMPORT.UPLOAD_DROP_TITLE' | translate}}</div>
 
             <input type="file" class="file-upload-input"/>
-            <a ng-show="!fileName" ng-click="openFileBrowser()" class="browse-link">
+            <a ng-click="openFileBrowser()" class="browse-link">
                 {{'IMPORT.UPLOAD_BROWSE_LINK' | translate}}
             </a>
 
-            <div ng-show="fileName" class="file-name"> {{fileName}} </div>
+            <div class="file-name"> {{fileName}} </div>
 
         </div>
 
     </div>
-
 
     <div class="import-buttons">
         <button 
@@ -41,17 +64,6 @@
                 {{'IMPORT.BUTTON_CANCEL' | translate}}
         </button>
     </div>
-
-    <!-- The translatable error message, if one is set -->
-    <p 
-        class="parseError" ng-show="error.key" 
-        translate="{{error.key}}" translate-values="{{error.variables}}"
-    ></p>
-    
-    <!-- The base message, if no translatable message is available -->
-    <p class="parseError" ng-show="!error.key && error.message">
-        {{error.message}}
-    </p>
 
     <!-- Connection specific errors, if there are any -->
     <connection-import-errors parse-result="parseResult" patch-failure="patchFailure" />
