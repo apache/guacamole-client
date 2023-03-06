@@ -59,6 +59,13 @@
             <version>1.5.0</version>
         </dependency>
 
+        <!-- SSL Authentication Extension -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-auth-sso-ssl</artifactId>
+            <version>1.5.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
