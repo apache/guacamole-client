@@ -58,12 +58,12 @@
     overflow: hidden;
 }
 
-.active {
+#clipboard-settings .clipboard.active {
     overflow: auto;
     font-size: 1em;
 }
 
-.inactive {
+#clipboard-settings .clipboard.inactive {
     overflow: hidden;
     font-size: 0.9em;
     opacity: 0.5;
