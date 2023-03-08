@@ -19,17 +19,12 @@
 
 package org.apache.guacamole.auth.saml.acs;
 
+import org.apache.guacamole.auth.sso.AuthenticationSession;
+
 /**
  * Representation of an in-progress SAML authentication attempt.
  */
-public class AuthenticationSession {
-
-    /**
-     * The absolute point in time after which this authentication session is
-     * invalid. This value is a UNIX epoch timestamp, as may be returned by
-     * {@link System#currentTimeMillis()}.
-     */
-    private final long expirationTimestamp;
+public class SAMLAuthenticationSession extends AuthenticationSession {
 
     /**
      * The request ID of the SAML request associated with the authentication
@@ -55,24 +50,21 @@ public class AuthenticationSession {
      *     The number of milliseconds that may elapse before this session must
      *     be considered invalid.
      */
-    public AuthenticationSession(String requestId, long expires) {
-        this.expirationTimestamp = System.currentTimeMillis() + expires;
+    public SAMLAuthenticationSession(String requestId, long expires) {
+        super(expires);
         this.requestId = requestId;
     }
 
     /**
-     * Returns whether this authentication session is still valid (has not yet
-     * expired). If an identity has been asserted by the SAML IdP, this
+     * {@inheritDoc}
+     *
+     * <p>If an identity has been asserted by the SAML IdP, this
      * considers also whether the SAML response asserting that identity has
      * expired.
-     *
-     * @return
-     *     true if this authentication session is still valid, false if it has
-     *     expired.
      */
+    @Override
     public boolean isValid() {
-        return System.currentTimeMillis() < expirationTimestamp
-                && (identity == null || identity.isValid());
+        return super.isValid() && (identity == null || identity.isValid());
     }
 
     /**

@@ -17,24 +17,13 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.openid;
-
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import org.apache.guacamole.auth.openid.conf.ConfigurationService;
-import org.apache.guacamole.auth.sso.NonceService;
-import org.apache.guacamole.auth.openid.token.TokenValidationService;
-
 /**
- * Guice module which configures OpenID-specific injections.
+ * The module for code implementing SSO using SSL/TLS client authentication.
  */
-public class OpenIDAuthenticationProviderModule extends AbstractModule {
+angular.module('guacSsoSsl', [
+    'auth',
+    'rest'
+]);
 
-    @Override
-    protected void configure() {
-        bind(ConfigurationService.class);
-        bind(NonceService.class).in(Scopes.SINGLETON);
-        bind(TokenValidationService.class);
-    }
-
-}
+// Ensure the guacSsoSsl module is loaded along with the rest of the app
+angular.module('index').requires.push('guacSsoSsl');

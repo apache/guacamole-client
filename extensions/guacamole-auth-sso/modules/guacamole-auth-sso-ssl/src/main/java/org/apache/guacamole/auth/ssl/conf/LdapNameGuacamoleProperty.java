@@ -17,24 +17,34 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.openid;
+package org.apache.guacamole.auth.ssl.conf;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Scopes;
-import org.apache.guacamole.auth.openid.conf.ConfigurationService;
-import org.apache.guacamole.auth.sso.NonceService;
-import org.apache.guacamole.auth.openid.token.TokenValidationService;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.properties.GuacamoleProperty;
 
 /**
- * Guice module which configures OpenID-specific injections.
+ * A GuacamoleProperty whose value is an LDAP name, such as a distinguished
+ * name.
  */
-public class OpenIDAuthenticationProviderModule extends AbstractModule {
+public abstract class LdapNameGuacamoleProperty implements GuacamoleProperty<LdapName> {
 
     @Override
-    protected void configure() {
-        bind(ConfigurationService.class);
-        bind(NonceService.class).in(Scopes.SINGLETON);
-        bind(TokenValidationService.class);
+    public LdapName parseValue(String value) throws GuacamoleException {
+
+        if (value == null)
+            return null;
+
+        try {
+            return new LdapName(value);
+        }
+        catch (InvalidNameException e) {
+            throw new GuacamoleServerException("Value \"" + value
+                + "\" is not a valid LDAP name.", e);
+        }
+
     }
 
 }

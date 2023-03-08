@@ -60,6 +60,15 @@
             </includes>
         </dependencySet>
 
+        <!-- SSL extension .jar -->
+        <dependencySet>
+            <outputDirectory>ssl</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <includes>
+                <include>org.apache.guacamole:guacamole-auth-sso-ssl</include>
+            </includes>
+        </dependencySet>
+
     </dependencySets>
 
     <!-- Include extension licenses -->

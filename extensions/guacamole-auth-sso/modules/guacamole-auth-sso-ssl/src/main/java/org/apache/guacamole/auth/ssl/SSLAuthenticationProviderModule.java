@@ -17,24 +17,24 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.openid;
+package org.apache.guacamole.auth.ssl;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
-import org.apache.guacamole.auth.openid.conf.ConfigurationService;
+import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
 import org.apache.guacamole.auth.sso.NonceService;
-import org.apache.guacamole.auth.openid.token.TokenValidationService;
 
 /**
- * Guice module which configures OpenID-specific injections.
+ * Guice module which configures injections specific to SSO using SSL/TLS
+ * client authentication.
  */
-public class OpenIDAuthenticationProviderModule extends AbstractModule {
+public class SSLAuthenticationProviderModule extends AbstractModule {
 
     @Override
     protected void configure() {
         bind(ConfigurationService.class);
         bind(NonceService.class).in(Scopes.SINGLETON);
-        bind(TokenValidationService.class);
+        bind(SSLAuthenticationSessionManager.class);
     }
 
 }

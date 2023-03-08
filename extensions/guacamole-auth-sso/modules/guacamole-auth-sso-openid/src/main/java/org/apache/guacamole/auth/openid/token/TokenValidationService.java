@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.sso.NonceService;
 import org.jose4j.jwk.HttpsJwks;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;

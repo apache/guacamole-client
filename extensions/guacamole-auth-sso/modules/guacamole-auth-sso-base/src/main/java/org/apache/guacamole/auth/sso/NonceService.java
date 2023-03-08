@@ -17,38 +17,42 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.openid.token;
+package org.apache.guacamole.auth.sso;
 
-import com.google.inject.Singleton;
-import java.math.BigInteger;
-import java.security.SecureRandom;
+import com.google.inject.Inject;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Service for generating and validating single-use random tokens (nonces).
+ * Each generated nonce is at least 128 bits and case-insensitive.
  */
-@Singleton
 public class NonceService {
 
     /**
-     * Cryptographically-secure random number generator for generating the
-     * required nonce.
+     * Generator of arbitrary, unique, unpredictable identifiers.
      */
-    private final SecureRandom random = new SecureRandom();
+    @Inject
+    private IdentifierGenerator idGenerator;
 
     /**
      * Map of all generated nonces to their corresponding expiration timestamps.
      * This Map must be periodically swept of expired nonces to avoid growing
      * without bound.
      */
-    private final Map<String, Long> nonces = new ConcurrentHashMap<String, Long>();
+    private final Map<String, Long> nonces = new ConcurrentHashMap<>();
 
     /**
      * The timestamp of the last expired nonce sweep.
      */
     private long lastSweep = System.currentTimeMillis();
+
+    /**
+     * The minimum number of bits of entropy to include in each nonce.
+     */
+    private static final int NONCE_BITS = 128;
 
     /**
      * The minimum amount of time to wait between sweeping expired nonces from
@@ -94,7 +98,8 @@ public class NonceService {
      *     valid, in milliseconds.
      *
      * @return
-     *     A cryptographically-secure nonce value.
+     *     A cryptographically-secure nonce value. Generated nonces are at
+     *     least 128-bit and are case-insensitive.
      */
     public String generate(long maxAge) {
 
@@ -102,7 +107,7 @@ public class NonceService {
         sweepExpiredNonces();
 
         // Generate and store nonce, along with expiration timestamp
-        String nonce = new BigInteger(130, random).toString(32);
+        String nonce = idGenerator.generateIdentifier(NONCE_BITS, false);
         nonces.put(nonce, System.currentTimeMillis() + maxAge);
         return nonce;
 
@@ -115,15 +120,20 @@ public class NonceService {
      * invalidates that nonce.
      *
      * @param nonce
-     *     The nonce value to test.
+     *     The nonce value to test. This value may be null, which will be
+     *     considered an invalid nonce. Comparisons are case-insensitive.
      *
      * @return
      *     true if the provided nonce is valid, false otherwise.
      */
     public boolean isValid(String nonce) {
 
+        // All null nonces are invalid.
+        if (nonce == null)
+            return false;
+
         // Remove nonce, verifying whether it was present at all
-        Long expires = nonces.remove(nonce);
+        Long expires = nonces.remove(nonce.toLowerCase(Locale.US));
         if (expires == null)
             return false;
 
