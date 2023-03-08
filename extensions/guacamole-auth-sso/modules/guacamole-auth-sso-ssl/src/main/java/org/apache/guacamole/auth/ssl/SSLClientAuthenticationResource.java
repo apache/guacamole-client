@@ -272,16 +272,13 @@ public class SSLClientAuthenticationResource extends SSOResource {
     }
 
     /**
-     * Processes the X.509 certificate in the headers of the given HTTP
-     * request, returning an authentication session token representing the
+     * Processes the X.509 certificate in the given set of HTTP request
+     * headers, returning an authentication session token representing the
      * identity in that certificate. If the certificate is invalid or not
      * present, an invalid session token is returned.
      *
-     * @param credentials
-     *     The credentials submitted in the HTTP request being processed.
-     *
-     * @param request
-     *     The HTTP request to process.
+     * @param headers
+     *     The headers of the HTTP request to process.
      *
      * @return
      *     An authentication session token representing the identity in the
