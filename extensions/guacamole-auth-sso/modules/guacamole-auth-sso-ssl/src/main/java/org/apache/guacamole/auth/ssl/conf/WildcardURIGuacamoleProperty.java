@@ -45,6 +45,9 @@ public abstract class WildcardURIGuacamoleProperty extends URIGuacamoleProperty 
     @Override
     public URI parseValue(String value) throws GuacamoleException {
 
+        if (value == null)
+            return null;
+
         // Verify wildcard prefix is present
         Matcher matcher = WILDCARD_URI_PATTERN.matcher(value);
         if (matcher.matches()) {
