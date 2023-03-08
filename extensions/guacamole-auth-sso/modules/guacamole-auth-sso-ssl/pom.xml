@@ -119,6 +119,13 @@
             <artifactId>jsr311-api</artifactId>
         </dependency>
 
+        <!-- Use FIPS variant of Bouncy Castle crypto library -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-fips</artifactId>
+            <version>1.0.7</version>
+        </dependency>
+
     </dependencies>
 
 </project>

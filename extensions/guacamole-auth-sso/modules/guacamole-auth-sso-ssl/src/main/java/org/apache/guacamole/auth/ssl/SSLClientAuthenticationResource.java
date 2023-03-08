@@ -19,17 +19,14 @@
 package org.apache.guacamole.auth.ssl;
 
 import com.google.inject.Inject;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.security.Principal;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.naming.InvalidNameException;
@@ -46,9 +43,14 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.sso.SSOResource;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x500.style.RFC4519Style;
+import org.bouncycastle.cert.X509CertificateHolder;
+import org.bouncycastle.openssl.PEMParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -247,27 +249,25 @@ public class SSLClientAuthenticationResource extends SSOResource {
     public String getUsername(byte[] certificate) throws GuacamoleException {
 
         // Parse and re-verify certificate is valid with respect to timestamps
-        X509Certificate cert;
-        try (InputStream input = new ByteArrayInputStream(certificate)) {
+        X509CertificateHolder cert;
+        try (Reader reader = new StringReader(new String(certificate, StandardCharsets.UTF_8))) {
 
-            CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-            cert = (X509Certificate) certFactory.generateCertificate(input);
+            PEMParser parser = new PEMParser(reader);
+            cert = (X509CertificateHolder) parser.readObject();
 
             // Verify certificate is valid (it should be given pre-validation
             // from SSL termination, but it's worth rechecking for sanity)
-            cert.checkValidity();
+            if (!cert.isValidOn(new Date()))
+                throw new GuacamoleClientException("Certificate has expired.");
 
-        }
-        catch (CertificateException e) {
-            throw new GuacamoleClientException("Certificate is not valid: " + e.getMessage(), e);
         }
         catch (IOException e) {
-            throw new GuacamoleClientException("Certificate could not be read: " + e.getMessage(), e);
+            throw new GuacamoleServerException("Certificate could not be read: " + e.getMessage(), e);
         }
 
-        // Extract user's DN from their X.509 certificate
-        Principal principal = cert.getSubjectX500Principal();
-        return getUsername(principal.getName());
+        // Extract user's DN from their X.509 certificate in LDAP (RFC 4919) format
+        X500Name subject = X500Name.getInstance(RFC4519Style.INSTANCE, cert.getSubject());
+        return getUsername(subject.toString());
 
     }
 
