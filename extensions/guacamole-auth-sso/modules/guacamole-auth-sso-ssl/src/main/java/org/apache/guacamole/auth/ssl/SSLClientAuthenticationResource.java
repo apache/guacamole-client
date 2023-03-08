@@ -149,7 +149,7 @@ public class SSLClientAuthenticationResource extends SSOResource {
      *     The decoded string.
      *
      * @throws GuacamoleException
-     *     If the provided value is not a value URL-encoded string.
+     *     If the provided value is not a valid URL-encoded string.
      */
     private byte[] decode(String value) throws GuacamoleException {
         try {
