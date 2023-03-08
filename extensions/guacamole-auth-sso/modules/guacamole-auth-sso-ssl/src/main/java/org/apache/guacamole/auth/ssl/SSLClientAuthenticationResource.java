@@ -253,7 +253,20 @@ public class SSLClientAuthenticationResource extends SSOResource {
         try (Reader reader = new StringReader(new String(certificate, StandardCharsets.UTF_8))) {
 
             PEMParser parser = new PEMParser(reader);
-            cert = (X509CertificateHolder) parser.readObject();
+            Object object = parser.readObject();
+
+            // Verify received data is indeed an X.509 certificate
+            if (object == null || !(object instanceof X509CertificateHolder))
+                throw new GuacamoleClientException("Certificate did not "
+                        + "contain an X.509 certificate.");
+
+            // Verify sanity of received certificate (there should be only
+            // one object here)
+            if (parser.readObject() != null)
+                throw new GuacamoleClientException("Certificate contains "
+                        + "more than a single X.509 certificate.");
+
+            cert = (X509CertificateHolder) object;
 
             // Verify certificate is valid (it should be given pre-validation
             // from SSL termination, but it's worth rechecking for sanity)
