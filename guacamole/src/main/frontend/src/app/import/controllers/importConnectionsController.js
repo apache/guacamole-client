@@ -35,6 +35,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const $timeout               = $injector.get('$timeout');
     const connectionParseService = $injector.get('connectionParseService');
     const connectionService      = $injector.get('connectionService');
+    const guacNotification       = $injector.get('guacNotification');
     const permissionService      = $injector.get('permissionService');
     const userService            = $injector.get('userService');
     const userGroupService       = $injector.get('userGroupService');
@@ -45,14 +46,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const PermissionSet       = $injector.get('PermissionSet');
     const User                = $injector.get('User');
     const UserGroup           = $injector.get('UserGroup');
-
-    /**
-     * Any error that may have occured during import file parsing.
-     *
-     * @type {ParseError}
-     */
-    $scope.error = null;
-
+    
     /**
      * The result of parsing the current upload, if successful.
      *
@@ -116,7 +110,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         $scope.aborted = false;
         $scope.dataReady = false;
         $scope.processing = false;
-        $scope.error = null;
         $scope.fileData = null;
         $scope.mimeType = null;
         $scope.fileReader = null;
@@ -404,7 +397,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     }
     
     /**
-     * Set any caught error message to the scope for display.
+     * Display the provided error to the user in a dismissable dialog.
      *
      * @argument {ParseError} error
      *     The error to display.
@@ -415,15 +408,24 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // all upload state to allow for a fresh retry
         resetUploadState();
 
-        // Set the error for display
-        $scope.error = error;
-        
+        guacNotification.showStatus({
+            className  : 'error',
+            title      : 'IMPORT.DIALOG_HEADER_ERROR',
+
+            // Use the translation key if available
+            text       : {
+                key: error.key || error.message,
+                variables: error.variables
+            },
+
+            // Add a button to hide the error
+            actions    : [{
+                name      : 'IMPORT.BUTTON_CLEAR',
+                callback  : () => guacNotification.showStatus(false)
+            }]
+        })
+
     };
-    
-    /**
-     * Clear the current displayed error.
-     */
-    $scope.clearError = () => delete $scope.error;
 
     /**
      * Process the uploaded import file, importing the connections, granting
@@ -455,16 +457,14 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         else if (mimeType.endsWith("yaml"))
             processDataCallback = connectionParseService.parseYAML;
 
-        // We don't expect this to happen - the file upload directive should
-        // have already have filtered out any invalid file types
-        else {
-            handleError(new ParseError({
-                message: 'Invalid file type: ' + mimeType,
-                key: 'IMPORT.INVALID_FILE_TYPE',
-                variables: { TYPE: mimeType }
-            }));
-            return;
-        }
+        // The file type was validated before being uploaded - this should
+        // never happen
+        else
+            processDataCallback = () => {
+                throw new ParseError({
+                    message: "Unexpected invalid file type: " + mimeType
+                });
+            };
 
         // Make the call to process the data into a series of patches
         processDataCallback(data)
@@ -500,9 +500,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      * batch.
      */
     $scope.cancel = function() {
-
-        // Clear any error message
-        $scope.clearError();
 
         // If the upload is in progress, stop it now; the FileReader will
         // reset the upload state when it stops
@@ -542,9 +539,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      */
     const handleFile = file => {
 
-        // Clear any error from a previous attempted file upload
-        $scope.clearError();
-
         // The MIME type of the provided file
         const mimeType = file.type;
 
@@ -556,7 +550,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
             // If the provided file is not one of the supported types,
             // display an error and abort processing
             handleError(new ParseError({
-                message: "Invalid file type: " + type,
+                message: "Invalid file type: " + mimeType,
                 key: 'IMPORT.ERROR_INVALID_FILE_TYPE',
                 variables: { TYPE: mimeType }
             }));
@@ -564,9 +558,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         }
 
         $scope.fileName = file.name;
-        
-        // Clear any error message from the previous upload attempt
-        $scope.clearError();
 
         // Initialize upload state
         $scope.aborted = false;

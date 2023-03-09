@@ -188,10 +188,9 @@
 
         "BUTTON_CANCEL": "Cancel",
         "BUTTON_CLEAR" : "Clear",
-        "BUTTON_CLEAR_ERROR": "✖",
         "BUTTON_IMPORT": "Import Connections",
 
-        "ERROR_HEADER": "Error",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 

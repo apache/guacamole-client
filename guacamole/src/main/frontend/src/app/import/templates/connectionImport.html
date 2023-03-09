@@ -5,23 +5,6 @@
         <guac-user-menu></guac-user-menu>
     </div>
 
-    <div ng-show="error" class="parseError notification error">
-
-        <!-- The translatable error message, if one is set -->
-        <span
-            class="message" ng-show="error.key"
-            translate="{{error.key}}" translate-values="{{error.variables}}"
-        ></span>
-
-        <!-- The base message, if no translatable message is available -->
-        <span class="message" ng-show="!error.key && error.message">
-            {{error.message}}
-        </span>
-
-        <span class="clear" ng-click="clearError()"> {{'IMPORT.BUTTON_CLEAR_ERROR' | translate}} </span>
-
-    </div>
-
     <div ng-show="fileName" class="file-upload-container file-selected">
         <div class="file-name"> {{fileName}} </div>
         <button class="danger clear" ng-click="cancel()">
