@@ -30,6 +30,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
     // Required services
     const $document              = $injector.get('$document');
+    const $location              = $injector.get('$location');
     const $q                     = $injector.get('$q');
     const $routeParams           = $injector.get('$routeParams');
     const $timeout               = $injector.get('$timeout');
@@ -121,6 +122,12 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         $scope.$broadcast('clearFile');
         
     }
+
+    // Indicate that data is currently being loaded / processed if the the file
+    // has been provided but not yet fully uploaded, or if the the file is
+    // fully loaded and is currently being processed.
+    $scope.isLoading = () => (
+            ($scope.fileName && !$scope.dataReady) || $scope.processing);
 
     /**
      * Create all users and user groups mentioned in the import file that don't
@@ -322,9 +329,10 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      * @param {DirectoryPatchResponse} userGroupResponse
      *     The response to the user group PATCH creation request.
      * 
-     * @returns {Object}
-     *     An object containing PATCH deletion responses corresponding to any
-     *     provided connection, user, and/or user group creation responses.
+     * @returns {Promise.<Object>}
+     *     A promise resolving to an object containing PATCH deletion responses
+     *     corresponding to any provided connection, user, and/or user group
+     *     creation responses.
      */
     function cleanUpAll(connectionResponse, userResponse, userGroupResponse) {
 
@@ -351,15 +359,14 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      * Process a successfully parsed import file, creating any specified
      * connections, creating and granting permissions to any specified users
      * and user groups. If successful, the user will be shown a success message.
-     * If not, any errors will be displayed, and the user will be given ???an
-     * option??? to roll back any already-created entities.
+     * If not, any errors will be displayed and any already-created entities
+     * will be rolled back.
      *
      * @param {ParseResult} parseResult
      *     The result of parsing the user-supplied import file.
      */
     function handleParseSuccess(parseResult) {
 
-        $scope.processing = false;
         $scope.parseResult = parseResult;
 
         // If errors were encounted during file parsing, abort further
@@ -370,8 +377,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
         const dataSource = $routeParams.dataSource;
 
-        console.log("parseResult", parseResult);
-
         // First, attempt to create the connections
         connectionService.patchConnections(dataSource, parseResult.patches)
                 .then(connectionResponse => {
@@ -381,13 +386,39 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                     ({userResponse, groupResponse}) => 
 
                 grantConnectionPermissions(parseResult, connectionResponse)
-                        .then(() =>
+                        .then(() => {
                    
                     // TODON'T: Delete the stuff so we can test over and over
                     cleanUpAll(connectionResponse, userResponse, groupResponse)
-                        .then(resetUploadState)
+                        .then(() => {
+                            
+                            $scope.processing = false;
 
-                ));
+                            // Display a success message if everything worked
+                            guacNotification.showStatus({
+                                className  : 'success',
+                                title      : 'IMPORT.DIALOG_HEADER_SUCCESS',
+                                text       : {
+                                    key: 'IMPORT.CONNECTIONS_IMPORTED_SUCCESS',
+                                    variables: { NUMBER: parseResult.patches.length }
+                                },
+
+                                // Add a button to acknowledge and redirect to
+                                // the connection listing page
+                                actions    : [{
+                                    name      : 'IMPORT.ACTION_ACKNOWLEDGE',
+                                    callback  : () => {
+
+                                        // Close the notification
+                                        guacNotification.showStatus(false);
+
+                                        // Redirect to connection list page
+                                        $location.url('/settings/' + dataSource + '/connections');
+                                    }
+                                }]
+                            })
+                        });
+                }));
         })
 
         // If an error occured when the call to create the connections was made,

@@ -185,12 +185,17 @@
     },
 
     "IMPORT": {
+        
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
 
         "BUTTON_CANCEL": "Cancel",
         "BUTTON_CLEAR" : "Clear",
         "BUTTON_IMPORT": "Import Connections",
 
+        "CONNECTIONS_IMPORTED_SUCCESS": "{NUMBER} connections imported successfully.",
+
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_SUCCESS": "Success",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 

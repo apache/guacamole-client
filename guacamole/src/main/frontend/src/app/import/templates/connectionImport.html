@@ -48,6 +48,8 @@
         </button>
     </div>
 
+    <div ng-show="isLoading()" class="loading"></div>
+
     <!-- Connection specific errors, if there are any -->
     <connection-import-errors parse-result="parseResult" patch-failure="patchFailure" />
 
