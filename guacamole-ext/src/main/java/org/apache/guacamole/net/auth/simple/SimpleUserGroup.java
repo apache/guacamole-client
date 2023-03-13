@@ -43,5 +43,27 @@ public class SimpleUserGroup extends AbstractUserGroup {
     public SimpleUserGroup(String identifier) {
         super.setIdentifier(identifier);
     }
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * <p>This implementation of UserGroup is always enabled, so this will
+     * always return false.
+     */
+    @Override
+    public boolean isDisabled() {
+        return false;
+    }
+    
+    /**
+     * {@inheritDoc}
+     * 
+     * <p>This implementation of UserGroup is always enabled, so this method
+     * will silently ignore the value passed in the disabled parameter.
+     */
+    @Override
+    public void setDisabled(boolean disabled) {
+        // Silently ignore as the UserGroup implementation is always enabled.
+    }
 
 }
