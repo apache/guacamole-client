@@ -29,6 +29,25 @@ import org.apache.guacamole.GuacamoleException;
 public interface UserGroup extends Identifiable, Attributes, Permissions {
 
     /**
+     * Returns true if the user group is disabled, making membership in the group
+     * ineffective, meaning that any permissions or other group membership
+     * assigned to this group will not apply to member groups and users.
+     * 
+     * @return 
+     *     True if the group is disabled, otherwise false.
+     */
+    public boolean isDisabled();
+    
+    /**
+     * Set the disabled status of the user group, passing a boolean true value
+     * if the user group should be disabled, otherwise false.
+     * 
+     * @param disabled 
+     *     True if the user group should be disabled, otherwise false.
+     */
+    public void setDisabled(boolean disabled);
+    
+    /**
      * Returns a set of all readable user groups of which this user group is a
      * member. If permission is granted for the current user to modify the
      * membership of this user group, then the returned set will be mutable,

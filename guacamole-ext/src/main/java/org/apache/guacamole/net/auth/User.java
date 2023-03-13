@@ -79,6 +79,23 @@ public interface User extends Identifiable, Attributes, Permissions {
      * @param password The password to set.
      */
     public void setPassword(String password);
+    
+    /**
+     * Returns true if this user account is disabled, otherwise false.
+     * 
+     * @return 
+     *     True if this user account is disabled, otherwise false.
+     */
+    public boolean isDisabled();
+    
+    /**
+     * Set the disabled status of this account to the boolean parameter as
+     * provided, true if the account should be disabled, otherwise false.
+     * 
+     * @param disabled 
+     *     True if the account should be disabled, otherwise false.
+     */
+    public void setDisabled(boolean disabled);
 
     /**
      * Returns the date and time that this user was last active. If the user
