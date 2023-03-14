@@ -26,19 +26,23 @@ import java.security.InvalidKeyException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.totp.conf.ConfigurationService;
 import org.apache.guacamole.auth.totp.form.AuthenticationCodeField;
+import org.apache.guacamole.auth.totp.usergroup.TOTPUserGroup;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.totp.TOTPGenerator;
 import org.slf4j.Logger;
@@ -203,6 +207,65 @@ public class UserVerificationService {
         return true;
 
     }
+    
+    /**
+     * Checks the user in question, via both UserContext and AuthenticatedUser,
+     * to see if TOTP has been disabled for this user, either directly or via
+     * membership in a group that has had TOTP marked as disabled.
+     * 
+     * @param context
+     *     The UserContext for the user being verified.
+     * 
+     * @param authenticatedUser
+     *     The AuthenticatedUser for the user being verified.
+     * 
+     * @return
+     *     True if TOTP access has been disabled for the user, otherwise
+     *     false.
+     * 
+     * @throws GuacamoleException
+     *     If the extension handling storage fails internally while attempting
+     *     to update the user.
+     */
+    private boolean totpDisabled(UserContext context,
+            AuthenticatedUser authenticatedUser)
+            throws GuacamoleException {
+        
+        // If TOTP is disabled for this user, return, allowing login to continue
+        Map<String, String> myAttributes = context.self().getAttributes();
+        if (myAttributes != null
+                && TOTPUser.TRUTH_VALUE.equals(myAttributes.get(TOTPUser.TOTP_KEY_DISABLED_ATTRIBUTE_NAME))) {
+
+            logger.warn("TOTP validation has been disabled for user \"{}\"",
+                    context.self().getIdentifier());
+            return true;
+
+        }
+        
+        // Check if any effective user groups have TOTP marked as disabled
+        Set<String> userGroups = authenticatedUser.getEffectiveUserGroups();
+        Directory<UserGroup> directoryGroups = context.getPrivileged().getUserGroupDirectory();
+        for (String userGroup : userGroups) {
+            UserGroup thisGroup = directoryGroups.get(userGroup);
+            if (thisGroup == null)
+                continue;
+            
+            Map<String, String> grpAttributes = thisGroup.getAttributes();
+            if (grpAttributes != null 
+                    && TOTPUserGroup.TRUTH_VALUE.equals(grpAttributes.get(TOTPUserGroup.TOTP_KEY_DISABLED_ATTRIBUTE_NAME))) {
+
+                logger.warn("TOTP validation will be bypassed for user \"{}\""
+                            + " because it has been disabled for group \"{}\"",
+                            context.self().getIdentifier(), userGroup);
+                return true;
+
+            }
+        }
+        
+        // TOTP has not been disabled
+        return false;
+        
+    }
 
     /**
      * Verifies the identity of the given user using TOTP. If a authentication
@@ -230,6 +293,10 @@ public class UserVerificationService {
         if (username.equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
             return;
 
+        // Check if TOTP has been disabled for this user
+        if (totpDisabled(context, authenticatedUser))
+            return;
+        
         // Ignore users which do not have an associated key
         UserTOTPKey key = getKey(context, username);
         if (key == null)

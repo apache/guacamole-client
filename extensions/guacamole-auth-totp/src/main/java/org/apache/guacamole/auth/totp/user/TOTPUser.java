@@ -34,6 +34,12 @@ import org.apache.guacamole.net.auth.User;
 public class TOTPUser extends DelegatingUser {
 
     /**
+     * The name of the user attribute which disables the TOTP requirement
+     * for that specific user.
+     */
+    public static final String TOTP_KEY_DISABLED_ATTRIBUTE_NAME = "guac-totp-disabled";
+    
+    /**
      * The name of the user attribute which stores the TOTP key.
      */
     public static final String TOTP_KEY_SECRET_ATTRIBUTE_NAME = "guac-totp-key-secret";
@@ -56,13 +62,14 @@ public class TOTPUser extends DelegatingUser {
      * The string value used by TOTP user attributes to represent the boolean
      * value "true".
      */
-    private static final String TRUTH_VALUE = "true";
+    public static final String TRUTH_VALUE = "true";
 
     /**
      * The form which contains all configurable properties for this user.
      */
     public static final Form TOTP_ENROLLMENT_STATUS = new Form("totp-enrollment-status",
             Arrays.asList(
+                    new BooleanField(TOTP_KEY_DISABLED_ATTRIBUTE_NAME, TRUTH_VALUE),
                     new BooleanField(TOTP_KEY_SECRET_GENERATED_ATTRIBUTE_NAME, TRUTH_VALUE),
                     new BooleanField(TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME, TRUTH_VALUE)
             )
@@ -95,6 +102,9 @@ public class TOTPUser extends DelegatingUser {
 
         // Create independent, mutable copy of attributes
         Map<String, String> attributes = new HashMap<>(super.getAttributes());
+        
+        if (!attributes.containsKey(TOTP_KEY_DISABLED_ATTRIBUTE_NAME))
+            attributes.put(TOTP_KEY_DISABLED_ATTRIBUTE_NAME, null);
 
         // Replace secret key with simple boolean attribute representing
         // whether a key has been generated at all
