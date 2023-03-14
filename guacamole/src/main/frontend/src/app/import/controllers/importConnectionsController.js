@@ -43,6 +43,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     
     // Required types
     const DirectoryPatch      = $injector.get('DirectoryPatch');
+    const Error               = $injector.get('Error');
     const ParseError          = $injector.get('ParseError');
     const PermissionSet       = $injector.get('PermissionSet');
     const User                = $injector.get('User');
@@ -117,9 +118,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         $scope.parseResult = null;
         $scope.patchFailure = null;
         $scope.fileName = null;
-
-        // Broadcast an event to clear the file upload UI
-        $scope.$broadcast('clearFile');
         
     }
 
@@ -127,18 +125,21 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     // has been provided but not yet fully uploaded, or if the the file is
     // fully loaded and is currently being processed.
     $scope.isLoading = () => (
-            ($scope.fileName && !$scope.dataReady) || $scope.processing);
+            ($scope.fileName && !$scope.dataReady && !$scope.patchFailure)
+            || $scope.processing);
 
     /**
      * Create all users and user groups mentioned in the import file that don't
-     * already exist in the current data source.
+     * already exist in the current data source. If either creation fails, any
+     * already-created entities will be cleaned up, and the returned promise
+     * will be rejected.
      *
      * @param {ParseResult} parseResult
      *     The result of parsing the user-supplied import file.
      *
-     * @return {Object}
-     *     An object containing the results of the calls to create the users
-     *     and groups.
+     * @return {Promise.<Object>}
+     *     A promise resolving to an object containing the results of the calls
+     *     to create the users and groups.
      */
     function createUsersAndGroups(parseResult) {
 
@@ -173,11 +174,32 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                     value: new UserGroup({ identifier })
                 }));
 
-            return $q.all({
-                userResponse: userService.patchUsers(dataSource, userPatches),
-                groupResponse: userGroupService.patchUserGroups(dataSource, groupPatches)
-            });
+            // First, create any required users and groups, automatically cleaning
+            // up any created already-created entities if a call fails.
+            // NOTE: Generally we'd want to do these calls in parallel, using
+            // `$q.all()`. However, `$q.all()` rejects immediately if any of the
+            // wrapped promises reject, so the users may not be ready for cleanup
+            // at the time that the group promise rejects, or vice versa. While
+            // it would be possible to juggle promises and still do these calls
+            // in parallel, the code gets pretty complex, so for readability and
+            // simplicity, they are executed serially. The performance cost of
+            // doing so should be low.
+            return userService.patchUsers(dataSource, userPatches).then(userResponse => {
+
+                // Then, if that succeeds, create any required groups
+                return userGroupService.patchUserGroups(dataSource, groupPatches).then(
+
+                    // If user group creation succeeds, resolve the returned promise
+                    userGroupResponse => ({ userResponse, userGroupResponse}))
             
+                // If the group creation request fails, clean up any created users
+                .catch(groupFailure => {
+                    cleanUpUsers(userResponse);
+                    return groupFailure;
+                });
+
+            });
+
         });
         
     }
@@ -299,63 +321,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     }
 
     /**
-     * Given a successful response to a user group PATCH request, make another
-     * request to delete every created user group in the provided request.
-     *
-     * @param {DirectoryPatchResponse} creationResponse
-     *     The response to the user group PATCH creation request.
-     *
-     * @returns {DirectoryPatchResponse}
-     *     The response to the PATCH deletion request.
-     */
-    function cleanUpUserGroups(creationResponse) {
-
-        return userGroupService.patchUserGroups(
-            $routeParams.dataSource, createDeletionPatches(creationResponse));
-
-    }
-
-    /**
-     * Make requests to delete all connections, users, and/or groups from any
-     * provided PATCH API responses. If any responses are not provided, no
-     * cleanup will be attempted.
-     *
-     * @param {DirectoryPatchResponse} connectionResponse
-     *     The response to the connection PATCH creation request.
-     *
-     * @param {DirectoryPatchResponse} userResponse
-     *     The response to the user PATCH creation request.
-     *
-     * @param {DirectoryPatchResponse} userGroupResponse
-     *     The response to the user group PATCH creation request.
-     * 
-     * @returns {Promise.<Object>}
-     *     A promise resolving to an object containing PATCH deletion responses
-     *     corresponding to any provided connection, user, and/or user group
-     *     creation responses.
-     */
-    function cleanUpAll(connectionResponse, userResponse, userGroupResponse) {
-
-        // All cleanup requests that need to be made
-        const requests = {};
-
-        // If the connection response was provided, clean up connections
-        if (connectionResponse)
-            requests.connectionCleanup = cleanUpConnections(connectionResponse);
-
-        // If the user response was provided, clean up users
-        if (userResponse)
-            requests.userCleanup = cleanUpUsers(userResponse);
-
-        // If the user group response was provided, clean up user groups
-        if (connectionResponse)
-            requests.userGroupCleanup = cleanUpUserGroups(userGroupResponse);
-
-        // Return when all cleanup is complete
-        return $q.all(requests);
-    }
-
-    /**
      * Process a successfully parsed import file, creating any specified
      * connections, creating and granting permissions to any specified users
      * and user groups. If successful, the user will be shown a success message.
@@ -379,58 +344,63 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
         // First, attempt to create the connections
         connectionService.patchConnections(dataSource, parseResult.patches)
-                .then(connectionResponse => {
+                .then(connectionResponse => 
 
             // If connection creation is successful, create users and groups
-            createUsersAndGroups(parseResult).then(
-                    ({userResponse, groupResponse}) => 
+            createUsersAndGroups(parseResult).then(() => 
 
                 grantConnectionPermissions(parseResult, connectionResponse)
                         .then(() => {
-                   
-                    // TODON'T: Delete the stuff so we can test over and over
-                    cleanUpAll(connectionResponse, userResponse, groupResponse)
-                        .then(() => {
                             
-                            $scope.processing = false;
+                    $scope.processing = false;
 
-                            // Display a success message if everything worked
-                            guacNotification.showStatus({
-                                className  : 'success',
-                                title      : 'IMPORT.DIALOG_HEADER_SUCCESS',
-                                text       : {
-                                    key: 'IMPORT.CONNECTIONS_IMPORTED_SUCCESS',
-                                    variables: { NUMBER: parseResult.patches.length }
-                                },
+                    // Display a success message if everything worked
+                    guacNotification.showStatus({
+                        className  : 'success',
+                        title      : 'IMPORT.DIALOG_HEADER_SUCCESS',
+                        text       : {
+                            key: 'IMPORT.CONNECTIONS_IMPORTED_SUCCESS',
+                            variables: { NUMBER: parseResult.patches.length }
+                        },
 
-                                // Add a button to acknowledge and redirect to
-                                // the connection listing page
-                                actions    : [{
-                                    name      : 'IMPORT.ACTION_ACKNOWLEDGE',
-                                    callback  : () => {
+                        // Add a button to acknowledge and redirect to
+                        // the connection listing page
+                        actions    : [{
+                            name      : 'IMPORT.ACTION_ACKNOWLEDGE',
+                            callback  : () => {
 
-                                        // Close the notification
-                                        guacNotification.showStatus(false);
+                                // Close the notification
+                                guacNotification.showStatus(false);
 
-                                        // Redirect to connection list page
-                                        $location.url('/settings/' + dataSource + '/connections');
-                                    }
-                                }]
-                            })
-                        });
-                }));
-        })
+                                // Redirect to connection list page
+                                $location.url('/settings/' + dataSource + '/connections');
+                            }
+                        }]
+                    });
+                }))
+
+            // If an error occurs while trying to users or groups, or while trying
+            // to assign permissions to users or groups, clean up the already-created
+            // connections, displaying an error to the user along with a blank slate
+            // so they can fix their problems and try again.
+            .catch(error => {
+                cleanUpConnections(connectionResponse);
+                handleError(error);
+            }))
 
         // If an error occured when the call to create the connections was made,
         // skip any further processing - the user will have a chance to fix the
         // problems and try again
-        .catch(patchFailure => { $scope.patchFailure = patchFailure; });
+        .catch(patchFailure => {
+            $scope.processing = false;
+            $scope.patchFailure = patchFailure;
+        });
     }
     
     /**
      * Display the provided error to the user in a dismissable dialog.
      *
-     * @argument {ParseError} error
+     * @argument {ParseError|Error} error
      *     The error to display.
      */
     const handleError = error => {
@@ -439,19 +409,33 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // all upload state to allow for a fresh retry
         resetUploadState();
 
+        let text;
+        
+        // If it's a import file parsing error
+        if (error instanceof ParseError)
+            text = {
+
+                // Use the translation key if available
+                key: error.key || error.message,
+                variables: error.variables
+            };
+
+        // If it's a generic REST error
+        else if (error instanceof Error)
+            text = error.translatableMessage;
+
+        // If it's an unknown type, just use the message directly
+        else
+            text = { key: error };
+
         guacNotification.showStatus({
             className  : 'error',
             title      : 'IMPORT.DIALOG_HEADER_ERROR',
-
-            // Use the translation key if available
-            text       : {
-                key: error.key || error.message,
-                variables: error.variables
-            },
+            text,
 
             // Add a button to hide the error
             actions    : [{
-                name      : 'IMPORT.BUTTON_CLEAR',
+                name      : 'IMPORT.ACTION_ACKNOWLEDGE',
                 callback  : () => guacNotification.showStatus(false)
             }]
         })
@@ -546,6 +530,9 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     };
 
     /**
+     * Returns true if cancellation should be disabled, or false if
+     * cancellation should be allowed.
+     *
      * @return {Boolean}
      *     True if cancellation should be disabled, or false if cancellation
      *     should be allowed.

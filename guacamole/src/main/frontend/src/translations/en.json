@@ -189,7 +189,6 @@
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
 
         "BUTTON_CANCEL": "Cancel",
-        "BUTTON_CLEAR" : "Clear",
         "BUTTON_IMPORT": "Import Connections",
 
         "CONNECTIONS_IMPORTED_SUCCESS": "{NUMBER} connections imported successfully.",
