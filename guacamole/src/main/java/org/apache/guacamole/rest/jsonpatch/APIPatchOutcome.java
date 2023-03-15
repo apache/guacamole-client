@@ -31,7 +31,6 @@ import org.apache.guacamole.rest.jsonpatch.APIPatch.Operation;
  * the user who submitted the Patch request. Rather than including the full
  * contents of the value, only the identifier is included, allowing the user to
  * determine the identifier of any newly-created objects as part of the request.
- *
  */
 public class APIPatchOutcome {
 
@@ -56,8 +55,13 @@ public class APIPatchOutcome {
      * patch API request.
      *
      * @param op
+     *     The requested operation for the patch corresponding to this outcome.
+     *
      * @param identifier
+     *     The identifier for the value in patch corresponding to this outcome.
+     *
      * @param path
+     *     The path for the patch corresponding to this outcome.
      */
     public APIPatchOutcome(Operation op, String identifier, String path) {
         this.op = op;

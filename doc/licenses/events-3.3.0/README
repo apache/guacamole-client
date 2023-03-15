@@ -2,6 +2,6 @@ events (https://github.com/browserify/events)
 ---------------------------------------------
 
     Version: 3.3.0
-    From: 'browserify' (https://github.com/browserify)
+    From: 'Node.js contributors, Joyent, Inc., and other Node contributors'
     License(s):
         MIT (bundled/events-3.3.0/LICENSE)

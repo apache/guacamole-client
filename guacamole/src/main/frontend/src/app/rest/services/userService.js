@@ -245,6 +245,10 @@ angular.module('rest').factory('userService', ['$injector',
      * connection patching process, the entire request will fail, and no
      * changes will be persisted.
      *
+     * @param {String} dataSource
+     *     The identifier of the data source associated with the users to be
+     *     patched.
+     *
      * @param {DirectoryPatch.<User>[]} patches
      *     An array of patches to apply.
      *
@@ -267,7 +271,7 @@ angular.module('rest').factory('userService', ['$injector',
             return patchResponse;
         });
 
-    }
+    };
     
     return service;
 

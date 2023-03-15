@@ -75,12 +75,12 @@ angular.module('rest').factory('DirectoryPatch', [function defineDirectoryPatch(
         /**
          * Adds the specified object to the relation.
          */
-        ADD : "add",
+        ADD : 'add',
 
         /**
          * Removes the specified object from the relation.
          */
-        REMOVE : "remove"
+        REMOVE : 'remove'
 
     };
 

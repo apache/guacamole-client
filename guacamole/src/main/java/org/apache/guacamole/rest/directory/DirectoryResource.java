@@ -441,7 +441,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
         // An outcome for each patch included in the request. This list
         // may include both success and failure responses, though the
-        // presense of any failure would indicated that the entire
+        // presence of any failure would indicated that the entire
         // request has failed and no changes have been made.
         List<APIPatchOutcome> patchOutcomes = new ArrayList<>();
 
@@ -457,8 +457,9 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                 // endpoint requires that operations be performed atomically.
                 if (!atomic)
                     throw new GuacamoleUnsupportedException(
-                            "Atomic operations are not supported. " +
-                            "The patch cannot be executed.");
+                            "The extension providing this directory does not " +
+                            "support Atomic Operations. The patch cannot be " +
+                            "executed.");
 
                 // Keep a list of all objects that have been successfully
                 // added or removed
@@ -482,7 +483,9 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                     if (!path.startsWith("/"))
                         throw new GuacamoleClientException("Patch paths must start with \"/\".");
 
-                    if(patch.getOp() == APIPatch.Operation.add) {
+                    APIPatch.Operation op = patch.getOp();
+
+                    if (op == APIPatch.Operation.add) {
 
                         // Filter/sanitize object contents
                         InternalType internal = filterAndTranslate(patch.getValue());
@@ -497,7 +500,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                             // Add a success outcome describing the object creation
                             APIPatchOutcome response = new APIPatchOutcome(
-                                    patch.getOp(), internal.getIdentifier(), path);
+                                    op, internal.getIdentifier(), path);
                             patchOutcomes.add(response);
                             creationSuccesses.add(response);
 
@@ -515,7 +518,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                              */
                             if (e instanceof GuacamoleException)
                                 patchOutcomes.add(new APIPatchError(
-                                        patch.getOp(), null, path,
+                                        op, null, path,
                                         ((GuacamoleException) e).getMessage()));
 
                             // If an unexpected failure occurs, fall through to the
@@ -527,7 +530,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                     }
 
                     // Append each identifier to the list, to be removed atomically
-                    else if (patch.getOp() == APIPatch.Operation.remove) {
+                    else if (op == APIPatch.Operation.remove) {
 
                         String identifier = path.substring(1);
 
@@ -541,7 +544,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                             // Add a success outcome describing the object removal
                             APIPatchOutcome response = new APIPatchOutcome(
-                                    patch.getOp(), identifier, path);
+                                    op, identifier, path);
                             patchOutcomes.add(response);
                             creationSuccesses.add(response);
                         }
@@ -557,7 +560,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                              */
                             if (e instanceof GuacamoleException)
                                 patchOutcomes.add(new APIPatchError(
-                                        patch.getOp(), identifier, path,
+                                        op, identifier, path,
                                         ((GuacamoleException) e).getMessage()));
 
                             // If an unexpected failure occurs, fall through to the
@@ -569,8 +572,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                     
                     else {
                         throw new GuacamoleUnsupportedException(
-                                "Unsupported patch operation \""
-                                + patch.getOp() + "\". "
+                                "Unsupported patch operation \"" + op + "\". "
                                 + "Only add and remove are supported.");
                     }
 

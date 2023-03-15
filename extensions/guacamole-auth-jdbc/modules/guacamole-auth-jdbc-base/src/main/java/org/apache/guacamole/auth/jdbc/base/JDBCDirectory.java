@@ -32,6 +32,7 @@ import org.mybatis.guice.transactional.Transactional;
 public abstract class JDBCDirectory<ObjectType extends Identifiable>
         extends RestrictedObject implements Directory<ObjectType>  {
 
+    @Override
     @Transactional
     public void tryAtomically(AtomicDirectoryOperation<ObjectType> operation)
             throws GuacamoleException {

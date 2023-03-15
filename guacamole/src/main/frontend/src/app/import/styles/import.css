@@ -27,15 +27,21 @@
 }
 
 .import .errors table {
+
     width: 100%;
+
 }
 
 .import .errors .error-message {
+
     color: red;
+
 }
 
 .import .errors .error-message ul {
+
     margin: 0px;
+
 }
 
 .file-upload-container {
@@ -56,13 +62,17 @@
 }
 
 .file-upload-container.file-selected {
+
     display: flex;
     flex-direction: row;
     gap: 100px;
+
 }
 
 .file-upload-container .clear {
+
     margin: 0;
+
 }
 
 .file-upload-container .upload-header {

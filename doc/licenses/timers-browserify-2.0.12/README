@@ -2,7 +2,7 @@ timers-browserify (https://github.com/browserify/timers-browserify)
 ---------------------------------------------
 
     Version: 2.0.12
-    From: 'browserify' (https://github.com/browserify)
+    From: 'J. Ryan Stinnett' (https://github.com/jryans)
     License(s):
-        MIT (bundled/timers-browserify-2.0.12/LICENSE)
+        MIT (bundled/timers-browserify-2.0.12/LICENSE.md)
 

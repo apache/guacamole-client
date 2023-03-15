@@ -26,9 +26,6 @@ angular.module('rest').factory('connectionService', ['$injector',
     // Required services
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
-
-    // Required types
-    const Error = $injector.get('Error');
     
     var service = {};
     
@@ -166,6 +163,10 @@ angular.module('rest').factory('connectionService', ['$injector',
      * connection patching process, the entire request will fail, and no 
      * changes will be persisted.
      *
+     * @param {String} dataSource
+     *     The identifier of the data source associated with the connections to
+     *     be patched.
+     *
      * @param {DirectoryPatch.<Connection>[]} patches 
      *     An array of patches to apply.
      *
@@ -194,7 +195,7 @@ angular.module('rest').factory('connectionService', ['$injector',
             
         });
 
-    }
+    };
     
     /**
      * Makes a request to the REST API to delete a connection,

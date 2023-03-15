@@ -33,25 +33,33 @@ angular.module('import').factory('DisplayErrorList', [
      */
     const DisplayErrorList = function DisplayErrorList(messages) {
 
-        // Use empty message list by default
+        /**
+         * The error messages that should be prepared for display.
+         *
+         * @type {String[]}
+         */
         this.messages = messages || [];
 
-        // The single String message composed of all messages concatenated
-        // together. This will be used for filtering / sorting, and should only
-        // be calculated once.
-        this.cachedMessage = null;
+        /**
+         * The single String message composed of all messages concatenated
+         * together. This will be used for filtering / sorting, and should only
+         * be calculated once, when toString() is called.
+         *
+         * @type {String}
+         */
+        this.concatenatedMessage = null;
 
     };
 
     /**
      * Return a sortable / filterable representation of all the error messages
-     * wrapped by this DisplayErrorList. 
-     * 
+     * wrapped by this DisplayErrorList.
+     *
      * NOTE: Once this method is called, any changes to the underlying array
      * will have no effect. This is to ensure that repeated calls to toString()
      * by sorting / filtering UI code will not regenerate the concatenated
      * message every time.
-     * 
+     *
      * @returns {String}
      *     A sortable / filterable representation of the error messages wrapped
      *     by this DisplayErrorList

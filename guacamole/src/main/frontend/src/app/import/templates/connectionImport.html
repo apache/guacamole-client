@@ -1,34 +1,34 @@
-<div class="settings-view import">
+<div class="settings-view view import">
 
     <div class="header">
-        <h2>{{'IMPORT.HEADER' | translate}}</h2>
+        <h2>{{'IMPORT.SECTION_HEADER_CONNECTION_IMPORT' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
 
     <div ng-show="fileName" class="file-upload-container file-selected">
         <div class="file-name"> {{fileName}} </div>
         <button class="danger clear" ng-click="cancel()">
-            {{'IMPORT.BUTTON_CLEAR' | translate}}
+            {{'IMPORT.ACTION_CLEAR' | translate}}
         </button>
     </div>
-    
+
     <div ng-show="!fileName" class="file-upload-container">
 
         <div class="upload-header">
-            <span class="file-options">{{'IMPORT.UPLOAD_FILE_TYPES' | translate}}</span>
+            <span class="file-options">{{'IMPORT.HELP_UPLOAD_FILE_TYPES' | translate}}</span>
             <a
                 href="#/import/connection/file-format-help" target="_blank"
-                class="file-help-link">{{'IMPORT.UPLOAD_HELP_LINK' | translate}}
+                class="file-help-link">{{'IMPORT.ACTION_VIEW_FORMAT_HELP' | translate}}
             </a>
         </div>
 
         <div class="drop-target" ng-class="{ 'drop-pending': dropPending, 'file-present': fileName}">
 
-            <div class="title">{{'IMPORT.UPLOAD_DROP_TITLE' | translate}}</div>
+            <div class="title">{{'IMPORT.HELP_UPLOAD_DROP_TITLE' | translate}}</div>
 
             <input type="file" class="file-upload-input"/>
             <a ng-click="openFileBrowser()" class="browse-link">
-                {{'IMPORT.UPLOAD_BROWSE_LINK' | translate}}
+                {{'IMPORT.ACTION_BROWSE' | translate}}
             </a>
 
             <div class="file-name"> {{fileName}} </div>
@@ -38,13 +38,13 @@
     </div>
 
     <div class="import-buttons">
-        <button 
-            ng-click="import()" ng-disabled="importDisabled()" class="import">
-                {{'IMPORT.BUTTON_IMPORT' | translate}}
+        <button
+            ng-click="import()" ng-disabled="importDisabled()" class="save import">
+                {{'IMPORT.ACTION_IMPORT' | translate}}
         </button>
         <button
             ng-click="cancel()" ng-disabled="cancelDisabled()" class="cancel">
-                {{'IMPORT.BUTTON_CANCEL' | translate}}
+                {{'IMPORT.ACTION_CANCEL' | translate}}
         </button>
     </div>
 

@@ -23,7 +23,7 @@ import org.apache.guacamole.GuacamoleException;
 
 /**
  * An operation that should be attempted atomically when passed to
- * {@link Directory#tryAtomically()}, if atomic operations are supported by
+ * {@link Directory#tryAtomically}, if atomic operations are supported by
  * the Directory.
  */
 public interface AtomicDirectoryOperation<ObjectType extends Identifiable>  {
@@ -36,12 +36,12 @@ public interface AtomicDirectoryOperation<ObjectType extends Identifiable>  {
      * provided directory outside this function, or of the directory invoking
      * this function are not guaranteed.
      *
-     * NOTE: If atomicity is required for this operation, a GuacamoleException
-     * may be thrown by this function before any changes are made, ensuring the
-     * operation will only ever be performed atomically.
+     * <p>NOTE: If atomicity is required for this operation, a 
+     * GuacamoleException may be thrown by this function before any changes are
+     * made, ensuring the operation will only ever be performed atomically.
      *
      * @param atomic
-     *     True if the provided directory is guaranteed to peform the operation
+     *     True if the provided directory is guaranteed to perform the operation
      *     atomically within the context of this function.
      *
      * @param directory

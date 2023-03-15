@@ -135,7 +135,7 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 
-        // Connection import page
+        // Connection import file format help page
         .when('/import/connection/file-format-help', {
             title         : 'APP.NAME',
             bodyClassName : 'settings',

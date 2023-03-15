@@ -71,9 +71,7 @@ angular.module('import').factory('ImportConnection', [
 
         /**
          * Connection configuration parameters, as dictated by the protocol in
-         * use, arranged as name/value pairs. This information may not be
-         * available until directly queried. If this information is
-         * unavailable, this property will be null or undefined.
+         * use, arranged as name/value pairs.
          *
          * @type Object.<String, String>
          */

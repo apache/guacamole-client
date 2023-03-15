@@ -26,7 +26,7 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
      * The result of parsing a connection import file - containing a list of
      * API patches ready to be submitted to the PATCH REST API for batch
      * connection creation, a set of users and user groups to grant access to
-     * each connection, and any errors that may have occured while parsing
+     * each connection, and any errors that may have occurred while parsing
      * each connection.
      *
      * @constructor
@@ -49,7 +49,7 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
 
         /**
          * An object whose keys are the user identifiers of users specified
-         * in the batch import. and the keys are an array of indices of
+         * in the batch import, and whose values are an array of indices of
          * connections to which those users should be granted access.
          *
          * @type {Object.<String, Integer[]>}
@@ -68,7 +68,7 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
         /**
          * An array of errors encountered while parsing the corresponding
          * connection (at the same array index). Each connection should have a
-         * an array of errors. If empty, no errors occured for this connection.
+         * an array of errors. If empty, no errors occurred for this connection.
          *
          * @type {ParseError[][]}
          */
@@ -85,5 +85,5 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
     };
 
     return ParseResult;
-    
+
 }]);

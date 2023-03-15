@@ -20,7 +20,7 @@
 /* global _ */
 
 /**
- * A directive that displays errors that occured during parsing of a connection
+ * A directive that displays errors that occurred during parsing of a connection
  * import file, or errors that were returned from the API during the connection
  * batch creation attempt.
  */
@@ -124,7 +124,7 @@ angular.module('import').directive('connectionImportErrors', [
          *     given parse result.
          */
         const generateConnectionError = (parseResult, index) => {
-            
+
             // Get the patch associated with the current row
             const patch = parseResult.patches[index];
 
@@ -140,18 +140,6 @@ angular.module('import').directive('connectionImportErrors', [
                 name: connection.name,
                 protocol: connection.protocol,
 
-                // The group and parent identifiers, if any are set. Include
-                // both since these could be a potential source of conflict.
-                // TODO: Should we _really_ have both of these here?
-                group: connection.group,
-                parentIdentifier: connection.parentIdentifier,
-
-                // Get the list of user and group identifiers from the parse
-                // result. There should one entry in each of these lists for
-                // each patch.
-                users: parseResult.users[index],
-                groups: parseResult.groups[index],
-
                 // The human-readable error messages
                 errors: new DisplayErrorList(
                         [ ...(parseResult.errors[index] || []) ])
@@ -159,7 +147,7 @@ angular.module('import').directive('connectionImportErrors', [
         };
 
         // If a new connection patch failure is seen, update the display list
-        $scope.$watch('patchFailure', async function patchFailureChanged(patchFailure) {
+        $scope.$watch('patchFailure', function patchFailureChanged(patchFailure) {
 
             const { parseResult } = $scope;
 
@@ -176,8 +164,6 @@ angular.module('import').directive('connectionImportErrors', [
                 const connectionError = generateConnectionError(parseResult, index);
 
                 // Set the error from the PATCH request, if there is one
-                // TODO: These generally aren't translated from the backend -
-                // should we even bother trying to translate them?
                 const error = _.get(patchFailure, ['patches', index, 'error']);
                 if (error)
                     connectionError.errors = new DisplayErrorList([error]);
@@ -187,7 +173,7 @@ angular.module('import').directive('connectionImportErrors', [
         });
 
         // If a new parse result with errors is seen, update the display list
-        $scope.$watch('parseResult', async function parseResultChanged(parseResult) {
+        $scope.$watch('parseResult', function parseResultChanged(parseResult) {
 
             // Do not process if there are no errors in the provided result
             if (!parseResult || !parseResult.hasErrors)
@@ -226,11 +212,11 @@ angular.module('import').directive('connectionImportErrors', [
                             .then(translatedError => {
                                 connectionError.errors.getArray()[errorIndex] = translatedError;
                             }));
-                    
+
                 });
-                
+
                 return connectionError;
-                
+
             });
 
             // Once all the translations have been completed, update the

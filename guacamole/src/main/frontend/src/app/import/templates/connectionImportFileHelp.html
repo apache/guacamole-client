@@ -1,90 +1,26 @@
-<div class="import help">
+<div class="import view help">
 
     <div class="header">
-        <h2>{{'IMPORT.HELP_HEADER' | translate}}</h2>
+        <h2>{{'IMPORT.SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE' | translate}}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
 
     <h2>{{'IMPORT.HELP_FILE_TYPE_HEADER' | translate}}</h2>
     <p>{{'IMPORT.HELP_FILE_TYPE_DESCRIPTION' | translate}}</p>
 
-    <h2>{{'IMPORT.HELP_CSV_HEADER' | translate}}</h2>
+    <h2>{{'IMPORT.SECTION_HEADER_CSV' | translate}}</h2>
     <p>{{'IMPORT.HELP_CSV_DESCRIPTION' | translate}}</p>
     <p>{{'IMPORT.HELP_CSV_MORE_DETAILS' | translate}}</p>
-    <pre>name,protocol,hostname,group,users,groups,guacd-encryption (attribute)
-conn1,vnc,conn1.web.com,ROOT,guac user 1;guac user 2,Connection 1 Users,none
-conn2,rdp,conn2.web.com,ROOT/Parent Group,guac user 1,,ssl
-conn3,ssh,conn3.web.com,ROOT/Parent Group/Child Group,guac user 2;guac user 3,,
-conn4,kubernetes,,,,,</pre>
+    <pre>{{'IMPORT.HELP_CSV_EXAMPLE' | translate }}</pre>
 
-    <h2>{{'IMPORT.HELP_JSON_HEADER' | translate}}</h2>
+    <h2>{{'IMPORT.SECTION_HEADER_JSON' | translate}}</h2>
     <p>{{'IMPORT.HELP_JSON_DESCRIPTION' | translate}}</p>
     <p>{{'IMPORT.HELP_JSON_MORE_DETAILS' | translate}}</p>
-    <pre>[
-  {
-    "name": "conn1",
-    "protocol": "vnc",
-    "parameters": { "hostname": "conn1.web.com" },
-    "parentIdentifier": "ROOT",
-    "users": [ "guac user 1", "guac user 2" ],
-    "groups": [ "Connection 1 Users" ],
-    "attributes": { "guacd-encryption": "none" }
-  },
-  {
-    "name": "conn2",
-    "protocol": "rdp",
-    "parameters": { "hostname": "conn2.web.com" },
-    "group": "ROOT/Parent Group",
-    "users": [ "guac user 1" ],
-    "attributes": { "guacd-encryption": "none" }
-  },
-  {
-    "name": "conn3",
-    "protocol": "ssh",
-    "parameters": { "hostname": "conn3.web.com" },
-    "group": "ROOT/Parent Group/Child Group",
-    "users": [ "guac user 2", "guac user 3" ]
-  },
-  {
-    "name": "conn4",
-    "protocol": "kubernetes"
-  }
-]</pre>
+    <pre>{{'IMPORT.HELP_JSON_EXAMPLE' | translate }}</pre>
 
-    <h2>{{'IMPORT.HELP_YAML_HEADER' | translate}}</h2>
+    <h2>{{'IMPORT.SECTION_HEADER_YAML' | translate}}</h2>
     <p>{{'IMPORT.HELP_YAML_DESCRIPTION' | translate}}</p>
-    <pre>---
-  - name: conn1
-    protocol: vnc
-    parameters:
-      hostname: conn1.web.com
-    group: ROOT
-    users:
-    - guac user 1
-    - guac user 2
-    groups:
-    - Connection 1 Users
-    attributes:
-      guacd-encryption: none
-  - name: conn2
-    protocol: rdp
-    parameters:
-      hostname: conn2.web.com
-    group: ROOT/Parent Group
-    users:
-    - guac user 1
-    attributes:
-      guacd-encryption: none
-  - name: conn3
-    protocol: ssh
-    parameters:
-      hostname: conn3.web.com
-    group: ROOT/Parent Group/Child Group
-    users:
-    - guac user 2
-    - guac user 3
-  - name: conn4
-    protocol: kubernetes</pre>
+    <pre>{{'IMPORT.HELP_YAML_EXAMPLE' | translate}}</pre>
 
     <ol class="footnotes">
         <li>{{'IMPORT.HELP_SEMICOLON_FOOTNOTE' | translate}}</li>

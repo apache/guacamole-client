@@ -199,6 +199,10 @@ angular.module('rest').factory('userGroupService', ['$injector',
      * connection patching process, the entire request will fail, and no
      * changes will be persisted.
      *
+     * @param {String} dataSource
+     *     The identifier of the data source associated with the user groups to
+     *     be patched.
+     *
      * @param {DirectoryPatch.<UserGroup>[]} patches
      *     An array of patches to apply.
      *
@@ -221,7 +225,7 @@ angular.module('rest').factory('userGroupService', ['$injector',
             return patchResponse;
         });
 
-    }
+    };
 
     return service;
 

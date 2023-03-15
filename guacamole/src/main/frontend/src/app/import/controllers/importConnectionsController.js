@@ -20,14 +20,48 @@
 /* global _ */
 
 /**
+ * The allowed MIME type for CSV files.
+ * 
+ * @type String
+ */
+const CSV_MIME_TYPE = 'text/csv';
+
+/**
+ * The allowed MIME type for JSON files.
+ *
+ * @type String
+ */
+const JSON_MIME_TYPE = 'application/json';
+
+/**
+ * The allowed MIME types for YAML files.
+ * NOTE: There is no registered MIME type for YAML files. This may result in a
+ * wide variety of possible browser-supplied MIME types.
+ *
+ * @type String[]
+ */
+const YAML_MIME_TYPES = [
+    'text/x-yaml',
+    'text/yaml',
+    'text/yml',
+    'application/x-yaml',
+    'application/x-yml',
+    'application/yaml',
+    'application/yml'
+];
+
+/*
+ * All file types supported for connection import.
+ * 
+ * @type {String[]}
+ */
+const LEGAL_MIME_TYPES = [CSV_MIME_TYPE, JSON_MIME_TYPE, ...YAML_MIME_TYPES];
+
+/**
  * The controller for the connection import page.
  */
 angular.module('import').controller('importConnectionsController', ['$scope', '$injector',
         function importConnectionsController($scope, $injector) {
-
-    // The file types supported for connection import
-    const LEGAL_FILE_TYPES = ['csv', 'json', 'yaml'];
-
     // Required services
     const $document              = $injector.get('$document');
     const $location              = $injector.get('$location');
@@ -40,7 +74,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const permissionService      = $injector.get('permissionService');
     const userService            = $injector.get('userService');
     const userGroupService       = $injector.get('userGroupService');
-    
+
     // Required types
     const DirectoryPatch      = $injector.get('DirectoryPatch');
     const Error               = $injector.get('Error');
@@ -48,7 +82,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const PermissionSet       = $injector.get('PermissionSet');
     const User                = $injector.get('User');
     const UserGroup           = $injector.get('UserGroup');
-    
+
     /**
      * The result of parsing the current upload, if successful.
      *
@@ -118,7 +152,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         $scope.parseResult = null;
         $scope.patchFailure = null;
         $scope.fileName = null;
-        
+
     }
 
     // Indicate that data is currently being loaded / processed if the the file
@@ -191,7 +225,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
                     // If user group creation succeeds, resolve the returned promise
                     userGroupResponse => ({ userResponse, userGroupResponse}))
-            
+
                 // If the group creation request fails, clean up any created users
                 .catch(groupFailure => {
                     cleanUpUsers(userResponse);
@@ -201,7 +235,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
             });
 
         });
-        
+
     }
 
     /**
@@ -237,9 +271,9 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                         PermissionSet.ObjectPermissionType.READ];
                 return permissions;
             }, {}) });
-        
+
         // Now that we've created all the users, grant access to each
-        _.forEach(parseResult.users, (connectionIndices, identifier) => 
+        _.forEach(parseResult.users, (connectionIndices, identifier) =>
 
             // Grant the permissions - note the group flag is `false`
             userRequests[identifier] = permissionService.patchPermissions(
@@ -255,7 +289,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                 false));
 
         // Now that we've created all the groups, grant access to each
-        _.forEach(parseResult.groups, (connectionIndices, identifier) => 
+        _.forEach(parseResult.groups, (connectionIndices, identifier) =>
 
             // Grant the permissions - note the group flag is `true`
             groupRequests[identifier] = permissionService.patchPermissions(
@@ -337,21 +371,21 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // If errors were encounted during file parsing, abort further
         // processing - the user will have a chance to fix the errors and try
         // again
-        if (parseResult.hasErrors) 
+        if (parseResult.hasErrors)
             return;
 
         const dataSource = $routeParams.dataSource;
 
         // First, attempt to create the connections
         connectionService.patchConnections(dataSource, parseResult.patches)
-                .then(connectionResponse => 
+                .then(connectionResponse =>
 
             // If connection creation is successful, create users and groups
-            createUsersAndGroups(parseResult).then(() => 
+            createUsersAndGroups(parseResult).then(() =>
 
                 grantConnectionPermissions(parseResult, connectionResponse)
                         .then(() => {
-                            
+
                     $scope.processing = false;
 
                     // Display a success message if everything worked
@@ -359,7 +393,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                         className  : 'success',
                         title      : 'IMPORT.DIALOG_HEADER_SUCCESS',
                         text       : {
-                            key: 'IMPORT.CONNECTIONS_IMPORTED_SUCCESS',
+                            key: 'IMPORT.INFO_CONNECTIONS_IMPORTED_SUCCESS',
                             variables: { NUMBER: parseResult.patches.length }
                         },
 
@@ -388,7 +422,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                 handleError(error);
             }))
 
-        // If an error occured when the call to create the connections was made,
+        // If an error occurred when the call to create the connections was made,
         // skip any further processing - the user will have a chance to fix the
         // problems and try again
         .catch(patchFailure => {
@@ -396,7 +430,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
             $scope.patchFailure = patchFailure;
         });
     }
-    
+
     /**
      * Display the provided error to the user in a dismissable dialog.
      *
@@ -410,7 +444,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         resetUploadState();
 
         let text;
-        
+
         // If it's a import file parsing error
         if (error instanceof ParseError)
             text = {
@@ -438,18 +472,18 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                 name      : 'IMPORT.ACTION_ACKNOWLEDGE',
                 callback  : () => guacNotification.showStatus(false)
             }]
-        })
+        });
 
     };
 
     /**
      * Process the uploaded import file, importing the connections, granting
-     * connection permissions, or displaying errors to the user if there are 
+     * connection permissions, or displaying errors to the user if there are
      * problems with the provided file.
      *
      * @param {String} mimeType
      *     The MIME type of the uploaded data file.
-     * 
+     *
      * @param {String} data
      *     The raw string contents of the import file.
      */
@@ -457,19 +491,19 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
         // Data processing has begun
         $scope.processing = true;
-        
+
         // The function that will process all the raw data and return a list of
         // patches to be submitted to the API
         let processDataCallback;
 
         // Choose the appropriate parse function based on the mimetype
-        if (mimeType.endsWith("json"))
+        if (mimeType === JSON_MIME_TYPE)
             processDataCallback = connectionParseService.parseJSON;
 
-        else if (mimeType.endsWith("csv"))
+        else if (mimeType === CSV_MIME_TYPE)
             processDataCallback = connectionParseService.parseCSV;
 
-        else if (mimeType.endsWith("yaml"))
+        else if (YAML_MIME_TYPES.indexOf(mimeType) >= 0)
             processDataCallback = connectionParseService.parseYAML;
 
         // The file type was validated before being uploaded - this should
@@ -498,12 +532,14 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     $scope.import = () => processData($scope.mimeType, $scope.fileData);
 
     /**
+     * Returns true if import should be disabled, or false if import should be
+     * allowed.
+     *
      * @return {Boolean}
-     *     True if import should be disabled, or false if import should be
-     *     allowed.
+     *     True if import should be disabled, otherwise false.
      */
     $scope.importDisabled = () =>
-        
+
         // Disable import if no data is ready
         !$scope.dataReady ||
 
@@ -524,7 +560,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         }
 
         // Clear any upload state - there's no FileReader handler to do it
-        else 
+        else
             resetUploadState();
 
     };
@@ -560,19 +596,19 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // The MIME type of the provided file
         const mimeType = file.type;
 
-        // Check if the mimetype ends with one of the supported types,
+        // Check if the mimetype is one of the supported types,
         // e.g. "application/json" or "text/csv"
-        if (_.every(LEGAL_FILE_TYPES.map(
-                type => !mimeType.endsWith(type)))) {
+        if (LEGAL_MIME_TYPES.indexOf(mimeType) < 0) {
 
             // If the provided file is not one of the supported types,
             // display an error and abort processing
             handleError(new ParseError({
                 message: "Invalid file type: " + mimeType,
-                key: 'IMPORT.ERROR_INVALID_FILE_TYPE',
+                key: 'IMPORT.ERROR_INVALID_MIME_TYPE',
                 variables: { TYPE: mimeType }
             }));
             return;
+            
         }
 
         $scope.fileName = file.name;
@@ -592,17 +628,17 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
             // If the upload was explicitly aborted, clear any upload state and
             // do not process the data
-            if ($scope.aborted) 
+            if ($scope.aborted)
                 resetUploadState();
 
             else {
-                
+
                 // Save the uploaded data
                 $scope.fileData = e.target.result;
 
                 // Mark the data as ready
                 $scope.dataReady = true;
-                
+
                 // Clear the file reader from the scope now that this file is
                 // fully uploaded
                 $scope.fileReader = null;
@@ -610,10 +646,10 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
             }
         });
 
-        // Read all the data into memory 
+        // Read all the data into memory
         $scope.fileReader.readAsBinaryString(file);
     };
-   
+
     /**
      * Whether a drag/drop operation is currently in progress (the user has
      * dragged a file over the Guacamole connection but has not yet

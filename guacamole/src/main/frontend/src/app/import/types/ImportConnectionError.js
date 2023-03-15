@@ -27,13 +27,15 @@ angular.module('import').factory('ImportConnectionError', ['$injector',
     const DisplayErrorList = $injector.get('DisplayErrorList');
 
     /**
-     * A representation of a connection to be imported, as parsed from an
+     * A representation of the errors associated with a connection to be
+     * imported, along with some basic information connection information to
+     * identify the connection having the error, as returned from a parsed
      * user-supplied import file.
      *
      * @constructor
-     * @param {ImportConnection|Object} [template={}]
+     * @param {ImportConnectionError|Object} [template={}]
      *     The object whose properties should be copied within the new
-     *     Connection.
+     *     ImportConnectionError.
      */
     const ImportConnectionError = function ImportConnectionError(template) {
 
@@ -45,22 +47,6 @@ angular.module('import').factory('ImportConnectionError', ['$injector',
          * connection. This should be 1-indexed.
          */
         this.rowNumber = template.rowNumber;
-
-        /**
-         * The unique identifier of the connection group that contains this
-         * connection.
-         *
-         * @type String
-         */
-        this.parentIdentifier = template.parentIdentifier;
-
-        /**
-         * The path to the connection group that contains this connection,
-         * written as e.g. "ROOT/parent/child/group".
-         *
-         * @type String
-         */
-        this.group = template.group;
 
         /**
          * The human-readable name of this connection, which is not necessarily
@@ -77,22 +63,6 @@ angular.module('import').factory('ImportConnectionError', ['$injector',
          * @type String
          */
         this.protocol = template.protocol;
-
-        /**
-         * The identifiers of all users who should be granted read access to
-         * this connection.
-         *
-         * @type String[]
-         */
-        this.users = template.users || [];
-
-        /**
-         * The identifiers of all user groups who should be granted read access
-         * to this connection.
-         *
-         * @type String[]
-         */
-        this.groups = template.groups || [];
 
         /**
          * The error messages associated with this particular connection, if any.
