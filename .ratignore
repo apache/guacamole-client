@@ -1,3 +1,4 @@
+.github/**
 CONTRIBUTING
 doc/licenses/*/**/*
 doc/**/html/*.html
