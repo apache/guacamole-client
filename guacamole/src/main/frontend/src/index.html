@@ -64,6 +64,20 @@
             </guac-modal>
         </div>
 
+        <!-- Authentication error without a corresponding login form -->
+        <div class="automatic-login-rejected-modal" ng-switch-when="automaticLoginRejected">
+            <guac-modal>
+                <div class="notification">
+                    <p translate="{{ fatalError.translatableMessage.key }}"
+                       translate-values="{{ fatalError.translatableMessage.variables }}"></p>
+                    <p>
+                        <button translate="APP.ACTION_LOGIN_AGAIN" ng-disabled="reAuthenticating"
+                                ng-click="reAuthenticate()"></button>
+                    </p>
+                </div>
+            </guac-modal>
+        </div>
+
         <!-- Login screen for logged-out users -->
         <guac-login ng-switch-when="awaitingCredentials"
                     help-text="loginHelpText"

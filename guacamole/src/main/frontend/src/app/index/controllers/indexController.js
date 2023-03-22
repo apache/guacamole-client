@@ -35,6 +35,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     const SESSION_VALIDITY_RECHECK_INTERVAL = 15000;
 
     // Required types
+    const Error              = $injector.get('Error');
     const ManagedClientState = $injector.get('ManagedClientState');
 
     // Required services
@@ -109,6 +110,11 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * @enum {string}
      */
     var ApplicationState = {
+
+        /**
+         * A non-interactive authentication attempt failed.
+         */
+        AUTOMATIC_LOGIN_REJECTED : 'automaticLoginRejected',
 
         /**
          * The application has fully loaded but is awaiting credentials from
@@ -320,6 +326,25 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
         $scope.loginHelpText = error.translatableMessage;
         $scope.acceptedCredentials = parameters;
         $scope.expectedCredentials = error.expected;
+
+    });
+
+    // Alert user to authentication errors that occur in the absence of an
+    // interactive login form
+    $scope.$on('guacLoginFailed', function loginFailed(event, parameters, error) {
+
+        // All errors related to an interactive login form are handled elsewhere
+        if ($scope.applicationState === ApplicationState.AWAITING_CREDENTIALS
+                || error.type === Error.Type.INSUFFICIENT_CREDENTIALS
+                || error.type === Error.Type.INVALID_CREDENTIALS)
+            return;
+
+        $scope.applicationState = ApplicationState.AUTOMATIC_LOGIN_REJECTED;
+        $scope.page.title = 'APP.NAME';
+        $scope.page.bodyClassName = '';
+
+        $scope.reAuthenticating = false;
+        $scope.fatalError = error;
 
     });
 
