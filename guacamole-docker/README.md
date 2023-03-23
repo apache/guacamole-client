@@ -228,32 +228,15 @@ The process for doing this via the `sqlcmd` utilities included
 with SQLServer is documented in
 [the Guacamole manual](http://guacamole.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-sqlserver).
 
-Enabling guacd ssl
+Enabling ssl
 ================
-This explains how to enable ssl between guacamole and guacd using a self signed certificat.
+This explains how to enable ssl between guacamole and guacd using a self signed certificate.
 
-1. Generate a new certificat
-You need to create the new certificat on the guacd host.
+You need to create the new certificate on the guacd host, see https://github.com/apache/guacamole-server/blob/master/README 
+or https://github.com/apache/guacamole-server/blob/master/src/guacd-docker/README.md depending
+on the version you will use (standalone vs docker).
 
-```shell
-openssl genrsa -out /etc/guacd/server.key 2048
-openssl req -new -key /etc/guacd/server.key -out /etc/guacd/cert.csr
-openssl x509 -in /etc/guacd/cert.csr -out /etc/guacd/server.crt -req -signkey /etc/guacd/server.key -days 3650
-openssl pkcs12 -export -in /etc/guacd/server.crt -inkey /etc/guacd/server.key  -out /etc/guacd/server.p12 -CAfile ca.crt -caname root
-```
-2. Configure guacd
-
-On debian, edit /etc/default/guacd and modify the following variables.
-```
-# listen on all interface
-LISTEN_ADDRESS=0.0.0.0
-
-# certificats
-DAEMON_ARGS=-C /etc/guacd/server.crt -K /etc/guacd/server.key
-```
-restart guacd! 
-
-3. Deploy Guacamole
+Copy the SSL certificate server.p12 to /path/guacamole/certs
 
 ```shell
 docker run --name some-guacamole                                  \
@@ -262,13 +245,12 @@ docker run --name some-guacamole                                  \
   -e GUACD_SSL=true                                               \
   -e GUACD_PORT=4822                                              \
   -e GUACD_HOSTNAME=hostname                                      \
-  -v <path to certificat>:/home/guacamole/certs                   \
+  -v /path/guacamole/certs:/home/guacamole/certs                   \
   ...
   -d -p 8080:8080 guacamole/guacamole
 ```
 
-4. From the guacamole web interface, add a new connexion and enable SSL/TLS whenever using a guacd proxy.
-
+From the guacamole web interface, add a new connection and enable SSL/TLS whenever using a guacd proxy.
 
 
 Reporting issues
