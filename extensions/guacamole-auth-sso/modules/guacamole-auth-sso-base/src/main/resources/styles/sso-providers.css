@@ -24,12 +24,6 @@
     bottom: 0;
     left: 0;
 
-    display: none;
-
-}
-
-.login-ui .sso-providers:last-child {
-    display: block;
 }
 
 .sso-providers ul {
