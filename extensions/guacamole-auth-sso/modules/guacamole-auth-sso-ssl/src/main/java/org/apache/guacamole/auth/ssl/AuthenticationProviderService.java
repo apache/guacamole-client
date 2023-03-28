@@ -23,15 +23,20 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import java.net.URI;
+import java.util.Arrays;
 import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
+import org.apache.guacamole.form.Field;
+import org.apache.guacamole.form.RedirectField;
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 
 /**
  * Service that authenticates Guacamole users using SSL/TLS authentication
@@ -150,11 +155,15 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         if (confService.isPrimaryHostname(host))
             return processIdentity(credentials, request);
 
-        // All other requests are not allowed - refuse to authenticate
-        throw new GuacamoleClientException("Direct authentication against "
-                + "this endpoint is not valid without first requesting to "
-                + "authenticate at the primary URL of this Guacamole "
-                + "instance.");
+        // All other requests are not allowed - redirect to proper hostname
+        throw new GuacamoleInvalidCredentialsException("Authentication is "
+                + "only allowed against the primary URL of this Guacamole "
+                + "instance.",
+            new CredentialsInfo(Arrays.asList(new Field[] {
+                new RedirectField("primaryURI", confService.getPrimaryURI(),
+                        new TranslatableMessage("LOGIN.INFO_REDIRECT_PENDING"))
+            }))
+        );
 
     }
 
