@@ -58,6 +58,7 @@
 
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_CLIENT_MESSAGES"     : "Vyčistit",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Vyčistit",
         "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
         "ACTION_DISCONNECT"                : "Odpojit",
@@ -123,8 +124,9 @@
         "HELP_MOUSE_MODE_RELATIVE" : "Přetažením myši posuňte ukazatel myši a klepněte na tlačítko. Kliknutí nastane v místě ukazatele.",
         "HELP_SHARE_LINK"          : "Aktuální připojení je sdíleno a může k němu přistupovat kdokoli s následujícím {LINKS, plural, one{odkazem} other{odkazy}}:",
 
-        "INFO_CONNECTION_SHARED" : "Toto připojení je nyní sdíleno.",
-        "INFO_NO_FILE_TRANSFERS" : "Žádné přenosy souborů.",
+        "INFO_ANONYMOUS_USER_COUNT" : "Anonymní{COUNT, plural, one{} other{ (#)}}",
+        "INFO_CONNECTION_SHARED"    : "Toto připojení je nyní sdíleno.",
+        "INFO_NO_FILE_TRANSFERS"    : "Žádné přenosy souborů.",
 
         "NAME_INPUT_METHOD_NONE"   : "Žádné",
         "NAME_INPUT_METHOD_OSK"    : "Na obrazovce, klávesnice",
@@ -136,21 +138,28 @@
         "NAME_MOUSE_MODE_ABSOLUTE" : "Dotyková obrazovka",
         "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
 
-        "SECTION_HEADER_CLIPBOARD"      : "Schránka",
-        "SECTION_HEADER_DEVICES"        : "Zařízení",
-        "SECTION_HEADER_DISPLAY"        : "Zobrazení",
-        "SECTION_HEADER_FILE_TRANSFERS" : "Přenos souborů",
-        "SECTION_HEADER_INPUT_METHOD"   : "Metoda vstupu",
-        "SECTION_HEADER_MOUSE_MODE"     : "Mód emulace myši",
+        "SECTION_HEADER_CLIENT_MESSAGES" : "Zprávy",
+        "SECTION_HEADER_CLIPBOARD"       : "Schránka",
+        "SECTION_HEADER_DEVICES"         : "Zařízení",
+        "SECTION_HEADER_DISPLAY"         : "Zobrazení",
+        "SECTION_HEADER_FILE_TRANSFERS"  : "Přenos souborů",
+        "SECTION_HEADER_INPUT_METHOD"    : "Metoda vstupu",
+        
+        "SECTION_HEADER_MOUSE_MODE"      : "Mód emulace myši",
 
+        "TEXT_ANONYMOUS_USER_JOINED"      : "K připojení se připojil anonymní uživatel.",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "Anonymní uživatel opustil připojení.",
         "TEXT_ZOOM_AUTO_FIT"              : "Automaticky přizpůsobit prohlížeč oknu",
         "TEXT_CLIENT_STATUS_IDLE"         : "Nečinný",
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Připojuji ke Guacamole...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Byl jste odpojen.",
         "TEXT_CLIENT_STATUS_UNSTABLE"     : "Síťové spojení ke  Guacamole serveru se zdá nestabilní.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Připojen ke Guacamole. Čekání na odpověď...",
+        "TEXT_USER_JOINED"                : "{USERNAME} se připojil ke spojení.",
+        "TEXT_USER_LEFT"                  : "{USERNAME} opustil spojení.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Znovu připojuji  {REMAINING} {REMAINING, plural, one{sekundu} other{sekund}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+        "TEXT_CLIPBOARD_AWAITING_FOCUS"   : "Kliknutím zobrazíte obsah schránky...",
 
         "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
 
@@ -914,6 +923,7 @@
 
         "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
         "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
 
         "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
@@ -940,6 +950,7 @@
         "HELP_UPDATE_PASSWORD"      : "Pokud chcete změnit heslo, zadejte své aktuální heslo a níže požadované nové heslo a klikněte na tlačítko „Aktualizovat heslo“. Změna se projeví okamžitě.",
 
         "INFO_PASSWORD_CHANGED" : "Heslo bylo změněno.",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "Uživatelská nastavení uložena.",
 
         "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
         "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
