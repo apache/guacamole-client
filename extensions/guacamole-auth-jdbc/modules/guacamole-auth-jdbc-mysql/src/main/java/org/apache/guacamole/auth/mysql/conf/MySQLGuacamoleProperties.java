@@ -265,4 +265,16 @@ public class MySQLGuacamoleProperties {
                 
     };
 
+    /**
+     * The maximum number of identifiers/parameters to be included in a single batch when
+     * executing SQL statements.
+     */
+    public static final IntegerGuacamoleProperty MYSQL_BATCH_SIZE =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-batch-size"; }
+
+    };    
+    
 }

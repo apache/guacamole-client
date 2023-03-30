@@ -68,6 +68,19 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
     public abstract int getAbsoluteMaxConnections() throws GuacamoleException;
 
     /**
+     * Returns the maximum number of identifiers/parameters to be 
+     * included in a single batch when executing SQL statements.
+     *
+     * @return
+     *     The maximum number of identifiers/parameters to be included 
+     *     in a single batch.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property.
+     */
+    public abstract int getBatchSize() throws GuacamoleException;
+
+    /**
      * Returns the default maximum number of concurrent connections to allow to 
      * any one connection, unless specified differently on an individual 
      * connection. Zero denotes unlimited.
