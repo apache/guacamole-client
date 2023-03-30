@@ -302,5 +302,17 @@ public class PostgreSQLGuacamoleProperties {
         public String getName() { return "postgresql-enforce-access-windows-for-active-sessions"; }
 
     };
+    
+    /**
+     * The maximum number of identifiers/parameters to be included in a single batch when
+     * executing SQL statements.
+     */
+    public static final IntegerGuacamoleProperty POSTGRESQL_BATCH_SIZE =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-batch-size"; }
+
+    };
 
 }

@@ -115,6 +115,18 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
      * The default value to use for SSL mode if none is explicitly configured.
      */
     private final PostgreSQLSSLMode DEFAULT_SSL_MODE = PostgreSQLSSLMode.PREFER;
+    
+    /**
+     * The default maximum number of identifiers/parameters to be included in a 
+     * single batch when executing SQL statements for PostgreSQL.
+     * 
+     * PostgreSQL has a maximum limit of 65535 parameters per prepared statement.
+     * A value of 5000 is chosen to avoid potential performance issues or query
+     * execution errors while staying well below the maximum limit.
+     *
+     * @see https://www.postgresql.org/docs/current/runtime-config-resource.html#GUC-MAX-PREPARED-STATEMENT-ARGS
+     */
+    private static final int DEFAULT_BATCH_SIZE = 5000;
 
     /**
      * Constructs a new PostgreSQLEnvironment, providing access to PostgreSQL-specific
@@ -146,6 +158,13 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
         );
     }
 
+    @Override
+    public int getBatchSize() throws GuacamoleException {
+        return getProperty(PostgreSQLGuacamoleProperties.POSTGRESQL_BATCH_SIZE,
+            DEFAULT_BATCH_SIZE
+        );
+    }    
+    
     @Override
     public int getDefaultMaxConnections() throws GuacamoleException {
         return getProperty(
