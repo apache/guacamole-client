@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.5.11</version>
+            <version>3.5.13</version>
         </dependency>
         
         <!-- MyBatis Guice -->
