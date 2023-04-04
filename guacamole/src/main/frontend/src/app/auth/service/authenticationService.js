@@ -196,6 +196,13 @@ angular.module('auth').factory('authenticationService', ['$injector',
         // Attempt authentication after auth parameters are available ...
         return parameters.then(function requestParametersReady(requestParams) {
 
+            // Strip any properties that are from AngularJS core, such as the
+            // '$$state' property added by $q. Properties added by AngularJS
+            // core will have a '$' prefix. The '$$state' property is
+            // particularly problematic, as it is self-referential and explodes
+            // the stack when fed to $.param().
+            requestParams = _.omitBy(requestParams, (value, key) => key.startsWith('$'));
+
             return requestService({
                 method: 'POST',
                 url: 'api/tokens',
