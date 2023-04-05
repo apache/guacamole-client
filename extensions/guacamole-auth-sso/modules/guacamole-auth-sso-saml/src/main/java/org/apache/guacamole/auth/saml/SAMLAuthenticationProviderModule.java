@@ -36,6 +36,8 @@ public class SAMLAuthenticationProviderModule extends AbstractModule {
         bind(ConfigurationService.class);
         bind(SAMLAuthenticationSessionManager.class);
         bind(SAMLService.class);
+        
+        requestStaticInjection(AuthenticationEventListener.class);
     }
 
 }
