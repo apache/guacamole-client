@@ -37,6 +37,17 @@
         <relativePath>../</relativePath>
     </parent>
 
+    <properties>
+
+        <!--
+        The location where temporary files should be stored for communicating
+        between karma and firefox. The default location, /tmp, does not work
+        if firefox is installed via snap.
+        -->
+        <firefox.temp.dir>${project.basedir}/.tmp</firefox.temp.dir>
+        
+    </properties>
+
     <description>
         The base JavaScript API of the Guacamole project, providing JavaScript
         support for the Guacamole stack, including a full client
@@ -114,7 +125,27 @@
                 </executions>
             </plugin>
 
-            <!-- Unit test using Jasmin and PhantomJS -->
+            <!-- Ensure the firefox temp directory exists -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>createFirefoxTempdir</id>
+                        <phase>test-compile</phase>
+                        <configuration>
+                            <tasks>
+                                <mkdir dir="${firefox.temp.dir}"/>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Unit test using Jasmin and Firefox -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
@@ -130,6 +161,11 @@
 
                     <!-- The location of the karma config file -->
                     <karmaConfPath>karma-ci.conf.js</karmaConfPath>
+
+                    <!-- Tell karma to use the custom temp directory -->
+                    <environmentVariables>
+                        <TMPDIR>${firefox.temp.dir}</TMPDIR>
+                    </environmentVariables>
                     
                 </configuration>
 
@@ -138,6 +174,7 @@
                     <!-- Install node.js and NPM before running tests -->
                     <execution>
                         <id>install node and npm</id>
+                        <phase>test-compile</phase>
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
@@ -146,6 +183,7 @@
                     <!-- Install test dependencies -->
                     <execution>
                         <id>npm install</id>
+                        <phase>test-compile</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -154,6 +192,7 @@
                     <!-- Run all tests non-interactively -->
                     <execution>
                         <id>run tests</id>
+                        <phase>test</phase>
                         <goals>
                             <goal>karma</goal>
                         </goals>

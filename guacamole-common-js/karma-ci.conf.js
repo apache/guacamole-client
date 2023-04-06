@@ -17,6 +17,10 @@
  * under the License.
  */
 
+/**
+ * A karma configuration intended for use in builds or CI. Runs all discovered
+ * unit tests under a headless firefox browser and immediately exits.
+ */
 module.exports = function(config) {
   config.set({
 
@@ -34,17 +38,17 @@ module.exports = function(config) {
     // Disable automatic test running on changed files
     autoWatch: false,
 
-    // Use a headless chromium browser to run the tests
-    // --no-sandbox required when running in docker build - for more, see
-    // https://github.com/karma-runner/karma-chrome-launcher/issues/158
-    // TODON'T: THIS
-    browsers: ['ChromiumHeadlessNoSandbox'],
+    // Use a headless firefox browser to run the tests
+    browsers: ['FirefoxHeadless'],
     customLaunchers: {
-      ChromiumHeadlessNoSandbox: {
-        base: 'ChromiumHeadless',
-        flags: ['--no-sandbox']
+      'FirefoxHeadless': {
+        base: 'Firefox',
+        flags: [
+            '--headless'
+        ]
       }
     }
 
-  })
-}
+  });
+  
+};
