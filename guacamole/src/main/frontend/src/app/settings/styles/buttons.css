@@ -63,5 +63,5 @@ a.button.add-connection-group::before {
 }
 
 a.button.import-connections::before {
-    background-image: url('images/action-icons/guac-monitor-add-many.svg');
+    background-image: url('images/action-icons/guac-file-import.svg');
 }
