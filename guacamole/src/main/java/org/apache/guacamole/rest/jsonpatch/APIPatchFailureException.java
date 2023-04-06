@@ -51,7 +51,7 @@ public class APIPatchFailureException extends GuacamoleClientException {
     public APIPatchFailureException(
             String message, List<APIPatchOutcome> patches) {
 
-        super(message );
+        super(message);
         this.patches = patches;
     }
 

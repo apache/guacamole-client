@@ -155,6 +155,10 @@ angular.module('import').directive('connectionImportErrors', [
             if (!patchFailure || !parseResult)
                 return;
 
+            // All promises from all translation requests. The scope will not be
+            // updated until all translations are ready.
+            const translationPromises = [];
+
             // Set up the list of connection errors based on the existing parse
             // result, with error messages fetched from the patch failure
             $scope.connectionErrors = parseResult.patches.map(
@@ -166,10 +170,24 @@ angular.module('import').directive('connectionImportErrors', [
                 // Set the error from the PATCH request, if there is one
                 const error = _.get(patchFailure, ['patches', index, 'error']);
                 if (error)
-                    connectionError.errors = new DisplayErrorList([error]);
+
+                    // Fetch the translation and update it when it's ready
+                    translationPromises.push($translate(
+                        error.key, error.variables)
+                        .then(translatedError =>
+                            connectionError.errors.getArray().push(translatedError)
+                        ));
 
                 return connectionError;
+                
             });
+
+            // Once all the translations have been completed, update the
+            // connectionErrors all in one go, to ensure no excessive reloading
+            $q.all(translationPromises).then(() => {
+                $scope.connectionErrors = connectionErrors;
+            });
+            
         });
 
         // If a new parse result with errors is seen, update the display list

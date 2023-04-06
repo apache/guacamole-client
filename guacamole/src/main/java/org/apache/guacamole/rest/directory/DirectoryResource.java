@@ -21,10 +21,13 @@ package org.apache.guacamole.rest.directory;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -39,6 +42,8 @@ import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.language.Translatable;
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.AtomicDirectoryOperation;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -53,6 +58,7 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 import org.apache.guacamole.net.event.DirectoryEvent;
 import org.apache.guacamole.net.event.DirectoryFailureEvent;
 import org.apache.guacamole.net.event.DirectorySuccessEvent;
+import org.apache.guacamole.rest.APIError;
 import org.apache.guacamole.rest.event.ListenerService;
 import org.apache.guacamole.rest.jsonpatch.APIPatch;
 import org.apache.guacamole.rest.jsonpatch.APIPatchError;
@@ -416,6 +422,61 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
     }
 
     /**
+     * If the provided throwable is a known Guacamole-specific type, create and
+     * return a APIPatchError with an error message extracted from the error.
+     * If the provided throwable is not a known type, null will be returned.
+     *
+     * @param op
+     *     The operation being attempted when the error occurred.
+     *
+     * @param identifier
+     *     The identifier of the object in question, if any.
+     *
+     * @param path
+     *     The path for the patch that was being applied when the error occurred.
+     *
+     * @param t
+     *     The error that occurred while attempting to apply the patch.
+     *
+     * @return
+     *     A APIPatchError with an error message extracted from the provided
+     *     throwable - if it's a known type, otherwise null.
+     */
+    @Nullable
+    private APIPatchError createPatchFailure(
+            @Nonnull APIPatch.Operation op, @Nullable String identifier,
+            @Nonnull String path, @Nonnull Throwable t) {
+
+        /*
+         * If the failure is a translatable type, use the translation directly
+         * in the patch error.
+         */
+        if (t instanceof Translatable)
+            return new APIPatchError(
+                op, identifier, path,
+                ((Translatable) t).getTranslatableMessage());
+
+        /*
+         * If the failure represents a known Guacamole exception but is not
+         * translateable, create a patch error containing the raw untranslated
+         * exception message.
+         */
+        if (t instanceof GuacamoleException) {
+
+            // Create a translated message that will fall
+            // through to the untranslated message
+            TranslatableMessage message = new TranslatableMessage(
+                    "APP.TEXT_UNTRANSLATED", Collections.singletonMap(
+                            "MESSAGE", ((GuacamoleException) t).getMessage()));
+
+            return new APIPatchError(op, identifier, path, message);
+        }
+
+        // The error is not a known type - no patch error can be generated
+        return null;
+    }
+
+    /**
      * Applies the given object patches, updating the underlying directory
      * accordingly. This operation supports addition and removal of objects
      * through the "add" and "remove" patch operation. The path of each patch
@@ -512,19 +573,19 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                                     DirectoryEvent.Operation.ADD,
                                     internal.getIdentifier(), internal, e);
 
-                            /*
-                             * If the failure represents an understood issue,
-                             * create a failure outcome for this failed patch.
-                             */
-                            if (e instanceof GuacamoleException)
-                                patchOutcomes.add(new APIPatchError(
-                                        op, null, path,
-                                        ((GuacamoleException) e).getMessage()));
+                            // Attempt to generate an API Patch error using the
+                            // caught exception
+                            APIPatchError patchError = createPatchFailure(
+                                    op, null, path, e);
 
-                            // If an unexpected failure occurs, fall through to the
-                            // standard API error handling
+                            if (patchError != null)
+                                patchOutcomes.add(patchError);
+
+                            // If an unexpected failure occurs, fall through to
+                            // the standard API error handling
                             else
                                 throw e;
+
                         }
 
                     }
@@ -554,17 +615,16 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                                     DirectoryEvent.Operation.REMOVE,
                                     identifier, null, e);
 
-                            /*
-                             * If the failure represents an understood issue,
-                             * create a failure outcome for this failed patch.
-                             */
-                            if (e instanceof GuacamoleException)
-                                patchOutcomes.add(new APIPatchError(
-                                        op, identifier, path,
-                                        ((GuacamoleException) e).getMessage()));
+                            // Attempt to generate an API Patch error using the
+                            // caught exception
+                            APIPatchError patchError = createPatchFailure(
+                                    op, identifier, path, e);
 
-                            // If an unexpected failure occurs, fall through to the
-                            // standard API error handling
+                            if (patchError != null)
+                                patchOutcomes.add(patchError);
+
+                            // If an unexpected failure occurs, fall through to
+                            // the standard API error handling
                             else
                                 throw e;
                         }

@@ -61,6 +61,13 @@ angular.module('import').factory('ParseError', [function defineParseError() {
          */
         this.variables = template.variables;
 
+        // If no translation key is available, fall back to the untranslated
+        // key, passing the raw message directly through the translation system
+        if (!this.key) {
+            this.key = 'APP.TEXT_UNTRANSLATED';
+            this.variables = { MESSAGE: this.message };
+        }
+
     };
 
     return ParseError;

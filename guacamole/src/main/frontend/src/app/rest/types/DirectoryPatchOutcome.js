@@ -68,7 +68,7 @@ angular.module('rest').factory('DirectoryPatchOutcome', [
          * The error message associated with the failure, if the patch failed to
          * apply.
          *
-         * @type {String}
+         * @type {TranslatableMessage}
          */
         this.error = template.error;
 

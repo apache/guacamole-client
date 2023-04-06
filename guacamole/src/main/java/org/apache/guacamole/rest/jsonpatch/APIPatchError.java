@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.rest.jsonpatch;
 
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.rest.jsonpatch.APIPatch.Operation;
 
 /**
@@ -33,7 +34,7 @@ public class APIPatchError extends APIPatchOutcome {
     /**
      * The error associated with the submitted patch.
      */
-    private final String error;
+    private final TranslatableMessage error;
 
     /**
      * Create a failure status associated with a submitted patch from a JSON
@@ -54,7 +55,8 @@ public class APIPatchError extends APIPatchOutcome {
      *     patch from applying.
      */
     public APIPatchError(
-            Operation op, String identifier, String path, String error) {
+            Operation op, String identifier, String path,
+            TranslatableMessage error) {
         super(op, identifier, path);
         this.error = error;
     }
@@ -65,7 +67,7 @@ public class APIPatchError extends APIPatchOutcome {
      * @return
      *     The error associated with the patch failure.
      */
-    public String getError() {
+    public TranslatableMessage getError() {
         return error;
     }
 }
