@@ -116,25 +116,51 @@
 
             <!-- Unit test using Jasmin and PhantomJS -->
             <plugin>
-                <groupId>com.github.searls</groupId>
-                <artifactId>jasmine-maven-plugin</artifactId>
-                <version>2.2</version>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.12.1</version>
+                
+                <configuration>
+
+                    <!-- The version of node to use for running tests -->
+                    <nodeVersion>v16.19.1</nodeVersion>
+
+                    <!-- Install dependencies with "npm ci" for repeatability -->
+                    <arguments>ci</arguments>
+
+                    <!-- The location of the karma config file -->
+                    <karmaConfPath>karma-ci.conf.js</karmaConfPath>
+                    
+                </configuration>
+
                 <executions>
+
+                    <!-- Install node.js and NPM before running tests -->
                     <execution>
+                        <id>install node and npm</id>
                         <goals>
-                            <goal>test</goal>
+                            <goal>install-node-and-npm</goal>
                         </goals>
                     </execution>
+
+                    <!-- Install test dependencies -->
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Run all tests non-interactively -->
+                    <execution>
+                        <id>run tests</id>
+                        <goals>
+                            <goal>karma</goal>
+                        </goals>
+                    </execution>
+                    
                 </executions>
-                <configuration>
-                    <phantomjs>
-                        <version>2.1.1</version>
-                    </phantomjs>
-                    <sourceIncludes>
-                        <sourceInclude>**/*.min.js</sourceInclude>
-                    </sourceIncludes>
-                    <jsSrcDir>${project.build.directory}/${project.build.finalName}</jsSrcDir>
-                </configuration>
+                
             </plugin>
 
         </plugins>
