@@ -232,5 +232,17 @@ public class SQLServerGuacamoleProperties {
         public String getName() { return "sqlserver-enforce-access-windows-for-active-sessions"; }
 
     };
+    
+    /**
+     * The maximum number of identifiers/parameters to be included in a single batch when
+     * executing SQL statements.
+     */
+    public static final IntegerGuacamoleProperty SQLSERVER_BATCH_SIZE =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-batch-size"; }
+
+    };
 
 }
