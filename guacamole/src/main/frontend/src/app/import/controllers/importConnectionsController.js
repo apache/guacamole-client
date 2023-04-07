@@ -62,12 +62,11 @@ const LEGAL_MIME_TYPES = [CSV_MIME_TYPE, JSON_MIME_TYPE, ...YAML_MIME_TYPES];
  */
 angular.module('import').controller('importConnectionsController', ['$scope', '$injector',
         function importConnectionsController($scope, $injector) {
+            
     // Required services
-    const $document              = $injector.get('$document');
     const $location              = $injector.get('$location');
     const $q                     = $injector.get('$q');
     const $routeParams           = $injector.get('$routeParams');
-    const $timeout               = $injector.get('$timeout');
     const connectionParseService = $injector.get('connectionParseService');
     const connectionService      = $injector.get('connectionService');
     const guacNotification       = $injector.get('guacNotification');
@@ -586,12 +585,19 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
     /**
      * Handle a provided File upload, reading all data onto the scope for
-     * import processing, should the user request an import.
+     * import processing, should the user request an import. Note that this
+     * function is used as a callback for directives that invoke it with a file
+     * list, but directive-level checking should ensure that there is only ever
+     * one file provided at a time.
      *
-     * @argument {File} file
-     *     The file to upload onto the scope for further processing.
+     * @argument {File[]} files
+     *     The files to upload onto the scope for further processing. There
+     *     should only ever be a single file in the array.
      */
-    const handleFile = file => {
+    $scope.handleFiles = files => {
+
+        // There should only ever be a single file in the array
+        const file = files[0];
 
         // The MIME type of the provided file
         const mimeType = file.type;
@@ -651,146 +657,9 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     };
 
     /**
-     * Whether a drag/drop operation is currently in progress (the user has
-     * dragged a file over the Guacamole connection but has not yet
-     * dropped it).
-     *
-     * @type boolean
-     */
-    $scope.dropPending = false;
-
-    /**
      * The name of the file that's currently being uploaded, or has yet to
      * be imported, if any.
      */
     $scope.fileName = null;
-
-    /**
-     * The container for the file upload UI.
-     *
-     * @type Element
-     *
-     */
-    const uploadContainer = angular.element(
-            $document.find('.file-upload-container'));
-
-    /**
-     * The location where files can be dragged-and-dropped to.
-     *
-     * @type Element
-     */
-    const dropTarget = uploadContainer.find('.drop-target');
-
-    /**
-     * Displays a visual indication that dropping the file currently
-     * being dragged is possible. Further propagation and default behavior
-     * of the given event is automatically prevented.
-     *
-     * @param {Event} e
-     *     The event related to the in-progress drag/drop operation.
-     */
-    const notifyDragStart = function notifyDragStart(e) {
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        $scope.$apply(() => {
-            $scope.dropPending = true;
-        });
-
-    };
-
-    /**
-     * Removes the visual indication that dropping the file currently
-     * being dragged is possible. Further propagation and default behavior
-     * of the given event is automatically prevented.
-     *
-     * @param {Event} e
-     *     The event related to the end of the former drag/drop operation.
-     */
-    const notifyDragEnd = function notifyDragEnd(e) {
-
-        e.preventDefault();
-        e.stopPropagation();
-
-        $scope.$apply(() => {
-            $scope.dropPending = false;
-        });
-
-    };
-
-    // Add listeners to the drop target to ensure that the visual state
-    // stays up to date
-    dropTarget.on('dragenter', notifyDragStart);
-    dropTarget.on('dragover',  notifyDragStart);
-    dropTarget.on('dragleave', notifyDragEnd);
-
-    /**
-     * Drop target event listener that will be invoked if the user drops
-     * anything onto the drop target. If a valid file is provided, the
-     * onFile callback provided to this directive will be called; otherwise
-     * an error will be displayed, if appropriate.
-     *
-     * @param {Event} e
-     *     The drop event that triggered this handler.
-     */
-    dropTarget.on('drop', e => {
-
-        notifyDragEnd(e);
-
-        const files = e.originalEvent.dataTransfer.files;
-
-        // Ignore any non-files that are dragged into the drop area
-        if (files.length < 1)
-            return;
-
-        if (files.length >= 2) {
-
-            // If more than one file was provided, print an error explaining
-            // that only a single file is allowed and abort processing
-            handleError(new ParseError({
-                message: 'Only a single file may be imported at once',
-                key: 'IMPORT.ERROR_FILE_SINGLE_ONLY'
-            }));
-            return;
-        }
-
-        handleFile(files[0]);
-
-    });
-
-    /**
-     * The hidden file input used to create a file browser.
-     *
-     * @type Element
-     */
-    const fileUploadInput = uploadContainer.find('.file-upload-input');
-
-    /**
-     * A function that will click on the hidden file input to open a file
-     * browser to allow the user to select a file for upload.
-     */
-    $scope.openFileBrowser = () =>
-            $timeout(() => fileUploadInput.click(), 0, false);
-
-    /**
-     * A handler that will be invoked when a user selectes a file in the
-     * file browser. After some error checking, the file will be passed to
-     * the onFile callback provided to this directive.
-     *
-     * @param {Event} e
-     *     The event that was triggered when the user selected a file in
-     *     their file browser.
-     */
-    fileUploadInput.on('change', e => {
-
-        // Process the uploaded file
-        handleFile(e.target.files[0]);
-
-        // Clear the value to ensure that the change event will be fired
-        // if the user selects the same file again
-        fileUploadInput.value = null;
-
-    });
 
 }]);

@@ -161,7 +161,7 @@ angular.module('import').directive('connectionImportErrors', [
 
             // Set up the list of connection errors based on the existing parse
             // result, with error messages fetched from the patch failure
-            $scope.connectionErrors = parseResult.patches.map(
+            const connectionErrors = parseResult.patches.map(
                     (patch, index) => {
 
                 // Generate a connection error for display

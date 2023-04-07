@@ -22,7 +22,10 @@
             </a>
         </div>
 
-        <div class="drop-target" ng-class="{ 'drop-pending': dropPending, 'file-present': fileName}">
+        <div class="drop-target" guac-upload="handleFiles" 
+             guac-drop="handleFiles" guac-multiple="false"
+             guac-dragged-class="'drop-pending'"
+             ng-class="{'file-present': fileName}">
 
             <div class="title">{{'IMPORT.HELP_UPLOAD_DROP_TITLE' | translate}}</div>
 
