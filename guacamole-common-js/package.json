@@ -1,0 +1,8 @@
+{
+  "description": "Dependencies to be installed by maven for running JS tests",
+  "devDependencies": {
+    "karma": "^6.4.1",
+    "karma-firefox-launcher": "^2.1.2",
+    "karma-jasmine": "^5.1.0"
+  }
+}
