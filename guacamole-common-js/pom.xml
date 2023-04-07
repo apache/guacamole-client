@@ -44,7 +44,13 @@
         between karma and firefox. The default location, /tmp, does not work
         if firefox is installed via snap.
         -->
-        <firefox.temp.dir>${project.basedir}/.tmp</firefox.temp.dir>
+        <firefox.temp.dir>${project.build.directory}/tmp</firefox.temp.dir>
+
+        <!--
+        Skip tests unless requested otherwise with -DskipTests=false.
+        Skipped by default because these tests require firefox to be installed.
+        -->
+        <skipTests>true</skipTests>
         
     </properties>
 
@@ -125,18 +131,29 @@
                 </executions>
             </plugin>
 
+            <!-- Skip tests if configured to do so -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
+            </plugin>
+
             <!-- Ensure the firefox temp directory exists -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>createFirefoxTempdir</id>
-                        <phase>test-compile</phase>
+                        <phase>test</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <mkdir dir="${firefox.temp.dir}"/>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -174,7 +191,7 @@
                     <!-- Install node.js and NPM before running tests -->
                     <execution>
                         <id>install node and npm</id>
-                        <phase>test-compile</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
@@ -183,7 +200,7 @@
                     <!-- Install test dependencies -->
                     <execution>
                         <id>npm install</id>
-                        <phase>test-compile</phase>
+                        <phase>test</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>

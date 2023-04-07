@@ -1,5 +1,4 @@
 node/
 node_modules/
 target/
-.tmp/
 *~
