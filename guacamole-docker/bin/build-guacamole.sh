@@ -38,15 +38,9 @@
 ##     subdirectories within this directory, and files will thus be grouped by
 ##     extension type.
 ##
-## @param BUILD_PROFILE
-##     The build profile that will be passed to Maven build process. Defaults
-##     to empty string. Can be set to "lgpl-extensions" to e.g. include
-##     RADIUS authentication extension.
-##
 
 BUILD_DIR="$1"
 DESTINATION="$2"
-BUILD_PROFILE="$3"
 
 #
 # Create destination, if it does not yet exist
@@ -60,16 +54,11 @@ mkdir -p "$DESTINATION"
 
 cd "$BUILD_DIR"
 
-# Required for build leveraging PhantomJS for unit testing (without this, the
-# build fails with "libssl_conf.so: cannot open shared object file: No such
-# file or directory")
-export OPENSSL_CONF=/etc/ssl
+#
+# Run the maven build, applying any arbitrary provided maven arguments.
+#
 
-if [ -z "$BUILD_PROFILE" ]; then
-    mvn package
-else
-    mvn -P "$BUILD_PROFILE" package
-fi
+mvn $MAVEN_ARGUMENTS package
 
 #
 # Copy guacamole.war to destination

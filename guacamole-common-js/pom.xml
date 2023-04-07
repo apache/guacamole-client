@@ -37,6 +37,23 @@
         <relativePath>../</relativePath>
     </parent>
 
+    <properties>
+
+        <!--
+        The location where temporary files should be stored for communicating
+        between karma and firefox. The default location, /tmp, does not work
+        if firefox is installed via snap.
+        -->
+        <firefox.temp.dir>${project.build.directory}/tmp</firefox.temp.dir>
+
+        <!--
+        Skip tests unless requested otherwise with -DskipTests=false.
+        Skipped by default because these tests require firefox to be installed.
+        -->
+        <skipTests>true</skipTests>
+        
+    </properties>
+
     <description>
         The base JavaScript API of the Guacamole project, providing JavaScript
         support for the Guacamole stack, including a full client
@@ -114,27 +131,92 @@
                 </executions>
             </plugin>
 
-            <!-- Unit test using Jasmin and PhantomJS -->
+            <!-- Skip tests if configured to do so -->
             <plugin>
-                <groupId>com.github.searls</groupId>
-                <artifactId>jasmine-maven-plugin</artifactId>
-                <version>3.0-beta-02</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <skipTests>${skipTests}</skipTests>
+                </configuration>
+            </plugin>
+
+            <!-- Ensure the firefox temp directory exists -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
+                        <id>createFirefoxTempdir</id>
+                        <phase>test</phase>
+                        <configuration>
+                            <target>
+                                <mkdir dir="${firefox.temp.dir}"/>
+                            </target>
+                        </configuration>
                         <goals>
-                            <goal>test</goal>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <!-- Unit test using Jasmin and Firefox -->
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>1.12.1</version>
+                
                 <configuration>
-                    <phantomjs>
-                        <version>2.1.1</version>
-                    </phantomjs>
-                    <sourceIncludes>
-                        <sourceInclude>**/*.min.js</sourceInclude>
-                    </sourceIncludes>
-                    <jsSrcDir>${project.build.directory}/${project.build.finalName}</jsSrcDir>
+
+                    <!-- The version of node to use for running tests -->
+                    <nodeVersion>v16.19.1</nodeVersion>
+
+                    <!-- Install dependencies with "npm ci" for repeatability -->
+                    <arguments>ci</arguments>
+
+                    <!-- The location of the karma config file -->
+                    <karmaConfPath>karma-ci.conf.js</karmaConfPath>
+
+                    <!-- Tell karma to use the custom temp directory -->
+                    <environmentVariables>
+                        <TMPDIR>${firefox.temp.dir}</TMPDIR>
+                    </environmentVariables>
+                    
                 </configuration>
+
+                <executions>
+
+                    <!-- Install node.js and NPM before running tests -->
+                    <execution>
+                        <id>install node and npm</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Install test dependencies -->
+                    <execution>
+                        <id>npm install</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Run all tests non-interactively -->
+                    <execution>
+                        <id>run tests</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>karma</goal>
+                        </goals>
+                    </execution>
+                    
+                </executions>
+                
             </plugin>
 
         </plugins>

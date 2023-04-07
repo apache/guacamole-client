@@ -30,12 +30,14 @@ ARG TOMCAT_JRE=jdk8
 # Use official maven image for the build
 FROM maven:3-jdk-8 AS builder
 
-# Install chromium-driver for sake of JavaScript unit tests
-RUN apt-get update && apt-get install -y chromium-driver
+# Install firefox browser for sake of JavaScript unit tests
+RUN apt-get update && apt-get install -y firefox-esr
 
-# Use args to build radius auth extension such as
-# `--build-arg BUILD_PROFILE=lgpl-extensions`
-ARG BUILD_PROFILE
+# Arbitrary arguments that can be passed to the maven build. By default, an
+# argument will be provided to explicitly unskip any skipped tests. To, for
+# example, allow the building of the RADIUS auth extension, pass a build profile
+# as well: `--build-arg MAVEN_ARGUMENTS="-P lgpl-extensions -DskipTests=false"`.
+ARG MAVEN_ARGUMENTS="-DskipTests=false"
 
 # Build environment variables
 ENV \
@@ -48,7 +50,7 @@ COPY guacamole-docker/bin/ /opt/guacamole/bin/
 COPY . "$BUILD_DIR"
 
 # Run the build itself
-RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole "$BUILD_PROFILE"
+RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole
 
 # For the runtime image, we start with the official Tomcat distribution
 FROM tomcat:${TOMCAT_VERSION}-${TOMCAT_JRE}
