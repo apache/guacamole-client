@@ -47,8 +47,8 @@ COPY guacamole-docker/bin/ /opt/guacamole/bin/
 # Copy source to container for sake of build
 COPY . "$BUILD_DIR"
 
-# Run the build itself
-RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole "$BUILD_PROFILE"
+# Run the build itself, explicitly un-skipping any skipped-by-default tests
+RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole "$BUILD_PROFILE" -DskipTests=false
 
 # For the runtime image, we start with the official Tomcat distribution
 FROM tomcat:${TOMCAT_VERSION}-${TOMCAT_JRE}

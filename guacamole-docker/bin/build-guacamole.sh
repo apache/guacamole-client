@@ -43,10 +43,14 @@
 ##     to empty string. Can be set to "lgpl-extensions" to e.g. include
 ##     RADIUS authentication extension.
 ##
+## @param MAVEN_ARGUMENTS
+##     Any number of arbitrary extra arguments to be passed to maven.
+##
 
 BUILD_DIR="$1"
 DESTINATION="$2"
 BUILD_PROFILE="$3"
+MAVEN_ARGUMENTS="$4"
 
 #
 # Create destination, if it does not yet exist
@@ -66,9 +70,9 @@ cd "$BUILD_DIR"
 export OPENSSL_CONF=/etc/ssl
 
 if [ -z "$BUILD_PROFILE" ]; then
-    mvn package
+    mvn package $MAVEN_ARGUMENTS
 else
-    mvn -P "$BUILD_PROFILE" package
+    mvn -P "$BUILD_PROFILE" $MAVEN_ARGUMENTS package
 fi
 
 #
