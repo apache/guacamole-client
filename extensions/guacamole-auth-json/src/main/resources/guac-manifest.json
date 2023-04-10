@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.5.0",
+    "guacamoleVersion" : "1.5.1",
 
     "name"      : "Encrypted JSON Authentication",
     "namespace" : "json",
