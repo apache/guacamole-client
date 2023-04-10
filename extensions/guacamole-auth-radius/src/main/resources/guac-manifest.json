@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.5.0",
+    "guacamoleVersion" : "1.5.1",
 
     "name"      : "RADIUS Authentication Backend",
     "namespace" : "radius",
