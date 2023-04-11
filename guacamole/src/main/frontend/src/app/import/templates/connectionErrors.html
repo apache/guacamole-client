@@ -28,7 +28,7 @@
                 <td>{{error.rowNumber}}</td>
                 <td>{{error.name}}</td>
                 <td>{{error.protocol}}</td>
-                <td class="error-message">
+                <td class="error-message" ng-class="{ 'has-errors' : error.errors.getArray().length }">
                     <ul>
                         <li ng-repeat="message in error.errors.getArray()">
                             {{ message }}
