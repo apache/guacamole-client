@@ -96,7 +96,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
      *     success.
      */
     service.getProtocol = function getProtocol(tunnel) {
-
+        // GUACAMOLE-956: replace http parameter with header | START
         // Retrieve the protocol details of the specified tunnel
         return requestService({
             method  : 'GET',
@@ -107,7 +107,7 @@ angular.module('rest').factory('tunnelService', ['$injector',
             }
 
         });
-
+        // GUACAMOLE-956: replace http parameter with header | END
     };
 
     /**
