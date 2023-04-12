@@ -97,17 +97,15 @@ angular.module('rest').factory('tunnelService', ['$injector',
      */
     service.getProtocol = function getProtocol(tunnel) {
 
-        // Build HTTP parameters set
-        var httpParameters = {
-            token : authenticationService.getCurrentToken()
-        };
-
         // Retrieve the protocol details of the specified tunnel
         return requestService({
             method  : 'GET',
             url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
                         + '/protocol',
-            params  : httpParameters
+            headers: {
+                'Guacamole-Token': authenticationService.getCurrentToken(),
+            }
+
         });
 
     };
