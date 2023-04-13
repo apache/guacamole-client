@@ -46,6 +46,14 @@ angular.module('import').factory('connectionParseService',
     const service = {};
 
     /**
+     * The identifier of the root connection group, under which all other groups
+     * and connections exist.
+     * 
+     * @type String
+     */
+    const ROOT_GROUP_IDENTIFIER = 'ROOT';
+
+    /**
      * Perform basic checks, common to all file types - namely that the parsed
      * data is an array, and contains at least one connection entry. Returns an
      * error if any of these basic checks fails.
@@ -136,6 +144,10 @@ angular.module('import').factory('connectionParseService',
      * are present on the provided object, or if no group exists at the specified
      * path, the function will throw a ParseError describing the failure.
      *
+     * The group may begin with the root identifier, a leading slash, or may omit
+     * the root identifier entirely. Additionally, the group may optionally end
+     * with a trailing slash.
+     *
      * @returns {Promise.<Function<Object, Object>>}
      *     A promise that will resolve to a function that will transform a
      *     "group" field into a "parentIdentifier" field if possible.
@@ -154,8 +166,25 @@ angular.module('import').factory('connectionParseService',
                     key: 'IMPORT.ERROR_AMBIGUOUS_PARENT_GROUP'
                 });
 
+            // The group path extracted from the user-provided connection, to be
+            // translated if needed into an absolute path from the root group
+            let group = connection.group;
+
+            // Allow the group to start with a leading slash instead instead of
+            // explicitly requiring the root connection group
+            if (group.startsWith('/'))
+                group = ROOT_GROUP_IDENTIFIER + group;
+
+            // Allow groups to begin directly with the path underneath the root
+            else if (!group.startsWith(ROOT_GROUP_IDENTIFIER))
+                group = ROOT_GROUP_IDENTIFIER + '/' + group;
+
+            // Allow groups to end with a trailing slash
+            if (group.endsWith('/'))
+                group = group.slice(0, -1);
+
             // Look up the parent identifier for the specified group path
-            const identifier = lookups[connection.group];
+            const identifier = lookups[group];
 
             // If the group doesn't match anything in the tree
             if (!identifier)
