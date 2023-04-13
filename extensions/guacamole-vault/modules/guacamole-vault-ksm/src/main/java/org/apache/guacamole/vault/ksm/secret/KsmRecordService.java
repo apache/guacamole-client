@@ -220,7 +220,9 @@ public class KsmRecordService {
      *     The type of field to return.
      *
      * @param fields
-     *     The list of fields to retrieve the field from.
+     *     The list of fields to retrieve the field from. For convenience, this
+     *     may be null. A null list will be considered equivalent to an empty
+     *     list.
      *
      * @param fieldClass
      *     The class representing the type of field to return.
@@ -236,6 +238,10 @@ public class KsmRecordService {
     @SuppressWarnings("unchecked") // Manually verified with isAssignableFrom()
     private <T extends KeeperRecordField> T getField(List<KeeperRecordField> fields,
             Class<T> fieldClass, Pattern labelPattern) {
+
+        // There are no fields if no List was provided at all
+        if (fields == null)
+            return null;
 
         T foundField = null;
         for (KeeperRecordField field : fields) {
