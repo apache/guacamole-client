@@ -365,6 +365,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      */
     function handleParseSuccess(parseResult) {
 
+        $scope.processing = false;
         $scope.parseResult = parseResult;
 
         // If errors were encounted during file parsing, abort further
