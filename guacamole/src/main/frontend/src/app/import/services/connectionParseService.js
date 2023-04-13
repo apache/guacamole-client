@@ -80,20 +80,25 @@ angular.module('import').factory('connectionParseService',
             });
     }
 
-
     /**
-     * Returns a promise that resolves to an object mapping potential groups
-     * that might be encountered in an imported connection to group identifiers.
+     * Returns a promise that resolves to an object containing both a map of
+     * connection group paths to group identifiers and a set of all known group
+     * identifiers.
+     *
+     * The resolved object will contain a "groupLookups" key with a map of group
+     * paths to group identifier, as well as a "identifierSet" key containing a
+     * set of all known group identifiers.
      *
      * The idea is that a user-provided import file might directly specify a
      * parentIdentifier, or it might specify a named group path like "ROOT",
-     * "ROOT/parent", or "ROOT/parent/child". This object resolved by the
-     * promise returned from this function will map all of the above to the
-     * identifier of the appropriate group, if defined.
+     * "ROOT/parent", or "ROOT/parent/child". The resolved "groupLookups" field
+     * will map all of the above to the identifier of the appropriate group, if
+     * defined. The "identifierSet" field can be used to check if a given group
+     * identifier is known.
      *
      * @returns {Promise.<Object>}
-     *     A promise that resolves to an object mapping groups to group
-     *     identifiers.
+     *     A promise that resolves to an object containing a map of group paths
+     *     to group identifiers, as well as set of all known group identifiers.
      */
     function getGroupLookups() {
 
@@ -106,7 +111,12 @@ angular.module('import').factory('connectionParseService',
         connectionGroupService.getConnectionGroupTree(dataSource).then(
                 rootGroup => {
 
-            const groupLookup = {};
+            // An object mapping group paths to group identifiers
+            const groupLookups = {};
+
+            // An object mapping group identifiers to the boolean value true,
+            // i.e. a set of all known group identifiers
+            const identifierSet = {};
 
             // Add the specified group to the lookup, appending all specified
             // prefixes, and then recursively call saveLookups for all children
@@ -117,7 +127,10 @@ angular.module('import').factory('connectionParseService',
                 const currentPath = prefix + group.name;
 
                 // Add the current path to the lookup
-                groupLookup[currentPath] = group.identifier;
+                groupLookups[currentPath] = group.identifier;
+
+                // Add this group identifier to the set
+                identifierSet[group.identifier] = true;
 
                 // Add each child group to the lookup
                 const nextPrefix = currentPath + "/";
@@ -130,7 +143,7 @@ angular.module('import').factory('connectionParseService',
             saveLookups("", rootGroup);
 
             // Resolve with the now fully-populated lookups
-            deferredGroupLookups.resolve(groupLookup);
+            deferredGroupLookups.resolve({ groupLookups, identifierSet });
 
         });
 
@@ -153,14 +166,30 @@ angular.module('import').factory('connectionParseService',
      *     "group" field into a "parentIdentifier" field if possible.
      */
     function getGroupTransformer() {
-        return getGroupLookups().then(lookups => connection => {
+        return getGroupLookups().then(({groupLookups, identifierSet}) =>
+                connection => {
 
-            // If there's no group to translate, do nothing
-            if (!connection.group)
-                return connection;
+            const parentIdentifier = connection.parentIdentifier;
+
+            // If there's no group path defined for this connection
+            if (!connection.group) {
+
+                // If the specified parentIdentifier is not specified
+                // at all, or valid, there's nothing to be done
+                if (!parentIdentifier || identifierSet[parentIdentifier])
+                    return connection;
+
+                // If a parent group identifier is present, but not valid
+                if (parentIdentifier)
+                    throw new ParseError({
+                        message: 'No group with identifier: ' + parentIdentifier,
+                        key: 'IMPORT.ERROR_INVALID_GROUP_IDENTIFIER',
+                        variables: { IDENTIFIER: parentIdentifier }
+                    });
+            }
 
             // If both are specified, the parent group is ambigious
-            if (connection.parentIdentifier)
+            if (parentIdentifier)
                 throw new ParseError({
                     message: 'Only one of group or parentIdentifier can be set',
                     key: 'IMPORT.ERROR_AMBIGUOUS_PARENT_GROUP'
@@ -184,7 +213,7 @@ angular.module('import').factory('connectionParseService',
                 group = group.slice(0, -1);
 
             // Look up the parent identifier for the specified group path
-            const identifier = lookups[group];
+            const identifier = groupLookups[group];
 
             // If the group doesn't match anything in the tree
             if (!identifier)
