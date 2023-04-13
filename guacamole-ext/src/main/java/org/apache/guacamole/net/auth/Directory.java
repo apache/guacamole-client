@@ -215,8 +215,29 @@ public interface Directory<ObjectType extends Identifiable> {
      * @param identifier The identifier of the object to remove.
      *
      * @throws GuacamoleException If an error occurs while removing the object,
-     *                            or if removing object is not allowed.
+     *                            or if removing the object is not allowed.
      */
     void remove(String identifier) throws GuacamoleException;
+
+    /**
+     * Attempt to perform the provided operation atomically if possible. If the
+     * operation can be performed atomically, the atomic flag will be set to
+     * true, and the directory passed to the provided operation callback will
+     * peform directory operations atomically within the operation callback.
+     *
+     * @param operation
+     *     The directory operation that should be performed atomically.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs during execution of the provided operation.
+     */
+    default void tryAtomically(AtomicDirectoryOperation<ObjectType> operation)
+            throws GuacamoleException {
+
+        // By default, perform the operation non-atomically. If atomic operation
+        // is supported by an implementation, it must be implemented there.
+        operation.executeOperation(false, this);
+
+    }
 
 }

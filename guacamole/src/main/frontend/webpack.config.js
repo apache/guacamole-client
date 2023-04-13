@@ -47,6 +47,22 @@ module.exports = {
     module: {
         rules: [
 
+            // NOTE: This is required in order to parse ES2020 language features,
+            // like the optional chaining and nullish coalescing operators. It
+            // specifically needs to operate on the node-modules directory since
+            // Webpack 4 cannot handle such language features.
+            {
+                test: /\.js$/i,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                      presets: [
+                        ['@babel/preset-env']
+                      ]
+                    }
+                }
+            },
+
             // Automatically extract imported CSS for later reference within separate CSS file
             {
                 test: /\.css$/i,

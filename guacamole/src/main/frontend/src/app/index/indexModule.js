@@ -35,6 +35,7 @@ angular.module('index', [
     'client',
     'clipboard',
     'home',
+    'import',
     'login',
     'manage',
     'navigation',

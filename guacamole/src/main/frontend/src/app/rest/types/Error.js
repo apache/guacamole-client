@@ -78,6 +78,15 @@ angular.module('rest').factory('Error', [function defineError() {
          */
         this.expected = template.expected;
 
+        /**
+         * The outcome for each patch that was submitted as part of the request
+         * that generated this error, if the request was a directory PATCH
+         * request. In all other cases, this will be null.
+         *
+         * @type DirectoryPatchOutcome[]
+         */
+        this.patches = template.patches || null;
+
     };
 
     /**

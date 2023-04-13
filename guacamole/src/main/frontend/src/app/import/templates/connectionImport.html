@@ -1,0 +1,60 @@
+<div class="settings-view view import">
+
+    <div class="header">
+        <h2>{{'IMPORT.SECTION_HEADER_CONNECTION_IMPORT' | translate}}</h2>
+        <guac-user-menu></guac-user-menu>
+    </div>
+
+    <div ng-show="fileName" class="file-upload-container file-selected">
+        <div class="file-name"> {{fileName}} </div>
+        <button class="danger clear" ng-click="cancel()">
+            {{'IMPORT.ACTION_CLEAR' | translate}}
+        </button>
+    </div>
+
+    <div ng-show="!fileName" class="file-upload-container">
+
+        <div class="upload-header">
+            <span class="file-options">{{'IMPORT.HELP_UPLOAD_FILE_TYPES' | translate}}</span>
+            <a
+                href="#/import/connection/file-format-help" target="_blank"
+                class="file-help-link">{{'IMPORT.ACTION_VIEW_FORMAT_HELP' | translate}}
+            </a>
+        </div>
+
+        <div class="drop-target" guac-upload="handleFiles" 
+             guac-drop="handleFiles" guac-multiple="false"
+             guac-dragged-class="'drop-pending'"
+             ng-class="{'file-present': fileName}">
+
+            <div class="title">{{'IMPORT.HELP_UPLOAD_DROP_TITLE' | translate}}</div>
+
+            <input type="file" class="file-upload-input"/>
+            <a ng-click="openFileBrowser()" class="browse-link">
+                {{'IMPORT.ACTION_BROWSE' | translate}}
+            </a>
+
+            <div class="file-name"> {{fileName}} </div>
+
+        </div>
+
+    </div>
+
+    <div class="import-buttons">
+        <button
+            ng-click="import()" ng-disabled="importDisabled()" class="save import">
+                {{'IMPORT.ACTION_IMPORT' | translate}}
+        </button>
+        <button
+            ng-click="cancel()" ng-disabled="cancelDisabled()" class="cancel">
+                {{'IMPORT.ACTION_CANCEL' | translate}}
+        </button>
+    </div>
+
+    <div ng-show="isLoading()" class="loading"></div>
+
+    <!-- Connection specific errors, if there are any -->
+    <connection-import-errors parse-result="parseResult" patch-failure="patchFailure" />
+
+
+</div>

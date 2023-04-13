@@ -25,16 +25,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
+import org.apache.guacamole.auth.jdbc.base.JDBCDirectory;
 import org.apache.guacamole.net.auth.ActiveConnection;
-import org.apache.guacamole.net.auth.Directory;
 
 /**
  * Implementation of a Directory which contains all currently-active
  * connections.
  */
-public class ActiveConnectionDirectory extends RestrictedObject
-    implements Directory<ActiveConnection> {
+public class ActiveConnectionDirectory extends JDBCDirectory<ActiveConnection> {
 
     /**
      * Service for retrieving and manipulating active connections.
