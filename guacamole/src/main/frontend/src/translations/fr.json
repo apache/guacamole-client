@@ -558,6 +558,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japonais (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polonais (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portugais Brésilien (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portugais (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Suédois (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danois (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turque (Qwerty)",
