@@ -592,6 +592,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norweski (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polski (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portugalski Brazylijski (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portugalski (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Szwecki (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Duński (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turecki-Q (Qwerty)",
