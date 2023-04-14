@@ -207,9 +207,13 @@
         "ERROR_EMPTY_FILE": "The provided file is empty",
         "ERROR_INVALID_CSV_HEADER": "Invalid CSV Header \"{HEADER}\" is neither an attribute or parameter",
         "ERROR_INVALID_MIME_TYPE": "Unsupported file type: \"{TYPE}\"",
+        "ERROR_DETECTED_INVALID_TYPE": "Unsupported file type. Please make sure the file is valid CSV, JSON, or YAML.",
         "ERROR_INVALID_GROUP": "No group matching \"{GROUP}\" found",
         "ERROR_INVALID_GROUP_IDENTIFIER": "No connection group with identifier \"{IDENTIFIER}\" found",
         "ERROR_NO_FILE_SUPPLIED": "Please select a file to import",
+        "ERROR_PARSE_FAILURE_CSV": "Please make sure your file is valid CSV. Parsing failed with error \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_JSON": "Please make sure your file is valid JSON. Parsing failed with error \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_YAML": "Please make sure your file is valid YAML. Parsing failed with error \"{ERROR}\". ",
         "ERROR_REQUIRED_NAME": "No connection name found in the provided file",
         "ERROR_REQUIRED_PROTOCOL": "No connection protocol found in the provided file",
 
@@ -217,7 +221,7 @@
 
         "HELP_CSV_DESCRIPTION": "A connection import CSV file has one connection record per row. Each column will specify a connection field. At minimum the connection name and protocol must be specified.",
         "HELP_CSV_EXAMPLE": "name,protocol,hostname,group,users,groups,guacd-encryption (attribute)\nconn1,vnc,conn1.web.com,ROOT,guac user 1;guac user 2,Connection 1 Users,none\nconn2,rdp,conn2.web.com,ROOT/Parent Group,guac user 1,,ssl\nconn3,ssh,conn3.web.com,ROOT/Parent Group/Child Group,guac user 2;guac user 3,,\nconn4,kubernetes,,,,,",
-        "HELP_CSV_MORE_DETAILS": "The CSV header for each row specifies the connection field. The connection group ID that the connection should be imported into may be directly specified with \"parentIdentifier\", or the path to the parent group may be specified using \"group\" as shown below. In most cases, there should be no conflict between fields, but if needed, an \" (attribute)\" or \" (parameter)\" suffix may be added to disambiguate. Lists of user or user group identifiers must be semicolon-seperated.¹",
+        "HELP_CSV_MORE_DETAILS": "The CSV header for each row specifies the connection field. The connection group ID that the connection should be imported into may be directly specified with \"parentIdentifier\", or the path to the parent group may be specified using \"group\" as shown below. In most cases, there should be no conflict between fields, but if needed, an \" (attribute)\" or \" (parameter)\" suffix may be added to disambiguate. Lists of user or user group identifiers must be semicolon-separated.¹",
         "HELP_FILE_TYPE_DESCRIPTION": "Three file types are supported for connection import: CSV, JSON, and YAML. The same data may be specified by each file type. This must include the connection name and protocol. Optionally, a connection group location, a list of users and/or user groups to grant access, connection parameters, or connection protocols may also be specified. Any users or user groups that do not exist in the current data source will be automatically created.",
         "HELP_FILE_TYPE_HEADER": "File Types",
         "HELP_JSON_DESCRIPTION": "A connection import JSON file is a list of connection objects. At minimum the connection name and protocol must be specified in each connection object.",

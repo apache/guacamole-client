@@ -354,12 +354,15 @@ angular.module('import').factory('connectionParseService',
             parsedData = parseCSVData(csvData, {skip_empty_lines: true});
         }
 
-        // If the CSV parser throws an error, reject with that error. No
-        // translation key will be available here.
+        // If the CSV parser throws an error, reject with that error
         catch(error) {
             console.error(error);
             const deferred = $q.defer();
-            deferred.reject(new ParseError({ message: error.message }));
+            deferred.reject(new ParseError({
+                message: "CSV Parse Failure: "+ error.message,
+                key: "IMPORT.ERROR_PARSE_FAILURE_CSV",
+                variables: { ERROR: error.message }
+            }));
             return deferred.promise;
         }
 
@@ -400,12 +403,15 @@ angular.module('import').factory('connectionParseService',
             connectionData = parseYAMLData(yamlData);
         }
 
-        // If the YAML parser throws an error, reject with that error. No
-        // translation key will be available here.
+        // If the YAML parser throws an error, reject with that error
         catch(error) {
             console.error(error);
             const deferred = $q.defer();
-            deferred.reject(new ParseError({ message: error.message }));
+            deferred.reject(new ParseError({
+                message: "YAML Parse Failure: "+ error.message,
+                key: "IMPORT.ERROR_PARSE_FAILURE_YAML",
+                variables: { ERROR: error.message }
+            }));
             return deferred.promise;
         }
 
@@ -434,12 +440,15 @@ angular.module('import').factory('connectionParseService',
             connectionData = JSON.parse(jsonData);
         }
 
-        // If the JSON parse attempt throws an error, reject with that error.
-        // No translation key will be available here.
+        // If the JSON parse attempt throws an error, reject with that error
         catch(error) {
             console.error(error);
             const deferred = $q.defer();
-            deferred.reject(new ParseError({ message: error.message }));
+            deferred.reject(new ParseError({
+                message: "JSON Parse Failure: "+ error.message,
+                key: "IMPORT.ERROR_PARSE_FAILURE_JSON",
+                variables: { ERROR: error.message }
+            }));
             return deferred.promise;
         }
 
