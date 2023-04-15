@@ -23,6 +23,17 @@ import { parse as parseCSVData } from 'csv-parse/lib/sync'
 import { parse as parseYAMLData } from 'yaml'
 
 /**
+ * A particularly unfriendly looking error that the CSV parser throws if a
+ * binary file parse attempt is made. If at all possible, this message should
+ * never be displayed to the user since it makes it look like the application
+ * is broken. As such, the code will attempt to filter out this error and print
+ * something a bit more generic. Lowercased for slightly fuzzier matching.
+ *
+ * @type String
+ */
+const BINARY_CSV_ERROR_MESSAGE = "Argument must be a Buffer".toLowerCase();
+
+/**
  * A service for parsing user-provided JSON, YAML, or JSON connection data into
  * an appropriate format for bulk uploading using the PATCH REST endpoint.
  */
@@ -356,13 +367,29 @@ angular.module('import').factory('connectionParseService',
 
         // If the CSV parser throws an error, reject with that error
         catch(error) {
+
+            const message = error.message;
             console.error(error);
+
             const deferred = $q.defer();
-            deferred.reject(new ParseError({
-                message: "CSV Parse Failure: "+ error.message,
-                key: "IMPORT.ERROR_PARSE_FAILURE_CSV",
-                variables: { ERROR: error.message }
-            }));
+
+            // If the error message looks like the expected (and ugly) message
+            // that's thrown when a binary file is provided, throw a more
+            // friendy error.
+            if (_.trim(message).toLowerCase() == BINARY_CSV_ERROR_MESSAGE)
+                deferred.reject(new ParseError({
+                    message: "CSV binary parse attempt error: " + error.message,
+                    key: "IMPORT.ERROR_DETECTED_INVALID_TYPE"
+                }));
+
+            // Otherwise, pass the error from the library through to the user
+            else
+                deferred.reject(new ParseError({
+                    message: "CSV Parse Failure: " + error.message,
+                    key: "IMPORT.ERROR_PARSE_FAILURE_CSV",
+                    variables: { ERROR: error.message }
+                }));
+
             return deferred.promise;
         }
 
@@ -408,7 +435,7 @@ angular.module('import').factory('connectionParseService',
             console.error(error);
             const deferred = $q.defer();
             deferred.reject(new ParseError({
-                message: "YAML Parse Failure: "+ error.message,
+                message: "YAML Parse Failure: " + error.message,
                 key: "IMPORT.ERROR_PARSE_FAILURE_YAML",
                 variables: { ERROR: error.message }
             }));
@@ -445,7 +472,7 @@ angular.module('import').factory('connectionParseService',
             console.error(error);
             const deferred = $q.defer();
             deferred.reject(new ParseError({
-                message: "JSON Parse Failure: "+ error.message,
+                message: "JSON Parse Failure: " + error.message,
                 key: "IMPORT.ERROR_PARSE_FAILURE_JSON",
                 variables: { ERROR: error.message }
             }));
