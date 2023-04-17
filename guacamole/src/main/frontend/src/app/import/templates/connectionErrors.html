@@ -15,6 +15,9 @@
                 <th guac-sort-order="errorOrder" guac-sort-property="'name'">
                     {{'IMPORT.TABLE_HEADER_NAME' | translate}}
                 </th>
+                <th guac-sort-order="errorOrder" guac-sort-property="'group'">
+                    {{'IMPORT.TABLE_HEADER_GROUP' | translate}}
+                </th>
                 <th guac-sort-order="errorOrder" guac-sort-property="'protocol'">
                     {{'IMPORT.TABLE_HEADER_PROTOCOL' | translate}}
                 </th>
@@ -27,6 +30,7 @@
             <tr ng-repeat="error in errorPage">
                 <td>{{error.rowNumber}}</td>
                 <td>{{error.name}}</td>
+                <td>{{error.group}}</td>
                 <td>{{error.protocol}}</td>
                 <td class="error-message" ng-class="{ 'has-errors' : error.errors.getArray().length }">
                     <ul>

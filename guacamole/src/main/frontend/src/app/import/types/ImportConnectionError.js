@@ -57,6 +57,14 @@ angular.module('import').factory('ImportConnectionError', ['$injector',
         this.name = template.name;
 
         /**
+         * The human-readable connection group path for this connection, of the
+         * form "ROOT/Parent/Child".
+         *
+         * @type String
+         */
+        this.group = template.group;
+
+        /**
          * The name of the protocol associated with this connection, such as
          * "vnc" or "rdp".
          *

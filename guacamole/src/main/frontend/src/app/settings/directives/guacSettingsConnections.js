@@ -111,6 +111,24 @@ angular.module('settings').directive('guacSettingsConnections', [function guacSe
             };
 
             /**
+             * Returns whether the current user has the ADMINISTER system
+             * permission (i.e. they are an administrator).
+             *
+             * @return {Boolean}
+             *     true if the current user is an administrator.
+             */
+            $scope.canAdminister = function canAdminister() {
+
+                // Abort if permissions have not yet loaded
+                if (!$scope.permissions)
+                    return false;
+
+                // Return whether the current user is an administrator
+                return PermissionSet.hasSystemPermission(
+                        $scope.permissions, PermissionSet.SystemPermissionType.ADMINISTER);
+            };
+
+            /**
              * Returns whether the current user can create new connections
              * within the current data source.
              *

@@ -25,9 +25,9 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
     /**
      * The result of parsing a connection import file - containing a list of
      * API patches ready to be submitted to the PATCH REST API for batch
-     * connection creation, a set of users and user groups to grant access to
-     * each connection, and any errors that may have occurred while parsing
-     * each connection.
+     * connection creation/replacement, a set of users and user groups to grant
+     * access to each connection, a group path for every connection, and any
+     * errors that may have occurred while parsing each connection.
      *
      * @constructor
      * @param {ParseResult|Object} [template={}]
@@ -41,7 +41,10 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
 
         /**
          * An array of patches, ready to be submitted to the PATCH REST API for
-         * batch connection creation.
+         * batch connection creation / replacement. Note that this array may 
+         * contain more patches than connections from the original file - in the 
+         * case that connections are being fully replaced, there will be a 
+         * remove and a create patch for each replaced connection.
          *
          * @type {DirectoryPatch[]}
          */
@@ -50,7 +53,8 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
         /**
          * An object whose keys are the user identifiers of users specified
          * in the batch import, and whose values are an array of indices of
-         * connections to which those users should be granted access.
+         * connections within the patches array to which those users should be
+         * granted access.
          *
          * @type {Object.<String, Integer[]>}
          */
@@ -66,9 +70,18 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
         this.groups = template.users || {};
 
         /**
+         * A map of connection index within the patch array, to connection group
+         * path for that connection, of the form "ROOT/Parent/Child".
+         *
+         * @type {Object.<String, String>}
+         */
+        this.groupPaths = template.groupPaths || {};
+
+        /**
          * An array of errors encountered while parsing the corresponding
-         * connection (at the same array index). Each connection should have a
-         * an array of errors. If empty, no errors occurred for this connection.
+         * connection (at the same array index in the patches array). Each 
+         * connection should have a an array of errors. If empty, no errors
+         * occurred for this connection.
          *
          * @type {ParseError[][]}
          */
@@ -79,8 +92,19 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
          * represented by this ParseResult. This should always be true if there
          * are a non-zero number of elements in the errors list for any
          * connection, or false otherwise.
+         *
+         * @type {Boolean}
          */
         this.hasErrors = template.hasErrors || false;
+
+        /**
+         * The integer number of unique connections present in the parse result.
+         * This may be less than the length of the patches array, if any REMOVE
+         * patches are present.
+         *
+         * @Type {Number}
+         */
+        this.connectionCount = template.connectionCount || 0;
 
     };
 

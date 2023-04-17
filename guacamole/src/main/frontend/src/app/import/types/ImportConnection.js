@@ -20,8 +20,8 @@
 /**
  * Service which defines the ImportConnection class.
  */
-angular.module('import').factory('ImportConnection', [
-        function defineImportConnection() {
+angular.module('import').factory('ImportConnection', ['$injector',
+        function defineImportConnection($injector) {
 
     /**
      * A representation of a connection to be imported, as parsed from an
@@ -52,6 +52,12 @@ angular.module('import').factory('ImportConnection', [
          * @type String
          */
         this.group = template.group;
+
+        /**
+         * The identifier of the connection being updated. Only meaningful if
+         * the replace operation is set.
+         */
+        this.identifier = template.identifier;
 
         /**
          * The human-readable name of this connection, which is not necessarily
@@ -101,6 +107,31 @@ angular.module('import').factory('ImportConnection', [
          * @type String[]
          */
         this.groups = template.groups || [];
+
+        /**
+         * The mode import mode for this connection. If not otherwise specified,
+         * a brand new connection should be created.
+         */
+        this.importMode = template.importMode || ImportConnection.ImportMode.CREATE;
+        
+    };
+
+    /**
+     * The possible import modes for a given connection.
+     */
+    ImportConnection.ImportMode = {
+
+        /**
+         * The connection should be created fresh. This mode is valid IFF there
+         * is no existing connection with the same name and parent group.
+         */
+        CREATE : "CREATE",
+
+        /**
+         * This connection will replace the existing connection with the same
+         * name and parent group.
+         */
+        REPLACE : "REPLACE"
 
     };
 
