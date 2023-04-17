@@ -50,6 +50,21 @@ const YAML_MIME_TYPES = [
     'application/yml'
 ];
 
+/**
+ * Possible signatures for zip files (which include most modern Microsoft office
+ * documents - most notable excel). If any file, regardless of extension, has
+ * these starting bytes, it's invalid and must be rejected.
+ * For more, see https://en.wikipedia.org/wiki/List_of_file_signatures and
+ * https://en.wikipedia.org/wiki/Magic_number_(programming)#Magic_numbers_in_files.
+ *
+ * @type String[]
+ */
+const ZIP_SIGNATURES = [
+    'PK\u0003\u0004',
+    'PK\u0005\u0006',
+    'PK\u0007\u0008'
+];
+
 /*
  * All file types supported for connection import.
  * 
@@ -640,8 +655,23 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
             else {
 
+                const fileData = e.target.result;
+
+                // Check if the file has a header of a known-bad type
+                if (_.some(ZIP_SIGNATURES,
+                        signature => fileData.startsWith(signature))) {
+
+                    // Throw an error and abort processing
+                    handleError(new ParseError({
+                        message: "Invalid file type detected",
+                        key: 'IMPORT.ERROR_DETECTED_INVALID_TYPE'
+                    }));
+                    return;
+
+                }
+
                 // Save the uploaded data
-                $scope.fileData = e.target.result;
+                $scope.fileData = fileData;
 
                 // Mark the data as ready
                 $scope.dataReady = true;

@@ -304,7 +304,7 @@ angular.module('import').factory('connectionCSVService',
                     transformConfig.parameterOrAttributeGetters.push(
                         row => ({
                             type: 'attributes',
-                            name: parameterName,
+                            name: attributeName,
                             value: fetchFieldAtIndex(row)
                         })
                     );
