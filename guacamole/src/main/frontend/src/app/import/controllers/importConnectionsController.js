@@ -635,44 +635,5 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // Read all the data into memory
         $scope.fileReader.readAsBinaryString(file);
     };
-
-    /**
-     * Display a modal with the given title and text keys.
-     *
-     * @param {String} titleKey
-     *     The translation key to use for the title of the modal.
-     *
-     * @param {String} contentKey
-     *     The translation key to use for the text contents of the modal.
-     */
-    const showModal = (titleKey, contentKey) => guacNotification.showStatus({
-
-        // The provided modal contents
-        title: titleKey,
-        text: { key: contentKey },
-
-        // Add a button to hide the modal
-        actions    : [{
-            name      : 'IMPORT.ACTION_ACKNOWLEDGE',
-            callback  : () => guacNotification.showStatus(false)
-        }]
-
-    });
-
-    /**
-     * Display a modal with information about the existing connection
-     * replacement option.
-     */
-    $scope.showConnectionReplaceHelp = () => showModal(
-            'IMPORT.HELP_REPLACE_CONNECTION_TITLE',
-            'IMPORT.HELP_REPLACE_CONNECTION_CONTENT');
-
-    /**
-     * Display a modal with information about the existing connection permission
-     * replacement option.
-     */
-    $scope.showPermissionReplaceHelp = () => showModal(
-            'IMPORT.HELP_REPLACE_PERMISSION_TITLE',
-            'IMPORT.HELP_REPLACE_PERMISSION_CONTENT');
-
+    
 }]);

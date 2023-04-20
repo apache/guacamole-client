@@ -40,10 +40,10 @@ angular.module('import').factory('ConnectionImportConfig', [
         /**
          * The mode for handling connections that match existing connections.
          *
-         * @type ConnectionImportConfig.ReplaceConnectionMode
+         * @type ConnectionImportConfig.ExistingConnectionMode
          */
-        this.replaceConnectionMode = template.replaceConnectionMode
-                || ConnectionImportConfig.ReplaceConnectionMode.REJECT;
+        this.existingConnectionMode = template.existingConnectionMode
+                || ConnectionImportConfig.ExistingConnectionMode.REJECT;
 
         /**
          * The mode for handling permissions on existing connections that are
@@ -53,19 +53,19 @@ angular.module('import').factory('ConnectionImportConfig', [
          * @type ConnectionImportConfig.ExistingPermissionMode
          */
         this.existingPermissionMode = template.existingPermissionMode
-                || ConnectionImportConfig.ExistingPermissionMode.ADD;
+                || ConnectionImportConfig.ExistingPermissionMode.PRESERVE;
 
     };
 
     /**
-     * Valid modes for the behavior of the importer when attempts are made to
-     * update existing connections.
+     * Valid modes for the behavior of the importer when an imported connection
+     * already exists.
      */
-    ConnectionImportConfig.ReplaceConnectionMode = {
+    ConnectionImportConfig.ExistingConnectionMode = {
 
         /**
-         * Any attempt to update existing connections will cause the entire 
-         * import to be rejected with an error.
+         * Any Connection that has the same name and parent group as an existing
+         * connection will cause the entire import to be rejected with an error.
          */
         REJECT : "REJECT",
 
@@ -87,7 +87,7 @@ angular.module('import').factory('ConnectionImportConfig', [
          * added to the existing connection, without removing any existing
          * permissions.
          */
-        ADD : "ADD",
+        PRESERVE : "PRESERVE",
 
         /**
          * Any existing permissions will be removed, ensuring that only the

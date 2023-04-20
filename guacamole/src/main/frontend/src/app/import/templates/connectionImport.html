@@ -41,22 +41,22 @@
         <ul class="import-config">
             <li>
                 <input type="checkbox"
-                    id="replace-connections" ng-model="importConfig.replaceConnectionMode"
+                    id="existing-connection-mode" ng-model="importConfig.existingConnectionMode"
                     ng-true-value="'REPLACE'" ng-false-value="'REJECT'" />
-                <label for="replace-connections">
-                    {{'IMPORT.FIELD_HEADER_REPLACE_CONNECTIONS' | translate}}
+                <label for="existing-connection-mode">
+                    {{'IMPORT.FIELD_HEADER_EXISTING_CONNECTION_MODE' | translate}}
                 </label>
-                <span ng-click="showConnectionReplaceHelp()" class="help"></span>
+                <span ng-attr-title="{{'IMPORT.HELP_EXISTING_CONNECTION_MODE' | translate}}" class="help"></span>
             </li>
             <li>
                 <input type="checkbox"
-                    id="replace-permissions" ng-model="importConfig.existingPermissionMode"
+                    id="existing-permission-mode" ng-model="importConfig.existingPermissionMode"
                     ng-disabled="importConfig.replaceConnectionMode === 'REJECT'"
-                    ng-true-value="'REPLACE'" ng-false-value="'ADD'" />
-                <label for="replace-permissions">
-                    {{'IMPORT.FIELD_HEADER_REPLACE_PERMISSIONS' | translate}}
+                    ng-true-value="'REPLACE'" ng-false-value="'PRESERVE'" />
+                <label for="existing-permission-mode">
+                    {{'IMPORT.FIELD_HEADER_EXISTING_PERMISSION_MODE' | translate}}
                 </label>
-                <span ng-click="showPermissionReplaceHelp()" class="help"></span>
+                <span ng-attr-title="{{'IMPORT.HELP_EXISTING_PERMISSION_MODE' | translate}}" class="help"></span>
             </li>
         </ul>
 

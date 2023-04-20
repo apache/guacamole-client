@@ -422,6 +422,45 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
     }
 
     /**
+     * Retrieve and return the object having the given identifier from the
+     * directory, throwing a GuacamoleResourceNotFoundException and firing a
+     * directory GET failure event if no object exists with the given identifier
+     * in the directory.
+     *
+     * @param identifier
+     *     The identifier of the object to retrieve from the directory.
+     *
+     * @return
+     *     The object from the directory with the provided identifier.
+     *
+     * @throws GuacamoleException
+     *     If no object with the provided identifier exists within the
+     *     directory, or if any other error occurs while attempting to retrieve
+     *     the object.
+     */
+    @Nonnull
+    private InternalType getObjectByIdentifier(String identifier)
+            throws GuacamoleException {
+
+        // Retrieve the object having the given identifier
+        InternalType object;
+        try {
+            object = directory.get(identifier);
+            if (object == null)
+                throw new GuacamoleResourceNotFoundException(
+                        "Not found: \"" + identifier + "\"");
+        }
+        catch (GuacamoleException | RuntimeException | Error e) {
+            fireDirectoryFailureEvent(
+                    DirectoryEvent.Operation.GET, identifier, null, e);
+            throw e;
+        }
+
+        // Return the object; it is guaranteed to be non-null at this point
+        return object;
+    }
+
+    /**
      * If the provided throwable is a known Guacamole-specific type, create and
      * return a APIPatchError with an error message extracted from the error.
      * If the provided throwable is not a known type, null will be returned.
@@ -600,8 +639,10 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                         try {
 
-                            // Fetch the object to be updated
-                            original = directory.get(identifier);
+                            // Fetch the object to be updated. If no object is
+                            // found, a directory GET failure event will be
+                            // logged, and the update attempt will be aborted.
+                            original = getObjectByIdentifier(identifier);
                             
                             // Apply the changes to the original object
                             translator.applyExternalChanges(
@@ -805,17 +846,10 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
         getObjectResource(@PathParam("identifier") String identifier)
             throws GuacamoleException {
 
-        // Retrieve the object having the given identifier
-        InternalType object;
-        try {
-            object = directory.get(identifier);
-            if (object == null)
-                throw new GuacamoleResourceNotFoundException("Not found: \"" + identifier + "\"");
-        }
-        catch (GuacamoleException | RuntimeException | Error e) {
-            fireDirectoryFailureEvent(DirectoryEvent.Operation.GET, identifier, null, e);
-            throw e;
-        }
+        // Fetch the object to be updated. If no object is found, a directory
+        // GET failure event will be logged. If no exception is thrown, the
+        // object is guaranteed to exist
+        InternalType object = getObjectByIdentifier(identifier);
 
         // Return a resource which provides access to the retrieved object
         DirectoryObjectResource<InternalType, ExternalType> resource = resourceFactory.create(authenticatedUser, userContext, directory, object);

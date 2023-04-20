@@ -312,7 +312,7 @@ angular.module('import').factory('connectionParseService',
                 throw new ParseError({
                     message: 'Duplicate connection in file: ' + path,
                     key: 'IMPORT.ERROR_DUPLICATE_CONNECTION_IN_FILE',
-                    variables: { PATH: path }
+                    variables: { NAME: connection.name, PATH: group }
                 });
 
             // Mark the current path as already seen in the file
@@ -326,12 +326,12 @@ angular.module('import').factory('connectionParseService',
             let identifier;
 
             // If updates to existing connections are disallowed
-            if (existingIdentifier && importConfig.replaceConnectionMode ===
-                    ConnectionImportConfig.ReplaceConnectionMode.REJECT)
+            if (existingIdentifier && importConfig.existingConnectionMode ===
+                    ConnectionImportConfig.ExistingConnectionMode.REJECT)
                 throw new ParseError({
                     message: 'Rejecting update to existing connection: ' + path,
                     key: 'IMPORT.ERROR_REJECT_UPDATE_CONNECTION',
-                    variables: { PATH: path }
+                    variables: { NAME: connection.name, PATH: group }
                 });
 
             // If the connection is being replaced, set the existing identifer
@@ -430,7 +430,7 @@ angular.module('import').factory('connectionParseService',
             // The connection is being replaced, and permissions are only being
             // added, not replaced
             else if (importConfig.existingPermissionMode ===
-                    ConnectionImportConfig.ExistingPermissionMode.ADD)
+                    ConnectionImportConfig.ExistingPermissionMode.PRESERVE)
 
                 // Add a patch for replacing the connection
                 patches.push(new DirectoryPatch({

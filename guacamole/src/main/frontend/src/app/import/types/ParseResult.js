@@ -80,7 +80,7 @@ angular.module('import').factory('ParseResult', [function defineParseResult() {
         /**
          * An array of errors encountered while parsing the corresponding
          * connection (at the same array index in the patches array). Each 
-         * connection should have a an array of errors. If empty, no errors
+         * connection should have an array of errors. If empty, no errors
          * occurred for this connection.
          *
          * @type {ParseError[][]}
