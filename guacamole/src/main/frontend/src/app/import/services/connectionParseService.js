@@ -41,11 +41,13 @@ angular.module('import').factory('connectionParseService',
         ['$injector', function connectionParseService($injector) {
 
     // Required types
-    const Connection          = $injector.get('Connection');
-    const DirectoryPatch      = $injector.get('DirectoryPatch');
-    const ParseError          = $injector.get('ParseError');
-    const ParseResult         = $injector.get('ParseResult');
-    const TranslatableMessage = $injector.get('TranslatableMessage');
+    const Connection             = $injector.get('Connection');
+    const ConnectionImportConfig = $injector.get('ConnectionImportConfig');
+    const DirectoryPatch         = $injector.get('DirectoryPatch');
+    const ImportConnection       = $injector.get('ImportConnection');
+    const ParseError             = $injector.get('ParseError');
+    const ParseResult            = $injector.get('ParseResult');
+    const TranslatableMessage    = $injector.get('TranslatableMessage');
 
     // Required services
     const $q                     = $injector.get('$q');
@@ -92,42 +94,69 @@ angular.module('import').factory('connectionParseService',
     }
 
     /**
-     * Returns a promise that resolves to an object containing both a map of
-     * connection group paths to group identifiers and a set of all known group
-     * identifiers.
+     * A collection of connection-group-tree-derived maps that are useful for
+     * processing connections.
      *
-     * The resolved object will contain a "groupLookups" key with a map of group
-     * paths to group identifier, as well as a "identifierSet" key containing a
-     * set of all known group identifiers.
-     *
-     * The idea is that a user-provided import file might directly specify a
-     * parentIdentifier, or it might specify a named group path like "ROOT",
-     * "ROOT/parent", or "ROOT/parent/child". The resolved "groupLookups" field
-     * will map all of the above to the identifier of the appropriate group, if
-     * defined. The "identifierSet" field can be used to check if a given group
-     * identifier is known.
-     *
-     * @returns {Promise.<Object>}
-     *     A promise that resolves to an object containing a map of group paths
-     *     to group identifiers, as well as set of all known group identifiers.
+     * @constructor
+     * @param {TreeLookups|{}} template
+     *     The object whose properties should be copied within the new
+     *     ConnectionImportConfig.
      */
-    function getGroupLookups() {
+    const TreeLookups = template => ({
+
+        /**
+         * A map of all known group paths to the corresponding identifier for
+         * that group. The is that a user-provided import file might directly
+         * specify a named group path like "ROOT", "ROOT/parent", or
+         * "ROOT/parent/child". This field field will map all of the above to
+         * the identifier of the appropriate group, if defined.
+         *
+         * @type Object.<String, String>
+         */
+        groupPathsByIdentifier: template.groupPathsByIdentifier || {},
+
+        /**
+         * A map of all known group identifiers to the path of the corresponding
+         * group. These paths are all of the form "ROOT/parent/child".
+         *
+         * @type Object.<String, String>
+         */
+        groupIdentifiersByPath: template.groupIdentifiersByPath || {},
+
+        /**
+         * A map of group identifier, to connection name, to connection 
+         * identifier. These paths are all of the form "ROOT/parent/child". The 
+         * idea is that existing connections can be found by checking if a
+         * connection already exists with the same parent group, and with the
+         * same name as an user-supplied import connection.
+         *
+         * @type Object.<String, String>
+         */
+        connectionIdsByGroupAndName : template.connectionIdsByGroupAndName || {}
+
+    });
+
+    /**
+     * Returns a promise that resolves to a TreeLookups object containing maps
+     * useful for processing user-supplied connections to be imported, derived
+     * from the current connection group tree, starting at the ROOT group.
+     *
+     * @returns {Promise.<TreeLookups>}
+     *     A promise that resolves to a TreeLookups object containing maps
+     *     useful for processing connections.
+     */
+    function getTreeLookups() {
 
         // The current data source - defines all the groups that the connections
         // might be imported into
         const dataSource = $routeParams.dataSource;
 
-        const deferredGroupLookups = $q.defer();
+        const deferredTreeLookups = $q.defer();
 
         connectionGroupService.getConnectionGroupTree(dataSource).then(
                 rootGroup => {
 
-            // An object mapping group paths to group identifiers
-            const groupLookups = {};
-
-            // An object mapping group identifiers to the boolean value true,
-            // i.e. a set of all known group identifiers
-            const identifierSet = {};
+            const lookups = new TreeLookups({});
 
             // Add the specified group to the lookup, appending all specified
             // prefixes, and then recursively call saveLookups for all children
@@ -137,11 +166,18 @@ angular.module('import').factory('connectionParseService',
                 // To get the path for the current group, add the name
                 const currentPath = prefix + group.name;
 
-                // Add the current path to the lookup
-                groupLookups[currentPath] = group.identifier;
+                // Add the current path to the identifier map
+                lookups.groupPathsByIdentifier[currentPath] = group.identifier;
 
-                // Add this group identifier to the set
-                identifierSet[group.identifier] = true;
+                // Add the current identifier to the path map
+                lookups.groupIdentifiersByPath[group.identifier] = currentPath;
+
+                // Add each connection to the connection map
+                _.forEach(group.childConnections,
+                    connection => _.setWith(
+                        lookups.connectionIdsByGroupAndName,
+                        [group.identifier, connection.name],
+                        connection.identifier, Object));
 
                 // Add each child group to the lookup
                 const nextPrefix = currentPath + "/";
@@ -154,99 +190,174 @@ angular.module('import').factory('connectionParseService',
             saveLookups("", rootGroup);
 
             // Resolve with the now fully-populated lookups
-            deferredGroupLookups.resolve({ groupLookups, identifierSet });
+            deferredTreeLookups.resolve(lookups);
 
         });
 
-        return deferredGroupLookups.promise;
+        return deferredTreeLookups.promise;
     }
 
     /**
      * Returns a promise that will resolve to a transformer function that will
-     * take an object that may contain a "group" field, replacing it if present
-     * with a "parentIdentifier". If both a "group" and "parentIdentifier" field
-     * are present on the provided object, or if no group exists at the specified
-     * path, the function will throw a ParseError describing the failure.
+     * perform various checks and transforms relating to the connection group
+     * tree heirarchy. It will:
+     * - Ensure that a connection specifies either a valid group path (no path
+     *   defaults to ROOT), or a valid parent group identifier, but not both
+     * - Ensure that this connection does not duplicate another connection
+     *   earlier in the import file
+     * - Handle import connections that match existing connections connections
+     *   based on the provided import config.
      *
-     * The group may begin with the root identifier, a leading slash, or may omit
-     * the root identifier entirely. Additionally, the group may optionally end
-     * with a trailing slash.
+     * The group set on the connection may begin with the root identifier, a
+     * leading slash, or may omit the root identifier entirely. The group may
+     * optionally end with a trailing slash.
      *
-     * @returns {Promise.<Function<Object, Object>>}
-     *     A promise that will resolve to a function that will transform a
-     *     "group" field into a "parentIdentifier" field if possible.
+     * @param {ConnectionImportConfig} importConfig
+     *     The configuration options selected by the user prior to import.
+     *
+     * @returns {Promise.<Function<ImportConnection, ImportConnection>>}
+     *     A promise that will resolve to a function that will apply various
+     *     connection tree based checks and transforms to this connection.
      */
-    function getGroupTransformer() {
-        return getGroupLookups().then(({groupLookups, identifierSet}) =>
-                connection => {
+    function getTreeTransformer(importConfig) {
 
-            const parentIdentifier = connection.parentIdentifier;
+        // A map of group path with connection name, to connection object, used
+        // for detecting duplicate connections within the import file itself
+        const connectionsInFile = {};
 
-            // If there's no group path defined for this connection
-            if (!connection.group) {
+        return getTreeLookups().then(treeLookups => connection => {
 
-                // If the specified parentIdentifier is not specified
-                // at all, or valid, there's nothing to be done
-                if (!parentIdentifier || identifierSet[parentIdentifier])
-                    return connection;
+            const { groupPathsByIdentifier, groupIdentifiersByPath,
+                    connectionIdsByGroupAndName } = treeLookups;
 
-                // If a parent group identifier is present, but not valid
-                if (parentIdentifier)
-                    throw new ParseError({
-                        message: 'No group with identifier: ' + parentIdentifier,
-                        key: 'IMPORT.ERROR_INVALID_GROUP_IDENTIFIER',
-                        variables: { IDENTIFIER: parentIdentifier }
-                    });
-            }
+            const providedIdentifier = connection.parentIdentifier;
+
+            // The normalized group path for this connection, of the form
+            // "ROOT/parent/child"
+            let group;
+            
+            // The identifier for the parent group of this connection
+            let parentIdentifier;
+            
+            // The operator to apply for this connection
+            let op = DirectoryPatch.Operation.ADD;
 
             // If both are specified, the parent group is ambigious
-            if (parentIdentifier)
+            if (providedIdentifier && connection.group)
                 throw new ParseError({
                     message: 'Only one of group or parentIdentifier can be set',
                     key: 'IMPORT.ERROR_AMBIGUOUS_PARENT_GROUP'
                 });
 
-            // The group path extracted from the user-provided connection, to be
-            // translated if needed into an absolute path from the root group
-            let group = connection.group;
-
-            // Allow the group to start with a leading slash instead instead of
-            // explicitly requiring the root connection group
-            if (group.startsWith('/'))
-                group = ROOT_GROUP_IDENTIFIER + group;
-
-            // Allow groups to begin directly with the path underneath the root
-            else if (!group.startsWith(ROOT_GROUP_IDENTIFIER))
-                group = ROOT_GROUP_IDENTIFIER + '/' + group;
-
-            // Allow groups to end with a trailing slash
-            if (group.endsWith('/'))
-                group = group.slice(0, -1);
-
-            // Look up the parent identifier for the specified group path
-            const identifier = groupLookups[group];
-
-            // If the group doesn't match anything in the tree
-            if (!identifier)
+            // If a parent group identifier is present, but not valid
+            else if (providedIdentifier && !groupPathsByIdentifier[providedIdentifier])
                 throw new ParseError({
-                    message: 'No group found named: ' + connection.group,
-                    key: 'IMPORT.ERROR_INVALID_GROUP',
-                    variables: { GROUP: connection.group }
+                    message: 'No group with identifier: ' + parentIdentifier,
+                    key: 'IMPORT.ERROR_INVALID_GROUP_IDENTIFIER',
+                    variables: { IDENTIFIER: parentIdentifier }
                 });
 
-            // Set the parent identifier now that it's known
-            return {
-                ...connection,
-                parentIdentifier: identifier
-            };
+            // If the parent identifier is valid, use it to determine the path
+            else if (providedIdentifier) {
+                parentIdentifier = providedIdentifier;
+                group = groupPathsByIdentifier[providedIdentifier];
+            }
+
+            // If a user-supplied group path is provided, attempt to normalize
+            // and match it to an existing connection group
+            else if (connection.group) {
+
+                // The group path extracted from the user-provided connection,
+                // to be translated into an absolute path starting at the root
+                group = connection.group;
+
+                // Allow the group to start with a leading slash instead instead
+                // of explicitly requiring the root connection group
+                if (group.startsWith('/'))
+                    group = ROOT_GROUP_IDENTIFIER + group;
+
+                // Allow groups to begin directly with the path under the root
+                else if (!group.startsWith(ROOT_GROUP_IDENTIFIER))
+                    group = ROOT_GROUP_IDENTIFIER + '/' + group;
+
+                // Allow groups to end with a trailing slash
+                if (group.endsWith('/'))
+                    group = group.slice(0, -1);
+
+                // Look up the parent identifier for the specified group path
+                parentIdentifier = groupPathsByIdentifier[group];
+
+                // If the group doesn't match anything in the tree
+                if (!parentIdentifier)
+                    throw new ParseError({
+                        message: 'No group found named: ' + connection.group,
+                        key: 'IMPORT.ERROR_INVALID_GROUP',
+                        variables: { GROUP: connection.group }
+                    });
+
+            }
+
+            // If no group is specified at all, default to the root group
+            else {
+                parentIdentifier = ROOT_GROUP_IDENTIFIER;
+                group = ROOT_GROUP_IDENTIFIER;
+            }
+
+            // The full path, of the form "ROOT/Child Group/Connection Name"
+            const path = group + '/' + connection.name;
+
+            // Error out if this is a duplicate of a connection already in the
+            // file
+            if (!!_.get(connectionsInFile, path))
+                throw new ParseError({
+                    message: 'Duplicate connection in file: ' + path,
+                    key: 'IMPORT.ERROR_DUPLICATE_CONNECTION_IN_FILE',
+                    variables: { NAME: connection.name, PATH: group }
+                });
+
+            // Mark the current path as already seen in the file
+            _.setWith(connectionsInFile, path, connection, Object);
+
+            // Check if this would be an update to an existing connection
+            const existingIdentifier = _.get(connectionIdsByGroupAndName,
+                    [parentIdentifier, connection.name]);
+
+            let importMode;
+            let identifier;
+
+            // If updates to existing connections are disallowed
+            if (existingIdentifier && importConfig.existingConnectionMode ===
+                    ConnectionImportConfig.ExistingConnectionMode.REJECT)
+                throw new ParseError({
+                    message: 'Rejecting update to existing connection: ' + path,
+                    key: 'IMPORT.ERROR_REJECT_UPDATE_CONNECTION',
+                    variables: { NAME: connection.name, PATH: group }
+                });
+
+            // If the connection is being replaced, set the existing identifer
+            else if (existingIdentifier) {
+                identifier = existingIdentifier;
+                importMode = ImportConnection.ImportMode.REPLACE;
+            }
+
+            // Otherwise, just create a new connection
+            else
+                importMode = ImportConnection.ImportMode.CREATE;
+
+            // Set the import mode, normalized path, and validated identifier
+            return new ImportConnection({ ...connection, 
+                    importMode, group, identifier, parentIdentifier });
 
         });
     }
 
     /**
-     * Convert a provided ImportConnection array into a ParseResult. Any provided
+     * Convert a provided connection array into a ParseResult. Any provided
      * transform functions will be run on each entry in `connectionData` before
      * any other processing is done.
+     *
+     * @param {ConnectionImportConfig} importConfig
+     *     The configuration options selected by the user prior to import.
      *
      * @param {*[]} connectionData
      *     An arbitrary array of data. This must evaluate to a ImportConnection
@@ -256,11 +367,12 @@ angular.module('import').factory('connectionParseService',
      *     An array of transformation functions to run on each entry in
      *     `connection` data.
      *
-     * @return {Promise.<Object>}
+     * @return {Promise.<ParseResult>}
      *     A promise resolving to ParseResult object representing the result of
      *     parsing all provided connection data.
      */
-    function parseConnectionData(connectionData, transformFunctions) {
+    function parseConnectionData(
+            importConfig, connectionData, transformFunctions) {
 
         // Check that the provided connection data array is not empty
         const checkError = performBasicChecks(connectionData);
@@ -270,11 +382,13 @@ angular.module('import').factory('connectionParseService',
             return deferred.promise;
         }
 
-        // Get the group transformer to apply to each connection
-        return getGroupTransformer().then(groupTransformer =>
-                connectionData.reduce((parseResult, data, index) => {
+        let index = 0;
 
-            const { patches, users, groups } = parseResult;
+        // Get the group transformer to apply to each connection
+        return getTreeTransformer(importConfig).then(treeTransformer =>
+                connectionData.reduce((parseResult, data) => {
+
+            const { patches, users, groups, groupPaths } = parseResult;
 
             // Run the array data through each provided transform
             let connectionObject = data;
@@ -284,24 +398,77 @@ angular.module('import').factory('connectionParseService',
 
             // All errors found while parsing this connection
             const connectionErrors = [];
-            parseResult.errors.push(connectionErrors);
 
-            // Translate the group on the object to a parentIdentifier
+            // Determine the connection's place in the connection group tree
             try {
-                connectionObject = groupTransformer(connectionObject);
+                connectionObject = treeTransformer(connectionObject);
             }
 
-            // If there was a problem with the group or parentIdentifier
+            // If there was a problem with the connection group heirarchy
             catch (error) {
                 connectionErrors.push(error);
             }
 
-            // The users and user groups that should be granted access
-            const connectionUsers = connectionObject.users || [];
-            const connectionGroups = connectionObject.groups || [];
+            // If there are any errors for this connection, fail the whole batch
+            if (connectionErrors.length)
+                parseResult.hasErrors = true;
+
+            // The value for the patch is a full-fledged Connection
+            const value = new Connection(connectionObject);
+
+            // If a new connection is being created
+            if (connectionObject.importMode 
+                    === ImportConnection.ImportMode.CREATE) 
+
+                // Add a patch for creating the connection
+                patches.push(new DirectoryPatch({
+                    op: DirectoryPatch.Operation.ADD,
+                    path: '/',
+                    value
+                }));
+
+            // The connection is being replaced, and permissions are only being
+            // added, not replaced
+            else if (importConfig.existingPermissionMode ===
+                    ConnectionImportConfig.ExistingPermissionMode.PRESERVE)
+
+                // Add a patch for replacing the connection
+                patches.push(new DirectoryPatch({
+                    op: DirectoryPatch.Operation.REPLACE,
+                    path: '/' + connectionObject.identifier,
+                    value
+                }));
+
+            // The connection is being replaced, and permissions are also being
+            // replaced
+            else {
+
+                // Add a patch for removing the existing connection
+                patches.push(new DirectoryPatch({
+                    op: DirectoryPatch.Operation.REMOVE,
+                    path: '/' + connectionObject.identifier
+                }));
+
+                // Increment the index for the additional remove patch
+                index += 1;
+
+                // Add a second patch for creating the replacement connection
+                patches.push(new DirectoryPatch({
+                    op: DirectoryPatch.Operation.ADD,
+                    path: '/',
+                    value
+                }));
+
+            }
+
+            // Save the connection group path into the parse result
+            groupPaths[index] = connectionObject.group;
+
+            // Save the errors for this connection into the parse result
+            parseResult.errors[index] = connectionErrors;
 
             // Add this connection index to the list for each user
-            connectionUsers.forEach(identifier => {
+            _.forEach(connectionObject.users, identifier => {
 
                 // If there's an existing list, add the index to that
                 if (users[identifier])
@@ -313,7 +480,7 @@ angular.module('import').factory('connectionParseService',
             });
 
             // Add this connection index to the list for each group
-            connectionGroups.forEach(identifier => {
+            _.forEach(connectionObject.groups, identifier => {
 
                 // If there's an existing list, add the index to that
                 if (groups[identifier])
@@ -324,20 +491,10 @@ angular.module('import').factory('connectionParseService',
                     groups[identifier] = [index];
             });
 
-            // Translate to a full-fledged Connection
-            const connection = new Connection(connectionObject);
-
-            // Finally, add a patch for creating the connection
-            patches.push(new DirectoryPatch({
-                op: 'add',
-                path: '/',
-                value: connection
-            }));
-
-            // If there are any errors for this connection, fail the whole batch
-            if (connectionErrors.length)
-                parseResult.hasErrors = true;
-
+            // Return the existing parse result state and continue on to the
+            // next connection in the file
+            index++;
+            parseResult.connectionCount++;
             return parseResult;
 
         }, new ParseResult()));
@@ -349,6 +506,9 @@ angular.module('import').factory('connectionParseService',
      * objects containing lists of user and user group identifiers to be granted
      * to each connection.
      *
+     * @param {ConnectionImportConfig} importConfig
+     *     The configuration options selected by the user prior to import.
+     *
      * @param {String} csvData
      *     The CSV-encoded connection list to process.
      *
@@ -356,7 +516,7 @@ angular.module('import').factory('connectionParseService',
      *     A promise resolving to ParseResult object representing the result of
      *     parsing all provided connection data.
      */
-    service.parseCSV = function parseCSV(csvData) {
+    service.parseCSV = function parseCSV(importConfig, csvData) {
 
         // Convert to an array of arrays, one per CSV row (including the header)
         // NOTE: skip_empty_lines is required, or a trailing newline will error
@@ -405,7 +565,8 @@ angular.module('import').factory('connectionParseService',
             csvTransformer =>
 
                 // Apply the CSV transform to every row
-                parseConnectionData(connectionData, [csvTransformer]));
+                parseConnectionData(
+                        importConfig, connectionData, [csvTransformer]));
 
     };
 
@@ -415,6 +576,9 @@ angular.module('import').factory('connectionParseService',
      * objects containing lists of user and user group identifiers to be granted
      * to each connection.
      *
+     * @param {ConnectionImportConfig} importConfig
+     *     The configuration options selected by the user prior to import.
+     *
      * @param {String} yamlData
      *     The YAML-encoded connection list to process.
      *
@@ -422,7 +586,7 @@ angular.module('import').factory('connectionParseService',
      *     A promise resolving to ParseResult object representing the result of
      *     parsing all provided connection data.
      */
-    service.parseYAML = function parseYAML(yamlData) {
+    service.parseYAML = function parseYAML(importConfig, yamlData) {
 
         // Parse from YAML into a javascript array
         let connectionData;
@@ -443,7 +607,7 @@ angular.module('import').factory('connectionParseService',
         }
 
         // Produce a ParseResult
-        return parseConnectionData(connectionData);
+        return parseConnectionData(importConfig, connectionData);
     };
 
     /**
@@ -452,6 +616,9 @@ angular.module('import').factory('connectionParseService',
      * as a list of objects containing lists of user and user group identifiers
      * to be granted to each connection.
      *
+     * @param {ConnectionImportConfig} importConfig
+     *     The configuration options selected by the user prior to import.
+     *
      * @param {String} jsonData
      *     The JSON-encoded connection list to process.
      *
@@ -459,7 +626,7 @@ angular.module('import').factory('connectionParseService',
      *     A promise resolving to ParseResult object representing the result of
      *     parsing all provided connection data.
      */
-    service.parseJSON = function parseJSON(jsonData) {
+    service.parseJSON = function parseJSON(importConfig, jsonData) {
 
         // Parse from JSON into a javascript array
         let connectionData;
@@ -480,7 +647,7 @@ angular.module('import').factory('connectionParseService',
         }
 
         // Produce a ParseResult
-        return parseConnectionData(connectionData);
+        return parseConnectionData(importConfig, connectionData);
 
     };
 

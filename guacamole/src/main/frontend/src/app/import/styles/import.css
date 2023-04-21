@@ -158,3 +158,33 @@
     cursor: pointer;
 
 }
+
+.file-upload-container .import-config {
+
+    margin-top: 0.5em;
+    list-style: none;
+    width: 100%;
+    padding-left: 0;
+
+}
+
+.file-upload-container .import-config .help {
+
+    visibility: hidden;
+    cursor: help;
+    
+}
+
+.file-upload-container .import-config .help::after {
+
+    content: '';
+    visibility: visible;
+    display: inline-block;
+    background-image: url('images/question.svg');
+    background-size: contain;
+    width: 20px;
+    height: 20px;
+    position: relative;
+    top: 4px;
+
+}

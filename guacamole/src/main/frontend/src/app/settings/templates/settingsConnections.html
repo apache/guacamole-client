@@ -10,7 +10,7 @@
         <div class="action-buttons">
 
             <a class="import-connections button"
-                ng-show="canCreateConnections()"
+                ng-show="canAdminister()"
                 href="#/import/{{dataSource | escape}}/connection/">{{'SETTINGS_CONNECTIONS.ACTION_IMPORT' | translate}}</a>
 
             <a class="add-connection button"

@@ -422,6 +422,45 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
     }
 
     /**
+     * Retrieve and return the object having the given identifier from the
+     * directory, throwing a GuacamoleResourceNotFoundException and firing a
+     * directory GET failure event if no object exists with the given identifier
+     * in the directory.
+     *
+     * @param identifier
+     *     The identifier of the object to retrieve from the directory.
+     *
+     * @return
+     *     The object from the directory with the provided identifier.
+     *
+     * @throws GuacamoleException
+     *     If no object with the provided identifier exists within the
+     *     directory, or if any other error occurs while attempting to retrieve
+     *     the object.
+     */
+    @Nonnull
+    private InternalType getObjectByIdentifier(String identifier)
+            throws GuacamoleException {
+
+        // Retrieve the object having the given identifier
+        InternalType object;
+        try {
+            object = directory.get(identifier);
+            if (object == null)
+                throw new GuacamoleResourceNotFoundException(
+                        "Not found: \"" + identifier + "\"");
+        }
+        catch (GuacamoleException | RuntimeException | Error e) {
+            fireDirectoryFailureEvent(
+                    DirectoryEvent.Operation.GET, identifier, null, e);
+            throw e;
+        }
+
+        // Return the object; it is guaranteed to be non-null at this point
+        return object;
+    }
+
+    /**
      * If the provided throwable is a known Guacamole-specific type, create and
      * return a APIPatchError with an error message extracted from the error.
      * If the provided throwable is not a known type, null will be returned.
@@ -478,18 +517,18 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
     /**
      * Applies the given object patches, updating the underlying directory
-     * accordingly. This operation supports addition and removal of objects
-     * through the "add" and "remove" patch operation. The path of each patch
-     * operation is of the form "/ID" where ID is the identifier of the object
-     * being modified. In the case of object creation, the identifier is
-     * ignored, as the identifier will be automatically provided. This operation
-     * is atomic.
+     * accordingly. This operation supports addition, replacement, and removal of
+     * objects through the "add", "replace", or "remove" patch operations. The
+     * path of each patch operation is of the form "/ID" where ID is the 
+     * identifier of the object being modified. In the case of object creation, 
+     * the identifier is ignored, as the identifier will be automatically 
+     * provided. This operation is atomic.
      *
      * @param patches
      *     The patches to apply for this request.
      *
      * @throws GuacamoleException
-     *     If an error occurs while adding, updating, or removing objects.
+     *     If an error occurs while adding, replacing, or removing objects.
      *
      * @return
      *     A response describing the outcome of each patch. Only the identifier
@@ -523,8 +562,9 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                             "executed.");
 
                 // Keep a list of all objects that have been successfully
-                // added or removed
+                // added, replaced, or removed
                 Collection<InternalType> addedObjects = new ArrayList<>();
+                Collection<InternalType> replacedObjects = new ArrayList<>();
                 Collection<String> removedIdentifiers = new ArrayList<>();
 
                 // A list of all responses associated with the successful
@@ -590,7 +630,58 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                     }
 
-                    // Append each identifier to the list, to be removed atomically
+                    else if (op == APIPatch.Operation.replace) {
+
+                        // The identifier of the object to be replaced
+                        String identifier = path.substring(1);
+
+                        InternalType original = null;
+
+                        try {
+
+                            // Fetch the object to be updated. If no object is
+                            // found, a directory GET failure event will be
+                            // logged, and the update attempt will be aborted.
+                            original = getObjectByIdentifier(identifier);
+                            
+                            // Apply the changes to the original object
+                            translator.applyExternalChanges(
+                                    original, patch.getValue());
+
+                            // Update the directory
+                            directory.update(original);
+
+                            replacedObjects.add(original);
+
+                            // Add a success outcome describing the replacement
+                            APIPatchOutcome response = new APIPatchOutcome(
+                                    op, identifier, path);
+                            patchOutcomes.add(response);
+                            
+                        }
+
+                        catch (GuacamoleException | RuntimeException | Error e) {
+                            failed = true;
+                            fireDirectoryFailureEvent(
+                                    DirectoryEvent.Operation.UPDATE,
+                                    identifier, original, e);
+
+                            // Attempt to generate an API Patch error using the
+                            // caught exception
+                            APIPatchError patchError = createPatchFailure(
+                                    op, identifier, path, e);
+
+                            if (patchError != null)
+                                patchOutcomes.add(patchError);
+
+                            // If an unexpected failure occurs, fall through to
+                            // the standard API error handling
+                            else
+                                throw e;
+
+                        }
+                    }
+
                     else if (op == APIPatch.Operation.remove) {
 
                         String identifier = path.substring(1);
@@ -633,7 +724,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                     else {
                         throw new GuacamoleUnsupportedException(
                                 "Unsupported patch operation \"" + op + "\". "
-                                + "Only add and remove are supported.");
+                                + "Only add, replace, and remove are supported.");
                     }
 
 
@@ -662,6 +753,17 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                     InternalType internal = addedIterator.next();
                     fireDirectorySuccessEvent(
                             DirectoryEvent.Operation.ADD,
+                            internal.getIdentifier(), internal);
+
+                }
+
+                // Fire directory success events for each updated object
+                Iterator<InternalType> updatedIterator = replacedObjects.iterator();
+                while (updatedIterator.hasNext()) {
+
+                    InternalType internal = updatedIterator.next();
+                    fireDirectorySuccessEvent(
+                            DirectoryEvent.Operation.UPDATE,
                             internal.getIdentifier(), internal);
 
                 }
@@ -744,17 +846,10 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
         getObjectResource(@PathParam("identifier") String identifier)
             throws GuacamoleException {
 
-        // Retrieve the object having the given identifier
-        InternalType object;
-        try {
-            object = directory.get(identifier);
-            if (object == null)
-                throw new GuacamoleResourceNotFoundException("Not found: \"" + identifier + "\"");
-        }
-        catch (GuacamoleException | RuntimeException | Error e) {
-            fireDirectoryFailureEvent(DirectoryEvent.Operation.GET, identifier, null, e);
-            throw e;
-        }
+        // Fetch the object to be updated. If no object is found, a directory
+        // GET failure event will be logged. If no exception is thrown, the
+        // object is guaranteed to exist
+        InternalType object = getObjectByIdentifier(identifier);
 
         // Return a resource which provides access to the retrieved object
         DirectoryObjectResource<InternalType, ExternalType> resource = resourceFactory.create(authenticatedUser, userContext, directory, object);

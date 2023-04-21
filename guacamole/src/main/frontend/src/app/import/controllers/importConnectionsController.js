@@ -90,12 +90,13 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const userGroupService       = $injector.get('userGroupService');
 
     // Required types
-    const DirectoryPatch      = $injector.get('DirectoryPatch');
-    const Error               = $injector.get('Error');
-    const ParseError          = $injector.get('ParseError');
-    const PermissionSet       = $injector.get('PermissionSet');
-    const User                = $injector.get('User');
-    const UserGroup           = $injector.get('UserGroup');
+    const ConnectionImportConfig = $injector.get('ConnectionImportConfig');
+    const DirectoryPatch         = $injector.get('DirectoryPatch');
+    const Error                  = $injector.get('Error');
+    const ParseError             = $injector.get('ParseError');
+    const PermissionSet          = $injector.get('PermissionSet');
+    const User                   = $injector.get('User');
+    const UserGroup              = $injector.get('UserGroup');
 
     /**
      * The result of parsing the current upload, if successful.
@@ -138,6 +139,14 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     $scope.mimeType = null;
 
     /**
+     * The name of the file that's currently being uploaded, or has yet to
+     * be imported, if any.
+     *
+     * @type {String}
+     */
+    $scope.fileName = null;
+
+    /**
      * The raw string contents of the uploaded file, if any.
      *
      * @type {String}
@@ -151,6 +160,13 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      * @type {FileReader}
      */
     $scope.fileReader = null;
+
+    /**
+     * The configuration options for this import, to be chosen by the user.
+     *
+     * @type {ConnectionImportConfig}
+     */
+    $scope.importConfig = new ConnectionImportConfig();
 
     /**
      * Clear all file upload state.
@@ -178,10 +194,9 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
     /**
      * Create all users and user groups mentioned in the import file that don't
-     * already exist in the current data source. If either creation fails, any
-     * already-created entities will be cleaned up, and the returned promise
-     * will be rejected.
-     *
+     * already exist in the current data source. Return an object describing the
+     * result of the creation requests.
+     * 
      * @param {ParseResult} parseResult
      *     The result of parsing the user-supplied import file.
      *
@@ -222,30 +237,11 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                     value: new UserGroup({ identifier })
                 }));
 
-            // First, create any required users and groups, automatically cleaning
-            // up any created already-created entities if a call fails.
-            // NOTE: Generally we'd want to do these calls in parallel, using
-            // `$q.all()`. However, `$q.all()` rejects immediately if any of the
-            // wrapped promises reject, so the users may not be ready for cleanup
-            // at the time that the group promise rejects, or vice versa. While
-            // it would be possible to juggle promises and still do these calls
-            // in parallel, the code gets pretty complex, so for readability and
-            // simplicity, they are executed serially. The performance cost of
-            // doing so should be low.
-            return userService.patchUsers(dataSource, userPatches).then(userResponse => {
-
-                // Then, if that succeeds, create any required groups
-                return userGroupService.patchUserGroups(dataSource, groupPatches).then(
-
-                    // If user group creation succeeds, resolve the returned promise
-                    userGroupResponse => ({ userResponse, userGroupResponse}))
-
-                // If the group creation request fails, clean up any created users
-                .catch(groupFailure => {
-                    cleanUpUsers(userResponse);
-                    return groupFailure;
-                });
-
+            // Create all the users and groups
+            return $q.all({
+                userResponse: userService.patchUsers(dataSource, userPatches),
+                userGroupResponse: userGroupService.patchUserGroups(
+                        dataSource, groupPatches)
             });
 
         });
@@ -322,52 +318,6 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         return $q.all({ ...userRequests, ...groupRequests });
     }
 
-    // Given a PATCH API response, create an array of patches to delete every
-    // entity created in the original request that generated this response
-    const createDeletionPatches = creationResponse =>
-        creationResponse.patches.map(patch =>
-
-            // Add one deletion patch per original creation patch
-            new DirectoryPatch({
-                op: 'remove',
-                path: '/' + patch.identifier
-            }));
-
-    /**
-     * Given a successful response to a connection PATCH request, make another
-     * request to delete every created connection in the provided request, i.e.
-     * clean up every connection that was created.
-     *
-     * @param {DirectoryPatchResponse} creationResponse
-     *     The response to the connection PATCH request.
-     *
-     * @returns {DirectoryPatchResponse}
-     *     The response to the PATCH deletion request.
-     */
-    function cleanUpConnections(creationResponse) {
-
-        return connectionService.patchConnections(
-            $routeParams.dataSource, createDeletionPatches(creationResponse));
-
-    }
-
-    /**
-     * Given a successful response to a user PATCH request, make another
-     * request to delete every created user in the provided request.
-     *
-     * @param {DirectoryPatchResponse} creationResponse
-     *     The response to the user PATCH request.
-     *
-     * @returns {DirectoryPatchResponse}
-     *     The response to the PATCH deletion request.
-     */
-    function cleanUpUsers(creationResponse) {
-
-        return userService.patchUsers(
-            $routeParams.dataSource, createDeletionPatches(creationResponse));
-
-    }
-
     /**
      * Process a successfully parsed import file, creating any specified
      * connections, creating and granting permissions to any specified users
@@ -398,6 +348,9 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
             // If connection creation is successful, create users and groups
             createUsersAndGroups(parseResult).then(() =>
 
+                // Grant any new permissions to users and groups. NOTE: Any
+                // existing permissions for updated connections will NOT be
+                // removed - only new permissions will be added.
                 grantConnectionPermissions(parseResult, connectionResponse)
                         .then(() => {
 
@@ -409,7 +362,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                         title      : 'IMPORT.DIALOG_HEADER_SUCCESS',
                         text       : {
                             key: 'IMPORT.INFO_CONNECTIONS_IMPORTED_SUCCESS',
-                            variables: { NUMBER: parseResult.patches.length }
+                            variables: { NUMBER: parseResult.connectionCount }
                         },
 
                         // Add a button to acknowledge and redirect to
@@ -428,14 +381,10 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
                     });
                 }))
 
-            // If an error occurs while trying to users or groups, or while trying
-            // to assign permissions to users or groups, clean up the already-created
-            // connections, displaying an error to the user along with a blank slate
-            // so they can fix their problems and try again.
-            .catch(error => {
-                cleanUpConnections(connectionResponse);
-                handleError(error);
-            }))
+            // If an error occurs while trying to create users or groups, 
+            // display the error to the user.
+            .catch(handleError)
+        )
 
         // If an error occurred when the call to create the connections was made,
         // skip any further processing - the user will have a chance to fix the
@@ -531,7 +480,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
             };
 
         // Make the call to process the data into a series of patches
-        processDataCallback(data)
+        processDataCallback($scope.importConfig, data)
 
             // Send the data off to be imported if parsing is successful
             .then(handleParseSuccess)
@@ -686,11 +635,5 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // Read all the data into memory
         $scope.fileReader.readAsBinaryString(file);
     };
-
-    /**
-     * The name of the file that's currently being uploaded, or has yet to
-     * be imported, if any.
-     */
-    $scope.fileName = null;
-
+    
 }]);

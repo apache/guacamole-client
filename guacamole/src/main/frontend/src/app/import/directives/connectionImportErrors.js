@@ -59,6 +59,7 @@ angular.module('import').directive('connectionImportErrors', [
             function connectionImportErrorsController($scope, $injector) {
 
         // Required types
+        const DirectoryPatch        = $injector.get('DirectoryPatch');
         const DisplayErrorList      = $injector.get('DisplayErrorList');
         const ImportConnectionError = $injector.get('ImportConnectionError');
         const ParseError            = $injector.get('ParseError');
@@ -93,6 +94,7 @@ angular.module('import').directive('connectionImportErrors', [
         $scope.errorOrder = new SortOrder([
             'rowNumber',
             'name',
+            'group',
             'protocol',
             'errors',
         ]);
@@ -105,6 +107,7 @@ angular.module('import').directive('connectionImportErrors', [
         $scope.filteredErrorProperties = [
             'rowNumber',
             'name',
+            'group',
             'protocol',
             'errors',
         ];
@@ -117,13 +120,18 @@ angular.module('import').directive('connectionImportErrors', [
          *     The result of parsing the connection import file.
          *
          * @param {Integer} index
-         *     The current row within the import file, 0-indexed.
+         *     The current row within the patches array, 0-indexed.
+         *
+         * @param {Integer} row
+         *     The current row within the original connection, 0-indexed.
+         *     If any REMOVE patches are present, this may be greater than
+         *     the index.
          *
          * @returns {ImportConnectionError}
          *     The connection error object associated with the given row in the
          *     given parse result.
          */
-        const generateConnectionError = (parseResult, index) => {
+        const generateConnectionError = (parseResult, index, row) => {
 
             // Get the patch associated with the current row
             const patch = parseResult.patches[index];
@@ -133,11 +141,12 @@ angular.module('import').directive('connectionImportErrors', [
 
             return new ImportConnectionError({
 
-                // Add 1 to the index to get the position in the file
-                rowNumber: index + 1,
+                // Add 1 to the provided row to get the position in the file
+                rowNumber: row + 1,
 
-                // Basic connection information - name and protocol.
+                // Basic connection information - name, group, and protocol.
                 name: connection.name,
+                group: parseResult.groupPaths[index],
                 protocol: connection.protocol,
 
                 // The human-readable error messages
@@ -159,28 +168,67 @@ angular.module('import').directive('connectionImportErrors', [
             // updated until all translations are ready.
             const translationPromises = [];
 
+            // Any error returned from the API specifically associated with the
+            // preceding REMOVE patch
+            let removeError = null;
+
+            // Fetch the API error, if any, of the patch at the given index
+            const getAPIError = index =>
+                    _.get(patchFailure, ['patches', index, 'error']);
+
+            // The row number for display. Unlike the index, this number will
+            // skip any REMOVE patches. In other words, this is the index of
+            // connections within the original import file.
+            let row = 0;
+
             // Set up the list of connection errors based on the existing parse
             // result, with error messages fetched from the patch failure
-            const connectionErrors = parseResult.patches.map(
-                    (patch, index) => {
+            const connectionErrors = parseResult.patches.reduce(
+                    (errors, patch, index) => {
+
+                // Do not process display REMOVE patches - they are always
+                // followed by ADD patches containing the actual content
+                // (and errors, if any)
+                if (patch.op === DirectoryPatch.Operation.REMOVE) {
+
+                    // Save the API error, if any, so it can be displayed
+                    // alongside the connection information associated with the
+                    // following ADD patch
+                    removeError = getAPIError(index);
+
+                    // Do not add an entry for this remove patch - it should
+                    // always be followed by a corresponding CREATE patch
+                    // containing the relevant connection information
+                    return errors;
+                    
+                }
 
                 // Generate a connection error for display
-                const connectionError = generateConnectionError(parseResult, index);
+                const connectionError = generateConnectionError(
+                        parseResult, index, row++);
 
-                // Set the error from the PATCH request, if there is one
-                const error = _.get(patchFailure, ['patches', index, 'error']);
-                if (error)
+                // Add the error associated with the previous REMOVE patch, if
+                // any, to the error associated with the current patch, if any
+                const apiErrors = [ removeError, getAPIError(index) ];
 
-                    // Fetch the translation and update it when it's ready
-                    translationPromises.push($translate(
+                // Clear the previous REMOVE patch error after consuming it
+                removeError = null;
+
+                // Go through each potential API error
+                apiErrors.forEach(error =>
+
+                    // If the API error exists, fetch the translation and
+                    // update it when it's ready
+                    error && translationPromises.push($translate(
                         error.key, error.variables)
                         .then(translatedError =>
                             connectionError.errors.getArray().push(translatedError)
-                        ));
+                        )));
 
-                return connectionError;
+                errors.push(connectionError);
+                return errors;
                 
-            });
+            }, []);
 
             // Once all the translations have been completed, update the
             // connectionErrors all in one go, to ensure no excessive reloading
@@ -206,13 +254,25 @@ angular.module('import').directive('connectionImportErrors', [
             // entirely - if set, they will be from the previous file and no
             // longer relevant.
 
+            // The row number for display. Unlike the index, this number will
+            // skip any REMOVE patches. In other words, this is the index of
+            // connections within the original import file.
+            let row = 0;
+
             // Set up the list of connection errors based on the updated parse
             // result
-            const connectionErrors = parseResult.patches.map(
-                    (patch, index) => {
+            const connectionErrors = parseResult.patches.reduce(
+                    (errors, patch, index) => {
+
+                // Do not process display REMOVE patches - they are always
+                // followed by ADD patches containing the actual content
+                // (and errors, if any)
+                if (patch.op === DirectoryPatch.Operation.REMOVE)
+                    return errors;
 
                 // Generate a connection error for display
-                const connectionError = generateConnectionError(parseResult, index);
+                const connectionError = generateConnectionError(
+                        parseResult, index, row++);
 
                 // Go through the errors and check if any are translateable
                 connectionError.errors.getArray().forEach(
@@ -231,11 +291,18 @@ angular.module('import').directive('connectionImportErrors', [
                                 connectionError.errors.getArray()[errorIndex] = translatedError;
                             }));
 
+                    // If the error is not a known translatable type, add the
+                    // message directly to the error array
+                    else
+                         connectionError.errors.getArray()[errorIndex] = (
+                             error.message ? error.message : error);
+
                 });
 
-                return connectionError;
+                errors.push(connectionError);
+                return errors;
 
-            });
+            }, []);
 
             // Once all the translations have been completed, update the
             // connectionErrors all in one go, to ensure no excessive reloading
