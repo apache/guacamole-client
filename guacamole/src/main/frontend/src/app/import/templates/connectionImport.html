@@ -51,7 +51,7 @@
             <li>
                 <input type="checkbox"
                     id="existing-permission-mode" ng-model="importConfig.existingPermissionMode"
-                    ng-disabled="importConfig.replaceConnectionMode === 'REJECT'"
+                    ng-disabled="importConfig.existingConnectionMode === 'REJECT'"
                     ng-true-value="'REPLACE'" ng-false-value="'PRESERVE'" />
                 <label for="existing-permission-mode">
                     {{'IMPORT.FIELD_HEADER_EXISTING_PERMISSION_MODE' | translate}}

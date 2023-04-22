@@ -430,6 +430,10 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
      * @param identifier
      *     The identifier of the object to retrieve from the directory.
      *
+     * @param directory
+     *     The directory to fetch the object from. If null, the directory
+     *     associated with this DirectoryResource instance will be used.
+     *
      * @return
      *     The object from the directory with the provided identifier.
      *
@@ -439,8 +443,14 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
      *     the object.
      */
     @Nonnull
-    private InternalType getObjectByIdentifier(String identifier)
+    private InternalType getObjectByIdentifier(
+            String identifier, @Nullable Directory<InternalType> directory)
             throws GuacamoleException {
+
+        // Use the directory associated with this instance if not otherwise
+        // specified
+        if (directory == null)
+            directory = this.directory;
 
         // Retrieve the object having the given identifier
         InternalType object;
@@ -639,10 +649,11 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
 
                         try {
 
-                            // Fetch the object to be updated. If no object is
-                            // found, a directory GET failure event will be
-                            // logged, and the update attempt will be aborted.
-                            original = getObjectByIdentifier(identifier);
+                            // Fetch the object to be updated from the atomic
+                            // directory instance. If no object is found, a 
+                            // directory GET failure event will be logged, and
+                            // the update attempt will be aborted.
+                            original = getObjectByIdentifier(identifier, directory);
                             
                             // Apply the changes to the original object
                             translator.applyExternalChanges(
@@ -849,7 +860,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
         // Fetch the object to be updated. If no object is found, a directory
         // GET failure event will be logged. If no exception is thrown, the
         // object is guaranteed to exist
-        InternalType object = getObjectByIdentifier(identifier);
+        InternalType object = getObjectByIdentifier(identifier, null);
 
         // Return a resource which provides access to the retrieved object
         DirectoryObjectResource<InternalType, ExternalType> resource = resourceFactory.create(authenticatedUser, userContext, directory, object);
