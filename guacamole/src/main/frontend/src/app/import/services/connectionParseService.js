@@ -252,9 +252,9 @@ angular.module('import').factory('connectionParseService',
             // If a parent group identifier is present, but not valid
             else if (providedIdentifier && !groupPathsByIdentifier[providedIdentifier])
                 throw new ParseError({
-                    message: 'No group with identifier: ' + parentIdentifier,
+                    message: 'No group with identifier: ' + providedIdentifier,
                     key: 'IMPORT.ERROR_INVALID_GROUP_IDENTIFIER',
-                    variables: { IDENTIFIER: parentIdentifier }
+                    variables: { IDENTIFIER: providedIdentifier }
                 });
 
             // If the parent identifier is valid, use it to determine the path
