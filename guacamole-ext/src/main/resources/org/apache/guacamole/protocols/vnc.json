@@ -57,6 +57,10 @@
                     "name"    : "force-lossless",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name" : "encodings",
+                    "type" : "TEXT"
                 }
             ]
         },
