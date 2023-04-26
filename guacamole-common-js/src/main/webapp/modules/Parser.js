@@ -92,29 +92,44 @@ Guacamole.Parser = function Parser() {
      *
      * @param {!string} packet
      *     The instruction data to receive.
+     *
+     * @param {!boolean} [isBuffer=false]
+     *     Whether the provided data should be treated as an instruction buffer
+     *     that grows continuously. If true, the data provided to receive()
+     *     MUST always start with the data provided to the previous call. If
+     *     false (the default), only the new data should be provided to
+     *     receive(), and previously-received data will automatically be
+     *     buffered by the parser as needed.
      */
-    this.receive = function receive(packet) {
+    this.receive = function receive(packet, isBuffer) {
 
-        // Truncate buffer as necessary
-        if (startIndex > 4096 && elementEnd >= startIndex) {
+        if (isBuffer)
+            buffer = packet;
 
-            buffer = buffer.substring(startIndex);
+        else {
 
-            // Reset parse relative to truncation
-            elementEnd -= startIndex;
-            startIndex = 0;
+            // Truncate buffer as necessary
+            if (startIndex > 4096 && elementEnd >= startIndex) {
+
+                buffer = buffer.substring(startIndex);
+
+                // Reset parse relative to truncation
+                elementEnd -= startIndex;
+                startIndex = 0;
+
+            }
+
+            // Append data to buffer ONLY if there is outstanding data present. It
+            // is otherwise much faster to simply parse the received buffer as-is,
+            // and tunnel implementations can take advantage of this by preferring
+            // to send only complete instructions. Both the HTTP and WebSocket
+            // tunnel implementations included with Guacamole already do this.
+            if (buffer.length)
+                buffer += packet;
+            else
+                buffer = packet;
 
         }
-
-        // Append data to buffer ONLY if there is outstanding data present. It
-        // is otherwise much faster to simply parse the received buffer as-is,
-        // and tunnel implementations can take advantage of this by preferring
-        // to send only complete instructions. Both the HTTP and WebSocket
-        // tunnel implementations included with Guacamole already do this.
-        if (buffer.length)
-            buffer += packet;
-        else
-            buffer = packet;
 
         // While search is within currently received data
         while (elementEnd < buffer.length) {
@@ -256,4 +271,44 @@ Guacamole.Parser.codePointCount = function codePointCount(str, start, end) {
     str = str.substring(start || 0, end);
     var surrogatePairs = str.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g);
     return str.length - (surrogatePairs ? surrogatePairs.length : 0);
+};
+
+/**
+ * Converts each of the values within the given array to strings, formatting
+ * those strings as length-prefixed elements of a complete Guacamole
+ * instruction.
+ *
+ * @param {!*[]} elements
+ *     The values that should be encoded as the elements of a Guacamole
+ *     instruction. Order of these elements is preserved. This array MUST have
+ *     at least one element.
+ *
+ * @returns {!string}
+ *     A complete Guacamole instruction consisting of each of the provided
+ *     element values, in order.
+ */
+Guacamole.Parser.toInstruction = function toInstruction(elements) {
+
+    /**
+     * Converts the given value to a length/string pair for use as an
+     * element in a Guacamole instruction.
+     *
+     * @private
+     * @param {*} value
+     *     The value to convert.
+     *
+     * @return {!string}
+     *     The converted value.
+     */
+    var toElement = function toElement(value) {
+        var str = '' + value;
+        return Guacamole.Parser.codePointCount(str) + "." + str;
+    };
+
+    var instr = toElement(elements[0]);
+    for (var i = 1; i < elements.length; i++)
+        instr += ',' + toElement(elements[i]);
+
+    return instr + ';';
+
 };
