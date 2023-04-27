@@ -158,6 +158,20 @@ describe('Guacamole.Parser', function ParserSpec() {
 
     });
 
+    // Instruction fed via blocks of characters that accumulate via an external
+    // buffer
+    describe('when an instruction is received via an external buffer', function() {
 
+        it('should correctly parse each element and invoke oninstruction once ready', function() {
+            parser.oninstruction = jasmine.createSpy('oninstruction');
+            parser.receive('5.test2,10.hello', true);
+            expect(parser.oninstruction).not.toHaveBeenCalled();
+            parser.receive('5.test2,10.hellohello,15', true);
+            expect(parser.oninstruction).not.toHaveBeenCalled();
+            parser.receive('5.test2,10.hellohello,15.worldworldworld;', true);
+            expect(parser.oninstruction).toHaveBeenCalledOnceWith('test2', [ 'hellohello', 'worldworldworld' ]);
+        });
+
+    });
 
 });
