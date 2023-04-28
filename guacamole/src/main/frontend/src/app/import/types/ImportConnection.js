@@ -113,6 +113,13 @@ angular.module('import').factory('ImportConnection', ['$injector',
          * a brand new connection should be created.
          */
         this.importMode = template.importMode || ImportConnection.ImportMode.CREATE;
+
+        /**
+         * Any errors specific to this connection encountered while parsing.
+         *
+         * @type ParseError[]
+         */
+        this.errors = template.errors || [];
         
     };
 

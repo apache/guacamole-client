@@ -271,6 +271,13 @@ angular.module('import').factory('connectionParseService',
                 // to be translated into an absolute path starting at the root
                 group = connection.group;
 
+                // If the provided group isn't a string, it can never be valid
+                if (typeof group !== 'string')
+                    throw new ParseError({
+                        message: 'Invalid group type - must be a string',
+                        key: 'IMPORT.ERROR_INVALID_GROUP_TYPE'
+                    });
+
                 // Allow the group to start with a leading slash instead instead
                 // of explicitly requiring the root connection group
                 if (group.startsWith('/'))
@@ -352,6 +359,84 @@ angular.module('import').factory('connectionParseService',
     }
 
     /**
+     * Returns a promise that resolves to a map of all valid protocols to the
+     * boolean value "true", i.e. a set of all valid protocols.
+     *
+     * @returns {Promise.<Object.<String, Boolean>>}
+     *     A promise that resolves to a set of all valid protocols.
+     */
+    function getValidProtocols() {
+
+        // The current data source - the one that the connections will be
+        // imported into
+        const dataSource = $routeParams.dataSource;
+
+        // Fetch the protocols and convert to a set of valid protocol names
+        return schemaService.getProtocols(dataSource).then(
+                protocols => _.mapValues(protocols, () => true));
+    }
+
+    /**
+     * Return a list of field-level errors for the provided connection,
+     * such as missing or invalid fields that are not dependant on the
+     * connection group heirarchy.
+     *
+     * @param {ImportConnection} connection
+     *     The connection object to check field values on.
+     *
+     * @param {Object.<String, Boolean>} protocols
+     *     A set of valid protocols, such as the one returned by 
+     *     getValidProtocols().
+     *
+     * @returns {ParseError[]}
+     *     A list of field-level errors for the provided connection.
+     */
+    function getFieldErrors(connection, protocols) {
+        const connectionErrors = [];
+
+        // Ensure that a protocol was specified for this connection
+        const protocol = connection.protocol;
+        if (!protocol)
+            connectionErrors.push(new ParseError({
+                message: 'Missing required protocol field',
+                key: 'IMPORT.ERROR_REQUIRED_PROTOCOL_CONNECTION'
+            }));
+
+        // Ensure that a valid protocol was specified for this connection
+        if (!protocols[protocol])
+            connectionErrors.push(new ParseError({
+                message: 'Invalid protocol: ' + protocol,
+                key: 'IMPORT.ERROR_INVALID_PROTOCOL',
+                variables: { PROTOCOL: protocol }
+            }));
+
+        // Ensure that a name was specified for this connection
+        if (!connection.name)
+            connectionErrors.push(new ParseError({
+                message: 'Missing required name field',
+                key: 'IMPORT.ERROR_REQUIRED_NAME_CONNECTION'
+            }));
+
+        // Ensure that the specified user list, if any, is an array
+        const users = connection.users;
+        if (users && !Array.isArray(users))
+            connectionErrors.push(new ParseError({
+                message: 'Invalid users list - must be an array',
+                key: 'IMPORT.ERROR_INVALID_USERS_TYPE'
+            }));
+
+        // Ensure that the specified user list, if any, is an array
+        const groups = connection.groups;
+        if (groups && !Array.isArray(groups))
+            connectionErrors.push(new ParseError({
+                message: 'Invalid groups list - must be an array',
+                key: 'IMPORT.ERROR_INVALID_USER_GROUPS_TYPE'
+            }));
+
+        return connectionErrors;
+    }
+
+    /**
      * Convert a provided connection array into a ParseResult. Any provided
      * transform functions will be run on each entry in `connectionData` before
      * any other processing is done.
@@ -384,8 +469,12 @@ angular.module('import').factory('connectionParseService',
 
         let index = 0;
 
-        // Get the group transformer to apply to each connection
-        return getTreeTransformer(importConfig).then(treeTransformer =>
+        // Get the tree transformer and valid protocol set
+        return $q.all({
+            treeTransformer : getTreeTransformer(importConfig),
+            protocols       : getValidProtocols()
+        })
+        .then(({treeTransformer, protocols}) =>
                 connectionData.reduce((parseResult, data) => {
 
             const { patches, users, groups, groupPaths } = parseResult;
@@ -396,8 +485,13 @@ angular.module('import').factory('connectionParseService',
                 connectionObject = transform(connectionObject);
             });
 
-            // All errors found while parsing this connection
-            const connectionErrors = [];
+            // All errors encountered while running the connection through the
+            // provided transform, starting with those encountered during
+            // the provided transforms, and any errors from missing fields
+            const connectionErrors = [
+                ..._.get(connectionObject, 'errors', []),
+                ...getFieldErrors(connectionObject, protocols)
+            ];
 
             // Determine the connection's place in the connection group tree
             try {
