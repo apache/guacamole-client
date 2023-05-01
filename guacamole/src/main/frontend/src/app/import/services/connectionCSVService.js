@@ -322,9 +322,31 @@ angular.module('import').factory('connectionCSVService',
                         // of the header
                         const value = fetchFieldAtIndex(row);
 
+                        // If no value is provided, do not check the validity
+                        // of the parameter/attribute. Doing so would prevent
+                        // the import of a list of mixed protocol types, where
+                        // fields are only populated for protocols for which
+                        // they are valid parameters. If a value IS provided,
+                        // it must be a valid parameter or attribute for the
+                        // current protocol, which will be checked below.
+                        if (!value)
+                            return {};
+
                         // The protocol may determine whether a field is
                         // a parameter or an attribute (or both)
                         const protocol = transformConfig.protocolGetter(row);
+
+                        // Any errors encountered while processing this row
+                        const errors = [];
+
+                        // Before checking whether it's an attribute or protocol,
+                        // make sure this is a valid protocol to start
+                        if (!protocolParameters[protocol])
+
+                            // If the protocol is invalid, do not throw an error
+                            // here - this will be handled further downstream
+                            // by non-CSV-specific error handling
+                            return {};
 
                         // Determine if the field refers to an attribute or a
                         // parameter (or both, which is an error)
@@ -336,24 +358,24 @@ angular.module('import').factory('connectionCSVService',
                         // parameter with the provided name, it's impossible to
                         // figure out which this should be
                         if (isAttribute && isParameter)
-                            throw new ParseError({
+                            errors.push(new ParseError({
                                 message: 'Ambiguous CSV Header: ' + header,
                                 key: 'IMPORT.ERROR_AMBIGUOUS_CSV_HEADER',
                                 variables: { HEADER: header }
-                            });
+                            }));
 
                         // It's neither an attribute or a parameter
                         else if (!isAttribute && !isParameter)
-                            throw new ParseError({
+                            errors.push(new ParseError({
                                 message: 'Invalid CSV Header: ' + header,
                                 key: 'IMPORT.ERROR_INVALID_CSV_HEADER',
                                 variables: { HEADER: header }
-                            });
+                            }));
 
                         // Choose the appropriate type
                         const type = isAttribute ? 'attributes' : 'parameters';
 
-                        return { type, name, value };
+                        return { type, name, value, errors };
                     });
             });
 
@@ -364,19 +386,20 @@ angular.module('import').factory('connectionCSVService',
                 parameterOrAttributeGetters
             } = transformConfig;
 
-            // Fail if the name wasn't provided
+            // Fail if the name wasn't provided. Note that this is a file-level
+            // error, not specific to any connection.
             if (!nameGetter)
-                return deferred.reject(new ParseError({
+                throw new ParseError({
                     message: 'The connection name must be provided',
-                    key: 'IMPORT.ERROR_REQUIRED_NAME'
-                }));
+                    key: 'IMPORT.ERROR_REQUIRED_NAME_FILE'
+                });
 
             // Fail if the protocol wasn't provided
             if (!protocolGetter)
-                return deferred.reject(new ParseError({
+                throw new ParseError({
                     message: 'The connection protocol must be provided',
-                    key: 'IMPORT.ERROR_REQUIRED_PROTOCOL'
-                }));
+                    key: 'IMPORT.ERROR_REQUIRED_PROTOCOL_FILE'
+                });
 
             // The function to transform a CSV row into a connection object
             deferred.resolve(function transformCSVRow(row) {
@@ -409,14 +432,20 @@ angular.module('import').factory('connectionCSVService',
                     ...parameterOrAttributeGetters.reduce((values, getter) => {
 
                         // Determine the type, name, and value
-                        const { type, name, value } = getter(row);
+                        const { type, name, value, errors } = getter(row);
 
-                        // Set the value and continue on to the next attribute
-                        // or parameter
-                        values[type][name] = value;
+                        // Set the value if available
+                        if (type && name && value)
+                            values[type][name] = value;
+
+                        // If there were errors
+                        if (errors && errors.length)
+                            values.errors = [...values.errors, ...errors];
+
+                        // Continue on to the next attribute or parameter
                         return values;
 
-                    }, {parameters: {}, attributes: {}})
+                    }, {parameters: {}, attributes: {}, errors: []})
 
                 });
 
