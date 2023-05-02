@@ -389,17 +389,17 @@ angular.module('import').factory('connectionCSVService',
             // Fail if the name wasn't provided. Note that this is a file-level
             // error, not specific to any connection.
             if (!nameGetter)
-                throw new ParseError({
+                deferred.reject(new ParseError({
                     message: 'The connection name must be provided',
                     key: 'IMPORT.ERROR_REQUIRED_NAME_FILE'
-                });
+                }));
 
             // Fail if the protocol wasn't provided
             if (!protocolGetter)
-                throw new ParseError({
+                deferred.reject(new ParseError({
                     message: 'The connection protocol must be provided',
                     key: 'IMPORT.ERROR_REQUIRED_PROTOCOL_FILE'
-                });
+                }));
 
             // The function to transform a CSV row into a connection object
             deferred.resolve(function transformCSVRow(row) {
