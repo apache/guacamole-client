@@ -203,4 +203,19 @@ describe('Guacamole.Parser', function ParserSpec() {
 
     });
 
+    // Verify toInstruction() utility function correctly encodes instructions
+    describe('when an array of elements is provided to toInstruction()', function() {
+
+        it('should return a correctly-encoded Guacamole instruction', function() {
+            expect(Guacamole.Parser.toInstruction([ 'test', 'instruction' ])).toBe('4.test,11.instruction;');
+            expect(Guacamole.Parser.toInstruction([ 'test' + SURROGATE_PAIR, 'instruction' ]))
+                    .toBe('5.test' + SURROGATE_PAIR + ',11.instruction;');
+            expect(Guacamole.Parser.toInstruction([ UTF8_MULTIBYTE, HIGH_SURROGATE + 'xyz' + LOW_SURROGATE ]))
+                    .toBe('4.' + UTF8_MULTIBYTE + ',5.' + HIGH_SURROGATE + 'xyz' + LOW_SURROGATE + ';');
+            expect(Guacamole.Parser.toInstruction([ UTF8_MULTIBYTE, LOW_SURROGATE + 'xyz' + HIGH_SURROGATE ]))
+                    .toBe('4.' + UTF8_MULTIBYTE + ',5.' + LOW_SURROGATE + 'xyz' + HIGH_SURROGATE + ';');
+        });
+
+    });
+
 });
