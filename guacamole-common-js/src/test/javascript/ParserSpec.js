@@ -174,4 +174,33 @@ describe('Guacamole.Parser', function ParserSpec() {
 
     });
 
+    // Verify codePointCount() utility function correctly counts codepoints in
+    // full strings
+    describe('when a string is provided to codePointCount()', function() {
+
+        it('should return the number of codepoints in that string', function() {
+            expect(Guacamole.Parser.codePointCount('')).toBe(0);
+            expect(Guacamole.Parser.codePointCount('test string')).toBe(11);
+            expect(Guacamole.Parser.codePointCount('surrogate' + SURROGATE_PAIR + 'pair')).toBe(14);
+            expect(Guacamole.Parser.codePointCount('missing' + HIGH_SURROGATE + 'surrogates' + LOW_SURROGATE)).toBe(19);
+            expect(Guacamole.Parser.codePointCount(HIGH_SURROGATE + LOW_SURROGATE + HIGH_SURROGATE)).toBe(2);
+            expect(Guacamole.Parser.codePointCount(HIGH_SURROGATE + HIGH_SURROGATE + LOW_SURROGATE)).toBe(2);
+        });
+
+    });
+
+    // Verify codePointCount() utility function correctly counts codepoints in
+    // substrings
+    describe('when a substring is provided to codePointCount()', function() {
+
+        it('should return the number of codepoints in that substring', function() {
+            expect(Guacamole.Parser.codePointCount('test string', 0)).toBe(11);
+            expect(Guacamole.Parser.codePointCount('surrogate' + SURROGATE_PAIR + 'pair', 5)).toBe(9);
+            expect(Guacamole.Parser.codePointCount('missing' + HIGH_SURROGATE + 'surrogates' + LOW_SURROGATE, 2, 17)).toBe(15);
+            expect(Guacamole.Parser.codePointCount(HIGH_SURROGATE + LOW_SURROGATE + HIGH_SURROGATE, 0, 2)).toBe(1);
+            expect(Guacamole.Parser.codePointCount(HIGH_SURROGATE + HIGH_SURROGATE + LOW_SURROGATE, 1, 2)).toBe(1);
+        });
+
+    });
+
 });
