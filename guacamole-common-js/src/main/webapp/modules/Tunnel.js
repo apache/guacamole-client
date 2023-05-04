@@ -356,12 +356,16 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
     }
 
     /**
-     * Initiates a timeout which, if data is not received, causes the tunnel
-     * to close with an error.
-     * 
+     * Resets the state of timers tracking network activity and stability. If
+     * those timers are not yet started, invoking this function starts them.
+     * This function should be invoked when the tunnel is established and every
+     * time there is network activity on the tunnel, such that the timers can
+     * safely assume the network and/or server are not responding if this
+     * function has not been invoked for a significant period of time.
+     *
      * @private
      */
-    function reset_timeout() {
+    var resetTimers = function resetTimers() {
 
         // Get rid of old timeouts (if any)
         window.clearTimeout(receive_timeout);
@@ -381,7 +385,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
             tunnel.setState(Guacamole.Tunnel.State.UNSTABLE);
         }, tunnel.unstableThreshold);
 
-    }
+    };
 
     /**
      * Closes this tunnel, signaling the given status and corresponding
@@ -491,7 +495,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
             message_xmlhttprequest.onreadystatechange = function() {
                 if (message_xmlhttprequest.readyState === 4) {
 
-                    reset_timeout();
+                    resetTimers();
 
                     // If an error occurs during send, handle it
                     if (message_xmlhttprequest.status !== 200)
@@ -581,7 +585,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
             if (xmlhttprequest.readyState === 3 ||
                 xmlhttprequest.readyState === 4) {
 
-                reset_timeout();
+                resetTimers();
 
                 // Also poll every 30ms (some browsers don't repeatedly call onreadystatechange for new data)
                 if (pollingMode === POLLING_ENABLED) {
@@ -742,7 +746,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
     this.connect = function(data) {
 
         // Start waiting for connect
-        reset_timeout();
+        resetTimers();
 
         // Mark the tunnel as connecting
         tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
@@ -760,7 +764,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
                 return;
             }
 
-            reset_timeout();
+            resetTimers();
 
             // Get UUID and HTTP-specific tunnel session token from response
             tunnel.setUUID(connect_xmlhttprequest.responseText);
@@ -844,13 +848,13 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     var unstableTimeout = null;
 
     /**
-     * The current connection stability test ping interval ID, if any. This
+     * The current connection stability test ping timeout ID, if any. This
      * will only be set upon successful connection.
      *
      * @private
      * @type {number}
      */
-    var pingInterval = null;
+    var pingTimeout = null;
 
     /**
      * The WebSocket protocol corresponding to the protocol used for the current
@@ -873,6 +877,16 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
      * @type {!number}
      */
     var PING_FREQUENCY = 500;
+
+    /**
+     * The timestamp of the point in time that the last connection stability
+     * test ping was sent, in milliseconds elapsed since midnight of January 1,
+     * 1970 UTC.
+     *
+     * @private
+     * @type {!number}
+     */
+    var lastSentPing = 0;
 
     // Transform current URL to WebSocket URL
 
@@ -908,16 +922,35 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
     }
 
     /**
-     * Initiates a timeout which, if data is not received, causes the tunnel
-     * to close with an error.
-     * 
+     * Sends an internal "ping" instruction to the Guacamole WebSocket
+     * endpoint, verifying network connection stability. If the network is
+     * stable, the Guacamole server will receive this instruction and respond
+     * with an identical ping.
+     *
      * @private
      */
-    function reset_timeout() {
+    var sendPing = function sendPing() {
+        var currentTime = new Date().getTime();
+        tunnel.sendMessage(Guacamole.Tunnel.INTERNAL_DATA_OPCODE, 'ping', currentTime);
+        lastSentPing = currentTime;
+    };
+
+    /**
+     * Resets the state of timers tracking network activity and stability. If
+     * those timers are not yet started, invoking this function starts them.
+     * This function should be invoked when the tunnel is established and every
+     * time there is network activity on the tunnel, such that the timers can
+     * safely assume the network and/or server are not responding if this
+     * function has not been invoked for a significant period of time.
+     *
+     * @private
+     */
+    var resetTimers = function resetTimers() {
 
         // Get rid of old timeouts (if any)
         window.clearTimeout(receive_timeout);
         window.clearTimeout(unstableTimeout);
+        window.clearTimeout(pingTimeout);
 
         // Clear unstable status
         if (tunnel.state === Guacamole.Tunnel.State.UNSTABLE)
@@ -933,7 +966,17 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
             tunnel.setState(Guacamole.Tunnel.State.UNSTABLE);
         }, tunnel.unstableThreshold);
 
-    }
+        var currentTime = new Date().getTime();
+        var pingDelay = Math.max(lastSentPing + PING_FREQUENCY - currentTime, 0);
+
+        // Ping tunnel endpoint regularly to test connection stability, sending
+        // the ping immediately if enough time has already elapsed
+        if (pingDelay > 0)
+            pingTimeout = window.setTimeout(sendPing, pingDelay);
+        else
+            sendPing();
+
+    };
 
     /**
      * Closes this tunnel, signaling the given status and corresponding
@@ -949,9 +992,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         // Get rid of old timeouts (if any)
         window.clearTimeout(receive_timeout);
         window.clearTimeout(unstableTimeout);
-
-        // Cease connection test pings
-        window.clearInterval(pingInterval);
+        window.clearTimeout(pingTimeout);
 
         // Ignore if already closed
         if (tunnel.state === Guacamole.Tunnel.State.CLOSED)
@@ -1010,7 +1051,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
     this.connect = function(data) {
 
-        reset_timeout();
+        resetTimers();
 
         // Mark the tunnel as connecting
         tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
@@ -1019,14 +1060,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
 
         socket.onopen = function(event) {
-            reset_timeout();
-
-            // Ping tunnel endpoint regularly to test connection stability
-            pingInterval = setInterval(function sendPing() {
-                tunnel.sendMessage(Guacamole.Tunnel.INTERNAL_DATA_OPCODE,
-                    "ping", new Date().getTime());
-            }, PING_FREQUENCY);
-
+            resetTimers();
         };
 
         socket.onclose = function(event) {
@@ -1048,7 +1082,7 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
         
         socket.onmessage = function(event) {
 
-            reset_timeout();
+            resetTimers();
 
             var message = event.data;
             var startIndex = 0;
