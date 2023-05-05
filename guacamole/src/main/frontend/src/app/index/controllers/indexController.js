@@ -23,6 +23,9 @@
 angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
 
+    // Required types
+    const Error = $injector.get('Error');
+
     // Required services
     const $document         = $injector.get('$document');
     const $location         = $injector.get('$location');
@@ -93,6 +96,11 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
      * @enum {string}
      */
     var ApplicationState = {
+
+        /**
+         * A non-interactive authentication attempt failed.
+         */
+        AUTOMATIC_LOGIN_REJECTED : 'automaticLoginRejected',
 
         /**
          * The application has fully loaded but is awaiting credentials from
@@ -221,6 +229,22 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     }, true);
 
     /**
+     * Sets the current overall state of the client side of the
+     * application to the given value. Possible values are defined by
+     * {@link ApplicationState}. The title and class associated with the
+     * current page are automatically reset to the standard values applicable
+     * to the application as a whole (rather than any specific page).
+     *
+     * @param {!string} state
+     *     The state to assign, as defined by {@link ApplicationState}.
+     */
+    const setApplicationState = function setApplicationState(state) {
+        $scope.applicationState = state;
+        $scope.page.title = 'APP.NAME';
+        $scope.page.bodyClassName = '';
+    };
+
+    /**
      * Navigates the user back to the root of the application (or reloads the
      * current route and controller if the user is already there), effectively
      * forcing reauthentication. If the user is not logged in, this will result
@@ -242,9 +266,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Display login screen if a whole new set of credentials is needed
     $scope.$on('guacInvalidCredentials', function loginInvalid(event, parameters, error) {
 
-        $scope.applicationState = ApplicationState.AWAITING_CREDENTIALS;
-        $scope.page.title = 'APP.NAME';
-        $scope.page.bodyClassName = '';
+        setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
         $scope.loginHelpText = null;
         $scope.acceptedCredentials = {};
@@ -255,9 +277,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Prompt for remaining credentials if provided credentials were not enough
     $scope.$on('guacInsufficientCredentials', function loginInsufficient(event, parameters, error) {
 
-        $scope.applicationState = ApplicationState.AWAITING_CREDENTIALS;
-        $scope.page.title = 'APP.NAME';
-        $scope.page.bodyClassName = '';
+        setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
         $scope.loginHelpText = error.translatableMessage;
         $scope.acceptedCredentials = parameters;
@@ -265,16 +285,27 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
 
     });
 
+    // Alert user to authentication errors that occur in the absence of an
+    // interactive login form
+    $scope.$on('guacLoginFailed', function loginFailed(event, parameters, error) {
+
+        // All errors related to an interactive login form are handled elsewhere
+        if ($scope.applicationState === ApplicationState.AWAITING_CREDENTIALS
+                || error.type === Error.Type.INSUFFICIENT_CREDENTIALS
+                || error.type === Error.Type.INVALID_CREDENTIALS)
+            return;
+
+        setApplicationState(ApplicationState.AUTOMATIC_LOGIN_REJECTED);
+        $scope.reAuthenticating = false;
+        $scope.fatalError = error;
+
+    });
+
     // Replace absolutely all content with an error message if the page itself
     // cannot be displayed due to an error
     $scope.$on('guacFatalPageError', function fatalPageError(error) {
-
-        $scope.applicationState = ApplicationState.FATAL_ERROR;
-        $scope.page.title = 'APP.NAME';
-        $scope.page.bodyClassName = '';
-
+        setApplicationState(ApplicationState.FATAL_ERROR);
         $scope.fatalError = error;
-
     });
 
     // Replace the overall user interface with an informational message if the
