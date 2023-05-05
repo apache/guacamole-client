@@ -86,6 +86,29 @@ Guacamole.Parser = function Parser() {
     var elementCodepoints = 0;
 
     /**
+     * The number of parsed characters that must accumulate in the begining of
+     * the parse buffer before processing time is expended to truncate that
+     * buffer and conserve memory.
+     *
+     * @private
+     * @constant
+     * @type {!number}
+     */
+    var BUFFER_TRUNCATION_THRESHOLD = 4096;
+
+    /**
+     * The lowest Unicode codepoint to require a surrogate pair when encoded
+     * with UTF-16. In UTF-16, characters with codepoints at or above this
+     * value are represented with a surrogate pair, while characters with
+     * codepoints below this value are represented with a single character.
+     *
+     * @private
+     * @constant
+     * @type {!number}
+     */
+    var MIN_CODEPOINT_REQUIRES_SURROGATE = 0x10000;
+
+    /**
      * Appends the given instruction data packet to the internal buffer of
      * this Guacamole.Parser, executing all completed instructions at
      * the beginning of this buffer, if any.
@@ -109,7 +132,7 @@ Guacamole.Parser = function Parser() {
         else {
 
             // Truncate buffer as necessary
-            if (startIndex > 4096 && elementEnd >= startIndex) {
+            if (startIndex > BUFFER_TRUNCATION_THRESHOLD && elementEnd >= startIndex) {
 
                 buffer = buffer.substring(startIndex);
 
@@ -157,7 +180,7 @@ Guacamole.Parser = function Parser() {
                 // a high and low surrogate, elementEnd points to the low
                 // surrogate and NOT the element terminator. We must shift the
                 // end and reevaluate.
-                else if (elementCodepoints && buffer.codePointAt(elementEnd - 1) >= 0x10000) {
+                else if (elementCodepoints && buffer.codePointAt(elementEnd - 1) >= MIN_CODEPOINT_REQUIRES_SURROGATE) {
                     elementEnd++;
                     continue;
                 }
