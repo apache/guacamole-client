@@ -164,7 +164,7 @@ Guacamole.Parser = function Parser() {
 
                 // We now have enough data for the element. Parse.
                 var element = buffer.substring(startIndex, elementEnd);
-                var terminator = buffer.substring(elementEnd, elementEnd+1);
+                var terminator = buffer.substring(elementEnd, elementEnd + 1);
 
                 // Add element to array
                 elementBuffer.push(element);
@@ -205,7 +205,7 @@ Guacamole.Parser = function Parser() {
             if (lengthEnd !== -1) {
 
                 // Parse length
-                elementCodepoints = parseInt(buffer.substring(elementEnd+1, lengthEnd));
+                elementCodepoints = parseInt(buffer.substring(elementEnd + 1, lengthEnd));
                 if (isNaN(elementCodepoints))
                     throw new Error('Non-numeric character in element length.');
 
