@@ -268,9 +268,20 @@ Guacamole.Parser = function Parser() {
  *     given string.
  */
 Guacamole.Parser.codePointCount = function codePointCount(str, start, end) {
+
+    // Count only characters within the specified region
     str = str.substring(start || 0, end);
+
+    // Locate each proper Unicode surrogate pair (one high surrogate followed
+    // by one low surrogate)
     var surrogatePairs = str.match(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g);
+
+    // Each surrogate pair represents a single codepoint but is represented by
+    // two characters in a JavaScript string, and thus is counted twice toward
+    // string length. Subtracting the number of surrogate pairs adjusts that
+    // length value such that it gives us the number of codepoints.
     return str.length - (surrogatePairs ? surrogatePairs.length : 0);
+
 };
 
 /**
