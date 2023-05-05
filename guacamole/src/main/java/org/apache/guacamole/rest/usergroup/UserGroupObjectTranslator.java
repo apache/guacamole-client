@@ -57,7 +57,7 @@ public class UserGroupObjectTranslator
             throws GuacamoleException {
 
         // Filter object attributes by defined schema
-        object.setAttributes(filterAttributes(userContext.getUserAttributes(),
+        object.setAttributes(filterAttributes(userContext.getUserGroupAttributes(),
                 object.getAttributes()));
 
     }
