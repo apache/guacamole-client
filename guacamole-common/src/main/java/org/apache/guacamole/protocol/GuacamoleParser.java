@@ -21,7 +21,6 @@ package org.apache.guacamole.protocol;
 
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
@@ -87,9 +86,17 @@ public class GuacamoleParser implements Iterator<GuacamoleInstruction> {
     private State state = State.PARSING_LENGTH;
 
     /**
-     * The length of the current element, if known.
+     * The length of the current element, if known, in Java characters. This
+     * value may be adjusted as an element is parsed to take surrogates into
+     * account.
      */
     private int elementLength = 0;
+
+    /**
+     * The length of the current element, if known, in Unicode codepoints. This
+     * value will NOT change as an element is parsed.
+     */
+    private int elementCodepoints;
 
     /**
      * The number of elements currently parsed.
@@ -104,13 +111,22 @@ public class GuacamoleParser implements Iterator<GuacamoleInstruction> {
     /**
      * Appends data from the given buffer to the current instruction.
      * 
-     * @param chunk The buffer containing the data to append.
-     * @param offset The offset within the buffer where the data begins.
-     * @param length The length of the data to append.
-     * @return The number of characters appended, or 0 if complete instructions
-     *         have already been parsed and must be read via next() before
-     *         more data can be appended.
-     * @throws GuacamoleException If an error occurs while parsing the new data.
+     * @param chunk
+     *     The buffer containing the data to append.
+     *
+     * @param offset
+     *     The offset within the buffer where the data begins.
+     *
+     * @param length
+     *     The length of the data to append.
+     *
+     * @return
+     *     The number of characters appended, or 0 if complete instructions
+     *     have already been parsed and must be read via next() before more
+     *     data can be appended.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the new data.
      */
     public int append(char chunk[], int offset, int length) throws GuacamoleException {
 
@@ -156,39 +172,63 @@ public class GuacamoleParser implements Iterator<GuacamoleInstruction> {
             }
 
             // Save length
-            elementLength = parsedLength;
+            elementCodepoints = elementLength = parsedLength;
 
         } // end parse length
 
         // Parse element content, if available
-        if (state == State.PARSING_CONTENT && charsParsed + elementLength + 1 <= length) {
+        while (state == State.PARSING_CONTENT && charsParsed + elementLength + 1 <= length) {
 
-            // Read element
+            // Read element (which may not match element length if surrogate
+            // characters are present)
             String element = new String(chunk, offset + charsParsed, elementLength);
+
+            // Verify element contains the number of whole Unicode characters
+            // expected, scheduling a future read if we don't yet have enough
+            // characters
+            int codepoints = element.codePointCount(0, element.length());
+            if (codepoints < elementCodepoints) {
+                elementLength += elementCodepoints - codepoints;
+                continue;
+            }
+
+            // If the current element ends with a character involving both
+            // a high and low surrogate, elementLength points to the low
+            // surrogate and NOT the element terminator. We must correct the
+            // length and reevaluate.
+            else if (Character.isSurrogatePair(chunk[offset + charsParsed + elementLength - 1],
+                    chunk[offset + charsParsed + elementLength])) {
+                elementLength++;
+                continue;
+            }
+
             charsParsed += elementLength;
             elementLength = 0;
 
-            // Read terminator char following element
-            char terminator = chunk[offset + charsParsed++];
-
             // Add element to currently parsed elements
             elements[elementCount++] = element;
-            
-            // If semicolon, store end-of-instruction
-            if (terminator == ';') {
-                state = State.COMPLETE;
-                parsedInstruction = new GuacamoleInstruction(elements[0],
-                        Arrays.asList(elements).subList(1, elementCount));
-            }
 
-            // If comma, move on to next element
-            else if (terminator == ',')
-                state = State.PARSING_LENGTH;
+            // Read terminator char following element
+            char terminator = chunk[offset + charsParsed++];
+            switch (terminator) {
 
-            // Otherwise, parse error
-            else {
-                state = State.ERROR;
-                throw new GuacamoleServerException("Element terminator of instruction was not ';' nor ','");
+                // If semicolon, store end-of-instruction
+                case ';':
+                    state = State.COMPLETE;
+                    parsedInstruction = new GuacamoleInstruction(elements[0],
+                            Arrays.asList(elements).subList(1, elementCount));
+                    break;
+
+                // If comma, move on to next element
+                case ',':
+                    state = State.PARSING_LENGTH;
+                    break;
+
+                // Otherwise, parse error
+                default:
+                    state = State.ERROR;
+                    throw new GuacamoleServerException("Element terminator of instruction was not ';' nor ','");
+
             }
 
         } // end parse content

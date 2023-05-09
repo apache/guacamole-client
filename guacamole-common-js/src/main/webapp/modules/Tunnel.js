@@ -436,37 +436,11 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
             return;
 
         // Do not attempt to send empty messages
-        if (arguments.length === 0)
+        if (!arguments.length)
             return;
 
-        /**
-         * Converts the given value to a length/string pair for use as an
-         * element in a Guacamole instruction.
-         * 
-         * @private
-         * @param value
-         *     The value to convert.
-         *
-         * @return {!string}
-         *     The converted value.
-         */
-        function getElement(value) {
-            var string = new String(value);
-            return string.length + "." + string; 
-        }
-
-        // Initialized message with first element
-        var message = getElement(arguments[0]);
-
-        // Append remaining elements
-        for (var i=1; i<arguments.length; i++)
-            message += "," + getElement(arguments[i]);
-
-        // Final terminator
-        message += ";";
-
         // Add message to buffer
-        outputMessageBuffer += message;
+        outputMessageBuffer += Guacamole.Parser.toInstruction(arguments);
 
         // Send if not currently sending
         if (!sendingMessages)
@@ -546,14 +520,36 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
 
         var dataUpdateEvents = 0;
 
-        // The location of the last element's terminator
-        var elementEnd = -1;
+        var parser = new Guacamole.Parser();
+        parser.oninstruction = function instructionReceived(opcode, args) {
 
-        // Where to start the next length search or the next element
-        var startIndex = 0;
+            // Switch to next request if end-of-stream is signalled
+            if (opcode === Guacamole.Tunnel.INTERNAL_DATA_OPCODE && args.length === 0) {
 
-        // Parsed elements
-        var elements = new Array();
+                // Reset parser state by simply switching to an entirely new
+                // parser
+                parser = new Guacamole.Parser();
+                parser.oninstruction = instructionReceived;
+
+                // Clean up interval if polling
+                if (interval)
+                    clearInterval(interval);
+
+                // Clean up object
+                xmlhttprequest.onreadystatechange = null;
+                xmlhttprequest.abort();
+
+                // Start handling next request
+                if (nextRequest)
+                    handleResponse(nextRequest);
+
+            }
+
+            // Call instruction handler.
+            else if (opcode !== Guacamole.Tunnel.INTERNAL_DATA_OPCODE && tunnel.oninstruction)
+                tunnel.oninstruction(opcode, args);
+
+        };
 
         function parseResponse() {
 
@@ -614,83 +610,13 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
                 // Do not attempt to parse if data could not be read
                 catch (e) { return; }
 
-                // While search is within currently received data
-                while (elementEnd < current.length) {
-
-                    // If we are waiting for element data
-                    if (elementEnd >= startIndex) {
-
-                        // We now have enough data for the element. Parse.
-                        var element = current.substring(startIndex, elementEnd);
-                        var terminator = current.substring(elementEnd, elementEnd+1);
-
-                        // Add element to array
-                        elements.push(element);
-
-                        // If last element, handle instruction
-                        if (terminator === ";") {
-
-                            // Get opcode
-                            var opcode = elements.shift();
-
-                            // Call instruction handler.
-                            if (tunnel.oninstruction)
-                                tunnel.oninstruction(opcode, elements);
-
-                            // Clear elements
-                            elements.length = 0;
-
-                        }
-
-                        // Start searching for length at character after
-                        // element terminator
-                        startIndex = elementEnd + 1;
-
-                    }
-
-                    // Search for end of length
-                    var lengthEnd = current.indexOf(".", startIndex);
-                    if (lengthEnd !== -1) {
-
-                        // Parse length
-                        var length = parseInt(current.substring(elementEnd+1, lengthEnd));
-
-                        // If we're done parsing, handle the next response.
-                        if (length === 0) {
-
-                            // Clean up interval if polling
-                            if (interval)
-                                clearInterval(interval);
-                           
-                            // Clean up object
-                            xmlhttprequest.onreadystatechange = null;
-                            xmlhttprequest.abort();
-
-                            // Start handling next request
-                            if (nextRequest)
-                                handleResponse(nextRequest);
-
-                            // Done parsing
-                            break;
-
-                        }
-
-                        // Calculate start of element
-                        startIndex = lengthEnd + 1;
-
-                        // Calculate location of element terminator
-                        elementEnd = startIndex + length;
-
-                    }
-                    
-                    // If no period yet, continue search when more data
-                    // is received
-                    else {
-                        startIndex = current.length;
-                        break;
-                    }
-
-                } // end parse loop
+                try {
+                    parser.receive(current, true);
+                }
+                catch (e) {
+                    close_tunnel(new Guacamole.Status(Guacamole.Status.Code.SERVER_ERROR, e.message));
+                    return;
+                }
 
             }
 
@@ -822,6 +748,16 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
      * @type {Guacamole.WebSocketTunnel}
      */
     var tunnel = this;
+
+    /**
+     * The parser that this tunnel will use to parse received Guacamole
+     * instructions. The parser is created when the tunnel is (re-)connected.
+     * Initially, this will be null.
+     *
+     * @private
+     * @type {Guacamole.Parser}
+     */
+    var parser = null;
 
     /**
      * The WebSocket used by this tunnel.
@@ -1016,36 +952,10 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
             return;
 
         // Do not attempt to send empty messages
-        if (arguments.length === 0)
+        if (!arguments.length)
             return;
 
-        /**
-         * Converts the given value to a length/string pair for use as an
-         * element in a Guacamole instruction.
-         * 
-         * @private
-         * @param {*} value
-         *     The value to convert.
-         *
-         * @return {!string}
-         *     The converted value.
-         */
-        function getElement(value) {
-            var string = new String(value);
-            return string.length + "." + string; 
-        }
-
-        // Initialized message with first element
-        var message = getElement(arguments[0]);
-
-        // Append remaining elements
-        for (var i=1; i<arguments.length; i++)
-            message += "," + getElement(arguments[i]);
-
-        // Final terminator
-        message += ";";
-
-        socket.send(message);
+        socket.send(Guacamole.Parser.toInstruction(arguments));
 
     };
 
@@ -1055,6 +965,27 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
         // Mark the tunnel as connecting
         tunnel.setState(Guacamole.Tunnel.State.CONNECTING);
+
+        parser = new Guacamole.Parser();
+        parser.oninstruction = function instructionReceived(opcode, args) {
+
+            // Update state and UUID when first instruction received
+            if (tunnel.uuid === null) {
+
+                // Associate tunnel UUID if received
+                if (opcode === Guacamole.Tunnel.INTERNAL_DATA_OPCODE && args.length === 1)
+                    tunnel.setUUID(args[0]);
+
+                // Tunnel is now open and UUID is available
+                tunnel.setState(Guacamole.Tunnel.State.OPEN);
+
+            }
+
+            // Call instruction handler.
+            if (opcode !== Guacamole.Tunnel.INTERNAL_DATA_OPCODE && tunnel.oninstruction)
+                tunnel.oninstruction(opcode, args);
+
+        };
 
         // Connect socket
         socket = new WebSocket(tunnelURL + "?" + data, "guacamole");
@@ -1084,72 +1015,12 @@ Guacamole.WebSocketTunnel = function(tunnelURL) {
 
             resetTimers();
 
-            var message = event.data;
-            var startIndex = 0;
-            var elementEnd;
-
-            var elements = [];
-
-            do {
-
-                // Search for end of length
-                var lengthEnd = message.indexOf(".", startIndex);
-                if (lengthEnd !== -1) {
-
-                    // Parse length
-                    var length = parseInt(message.substring(elementEnd+1, lengthEnd));
-
-                    // Calculate start of element
-                    startIndex = lengthEnd + 1;
-
-                    // Calculate location of element terminator
-                    elementEnd = startIndex + length;
-
-                }
-                
-                // If no period, incomplete instruction.
-                else
-                    close_tunnel(new Guacamole.Status(Guacamole.Status.Code.SERVER_ERROR, "Incomplete instruction."));
-
-                // We now have enough data for the element. Parse.
-                var element = message.substring(startIndex, elementEnd);
-                var terminator = message.substring(elementEnd, elementEnd+1);
-
-                // Add element to array
-                elements.push(element);
-
-                // If last element, handle instruction
-                if (terminator === ";") {
-
-                    // Get opcode
-                    var opcode = elements.shift();
-
-                    // Update state and UUID when first instruction received
-                    if (tunnel.uuid === null) {
-
-                        // Associate tunnel UUID if received
-                        if (opcode === Guacamole.Tunnel.INTERNAL_DATA_OPCODE && elements.length === 1)
-                            tunnel.setUUID(elements[0]);
-
-                        // Tunnel is now open and UUID is available
-                        tunnel.setState(Guacamole.Tunnel.State.OPEN);
-
-                    }
-
-                    // Call instruction handler.
-                    if (opcode !== Guacamole.Tunnel.INTERNAL_DATA_OPCODE && tunnel.oninstruction)
-                        tunnel.oninstruction(opcode, elements);
-
-                    // Clear elements
-                    elements.length = 0;
-
-                }
-
-                // Start searching for length at character after
-                // element terminator
-                startIndex = elementEnd + 1;
-
-            } while (startIndex < message.length);
+            try {
+                parser.receive(event.data);
+            }
+            catch (e) {
+                close_tunnel(new Guacamole.Status(Guacamole.Status.Code.SERVER_ERROR, e.message));
+            }
 
         };
 
