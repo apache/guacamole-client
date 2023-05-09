@@ -27,11 +27,29 @@
 const CSV_MIME_TYPE = 'text/csv';
 
 /**
+ * A fallback regular expression for CSV filenames, if no MIME type is provided
+ * by the browser. Any file that matches this regex will be considered to be a
+ * CSV file.
+ *
+ * @type RegExp
+ */
+const CSV_FILENAME_REGEX = /\.csv$/i;
+
+/**
  * The allowed MIME type for JSON files.
  *
  * @type String
  */
 const JSON_MIME_TYPE = 'application/json';
+
+/**
+ * A fallback regular expression for JSON filenames, if no MIME type is provided
+ * by the browser. Any file that matches this regex will be considered to be a
+ * JSON file.
+ *
+ * @type RegExp
+ */
+const JSON_FILENAME_REGEX = /\.json$/i;
 
 /**
  * The allowed MIME types for YAML files.
@@ -49,6 +67,15 @@ const YAML_MIME_TYPES = [
     'application/yaml',
     'application/yml'
 ];
+
+/**
+ * A fallback regular expression for YAML filenames, if no MIME type is provided
+ * by the browser. Any file that matches this regex will be considered to be a
+ * YAML file.
+ *
+ * @type RegExp
+ */
+const YAML_FILENAME_REGEX = /\.ya?ml$/i;
 
 /**
  * Possible signatures for zip files (which include most modern Microsoft office
@@ -564,12 +591,46 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // There should only ever be a single file in the array
         const file = files[0];
 
-        // The MIME type of the provided file
-        const mimeType = file.type;
+        // The name and MIME type of the file as provided by the browser
+        let fileName = file.name;
+        let mimeType = file.type;
+
+        // If no MIME type was provided by the browser at all, use REGEXes as a
+        // fallback to try to determine the file type. NOTE: Windows 10/11 are
+        // known to do this with YAML files.
+        if (!_.trim(mimeType).length) {
+
+            // If the file name matches what we'd expect for a CSV file, set the
+            // CSV MIME type and move on
+            if (CSV_FILENAME_REGEX.test(fileName))
+                mimeType = CSV_MIME_TYPE;
+
+            // If the file name matches what we'd expect for a JSON file, set
+            // the JSON MIME type and move on
+            else if (JSON_FILENAME_REGEX.test(fileName))
+                mimeType = JSON_MIME_TYPE;
+
+            // If the file name matches what we'd expect for a JSON file, set
+            // one of the allowed YAML MIME types and move on
+            else if (YAML_FILENAME_REGEX.test(fileName))
+                mimeType = YAML_MIME_TYPES[0];
+
+            else {
+
+                // If none of the REGEXes pass, there's nothing more to be tried
+                handleError(new ParseError({
+                    message: "Unknown type for file: " + fileName,
+                    key: 'IMPORT.ERROR_DETECTED_INVALID_TYPE'
+                }));
+                return;
+                
+            }
+
+        }
 
         // Check if the mimetype is one of the supported types,
         // e.g. "application/json" or "text/csv"
-        if (LEGAL_MIME_TYPES.indexOf(mimeType) < 0) {
+        else if (LEGAL_MIME_TYPES.indexOf(mimeType) < 0) {
 
             // If the provided file is not one of the supported types,
             // display an error and abort processing
@@ -582,16 +643,15 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
             
         }
 
-        $scope.fileName = file.name;
+        // Save the name and type to the scope
+        $scope.fileName = fileName;
+        $scope.mimeType = mimeType;
 
         // Initialize upload state
         $scope.aborted = false;
         $scope.dataReady = false;
         $scope.processing = false;
         $scope.uploadStarted = true;
-
-        // Save the MIME type to the scope
-        $scope.mimeType = file.type;
 
         // Save the file to the scope when ready
         $scope.fileReader = new FileReader();

@@ -477,9 +477,17 @@ angular.module('import').factory('connectionParseService',
 
             _.forEach(connection.parameters, (value, name) => {
 
+                // An explicit null value for a parameter is valid - do not
+                // process it further
+                if (value === null)
+                    return;
+
+                // All non-null connection parameters must be strings.
+                const stringValue = String(value);
+
                 // Convert the provided value to the format that would match
                 // the lookup object format
-                const comparisonValue = value.toLowerCase().trim();
+                const comparisonValue = stringValue.toLowerCase().trim();
 
                 // The validated / corrected option value for this connection
                 // parameter, if any
@@ -490,6 +498,22 @@ angular.module('import').factory('connectionParseService',
                 // use the valid option value instead
                 if (validOptionValue)
                     connection.parameters[name] = validOptionValue;
+
+                // Even if no option is found, the value must be a string
+                else
+                    connection.parameters[name] = stringValue;
+
+            });
+
+            _.forEach(connection.attributes, (value, name) => {
+
+                // An explicit null value for an attribute is valid - do not
+                // process it further
+                if (value === null)
+                    return;
+
+                // All non-null connection attributes must be strings
+                connection.attributes[name] = String(value);
 
             });
 
