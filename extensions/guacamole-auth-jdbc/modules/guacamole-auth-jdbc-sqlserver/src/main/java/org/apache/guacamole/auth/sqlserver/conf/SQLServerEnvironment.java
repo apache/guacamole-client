@@ -295,4 +295,21 @@ public class SQLServerEnvironment extends JDBCEnvironment {
                 true);
     }
 
+    /**
+     * Returns true if all server certificates should be trusted, including
+     * those signed by an unknown certificate authority, such as self-signed
+     * certificates, or false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value, or if the
+     *     value was not set, as this property is required.
+     */
+    public boolean trustAllServerCertificates() throws GuacamoleException {
+
+        // Do not trust unknown certificates unless explicitly enabled
+        return getProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_TRUST_ALL_SERVER_CERTIFICATES,
+                false);
+    }
+
 }

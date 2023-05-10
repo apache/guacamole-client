@@ -245,4 +245,17 @@ public class SQLServerGuacamoleProperties {
 
     };
 
+    /**
+     * Whether or not all server certificates should be trusted, including those
+     * signed by an unknown certificate authority, such as self-signed
+     * certificates.
+     */
+    public static final BooleanGuacamoleProperty SQLSERVER_TRUST_ALL_SERVER_CERTIFICATES =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-trust-all-server-certificates"; }
+
+    };
+
 }
