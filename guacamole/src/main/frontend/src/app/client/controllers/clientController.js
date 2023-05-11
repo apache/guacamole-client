@@ -448,8 +448,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.$watch('menu.inputMethod', function setInputMethod(inputMethod) {
 
         // Show input methods only if selected
-        $scope.showOSK       = (inputMethod === 'osk');
-        $scope.showTextInput = (inputMethod === 'text');
+        // $scope.showOSK       = (inputMethod === 'osk');
+        // $scope.showTextInput = (inputMethod === 'text');
+
+        // テキストインプットモードを常に表示させるためにtrueで固定する
+        $scope.showTextInput = true;
 
     });
 
