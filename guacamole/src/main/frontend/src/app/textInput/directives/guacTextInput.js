@@ -149,6 +149,8 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
             }, false);
 
             target.addEventListener("compositionend", function targetComposeEnd(e) {
+                sendString(target.value);
+                resetTextInputTarget(TEXT_INPUT_PADDING);
                 composingText = false;
             }, false);
 
