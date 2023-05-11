@@ -72,6 +72,12 @@ ARG GID=1001
 RUN groupadd --gid $GID guacamole
 RUN useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $GID guacamole
 
+RUN apt-get update                                                                                                                                                                                                                                                     
+RUN apt install sudo
+RUN echo 'guacamole ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+  
+RUN apt-get -y install python3
+
 # Run with user guacamole
 USER guacamole
 
