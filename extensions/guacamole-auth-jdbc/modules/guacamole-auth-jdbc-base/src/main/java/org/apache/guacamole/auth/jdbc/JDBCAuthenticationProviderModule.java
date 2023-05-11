@@ -127,10 +127,11 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         // Transaction factory
         bindTransactionFactoryType(JdbcTransactionFactory.class);
         
-        // Set the JDBC Auth provider to use batch execution when possible
-        bindConfigurationSetting(configuration -> {
-            configuration.setDefaultExecutorType(ExecutorType.BATCH);
-        });
+        // Set the JDBC Auth provider to use batch execution if enabled
+        if (environment.shouldUseBatchExecutor())
+            bindConfigurationSetting(configuration -> {
+                configuration.setDefaultExecutorType(ExecutorType.BATCH);
+            });
 
         // Add MyBatis mappers
         addMapperClass(ConnectionMapper.class);

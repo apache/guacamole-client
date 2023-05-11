@@ -295,4 +295,36 @@ public class SQLServerEnvironment extends JDBCEnvironment {
                 true);
     }
 
+    @Override
+    public boolean shouldUseBatchExecutor() {
+
+        // The SQL Server driver does not work when batch execution is enabled.
+        // Specifically, inserts fail with com.microsoft.sqlserver.jdbc.SQLServerException:
+        // The statement must be executed before any results can be obtained.
+        // See https://github.com/microsoft/mssql-jdbc/issues/358 for more.
+        logger.warn(
+                "JDBC batch executor is disabled for SQL Server Connections. "
+                + "Large batched updates may run slower."
+        );
+        return false;
+        
+    }
+
+    /**
+     * Returns true if all server certificates should be trusted, including
+     * those signed by an unknown certificate authority, such as self-signed
+     * certificates, or false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value, or if the
+     *     value was not set, as this property is required.
+     */
+    public boolean trustAllServerCertificates() throws GuacamoleException {
+
+        // Do not trust unknown certificates unless explicitly enabled
+        return getProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_TRUST_ALL_SERVER_CERTIFICATES,
+                false);
+    }
+
 }
