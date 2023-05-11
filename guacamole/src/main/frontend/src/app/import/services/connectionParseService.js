@@ -456,20 +456,36 @@ angular.module('import').factory('connectionParseService',
 
             // Ensure that the specified user list, if any, is an array
             const users = connection.users;
-            if (users && !Array.isArray(users))
-                connection.errors.push(new ParseError({
-                    message: 'Invalid users list - must be an array',
-                    key: 'IMPORT.ERROR_INVALID_USERS_TYPE'
-                }));
+            if (users) {
 
-            // Ensure that the specified user list, if any, is an array
+                // Ensure all users in the array are trimmed strings
+                if (Array.isArray(users))
+                    connection.users = users.map(user => String(user).trim());
+
+                else
+                    connection.errors.push(new ParseError({
+                        message: 'Invalid users list - must be an array',
+                        key: 'IMPORT.ERROR_INVALID_USERS_TYPE'
+                    }));
+
+            }
+
+            // Ensure that the specified user group list, if any, is an array
             const groups = connection.groups;
-            if (groups && !Array.isArray(groups))
-                connection.errors.push(new ParseError({
-                    message: 'Invalid groups list - must be an array',
-                    key: 'IMPORT.ERROR_INVALID_USER_GROUPS_TYPE'
-                }));
+            if (groups) {
 
+                // Ensure all groups in the array are trimmed strings
+                if (Array.isArray(groups))
+                    connection.groups = groups.map(group => String(group).trim());
+
+                else
+                    connection.errors.push(new ParseError({
+                        message: 'Invalid groups list - must be an array',
+                        key: 'IMPORT.ERROR_INVALID_USER_GROUPS_TYPE'
+                    }));
+                
+            }
+            
             // If the protocol is not valid, there's no point in trying to check
             // parameter case sensitivity
             if (!protocols[protocol])
