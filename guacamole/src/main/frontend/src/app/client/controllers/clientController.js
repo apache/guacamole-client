@@ -93,6 +93,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     var DEL_KEY = 0xFFFF;
 
+
+    var LEFT_SHIFT_KEYS  = {0xFFE1: true};
+    var RIGHT_SHIFT_KEYS = {0xFFE2: true};
+
     /**
      * Menu-specific properties.
      */
@@ -414,6 +418,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
+    // 左右のSHIFTキーを同時に押した時に「true」が返される
+    const isChangeTextInputModeShortcutPressed = function isChangeTextInputModeShortcutPressed(keyboard) {
+
+        return !!(
+                _.findKey(LEFT_SHIFT_KEYS,  (val, keysym) => keyboard.pressed[keysym])
+             && _.findKey(RIGHT_SHIFT_KEYS, (val, keysym) => keyboard.pressed[keysym])
+        );
+
+    };
+
     // Show menu if the user swipes from the left, hide menu when the user
     // swipes from the right, scroll menu while visible
     $scope.menuDrag = function menuDrag(inProgress, startX, startY, currentX, currentY, deltaX, deltaY) {
@@ -445,16 +459,13 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     // Show/hide UI elements depending on input method
-    $scope.$watch('menu.inputMethod', function setInputMethod(inputMethod) {
+    // $scope.$watch('menu.inputMethod', function setInputMethod(inputMethod) {
 
-        // Show input methods only if selected
-        // $scope.showOSK       = (inputMethod === 'osk');
-        // $scope.showTextInput = (inputMethod === 'text');
+    //     // Show input methods only if selected
+    //     $scope.showOSK       = (inputMethod === 'osk');
+    //     $scope.showTextInput = (inputMethod === 'text');
 
-        // テキストインプットモードを常に表示させるためにtrueで固定する
-        $scope.showTextInput = true;
-
-    });
+    // });
 
     // Update client state/behavior as visibility of the Guacamole menu changes
     $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
@@ -579,6 +590,30 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Prevent all keydown events while menu is open
         else if ($scope.menu.shown)
             event.preventDefault();
+
+    });
+
+    // Changing the text input mode after LEFT_SHIFT+RIGHT_SHIFT, preventing those
+    // keypresses from reaching any Guacamole client
+    $scope.$on('guacBeforeKeydown', function changeTextInputMode(event, keysym, keyboard) {
+
+        // Toggle text input mode if change text input mode shortcut (LEFT_SHIFT+RIGHT_SHIFT) is pressed
+        if (isChangeTextInputModeShortcutPressed(keyboard)) {
+        
+            // Don't send this key event through to the client, and release
+            // all other keys involved in performing this shortcut
+            event.preventDefault();
+            keyboard.reset();
+            
+            // Toggle the menu
+            $scope.$apply(function() {
+                $scope.showTextInput = !$scope.showTextInput;
+                setTimeout(() => {
+                    document.getElementById("text-input-area-autofocus-var").focus();
+                }, 50);
+            });
+
+        }
 
     });
 
