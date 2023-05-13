@@ -248,6 +248,13 @@
                     <groupId>com.github.buckelieg</groupId>
                     <artifactId>minify-maven-plugin</artifactId>
                     <version>2.0.1</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>org.codehaus.plexus</groupId>
+                            <artifactId>plexus-utils</artifactId>
+                            <version>3.5.1</version>
+                        </dependency>
+                    </dependencies>
                 </plugin>
 
                 <!-- Explicitly use latest versions of core plugins -->
