@@ -34,16 +34,16 @@ angular.module('client').directive('guacClientNotification', [function guacClien
 
         /**
          * The client whose status should be displayed.
-         * 
+         *
          * @type ManagedClient
          */
         client : '='
-        
+
     };
 
     directive.controller = ['$scope', '$injector', '$element',
         function guacClientNotificationController($scope, $injector, $element) {
-   
+
         // Required types
         const ManagedClient      = $injector.get('ManagedClient');
         const ManagedClientState = $injector.get('ManagedClientState');
@@ -53,6 +53,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
         const $location              = $injector.get('$location');
         const authenticationService  = $injector.get('authenticationService');
         const guacClientManager      = $injector.get('guacClientManager');
+        const guacTranslate          = $injector.get('guacTranslate');
         const requestService         = $injector.get('requestService');
         const userPageService        = $injector.get('userPageService');
 
@@ -64,26 +65,6 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * @type {Notification|Object|Boolean}
          */
         $scope.status = false;
-
-        /**
-         * All client error codes handled and passed off for translation. Any error
-         * code not present in this list will be represented by the "DEFAULT"
-         * translation.
-         */
-        const CLIENT_ERRORS = {
-            0x0201: true,
-            0x0202: true,
-            0x0203: true,
-            0x0207: true,
-            0x0208: true,
-            0x0209: true,
-            0x020A: true,
-            0x020B: true,
-            0x0301: true,
-            0x0303: true,
-            0x0308: true,
-            0x031D: true
-        };
 
         /**
          * All error codes for which automatic reconnection is appropriate when a
@@ -98,26 +79,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
             0x0301: true,
             0x0308: true
         };
-     
-        /**
-         * All tunnel error codes handled and passed off for translation. Any error
-         * code not present in this list will be represented by the "DEFAULT"
-         * translation.
-         */
-        const TUNNEL_ERRORS = {
-            0x0201: true,
-            0x0202: true,
-            0x0203: true,
-            0x0204: true,
-            0x0205: true,
-            0x0207: true,
-            0x0208: true,
-            0x0301: true,
-            0x0303: true,
-            0x0308: true,
-            0x031D: true
-        };
-     
+
         /**
          * All error codes for which automatic reconnection is appropriate when a
          * tunnel error occurs.
@@ -239,7 +201,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
             // Get any associated status code
             const status = $scope.client.clientState.statusCode;
 
-            // Connecting 
+            // Connecting
             if (connectionState === ManagedClientState.ConnectionState.CONNECTING
              || connectionState === ManagedClientState.ConnectionState.WAITING) {
                 $scope.status = {
@@ -254,44 +216,58 @@ angular.module('client').directive('guacClientNotification', [function guacClien
             // Client error
             else if (connectionState === ManagedClientState.ConnectionState.CLIENT_ERROR) {
 
-                // Determine translation name of error
-                const errorName = (status in CLIENT_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+                // Translation IDs for this error code
+                const errorPrefix = "CLIENT.ERROR_CLIENT_";
+                const errorId = errorPrefix + status.toString(16).toUpperCase();
+                const defaultErrorId = errorPrefix + "DEFAULT";
 
                 // Determine whether the reconnect countdown applies
                 const countdown = (status in CLIENT_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
-                // Show error status
-                notifyConnectionClosed({
-                    className : "error",
-                    title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-                    text      : {
-                        key : "CLIENT.ERROR_CLIENT_" + errorName
-                    },
-                    countdown : countdown,
-                    actions   : actions
-                });
+                // Use the guacTranslate service to determine if there is a translation for
+                // this error code; if not, use the default
+                guacTranslate(errorId, defaultErrorId).then(
+
+                    // Show error status
+                    translationResult => notifyConnectionClosed({
+                        className : "error",
+                        title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+                        text      : {
+                            key : translationResult.id
+                        },
+                        countdown : countdown,
+                        actions   : actions
+                    })
+                );
 
             }
 
             // Tunnel error
             else if (connectionState === ManagedClientState.ConnectionState.TUNNEL_ERROR) {
 
-                // Determine translation name of error
-                const errorName = (status in TUNNEL_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+                // Translation IDs for this error code
+                const errorPrefix = "CLIENT.ERROR_TUNNEL_";
+                const errorId = errorPrefix + status.toString(16).toUpperCase();
+                const defaultErrorId = errorPrefix + "DEFAULT";
 
                 // Determine whether the reconnect countdown applies
                 const countdown = (status in TUNNEL_AUTO_RECONNECT) ? RECONNECT_COUNTDOWN : null;
 
-                // Show error status
-                notifyConnectionClosed({
-                    className : "error",
-                    title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
-                    text      : {
-                        key : "CLIENT.ERROR_TUNNEL_" + errorName
-                    },
-                    countdown : countdown,
-                    actions   : actions
-                });
+                // Use the guacTranslate service to determine if there is a translation for
+                // this error code; if not, use the default
+                guacTranslate(errorId, defaultErrorId).then(
+
+                    // Show error status
+                    translationResult => notifyConnectionClosed({
+                        className : "error",
+                        title     : "CLIENT.DIALOG_HEADER_CONNECTION_ERROR",
+                        text      : {
+                            key : translationResult.id
+                        },
+                        countdown : countdown,
+                        actions   : actions
+                    })
+                );
 
             }
 

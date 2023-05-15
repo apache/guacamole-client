@@ -30,7 +30,7 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
 
             /**
              * The file transfer to display.
-             * 
+             *
              * @type ManagedFileUpload|ManagedFileDownload
              */
             transfer : '='
@@ -40,26 +40,11 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
         templateUrl: 'app/client/templates/guacFileTransfer.html',
         controller: ['$scope', '$injector', function guacFileTransferController($scope, $injector) {
 
+            // Required services
+            const guacTranslate = $injector.get('guacTranslate');
+
             // Required types
             var ManagedFileTransferState = $injector.get('ManagedFileTransferState');
-
-            /**
-             * All upload error codes handled and passed off for translation.
-             * Any error code not present in this list will be represented by
-             * the "DEFAULT" translation.
-             */
-            var UPLOAD_ERRORS = {
-                0x0100: true,
-                0x0201: true,
-                0x0202: true,
-                0x0203: true,
-                0x0204: true,
-                0x0205: true,
-                0x0301: true,
-                0x0303: true,
-                0x0308: true,
-                0x031D: true
-            };
 
             /**
              * Returns the unit string that is most appropriate for the
@@ -193,7 +178,7 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
                     return;
 
                 // Save file
-                saveAs($scope.transfer.blob, $scope.transfer.filename); 
+                saveAs($scope.transfer.blob, $scope.transfer.filename);
 
             };
 
@@ -210,23 +195,20 @@ angular.module('client').directive('guacFileTransfer', [function guacFileTransfe
                 return $scope.transfer.transferState.streamState === ManagedFileTransferState.StreamState.ERROR;
             };
 
-            /**
-             * Returns the text of the current error as a translation string.
-             *
-             * @returns {String}
-             *     The name of the translation string containing the text
-             *     associated with the current error.
-             */
-            $scope.getErrorText = function getErrorText() {
+            // The translated error message for the current status code
+            $scope.translatedErrorMessage = '';
+
+            $scope.$watch('transfer.transferState.statusCode', function statusCodeChanged(statusCode) {
 
                 // Determine translation name of error
-                var status = $scope.transfer.transferState.statusCode;
-                var errorName = (status in UPLOAD_ERRORS) ? status.toString(16).toUpperCase() : "DEFAULT";
+                const errorName = 'CLIENT.ERROR_UPLOAD_' + statusCode.toString(16).toUpperCase();
 
-                // Return translation string
-                return 'CLIENT.ERROR_UPLOAD_' + errorName;
+                // Use translation string, or the default if no translation is found for this error code
+                guacTranslate(errorName, 'CLIENT.ERROR_UPLOAD_DEFAULT').then(
+                    translationResult => $scope.translatedErrorMessage = translationResult.message
+                );
 
-            };
+            });
 
         }] // end file transfer controller
 
