@@ -463,6 +463,17 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // });
 
+    // メニューバーの「テキストインプット」をクリックして、テキストインプットモードを切り替えられるように修正
+    $scope.onclick = function () {
+
+        $scope.showTextInput = !$scope.showTextInput;
+        $scope.closeMenu();
+        setTimeout(() => {
+            document.getElementById("text-input-area-autofocus-var").focus();
+        }, 350);
+
+    };
+
     // Update client state/behavior as visibility of the Guacamole menu changes
     $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
 

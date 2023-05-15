@@ -133,23 +133,23 @@
                     <div class="content">
 
                         <!-- No IME -->
-                        <div class="choice">
+                        <!-- <div class="choice">
                             <label><input id="ime-none" name="input-method" ng-change="closeMenu()" ng-model="menu.inputMethod" type="radio" value="none"> {{'CLIENT.NAME_INPUT_METHOD_NONE' | translate}}</label>
                             <p class="caption"><label for="ime-none">{{'CLIENT.HELP_INPUT_METHOD_NONE' | translate}}</label></p>
-                        </div>
+                        </div> -->
 
                         <!-- Text input -->
                         <div class="choice">
                             <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.svg" alt=""></label></div>
-                            <label><input id="ime-text" name="input-method" ng-change="closeMenu()" ng-model="menu.inputMethod" type="radio" value="text"> {{'CLIENT.NAME_INPUT_METHOD_TEXT' | translate}}</label>
+                            <label><button id="ime-text" name="input-method" ng-change="onclick()" ng-model="menu.inputMethod" type="button" value="text"> {{'CLIENT.NAME_INPUT_METHOD_TEXT' | translate}}</button></label>
                             <p class="caption"><label for="ime-text">{{'CLIENT.HELP_INPUT_METHOD_TEXT' | translate}} </label></p>
                         </div>
 
                         <!-- Guac OSK -->
-                        <div class="choice">
+                        <!-- <div class="choice">
                             <label><input id="ime-osk" name="input-method" ng-change="closeMenu()" ng-model="menu.inputMethod" type="radio" value="osk"> {{'CLIENT.NAME_INPUT_METHOD_OSK' | translate}}</label>
                             <p class="caption"><label for="ime-osk">{{'CLIENT.HELP_INPUT_METHOD_OSK' | translate}}</label></p>
-                        </div>
+                        </div> -->
 
                     </div>
                 </div>
