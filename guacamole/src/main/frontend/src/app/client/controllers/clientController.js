@@ -93,10 +93,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     var DEL_KEY = 0xFFFF;
 
-
-    var LEFT_SHIFT_KEYS  = {0xFFE1: true};
-    var RIGHT_SHIFT_KEYS = {0xFFE2: true};
-
     /**
      * Menu-specific properties.
      */
@@ -418,12 +414,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     };
 
-    // 左右のSHIFTキーを同時に押した時に「true」が返される
+    // 「ALTキー」と「SHIFTキー」を同時に押した時に「true」が返される
     const isChangeTextInputModeShortcutPressed = function isChangeTextInputModeShortcutPressed(keyboard) {
 
         return !!(
-                _.findKey(LEFT_SHIFT_KEYS,  (val, keysym) => keyboard.pressed[keysym])
-             && _.findKey(RIGHT_SHIFT_KEYS, (val, keysym) => keyboard.pressed[keysym])
+                _.findKey(ALT_KEYS,   (val, keysym) => keyboard.pressed[keysym])
+             && _.findKey(SHIFT_KEYS, (val, keysym) => keyboard.pressed[keysym])
         );
 
     };
