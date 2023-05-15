@@ -606,7 +606,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
                 $scope.showTextInput = !$scope.showTextInput;
                 setTimeout(() => {
                     document.getElementById("text-input-area-autofocus-var").focus();
-                }, 50);
+                }, 350);
             });
 
         }
