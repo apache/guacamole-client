@@ -15,6 +15,7 @@
         "csv": "^6.2.5",
         "datalist-polyfill": "^1.25.1",
         "file-saver": "^2.0.5",
+        "fuzzysort": "^2.0.4",
         "jquery": "^3.6.4",
         "jstz": "^2.1.1",
         "lodash": "^4.17.21",

@@ -44,71 +44,72 @@
  * THE SOFTWARE.
  */
 
-.settings.connectionHistoryPlayer {
+.text-batches {
 
-    background: black;
-    color: white;
-
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    padding: 0;
-    margin: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
 
 }
 
-.settings.connectionHistoryPlayer guac-player {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
+.text-batches .text-batch {
+
+    margin-bottom: 1em;
+    margin-left: 0.5em;
+    cursor: pointer;
+
+}
+
+.text-batches .text-batch .timestamp {
+
+    white-space: pre-wrap;
+    color: blue;
+
+}
+
+.guac-player-text-container {
+
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    color: black;
 }
 
-.settings.connectionHistoryPlayer .guac-player-help-no-recording,
-.settings.connectionHistoryPlayer .guac-player-help-recording-error {
-    margin: 8px;
-    max-width: 480px;
+.guac-player-text-container .text-controls {
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
 }
 
-.settings.connectionHistoryPlayer .guac-player-button {
+.guac-player-text-container .text-controls .filter {
 
-    display: inline-block;
+    flex-grow: 5;
 
-    border: 2px solid white;
-    border-radius: 0;
-    background: black;
-    color: white;
+}
+
+.guac-player-text-container .text-controls .fullscreen-button {
+
+    background-image: url('images/fullscreen.svg');
+    background-size: contain;
+    cursor: pointer;
+    height: 22px;
+    width: 22px;
+    margin-right: 0.25em;
+
+}
+
+.guac-player-text-container .result-count {
+
     font-weight: bold;
-
-    padding: 0.5em 1em;
-    margin: 8px;
+    margin: 0.5em;
 
 }
 
-.settings.connectionHistoryPlayer .guac-player-controls {
-    padding: 0.25em;
-}
+.guac-player-text-container .filter {
 
-.settings.connectionHistoryPlayer .guac-player-controls {
-    background: rgba(0, 0, 0, 0.5);
-}
+    margin: 0.25em;
 
-.settings.connectionHistoryPlayer .guac-player-controls.playing {
-    opacity: 0;
-    -webkit-transition: opacity 0.25s linear 0.25s;
-    -moz-transition: opacity 0.25s linear 0.25s;
-    -o-transition: opacity 0.25s linear 0.25s;
-    transition: opacity 0.25s linear 0.25s;
-}
-
-.settings.connectionHistoryPlayer .guac-player-controls.paused,
-.settings.connectionHistoryPlayer .guac-player-controls.playing:hover {
-    opacity: 1;
-    -webkit-transition-delay: 0s;
-    -moz-transition-delay: 0s;
-    -o-transition-delay: 0s;
-    transition-delay: 0s;
 }
