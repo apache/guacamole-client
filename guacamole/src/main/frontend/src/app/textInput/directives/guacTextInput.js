@@ -149,6 +149,10 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
             }, false);
 
             target.addEventListener("compositionend", function targetComposeEnd(e) {
+                // 全角入力が確定した時点で、文字列がフォーカスした部分に送られて、テキストエリアの文字列が消去されるようにメソッドを追加
+                sendString(target.value);
+                resetTextInputTarget(TEXT_INPUT_PADDING);
+
                 composingText = false;
             }, false);
 
