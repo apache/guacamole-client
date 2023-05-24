@@ -398,8 +398,10 @@ Guacamole.SessionRecording = function SessionRecording(source) {
     };
 
     // Read instructions from provided blob, extracting each frame
-    if (source instanceof Blob)
+    if (source instanceof Blob) {
+        recordingBlob = source;
         parseBlob(recordingBlob, loadInstruction, notifyLoaded);
+    }
 
     // If tunnel provided instead of Blob, extract frames, etc. as instructions
     // are received, buffering things into a Blob for future seeks
