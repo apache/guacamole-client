@@ -472,7 +472,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             document.getElementById("text-input-area-autofocus-var").focus();
         }, 350);
 
-    };
+    }
 
     // Update client state/behavior as visibility of the Guacamole menu changes
     $scope.$watch('menu.shown', function menuVisibilityChanged(menuShown, menuShownPreviousState) {
@@ -600,11 +600,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
-    // Changing the text input mode after LEFT_SHIFT+RIGHT_SHIFT, preventing those
+    // Changing the text input mode after Alt+Shift, preventing those
     // keypresses from reaching any Guacamole client
     $scope.$on('guacBeforeKeydown', function changeTextInputMode(event, keysym, keyboard) {
 
-        // Toggle text input mode if change text input mode shortcut (LEFT_SHIFT+RIGHT_SHIFT) is pressed
+        // Toggle text input mode if change text input mode shortcut (Alt+Shift) is pressed
         if (isChangeTextInputModeShortcutPressed(keyboard)) {
         
             // Don't send this key event through to the client, and release
@@ -612,7 +612,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             event.preventDefault();
             keyboard.reset();
             
-            // Toggle the menu
+            // Toggle the text input mode
             $scope.$apply(function() {
                 $scope.showTextInput = !$scope.showTextInput;
                 setTimeout(() => {
