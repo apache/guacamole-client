@@ -4,6 +4,9 @@
 
     "APP" : {
 
+        "NAME"    : "Apache Guacamole",
+        "VERSION" : "${project.version}",
+
         "ACTION_ACKNOWLEDGE"        : "ОК",
         "ACTION_CANCEL"             : "Отмена",
         "ACTION_CLONE"              : "Клонировать",
