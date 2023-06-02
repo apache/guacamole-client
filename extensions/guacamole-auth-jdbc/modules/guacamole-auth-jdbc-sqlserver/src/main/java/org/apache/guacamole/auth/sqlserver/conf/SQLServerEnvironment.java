@@ -89,15 +89,17 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     public static final SQLServerDriver SQLSERVER_DEFAULT_DRIVER = SQLServerDriver.MICROSOFT_2005;
 
     /**
-     * The default maximum number of identifiers/parameters to be included in a 
+     * The default maximum number of identifiers/parameters to be included in a
      * single batch when executing SQL statements for SQL Server.
-     * 
+     *
      * SQL Server supports a maximum of 2100 parameters per query. A value of
-     * 1000 is chosen to stay within this limit and avoid query execution errors.
+     * 500 is chosen to stay within this limit and avoid query execution errors,
+     * as some queries involve multiple parameters per item - namely retrieval
+     * of connections.
      *
      * @see https://docs.microsoft.com/en-us/sql/sql-server/maximum-capacity-specifications-for-sql-server
      */
-    private static final int DEFAULT_BATCH_SIZE = 1000;
+    private static final int DEFAULT_BATCH_SIZE = 500;
     
     /**
      * Constructs a new SQLServerEnvironment, providing access to SQLServer-specific
