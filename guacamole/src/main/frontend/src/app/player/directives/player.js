@@ -97,6 +97,14 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         function guacPlayerController($scope) {
 
         /**
+         * The minimum number of milliseconds that should occur between updates
+         * to the progress indicator.
+         *
+         * @type {number}
+         */
+        const PROGRESS_REFRESH_INTERVAL = 1000;
+
+        /**
          * Guacamole.SessionRecording instance to be used to playback the
          * session recording given via $scope.src. If the recording has not
          * yet been loaded, this will be null.
@@ -303,7 +311,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
             // Otherwise, begin loading the provided recording
             else {
 
-                $scope.recording = new Guacamole.SessionRecording(src);
+                $scope.recording = new Guacamole.SessionRecording(
+                        src, PROGRESS_REFRESH_INTERVAL);
 
                 // Begin downloading the recording
                 $scope.recording.connect();
