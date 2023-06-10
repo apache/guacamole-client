@@ -43,14 +43,13 @@ public class TimeRestrictionParser {
      * <ul>
      * <li>1:0700-1700 - Monday from 07:00 to 17:00
      * <li>7:0000-2359 - Sunday, all day (00:00 to 23:59)
-     * <li>wd:0900-1700 - Monday through Friday, 09:00 to 17:00
-     * <li>we:0900-1700 - Saturday and Sunday, 09:00 to 17:00
+     * <li>*:0900-1700 - Every day, 09:00 to 17:00
      * <li>6:0900-1600;7:1200-1300 - Saturday, 09:00 to 16:00, and Sunday, 
      * 12:00 - 13:00
      * </ul>
      */
     private static final Pattern RESTRICTION_REGEX = 
-            Pattern.compile("(?:^|;)+([1-7*]|(?:[w][ed]))(?::((?:[01][0-9]|2[0-3])[0-5][0-9])\\-((?:[01][0-9]|2[0-3])[0-5][0-9]))+");
+            Pattern.compile("(?:^|;)+([1-7*])(?::((?:[01][0-9]|2[0-3])[0-5][0-9])\\-((?:[01][0-9]|2[0-3])[0-5][0-9]))+");
     
     /**
      * The RegEx group that contains the start day-of-week of the restriction.
@@ -66,25 +65,6 @@ public class TimeRestrictionParser {
      * The RegEx group that contains the end time of the restriction.
      */
     private static final int RESTRICTION_TIME_END_GROUP = 3;
-    
-    /**
-     * A list of DayOfWeek items that make up weekdays.
-     */
-    private static final List<DayOfWeek> RESTRICTION_WEEKDAYS = Arrays.asList(
-            DayOfWeek.MONDAY,
-            DayOfWeek.TUESDAY,
-            DayOfWeek.WEDNESDAY,
-            DayOfWeek.THURSDAY,
-            DayOfWeek.FRIDAY
-    );
-    
-    /**
-     * A list of DayOfWeek items that make up weekends.
-     */
-    private static final List<DayOfWeek> RESTRICTION_WEEKEND = Arrays.asList(
-            DayOfWeek.SATURDAY,
-            DayOfWeek.SUNDAY
-    );
     
     /**
      * A list of DayOfWeek items that make up all days of the week.
@@ -152,16 +132,6 @@ public class TimeRestrictionParser {
                 // All days of the week.
                 case "*":
                     restrictions.add(new DailyRestriction(RESTRICTION_ALL_DAYS, startTime, endTime));
-                    break;
-                    
-                // Weekdays only.
-                case "wd":
-                    restrictions.add(new DailyRestriction(RESTRICTION_WEEKDAYS, startTime, endTime));
-                    break;
-                
-                // Weekend days only.
-                case "we":
-                    restrictions.add(new DailyRestriction(RESTRICTION_WEEKEND, startTime, endTime));
                     break;
                     
                 // A specific day of the week.
