@@ -28,6 +28,9 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
     // Required types
     const TimeRestrictionEntry = $injector.get('TimeRestrictionEntry');
     
+    // Required services
+    const $log = $injector.get('$log');
+    
     /**
      * Options which dictate the behavior of the input field model, as defined
      * by https://docs.angularjs.org/api/ng/directive/ngModelOptions
@@ -64,9 +67,7 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
         { id : '5', day : 'Friday' },
         { id : '6', day : 'Saturday' },
         { id : '7', day : 'Sunday' },
-        { id : '*', day : 'All days' },
-        { id : 'wd', day: 'Week days' },
-        { id : 'we', day: 'Week end' }
+        { id : '*', day : 'All days' }
     ];
     
     /**
@@ -111,14 +112,18 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
      */
     const parseRestrictions = function parseRestrictions(restrString) {
         
+        // Array to store the restrictions
         var restrictions = [];
+        
+        // Grab the current date so that we can accurately parse DST later
+        var templateDate = new Date();
         
         // If the string is null or empty, just return an empty array
         if (restrString === null || restrString === "")
             return restrictions;
         
         // Set up the RegEx and split the string using the separator.
-        const restrictionRegex = new RegExp('^([1-7*]|(?:[w][ed]))(?::((?:[01][0-9]|2[0-3])[0-5][0-9])\-((?:[01][0-9]|2[0-3])[0-5][0-9]))$');
+        const restrictionRegex = new RegExp('^([1-7*])(?::((?:[01][0-9]|2[0-3])[0-5][0-9])\-((?:[01][0-9]|2[0-3])[0-5][0-9]))$');
         var restrArray = restrString.split(";");
 
         // Loop through split string and process each item
@@ -129,8 +134,8 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
                 var currArray = restrArray[i].match(restrictionRegex);
                 var entry = new TimeRestrictionEntry();
                 entry.weekDay = '' + currArray[1];
-                entry.startTime = new Date(Date.UTC(1970, 1, 1, parseInt(currArray[2].slice(0,2)), parseInt(currArray[2].slice(2)), 0, 0));
-                entry.endTime = new Date(Date.UTC(1970, 1, 1, parseInt(currArray[3].slice(0,2)), parseInt(currArray[3].slice(2)), 0, 0));
+                entry.startTime = new Date(Date.UTC(templateDate.getFullYear(), templateDate.getMonth(), templateDate.getDate(), parseInt(currArray[2].slice(0,2)), parseInt(currArray[2].slice(2))));
+                entry.endTime = new Date(Date.UTC(templateDate.getFullYear(), templateDate.getMonth(), templateDate.getDate(), parseInt(currArray[3].slice(0,2)), parseInt(currArray[3].slice(2))))
                 restrictions.push(entry);
             }
         }
