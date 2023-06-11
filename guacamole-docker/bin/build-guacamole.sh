@@ -97,7 +97,7 @@ tar -xz                        \
 #
 
 echo "Downloading PostgreSQL JDBC driver ..."
-curl -L "https://jdbc.postgresql.org/download/postgresql-42.2.24.jre7.jar" > "$DESTINATION/postgresql/postgresql-42.2.24.jre7.jar"
+curl -L "https://jdbc.postgresql.org/download/postgresql-42.3.8.jar" > "$DESTINATION/postgresql/postgresql-42.3.8.jar"
 
 #
 # Copy SSO auth extensions
