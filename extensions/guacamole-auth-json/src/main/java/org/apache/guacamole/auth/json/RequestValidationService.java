@@ -52,7 +52,7 @@ public class RequestValidationService {
      * @param confService
      *     The (mock) instance of ConfigurationService
      */
-    private RequestValidationService(ConfigurationService confService) {
+    public RequestValidationService(ConfigurationService confService) {
         this.confService = confService;
     }
 

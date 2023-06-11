@@ -61,7 +61,7 @@ public class RequestValidationServiceTest {
          */
         private MockConfigurationService(String trustedNetworks) {
             if (trustedNetworks == null || trustedNetworks.isEmpty())
-                trustedNetworks = Collections.<String>emptyList();
+                this.trustedNetworks = Collections.<String>emptyList();
             else
                 this.trustedNetworks = Arrays.asList(Pattern.compile(",\\s*").split(trustedNetworks));
         }
@@ -372,7 +372,7 @@ public class RequestValidationServiceTest {
     @Test
     public void testNoTrustedNetwork() {
 
-        requestService = new RequestValidationService(new MockConfigurationService());
+        requestService = new RequestValidationService(new MockConfigurationService(null));
 
         try {
             assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("1.1.1.1")));
