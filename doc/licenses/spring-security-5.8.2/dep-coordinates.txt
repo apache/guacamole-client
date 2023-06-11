@@ -1,3 +1,0 @@
-org.springframework.security:spring-security-core:jar:5.8.2
-org.springframework.security:spring-security-crypto:jar:5.8.2
-org.springframework.security:spring-security-web:jar:5.8.2

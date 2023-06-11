@@ -74,6 +74,23 @@
             <groupId>com.onelogin</groupId>
             <artifactId>java-saml</artifactId>
             <version>2.9.0</version>
+            <!--
+                Replace vulnerable version of Woodstox until upstream
+                releases a version with fixed dependencies
+            -->
+            <exclusions>
+                <exclusion>
+                    <groupId>com.fasterxml.woodstox</groupId>
+                    <artifactId>woodstox-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- Woodstox -->
+        <dependency>
+            <groupId>com.fasterxml.woodstox</groupId>
+            <artifactId>woodstox-core</artifactId>
+            <version>5.4.0</version>
         </dependency>
 
     </dependencies>
