@@ -1314,9 +1314,10 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             var keydownEvent = new KeydownEvent(e);
 
-            // Ignore (but do not prevent) the "composition" keycode sent by some
-            // browsers when an IME is in use (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
-            if (keydownEvent.keyCode === 229)
+            // Ignore (but do not prevent) the event if explicitly marked as composing,
+            // or when the "composition" keycode sent by some browsers when an IME is in use
+            // (see: http://lists.w3.org/Archives/Public/www-dom/2010JulSep/att-0182/keyCode-spec.html)
+            if (e.isComposing || keydownEvent.keyCode === 229)
                 return;
 
             // Log event
@@ -1365,8 +1366,6 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         /**
          * Handles the given "input" event, typing the data within the input text.
-         * If the event is complete (text is provided), handling of "compositionend"
-         * events is suspended, as such events may conflict with input events.
          *
          * @private
          * @param {!InputEvent} e
@@ -1381,24 +1380,37 @@ Guacamole.Keyboard = function Keyboard(element) {
             if (!markEvent(e)) return;
 
             // Type all content written
-            if (e.data && !e.isComposing) {
-                element.removeEventListener("compositionend", handleComposition, false);
+            if (e.data && !e.isComposing)
                 guac_keyboard.type(e.data);
-            }
+
+        };
+
+        /**
+         * Handles the given "compositionstart" event, automatically removing
+         * the "input" event handler, as "input" events should only be handled
+         * if composition events are not provided by the browser.
+         *
+         * @private
+         * @param {!CompositionEvent} e
+         *     The "compositionstart" event to handle.
+         */
+        var handleCompositionStart = function handleCompositionStart(e) {
+
+            // Remove the "input" event handler now that the browser is known
+            // to send composition events
+            element.removeEventListener("input", handleInput, false);
 
         };
 
         /**
          * Handles the given "compositionend" event, typing the data within the
-         * composed text. If the event is complete (composed text is provided),
-         * handling of "input" events is suspended, as such events may conflict
-         * with composition events.
+         * composed text.
          *
          * @private
          * @param {!CompositionEvent} e
          *     The "compositionend" event to handle.
          */
-        var handleComposition = function handleComposition(e) {
+        var handleCompositionEnd = function handleCompositionEnd(e) {
 
             // Only intercept if handler set
             if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
@@ -1407,16 +1419,15 @@ Guacamole.Keyboard = function Keyboard(element) {
             if (!markEvent(e)) return;
 
             // Type all content written
-            if (e.data) {
-                element.removeEventListener("input", handleInput, false);
+            if (e.data)
                 guac_keyboard.type(e.data);
-            }
 
         };
 
         // Automatically type text entered into the wrapped field
         element.addEventListener("input", handleInput, false);
-        element.addEventListener("compositionend", handleComposition, false);
+        element.addEventListener("compositionend", handleCompositionEnd, false);
+        element.addEventListener("compositionstart", handleCompositionStart, false);
 
     };
 
