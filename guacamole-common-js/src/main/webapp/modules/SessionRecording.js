@@ -37,8 +37,13 @@ var Guacamole = Guacamole || {};
  *     position through the provided onseek() callback. If non-positive, this
  *     parameter will be ignored, and the recording position will only be
  *     updated when seek requests are made, or when new frames are rendered.
+ *     If not specified, refreshInterval will default to 1000 milliseconds.
  */
 Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) {
+
+    // Default the refresh interval to 1 second if not specified otherwise
+    if (refreshInterval === undefined)
+        refreshInterval = 1000;
 
     /**
      * Reference to this Guacamole.SessionRecording.
