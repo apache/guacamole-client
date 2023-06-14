@@ -295,6 +295,10 @@ Guacamole.Keyboard = function Keyboard(element) {
         // Determine whether default action for Alt+combinations must be prevented
         var prevent_alt = !this.modifiers.ctrl && !quirks.altIsTypableOnly;
 
+        // If alt is typeable only, and this is actually an alt key event, treat as AltGr instead
+        if (quirks.altIsTypableOnly && (this.keysym === 0xFFE9 || this.keysym === 0xFFEA))
+            this.keysym = 0xFE03;
+
         // Determine whether default action for Ctrl+combinations must be prevented
         var prevent_ctrl = !this.modifiers.alt;
 
