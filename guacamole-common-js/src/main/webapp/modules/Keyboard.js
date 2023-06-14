@@ -395,7 +395,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         13:  [0xFF0D], // enter
         16:  [0xFFE1, 0xFFE1, 0xFFE2], // shift
         17:  [0xFFE3, 0xFFE3, 0xFFE4], // ctrl
-        18:  [0xFFE9, 0xFFE9, 0xFE03], // alt
+        18:  [0xFFE9, 0xFFE9, 0xFFEA], // alt
         19:  [0xFF13], // pause/break
         20:  [0xFFE5], // caps lock
         27:  [0xFF1B], // escape
@@ -456,7 +456,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         "Again": [0xFF66],
         "AllCandidates": [0xFF3D],
         "Alphanumeric": [0xFF30],
-        "Alt": [0xFFE9, 0xFFE9, 0xFE03],
+        "Alt": [0xFFE9, 0xFFE9, 0xFFEA],
         "Attn": [0xFD0E],
         "AltGraph": [0xFE03],
         "ArrowDown": [0xFF54],
