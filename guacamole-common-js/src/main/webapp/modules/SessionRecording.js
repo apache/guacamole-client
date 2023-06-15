@@ -149,12 +149,22 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     var currentFrame = -1;
 
     /**
-     * True if the player is currently playing, or false otherwise.
+     * The timestamp of the frame when playback began, in milliseconds. If
+     * playback is not in progress, this will be null.
      *
      * @private
-     * @type {boolean}
+     * @type {number}
      */
-    var currentlyPlaying = null;
+    var startVideoTimestamp = null;
+
+    /**
+     * The real-world timestamp when playback began, in milliseconds. If
+     * playback is not in progress, this will be null.
+     *
+     * @private
+     * @type {number}
+     */
+    var startRealTimestamp = null;
 
     /**
      * The current position within the recording, in milliseconds.
@@ -740,8 +750,9 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
             // Pull the upcoming frame
             var next = frames[currentFrame + 1];
 
-            // The position at which the next frame should be rendered
-            var nextFramePosition = toRelativeTimestamp(next.timestamp);
+            // The position at which the next frame should be rendered, taking
+            // into account any accumulated delays from rendering frames so far
+            var nextFramePosition = next.timestamp - startVideoTimestamp + startRealTimestamp;
 
             // The position at which the refresh interval would induce an
             // update to the current recording position, rounded to the nearest
@@ -933,7 +944,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
      *     true if playback is currently in progress, false otherwise.
      */
     this.isPlaying = function isPlaying() {
-        return !!currentlyPlaying;
+        return !!startVideoTimestamp;
     };
 
     /**
@@ -993,8 +1004,13 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
             if (recording.onplay)
                 recording.onplay();
 
+            // Store timestamp of playback start for relative scheduling of
+            // future frames
+            var next = frames[currentFrame + 1];
+            startVideoTimestamp = next.timestamp;
+            startRealTimestamp = Date.now();
+
             // Begin playback of video
-            currentlyPlaying = true;
             lastUpdateTimestamp = Date.now();
             continuePlayback();
 
@@ -1099,7 +1115,6 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
         // Increment the current position by the amount of time passed since the
         // the last time it was updated
         currentPosition += Date.now() - lastUpdateTimestamp;
-        lastUpdateTimestamp = null;
 
         // Stop playback only if playback is in progress
         if (recording.isPlaying()) {
@@ -1109,7 +1124,9 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                 recording.onpause();
 
             // Playback is stopped
-            currentlyPlaying = false;
+            lastUpdateTimestamp = null;
+            startVideoTimestamp = null;
+            startRealTimestamp = null;
 
         }
 
