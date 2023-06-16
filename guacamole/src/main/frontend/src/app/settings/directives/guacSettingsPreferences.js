@@ -174,10 +174,17 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             permissionService.getEffectivePermissions(dataSource, username)
             .then(function permissionsRetrieved(permissions) {
 
-                // Add action for changing password if permission is granted
-                $scope.canChangePassword = PermissionSet.hasUserPermission(permissions,
-                        PermissionSet.ObjectPermissionType.UPDATE, username);
-                        
+                // Add action for updating password
+                $scope.canChangePassword = (
+
+                        // If permission is explicitly granted
+                        PermissionSet.hasUserPermission(permissions,
+                            PermissionSet.ObjectPermissionType.UPDATE, username)
+
+                        // Or if implicitly granted through being an administrator
+                        || PermissionSet.hasSystemPermission(permissions,
+                            PermissionSet.SystemPermissionType.ADMINISTER));
+
             })
             ['catch'](requestService.createErrorCallback(function permissionsFailed(error) {
                 $scope.canChangePassword = false;
