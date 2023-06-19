@@ -197,3 +197,11 @@ if [ -f extensions/guacamole-auth-ban/target/guacamole-auth-ban*.jar ]; then
     cp extensions/guacamole-auth-ban/target/guacamole-auth-ban*.jar "$DESTINATION/ban"
 fi
 
+#
+# Copy history recording storage extension if it was built
+#
+
+if [ -f extensions/guacamole-history-recording-storage/target/guacamole-history-recording-storage*.jar ]; then
+    mkdir -p "$DESTINATION/recordings"
+    cp extensions/guacamole-history-recording-storage/target/guacamole-history-recording-storage*.jar "$DESTINATION/recordings"
+fi
