@@ -187,3 +187,12 @@ if [ -f extensions/guacamole-auth-json/target/guacamole-auth-json*.jar ]; then
     mkdir -p "$DESTINATION/json"
     cp extensions/guacamole-auth-json/target/guacamole-auth-json*.jar "$DESTINATION/json"
 fi
+
+#
+# Copy history recording storage extension if it was built
+#
+
+if [ -f extensions/guacamole-history-recording-storage/target/guacamole-history-recording-storage*.jar ]; then
+    mkdir -p "$DESTINATION/recordings"
+    cp extensions/guacamole-history-recording-storage/target/guacamole-history-recording-storage*.jar "$DESTINATION/recordings"
+fi
