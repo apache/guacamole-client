@@ -1,0 +1,82 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  -->
+<div [ngSwitch]="applicationState">
+
+    <!-- Manually logged-out -->
+    <div class="logged-out-modal" *ngSwitchCase="ApplicationState.LOGGED_OUT">
+        <guac-modal>
+            <div class="notification">
+                <p transloco="APP.INFO_LOGGED_OUT"></p>
+                <p>
+                    <button transloco="APP.ACTION_LOGIN_AGAIN" [disabled]="reAuthenticating"
+                            (click)="reAuthenticate()"></button>
+                </p>
+            </div>
+        </guac-modal>
+    </div>
+
+    <!-- Absolute fatal error -->
+    <div class="fatal-page-error-modal" *ngSwitchCase="ApplicationState.FATAL_ERROR">
+        <guac-modal>
+            <div class="fatal-page-error">
+                <h1 transloco="APP.DIALOG_HEADER_ERROR"></h1>
+                <p transloco="APP.ERROR_PAGE_UNAVAILABLE"></p>
+            </div>
+        </guac-modal>
+    </div>
+
+    <!-- Authentication error without a corresponding login form -->
+    <div class="automatic-login-rejected-modal" *ngSwitchCase="ApplicationState.AUTOMATIC_LOGIN_REJECTED">
+        <guac-modal>
+            <div class="notification">
+                <p [transloco]="fatalError?.translatableMessage?.key"
+                   [translocoParams]="fatalError?.translatableMessage?.variables || {}"></p>
+                <p>
+                    <button transloco="APP.ACTION_LOGIN_AGAIN" [disabled]="reAuthenticating"
+                            (click)="reAuthenticate()"></button>
+                </p>
+            </div>
+        </guac-modal>
+    </div>
+
+    <!-- Login screen for logged-out users -->
+    <guac-login *ngSwitchCase="ApplicationState.AWAITING_CREDENTIALS"
+                [helpText]="loginHelpText!"
+                [form]="expectedCredentials"
+                [values]="acceptedCredentials"></guac-login>
+
+    <!-- Content for logged-in users -->
+    <div *ngSwitchCase="ApplicationState.READY">
+
+        <!-- Global status/error dialog -->
+        <guac-modal class="global-status-modal" *ngIf="notificationService.getStatus()">
+            <guac-notification [notification]="$any(notificationService.getStatus())"></guac-notification>
+        </guac-modal>
+
+        <router-outlet></router-outlet>
+
+        <!-- All active connections -->
+        <div id="other-connections">
+            <!-- TODO            <guac-client-panel client-groups="getManagedClientGroups()"></guac-client-panel>-->
+        </div>
+
+    </div>
+</div>
+
+

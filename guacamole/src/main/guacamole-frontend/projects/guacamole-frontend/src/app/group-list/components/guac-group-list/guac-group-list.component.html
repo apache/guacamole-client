@@ -1,0 +1,62 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  -->
+<div class="group-list">
+
+    <div class="group-list-page" *ngIf="dataSourceView !== null">
+
+        <!-- Root-level connections / groups -->
+        <div class="list-item" *ngFor="let childPage of dataSourceView.data | async">
+            <ng-container *ngTemplateOutlet="nestedItem; context: {$implicit: childPage}"/>
+
+            <ng-template #nestedItem let-item>
+                <div class="{{item.type}}" *ngIf="isVisible(item.type)"
+                     [ngClass]="{
+                'balancer'   : item.balancing,
+                'expanded'   : item.expanded,
+                'expandable' : item.expandable,
+                'empty'      : !item.children.length
+            }">
+
+                    <!-- Item caption -->
+                    <div class="caption">
+
+                        <!-- Expand/collapse icon -->
+                        <div class="icon expand" (click)="toggleExpanded(item)"
+                             *ngIf="item.expandable"></div>
+
+                        <ng-container *ngTemplateOutlet="templates[item.type]; context: {item: item, ctx: context}"/>
+
+                    </div>
+
+                    <!-- Children of item (if any) -->
+                    <div class="children" *ngIf="item.expanded">
+                        <div class="list-item" *ngFor="let child of sortService.orderBy(item.children, ['name'])">
+                            <ng-container *ngTemplateOutlet="nestedItem; context: {$implicit: child}"/>
+                        </div>
+                    </div>
+
+                </div>
+            </ng-template>
+        </div>
+    </div>
+
+    <!-- Pager for connections / groups -->
+    <guac-pager [pageSize]="pageSize!" [length]="dataSourceView?.totalLength | async"></guac-pager>
+
+</div>

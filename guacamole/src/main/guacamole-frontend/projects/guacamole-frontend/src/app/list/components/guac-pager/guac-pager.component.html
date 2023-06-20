@@ -1,0 +1,45 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  -->
+<div class="pager" [hidden]="pageNumbers.length <= 1">
+
+    <!-- First / Previous -->
+    <div class="first-page icon" [ngClass]="{'disabled': !canSelectPage(firstPage)}"
+         (click)="selectPage(firstPage)"></div>
+    <div class="prev-page icon" [ngClass]="{'disabled': !canSelectPage(previousPage)}"
+         (click)="selectPage(previousPage)"></div>
+
+    <!-- Indicator of the existence of pages before the first page number shown -->
+    <div class="more-pages" [hidden]="!hasMorePagesBefore()">...</div>
+
+    <!-- Page numbers -->
+    <ul class="page-numbers">
+        <li class="set-page"
+            [ngClass]="{'current': isSelected(pageNumber)}"
+            *ngFor="let pageNumber of pageNumbers"
+            (click)="selectPage(pageNumber)">{{pageNumber}}</li>
+    </ul>
+
+    <!-- Indicator of the existence of pages beyond the last page number shown -->
+    <div class="more-pages" [hidden]="!hasMorePagesAfter()">...</div>
+
+    <!-- Next / Last -->
+    <div class="next-page icon" [ngClass]="{'disabled': !canSelectPage(nextPage)}" (click)="selectPage(nextPage)"></div>
+    <div class="last-page icon" [ngClass]="{'disabled': !canSelectPage(lastPage)}" (click)="selectPage(lastPage)"></div>
+
+</div>

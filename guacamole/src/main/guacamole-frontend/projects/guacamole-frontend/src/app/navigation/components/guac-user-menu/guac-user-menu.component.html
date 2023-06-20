@@ -1,0 +1,51 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  -->
+<div class="user-menu" [hidden]="isAnonymous()">
+    <guac-menu [menuTitle]="username!">
+
+        <!-- User profile view -->
+        <div class="profile" [hidden]="!fullName">
+            <div class="full-name"><a [routerLink]="userURL">{{ fullName }}</a></div>
+            <div class="organizational-role" [hidden]="!role">{{ role }}</div>
+            <div class="organization" [hidden]="!organization">{{ organization }}</div>
+        </div>
+
+        <!-- Local actions -->
+        <ul class="action-list">
+            <li *ngFor="let action of localActions">
+                <a [ngClass]="action.className" (click)="action.callback()">
+                    {{action.name | transloco}}
+                </a>
+            </li>
+        </ul>
+
+        <!-- Navigation links -->
+        <guac-page-list [pages]="pages"></guac-page-list>
+
+        <!-- Actions -->
+        <ul class="action-list">
+            <li *ngFor="let action of actions">
+                <a [ngClass]="action.className" (click)="action.callback()">
+                    {{action.name | transloco}}
+                </a>
+            </li>
+        </ul>
+
+    </guac-menu>
+</div>

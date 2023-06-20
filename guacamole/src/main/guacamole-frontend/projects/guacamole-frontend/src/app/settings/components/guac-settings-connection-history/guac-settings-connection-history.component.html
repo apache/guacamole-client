@@ -1,0 +1,104 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  -->
+<div class="settings section connectionHistory">
+
+    <!-- Connection history -->
+    <p>{{'SETTINGS_CONNECTION_HISTORY.HELP_CONNECTION_HISTORY' | transloco}}</p>
+
+    <!-- Search controls -->
+    <form class="filter" (ngSubmit)="search()">
+        <input class="search-string" type="text"
+               placeholder="{{'SETTINGS_CONNECTION_HISTORY.FIELD_PLACEHOLDER_FILTER' | transloco}}"
+               [(ngModel)]="searchString"
+               [ngModelOptions]="{standalone: true}">
+        <input class="search-button" type="submit" value="{{'SETTINGS_CONNECTION_HISTORY.ACTION_SEARCH' | transloco}}">
+        <button type="button"
+                (click)="downloadCSV()">{{'SETTINGS_CONNECTION_HISTORY.ACTION_DOWNLOAD' | transloco}}</button>
+    </form>
+
+    <!-- Search results -->
+    <div class="results">
+
+        <!-- List of matching history records -->
+        <table class="sorted history-list">
+            <thead>
+            <tr>
+                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
+                    guacSortProperty="entry.username">
+                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_USERNAME' | transloco}}
+                </th>
+                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
+                    guacSortProperty="entry.startDate">
+                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE' | transloco}}
+                </th>
+                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
+                    guacSortProperty="duration">
+                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION' | transloco}}
+                </th>
+                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
+                    guacSortProperty="entry.connectionName">
+                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME' | transloco}}
+                </th>
+                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
+                    guacSortProperty="entry.remoteHost">
+                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_REMOTEHOST' | transloco}}
+                </th>
+                <th>
+                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_LOGS' | transloco}}
+                </th>
+            </tr>
+            </thead>
+
+            <ng-template #loading>
+                <tbody class="loading"></tbody>
+            </ng-template>
+
+            <tbody *ngIf="isLoaded(); else loading">
+            <tr *ngFor="let historyEntryWrapper of dataSourceView.data | async" class="history">
+                <td>
+                    <guac-user-item [username]="historyEntryWrapper.entry.username"></guac-user-item>
+                </td>
+                <td>{{historyEntryWrapper.entry.startDate || 0 | date : dateFormat || undefined}}</td>
+                <td [transloco]="historyEntryWrapper.readableDurationText"
+                    [translocoParams]="{VALUE: historyEntryWrapper.readableDuration?.value, UNIT: historyEntryWrapper.readableDuration?.unit}"></td>
+                <td>{{historyEntryWrapper.entry.connectionName}}</td>
+                <td>{{historyEntryWrapper.entry.remoteHost}}</td>
+                <td>
+                    <a class="history-session-recording"
+                       [hidden]="!historyEntryWrapper.sessionRecording"
+                       [routerLink]="historyEntryWrapper.sessionRecording?.url"
+                       [title]="historyEntryWrapper.sessionRecording?.description | async">
+                            <span
+                                class="history-action-description">{{'SETTINGS_CONNECTION_HISTORY.ACTION_VIEW_RECORDING' | transloco}}</span>
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Text displayed if no history exists -->
+        <p class="placeholder" [hidden]="!isHistoryEmpty()">
+            {{'SETTINGS_CONNECTION_HISTORY.INFO_NO_HISTORY' | transloco}}
+        </p>
+
+        <!-- Pager for history list -->
+        <guac-pager [pageSize]="25" [length]="dataSourceView?.totalLength | async"></guac-pager>
+    </div>
+
+</div>

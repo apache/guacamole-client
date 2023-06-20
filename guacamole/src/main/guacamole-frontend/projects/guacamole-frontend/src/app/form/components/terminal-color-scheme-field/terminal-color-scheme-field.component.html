@@ -1,0 +1,101 @@
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+  -->
+<div class="terminal-color-scheme-field" [ngClass]="{
+        'custom-color-scheme-details-visible' : detailsShown,
+        'custom-color-scheme-details-hidden' : !detailsShown
+    }">
+
+    <!-- Pre-defined color scheme options -->
+    <select [id]="fieldId"
+            [name]="field.name"
+            [formControl]="selectedColorScheme">
+        <!--        TODO: | orderBy: value-->
+        <option *ngFor="let option of field.options"
+                [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}</option>
+        <option value="custom">{{ 'COLOR_SCHEME.FIELD_OPTION_CUSTOM' | transloco }}</option>
+    </select>
+
+    <!-- Custom color scheme -->
+    <div class="custom-color-scheme" [hidden]="!isCustom()">
+
+        <!-- Default foreground color -->
+        <div class="custom-color-scheme-section default-color foreground">
+
+            <guac-input-color
+                class="guac-input-color"
+                [control]="customColorSchemeForeground"
+                [palette]="defaultPalette">
+                {{ 'COLOR_SCHEME.FIELD_HEADER_FOREGROUND' | transloco }}
+            </guac-input-color>
+        </div>
+
+        <!-- Default background color -->
+        <div class="custom-color-scheme-section default-color background">
+            <guac-input-color
+                class="guac-input-color"
+                [control]="customColorSchemeBackground"
+                [palette]="defaultPalette">
+                {{ 'COLOR_SCHEME.FIELD_HEADER_BACKGROUND' | transloco }}
+            </guac-input-color>
+        </div>
+
+        <!-- Low intensity portion of 16-color palette -->
+        <div class="custom-color-scheme-section palette low-intensity">
+            <div *ngFor="let index of lowIntensity" class="guac-input-color">
+                <guac-input-color
+                    [control]="customColorSchemeColorFormControl(index)"
+                    [palette]="defaultPalette">
+
+                    {{ index }}
+                </guac-input-color>
+            </div>
+        </div>
+
+        <!-- High intensity portion of 16-color palette -->
+        <div class="custom-color-scheme-section palette high-intensity">
+            <div *ngFor="let index of highIntensity"
+                 class="guac-input-color">
+                <guac-input-color
+                    [control]="customColorSchemeColorFormControl(index)"
+                    [palette]="defaultPalette">
+                    {{ index }}
+                </guac-input-color>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Show/hide details -->
+    <h4 class="custom-color-scheme-details-header" [hidden]="!isCustom()">
+        {{'COLOR_SCHEME.SECTION_HEADER_DETAILS' | transloco}}
+        <a class="custom-color-scheme-show-details"
+           (click)="showDetails()">{{'COLOR_SCHEME.ACTION_SHOW_DETAILS' | transloco}}</a>
+        <a class="custom-color-scheme-hide-details"
+           (click)="hideDetails()">{{'COLOR_SCHEME.ACTION_HIDE_DETAILS' | transloco}}</a>
+    </h4>
+
+    <!-- Custom color scheme details (internal representation -->
+    <textarea *ngIf="control"
+              class="custom-color-scheme-details"
+              spellcheck="false"
+              [formControl]="control"
+              [hidden]="isCustom()"
+    ></textarea>
+
+</div>
