@@ -149,13 +149,13 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     var currentFrame = -1;
 
     /**
-     * The timestamp of the frame when playback began, in milliseconds. If
+     * The position of the recording when playback began, in milliseconds. If
      * playback is not in progress, this will be null.
      *
      * @private
      * @type {number}
      */
-    var startVideoTimestamp = null;
+    var startVideoPosition = null;
 
     /**
      * The real-world timestamp when playback began, in milliseconds. If
@@ -750,21 +750,31 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
             // Pull the upcoming frame
             var next = frames[currentFrame + 1];
 
-            // The position at which the next frame should be rendered, taking
-            // into account any accumulated delays from rendering frames so far
-            var nextFramePosition = next.timestamp - startVideoTimestamp + startRealTimestamp;
+            // The number of elapsed milliseconds on the clock since playback began
+            var realLifePlayTime = Date.now() - startRealTimestamp;
 
-            // The position at which the refresh interval would induce an
-            // update to the current recording position, rounded to the nearest
-            // whole multiple of refreshInterval to ensure consistent timing
-            // for refresh intervals even with inconsistent frame timing
-            var nextRefreshPosition = refreshInterval > 0 ? refreshInterval * (
-                Math.floor((currentPosition + refreshInterval) / refreshInterval)
-            ) : nextFramePosition;
+            // The number of milliseconds between the recording position when
+            // playback started and the position of the next frame
+            var timestampOffset = (
+                    toRelativeTimestamp(next.timestamp) - startVideoPosition);
+
+            // The delay until the next frame should be rendered, taking into
+            // account any accumulated delays from rendering frames so far
+            var nextFrameDelay = timestampOffset - realLifePlayTime;
+
+            // The delay until the refresh interval would induce an update to
+            // the current recording position, rounded to the nearest whole
+            // multiple of refreshInterval to ensure consistent timing for
+            // refresh intervals even with inconsistent frame timing
+            var nextRefreshDelay = refreshInterval >= 0
+                    ? (refreshInterval * (Math.floor(
+                        (currentPosition + refreshInterval) / refreshInterval))
+                    ) - currentPosition
+                    : nextFrameDelay;
 
             // If the next frame will occur before the next refresh interval,
             // advance to the frame after the appropriate delay
-            if (nextFramePosition <= nextRefreshPosition)
+            if (nextFrameDelay <= nextRefreshDelay)
 
                 seekToFrame(currentFrame + 1, function frameDelayElapsed() {
 
@@ -772,7 +782,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                     lastUpdateTimestamp = Date.now();
                     continuePlayback();
 
-                }, Date.now() + (nextFramePosition - currentPosition));
+                }, Date.now() + nextFrameDelay);
 
             // The position needs to be incremented before the next frame
             else {
@@ -785,7 +795,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                     updateTimeout = null;
 
                     // Update the position
-                    currentPosition = nextRefreshPosition;
+                    currentPosition += nextRefreshDelay;
 
                     // Notifiy the new position using the onseek handler
                     if (recording.onseek)
@@ -795,7 +805,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                     lastUpdateTimestamp = Date.now();
                     continuePlayback();
 
-                }, nextRefreshPosition - currentPosition);
+                }, nextRefreshDelay);
             }
 
         }
@@ -944,7 +954,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
      *     true if playback is currently in progress, false otherwise.
      */
     this.isPlaying = function isPlaying() {
-        return !!startVideoTimestamp;
+        return !!startRealTimestamp;
     };
 
     /**
@@ -956,13 +966,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
      */
     this.getPosition = function getPosition() {
 
-        // Position is simply zero if playback has not started at all
-        if (currentFrame === -1)
-            return 0;
-
-        // Return current position as a millisecond timestamp relative to the
-        // start of the recording
-        return toRelativeTimestamp(frames[currentFrame].timestamp);
+        return currentPosition;
 
     };
 
@@ -1006,8 +1010,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
             // Store timestamp of playback start for relative scheduling of
             // future frames
-            var next = frames[currentFrame + 1];
-            startVideoTimestamp = next.timestamp;
+            startVideoPosition = currentPosition;
             startRealTimestamp = Date.now();
 
             // Begin playback of video
@@ -1125,7 +1128,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
             // Playback is stopped
             lastUpdateTimestamp = null;
-            startVideoTimestamp = null;
+            startVideoPosition = null;
             startRealTimestamp = null;
 
         }
