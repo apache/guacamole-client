@@ -1,0 +1,44 @@
+{
+    "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+    "version": 1,
+    "newProjectRoot": "projects",
+    "projects": {
+        "guacamole-frontend-lib": {
+            "projectType": "library",
+            "root": "projects/guacamole-frontend-lib",
+            "sourceRoot": "projects/guacamole-frontend-lib/src",
+            "prefix": "guac",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:ng-packagr",
+                    "options": {
+                        "project": "projects/guacamole-frontend-lib/ng-package.json"
+                    },
+                    "configurations": {
+                        "production": {
+                            "tsConfig": "projects/guacamole-frontend-lib/tsconfig.lib.prod.json"
+                        },
+                        "development": {
+                            "tsConfig": "projects/guacamole-frontend-lib/tsconfig.lib.json"
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "tsConfig": "projects/guacamole-frontend-lib/tsconfig.spec.json",
+                        "polyfills": [
+                            "zone.js",
+                            "zone.js/testing"
+                        ],
+                        "scripts": [
+                            "projects/guacamole-frontend-lib/src/assets/guacamole-common-js.min.js"
+                        ],
+                        "karmaConfig": "projects/guacamole-frontend-lib/karma.conf.js"
+                    }
+                }
+            }
+        }
+    }
+}
