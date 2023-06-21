@@ -60,81 +60,102 @@
     <build>
         <plugins>
 
-            <!-- Build AngularJS portion of application using NPM -->
+            <!-- Build Angular lib and application NPM -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>1.11.3</version>
                 <configuration>
-                    <workingDirectory>src/main/frontend</workingDirectory>
                     <installDirectory>${project.build.directory}</installDirectory>
-
-                    <!-- Newer Node.js requires the following to avoid an "ERR_OSSL_EVP_UNSUPPORTED"
-                    error when WebPack attempts to use its default hash (MD4) for content hashing -->
-                    <environmentVariables>
-                        <NODE_OPTIONS>--openssl-legacy-provider</NODE_OPTIONS>
-                    </environmentVariables>
-
                 </configuration>
                 <executions>
+                    <!-- Install Node-->
                     <execution>
                         <id>install-node-and-npm</id>
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v18.18.0</nodeVersion>
-                            <npmVersion>9.8.1</npmVersion>
+                            <nodeVersion>v18.16.1</nodeVersion>
                         </configuration>
                     </execution>
+
+                    <!-- guacamole-frontend-lib: npm ci-->
                     <execution>
-                        <id>npm-ci</id>
+                        <id>npm-ci-lib</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
+                            <workingDirectory>src/main/guacamole-frontend-lib</workingDirectory>
                             <arguments>ci</arguments>
                         </configuration>
                     </execution>
+                    <!-- guacamole-frontend-lib: npm run build-->
                     <execution>
-                        <id>npm-build</id>
+                        <id>npm-build-lib</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
+                            <workingDirectory>src/main/guacamole-frontend-lib</workingDirectory>
+                            <arguments>run build</arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- guacamole-frontend: npm ci-->
+                    <execution>
+                        <id>npm-ci-app</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>src/main/guacamole-frontend</workingDirectory>
+                            <arguments>ci</arguments>
+                        </configuration>
+                    </execution>
+                    <!-- guacamole-frontend: npm run build-->
+                    <execution>
+                        <id>npm-build-app</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <workingDirectory>src/main/guacamole-frontend</workingDirectory>
                             <arguments>run build</arguments>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- Copy automatically-generated set of NPM module dependencies for
+            <!-- TODO: Copy automatically-generated set of NPM module dependencies for
                 later use by LICENSE generator -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-npm-dependency-list</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${dependency.list.directory}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/frontend/dist</directory>
-                                    <includes>
-                                        <include>npm-dependencies.txt</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-resources-plugin</artifactId>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>copy-npm-dependency-list</id>-->
+            <!--                        <phase>generate-resources</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>copy-resources</goal>-->
+            <!--                        </goals>-->
+            <!--                        <configuration>-->
+            <!--                            <outputDirectory>${dependency.list.directory}</outputDirectory>-->
+            <!--                            <resources>-->
+            <!--                                <resource>-->
+            <!--                                    <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>-->
+            <!--                                    <includes>-->
+            <!--                                        <include>npm-dependencies.txt</include>-->
+            <!--                                    </includes>-->
+            <!--                                </resource>-->
+            <!--                            </resources>-->
+            <!--                        </configuration>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
 
             <!-- Automatically generate LICENSE and NOTICE -->
             <plugin>
@@ -158,22 +179,22 @@
 
                         <!-- Add frontend folder to war package ... -->
                         <resource>
-                            <directory>src/main/frontend/dist</directory>
+                            <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>
                             <excludes>
                                 <exclude>translations/*.json</exclude>
                                 <exclude>index.html</exclude>
-                                <exclude>verifyCachedVersion.js</exclude>
+                                <!--TODO: <exclude>verifyCachedVersion.js</exclude>-->
                             </excludes>
                         </resource>
 
                         <!-- ... but filter index.html and translation strings -->
                         <resource>
-                            <directory>src/main/frontend/dist</directory>
+                            <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>
                             <filtering>true</filtering>
                             <includes>
                                 <include>translations/*.json</include>
                                 <include>index.html</include>
-                                <include>verifyCachedVersion.js</include>
+                                <!-- TODO: <include>verifyCachedVersion.js</include>-->
                             </includes>
                         </resource>
 
@@ -193,7 +214,7 @@
                             <type>zip</type>
                         </overlay>
                     </overlays>
-            
+
                 </configuration>
                 <executions>
                     <execution>
@@ -323,7 +344,7 @@
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
         </dependency>
-        
+
         <!-- Jersey - JAX-RS Implementation -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
@@ -359,7 +380,7 @@
             <artifactId>jsr250-api</artifactId>
             <version>1.0</version>
         </dependency>
-        
+
         <!-- Guava Base Libraries -->
         <dependency>
             <groupId>com.google.guava</groupId>
