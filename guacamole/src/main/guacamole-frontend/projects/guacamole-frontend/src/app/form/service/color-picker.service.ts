@@ -284,7 +284,7 @@ export class ColorPickerService {
             // Replace all color swatches with the palette of colors given
             while (this.pickr.removeSwatch(0)) {
             }
-            for (let color of palette) {
+            for (const color of palette) {
                 this.pickr.addSwatch(color);
             }
 

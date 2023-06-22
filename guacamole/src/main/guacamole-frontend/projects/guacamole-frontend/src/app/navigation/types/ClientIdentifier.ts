@@ -17,10 +17,6 @@
  * under the License.
  */
 
-import { inject } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
-import { AuthenticationService } from '../../auth/service/authentication.service';
-
 /**
  * Uniquely identifies a particular connection or connection
  * group within Guacamole. This object can be converted to/from a string to

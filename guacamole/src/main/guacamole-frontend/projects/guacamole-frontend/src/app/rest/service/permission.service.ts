@@ -141,7 +141,7 @@ export class PermissionService {
      *     An observable which will emit a {@link PermissionSet} upon
      *     success.
      */
-    getPermissions(dataSource: string, identifier: string, group: boolean = false): Observable<PermissionSet> {
+    getPermissions(dataSource: string, identifier: string, group = false): Observable<PermissionSet> {
 
         // Retrieve user/group permissions
         // TODO: cache   : cacheService.users,
@@ -178,7 +178,7 @@ export class PermissionService {
      *     The URL for the REST resource representing the user or group having
      *     the given identifier.
      */
-    private getPermissionsResourceURL(dataSource: string, identifier: string, group: boolean = false): string {
+    private getPermissionsResourceURL(dataSource: string, identifier: string, group = false): string {
 
         // Create base URL for data source
         const base = 'api/session/data/' + encodeURIComponent(dataSource);
@@ -249,7 +249,7 @@ export class PermissionService {
             });
         });
 
-    };
+    }
 
     /**
      * Adds patches for modifying the permissions associated with specific
@@ -274,7 +274,7 @@ export class PermissionService {
     private addObjectPatchOperations(patch: PermissionPatch[], operation: PermissionPatch.Operation, path: string, permissions: Record<string, string[]>): void {
 
         // Add object permission operations to patch
-        for (let identifier in permissions) {
+        for (const identifier in permissions) {
             permissions[identifier].forEach(function addObjectPatch(type) {
                 patch.push({
                     op: operation,
@@ -333,5 +333,5 @@ export class PermissionService {
                     // TODO: this.cacheService.users.removeAll();
                 })
             );
-    };
+    }
 }

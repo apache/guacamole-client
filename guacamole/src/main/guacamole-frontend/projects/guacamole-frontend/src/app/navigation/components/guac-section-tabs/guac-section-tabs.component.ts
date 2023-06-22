@@ -134,5 +134,5 @@ export class GuacSectionTabsComponent {
      */
     isSelected(name: string): boolean {
         return this.current === name;
-    };
+    }
 }

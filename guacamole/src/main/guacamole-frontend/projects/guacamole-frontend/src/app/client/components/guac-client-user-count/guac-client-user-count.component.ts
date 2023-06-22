@@ -230,7 +230,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
                 this.userCounts = {};
                 this.oldClient = this.client;
 
-                for (let username in this.client.users) {
+                for (const username in this.client.users) {
                     const connections = this.client.users[username];
                     const count = Object.keys(connections).length;
                     this.userCounts[username] = count;
@@ -242,7 +242,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
 
             // Display join/leave notifications for users who are currently
             // connected but whose connection counts have changed
-            for (let username in this.client.users) {
+            for (const username in this.client.users) {
                 const connections = this.client.users[username];
 
                 const count = Object.keys(connections).length;
@@ -258,7 +258,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
             }
 
             // Display leave notifications for users who are no longer connected
-            for (let username in this.userCounts) {
+            for (const username in this.userCounts) {
                 const count = this.userCounts[username];
                 if (!this.client.users[username]) {
                     this.notifyUserLeft(username);

@@ -145,7 +145,7 @@ export class GuacRecentConnectionsComponent implements OnChanges {
             this.visibleObjects = {};
             if (rootGroups) {
 
-                for (let dataSource in rootGroups) {
+                for (const dataSource in rootGroups) {
                     const rootGroup = rootGroups[dataSource];
                     this.addVisibleConnectionGroup(dataSource, rootGroup);
                 }

@@ -89,7 +89,7 @@ export class ManagedFilesystemService {
 
                 // For each received stream name
                 const mimetypes = reader.getJSON();
-                for (let name in mimetypes) {
+                for (const name in mimetypes) {
 
                     // Assert prefix is correct
                     if (name.substring(0, expectedPrefix.length) !== expectedPrefix)

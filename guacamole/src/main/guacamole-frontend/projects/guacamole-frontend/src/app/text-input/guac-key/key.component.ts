@@ -52,14 +52,14 @@ export class KeyComponent implements OnChanges {
      *
      * @default false
      */
-    @Input() sticky: boolean = false;
+    @Input() sticky = false;
 
     /**
      * Whether this key is currently pressed.
      *
      * @default false
      */
-    @Input() pressed: boolean = false;
+    @Input() pressed = false;
     @Output() pressedChange = new EventEmitter<boolean>();
 
     constructor(private guacEventService: GuacEventService<GuacFrontendEventArguments>) {
@@ -90,7 +90,7 @@ export class KeyComponent implements OnChanges {
 
         // Prevent loss of focus due to interaction with buttons
         event.preventDefault();
-    };
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
         // Send keyup/keydown when pressed state is altered

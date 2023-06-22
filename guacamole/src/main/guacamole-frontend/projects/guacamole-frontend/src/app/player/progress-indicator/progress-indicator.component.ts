@@ -40,7 +40,7 @@ export class ProgressIndicatorComponent implements OnChanges {
      * The current progress of the operation as a percentage. This value is
      * automatically updated as this.progress changes.
      */
-    percentage: number = 0;
+    percentage = 0;
 
     /**
      * The CSS transform which should be applied to the bar portion of the

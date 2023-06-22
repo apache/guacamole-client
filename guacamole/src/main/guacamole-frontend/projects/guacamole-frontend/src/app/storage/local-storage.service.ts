@@ -89,7 +89,7 @@ export class LocalStorageService {
         } catch (ignore) {
         }
 
-    };
+    }
 
     /**
      * Retrieves the value currently stored within localStorage for the item
@@ -126,6 +126,6 @@ export class LocalStorageService {
         // No value defined for given key
         return null;
 
-    };
+    }
 
 }

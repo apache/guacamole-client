@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { ColorScheme } from "./ColorScheme";
+import { ColorScheme } from './ColorScheme';
 
 describe('ColorScheme', () => {
 
@@ -32,12 +32,12 @@ describe('ColorScheme', () => {
     });
 
     it('convert hex to x11 and back', () => {
-        let hex = '#A01212';
-        let x11 = colorScheme.fromHexColor(hex);
+        const hex = '#A01212';
+        const x11 = colorScheme.fromHexColor(hex);
 
         expect(x11).toBe('rgb:A0/12/12');
 
-        let hex2 = colorScheme.toHexColor(x11 as string);
+        const hex2 = colorScheme.toHexColor(x11 as string);
         expect(hex2).toEqual(hex);
     });
 

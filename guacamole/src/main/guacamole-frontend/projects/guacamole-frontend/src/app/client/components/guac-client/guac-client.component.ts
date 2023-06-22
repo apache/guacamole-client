@@ -61,7 +61,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
     /**
      * Whether the local, hardware mouse cursor is in use.
      */
-    private localCursor: boolean = false;
+    private localCursor = false;
 
     /**
      * The current Guacamole client instance.
@@ -567,14 +567,14 @@ export class GuacClientComponent implements OnInit, OnChanges {
      * client display that was centered within the pinch at the time the
      * gesture began.
      */
-    private initialCenterX: number = 0;
+    private initialCenterX = 0;
 
     /**
      * If a pinch gesture is in progress, the Y coordinate of the point on the
      * client display that was centered within the pinch at the time the
      * gesture began.
      */
-    private initialCenterY: number = 0;
+    private initialCenterY = 0;
 
     /**
      * Zoom and pan client via pinch gestures.
@@ -629,7 +629,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
      * dragged a file over the Guacamole connection but has not yet
      * dropped it).
      */
-    dropPending: boolean = false;
+    dropPending = false;
 
     /**
      * Displays a visual indication that dropping the file currently
@@ -648,7 +648,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
         this.dropPending = true;
         // });
 
-    };
+    }
 
     /**
      * Removes the visual indication that dropping the file currently

@@ -260,14 +260,14 @@ export class ManageUserGroupComponent implements OnInit {
 
                         // Add the identifiers of all modifiable user groups
                         this.availableGroups = [];
-                        for (let groupIdentifier in userGroups) {
+                        for (const groupIdentifier in userGroups) {
                             const userGroup = userGroups[groupIdentifier];
                             this.availableGroups.push(userGroup.identifier!);
                         }
 
                         // Add the identifiers of all modifiable users
                         this.availableUsers = [];
-                        for (let username in users) {
+                        for (const username in users) {
                             const user = users[username];
                             this.availableUsers.push(user.username);
                         }

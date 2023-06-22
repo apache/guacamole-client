@@ -34,7 +34,7 @@ import { Preferences } from '../types/Preferences';
 /**
  * The storage key of Guacamole preferences within local storage.
  */
-const GUAC_PREFERENCES_STORAGE_KEY: string = 'GUAC_PREFERENCES';
+const GUAC_PREFERENCES_STORAGE_KEY = 'GUAC_PREFERENCES';
 
 /**
  * A service for setting and retrieving browser-local preferences. Preferences

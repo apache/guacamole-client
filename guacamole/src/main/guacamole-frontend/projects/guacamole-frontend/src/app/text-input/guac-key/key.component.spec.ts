@@ -23,7 +23,7 @@ import {
     GuacFrontendEventArguments
 } from '../../events/types/GuacFrontendEventArguments';
 import { KeyComponent } from './key.component';
-import { TranslocoTestingModule } from "@ngneat/transloco";
+import { TranslocoTestingModule } from '@ngneat/transloco';
 
 describe('KeyComponent', () => {
     let component: KeyComponent;

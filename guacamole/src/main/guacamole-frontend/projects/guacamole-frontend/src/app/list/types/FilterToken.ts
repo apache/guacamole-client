@@ -180,7 +180,7 @@ export class FilterToken {
         const popToken = (): FilterToken | null => {
 
             // Attempt to find a matching token
-            for (let type in FilterToken.Types) {
+            for (const type in FilterToken.Types) {
 
                 // Get matching function for current type
                 const matcher = FilterToken.Types[type];

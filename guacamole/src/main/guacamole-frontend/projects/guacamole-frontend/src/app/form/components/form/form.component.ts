@@ -62,13 +62,13 @@ export class FormComponent implements OnChanges {
      * fields/forms which match properties defined within the given
      * model object. By default, all fields will be shown.
      */
-    @Input() modelOnly: boolean = false
+    @Input() modelOnly = false
 
     /**
      * Whether the contents of the form should be rendered as disabled.
      * By default, form fields are enabled.
      */
-    @Input() disabled: boolean = false;
+    @Input() disabled = false;
 
     /**
      * The name of the field to be focused, if any.
@@ -132,7 +132,7 @@ export class FormComponent implements OnChanges {
         // Produce set of forms from any given content
         if (changes['content']) {
 
-            let content: Form[] | Form | Field[] | Field = changes['content'].currentValue;
+            const content: Form[] | Form | Field[] | Field = changes['content'].currentValue;
 
             // Transform content to always be an array of forms
             this.forms = this.formService.asFormArray(content);

@@ -42,7 +42,7 @@ export class HistoryEntryWrapper {
      * given translation string as the VALUE and UNIT substitution
      * variables respectively.
      */
-    durationText: string = 'MANAGE_CONNECTION.TEXT_HISTORY_DURATION';
+    durationText = 'MANAGE_CONNECTION.TEXT_HISTORY_DURATION';
 
     /**
      * Creates a new HistoryEntryWrapper.

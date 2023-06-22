@@ -28,7 +28,7 @@ import includes from 'lodash/includes';
  * The string value which is assigned to selectedColorScheme if a custom
  * color scheme is selected.
  */
-const CUSTOM_COLOR_SCHEME: string = 'custom';
+const CUSTOM_COLOR_SCHEME = 'custom';
 
 /**
  * The palette indices of all colors which are considered low-intensity.
@@ -88,7 +88,7 @@ export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent im
      *
      * @default false
      */
-    detailsShown: boolean = false;
+    detailsShown = false;
 
     /**
      * Form group which contains the form controls for the custom color scheme.

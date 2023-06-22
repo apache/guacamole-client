@@ -18,11 +18,11 @@
  */
 
 import { Injectable } from '@angular/core';
-import { LocalStorageService } from "../storage/local-storage.service";
-import { HistoryEntry } from "./HistoryEntry";
+import { LocalStorageService } from '../storage/local-storage.service';
+import { HistoryEntry } from './HistoryEntry';
 
 // The parameter name for getting the history from local storage
-const GUAC_HISTORY_STORAGE_KEY = "GUAC_HISTORY";
+const GUAC_HISTORY_STORAGE_KEY = 'GUAC_HISTORY';
 
 /**
  * The number of entries to allow before removing old entries based on the
@@ -86,6 +86,6 @@ export class GuacHistoryService {
         // Save updated history
         this.localStorageService.setItem(GUAC_HISTORY_STORAGE_KEY, this.recentConnections);
 
-    };
+    }
 
 }

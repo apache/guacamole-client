@@ -71,14 +71,14 @@ export class ManagedClientState {
          *
          * @type String
          */
-        IDLE: "IDLE",
+        IDLE: 'IDLE',
 
         /**
          * The Guacamole connection is being established.
          *
          * @type String
          */
-        CONNECTING: "CONNECTING",
+        CONNECTING: 'CONNECTING',
 
         /**
          * The Guacamole connection has been successfully established, and the
@@ -86,7 +86,7 @@ export class ManagedClientState {
          *
          * @type String
          */
-        WAITING: "WAITING",
+        WAITING: 'WAITING',
 
         /**
          * The Guacamole connection has been successfully established, and
@@ -94,7 +94,7 @@ export class ManagedClientState {
          *
          * @type String
          */
-        CONNECTED: "CONNECTED",
+        CONNECTED: 'CONNECTED',
 
         /**
          * The Guacamole connection has terminated successfully. No errors are
@@ -102,7 +102,7 @@ export class ManagedClientState {
          *
          * @type String
          */
-        DISCONNECTED: "DISCONNECTED",
+        DISCONNECTED: 'DISCONNECTED',
 
         /**
          * The Guacamole connection has terminated due to an error reported by
@@ -110,7 +110,7 @@ export class ManagedClientState {
          *
          * @type String
          */
-        CLIENT_ERROR: "CLIENT_ERROR",
+        CLIENT_ERROR: 'CLIENT_ERROR',
 
         /**
          * The Guacamole connection has terminated due to an error reported by
@@ -118,7 +118,7 @@ export class ManagedClientState {
          *
          * @type String
          */
-        TUNNEL_ERROR: "TUNNEL_ERROR"
+        TUNNEL_ERROR: 'TUNNEL_ERROR'
     }
 
     /**

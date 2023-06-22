@@ -244,7 +244,7 @@ export class ColorScheme {
             + 'foreground: ' + scheme.fromHexColor(scheme.foreground) + ';';
 
         // Add color definitions for each palette entry
-        for (let index in scheme.colors)
+        for (const index in scheme.colors)
             str += '\ncolor' + index + ': ' + scheme.fromHexColor(scheme.colors[index]) + ';';
 
         return str;

@@ -82,7 +82,7 @@ export class GuacSettingsUsersComponent implements OnInit {
      * The name of the new user to create, if any, when user creation
      * is requested via newUser().
      */
-    newUsername: string = '';
+    newUsername = '';
 
     /**
      * Map of data source identifiers to all permissions associated
@@ -203,7 +203,7 @@ export class GuacSettingsUsersComponent implements OnInit {
 
                     // For each user in each data source
                     this.dataSources.forEach(dataSource => {
-                        for (let username in allUsers[dataSource]) {
+                        for (const username in allUsers[dataSource]) {
                             const user = allUsers[dataSource][username];
 
                             // Do not add the same user twice
@@ -320,7 +320,7 @@ export class GuacSettingsUsersComponent implements OnInit {
             return true;
 
         // For each data source
-        for (let dataSource in this.permissions) {
+        for (const dataSource in this.permissions) {
 
             // Retrieve corresponding permission set
             const permissionSet = this.permissions[dataSource];

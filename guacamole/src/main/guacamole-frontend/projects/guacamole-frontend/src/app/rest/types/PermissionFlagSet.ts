@@ -219,7 +219,7 @@ export class PermissionFlagSet {
     private static addObjectPermissions(permMap: Record<string, string[]>, flagMap: Record<string, Record<string, boolean>>): void {
 
         // For each defined identifier in the permission map
-        for (let identifier in permMap) {
+        for (const identifier in permMap) {
 
             // Pull the permission array and loop through each permission
             const permissions = permMap[identifier];

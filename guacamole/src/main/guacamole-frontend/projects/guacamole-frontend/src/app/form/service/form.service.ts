@@ -265,9 +265,9 @@ export class FormService {
         const formGroup = new FormGroup({});
 
         for (let i = 0; i < forms.length; i++) {
-            let form = forms[i];
+            const form = forms[i];
 
-            for (let field of form.fields) {
+            for (const field of form.fields) {
                 formGroup.addControl(field.name, new FormControl(''));
             }
 

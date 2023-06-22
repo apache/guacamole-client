@@ -104,7 +104,7 @@ export class ConnectionGroup {
      * The reserved identifier which always represents the root connection
      * group.
      */
-    static ROOT_IDENTIFIER: string = 'ROOT';
+    static ROOT_IDENTIFIER = 'ROOT';
 
     /**
      * All valid connection group types.

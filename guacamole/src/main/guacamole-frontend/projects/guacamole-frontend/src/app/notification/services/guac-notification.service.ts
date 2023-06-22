@@ -99,7 +99,7 @@ export class GuacNotificationService {
      * // To hide the status message
      * guacNotification.showStatus(false);
      */
-    showStatus(status: Notification | Boolean | Object): void {
+    showStatus(status: Notification | boolean | Object): void {
         if (!this.storedStatus() || !status)
             this.storedStatus(status);
     }

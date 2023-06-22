@@ -72,7 +72,7 @@ export class SortOrder {
      *     Whether the property should be sorted in descending order. By
      *     default, all properties are sorted in ascending order.
      */
-    reorder(name: string, descending: boolean = false): void {
+    reorder(name: string, descending = false): void {
 
         // Build ascending and descending predicate components
         const ascendingName = name;

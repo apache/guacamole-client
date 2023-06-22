@@ -73,8 +73,8 @@ export class PlayerDisplayComponent implements AfterViewInit, OnChanges {
         if (!this.display)
             return;
 
-        var displayWidth = this.display.getWidth();
-        var displayHeight = this.display.getHeight();
+        const displayWidth = this.display.getWidth();
+        const displayHeight = this.display.getHeight();
 
         // Ignore if the provided display is not at least 1x1 pixels
         if (!displayWidth || !displayHeight)
@@ -84,7 +84,7 @@ export class PlayerDisplayComponent implements AfterViewInit, OnChanges {
         this.display.scale(Math.min(this.element.nativeElement.offsetWidth / displayWidth,
             this.element.nativeElement.offsetHeight / displayHeight));
 
-    };
+    }
 
     ngOnChanges(changes: SimpleChanges): void {
 

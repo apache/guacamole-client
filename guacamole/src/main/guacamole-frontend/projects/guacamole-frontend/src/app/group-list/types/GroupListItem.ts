@@ -225,7 +225,7 @@ export class GroupListItem {
      */
     static fromConnection(dataSource: string,
                           connection: Connection,
-                          includeSharingProfiles: boolean = true,
+                          includeSharingProfiles = true,
                           countActiveConnections?: (dataSource: string, connection: Connection) => number): GroupListItem {
 
         const children: GroupListItem[] = [];
@@ -312,8 +312,8 @@ export class GroupListItem {
      */
     static fromConnectionGroup(dataSource: string,
                                connectionGroup: ConnectionGroup,
-                               includeConnections: boolean = true,
-                               includeSharingProfiles: boolean = true,
+                               includeConnections = true,
+                               includeSharingProfiles = true,
                                countActiveConnections?: (dataSource: string, connection: Connection) => number,
                                countActiveConnectionGroups?: (dataSource: string, connectionGroup: ConnectionGroup) => number): GroupListItem {
 

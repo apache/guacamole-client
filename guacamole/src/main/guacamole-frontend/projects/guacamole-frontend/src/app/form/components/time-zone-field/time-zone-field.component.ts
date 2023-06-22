@@ -156,7 +156,7 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
         const regions = [''];
 
         // Add each available region
-        for (let region in this.timeZones)
+        for (const region in this.timeZones)
             regions.push(region);
 
         return regions;
@@ -169,13 +169,13 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
         const regions: Record<string, string> = {};
 
         // For each available region
-        for (let region in this.timeZones) {
+        for (const region in this.timeZones) {
 
             // Get time zones within that region
             const timeZonesInRegion = this.timeZones[region];
 
             // For each of those time zones
-            for (let timeZoneName in timeZonesInRegion) {
+            for (const timeZoneName in timeZonesInRegion) {
 
                 // Get corresponding ID
                 const timeZoneID = timeZonesInRegion[timeZoneName];
@@ -196,7 +196,7 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
         const defaultTimeZone: Record<string, string> = {};
 
         // For each available region
-        for (let region in this.timeZones) {
+        for (const region in this.timeZones) {
 
             // Get time zones within that region
             const timeZonesInRegion = this.timeZones[region];
@@ -206,7 +206,7 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
             let defaultZoneID: string | undefined = undefined;
 
             // For each of those time zones
-            for (let timeZoneName in timeZonesInRegion) {
+            for (const timeZoneName in timeZonesInRegion) {
 
                 // Get corresponding ID
                 const timeZoneID = timeZonesInRegion[timeZoneName];

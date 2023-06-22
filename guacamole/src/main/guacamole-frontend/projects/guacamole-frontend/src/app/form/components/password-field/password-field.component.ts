@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 /**
@@ -43,7 +43,7 @@ export class PasswordFieldComponent extends FormFieldBaseComponent implements On
      *
      * @default 'password'
      */
-    passwordInputType: string = 'password';
+    passwordInputType = 'password';
 
     /**
      * Apply disabled state to form control.
@@ -92,6 +92,6 @@ export class PasswordFieldComponent extends FormFieldBaseComponent implements On
         else
             this.passwordInputType = 'password';
 
-    };
+    }
 
 }

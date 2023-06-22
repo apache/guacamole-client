@@ -91,7 +91,7 @@ export class LoginComponent implements OnInit, OnChanges {
      * reset to false once the attempt has been fully processed, including
      * rerouting the user to the requested page if the attempt succeeded.
      */
-    submitted: boolean = false;
+    submitted = false;
 
     /**
      * The field that is most relevant to the user.
@@ -118,7 +118,7 @@ export class LoginComponent implements OnInit, OnChanges {
     isContinuation(): boolean {
 
         // The login is continuing if any parameter values are provided
-        for (let name in this.values?.controls)
+        for (const name in this.values?.controls)
             return true;
 
         return false;
@@ -173,7 +173,7 @@ export class LoginComponent implements OnInit, OnChanges {
                 catchError(this.requestService.IGNORE)
             )
             .subscribe()
-    };
+    }
 
     /**
      * Returns the field most relevant to the user given the current state

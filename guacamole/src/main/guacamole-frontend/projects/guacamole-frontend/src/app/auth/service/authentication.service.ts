@@ -34,7 +34,7 @@ import { catchError, from, map, Observable, of, switchMap, throwError } from 'rx
  * The unique identifier of the local storage key which stores the latest
  * authentication token.
  */
-const AUTH_TOKEN_STORAGE_KEY: string = 'GUAC_AUTH_TOKEN';
+const AUTH_TOKEN_STORAGE_KEY = 'GUAC_AUTH_TOKEN';
 
 /**
  * A service for authenticating a user against the REST API. Invoking the

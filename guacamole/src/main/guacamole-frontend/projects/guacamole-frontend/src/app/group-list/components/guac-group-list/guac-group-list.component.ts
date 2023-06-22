@@ -81,7 +81,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
      * be shown. If false (the default), only the descendants of the
      * given connection group will be listed.
      */
-    @Input() showRootGroup: boolean = false;
+    @Input() showRootGroup = false;
 
     /**
      * The maximum number of connections or groups to show per page.
@@ -210,7 +210,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
         if (this.connectionGroups) {
 
             // Add each provided connection group
-            for (let dataSource in this.connectionGroups) {
+            for (const dataSource in this.connectionGroups) {
                 const connectionGroup = this.connectionGroups[dataSource];
 
                 let rootItem: GroupListItem;
@@ -252,10 +252,10 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
                 .then((activeConnectionMap) => {
 
                     // Within each data source, count each active connection by identifier
-                    for (let dataSource in activeConnectionMap) {
+                    for (const dataSource in activeConnectionMap) {
                         const activeConnections = activeConnectionMap[dataSource];
 
-                        for (let connectionID in activeConnections) {
+                        for (const connectionID in activeConnections) {
                             const activeConnection = activeConnections[connectionID];
 
                             // If counter already exists, increment

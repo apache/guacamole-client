@@ -73,7 +73,7 @@ export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
             type: 'text/plain',
             data: this.element.nativeElement.value
         }));
-    };
+    }
 
     /**
      * Updates the contents of the clipboard editor to the given data.
@@ -89,7 +89,7 @@ export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
         }
 
         // Ignore other data types for now
-    };
+    }
 
     ngOnInit(): void {
         // Update remote clipboard if local clipboard changes

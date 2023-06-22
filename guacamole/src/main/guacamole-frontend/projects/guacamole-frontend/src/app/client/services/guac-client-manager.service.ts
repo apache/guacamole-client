@@ -330,7 +330,7 @@ export class GuacClientManagerService {
         const managedClients: Record<string, ManagedClient> = this.storedManagedClients();
 
         // Disconnect each managed client
-        for (let id in managedClients)
+        for (const id in managedClients)
             managedClients[id].client.disconnect();
 
         // Clear managed clients and client groups

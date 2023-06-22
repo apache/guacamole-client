@@ -112,7 +112,7 @@ export class ClipboardService {
      */
     private stopEventPropagation(e: Event) {
         e.stopPropagation();
-    };
+    }
 
     /**
      * Pushes the current selection range to the selection stack such that it
@@ -132,7 +132,7 @@ export class ClipboardService {
         if (selection.getRangeAt && selection.rangeCount)
             this.selectionStack.push(selection.getRangeAt(0));
 
-    };
+    }
 
     /**
      * Pops a selection range off the selection stack restoring the document's
@@ -154,7 +154,7 @@ export class ClipboardService {
         selection.removeAllRanges();
         selection.addRange(range);
 
-    };
+    }
 
     /**
      * Selects all nodes within the given element. This will replace the

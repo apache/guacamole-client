@@ -100,13 +100,13 @@ export class TextInputComponent implements AfterViewInit {
      * Whether the "Alt" key is currently pressed within the text input
      * interface.
      */
-    altPressed: boolean = false;
+    altPressed = false;
 
     /**
      * Whether the "Ctrl" key is currently pressed within the text
      * input interface.
      */
-    ctrlPressed: boolean = false;
+    ctrlPressed = false;
 
     /**
      * ElementRef to the text area input target.
@@ -123,13 +123,13 @@ export class TextInputComponent implements AfterViewInit {
      * attribute has no effect, but any bound property will be updated
      * as focus is gained or lost.
      */
-    hasFocus: boolean = false;
+    hasFocus = false;
 
     /**
      * Whether composition is currently active within the text input
      * target element, such as when an IME is in use.
      */
-    composingText: boolean = false;
+    composingText = false;
 
     /**
      * Inject required services.

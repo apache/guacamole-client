@@ -114,6 +114,6 @@ export class GuacInputColorComponent {
             }).catch(() => {
             // Do nothing if the user cancels the dialog
         });
-    };
+    }
 
 }

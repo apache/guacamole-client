@@ -24,13 +24,13 @@ import { BehaviorSubject } from 'rxjs';
  * The default size of a page, if not provided via the pageSize
  * attribute.
  */
-const DEFAULT_PAGE_SIZE: number = 10;
+const DEFAULT_PAGE_SIZE = 10;
 
 /**
  * The default maximum number of page choices to provide, if a
  * value is not provided via the pageCount attribute.
  */
-const DEFAULT_PAGE_COUNT: number = 11;
+const DEFAULT_PAGE_COUNT = 11;
 
 /**
  * Event data emitted by GuacPagerComponent when the user selects a
@@ -95,29 +95,29 @@ export class GuacPagerComponent implements OnChanges {
     /**
      * The number of the first selectable page.
      */
-    firstPage: number = 1;
+    firstPage = 1;
 
     /**
      * The number of the page immediately before the currently-selected
      * page.
      */
-    previousPage: number = 1;
+    previousPage = 1;
 
     /**
      * The number of the currently-selected page.
      */
-    currentPage: number = 1;
+    currentPage = 1;
 
     /**
      * The number of the page immediately after the currently-selected
      * page.
      */
-    nextPage: number = 1;
+    nextPage = 1;
 
     /**
      * The number of the last selectable page.
      */
-    lastPage: number = 1;
+    lastPage = 1;
 
     /**
      * An array of relevant page numbers that the user may want to jump

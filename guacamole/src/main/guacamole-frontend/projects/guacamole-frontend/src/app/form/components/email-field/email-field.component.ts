@@ -37,7 +37,7 @@ export class EmailFieldComponent extends FormFieldBaseComponent implements OnCha
     /**
      * TOOD: To which value is this a reference in the AngularJS code?
      */
-    readOnly: boolean = false;
+    readOnly = false;
 
     /**
      * Apply disabled state to typed form control.

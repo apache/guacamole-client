@@ -20,7 +20,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { GuacHistoryService } from './guac-history.service';
-import { LocalStorageService } from "../storage/local-storage.service";
+import { LocalStorageService } from '../storage/local-storage.service';
 
 describe('GuacHistoryService Unit-Test', () => {
     let service: GuacHistoryService;

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Field } from "./Field";
+import { Field } from './Field';
 
 /**
  * The object returned by REST API calls when representing the data

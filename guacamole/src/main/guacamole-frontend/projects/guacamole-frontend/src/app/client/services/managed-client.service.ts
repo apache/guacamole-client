@@ -703,7 +703,7 @@ export class ManagedClientService {
      *     set.
      */
     sendArguments(managedClient: ManagedClient, values: Record<string, string> | null): void {
-        for (let name in values) {
+        for (const name in values) {
             const value = values[name];
 
             const stream = managedClient.client.createArgumentValueStream('text/plain', name);
@@ -730,7 +730,7 @@ export class ManagedClientService {
 
         const model: Record<string, string> = {};
 
-        for (let argumentName in client.arguments) {
+        for (const argumentName in client.arguments) {
             const managedArgument = client.arguments[argumentName];
 
             model[managedArgument.name] = managedArgument.value;
@@ -787,7 +787,7 @@ export class ManagedClientService {
     isShared(client: ManagedClient): boolean {
 
         // The connection is shared if at least one share link exists
-        for (let dummy in client.shareLinks)
+        for (const dummy in client.shareLinks)
             return true;
 
         // No share links currently exist

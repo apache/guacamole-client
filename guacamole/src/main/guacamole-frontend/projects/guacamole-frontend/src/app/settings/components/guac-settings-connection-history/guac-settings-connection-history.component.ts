@@ -81,7 +81,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
     /**
      * The search terms to use when filtering the history records.
      */
-    searchString: string = '';
+    searchString = '';
 
     /**
      * TODO: Document

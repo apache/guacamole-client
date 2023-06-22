@@ -18,7 +18,7 @@
  */
 
 import { Component, ElementRef, Inject, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { DOCUMENT } from "@angular/common";
+import { DOCUMENT } from '@angular/common';
 
 @Component({
     selector: 'guac-menu',
@@ -30,14 +30,14 @@ export class GuacMenuComponent implements OnInit {
     /**
      * The string which should be rendered as the menu title.
      */
-    @Input() menuTitle: string = '';
+    @Input() menuTitle = '';
 
     /**
      * Whether the menu should remain open while the user interacts
      * with the contents of the menu. By default, the menu will close
      * if the user clicks within the menu contents.
      */
-    @Input() interactive: boolean = false;
+    @Input() interactive = false;
 
     /**
      * The outermost element of the guacMenu directive.
@@ -47,7 +47,7 @@ export class GuacMenuComponent implements OnInit {
     /**
      * Whether the contents of the menu are currently shown.
      */
-    menuShown: boolean = false;
+    menuShown = false;
 
     constructor(@Inject(DOCUMENT) private document: Document, private elementRef: ElementRef) {
         this.element = elementRef.nativeElement;

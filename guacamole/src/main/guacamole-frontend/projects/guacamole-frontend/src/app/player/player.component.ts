@@ -86,7 +86,7 @@ export class PlayerComponent implements OnChanges, OnDestroy {
      * in progress, this will be the desired playback position of the
      * pending request.
      */
-    playbackPosition: number = 0;
+    playbackPosition = 0;
 
     /**
      * The key of the translation string that describes the operation
@@ -101,7 +101,7 @@ export class PlayerComponent implements OnChanges, OnDestroy {
      * completion. If no such operation is running, this value has no
      * meaning.
      */
-    operationProgress: number = 0;
+    operationProgress = 0;
 
     /**
      * The position within the recording of the current seek operation, in
@@ -115,14 +115,14 @@ export class PlayerComponent implements OnChanges, OnDestroy {
      * in progress if the user is attempting to change the current playback
      * position (the user is manipulating the playback position slider).
      */
-    pendingSeekRequest: boolean = false;
+    pendingSeekRequest = false;
 
     /**
      * Whether playback should be resumed (play() should be invoked on the
      * recording) once the current seek request is complete. This value
      * only has meaning if a seek request is pending.
      */
-    resumeAfterSeekRequest: boolean = false;
+    resumeAfterSeekRequest = false;
 
     /**
      * The operation that should be performed when the cancel button is
@@ -261,7 +261,7 @@ export class PlayerComponent implements OnChanges, OnDestroy {
             else
                 this.recording.play();
         }
-    };
+    }
 
     ngOnChanges(changes: SimpleChanges) {
         if (changes['src']) {

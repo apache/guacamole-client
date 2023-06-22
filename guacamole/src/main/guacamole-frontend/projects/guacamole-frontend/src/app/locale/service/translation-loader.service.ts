@@ -69,7 +69,7 @@ export class TranslationLoaderService implements TranslocoLoader {
      */
     private replaceValues(obj: any): void {
         if (typeof obj === 'object') {
-            for (let key in obj) {
+            for (const key in obj) {
                 if (typeof obj[key] === 'string' && obj[key].startsWith('@:')) {
                     obj[key] = `{{${obj[key].substring(2)}}}`;
                 } else if (typeof obj[key] === 'object') {

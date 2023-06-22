@@ -18,7 +18,6 @@
  */
 
 import {
-    ChangeDetectionStrategy,
     Component,
     Input,
     OnChanges,
@@ -33,7 +32,7 @@ import sortedIndexOf from 'lodash/sortedIndexOf';
 import { FilterService } from '../../../list/services/filter.service';
 import { SortService } from '../../../list/services/sort.service';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
-import { BehaviorSubject, skip } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
 import { DataSource } from '../../../list/types/DataSource';
 
@@ -115,7 +114,7 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
      * Initially, only an abbreviated list of identifiers currently present
      * is shown.
      */
-    expanded: boolean = false;
+    expanded = false;
 
     /**
      * Map of identifiers to boolean flags indicating whether that

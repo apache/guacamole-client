@@ -57,7 +57,7 @@ export class LocationChooserComponent implements OnInit, OnChanges {
     /**
      * Whether the group list menu is currently open.
      */
-    menuOpen: boolean = false;
+    menuOpen = false;
 
     /**
      * The human-readable name of the currently-chosen connection

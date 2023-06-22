@@ -59,7 +59,7 @@ export class GuacClientZoomComponent {
     zoomSet(): void {
         // this.menu.autoFit = false;
         // this.client.clientProperties.autoFit = false;
-    };
+    }
 
     /**
      * Resets the client autofit setting to false.

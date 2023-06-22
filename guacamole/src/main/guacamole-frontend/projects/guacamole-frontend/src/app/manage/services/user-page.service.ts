@@ -164,7 +164,7 @@ export class UserPageService {
 
         // Determine whether a connection or balancing group should serve as
         // the home page
-        for (let dataSource in rootGroups) {
+        for (const dataSource in rootGroups) {
             this.addClientPages(clientPages, dataSource, rootGroups[dataSource]);
         }
 

@@ -18,11 +18,11 @@
  */
 
 import { Injectable } from '@angular/core';
-import { GuacEventService } from "guacamole-frontend-lib";
+import { GuacEventService } from 'guacamole-frontend-lib';
 import { Observable, of, throwError } from 'rxjs';
 import {
     GuacFrontendEventArguments
-} from "../../events/types/GuacFrontendEventArguments";
+} from '../../events/types/GuacFrontendEventArguments';
 import { LogService } from '../../util/log.service';
 import { Error } from '../types/Error';
 

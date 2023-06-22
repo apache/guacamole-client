@@ -69,7 +69,7 @@ import { ApplicationState } from './util/ApplicationState';
  * the client-side view can recognize that a user's session has expired
  * absent any action taken by the user.
  */
-const SESSION_VALIDITY_RECHECK_INTERVAL: number = 15000;
+const SESSION_VALIDITY_RECHECK_INTERVAL = 15000;
 
 /**
  * Name of the file that contains additional styles provided by extensions.
@@ -101,7 +101,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
     /**
      * Whether the user has selected to log back in after having logged out.
      */
-    reAuthenticating: boolean = false;
+    reAuthenticating = false;
 
     /**
      * The credentials that the authentication service is has already accepted,
@@ -362,7 +362,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
     private hasActiveTunnel(): boolean {
 
         const clients = this.guacClientManager.getManagedClients();
-        for (let id in clients) {
+        for (const id in clients) {
 
             switch (clients[id].clientState.connectionState) {
                 case ManagedClientState.ConnectionState.CONNECTING:

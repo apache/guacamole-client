@@ -168,7 +168,7 @@ export class GuacSettingsSessionsComponent implements OnInit {
                 this.allConnections = {};
 
                 // Load connections from each received root group
-                for (let dataSource in rootGroups) {
+                for (const dataSource in rootGroups) {
                     const rootGroup = rootGroups[dataSource];
                     this.allConnections[dataSource] = {};
                     this.addDescendantConnections(dataSource, rootGroup);
@@ -268,9 +268,9 @@ export class GuacSettingsSessionsComponent implements OnInit {
 
         // Wrap all active connections for sake of display
         this.wrappers = [];
-        for (let dataSource in this.allActiveConnections) {
+        for (const dataSource in this.allActiveConnections) {
             const activeConnections = this.allActiveConnections[dataSource];
-            for (let identifier in activeConnections) {
+            for (const identifier in activeConnections) {
                 const activeConnection = activeConnections[identifier];
 
                 // Retrieve corresponding connection
@@ -342,7 +342,7 @@ export class GuacSettingsSessionsComponent implements OnInit {
         const deletionRequests: Observable<any>[] = [];
 
         // Perform deletion for each relevant data source
-        for (let dataSource in this.allSelectedWrappers) {
+        for (const dataSource in this.allSelectedWrappers) {
             const selectedWrappers = this.allSelectedWrappers[dataSource];
 
             // Delete sessions, if any are selected
@@ -423,8 +423,8 @@ export class GuacSettingsSessionsComponent implements OnInit {
     canDeleteSessions(): boolean {
 
         // We can delete sessions if at least one is selected
-        for (let dataSource in this.allSelectedWrappers) {
-            for (let identifier in this.allSelectedWrappers[dataSource])
+        for (const dataSource in this.allSelectedWrappers) {
+            for (const identifier in this.allSelectedWrappers[dataSource])
                 return true;
         }
 

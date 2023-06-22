@@ -108,12 +108,12 @@ export abstract class FormFieldBaseComponent {
      * Whether this field should be rendered as disabled. By default,
      * form fields are enabled.
      */
-    @Input() disabled: boolean = false;
+    @Input() disabled = false;
 
     /**
      * Whether this field should be focused.
      */
-    @Input() focused: boolean = false;
+    @Input() focused = false;
 
     /**
      * An ID value which is reasonably likely to be unique relative to

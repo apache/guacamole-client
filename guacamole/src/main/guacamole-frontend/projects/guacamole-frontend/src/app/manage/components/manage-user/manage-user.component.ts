@@ -84,7 +84,7 @@ export class ManageUserComponent implements OnInit {
      * not to collide with any user that does not represent the current user
      * within the permission set.
      */
-    selfUsername: string = '';
+    selfUsername = '';
 
     /**
      * All user accounts associated with the same username as the account being
@@ -227,7 +227,7 @@ export class ManageUserComponent implements OnInit {
 
                         // Add the identifiers of all modifiable user groups
                         const availableGroups: string[] = [];
-                        for (let groupIdentifier in userGroups) {
+                        for (const groupIdentifier in userGroups) {
                             const userGroup = userGroups[groupIdentifier];
                             availableGroups.push(userGroup.identifier!);
                         }

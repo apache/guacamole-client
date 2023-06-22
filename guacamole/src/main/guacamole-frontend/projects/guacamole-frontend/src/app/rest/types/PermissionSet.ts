@@ -106,7 +106,7 @@ export class PermissionSet {
     private static containsPermission(permMap: Record<string, string[]>, type: PermissionSet.ObjectPermissionType): boolean {
 
         // Search all identifiers for given permission
-        for (let identifier in permMap) {
+        for (const identifier in permMap) {
 
             // If permission is granted, then no further searching is necessary
             if (permMap[identifier].indexOf(type) !== -1)

@@ -41,7 +41,7 @@ export class GuacPageListComponent implements OnInit, OnChanges {
     /**
      * The URL of the currently-displayed page.
      */
-    currentURL: string = '';
+    currentURL = '';
 
     /**
      * The names associated with the current page, if the current page
@@ -114,7 +114,7 @@ export class GuacPageListComponent implements OnInit, OnChanges {
      *     The sorting weight to use for the page if it does not
      *     already have an associated weight.
      */
-    addPage(page: PageDefinition, weight: number = 0): void {
+    addPage(page: PageDefinition, weight = 0): void {
 
         // Pull all names for page
         const names = this.getPageNames(page);
@@ -194,7 +194,7 @@ export class GuacPageListComponent implements OnInit, OnChanges {
         const pages: PageDefinition[] = [];
 
         // Convert contents of level to a flat array of pages
-        for (let key in level) {
+        for (const key in level) {
             const page = level[key];
             pages.push(page);
 
@@ -216,7 +216,7 @@ export class GuacPageListComponent implements OnInit, OnChanges {
 
             // Determine current page name
             this.currentPageName = [];
-            for (let page of pages) {
+            for (const page of pages) {
 
                 // If page is current page, store its names
                 if (this.isCurrentPage(page))
@@ -235,7 +235,7 @@ export class GuacPageListComponent implements OnInit, OnChanges {
 
                 // Determine relevancy by counting the number of pages
                 let pageCount = 0;
-                for (let name in level) {
+                for (const name in level) {
 
                     // Level is relevant if it has two or more pages
                     if (++pageCount === 2)

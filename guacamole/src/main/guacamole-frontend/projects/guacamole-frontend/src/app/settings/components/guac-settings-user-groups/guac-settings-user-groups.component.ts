@@ -30,7 +30,7 @@ import keys from 'lodash/keys';
 import { UserGroup } from '../../../rest/types/UserGroup';
 import { Router } from '@angular/router';
 import { NonNullableProperties } from '../../../util/utility-types';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
 import { DataSource } from '../../../list/types/DataSource';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
@@ -249,7 +249,7 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
             return true;
 
         // For each data source
-        for (let dataSource in this.permissions) {
+        for (const dataSource in this.permissions) {
 
             // Retrieve corresponding permission set
             const permissionSet = (this.permissions)[dataSource];
@@ -288,7 +288,7 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
 
         // For each user group in each data source
         this.dataSources.forEach(dataSource => {
-            for (let userGroupIdentifier in userGroups[dataSource]) {
+            for (const userGroupIdentifier in userGroups[dataSource]) {
                 const userGroup = userGroups[dataSource][userGroupIdentifier];
 
                 // Do not add the same user group twice

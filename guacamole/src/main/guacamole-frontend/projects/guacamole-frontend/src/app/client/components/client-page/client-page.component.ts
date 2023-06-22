@@ -68,7 +68,7 @@ import findKey from 'lodash/findKey';
 import intersection from 'lodash/intersection';
 import isEmpty from 'lodash/isEmpty';
 import pull from 'lodash/pull';
-import { filter, pairwise, startWith, Subscription, tap } from 'rxjs';
+import { filter, pairwise, startWith, tap } from 'rxjs';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { SharingProfile } from '../../../rest/types/SharingProfile';
 import { ManagedClientState } from '../../types/ManagedClientState';
@@ -408,7 +408,7 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
      *     The client to apply parameter changes to.
      */
     applyParameterChanges(client: ManagedClient | null): void {
-        for (let name in this.menu.connectionParameters) {
+        for (const name in this.menu.connectionParameters) {
             const value = this.menu.connectionParameters[name];
             if (client)
                 this.managedClientService.setArgument(client, name, value);
@@ -452,7 +452,7 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
      *     Whether the specified client should be added (false) or removed
      *     (true).
      */
-    addRemoveClient(id: string, remove: boolean = false): void {
+    addRemoveClient(id: string, remove = false): void {
 
         // Deconstruct current path into corresponding client IDs
         const ids = ManagedClientGroup.getClientIdentifiers(this.groupId);
@@ -905,7 +905,7 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
     canShareConnection(): boolean {
 
         // If there is at least one sharing profile, the connection can be shared
-        for (let dummy in this.sharingProfiles)
+        for (const dummy in this.sharingProfiles)
             return true;
 
         // Otherwise, sharing is not possible
