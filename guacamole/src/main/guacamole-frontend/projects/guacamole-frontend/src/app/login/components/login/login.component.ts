@@ -18,9 +18,7 @@
  */
 
 import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import {
-    GuacFrontendEventArguments
-} from '../../../events/types/GuacFrontendEventArguments';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { TranslatableMessage } from '../../../rest/types/TranslatableMessage';
 import { Field } from '../../../rest/types/Field';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
@@ -239,8 +237,8 @@ export class LoginComponent implements OnInit, OnChanges {
                     // Reset all remaining fields to default values, but
                     // preserve any usernames
                     this.remainingFields.forEach((field) => {
-                        if (field.type !== Field.Type.USERNAME && field.name in this.enteredValues)
-                            this.enteredValues.get(field.name)?.setValue(this.DEFAULT_FIELD_VALUE);
+                        if (field.type !== Field.Type.USERNAME && this.enteredValues.get(field.name) !== null)
+                            this.enteredValues.get(field.name)!.setValue(this.DEFAULT_FIELD_VALUE);
                     });
                 }
 
@@ -255,12 +253,6 @@ export class LoginComponent implements OnInit, OnChanges {
             this.submitted = false;
         });
 
-        // TODO: // Reset state after authentication and routing have succeeded
-        // this.gaucEventService.on('$routeChangeSuccess', () => {
-        //     this.enteredValues = {};
-        //     this.submitted = false;
-        // });
     }
-
 
 }
