@@ -23,13 +23,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Consumer;
+
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.net.auth.permission.Permission;
 import org.apache.guacamole.net.auth.permission.PermissionSet;
+
+import com.google.common.collect.Iterables;
+import com.google.inject.Inject;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -50,6 +56,12 @@ import org.apache.guacamole.net.auth.permission.PermissionSet;
 public abstract class ModeledPermissionService<PermissionSetType extends PermissionSet<PermissionType>,
         PermissionType extends Permission, ModelType>
     extends AbstractPermissionService<PermissionSetType, PermissionType> {
+
+    /**
+     * The environment of the Guacamole server.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Returns an instance of a mapper for the type of permission used by this
@@ -139,6 +151,38 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
 
         return models;
 
+    }
+
+    /**
+     * Runs the provided consumer function on subsets of the original collection
+     * of objects, with each subset being no larger than the maximum batch size
+     * configured for the JDBC environment. Any permission update that involves
+     * passing potentially-large lists of models to a mapper should use this
+     * method to perform the update to ensure that the maximum number of
+     * parameters for an individual query is not exceeded.
+     *
+     * @param <T>
+     *     The type of object stored in the provided objects list, and consumed
+     *     by the provided consumer.
+     *
+     * @param objects
+     *     A collection of objects to be partitioned.
+     *
+     * @param consumer
+     *     A function that will consume subsets of the objects from the provided
+     *     collection of objects, performing any update as needed.
+     *
+     * @throws GuacamoleException
+     *     If the batch size cannot be determined for the JDBC environment.
+     */
+    protected <T> void batchPermissionUpdates(
+            Collection<T> objects, Consumer<Collection<T>> consumer)
+            throws GuacamoleException {
+
+        // Split the original collection into views, each no larger than the
+        // configured batch size, and call the collector function with each
+        Iterables.partition(objects, environment.getBatchSize())
+                .forEach(batch -> consumer.accept(batch));
     }
 
     @Override

@@ -97,8 +97,13 @@ public class SystemPermissionService
         // Only privileged users (such as system administrators) can create
         // system permissions
         if (user.isPrivileged()) {
-            Collection<SystemPermissionModel> models = getModelInstances(targetEntity, permissions);
-            systemPermissionMapper.insert(models);
+
+            batchPermissionUpdates(permissions, permissionSubset -> {
+                Collection<SystemPermissionModel> models = getModelInstances(
+                        targetEntity, permissionSubset);
+                systemPermissionMapper.insert(models);
+            });
+
             return;
         }
 
@@ -119,9 +124,13 @@ public class SystemPermissionService
             // Do not allow users to remove their own admin powers
             if (user.getUser().getIdentifier().equals(targetEntity.getIdentifier()))
                 throw new GuacamoleUnsupportedException("Removing your own administrative permissions is not allowed.");
-            
-            Collection<SystemPermissionModel> models = getModelInstances(targetEntity, permissions);
-            systemPermissionMapper.delete(models);
+
+            batchPermissionUpdates(permissions, permissionSubset -> {
+                Collection<SystemPermissionModel> models = getModelInstances(
+                        targetEntity, permissionSubset);
+                systemPermissionMapper.delete(models);
+            });
+
             return;
         }
 
