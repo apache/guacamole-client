@@ -17,9 +17,18 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
 
-initFederation('moduleFederation/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+@Component({
+    selector: 'guac-root',
+    standalone: true,
+    imports: [CommonModule, RouterOutlet],
+    template: `
+        <router-outlet></router-outlet>
+    `
+})
+export class AppComponent {
+    title = 'guacamole-frontend-extension-example';
+}

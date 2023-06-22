@@ -17,9 +17,4 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
-
-initFederation('moduleFederation/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+module.exports = require('./webpack.config');

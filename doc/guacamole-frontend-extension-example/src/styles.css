@@ -17,9 +17,4 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
-
-initFederation('moduleFederation/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+/* You can add global styles to this file, and also import other style files */

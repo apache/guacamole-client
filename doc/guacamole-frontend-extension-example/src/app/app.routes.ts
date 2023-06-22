@@ -17,9 +17,22 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
+import { Routes } from '@angular/router';
+import { HomePageComponent } from "./components/home-page.component";
 
-initFederation('moduleFederation/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+export const routes: Routes = [
+    {
+        path: '',
+        component: HomePageComponent,
+    },
+
+    {
+        path: 'about',
+        loadComponent: () => import('./components/about-extension-page.component')
+            .then(m => m.AboutExtensionPageComponent),
+        title: 'About The Extension'
+    },
+
+    // fallback route when the url is not found
+    {path: '**', redirectTo: '', pathMatch: 'full'}
+];

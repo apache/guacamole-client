@@ -17,9 +17,17 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
+const {shareAll, withModuleFederationPlugin} = require('@angular-architects/module-federation/webpack');
+module.exports = withModuleFederationPlugin({
 
-initFederation('moduleFederation/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+    name: 'guacamole-frontend-extension-example',
+
+    exposes: {
+        'bootsrapExtension': './src/app/extension.config.ts'
+    },
+
+    shared: {
+        ...shareAll({singleton: true, strictVersion: true, requiredVersion: 'auto'}),
+    },
+
+});

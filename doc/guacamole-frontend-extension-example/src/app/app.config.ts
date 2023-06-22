@@ -17,9 +17,11 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
+import { ApplicationConfig } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
-initFederation('moduleFederation/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [provideRouter(routes) ]
+};

@@ -17,9 +17,26 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
+import { Component, ViewEncapsulation } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from "@angular/router";
 
-initFederation('moduleFederation/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+/**
+ * Dispays the about extension page.
+ */
+@Component({
+    selector: 'guac-about-extension-page',
+    standalone: true,
+    imports: [CommonModule, RouterLink],
+    template: `
+        <p>
+            This is the about extension page.
+
+            <a routerLink="../">Go back to the extension page</a>
+        </p>
+    `,
+    encapsulation: ViewEncapsulation.None,
+})
+export class AboutExtensionPageComponent {
+
+}

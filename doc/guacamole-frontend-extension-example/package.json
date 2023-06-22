@@ -1,0 +1,34 @@
+{
+  "name": "guacamole-frontend-extension-example",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular-architects/module-federation": "^16.0.4",
+    "@angular/animations": "16.1.1",
+    "@angular/common": "16.1.1",
+    "@angular/compiler": "16.1.1",
+    "@angular/core": "16.1.1",
+    "@angular/forms": "16.1.1",
+    "@angular/platform-browser": "16.1.1",
+    "@angular/platform-browser-dynamic": "16.1.1",
+    "@angular/router": "16.1.1",
+    "guacamole-frontend-ext-lib": "file:../../guacamole/src/main/guacamole-frontend/dist/guacamole-frontend-ext-lib",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.13.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "16.1.1",
+    "@angular/cli": "~16.1.0",
+    "@angular/compiler-cli": "16.1.1",
+    "ngx-build-plus": "^16.0.0",
+    "typescript": "~5.1.3"
+  }
+}

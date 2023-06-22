@@ -1,0 +1,10 @@
+{
+    "extension-example": {
+        "remoteEntry": "http://localhost:4202/remoteEntry.js",
+
+        "entrypoint": "bootsrapExtension",
+        "bootsrapFunctionName": "bootsrapExtension",
+        "pageTitle": "Extension Example",
+        "routePath": "extension-example"
+    }
+}

@@ -17,9 +17,23 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
+import { Component, ViewEncapsulation } from '@angular/core';
+import { RouterLink } from "@angular/router";
 
-initFederation('moduleFederation/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+/**
+ * Displays a button to navigate to the about page.
+ */
+@Component({
+    selector: 'guac-about-extension-button',
+    template: `
+        <a routerLink="about">About</a>
+    `,
+    imports: [
+        RouterLink
+    ],
+    encapsulation: ViewEncapsulation.None,
+    standalone: true
+})
+export class AboutExtensionButtonComponent {
+
+}
