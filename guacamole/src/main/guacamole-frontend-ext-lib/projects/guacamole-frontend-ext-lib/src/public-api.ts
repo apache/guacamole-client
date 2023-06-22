@@ -21,6 +21,6 @@
  * Public API Surface of guacamole-frontend-ext-lib
  */
 
-export * from './lib/guacamole-frontend-ext-lib.service';
-export * from './lib/guacamole-frontend-ext-lib.component';
-export * from './lib/guacamole-frontend-ext-lib.module';
+export * from './lib/form/FormField';
+export * from './lib/form/FormFieldComponentData';
+export * from './lib/form/field-type.service';

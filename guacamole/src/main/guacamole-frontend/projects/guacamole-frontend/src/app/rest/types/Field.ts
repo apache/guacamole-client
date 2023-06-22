@@ -18,12 +18,13 @@
  */
 
 import { TranslatableMessage } from './TranslatableMessage';
+import { FormField } from "guacamole-frontend-ext-lib";
 
 /**
  * The object returned by REST API calls when representing the data
  * associated with a field or configuration parameter.
  */
-export class Field {
+export class Field implements FormField {
 
     /**
      * The name which uniquely identifies this parameter.

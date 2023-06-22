@@ -25,6 +25,7 @@
         "@simonwep/pickr": "^1.8.2",
         "angular-expressions": "^1.1.9",
         "file-saver": "^2.0.5",
+        "guacamole-frontend-ext-lib": "file:../guacamole-frontend-ext-lib/dist/guacamole-frontend-ext-lib",
         "guacamole-frontend-lib": "file:../guacamole-frontend-lib/dist/guacamole-frontend-lib",
         "jstz": "^2.1.1",
         "lodash": "^4.17.21",

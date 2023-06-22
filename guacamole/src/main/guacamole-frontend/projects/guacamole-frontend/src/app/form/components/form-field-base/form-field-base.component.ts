@@ -20,6 +20,7 @@
 import { Component, Input } from '@angular/core';
 import { Field } from '../../../rest/types/Field';
 import { FormControl } from '@angular/forms';
+import { FormFieldComponentData } from "guacamole-frontend-ext-lib";
 
 
 /**
@@ -82,7 +83,7 @@ export const canonicalize = (identifier: string): string => {
  * TODO: move to shared library
  */
 @Component({'template': ''})
-export abstract class FormFieldBaseComponent {
+export abstract class FormFieldBaseComponent implements FormFieldComponentData {
 
     /**
      * The translation namespace of the translation strings that will

@@ -30,8 +30,6 @@ import { Form } from '../../rest/types/Form';
 import { Field } from '../../rest/types/Field';
 import { FormFieldComponent } from '../components/form-field/form-field.component';
 import { TimeZoneFieldComponent } from '../components/time-zone-field/time-zone-field.component';
-import { FormFieldBaseComponent } from '../components/form-field-base/form-field-base.component';
-import { FieldType } from '../types/FieldType';
 import { CheckboxFieldComponent } from '../components/checkbox-field/checkbox-field.component';
 import { DateFieldComponent } from '../components/date-field/date-field.component';
 import { LanguageFieldComponent } from '../components/language-field/language-field.component';
@@ -49,12 +47,11 @@ import {
 } from '../components/terminal-color-scheme-field/terminal-color-scheme-field.component';
 import { FormControl, FormGroup } from '@angular/forms';
 import { isArray } from '../../util/is-array';
+import { FieldTypeService, FormFieldComponentData } from 'guacamole-frontend-ext-lib';
 
 /**
  * A service for maintaining form-related metadata and linking that data to
  * corresponding controllers and templates.
- *
- * TODO: move to shared library
  */
 @Injectable({
     providedIn: 'root'
@@ -70,24 +67,93 @@ export class FormService {
 
     private renderer: Renderer2;
 
-    constructor(rendererFactory: RendererFactory2) {
+    constructor(private fieldTypeService: FieldTypeService, rendererFactory: RendererFactory2) {
+        this.registerFieldTypes();
         this.renderer = rendererFactory.createRenderer(null, null);
     }
 
     /**
-     * Registers a new field type under the given name.
-     *
-     * @param fieldTypeName
-     *     The name which uniquely identifies the field type being registered.
-     *
-     * @param fieldType
-     *     The field type definition to associate with the given name.
+     * Registers the default field types with this field type service.
      */
-    registerFieldType(fieldTypeName: string, fieldType: FieldType): void {
+    private registerFieldTypes() {
 
-        // Store field type
-        this.fieldTypes[fieldTypeName] = fieldType;
+        /**
+         * Text field type.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.TEXT, TextFieldComponent);
 
+        /**
+         * Email address field type.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.EMAIL, EmailFieldComponent);
+
+        /**
+         * Numeric field type.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.NUMERIC, NumberFieldComponent);
+
+        /**
+         * Boolean field type.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.BOOLEAN, CheckboxFieldComponent);
+
+        /**
+         * Username field type. Identical in principle to a text field, but may
+         * have different semantics.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.USERNAME, UsernameFieldComponent);
+
+        /**
+         * Password field type. Similar to a text field, but the contents of
+         * the field are masked.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.PASSWORD, PasswordFieldComponent);
+
+        /**
+         * Enumerated field type. The user is presented a finite list of values
+         * to choose from.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.ENUM, SelectFieldComponent);
+
+        /**
+         * Multiline field type. The user may enter multiple lines of text.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.MULTILINE, TextAreaFieldComponent);
+
+        /**
+         * Field type which allows selection of languages. The languages
+         * displayed are the set of languages supported by the Guacamole web
+         * application. Legal values are valid language IDs, as dictated by
+         * the filenames of Guacamole's available translations.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.LANGUAGE, LanguageFieldComponent);
+
+        /**
+         * Field type which allows selection of time zones.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.TIMEZONE, TimeZoneFieldComponent);
+
+        /**
+         * Field type which allows selection of individual dates.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.DATE, DateFieldComponent);
+
+        /**
+         * Field type which allows selection of times of day.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.TIME, TimeFieldComponent);
+
+        /**
+         * Field type which allows selection of color schemes accepted by the
+         * Guacamole server terminal emulator and protocols which leverage it.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.TERMINAL_COLOR_SCHEME, TerminalColorSchemeFieldComponent);
+
+        /**
+         * Field type that supports redirecting the client browser to another
+         * URL.
+         */
+        this.fieldTypeService.registerFieldType(Field.Type.REDIRECT, RedirectFieldComponent);
     }
 
     /**
@@ -184,7 +250,7 @@ export class FormService {
         return new Promise((resolve, reject) => {
 
             // Ensure field type is defined
-            const componentToInject: Type<FormFieldBaseComponent> = this.fieldTypes[fieldType].component;
+            const componentToInject: Type<FormFieldComponentData> | null = this.fieldTypeService.getComponent(fieldType);
             if (!(componentToInject && this.viewContainer)) {
                 reject();
                 return;
@@ -214,7 +280,7 @@ export class FormService {
      * @param scope
      * @private
      */
-    private insertFieldElementInternal(componentType: Type<any>, fieldContainer: Element, scope: FormFieldComponent): ComponentRef<any> | null {
+    private insertFieldElementInternal(componentType: Type<FormFieldComponentData>, fieldContainer: Element, scope: FormFieldComponent): ComponentRef<any> | null {
 
         if (!this.viewContainer) {
             return null;
@@ -224,7 +290,7 @@ export class FormService {
         this.viewContainer.clear();
 
         // Create a component using the factory and add it to the container
-        const componentRef = this.viewContainer.createComponent<FormFieldBaseComponent>(componentType);
+        const componentRef = this.viewContainer.createComponent(componentType);
 
         // Copy properties from scope to the component instance
         componentRef.instance.namespace = scope.namespace;
@@ -233,7 +299,6 @@ export class FormService {
         componentRef.instance.disabled = scope.disabled;
         componentRef.instance.focused = scope.focused;
         componentRef.instance.fieldId = scope.fieldId;
-        // TODO: Copy more properties from scope to componentRef.instance
 
         // Get the native element of the created component
         const nativeElement = componentRef.location.nativeElement;
@@ -332,93 +397,5 @@ export class FormService {
         return 'name' in obj && 'fields' in obj;
     }
 
-    /**
-     * Map of all registered field type definitions by name.
-     */
-    fieldTypes: Record<string, FieldType> = {
 
-        /**
-         * Text field type.
-         */
-        [Field.Type.TEXT]: {component: TextFieldComponent},
-
-        /**
-         * Email address field type.
-         */
-        [Field.Type.EMAIL]: {component: EmailFieldComponent},
-
-        /**
-         * Numeric field type.
-         */
-        [Field.Type.NUMERIC]: {component: NumberFieldComponent},
-
-        /**
-         * Boolean field type.
-         */
-        [Field.Type.BOOLEAN]: {component: CheckboxFieldComponent},
-
-        /**
-         * Username field type. Identical in principle to a text field, but may
-         * have different semantics.
-         */
-        [Field.Type.USERNAME]: {component: UsernameFieldComponent},
-
-        /**
-         * Password field type. Similar to a text field, but the contents of
-         * the field are masked.
-         */
-        [Field.Type.PASSWORD]: {component: PasswordFieldComponent},
-
-        /**
-         * Enumerated field type. The user is presented a finite list of values
-         * to choose from.
-         */
-        [Field.Type.ENUM]: {component: SelectFieldComponent},
-
-        /**
-         * Multiline field type. The user may enter multiple lines of text.
-         */
-        [Field.Type.MULTILINE]: {component: TextAreaFieldComponent},
-
-        /**
-         * Field type which allows selection of languages. The languages
-         * displayed are the set of languages supported by the Guacamole web
-         * application. Legal values are valid language IDs, as dictated by
-         * the filenames of Guacamole's available translations.
-         */
-        [Field.Type.LANGUAGE]: {component: LanguageFieldComponent},
-
-        /**
-         * Field type which allows selection of time zones.
-         */
-        [Field.Type.TIMEZONE]: {component: TimeZoneFieldComponent},
-
-        /**
-         * Field type which allows selection of individual dates.
-         */
-        [Field.Type.DATE]: {component: DateFieldComponent},
-
-        /**
-         * Field type which allows selection of times of day.
-         */
-        [Field.Type.TIME]: {component: TimeFieldComponent},
-
-        /**
-         * Field type which allows selection of color schemes accepted by the
-         * Guacamole server terminal emulator and protocols which leverage it.
-         */
-        [Field.Type.TERMINAL_COLOR_SCHEME]: {component: TerminalColorSchemeFieldComponent},
-
-        /**
-         * Field type that supports redirecting the client browser to another
-         * URL.
-         */
-        [Field.Type.REDIRECT]: {component: RedirectFieldComponent},
-
-        /**
-         * Field type that is used to extract a query parameter from the URL.
-         * No input is presented to the user.
-         */
-        [Field.Type.QUERY_PARAMETER]: {component: undefined as any}
-    };
 }
