@@ -18,6 +18,7 @@
         "@angular/platform-browser": "^16.1.0",
         "@angular/platform-browser-dynamic": "^16.1.0",
         "@angular/router": "^16.1.0",
+        "guacamole-frontend-ext-lib": "file:../guacamole-frontend-ext-lib/dist/guacamole-frontend-ext-lib",
         "rxjs": "~7.8.0",
         "tslib": "^2.3.0",
         "zone.js": "~0.13.0"
@@ -29,8 +30,8 @@
         "@types/jasmine": "~4.3.0",
         "jasmine-core": "~4.6.0",
         "karma": "~6.4.0",
-        "karma-firefox-launcher": "~2.1.2",
         "karma-coverage": "~2.2.0",
+        "karma-firefox-launcher": "~2.1.2",
         "karma-jasmine": "~5.1.0",
         "karma-jasmine-html-reporter": "~2.1.0",
         "ng-packagr": "^16.1.0",
