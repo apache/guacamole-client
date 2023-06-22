@@ -18,8 +18,9 @@
  */
 
 import { TestBed } from '@angular/core/testing';
+import { TestScheduler } from 'rxjs/internal/testing/TestScheduler';
+import { getTestScheduler } from '../../util/test-helper';
 import { DataSourceBuilderService } from './data-source-builder.service';
-import { testScheduler } from '../../util/test-helper';
 import { from, map, of } from 'rxjs';
 import { SortOrder } from '../types/SortOrder';
 import { PagerEvent } from '../components/guac-pager/guac-pager.component';
@@ -32,6 +33,7 @@ interface Person {
 
 describe('DataSourceBuilderService', () => {
     let service: DataSourceBuilderService;
+    let testScheduler: TestScheduler;
     const source: Person[] = [
         {id: 1, name: 'John'},
         {id: 2, name: 'Jane'},
@@ -46,6 +48,7 @@ describe('DataSourceBuilderService', () => {
     ];
 
     beforeEach(() => {
+        testScheduler = getTestScheduler();
         TestBed.configureTestingModule({});
         service = TestBed.inject(DataSourceBuilderService);
     });
@@ -89,12 +92,12 @@ describe('DataSourceBuilderService', () => {
 
                 const dataSource: DataSource<Person> = service.getBuilder<Person>()
                     .source(source)
-                    .filter(of('ji'))
+                    .filter(of('ji'), ['name'])
                     .build();
 
                 const length = dataSource.totalLength;
 
-                // TODO: implement correct filtering expectObservable(length).toBe('(a|)', {a: 2});
+                expectObservable(length).toBe('(a|)', {a: 2});
 
             });
         });

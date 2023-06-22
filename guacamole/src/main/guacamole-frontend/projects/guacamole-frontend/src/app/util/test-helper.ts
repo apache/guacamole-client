@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { TestScheduler } from 'rxjs/internal/testing/TestScheduler';
+import { TestScheduler } from 'rxjs/testing';
 
 /**
  * Provides a TestScheduler that can be used for testing RxJS observables ("marble tests").
  */
-export const testScheduler = new TestScheduler((actual, expected) => {
+export const getTestScheduler = () => new TestScheduler((actual, expected) => {
     // asserting the two objects are equal - required
     // for TestScheduler assertions to work via your test framework
     // e.g. using chai.

@@ -18,18 +18,20 @@
  */
 
 import { catchError, throwError } from 'rxjs';
+import { TestScheduler } from 'rxjs/testing';
+import { getTestScheduler } from '../../util/test-helper';
 import { RequestService } from './request.service';
 import { TestBed } from '@angular/core/testing';
-
 import { Error } from '../types/Error';
-import { testScheduler } from '../../util/test-helper';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import Type = Error.Type;
 
 describe('RequestService', () => {
     let service: RequestService;
+    let testScheduler: TestScheduler;
 
     beforeEach(() => {
+        testScheduler = getTestScheduler();
         TestBed.configureTestingModule({
             imports: [HttpClientTestingModule],
         });

@@ -18,11 +18,12 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { GuacPageListComponent } from './guac-page-list.component';
 import { By } from "@angular/platform-browser";
 import { SimpleChange } from "@angular/core";
 import { LocaleModule } from "../../../locale/locale.module";
+import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { RouterTestingModule } from "@angular/router/testing";
 
 describe('PageListComponent', () => {
     let component: GuacPageListComponent;
@@ -31,7 +32,11 @@ describe('PageListComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [GuacPageListComponent],
-            imports: [LocaleModule]
+            imports: [
+                HttpClientTestingModule,
+                RouterTestingModule,
+                LocaleModule
+            ]
         });
         fixture = TestBed.createComponent(GuacPageListComponent);
         component = fixture.componentInstance;

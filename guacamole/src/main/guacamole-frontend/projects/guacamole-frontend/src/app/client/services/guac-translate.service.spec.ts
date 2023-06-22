@@ -18,18 +18,21 @@
  */
 
 import { TestBed } from '@angular/core/testing';
+import { TestScheduler } from 'rxjs/testing';
 import { GuacTranslateService } from './guac-translate.service';
 import { TRANSLOCO_MISSING_HANDLER, TranslocoService, TranslocoTestingModule } from '@ngneat/transloco';
 import { GuacMissingHandler } from '../../locale/locale.module';
-import { testScheduler } from '../../util/test-helper';
+import { getTestScheduler } from '../../util/test-helper';
 import { TranslationResult } from '../types/TranslationResult';
 
 
 describe('GuacTranslateService', () => {
     let service: GuacTranslateService;
     let transloco: TranslocoService;
+    let testScheduler: TestScheduler;
 
     beforeEach(() => {
+        testScheduler = getTestScheduler();
         TestBed.configureTestingModule({
             imports: [
                 TranslocoTestingModule.forRoot({

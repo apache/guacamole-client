@@ -17,7 +17,9 @@
  * under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { TranslocoTestingModule } from '@ngneat/transloco';
 
 import { GuacSectionTabsComponent } from './guac-section-tabs.component';
 import { By } from '@angular/platform-browser';
@@ -30,7 +32,19 @@ describe('SectionTabsComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [GuacSectionTabsComponent],
-            imports: [LocaleModule]
+            imports: [
+                LocaleModule,
+                TranslocoTestingModule.forRoot({
+                    langs: {
+                        en: {
+                            'TAB_1': 'TAB_1',
+                            'TAB_2': 'TAB_2',
+                            'TAB_3': 'TAB_3'
+                        }
+                    }
+                }),
+                HttpClientTestingModule,
+            ]
         });
         fixture = TestBed.createComponent(GuacSectionTabsComponent);
         component = fixture.componentInstance;

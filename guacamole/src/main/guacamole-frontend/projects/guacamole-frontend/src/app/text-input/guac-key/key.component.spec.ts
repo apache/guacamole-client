@@ -23,6 +23,7 @@ import {
     GuacFrontendEventArguments
 } from '../../events/types/GuacFrontendEventArguments';
 import { KeyComponent } from './key.component';
+import { TranslocoTestingModule } from "@ngneat/transloco";
 
 describe('KeyComponent', () => {
     let component: KeyComponent;
@@ -32,6 +33,9 @@ describe('KeyComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [KeyComponent],
+            imports: [
+                TranslocoTestingModule.forRoot({})
+            ],
         });
         fixture = TestBed.createComponent(KeyComponent);
         component = fixture.componentInstance;

@@ -19,13 +19,11 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ElementModule } from 'guacamole-frontend-lib';
 import { PlayerComponent } from './player.component';
 import { PlayerDisplayComponent } from './player-display/player-display.component';
 import { ProgressIndicatorComponent } from './progress-indicator/progress-indicator.component';
 import { FormsModule } from "@angular/forms";
-import { ElementModule } from "../element/element.module";
-
-
 
 @NgModule({
   declarations: [
