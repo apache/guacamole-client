@@ -17,9 +17,13 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
+import { ViewEncapsulation } from '@angular/core';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-initFederation('/assets/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
+import { AppModule } from './app/app.module';
+
+
+platformBrowserDynamic().bootstrapModule(AppModule, {
+    defaultEncapsulation: ViewEncapsulation.None
+})
     .catch(err => console.error(err));

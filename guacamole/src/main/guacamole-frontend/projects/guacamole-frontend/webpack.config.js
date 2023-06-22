@@ -17,9 +17,12 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
+const {shareAll, withModuleFederationPlugin} = require('@angular-architects/module-federation/webpack');
 
-initFederation('/assets/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+module.exports = withModuleFederationPlugin({
+
+    shared: {
+        ...shareAll({singleton: true, strictVersion: true, requiredVersion: 'auto'}),
+    },
+
+});

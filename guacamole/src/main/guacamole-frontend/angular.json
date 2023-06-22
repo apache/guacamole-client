@@ -11,7 +11,7 @@
             "prefix": "guac",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "ngx-build-plus:browser",
                     "options": {
                         "outputPath": "dist/guacamole-frontend",
                         "index": "projects/guacamole-frontend/src/index.html",
@@ -48,7 +48,9 @@
                         "scripts": [
                             "./node_modules/guacamole-frontend-lib/assets/guacamole-common-js.min.js"
                         ],
-                        "preserveSymlinks": true
+                        "preserveSymlinks": true,
+                        "extraWebpackConfig": "projects/guacamole-frontend/webpack.config.js",
+                        "commonChunk": false
                     },
                     "configurations": {
                         "production": {
@@ -64,7 +66,8 @@
                                     "maximumError": "9kb"
                                 }
                             ],
-                            "outputHashing": "all"
+                            "outputHashing": "all",
+                            "extraWebpackConfig": "projects/guacamole-frontend/webpack.prod.config.js"
                         },
                         "development": {
                             "buildOptimizer": false,
@@ -78,21 +81,28 @@
                     "defaultConfiguration": "production"
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "ngx-build-plus:dev-server",
                     "configurations": {
                         "production": {
-                            "browserTarget": "guacamole-frontend:build:production"
+                            "browserTarget": "guacamole-frontend:build:production",
+                            "extraWebpackConfig": "projects/guacamole-frontend/webpack.prod.config.js"
                         },
                         "development": {
                             "browserTarget": "guacamole-frontend:build:development"
                         }
                     },
-                    "defaultConfiguration": "development"
+                    "defaultConfiguration": "development",
+                    "options": {
+                        "port": 4200,
+                        "publicHost": "http://localhost:4200",
+                        "extraWebpackConfig": "projects/guacamole-frontend/webpack.config.js"
+                    }
                 },
                 "extract-i18n": {
-                    "builder": "@angular-devkit/build-angular:extract-i18n",
+                    "builder": "ngx-build-plus:extract-i18n",
                     "options": {
-                        "browserTarget": "guacamole-frontend:build"
+                        "browserTarget": "guacamole-frontend:build",
+                        "extraWebpackConfig": "projects/guacamole-frontend/webpack.config.js"
                     }
                 },
                 "test": {
