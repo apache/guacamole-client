@@ -19,11 +19,12 @@
 
 import {
     AfterViewInit,
-    Component,
+    Component, DestroyRef,
     ElementRef,
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import {
     GuacFrontendEventArguments
@@ -133,7 +134,8 @@ export class TextInputComponent implements AfterViewInit {
     /**
      * Inject required services.
      */
-    constructor(private guacEventService: GuacEventService<GuacFrontendEventArguments>) {
+    constructor(private guacEventService: GuacEventService<GuacFrontendEventArguments>,
+                private destroyRef: DestroyRef) {
     }
 
     ngAfterViewInit(): void {
@@ -185,18 +187,22 @@ export class TextInputComponent implements AfterViewInit {
         }, false);
 
         // If the text input UI has focus, prevent keydown events
-        this.guacEventService.on('guacBeforeKeydown', ({event, keysym}) => {
-            // filterKeydown
-            if (this.hasFocus && !ALLOWED_KEYS[keysym])
-                event.preventDefault();
-        });
+        this.guacEventService.on('guacBeforeKeydown')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event, keysym}) => {
+                // filterKeydown
+                if (this.hasFocus && !ALLOWED_KEYS[keysym])
+                    event.preventDefault();
+            });
 
         // If the text input UI has focus, prevent keyup events
-        this.guacEventService.on('guacBeforeKeyup', ({event, keysym}) => {
-            // filterKeyup
-            if (this.hasFocus && !ALLOWED_KEYS[keysym])
-                event.preventDefault();
-        });
+        this.guacEventService.on('guacBeforeKeyup')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event, keysym}) => {
+                // filterKeyup
+                if (this.hasFocus && !ALLOWED_KEYS[keysym])
+                    event.preventDefault();
+            });
 
         // Attempt to focus initially
         this.target.focus();

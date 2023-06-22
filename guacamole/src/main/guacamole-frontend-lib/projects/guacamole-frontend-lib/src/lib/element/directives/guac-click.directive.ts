@@ -17,7 +17,14 @@
  * under the License.
  */
 
-import { Directive, ElementRef, HostListener, Input } from '@angular/core';
+import {
+    DestroyRef,
+    Directive,
+    ElementRef,
+    HostListener,
+    Input
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from "../../events/services/guac-event.service";
 import { GuacEventArguments } from "../../events/types/GuacEventArguments";
 
@@ -81,19 +88,24 @@ export class GuacClickDirective {
         }
     }
 
-    constructor(private el: ElementRef,
-                private guacEventService: GuacEventService<GuacEventArguments>) {
+    constructor(el: ElementRef,
+                private guacEventService: GuacEventService<GuacEventArguments>,
+                private destroyRef: DestroyRef) {
         this.element = el.nativeElement;
 
         // Update tracking of modifier states for each key press
-        this.guacEventService.on('guacKeydown', ({keyboard}) => {
-            this.updateModifiers(keyboard);
-        });
+        this.guacEventService.on('guacKeydown')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({keyboard}) => {
+                this.updateModifiers(keyboard);
+            });
 
         // Update tracking of modifier states for each key release
-        this.guacEventService.on('guacKeyup', ({keyboard}) => {
-            this.updateModifiers(keyboard);
-        });
+        this.guacEventService.on('guacKeyup')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({keyboard}) => {
+                this.updateModifiers(keyboard);
+            });
     }
 
     /**

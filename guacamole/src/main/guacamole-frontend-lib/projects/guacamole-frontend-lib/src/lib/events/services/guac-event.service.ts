@@ -18,22 +18,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { filter, Subject } from "rxjs";
+import { filter, Observable, Subject } from "rxjs";
 import { GuacEvent, GuacEventName } from "../types/GuacEvent";
 import { GuacEventArguments } from "../types/GuacEventArguments";
-
-/**
- * A callback for the event T. The arguments for the callback are inferred
- * based on the Args and Event type parameters.
- *
- * @template Args
- *     The type of where the callback arguments for the event are specified.
- *
- * @template Event
- *     The type of the event.
- */
-export type GuacEventCallback<Args extends GuacEventArguments, Event extends GuacEventName<Args>>
-    = (args: { event: GuacEvent<Args> } & Args[Event]) => void
 
 /**
  * Service for broadcasting and subscribing to Guacamole frontend events.
@@ -63,11 +50,13 @@ export class GuacEventService<Args extends GuacEventArguments> {
     /**
      * TODO: Document
      * @param eventName
-     * @param callback
+     * @returns
      */
-    on<T extends GuacEventName<Args>>(eventName: T, callback: GuacEventCallback<Args, T>) {
-        this.events
-            .pipe(filter(({event}) => eventName === event.name))
-            .subscribe((args) => callback(args));
+    on<T extends GuacEventName<Args>>(eventName: T): Observable<{
+        event: GuacEvent<Args>
+    } & Args[T]> {
+        return this.events.pipe(
+            filter(({event}) => eventName === event.name)
+        );
     }
 }

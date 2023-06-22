@@ -258,7 +258,9 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
         // Display login screen if a whole new set of credentials is needed
         this.guacEventService
-            .on('guacInvalidCredentials', ({error}) => {
+            .on('guacInvalidCredentials')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({error}) => {
 
                 this.setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
@@ -270,7 +272,9 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
         // Prompt for remaining credentials if provided credentials were not enough
         this.guacEventService
-            .on('guacInsufficientCredentials', ({parameters, error}) => {
+            .on('guacInsufficientCredentials')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({parameters, error}) => {
 
                 this.setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
@@ -282,33 +286,39 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
         // Alert user to authentication errors that occur in the absence of an
         // interactive login form
-        this.guacEventService.on('guacLoginFailed', ({error}) => {
+        this.guacEventService.on('guacLoginFailed')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({error}) => {
 
-            // All errors related to an interactive login form are handled elsewhere
-            if (this.applicationState === ApplicationState.AWAITING_CREDENTIALS
-                || error.type === Error.Type.INSUFFICIENT_CREDENTIALS
-                || error.type === Error.Type.INVALID_CREDENTIALS)
-                return;
+                // All errors related to an interactive login form are handled elsewhere
+                if (this.applicationState === ApplicationState.AWAITING_CREDENTIALS
+                    || error.type === Error.Type.INSUFFICIENT_CREDENTIALS
+                    || error.type === Error.Type.INVALID_CREDENTIALS)
+                    return;
 
-            this.setApplicationState(ApplicationState.AUTOMATIC_LOGIN_REJECTED);
-            this.reAuthenticating = false;
-            this.fatalError = error;
+                this.setApplicationState(ApplicationState.AUTOMATIC_LOGIN_REJECTED);
+                this.reAuthenticating = false;
+                this.fatalError = error;
 
-        });
+            });
 
         // Replace absolutely all content with an error message if the page itself
         // cannot be displayed due to an error
-        this.guacEventService.on('guacFatalPageError', ({error}) => {
-            this.setApplicationState(ApplicationState.FATAL_ERROR);
-            this.fatalError = error;
-        });
+        this.guacEventService.on('guacFatalPageError')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({error}) => {
+                this.setApplicationState(ApplicationState.FATAL_ERROR);
+                this.fatalError = error;
+            });
 
         // Replace the overall user interface with an informational message if the
         // user has manually logged out
-        this.guacEventService.on('guacLogout', () => {
-            this.setApplicationState(ApplicationState.LOGGED_OUT);
-            this.reAuthenticating = false;
-        });
+        this.guacEventService.on('guacLogout')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.setApplicationState(ApplicationState.LOGGED_OUT);
+                this.reAuthenticating = false;
+            });
 
         // Add the CSS class provided in the route data property 'bodyClassName' to the body element
         this.router.events.pipe(

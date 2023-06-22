@@ -18,7 +18,7 @@
  */
 
 import {
-    Component,
+    Component, DestroyRef,
     ElementRef,
     Inject,
     Input,
@@ -28,6 +28,7 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import {
     GuacFrontendEventArguments
@@ -140,6 +141,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
      */
     constructor(private managedClientService: ManagedClientService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
+                private destroyRef: DestroyRef,
                 @Inject(DOCUMENT) private document: Document) {
         this.window = this.document.defaultView as Window;
     }
@@ -168,38 +170,47 @@ export class GuacClientComponent implements OnInit, OnChanges {
         });
 
         // Update remote clipboard if local clipboard changes
-        this.guacEventService.on('guacClipboard', ({data}) => {
-            this.managedClientService.setClipboard(this.managedClient, data);
-        });
+        this.guacEventService.on('guacClipboard')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({data}) => {
+                this.managedClientService.setClipboard(this.managedClient, data);
+            });
 
         // Translate local keydown events to remote keydown events if keyboard is enabled
-        this.guacEventService.on('guacKeydown', ({event, keysym}) => {
-            if (this.managedClient.clientProperties.focused) {
-                this.guacamoleClient?.sendKeyEvent(1, keysym);
-                event.preventDefault();
-            }
-        });
+        this.guacEventService.on('guacKeydown')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event, keysym}) => {
+                if (this.managedClient.clientProperties.focused) {
+                    this.guacamoleClient?.sendKeyEvent(1, keysym);
+                    event.preventDefault();
+                }
+            });
 
         // Translate local keyup events to remote keyup events if keyboard is enabled
-        this.guacEventService.on('guacKeyup', ({event, keysym}) => {
-            if (this.managedClient.clientProperties.focused) {
-                this.guacamoleClient?.sendKeyEvent(0, keysym);
-                event.preventDefault();
-            }
-        });
+        this.guacEventService.on('guacKeyup')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event, keysym}) => {
+                if (this.managedClient.clientProperties.focused) {
+                    this.guacamoleClient?.sendKeyEvent(0, keysym);
+                    event.preventDefault();
+                }
+            });
 
         // Universally handle all synthetic keydown events
-        this.guacEventService.on('guacSyntheticKeydown', ({keysym}) => {
-            if (this.managedClient.clientProperties.focused)
-                this.guacamoleClient?.sendKeyEvent(1, keysym);
-        });
+        this.guacEventService.on('guacSyntheticKeydown')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({keysym}) => {
+                if (this.managedClient.clientProperties.focused)
+                    this.guacamoleClient?.sendKeyEvent(1, keysym);
+            });
 
         // Universally handle all synthetic keyup events
-        this.guacEventService.on('guacSyntheticKeyup', ({keysym}) => {
-            if (this.managedClient.clientProperties.focused)
-                this.guacamoleClient?.sendKeyEvent(0, keysym);
-        });
-
+        this.guacEventService.on('guacSyntheticKeyup')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({keysym}) => {
+                if (this.managedClient.clientProperties.focused)
+                    this.guacamoleClient?.sendKeyEvent(0, keysym);
+            });
 
         this.main.addEventListener('dragenter', this.notifyDragStart, false);
         this.main.addEventListener('dragover', this.notifyDragStart, false);

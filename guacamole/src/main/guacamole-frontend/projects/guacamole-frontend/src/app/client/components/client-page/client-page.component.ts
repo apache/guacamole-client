@@ -30,17 +30,25 @@ import {
     SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
-import { AuthenticationService } from '../../../auth/service/authentication.service';
+import {
+    AuthenticationService
+} from '../../../auth/service/authentication.service';
 import {
     ClipboardService
 } from '../../../clipboard/services/clipboard.service';
 import {
     GuacFrontendEventArguments
 } from '../../../events/types/GuacFrontendEventArguments';
-import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
+import {
+    ConnectionGroupService
+} from '../../../rest/service/connection-group.service';
 import { GuacEventService, ScrollState } from 'guacamole-frontend-lib';
-import { DataSourceService } from '../../../rest/service/data-source-service.service';
-import { PreferenceService } from '../../../settings/services/preference.service';
+import {
+    DataSourceService
+} from '../../../rest/service/data-source-service.service';
+import {
+    PreferenceService
+} from '../../../settings/services/preference.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { TunnelService } from '../../../rest/service/tunnel.service';
 import { UserPageService } from '../../../manage/services/user-page.service';
@@ -50,7 +58,9 @@ import { ManagedClientService } from '../../services/managed-client.service';
 import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 import { ConnectionListContext } from '../../types/ConnectionListContext';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { GuacClientManagerService } from '../../services/guac-client-manager.service';
+import {
+    GuacClientManagerService
+} from '../../services/guac-client-manager.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import _filter from 'lodash/filter';
 import findIndex from 'lodash/findIndex';
@@ -58,13 +68,17 @@ import findKey from 'lodash/findKey';
 import intersection from 'lodash/intersection';
 import isEmpty from 'lodash/isEmpty';
 import pull from 'lodash/pull';
-import { filter, pairwise, startWith, tap } from 'rxjs';
+import { filter, pairwise, startWith, Subscription, tap } from 'rxjs';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { SharingProfile } from '../../../rest/types/SharingProfile';
 import { ManagedClientState } from '../../types/ManagedClientState';
 import { ManagedFilesystem } from '../../types/ManagedFilesystem';
-import { ManagedFilesystemService } from '../../services/managed-filesystem.service';
-import { NotificationAction } from '../../../notification/types/NotificationAction';
+import {
+    ManagedFilesystemService
+} from '../../services/managed-filesystem.service';
+import {
+    NotificationAction
+} from '../../../notification/types/NotificationAction';
 import { Protocol } from '../../../rest/types/Protocol';
 import { FormGroup } from '@angular/forms';
 import { FormService } from '../../../form/service/form.service';
@@ -106,19 +120,32 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
      * In order to open the guacamole menu, we need to hit ctrl-alt-shift. There are
      * several possible keysysms for each key.
      */
-    private readonly SHIFT_KEYS: Record<number, boolean> = {0xFFE1: true, 0xFFE2: true};
+    private readonly SHIFT_KEYS: Record<number, boolean> = {
+        0xFFE1: true,
+        0xFFE2: true
+    };
     private readonly ALT_KEYS: Record<number, boolean> = {
         0xFFE9: true, 0xFFEA: true, 0xFE03: true,
         0xFFE7: true, 0xFFE8: true
     };
-    private readonly CTRL_KEYS: Record<number, boolean> = {0xFFE3: true, 0xFFE4: true};
-    private readonly MENU_KEYS: Record<number, boolean> = {...this.SHIFT_KEYS, ...this.ALT_KEYS, ...this.CTRL_KEYS};
+    private readonly CTRL_KEYS: Record<number, boolean> = {
+        0xFFE3: true,
+        0xFFE4: true
+    };
+    private readonly MENU_KEYS: Record<number, boolean> = {
+        ...this.SHIFT_KEYS,
+        ...this.ALT_KEYS,
+        ...this.CTRL_KEYS
+    };
 
     /**
      * Keysym for detecting any END key presses, for the purpose of passing through
      * the Ctrl-Alt-Del sequence to a remote system.
      */
-    private readonly END_KEYS: Record<number, boolean> = {0xFF57: true, 0xFFB1: true};
+    private readonly END_KEYS: Record<number, boolean> = {
+        0xFF57: true,
+        0xFFB1: true
+    };
 
     /**
      * Keysym for sending the DELETE key when the Ctrl-Alt-End hotkey
@@ -253,7 +280,9 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
 
 
         // Automatically track and cache the currently-focused client
-        this.guacEventService.on('guacClientFocused', ({newFocusedClient}) => {
+        this.guacEventService.on('guacClientFocused')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({newFocusedClient}) => {
 
             const oldFocusedClient = this.focusedClient;
             this.focusedClient = newFocusedClient;
@@ -271,37 +300,41 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
 
         // Opening the Guacamole menu after Ctrl+Alt+Shift, preventing those
         // keypresses from reaching any Guacamole client
-        this.guacEventService.on('guacBeforeKeydown', ({event, keyboard}) => {
+        this.guacEventService.on('guacBeforeKeydown')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event, keyboard}) => {
 
-            // Toggle menu if menu shortcut (Ctrl+Alt+Shift) is pressed
-            if (this.isMenuShortcutPressed(keyboard)) {
+                // Toggle menu if menu shortcut (Ctrl+Alt+Shift) is pressed
+                if (this.isMenuShortcutPressed(keyboard)) {
 
-                // Don't send this key event through to the client, and release
-                // all other keys involved in performing this shortcut
-                event.preventDefault();
-                keyboard.reset();
+                    // Don't send this key event through to the client, and release
+                    // all other keys involved in performing this shortcut
+                    event.preventDefault();
+                    keyboard.reset();
 
-                // Toggle the menu
-                // TODO: $scope.$apply(function() {
-                this.menu.shown.update(shown => !shown);
-                // });
+                    // Toggle the menu
+                    this.menu.shown.update(shown => !shown);
 
-            }
+                }
 
-            // Prevent all keydown events while menu is open
-            else if (this.menu.shown())
-                event.preventDefault();
+                // Prevent all keydown events while menu is open
+                else if (this.menu.shown())
+                    event.preventDefault();
 
-        });
+            });
 
         // Prevent all keyup events while menu is open
-        this.guacEventService.on('guacBeforeKeyup', ({event}) => {
+        this.guacEventService.on('guacBeforeKeyup')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event}) => {
             if (this.menu.shown())
                 event.preventDefault();
         });
 
         // Send Ctrl-Alt-Delete when Ctrl-Alt-End is pressed.
-        this.guacEventService.on('guacKeydown', ({event, keysym, keyboard}) => {
+        this.guacEventService.on('guacKeydown')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event, keysym, keyboard}) => {
 
             // If one of the End keys is pressed, and we have a one keysym from each
             // of Ctrl and Alt groups, send Ctrl-Alt-Delete.
@@ -324,7 +357,9 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
         });
 
         // Update pressed keys as they are released
-        this.guacEventService.on('guacKeyup', ({event, keysym}) => {
+        this.guacEventService.on('guacKeyup')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event, keysym}) => {
 
             // Deal with substitute key presses
             if (this.substituteKeysPressed[keysym]) {
@@ -347,7 +382,8 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
                 this.connectionParameters = this.formService.getFormGroup(this.focusedClient.forms);
                 this.connectionParameters.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
                     .subscribe(value => this.menu.connectionParameters = value);
-            } else {
+            }
+            else {
                 this.connectionParameters = new FormGroup({});
             }
 

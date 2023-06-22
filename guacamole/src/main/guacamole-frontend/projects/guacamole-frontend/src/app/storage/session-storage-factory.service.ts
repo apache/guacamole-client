@@ -94,23 +94,25 @@ export class SessionStorageFactory {
         let value: any = undefined;
 
         // Reset value and allow storage when the user is logged in
-        this.guacEventService.on('guacLogin', function userLoggedIn() {
-            enabled = true;
-            value = undefined;
-        });
+        this.guacEventService.on('guacLogin')
+            .subscribe(() => {
+                enabled = true;
+                value = undefined;
+            });
 
         // Reset value and disallow storage when the user is logged out
-        this.guacEventService.on('guacLogout', function userLoggedOut() {
+        this.guacEventService.on('guacLogout')
+            .subscribe(() => {
 
-            // Call destructor before storage is torn down
-            if (isDefined(value) && destructor)
-                destructor(value);
+                // Call destructor before storage is torn down
+                if (isDefined(value) && destructor)
+                    destructor(value);
 
-            // Destroy storage
-            enabled = false;
-            value = undefined;
+                // Destroy storage
+                enabled = false;
+                value = undefined;
 
-        });
+            });
 
         // Return getter/setter for value
         return function sessionLocalGetterSetter(newValue: any) {

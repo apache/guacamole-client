@@ -18,7 +18,7 @@
  */
 
 import {
-    Component,
+    Component, DestroyRef,
     DoCheck,
     Input,
     KeyValueDiffer,
@@ -28,6 +28,7 @@ import {
     SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
     GuacFrontendEventArguments
 } from '../../../events/types/GuacFrontendEventArguments';
@@ -154,7 +155,8 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private router: Router,
                 private route: ActivatedRoute,
-                private differs: KeyValueDiffers) {
+                private differs: KeyValueDiffers,
+                private destroyRef: DestroyRef) {
     }
 
     ngOnInit(): void {
@@ -180,9 +182,12 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
 
         // Block internal handling of key events (by the client) if a
         // notification is visible
-        this.guacEventService.on('guacBeforeKeydown', ({event}) => this.preventDefaultDuringNotification(event));
-        this.guacEventService.on('guacBeforeKeyup', ({event}) => this.preventDefaultDuringNotification(event));
-
+        this.guacEventService.on('guacBeforeKeydown')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event}) => this.preventDefaultDuringNotification(event));
+        this.guacEventService.on('guacBeforeKeyup')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({event}) => this.preventDefaultDuringNotification(event));
     }
 
     /**

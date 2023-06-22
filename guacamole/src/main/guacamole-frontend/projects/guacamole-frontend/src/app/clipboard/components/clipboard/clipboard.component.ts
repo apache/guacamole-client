@@ -93,9 +93,10 @@ export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngOnInit(): void {
         // Update remote clipboard if local clipboard changes
-        this.guacEventService.on('guacClipboard', ({data}) => {
-            this.updateClipboardEditor(data);
-        });
+        this.guacEventService.on('guacClipboard')
+            .subscribe(({data}) => {
+                this.updateClipboardEditor(data);
+            });
     }
 
     ngAfterViewInit(): void {

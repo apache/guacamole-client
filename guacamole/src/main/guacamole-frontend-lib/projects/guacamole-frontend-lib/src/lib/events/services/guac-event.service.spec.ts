@@ -18,8 +18,10 @@
  */
 
 import { TestBed } from '@angular/core/testing';
+import { TestScheduler } from 'rxjs/testing';
+import { getTestScheduler } from '../../../test-utils/test-scheduler';
+import { GuacEvent } from '../types/GuacEvent';
 import { GuacEventArguments } from "../types/GuacEventArguments";
-
 import { GuacEventService } from './guac-event.service';
 
 interface TestEventArgs extends GuacEventArguments {
@@ -28,10 +30,14 @@ interface TestEventArgs extends GuacEventArguments {
 
 describe('GuacEventService', () => {
     let service: GuacEventService<TestEventArgs>;
+    let testScheduler: TestScheduler;
 
     beforeEach(() => {
-        TestBed.configureTestingModule({});
-        service = TestBed.inject(GuacEventService);
+        testScheduler = getTestScheduler()
+        TestBed.configureTestingModule({
+            providers: [GuacEventService<TestEventArgs>],
+        });
+        service = TestBed.inject(GuacEventService<TestEventArgs>);
     });
 
     it('should be created', () => {
@@ -39,13 +45,46 @@ describe('GuacEventService', () => {
     });
 
     it('should emit test event', () => {
-        const age = 25;
+        testScheduler.run(({expectObservable, cold}) => {
 
-        service.on('test', ({age, event}) => {
-            expect(event.name).toBe('test');
-            expect(age).toBe(25)
+            const age = 25;
+            const expected = {
+                a: {
+                    age: age,
+                    event: new GuacEvent<TestEventArgs>('test')
+                }
+            };
+            const events = service.on('test');
+
+            // Delay the broadcast for one time unit to allow expectObservable to subscribe to the subject
+            cold('-a').subscribe(() => service.broadcast('test', {age}));
+
+            expectObservable(events).toBe('-a', expected);
+
         });
 
-        service.broadcast('test', {age});
     });
+
+    it('handles multiple subscribers to the same event', () => {
+        testScheduler.run(({expectObservable, cold}) => {
+            const age = 25;
+            const expected = {
+                a: {
+                    age: age,
+                    event: new GuacEvent<TestEventArgs>('test')
+                }
+            };
+
+            const events1 = service.on('test');
+            const events2 = service.on('test');
+
+            // Delay the broadcast for one time unit to allow expectObservable to subscribe to the subject
+            cold('-a').subscribe(() => service.broadcast('test', {age}));
+
+            expectObservable(events1).toBe('-a', expected);
+            expectObservable(events2).toBe('-a', expected);
+
+        });
+    });
+
 });

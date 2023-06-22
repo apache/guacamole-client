@@ -113,9 +113,10 @@ export class PreferenceService {
 
 
         // Persist settings upon logout
-        this.guacEventService.on('guacLogout', () => {
-            this.save();
-        });
+        this.guacEventService.on('guacLogout')
+            .subscribe(() => {
+                this.save();
+            });
     }
 
     /**

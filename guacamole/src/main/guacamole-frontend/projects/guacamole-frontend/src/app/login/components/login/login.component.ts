@@ -200,45 +200,51 @@ export class LoginComponent implements OnInit, OnChanges {
     ngOnInit(): void {
         // Update UI to reflect in-progress auth status (clear any previous
         // errors, flag as pending)
-        this.guacEventService.on('guacLoginPending', () => {
-            this.submitted = true;
-            this.loginError = null;
-        });
+        this.guacEventService.on('guacLoginPending')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.submitted = true;
+                this.loginError = null;
+            });
 
         // Retry route upon success (entered values will be cleared only
         // after route change has succeeded as this can take time)
-        this.guacEventService.on('guacLogin', () => {
-            this.router.navigate([this.router.url], {onSameUrlNavigation: 'reload'});
-        });
+        this.guacEventService.on('guacLogin')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => {
+                this.router.navigate([this.router.url], {onSameUrlNavigation: 'reload'});
+            });
 
         // Reset upon failure
-        this.guacEventService.on('guacLoginFailed', ({error}) => {
+        this.guacEventService.on('guacLoginFailed')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({error}) => {
 
-            // Initial submission is complete and has failed
-            this.submitted = false;
+                // Initial submission is complete and has failed
+                this.submitted = false;
 
-            // Clear out passwords if the credentials were rejected for any reason
-            if (error.type !== Error.Type.INSUFFICIENT_CREDENTIALS) {
+                // Clear out passwords if the credentials were rejected for any reason
+                if (error.type !== Error.Type.INSUFFICIENT_CREDENTIALS) {
 
-                // Flag generic error for invalid login
-                if (error.type === Error.Type.INVALID_CREDENTIALS)
-                    this.loginError = {
-                        key: 'LOGIN.ERROR_INVALID_LOGIN'
-                    };
+                    // Flag generic error for invalid login
+                    if (error.type === Error.Type.INVALID_CREDENTIALS)
+                        this.loginError = {
+                            key: 'LOGIN.ERROR_INVALID_LOGIN'
+                        };
 
-                // Display error if anything else goes wrong
-                else
-                    this.loginError = error.translatableMessage || null;
+                    // Display error if anything else goes wrong
+                    else
+                        this.loginError = error.translatableMessage || null;
 
-                // Reset all remaining fields to default values, but
-                // preserve any usernames
-                this.remainingFields.forEach((field) => {
-                    if (field.type !== Field.Type.USERNAME && field.name in this.enteredValues)
-                        this.enteredValues.get(field.name)?.setValue(this.DEFAULT_FIELD_VALUE);
-                });
-            }
+                    // Reset all remaining fields to default values, but
+                    // preserve any usernames
+                    this.remainingFields.forEach((field) => {
+                        if (field.type !== Field.Type.USERNAME && field.name in this.enteredValues)
+                            this.enteredValues.get(field.name)?.setValue(this.DEFAULT_FIELD_VALUE);
+                    });
+                }
 
-        });
+            });
 
         // Reset state after authentication and routing have succeeded
         this.router.events.pipe(
