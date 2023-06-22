@@ -40,7 +40,7 @@ package that implements end-to-end testing capabilities.
       instead of a `@:` prefix.
 
 - The 'import' module is not included in this first version.
-- Additionally, the following files are not migrated as well:
+- Additionally, the following files are also not migrated yet:
     - index/services/iconService.js
 - If the user navigates to a route without being authenticated, the user is redirected to the home page after
   authentication.
@@ -48,6 +48,8 @@ package that implements end-to-end testing capabilities.
   The angular build creates a `3rdpartylicenses.txt` file, but I don't know if this is enough and where to put it.
 - Type declarations for guacamole-common-js (`guacamole-frontend-lib/src/lib/types/Guacamole.ts`) will be replaced by the package @types/guacamole-common-js
   once it is updated.
+- I included some Cypress E2E Tests in the `cypress` folder. They are not integrated in the build process and I did not
+  include a proper configuration file because of the various possible testing setups.
 
 ## Possible discussion points regarding the implementation
 
@@ -58,7 +60,7 @@ package that implements end-to-end testing capabilities.
     - `UserCredentials.getLink`
     - `UserCredentialService~getLink`
 
-- To replace the `$parse` of AngularJS I used the npm package angular-expressions.
+- To replace the `$parse` function of AngularJS I used the npm package angular-expressions.
   It is basically a copy of the AngularJS code as standalone module.
   If there is any problem with this package as a dependency, we have to invest more time to implement the parsing of the
   expressions ourselves or refactor the code to not use expressions at all.
