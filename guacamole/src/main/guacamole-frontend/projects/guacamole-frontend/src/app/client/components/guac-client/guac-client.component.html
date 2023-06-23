@@ -18,7 +18,7 @@
   -->
 <div class="client-main main" #main
      [ngClass]="{ 'drop-pending': dropPending }"
-     [guacResize]="mainElementResized.bind(this)"
+     (guacResize)="mainElementResized()"
      [guacTouchDrag]="clientDrag.bind(this)"
      [guacTouchPinch]="clientPinch.bind(this)">
 

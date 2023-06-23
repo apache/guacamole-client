@@ -16,6 +16,6 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<div class="guac-player-display" [guacResize]="fitDisplay" #guacPlayerDisplay>
+<div class="guac-player-display" (guacResize)="fitDisplay()" #guacPlayerDisplay>
     <div class="guac-player-display-container" #guacPlayerDisplayContainer></div>
 </div>

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Directive, ElementRef, Inject, Input } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, Inject, Output } from '@angular/core';
 import { DOCUMENT } from "@angular/common";
 
 /**
@@ -32,11 +32,10 @@ import { DOCUMENT } from "@angular/common";
 export class GuacResizeDirective {
 
     /**
-     * The function to call whenever the associated element is
-     * resized. The function will be passed the width and height of
-     * the element, in pixels.
+     * Will emit an event including the width and height of the element, in pixels whenever the associated
+     * element is resized.
      */
-    @Input({required: true}) guacResize!: (width: number, height: number) => void;
+    @Output() guacResize = new EventEmitter<{ width: number, height: number }>();
 
     /**
      * The element which will monitored for size changes.
@@ -100,7 +99,7 @@ export class GuacResizeDirective {
             || this.element.offsetHeight !== this.lastHeight) {
 
             // Call resize callback, if defined
-            this.guacResize(this.element.offsetWidth, this.element.offsetHeight);
+            this.guacResize.emit({width: this.element.offsetWidth, height: this.element.offsetHeight});
 
             // Update stored size
             this.lastWidth = this.element.offsetWidth;

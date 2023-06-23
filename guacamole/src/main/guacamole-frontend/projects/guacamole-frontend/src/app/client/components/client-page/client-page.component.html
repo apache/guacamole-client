@@ -23,7 +23,7 @@
         <div class="client-view-content">
 
             <!-- Central portion of view -->
-            <div class="client-body" [guacTouchDrag]="menuDrag">
+            <div class="client-body" [guacTouchDrag]="menuDrag.bind(this)">
 
                 <!-- All connections in current display -->
                                <guac-tiled-clients
@@ -64,7 +64,7 @@
 
     <!-- Menu -->
     <div class="menu" [ngClass]="{'open': menu.shown()}" id="guac-menu">
-        <div class="menu-content" *ngIf="menu.shown()" [guacTouchDrag]="menuDrag">
+        <div class="menu-content" *ngIf="menu.shown()" [guacTouchDrag]="menuDrag.bind(this)">
 
             <!-- Stationary header -->
             <div class="header">
@@ -252,7 +252,7 @@
             <div class="header">
                 <h2>{{filesystemMenuContents?.name}}</h2>
                 <button class="upload button"
-                        [guacUpload]="uploadFiles">{{'CLIENT.ACTION_UPLOAD_FILES' | transloco}}</button>
+                        [guacUpload]="uploadFiles.bind(this)">{{'CLIENT.ACTION_UPLOAD_FILES' | transloco}}</button>
                 <button class="back"
                         (click)="hideFilesystemMenu()">{{'CLIENT.ACTION_NAVIGATE_BACK' | transloco}}</button>
             </div>

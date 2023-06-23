@@ -99,7 +99,7 @@ export class OskComponent implements OnChanges {
         if (url) {
 
             // Retrieve layout JSON
-            this.http.get<any>(url).subscribe(
+            this.http.get<Guacamole.OnScreenKeyboard.Layout>(url).subscribe(
                 // Build OSK with retrieved layout
                 (layout) => {
 
