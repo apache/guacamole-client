@@ -39,17 +39,18 @@
                             "projects/guacamole-frontend/src/moduleFederation/mf.manifest.json",
                             {
                                 "glob": "**/*.json",
-                                "input": "./node_modules/guacamole-frontend-lib/assets/layouts",
+                                "input": "dist/guacamole-frontend-lib/assets/layouts",
                                 "output": "layouts"
                             }
                         ],
                         "styles": [
-                            "projects/guacamole-frontend/src/styles.css"
+                            "projects/guacamole-frontend/src/styles.css",
+                            "dist/guacamole-frontend-lib/assets/styles/element/styles/resize-sensor.css",
+                            "dist/guacamole-frontend-lib/assets/styles/osk/styles/osk.css"
                         ],
                         "scripts": [
-                            "./node_modules/guacamole-frontend-lib/assets/guacamole-common-js.min.js"
+                            "dist/guacamole-frontend-lib/assets/guacamole-common-js.min.js"
                         ],
-                        "preserveSymlinks": true,
                         "extraWebpackConfig": "projects/guacamole-frontend/webpack.config.js",
                         "commonChunk": false
                     },
@@ -133,6 +134,90 @@
                         "lintFilePatterns": [
                             "projects/guacamole-frontend/**/*.ts",
                             "projects/guacamole-frontend/**/*.html"
+                        ]
+                    }
+                }
+            }
+        },
+        "guacamole-frontend-lib": {
+            "projectType": "library",
+            "root": "projects/guacamole-frontend-lib",
+            "sourceRoot": "projects/guacamole-frontend-lib/src",
+            "prefix": "guac",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:ng-packagr",
+                    "options": {
+                        "project": "projects/guacamole-frontend-lib/ng-package.json"
+                    },
+                    "configurations": {
+                        "production": {
+                            "tsConfig": "projects/guacamole-frontend-lib/tsconfig.lib.prod.json"
+                        },
+                        "development": {
+                            "tsConfig": "projects/guacamole-frontend-lib/tsconfig.lib.json"
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "tsConfig": "projects/guacamole-frontend-lib/tsconfig.spec.json",
+                        "polyfills": [
+                            "zone.js",
+                            "zone.js/testing"
+                        ]
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "projects/guacamole-frontend-lib/**/*.ts",
+                            "projects/guacamole-frontend-lib/**/*.html"
+                        ]
+                    }
+                }
+            }
+        },
+        "guacamole-frontend-ext-lib": {
+            "projectType": "library",
+            "root": "projects/guacamole-frontend-ext-lib",
+            "sourceRoot": "projects/guacamole-frontend-ext-lib/src",
+            "prefix": "guac",
+            "architect": {
+                "build": {
+                    "builder": "@angular-devkit/build-angular:ng-packagr",
+                    "options": {
+                        "project": "projects/guacamole-frontend-ext-lib/ng-package.json"
+                    },
+                    "configurations": {
+                        "production": {
+                            "tsConfig": "projects/guacamole-frontend-ext-lib/tsconfig.lib.prod.json"
+                        },
+                        "development": {
+                            "tsConfig": "projects/guacamole-frontend-ext-lib/tsconfig.lib.json"
+                        }
+                    },
+                    "defaultConfiguration": "production"
+                },
+                "test": {
+                    "builder": "@angular-devkit/build-angular:karma",
+                    "options": {
+                        "tsConfig": "projects/guacamole-frontend-ext-lib/tsconfig.spec.json",
+                        "polyfills": [
+                            "zone.js",
+                            "zone.js/testing"
+                        ]
+                    }
+                },
+                "lint": {
+                    "builder": "@angular-eslint/builder:lint",
+                    "options": {
+                        "lintFilePatterns": [
+                            "projects/guacamole-frontend-ext-lib/**/*.ts",
+                            "projects/guacamole-frontend-ext-lib/**/*.html"
                         ]
                     }
                 }

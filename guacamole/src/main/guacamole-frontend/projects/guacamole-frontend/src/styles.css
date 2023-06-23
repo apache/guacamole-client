@@ -40,7 +40,7 @@
 
 @import "app/clipboard/styles/clipboard.css";
 
-@import "../../../node_modules/guacamole-frontend-lib/assets/styles/element/styles/resize-sensor.css";
+/*TODO: @import "../../../node_modules/guacamole-frontend-lib/assets/styles/element/styles/resize-sensor.css";*/
 
 @import "app/form/styles/form-field.css";
 @import "app/form/styles/form.css";
@@ -92,7 +92,7 @@
 @import "app/notification/styles/modal.css";
 @import "app/notification/styles/notification.css";
 
-@import "../../../node_modules/guacamole-frontend-lib/assets/styles/osk/styles/osk.css";
+/*TODO: @import "../../../node_modules/guacamole-frontend-lib/assets/styles/osk/styles/osk.css";*/
 
 @import "app/player/styles/player.css";
 @import "app/player/styles/playerDisplay.css";
