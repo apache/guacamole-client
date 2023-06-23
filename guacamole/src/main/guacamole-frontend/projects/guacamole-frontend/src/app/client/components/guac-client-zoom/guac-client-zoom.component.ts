@@ -41,7 +41,7 @@ export class GuacClientZoomComponent {
      */
     zoomIn(): void {
         this.client.clientProperties.autoFit = false;
-        this.client.clientProperties.scale += 0.1;
+        this.client.clientProperties.scale.update(scale => scale + 0.1);
     }
 
     /**
@@ -49,7 +49,7 @@ export class GuacClientZoomComponent {
      */
     zoomOut(): void {
         this.client.clientProperties.autoFit = false;
-        this.client.clientProperties.scale -= 0.1;
+        this.client.clientProperties.scale.update(scale => scale - 0.1);
     }
 
     /**
@@ -76,7 +76,7 @@ export class GuacClientZoomComponent {
 
         // Reset to 100% scale when autofit is first disabled
         if (!this.client.clientProperties.autoFit)
-            this.client.clientProperties.scale = 1;
+            this.client.clientProperties.scale.set(1);
 
     }
 

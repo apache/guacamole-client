@@ -21,9 +21,9 @@
         <div (click)="zoomOut()" class="client-zoom-out"><img src="images/settings/zoom-out.svg" alt="-"></div>
         <div class="client-zoom-state">
             <input type="number" guacZoomCtrl
-                   [(ngModel)]="client.clientProperties.scale"
+                   [ngModel]="client.clientProperties.scale()"
                    [ngModelOptions]="{updateOn: 'blur' }"
-                   (ngModelChange)="zoomSet()">%
+                   (ngModelChange)="client.clientProperties.scale.set($event)">%
         </div>
         <!-- TODO: Angular only allows one updateOn option    ng-model-options="{ updateOn: 'blur submit' }"-->
         <div (click)="zoomIn()" class="client-zoom-in"><img src="images/settings/zoom-in.svg" alt="+"></div>

@@ -2011,6 +2011,30 @@ declare namespace Guacamole {
          */
         onmousemove(state: Mouse.State): void;
 
+        /**
+         * Changes the local mouse cursor to the given canvas, having the given
+         * hotspot coordinates. This affects styling of the element backing this
+         * Guacamole.Mouse only, and may fail depending on browser support for
+         * setting the mouse cursor.
+         *
+         * If setting the local cursor is desired, it is up to the implementation
+         * to do something else, such as use the software cursor built into
+         * Guacamole.Display, if the local cursor cannot be set.
+         *
+         * @param canvas
+         *     The cursor image.
+         *
+         * @param x
+         *     The X-coordinate of the cursor hotspot.
+         *
+         * @param y
+         *     The Y-coordinate of the cursor hotspot.
+         *
+         * @return
+         *     true if the cursor was successfully set, false if the cursor could
+         *     not be set for any reason.
+         */
+        setCursor(canvas: HTMLCanvasElement, x: number, y: number): boolean;
     }
 
     namespace Mouse {

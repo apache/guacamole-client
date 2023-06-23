@@ -18,9 +18,13 @@
  */
 
 import {
-    Component, DestroyRef,
+    Component,
+    DestroyRef,
+    effect,
+    EffectRef,
     ElementRef,
     Inject,
+    Injector,
     Input,
     OnChanges,
     OnInit,
@@ -30,9 +34,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    GuacFrontendEventArguments
-} from '../../../events/types/GuacFrontendEventArguments';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedClientService } from '../../services/managed-client.service';
 import { DOCUMENT } from '@angular/common';
@@ -101,38 +103,29 @@ export class GuacClientComponent implements OnInit, OnChanges {
     /**
      * Guacamole mouse event object, wrapped around the main client
      * display.
-     *
-     * @type Guacamole.Mouse
      */
     private mouse!: Guacamole.Mouse;
 
     /**
      * Guacamole absolute mouse emulation object, wrapped around the
      * main client display.
-     *
-     * @type Guacamole.Mouse.Touchscreen
      */
     private touchScreen!: Guacamole.Mouse.Touchscreen;
 
     /**
      * Guacamole relative mouse emulation object, wrapped around the
      * main client display.
-     *
-     * @type Guacamole.Mouse.Touchpad
      */
     private touchPad!: Guacamole.Mouse.Touchpad;
 
     /**
      * Guacamole touch event handling object, wrapped around the main
      * client dislay.
-     *
-     * @type Guacamole.Touch
      */
     private touch!: Guacamole.Touch;
 
     /**
-     * TODO: Document
-     * @private
+     * Reference to the window object.
      */
     private window: Window;
 
@@ -142,7 +135,8 @@ export class GuacClientComponent implements OnInit, OnChanges {
     constructor(private managedClientService: ManagedClientService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private destroyRef: DestroyRef,
-                @Inject(DOCUMENT) private document: Document) {
+                @Inject(DOCUMENT) private document: Document,
+                private injector: Injector) {
         this.window = this.document.defaultView as Window;
     }
 
@@ -212,9 +206,9 @@ export class GuacClientComponent implements OnInit, OnChanges {
                     this.guacamoleClient?.sendKeyEvent(0, keysym);
             });
 
-        this.main.addEventListener('dragenter', this.notifyDragStart, false);
-        this.main.addEventListener('dragover', this.notifyDragStart, false);
-        this.main.addEventListener('dragleave', this.notifyDragEnd, false);
+        this.main.addEventListener('dragenter', this.notifyDragStart.bind(this), false);
+        this.main.addEventListener('dragover', this.notifyDragStart.bind(this), false);
+        this.main.addEventListener('dragleave', this.notifyDragEnd.bind(this), false);
 
         // File drop event handler
         this.main.addEventListener('drop', (e) => {
@@ -248,8 +242,8 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Calculate scale to fit screen
         this.managedClient.clientProperties.minScale = Math.min(
-            /* TODO */(this.main as any).offsetWidth / Math.max(this.display.getWidth(), 1),
-            /* TODO */ (this.main as any).offsetHeight / Math.max(this.display.getHeight(), 1)
+            this.main.offsetWidth / Math.max(this.display.getWidth(), 1),
+            this.main.offsetHeight / Math.max(this.display.getHeight(), 1)
         );
 
         // Calculate appropriate maximum zoom level
@@ -257,10 +251,10 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Clamp zoom level, maintain auto-fit
         if (this.display.getScale() < this.managedClient.clientProperties.minScale || this.managedClient.clientProperties.autoFit)
-            this.managedClient.clientProperties.scale = this.managedClient.clientProperties.minScale;
+            this.managedClient.clientProperties.scale.set(this.managedClient.clientProperties.minScale);
 
         else if (this.display.getScale() > this.managedClient.clientProperties.maxScale)
-            this.managedClient.clientProperties.scale = this.managedClient.clientProperties.maxScale;
+            this.managedClient.clientProperties.scale.set(this.managedClient.clientProperties.maxScale);
 
     }
 
@@ -277,8 +271,8 @@ export class GuacClientComponent implements OnInit, OnChanges {
         const mouse_view_y = mouseState.y + this.displayContainer.offsetTop - this.main.scrollTop;
 
         // Determine viewport dimensions
-        const view_width = /* TODO */(this.main as any).offsetWidth;
-        const view_height = /* TODO */(this.main as any).offsetHeight;
+        const view_width = this.main.offsetWidth;
+        const view_height = this.main.offsetHeight;
 
         // Determine scroll amounts based on mouse position relative to document
 
@@ -299,10 +293,8 @@ export class GuacClientComponent implements OnInit, OnChanges {
             scroll_amount_y = 0;
 
         // Scroll (if necessary) to keep mouse on screen.
-        /* TODO */
-        (this.main as any).scrollLeft += scroll_amount_x;
-        /* TODO */
-        (this.main as any).scrollTop += scroll_amount_y;
+        this.main.scrollLeft += scroll_amount_x;
+        this.main.scrollTop += scroll_amount_y;
 
     }
 
@@ -381,8 +373,10 @@ export class GuacClientComponent implements OnInit, OnChanges {
     }
 
     /**
-     * TODO
+     * Attach any given managed client.
+     *
      * @param managedClient
+     *     The managed client to attach.
      */
     private attachManagedClient(managedClient: ManagedClient): void {
 
@@ -401,7 +395,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Attach possibly new display
         this.display = this.guacamoleClient.getDisplay();
-        this.display.scale(this.managedClient.clientProperties.scale);
+        this.display.scale(this.managedClient.clientProperties.scale());
 
         // Add display element
         this.displayElement = this.display.getElement();
@@ -420,12 +414,86 @@ export class GuacClientComponent implements OnInit, OnChanges {
         this.mainElementResized();
     }
 
+    /**
+     * An effect which update the scale when display is resized.
+     */
+    private setDisplaySize: EffectRef | null = null;
+
+    /**
+     * An effect which keeps local cursor up-to-date.
+     */
+    private setCursor: EffectRef | null = null;
+
+    /**
+     * An effect which adjusts the scale if modified externally.
+     */
+    private changeScale: EffectRef | null = null;
+
     ngOnChanges(changes: SimpleChanges): void {
 
         // Attach any given managed client
         if (changes['managedClient']) {
             const managedClient = changes['managedClient'].currentValue as ManagedClient;
             this.attachManagedClient(managedClient);
+
+
+            // Update scale when display is resized
+            if (this.setDisplaySize !== null)
+                this.setDisplaySize.destroy();
+
+            this.setDisplaySize = effect(() => {
+
+                // Used to trigger this effect when the display size changes
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const displaySize = this.managedClient.managedDisplay?.size();
+                this.updateDisplayScale();
+
+            }, {injector: this.injector, allowSignalWrites: true});
+
+
+            // Keep local cursor up-to-date
+            if (this.setCursor !== null)
+                this.setCursor.destroy();
+
+            this.setCursor = effect(() => {
+
+                const cursor = this.managedClient.managedDisplay?.cursor();
+
+                if (cursor && cursor.canvas && cursor.x && cursor.y)
+                    this.localCursor = this.mouse.setCursor(cursor.canvas, cursor.x, cursor.y);
+
+            }, {injector: this.injector});
+
+
+            // Adjust scale if modified externally
+            if (this.changeScale !== null)
+                this.changeScale.destroy();
+
+            this.changeScale = effect(() => {
+
+                let scale = this.managedClient.clientProperties.scale();
+
+                // Fix scale within limits
+                scale = Math.max(scale, this.managedClient.clientProperties.minScale);
+                scale = Math.min(scale, this.managedClient.clientProperties.maxScale);
+
+                // If at minimum zoom level, hide scroll bars
+                if (scale === this.managedClient.clientProperties.minScale)
+                    this.main.style.overflow = "hidden";
+
+                // If not at minimum zoom level, show scroll bars
+                else
+                    this.main.style.overflow = "auto";
+
+                // Apply scale if client attached
+                if (this.display)
+                    this.display.scale(scale);
+
+                if (scale !== this.managedClient.clientProperties.scale())
+                    this.managedClient.clientProperties.scale.set(scale);
+
+            }, {injector: this.injector, allowSignalWrites: true});
+
         }
 
         /* TODO: Reimplement
@@ -441,16 +509,6 @@ export class GuacClientComponent implements OnInit, OnChanges {
                 *     $scope.client.clientProperties.scrollTop = main.scrollTop;
                 * });
                 *
-                * // Update scale when display is resized
-                * $scope.$watch('client.managedDisplay.size', function setDisplaySize() {
-                *     $scope.$evalAsync(updateDisplayScale);
-                * });
-                *
-                * // Keep local cursor up-to-date
-                * $scope.$watch('client.managedDisplay.cursor', function setCursor(cursor) {
-                *     if (cursor)
-                *         localCursor = mouse.setCursor(cursor.canvas, cursor.x, cursor.y);
-                * });
                 *
                 * // Update touch event handling depending on remote multi-touch
                 * // support and mouse emulation mode
@@ -480,29 +538,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
                 *
                 * });
                 *
-                * // Adjust scale if modified externally
-                * $scope.$watch('client.clientProperties.scale', function changeScale(scale) {
                 *
-                *     // Fix scale within limits
-                *     scale = Math.max(scale, $scope.client.clientProperties.minScale);
-                *     scale = Math.min(scale, $scope.client.clientProperties.maxScale);
-                *
-                *     // If at minimum zoom level, hide scroll bars
-                *     if (scale === $scope.client.clientProperties.minScale)
-                *         main.style.overflow = "hidden";
-                *
-                *     // If not at minimum zoom level, show scroll bars
-                *     else
-                *         main.style.overflow = "auto";
-                *
-                *     // Apply scale if client attached
-                *     if (display)
-                *         display.scale(scale);
-                *
-                *     if (scale !== $scope.client.clientProperties.scale)
-                *         $scope.client.clientProperties.scale = scale;
-                *
-                * });
                 *
                 * // If autofit is set, the scale should be set to the minimum scale, filling the screen
                 * $scope.$watch('client.clientProperties.autoFit', function changeAutoFit(autoFit) {
@@ -527,18 +563,17 @@ export class GuacClientComponent implements OnInit, OnChanges {
         if (this.guacamoleClient && this.display && this.main.offsetWidth && this.main.offsetHeight) {
 
             // Connect, if not already connected
-            this.managedClientService.connect(this.managedClient, /* TODO */(this.main as any).offsetWidth, /* TODO */(this.main as any).offsetHeight);
+            this.managedClientService.connect(this.managedClient, this.main.offsetWidth, this.main.offsetHeight);
 
-            const pixelDensity = this.  window.devicePixelRatio || 1;
-            const width = /* TODO */(this.main as any).offsetWidth * pixelDensity;
-            const height = /* TODO */(this.main as any).offsetHeight * pixelDensity;
+            const pixelDensity = this.window.devicePixelRatio || 1;
+            const width = this.main.offsetWidth * pixelDensity;
+            const height = this.main.offsetHeight * pixelDensity;
 
             if (this.display.getWidth() !== width || this.display.getHeight() !== height)
                 this.guacamoleClient.sendSize(width, height);
 
         }
 
-        // TODO: $scope.$evalAsync(updateDisplayScale);
         this.updateDisplayScale();
 
     }
@@ -600,7 +635,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Set initial scale if gesture has just started
         if (!this.initialScale) {
-            this.initialScale = this.managedClient.clientProperties.scale;
+            this.initialScale = this.managedClient.clientProperties.scale();
             this.initialCenterX = (centerX + this.managedClient.clientProperties.scrollLeft) / this.initialScale;
             this.initialCenterY = (centerY + this.managedClient.clientProperties.scrollTop) / this.initialScale;
         }
@@ -614,7 +649,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Update scale based on pinch distance
         this.managedClient.clientProperties.autoFit = false;
-        this.managedClient.clientProperties.scale = currentScale;
+        this.managedClient.clientProperties.scale.set(currentScale);
 
         // Scroll display to keep original pinch location centered within current pinch
         this.managedClient.clientProperties.scrollLeft = this.initialCenterX * currentScale - centerX;
@@ -636,7 +671,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
      * being dragged is possible. Further propagation and default behavior
      * of the given event is automatically prevented.
      *
-     * @param {Event} e
+     * @param e
      *     The event related to the in-progress drag/drop operation.
      */
     notifyDragStart(e: Event): void {
@@ -644,9 +679,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
         e.preventDefault();
         e.stopPropagation();
 
-        // TODO: $scope.$apply(() => {
         this.dropPending = true;
-        // });
 
     }
 
@@ -655,7 +688,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
      * being dragged is possible. Further propagation and default behavior
      * of the given event is automatically prevented.
      *
-     * @param {Event} e
+     * @param e
      *     The event related to the end of the former drag/drop operation.
      */
     private notifyDragEnd(e: Event): void {
@@ -663,9 +696,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
         e.preventDefault();
         e.stopPropagation();
 
-        // TODO: $scope.$apply(() => {
         this.dropPending = false;
-        // });
 
     }
 

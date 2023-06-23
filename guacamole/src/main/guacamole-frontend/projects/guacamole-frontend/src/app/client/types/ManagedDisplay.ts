@@ -17,9 +17,16 @@
  * under the License.
  */
 
+import { signal, WritableSignal } from "@angular/core";
+
 declare namespace ManagedDisplay {
     type Dimensions = typeof ManagedDisplay.Dimensions.prototype;
     type Cursor = typeof ManagedDisplay.Cursor.prototype;
+    type Template = {
+        display?: Guacamole.Display;
+        size?: ManagedDisplay.Dimensions;
+        cursor?: ManagedDisplay.Cursor;
+    }
 }
 
 /**
@@ -32,27 +39,27 @@ export class ManagedDisplay {
     /**
      * The underlying Guacamole display.
      */
-    display?: Guacamole.Display;
+    display: WritableSignal<Guacamole.Display | undefined>;
 
     /**
      * The current size of the Guacamole display.
      */
-    size?: ManagedDisplay.Dimensions;
+    size: WritableSignal<ManagedDisplay.Dimensions>;
 
     /**
      * The current mouse cursor, if any.
      */
-    cursor?: ManagedDisplay.Cursor;
+    cursor: WritableSignal<ManagedDisplay.Cursor | undefined>;
 
     /**
      * @param {ManagedDisplay|Object} [template={}]
      *     The object whose properties should be copied within the new
      *     ManagedDisplay.
      */
-    constructor(template: Partial<ManagedDisplay> = {}) {
-        this.display = template.display;
-        this.size = new ManagedDisplay.Dimensions(template.size);
-        this.cursor = template.cursor;
+    constructor(template: ManagedDisplay.Template = {}) {
+        this.display = signal(template.display);
+        this.size = signal(new ManagedDisplay.Dimensions(template.size));
+        this.cursor = signal(template.cursor);
     }
 
     /**
@@ -133,25 +140,23 @@ export class ManagedDisplay {
 
         // Store changes to display size
         display.onresize = function setClientSize() {
-            //TODO $rootScope.$apply(function updateClientSize() {
-            //updateClientSize
-            managedDisplay.size = new ManagedDisplay.Dimensions({
+
+            managedDisplay.size.set(new ManagedDisplay.Dimensions({
                 width: display.getWidth(),
                 height: display.getHeight()
-            });
-            // });
+            }));
+
         };
 
         // Store changes to display cursor
         display.oncursor = function setClientCursor(canvas, x, y) {
-            //TODO: $rootScope.$apply(function updateClientCursor() {
-            //updateClientCursor
-            managedDisplay.cursor = new ManagedDisplay.Cursor({
+
+            managedDisplay.cursor.set(new ManagedDisplay.Cursor({
                 canvas: canvas,
                 x: x,
                 y: y
-            });
-            // });
+            }));
+
         };
 
         return managedDisplay;
