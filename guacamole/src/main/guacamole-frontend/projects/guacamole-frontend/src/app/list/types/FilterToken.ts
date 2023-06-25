@@ -42,7 +42,7 @@ export class FilterToken {
     value: any;
 
     /**
-     * Create a new FilterToken.
+     * Creates a new FilterToken.
      *
      * @param consumed
      *     The input string consumed to produce this token.

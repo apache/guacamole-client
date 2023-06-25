@@ -29,17 +29,20 @@ import { PaginationService } from '../services/pagination.service';
 /**
  * A builder that allows to create a DataSource instance. A data source can be
  * configured with a filter, a sort order and pagination.
+ *
+ * @template T
+ *     The type of the elements in the data source.
  */
-export class DataSourceBuilder<TData> {
+export class DataSourceBuilder<T> {
 
-    private _source?: TData[];
+    private _source?: T[];
     private _searchString: Observable<string> | null = null;
     private _filterProperties: string[] | null = null;
     private _sortOrder: Observable<SortOrder> | null = null;
     private _pagerEvent: Observable<PagerEvent> | null = null;
 
     /**
-     * Creates a new data source builder.
+     * Creates a new DataSourceBuilder.
      */
     constructor(private sortService: SortService,
                 private filterService: FilterService,
@@ -55,7 +58,7 @@ export class DataSourceBuilder<TData> {
      * @returns
      *     The current builder instance for further chaining.
      */
-    source(source: TData[]): DataSourceBuilder<TData> {
+    source(source: T[]): DataSourceBuilder<T> {
         this._source = source;
         return this;
     }
@@ -74,7 +77,7 @@ export class DataSourceBuilder<TData> {
      * @returns
      *     The current builder instance for further chaining.
      */
-    filter(searchString: Observable<string>, filterProperties: string[]): DataSourceBuilder<TData> {
+    filter(searchString: Observable<string>, filterProperties: string[]): DataSourceBuilder<T> {
         this._searchString = searchString;
         this._filterProperties = filterProperties;
         return this;
@@ -90,7 +93,7 @@ export class DataSourceBuilder<TData> {
      * @returns
      *     The current builder instance for further chaining.
      */
-    sort(sortOrder: Observable<SortOrder>): DataSourceBuilder<TData> {
+    sort(sortOrder: Observable<SortOrder>): DataSourceBuilder<T> {
         this._sortOrder = sortOrder;
         return this;
     }
@@ -105,7 +108,7 @@ export class DataSourceBuilder<TData> {
      * @returns
      *     The current builder instance for further chaining.
      */
-    paginate(pagerEvent: Observable<PagerEvent>): DataSourceBuilder<TData> {
+    paginate(pagerEvent: Observable<PagerEvent>): DataSourceBuilder<T> {
         this._pagerEvent = pagerEvent;
         return this;
     }
@@ -116,12 +119,12 @@ export class DataSourceBuilder<TData> {
      * @returns
      *     The data source with the current configuration.
      */
-    build(): DataSource<TData> {
+    build(): DataSource<T> {
 
         if (!this._source)
             throw new Error('No source provided');
 
-        return new DataSource<TData>(
+        return new DataSource<T>(
             this.sortService,
             this.filterService,
             this.paginationService,

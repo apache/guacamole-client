@@ -41,7 +41,7 @@ export class DataSourceBuilderService {
     }
 
     /**
-     * Create a new DataSourceBuilder instance.
+     * Creates a new DataSourceBuilder.
      */
     getBuilder<TData>(): DataSourceBuilder<TData> {
         return new DataSourceBuilder<TData>(this.sortService, this.filterService, this.paginationService);

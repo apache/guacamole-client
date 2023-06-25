@@ -28,33 +28,19 @@ import { Injectable } from '@angular/core';
 })
 export class FilterService {
 
-    constructor() {
-    }
-
     /**
      * TODO: Document
-     * @param target
-     * @param filter
-     */
-    applyFilter<T extends { toString(): string }>(target: T[] | null, filter: string): T[] {
-
-        if (!target)
-            return [];
-
-        return target.filter((element) => {
-            return element.toString().toLowerCase().includes(filter.toLowerCase());
-        });
-    }
-
-    /**
-     * TODO: Document
+     *
+     * @template T
+     *     The type of the elements in the target array.
+     *
      * @param target
      * @param predicate
      */
-    filterByPredicate<T>(target: T[] | null, predicate: Function): T[] {
+    filterByPredicate<T>(target: T[] | null, predicate: (value: T, index: number, array: T[]) => boolean): T[] {
         if (!target)
             return [];
 
-        return target.filter(predicate as any);
+        return target.filter(predicate);
     }
 }

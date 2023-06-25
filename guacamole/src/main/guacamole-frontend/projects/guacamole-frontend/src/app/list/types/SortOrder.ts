@@ -42,7 +42,7 @@ export class SortOrder {
     descending: boolean;
 
     /**
-     * Create a new SortOrder object.
+     * Creates a new SortOrder.
 
      * @param predicate
      *     The properties to sort by, in order of precedence.

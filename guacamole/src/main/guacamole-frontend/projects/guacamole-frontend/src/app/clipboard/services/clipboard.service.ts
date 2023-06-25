@@ -63,8 +63,6 @@ export class ClipboardService {
     /**
      * The promise associated with the current pending clipboard read attempt.
      * If no clipboard read is active, this will be null.
-     *
-     * @type Promise.<ClipboardData>
      */
     private pendingRead: Promise<ClipboardData> | null = null;
 
@@ -73,8 +71,6 @@ export class ClipboardService {
      * currently selected within the document can be pushed onto this stack
      * with pushSelection(), and the most recently pushed selection can be
      * popped off the stack (and thus re-selected) with popSelection().
-     *
-     * @type Range[]
      */
     private selectionStack: Range[] = [];
 
@@ -162,7 +158,7 @@ export class ClipboardService {
      * contents. If the original selection should be preserved, use
      * pushSelection() and popSelection().
      *
-     * @param {Element} element
+     * @param element
      *     The element whose contents should be selected.
      */
     private selectAll(element: Element) {
@@ -193,10 +189,10 @@ export class ClipboardService {
     /**
      * Sets the local clipboard, if possible, to the given text.
      *
-     * @param {ClipboardData} data
+     * @param data
      *     The data to assign to the local clipboard should be set.
      *
-     * @return {Promise}
+     * @return
      *     A promise that will resolve if setting the clipboard was successful,
      *     and will reject if it failed.
      */

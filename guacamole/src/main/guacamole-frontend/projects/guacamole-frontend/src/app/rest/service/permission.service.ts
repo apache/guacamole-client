@@ -293,26 +293,26 @@ export class PermissionService {
      * granted to the user or group, and may not affect permissions inherited
      * through other means (effective permissions).
      *
-     * @param {String} dataSource
+     * @param dataSource
      *     The unique identifier of the data source containing the user or group
      *     whose permissions should be modified. This identifier corresponds to
      *     an AuthenticationProvider within the Guacamole web application.
      *
-     * @param {String} identifier
+     * @param identifier
      *     The identifier of the user or group to modify the permissions of.
      *
-     * @param {PermissionSet} [permissionsToAdd]
+     * @param [permissionsToAdd]
      *     The set of permissions to add, if any.
      *
-     * @param {PermissionSet} [permissionsToRemove]
+     * @param [permissionsToRemove]
      *     The set of permissions to remove, if any.
      *
-     * @param {Boolean} [group]
+     * @param [group]
      *     Whether the provided identifier refers to a user group. If false or
      *     omitted, the identifier given is assumed to refer to a user.
      *
-     * @returns {Promise}
-     *     A promise for the HTTP call which will succeed if and only if the
+     * @returns
+     *     An observable for the HTTP call which will succeed if and only if the
      *     patch operation is successful.
      */
     patchPermissions(dataSource: string, identifier: string, permissionsToAdd?: PermissionSet, permissionsToRemove?: PermissionSet, group?: boolean): Observable<void> {

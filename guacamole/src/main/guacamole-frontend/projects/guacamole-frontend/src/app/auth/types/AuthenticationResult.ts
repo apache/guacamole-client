@@ -46,7 +46,8 @@ export class AuthenticationResult {
     availableDataSources?: string[];
 
     /**
-     * Creates a new AuthenticationResult object.
+     * Creates a new AuthenticationResult object. This constructor initializes the properties of the
+     * new AuthenticationResult with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

@@ -45,7 +45,8 @@ export class ClientIdentifier {
     id?: string;
 
     /**
-     * Create a new ClientIdentifier.
+     * Creates a new ClientIdentifier. This constructor initializes the properties of the
+     * new ClientIdentifier with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

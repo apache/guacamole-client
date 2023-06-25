@@ -28,7 +28,7 @@ import { ManagedClient } from '../../client/types/ManagedClient';
 export class ActiveConnection {
 
     /**
-     * Create a new ActiveConnection object.
+     * Creates a new ActiveConnection.
      *
      * @param name
      *     The human-readable name of this connection.

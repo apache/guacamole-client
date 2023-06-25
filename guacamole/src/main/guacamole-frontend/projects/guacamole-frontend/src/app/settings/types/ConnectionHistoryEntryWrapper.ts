@@ -71,7 +71,8 @@ export class ConnectionHistoryEntryWrapper {
     sessionRecording: ConnectionHistoryEntryWrapper.Log | null = null;
 
     /**
-     * Create a new ConnectionHistoryEntryWrapper.
+     * Creates a new ConnectionHistoryEntryWrapper. This constructor initializes the properties of the
+     * new ConnectionHistoryEntryWrapper with the corresponding properties of the given template.
      *
      * @param historyEntry
      *     The ConnectionHistoryEntry that should be wrapped.
@@ -138,7 +139,8 @@ export class ConnectionHistoryEntryWrapper {
         description: Promise<string>;
 
         /**
-         * Create a new ConnectionHistoryEntryWrapper.Log object.
+         * Creates a new ConnectionHistoryEntryWrapper.Log. This constructor initializes the properties of the
+         * new Log with the corresponding properties of the given template.
          *
          * @param template
          *     The object whose properties should be copied within the new

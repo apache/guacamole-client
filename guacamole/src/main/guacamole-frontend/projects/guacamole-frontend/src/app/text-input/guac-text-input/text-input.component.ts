@@ -17,18 +17,10 @@
  * under the License.
  */
 
-import {
-    AfterViewInit,
-    Component, DestroyRef,
-    ElementRef,
-    ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    GuacFrontendEventArguments
-} from '../../events/types/GuacFrontendEventArguments';
+import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 
 /**
  * The number of characters to include on either side of text input
@@ -274,7 +266,7 @@ export class TextInputComponent implements AfterViewInit {
      * Translates each character within the given string to keysyms and
      * sends each, in order, as if typed by the user.
      *
-     * @param {String} content
+     * @param content
      *     The string to send.
      */
     sendString(content: string): void {
@@ -322,7 +314,7 @@ export class TextInputComponent implements AfterViewInit {
      * overall number of characters added will be twice the number
      * specified.
      *
-     * @param {Number} padding
+     * @param padding
      *     The number of characters to pad the text area with.
      */
     resetTextInputTarget(padding: number): void {

@@ -67,7 +67,8 @@ export class ManagementPermissions {
     canChangePermissions: boolean;
 
     /**
-     * Create a new ManagementPermissions object.
+     * Creates a new ManagementPermissions. This constructor initializes the properties of the
+     * new ManagementPermissions with the corresponding properties of the given template.
      *
      * @param template
      *     An object whose properties should be copied into the new
@@ -94,7 +95,7 @@ export class ManagementPermissions {
      * @param createPermission
      *     The system permission required to create objects of the same type as
      *     the object being managed, as defined by
-     *     {@link PermissionSet.SystemPermissionTypes}.
+     *     {@link PermissionSet.SystemPermissionType}.
      *
      * @param hasObjectPermission
      *     The function to invoke to test whether a {@link PermissionSet}

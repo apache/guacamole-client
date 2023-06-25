@@ -62,8 +62,6 @@ export class Notification {
      * The object which will receive all field values. Each field value
      * will be assigned to the property of this object having the same
      * name.
-     *
-     * @type Object.<String, String>
      */
     formModel?: Record<string, string>;
 
@@ -76,24 +74,18 @@ export class Notification {
     /**
      * An array of all actions available to the user in response to this
      * notification.
-     *
-     * @type NotificationAction[]
      */
     actions: NotificationAction[];
 
     /**
      * The current progress state of the ongoing action associated with this
      * notification.
-     *
-     * @type NotificationProgress
      */
     progress?: NotificationProgress;
 
     /**
      * The countdown and corresponding default action which applies to
      * this notification, if any.
-     *
-     * @type NotificationCountdown
      */
     countdown?: NotificationCountdown;
 

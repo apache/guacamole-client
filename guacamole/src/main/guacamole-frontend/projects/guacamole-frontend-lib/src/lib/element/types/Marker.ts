@@ -26,7 +26,7 @@ export class Marker {
      * Creates a new Marker which allows its associated element to be scrolled
      * into view as desired.
      *
-     * @param {Element} element
+     * @param element
      *     The element to associate with this marker.
      */
     constructor(private element: Element) {

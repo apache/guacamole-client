@@ -36,7 +36,8 @@ export class ManagedClientThumbnail {
     canvas: HTMLCanvasElement;
 
     /**
-     * Create a new ManagedClientThumbnail.
+     * Creates a new ManagedClientThumbnail. This constructor initializes the properties of the
+     * new ManagedClientThumbnail with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

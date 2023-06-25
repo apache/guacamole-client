@@ -32,10 +32,10 @@ export class CsvService {
      * given array of records, where each entry in the provided array is an
      * array of arbitrary fields.
      *
-     * @param {Array.<*[]>} records
+     * @param records
      *     An array of all records making up the desired CSV.
      *
-     * @returns {Blob}
+     * @returns
      *     A new Blob containing each provided record in CSV format.
      */
     toBlob(records: any[][]): Blob {

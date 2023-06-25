@@ -52,15 +52,11 @@ export class GuacUploadDirective implements OnInit {
 
     /**
      * Internal form, containing a single file input element.
-     *
-     * @type HTMLFormElement
      */
     readonly form: HTMLFormElement;
 
     /**
      * Internal file input element.
-     *
-     * @type HTMLInputElement
      */
     readonly input: HTMLInputElement;
 

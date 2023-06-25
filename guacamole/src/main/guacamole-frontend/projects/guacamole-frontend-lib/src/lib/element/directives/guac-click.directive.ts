@@ -113,7 +113,7 @@ export class GuacClickDirective {
      * based on which keys are currently marked as held down by the
      * given Guacamole.Keyboard.
      *
-     * @param {Guacamole.Keyboard} keyboard
+     * @param keyboard
      *     The Guacamole.Keyboard instance to read key states from.
      */
     updateModifiers(keyboard: Guacamole.Keyboard) {

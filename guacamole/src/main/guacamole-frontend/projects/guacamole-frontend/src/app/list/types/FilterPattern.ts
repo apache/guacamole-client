@@ -44,7 +44,7 @@ export class FilterPattern {
     predicate: Function;
 
     /**
-     * Create a new FilterPattern.
+     * Creates a new FilterPattern.
      *
      * @param expressions
      *     The expressions whose values are to be filtered.

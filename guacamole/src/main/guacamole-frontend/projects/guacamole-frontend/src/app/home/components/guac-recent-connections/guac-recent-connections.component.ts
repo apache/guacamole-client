@@ -77,11 +77,11 @@ export class GuacRecentConnectionsComponent implements OnChanges {
      * Adds the given connection to the internal set of visible
      * objects.
      *
-     * @param {String} dataSource
+     * @param dataSource
      *     The identifier of the data source associated with the
      *     given connection group.
      *
-     * @param {Connection} connection
+     * @param connection
      *     The connection to add to the internal set of visible objects.
      */
     addVisibleConnection(dataSource: string, connection: Connection): void {
@@ -99,11 +99,11 @@ export class GuacRecentConnectionsComponent implements OnChanges {
      * Adds the given connection group to the internal set of visible
      * objects, along with any descendants.
      *
-     * @param {String} dataSource
+     * @param dataSource
      *     The identifier of the data source associated with the
      *     given connection group.
      *
-     * @param {ConnectionGroup} connectionGroup
+     * @param connectionGroup
      *     The connection group to add to the internal set of visible
      *     objects, along with any descendants.
      */

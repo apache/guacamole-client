@@ -18,8 +18,9 @@
  */
 
 /**
- * Provides the ClipboardData class used for interchange between the
- * guacClipboard directive, clipboardService service, etc.
+ * Arbitrary data which can be contained by the clipboard.
+ * Used for interchange between the guacClipboard directive,
+ * clipboardService service, etc.
  */
 export class ClipboardData {
     /**
@@ -42,10 +43,11 @@ export class ClipboardData {
     data: string | Blob | File;
 
     /**
-     * Arbitrary data which can be contained by the clipboard.
+     * Creates a new ClipboardData object. This constructor initializes the
+     * properties of the new ClipboardData with the corresponding properties
+     * of the given template.
      *
-     * @constructor
-     * @param {ClipboardData|Object} [template={}]
+     * @param [template={}]
      *     The object whose properties should be copied within the new
      *     ClipboardData.
      */

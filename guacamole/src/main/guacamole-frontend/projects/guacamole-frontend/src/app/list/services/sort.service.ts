@@ -29,11 +29,11 @@ import { compile } from 'angular-expressions';
 })
 export class SortService {
 
-    constructor() {
-    }
-
     /**
      * TODO Document
+     * @template T
+     *     The type of the elements in the target array.
+     *
      * @param target
      * @param iteratees
      */
@@ -46,6 +46,9 @@ export class SortService {
      * The predicate is a string (AngularJS expression) that can be compiled into a function.
      * This function will be evaluated against each item and the result will be used for sorting.
      * The predicate can be prefixed with a minus sign to indicate descending order.
+     *
+     * @template T
+     *     The type of the elements in the collection array.
      *
      * @param collection
      *     The collection to sort.
@@ -61,6 +64,7 @@ export class SortService {
             return [];
         }
 
+        // Predicates starting with a minus sign indicate descending order
         const orders = predicates.map(p => p.startsWith('-') ? 'desc' : 'asc');
 
         const expressions = predicates.map(p => {
@@ -72,7 +76,7 @@ export class SortService {
                 if (value?.toString)
                     return value.toString().toLowerCase();
 
-               return null;
+                return null;
             };
         });
 

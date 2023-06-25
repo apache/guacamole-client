@@ -53,7 +53,8 @@ export class ManagedFileUpload {
     length?: number;
 
     /**
-     * Create a new ManagedFileUpload object.
+     * Creates a new ManagedFileUpload. This constructor initializes the properties of the
+     * new ManagedFileUpload with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

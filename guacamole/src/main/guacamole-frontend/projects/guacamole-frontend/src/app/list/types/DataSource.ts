@@ -27,6 +27,9 @@ import { FilterPattern } from './FilterPattern';
 
 /**
  * A data source which wraps a source array and applies filtering, sorting and pagination.
+ *
+ * @template T
+ *     The type of the elements in the data source.
  */
 export class DataSource<T> {
 
@@ -51,7 +54,8 @@ export class DataSource<T> {
     private dataComplete!: Subject<void>;
 
     /**
-     * Creates a new data source containing the given source array.
+     * Creates a new DataSource, which wraps the given source array and
+     * applies filtering, sorting and pagination.
      */
     constructor(private sortService: SortService,
                 private filterService: FilterService,
@@ -133,7 +137,7 @@ export class DataSource<T> {
             return data;
 
         this.filterPattern.compile(searchString);
-        return this.filterService.filterByPredicate(data, this.filterPattern.predicate)
+        return this.filterService.filterByPredicate(data, this.filterPattern.predicate as any)
     }
 
     /**

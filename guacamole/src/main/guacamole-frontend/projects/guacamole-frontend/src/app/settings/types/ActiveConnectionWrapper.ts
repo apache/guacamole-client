@@ -53,7 +53,8 @@ export class ActiveConnectionWrapper {
     checked: boolean;
 
     /**
-     * Create a new ActiveConnectionWrapper.
+     * Creates a new ActiveConnectionWrapper. This constructor initializes the properties of the
+     * new ActiveConnectionWrapper with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

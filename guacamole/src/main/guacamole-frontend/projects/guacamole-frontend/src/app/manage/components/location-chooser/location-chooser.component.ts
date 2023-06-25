@@ -66,7 +66,7 @@ export class LocationChooserComponent implements OnInit, OnChanges {
     chosenConnectionGroupName: string | null = null;
 
     /**
-     * TODO
+     * Map of the data source identifier to the root connection group.
      */
     rootGroups: Record<string, ConnectionGroup> = {};
 

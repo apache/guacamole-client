@@ -30,6 +30,9 @@ export class PaginationService {
     /**
      * Extracts a page from the given source.
      *
+     * @template T
+     *     The type of the elements in the source array.
+     *
      * @param source
      *     The source from which the page should be extracted.
      *

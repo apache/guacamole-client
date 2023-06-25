@@ -54,15 +54,15 @@ export class GuacMenuComponent implements OnInit {
     }
 
     ngOnInit(): void {
+
         // Close menu when user clicks anywhere outside this specific menu
         this.document.body.addEventListener('click', (e: MouseEvent) => {
-            //clickOutsideMenu
-            // TODO: $scope.$apply(function closeMenu() {
-            // TODO: Check cast to Node
-            if (e.target !== this.element && !this.element?.contains(e.target as Node))
+
+            if (e.target !== this.element && !this.element?.contains(e.target as HTMLElement))
                 this.menuShown = false;
-            // });
+
         }, false);
+
     }
 
 

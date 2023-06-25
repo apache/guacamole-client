@@ -52,7 +52,7 @@ export class ManagedDisplay {
     cursor: WritableSignal<ManagedDisplay.Cursor | undefined>;
 
     /**
-     * @param {ManagedDisplay|Object} [template={}]
+     * @param [template={}]
      *     The object whose properties should be copied within the new
      *     ManagedDisplay.
      */
@@ -64,11 +64,6 @@ export class ManagedDisplay {
 
     /**
      * Object which represents the size of the Guacamole display.
-     *
-     * @constructor
-     * @param {ManagedDisplay.Dimensions|Object} template
-     *     The object whose properties should be copied within the new
-     *     ManagedDisplay.Dimensions.
      */
     static Dimensions = class Dimensions {
 
@@ -82,6 +77,15 @@ export class ManagedDisplay {
          */
         height: number;
 
+        /**
+         * Creates a new ManagedDisplay.Dimensions object. This constructor initializes
+         * the properties of the new Dimensions with the corresponding properties
+         * of the given template.
+         *
+         * @param [template={}]
+         *     The object whose properties should be copied within the new
+         *     ManagedDisplay.Dimensions.
+         */
         constructor(template: Partial<Dimensions> = {}) {
             this.width = template.width || 0;
             this.height = template.height || 0;
@@ -90,11 +94,6 @@ export class ManagedDisplay {
 
     /**
      * Object which represents a mouse cursor used by the Guacamole display.
-     *
-     * @constructor
-     * @param {ManagedDisplay.Cursor|Object} template
-     *     The object whose properties should be copied within the new
-     *     ManagedDisplay.Cursor.
      */
     static Cursor = class Cursor {
 
@@ -113,6 +112,14 @@ export class ManagedDisplay {
          */
         y?: number;
 
+        /**
+         * Creates a new ManagedDisplay.Cursor. This constructor initializes the properties of the
+         * new Cursor with the corresponding properties of the given template.
+         *
+         * @param [template={}]
+         *     The object whose properties should be copied within the new
+         *     ManagedDisplay.Cursor.
+         */
         constructor(template: Partial<Cursor> = {}) {
             this.canvas = template.canvas;
             this.x = template.x;

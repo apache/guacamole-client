@@ -159,7 +159,7 @@ export class MembershipService {
      * which a given user or group is a member, returning an observable that can be
      * used for processing the results of the call.
      *
-     * @param {String} dataSource
+     * @param dataSource
      *     The unique identifier of the data source containing the user or
      *     group whose parent user groups should be modified. This identifier
      *     corresponds to an AuthenticationProvider within the Guacamole web

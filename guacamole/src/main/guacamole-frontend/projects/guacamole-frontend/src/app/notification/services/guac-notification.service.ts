@@ -120,7 +120,6 @@ export class GuacNotificationService {
             actions: [this.ACKNOWLEDGE_ACTION]
         });
 
-        // TODO: Check what happens when the error is thrown
         return throwError(() => error);
     });
 

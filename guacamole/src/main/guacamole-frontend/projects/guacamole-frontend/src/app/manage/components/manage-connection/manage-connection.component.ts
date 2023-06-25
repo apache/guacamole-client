@@ -112,7 +112,7 @@ export class ManageConnectionComponent implements OnInit {
     historyEntryWrappers?: HistoryEntryWrapper[];
 
     /**
-     * TODO: document
+     * Paginated view of the usage history of the connection being modified.
      */
     dataSourceView: DataSource<HistoryEntryWrapper> | null = null;
 

@@ -185,21 +185,21 @@ export class UserService {
      * Makes a request to the REST API to update the password for a user,
      * returning an observable that can be used for processing the results of the call.
      *
-     * @param {String} dataSource
+     * @param dataSource
      *     The unique identifier of the data source containing the user to be
      *     updated. This identifier corresponds to an AuthenticationProvider
      *     within the Guacamole web application.
      *
-     * @param {String} username
+     * @param username
      *     The username of the user to update.
      *
-     * @param {String} oldPassword
+     * @param oldPassword
      *     The exiting password of the user to update.
      *
-     * @param {String} newPassword
+     * @param newPassword
      *     The new password of the user to update.
      *
-     * @returns {Promise}
+     * @returns
      *     An observable for the HTTP call which will succeed if and only if the
      *     password update operation is successful.
      */

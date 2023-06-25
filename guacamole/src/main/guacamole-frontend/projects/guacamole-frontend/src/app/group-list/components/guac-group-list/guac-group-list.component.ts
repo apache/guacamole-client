@@ -71,8 +71,6 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
      * If the template for a type is omitted, items of that type will
      * not be rendered. All standard types are defined by
      * @link{GroupListItem.Type}, but use of custom types is legal.
-     *
-     * @type Object.<String, String>
      */
     @Input({required: true}) templates!: Record<string, TemplateRef<any>>;
 
@@ -186,7 +184,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
     /**
      * Toggle the open/closed status of a group list item.
      *
-     * @param {GroupListItem} groupListItem
+     * @param groupListItem
      *     The list item to expand, which should represent a
      *     connection group.
      */

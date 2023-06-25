@@ -92,10 +92,10 @@ export class TranslationLoaderService implements TranslocoLoader {
      *     The function to call if none of the translation files can be
      *     successfully loaded.
      *
-     * @param {String} requestedKey
+     * @param requestedKey
      *     The originally-requested language key.
      *
-     * @param {String[]} remainingKeys
+     * @param remainingKeys
      *     The keys of the languages to attempt to load, in order, where the
      *     first key in this array is the language to try within this function
      *     call. The first key in the array is not necessarily the originally-

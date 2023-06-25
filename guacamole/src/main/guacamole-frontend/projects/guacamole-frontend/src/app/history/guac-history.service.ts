@@ -54,10 +54,10 @@ export class GuacHistoryService {
      * Updates the thumbnail and access time of the history entry for the
      * connection with the given ID.
      *
-     * @param {String} id
+     * @param id
      *     The ID of the connection whose history entry should be updated.
      *
-     * @param {String} thumbnail
+     * @param thumbnail
      *     The URL of the thumbnail image to associate with the history entry.
      */
     updateThumbnail(id: string, thumbnail: string) {

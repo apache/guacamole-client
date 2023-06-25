@@ -43,9 +43,10 @@ export class ManagedFileTransferState {
     statusCode: number;
 
     /**
-     * Create a new ManagedFileTransferState object.
+     * Creates a new ManagedFileTransferState object. This constructor initializes the properties of the
+     * new ManagedFileTransferState with the corresponding properties of the given template.
      *
-     * @param {ManagedFileTransferState|Object} [template={}]
+     * @param [template={}]
      *     The object whose properties should be copied within the new
      *     ManagedFileTransferState.
      */

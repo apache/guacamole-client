@@ -35,8 +35,6 @@ export class LocalStorageService {
      * lazily as keys are retrieved, updated, or removed. If localStorage is
      * not actually available, then this cache will be the sole storage
      * location for these key/value pairs.
-     *
-     * @type Object.<String, String>
      */
     storedItems: Record<string, string> = {};
 

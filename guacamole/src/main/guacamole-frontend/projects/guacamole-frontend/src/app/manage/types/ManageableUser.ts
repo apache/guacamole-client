@@ -37,7 +37,8 @@ export class ManageableUser {
     user: User;
 
     /**
-     * Create a new ManageableUser object.
+     * Creates a new ManageableUser. This constructor initializes the properties of the
+     * new ManageableUser with the corresponding properties of the given template.
      *
      * @param template
      *    The object whose properties should be copied within the new

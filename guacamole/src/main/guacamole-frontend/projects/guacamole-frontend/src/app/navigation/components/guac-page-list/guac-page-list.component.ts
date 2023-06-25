@@ -84,10 +84,10 @@ export class GuacPageListComponent implements OnInit, OnChanges {
      * name, and that name is not stored as an array, it will be still
      * be returned as an array containing a single item.
      *
-     * @param {PageDefinition} page
+     * @param page
      *     The page to return the names of.
      *
-     * @return {String[]}
+     * @return
      *     An array of all names associated with the given page, in
      *     hierarchical order.
      */
@@ -167,10 +167,10 @@ export class GuacPageListComponent implements OnInit, OnChanges {
     /**
      * Tests whether the given page is the page currently being viewed.
      *
-     * @param {PageDefinition} page
+     * @param page
      *     The page to test.
      *
-     * @returns {Boolean}
+     * @returns
      *     true if the given page is the current page, false otherwise.
      */
     isCurrentPage(page: PageDefinition): boolean {
@@ -181,11 +181,11 @@ export class GuacPageListComponent implements OnInit, OnChanges {
      * Given an arbitrary map of PageDefinitions, returns an array of
      * those PageDefinitions, sorted by weight.
      *
-     * @param {Object.<*, PageDefinition>} level
+     * @param level
      *     A map of PageDefinitions with arbitrary keys. The value of
      *     each key is ignored.
      *
-     * @returns {PageDefinition[]}
+     * @returns
      *     An array of all PageDefinitions in the given map, sorted by
      *     weight.
      */

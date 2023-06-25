@@ -35,7 +35,7 @@ export class IPv4Network {
     netmask: number;
 
     /**
-     * Create a new IPv4Network object.
+     * Creates a new IPv4Network.
      *
      * @param address
      *     The IPv4 address of the network in binary form.
@@ -52,10 +52,10 @@ export class IPv4Network {
      * Tests whether the given network is entirely within this network,
      * taking into account the base addresses and netmasks of both.
      *
-     * @param {IPv4Network} other
+     * @param other
      *     The network to test.
      *
-     * @returns {Boolean}
+     * @returns
      *     true if the other network is entirely within this network, false
      *     otherwise.
      */

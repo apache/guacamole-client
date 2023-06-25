@@ -26,7 +26,7 @@
 export class PatchOperation {
 
     /**
-     * Create a new PatchOperation.
+     * Creates a new PatchOperation.
      *
      * @param name
      *     The name of the patching operation that will be applied. Valid
@@ -164,14 +164,14 @@ export namespace PatchOperation {
      * A function which applies a specific patch operation to the
      * given element.
      *
-     * @param {Element[]} root
+     * @param root
      *     The root element of the template being patched.
      *
-     * @param {String} selector
+     * @param selector
      *     The CSS selector which determines where this patch operation
      *     should be applied within the template defined by root.
      *
-     * @param {Element[]} elements
+     * @param elements
      *     The contents of the patch which should be applied to the
      *     template defined by root at the locations selected by the
      *     given CSS selector.

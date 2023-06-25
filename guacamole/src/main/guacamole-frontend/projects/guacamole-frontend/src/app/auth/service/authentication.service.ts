@@ -180,13 +180,13 @@ export class AuthenticationService {
      *
      * If a token is provided, it will be reused if possible.
      *
-     * @param {Object|Promise} parameters
+     * @param parameters
      *     Arbitrary parameters to authenticate with. If a Promise is provided,
      *     that Promise must resolve with the parameters to be submitted when
      *     those parameters are available, and any error will be handled as if
      *     from the authentication endpoint of the REST API itself.
      *
-     * @returns {Promise}
+     * @returns
      *     An Observable which emits the authentication result only if the login operation was successful.
      */
     authenticate(parameters: object | Promise<any>): Observable<AuthenticationResult> {

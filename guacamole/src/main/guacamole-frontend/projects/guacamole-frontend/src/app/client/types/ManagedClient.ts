@@ -192,7 +192,8 @@ export class ManagedClient {
     static readonly AUDIO_INPUT_MIMETYPE: string = 'audio/L16;rate=44100,channels=2';
 
     /**
-     * Create a new ManagedClient.
+     * Creates a new ManagedClient. This constructor initializes the properties of the
+     * new ManagedClient with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

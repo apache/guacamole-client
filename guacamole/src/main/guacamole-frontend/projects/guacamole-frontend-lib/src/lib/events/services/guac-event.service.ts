@@ -24,6 +24,10 @@ import { GuacEventArguments } from "../types/GuacEventArguments";
 
 /**
  * Service for broadcasting and subscribing to Guacamole frontend events.
+ *
+ * @template Args
+ *     Type which specifies the set of all possible events and their
+ *     arguments.
  */
 @Injectable({
     providedIn: 'root'
@@ -37,6 +41,10 @@ export class GuacEventService<Args extends GuacEventArguments> {
 
     /**
      * TODO: Document
+     *
+     * @template T
+     *     Union type of all possible event names.
+     *
      * @param eventName
      * @param args
      */
@@ -49,6 +57,10 @@ export class GuacEventService<Args extends GuacEventArguments> {
 
     /**
      * TODO: Document
+     *
+     * @template T
+     *     Union type of all possible event names.
+     *
      * @param eventName
      * @returns
      */

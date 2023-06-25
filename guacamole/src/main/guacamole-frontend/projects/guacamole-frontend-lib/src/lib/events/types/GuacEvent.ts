@@ -19,17 +19,44 @@
 
 import { GuacEventArguments } from "./GuacEventArguments";
 
+/**
+ * Type which represents the names of all possible Guacamole events.
+ *
+ * @template T
+ *     Type which specifies the set of all possible events and their
+ *     arguments.
+ */
 export type GuacEventName<T extends GuacEventArguments> = keyof T;
 
+/**
+ * An event which is emitted by the GuacEventService.
+ *
+ * @template T
+ *     Type which specifies the set of all possible events and their
+ *     arguments.
+ */
 export class GuacEvent<T extends GuacEventArguments> {
     name: GuacEventName<T>;
 
+    /**
+     * Creates a new GuacEvent having the given name.
+     *
+     * @param name
+     *     The name of the event.
+     */
     constructor(name: GuacEventName<T>) {
         this.name = name;
     }
 
-    defaultPrevented: boolean = false
+    /**
+     * Flag which is true if preventDefault() was called on this event, and
+     * false otherwise.
+     */
+    defaultPrevented = false
 
+    /**
+     * Sets the defaultPrevented flag to true.
+     */
     preventDefault() {
         this.defaultPrevented = true;
     }

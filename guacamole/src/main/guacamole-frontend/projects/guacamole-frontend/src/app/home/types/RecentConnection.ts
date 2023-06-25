@@ -29,7 +29,7 @@ import { HistoryEntry } from '../../history/HistoryEntry';
 export class RecentConnection {
 
     /**
-     * Creates a new RecentConnection instance.
+     * Creates a new RecentConnection.
      *
      * @param name
      *     The human-readable name of this connection.

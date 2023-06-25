@@ -78,7 +78,7 @@ export class ConnectionGroupService {
      * returning an observable that provides the corresponding
      * {@link ConnectionGroup} if successful.
      *
-     * @param {String} [connectionGroupID=ConnectionGroup.ROOT_IDENTIFIER]
+     * @param [connectionGroupID=ConnectionGroup.ROOT_IDENTIFIER]
      *     The ID of the connection group to retrieve. If not provided, the
      *     root connection group will be retrieved by default.
      *
@@ -155,7 +155,7 @@ export class ConnectionGroupService {
      * Makes a request to the REST API to delete a connection group, returning
      * an observable that can be used for processing the results of the call.
      *
-     * @param {ConnectionGroup} connectionGroup
+     * @param connectionGroup
      *     The connection group to delete.
      *
      * @returns

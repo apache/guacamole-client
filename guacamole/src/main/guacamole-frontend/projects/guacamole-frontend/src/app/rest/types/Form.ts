@@ -36,7 +36,8 @@ export class Form {
     fields: Field[];
 
     /**
-     * Create a new Form.
+     * Creates a new Form. This constructor initializes the properties of the
+     * new Form with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

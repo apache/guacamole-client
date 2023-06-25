@@ -20,9 +20,7 @@
 import { Injectable } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { Observable, of, throwError } from 'rxjs';
-import {
-    GuacFrontendEventArguments
-} from '../../events/types/GuacFrontendEventArguments';
+import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { LogService } from '../../util/log.service';
 import { Error } from '../types/Error';
 
@@ -74,11 +72,11 @@ export class RequestService {
      * JavaScript error occurs within a callback earlier in the promise chain,
      * the rejection is logged without invoking the given callback.
      *
-     * @param {Function} callback
+     * @param callback
      *     The callback to invoke if the promise is rejected with an
      *     @link{Error} object.
      *
-     * @returns {Function}
+     * @returns
      *     A function which can be provided as the error callback for a
      *     promise.
      */

@@ -51,7 +51,8 @@ export class ManagedShareLink {
     sharingCredentials: UserCredentials;
 
     /**
-     * Create a new ManagedShareLink object.
+     * Creates a new ManagedShareLink. This constructor initializes the properties of the
+     * new ManagedShareLink with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

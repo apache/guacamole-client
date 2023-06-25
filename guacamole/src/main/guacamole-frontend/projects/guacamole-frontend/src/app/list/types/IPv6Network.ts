@@ -27,8 +27,6 @@ export class IPv6Network {
     /**
      * The 128-bit binary address of this network as an array of eight
      * 16-bit numbers.
-     *
-     * @type Number[]
      */
     addressGroups: number[];
 
@@ -39,7 +37,7 @@ export class IPv6Network {
     netmaskGroups: number[];
 
     /**
-     * Create a new IPv6Network object.
+     * Creates a new IPv6Network.
      *
      * @param addressGroups
      *     Array of eight IPv6 address groups in binary form, each group being

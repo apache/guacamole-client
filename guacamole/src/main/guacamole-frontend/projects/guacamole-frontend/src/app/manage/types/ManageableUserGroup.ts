@@ -38,7 +38,8 @@ export class ManageableUserGroup {
 
 
     /**
-     * Create a new ManageableUserGroup object.
+     * Creates a new ManageableUserGroup. This constructor initializes the properties of the
+     * new ManageableUserGroup with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

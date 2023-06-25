@@ -43,7 +43,8 @@ export class ManagedArgument {
     stream: Guacamole.OutputStream;
 
     /**
-     * Create a new ManagedArgument.
+     * Creates a new ManagedArgument. This constructor initializes the properties of the
+     * new ManagedArgument with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new

@@ -57,7 +57,8 @@ export class ColorScheme {
     _originalString?: string;
 
     /**
-     * Creates a new ColorScheme.
+     * Creates a new ColorScheme. This constructor initializes the properties of the
+     * new ColorScheme with the corresponding properties of the given template.
      *
      * @param template
      *     The object whose properties should be copied within the new
@@ -164,11 +165,11 @@ export class ColorScheme {
      * supported by the Guacamole terminal emulator to a corresponding,
      * intermediate ColorScheme object.
      *
-     * @param {String} str
+     * @param str
      *     An arbitrary color scheme, in the string format supported by the
      *     Guacamole terminal emulator.
      *
-     * @returns {ColorScheme}
+     * @returns
      *     A new ColorScheme instance which represents the same color scheme as
      *     the given string.
      */

@@ -20,8 +20,11 @@
 /**
  * Consumed by REST API calls when representing changes to an
  * arbitrary set of directory-based objects.
+ *
+ * @template T
+ *     The type of object being modified.
  */
-export class DirectoryPatch<TData> {
+export class DirectoryPatch<T> {
 
     /**
      * The operation to apply to the objects indicated by the path. Valid
@@ -41,7 +44,7 @@ export class DirectoryPatch<TData> {
     /**
      * The object being added/replaced, or undefined if deleting.
      */
-    value?: TData;
+    value?: T;
 
     /**
      * Creates a new DirectoryPatch.
@@ -50,7 +53,7 @@ export class DirectoryPatch<TData> {
      *     The object whose properties should be copied within the new
      *     DirectoryPatch.
      */
-    constructor(template: Partial<DirectoryPatch<TData>> = {}) {
+    constructor(template: Partial<DirectoryPatch<T>> = {}) {
         this.op = template.op;
         this.path = template.path || '/';
         this.value = template.value;

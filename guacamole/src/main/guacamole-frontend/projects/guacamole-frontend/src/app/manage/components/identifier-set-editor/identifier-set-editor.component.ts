@@ -17,15 +17,7 @@
  * under the License.
  */
 
-import {
-    Component,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
-    ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import isEmpty from 'lodash/isEmpty';
 import sortedIndex from 'lodash/sortedIndex';
 import sortedIndexOf from 'lodash/sortedIndexOf';
@@ -89,8 +81,6 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
     /**
      * The set of identifiers that have been removed, relative to the
      * initial state of the identifier set being manipulated.
-     *
-     * @type String[]
      */
     @Input({required: true}) identifiersRemoved!: string[];
 
@@ -100,12 +90,14 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
     @ViewChild(GuacPagerComponent, {static: true}) pager!: GuacPagerComponent;
 
     /**
-     * TODO: document
+     * Filtered and paginated view of all identifiers which are available
+     * to be added to or removed from the identifier set being edited.
      */
     identifiersAvailableDataSourceView: DataSource<string> | null = null;
 
     /**
-     * TODO: document
+     * Filtered view of the current state of the identifier set being
+     * manipulated.
      */
     identifiersDataSourceView: DataSource<string> | null = null;
 
