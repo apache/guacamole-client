@@ -105,16 +105,6 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     var KEYFRAME_TIME_INTERVAL = 5000;
 
     /**
-     * The minimum number of milliseconds which must elapse between key events
-     * before text can be split across multiple frames.
-     *
-     * @private
-     * @constant
-     * @type {Number}
-     */
-    var TYPED_TEXT_INTERVAL = 5000;
-
-    /**
      * All frames parsed from the provided blob.
      *
      * @private
@@ -387,23 +377,35 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
     /**
      * A key event interpreter to split all key events in this recording into
-     * human-readable batches of text.
+     * human-readable batches of text. Constrcution is deferred until the first
+     * event is processed, to enable recording-relative timestamps.
      *
      * @type {!Guacamole.KeyEventInterpreter}
      */
-    var keyEventInterpreter = new Guacamole.KeyEventInterpreter();
+    var keyEventInterpreter = null;
 
-    // Pass through any received batches to the recording ontext handler
-    keyEventInterpreter.onBatch = function onBatch(text, timestamp) {
+    /**
+     * Initialize the key interpreter. This function should be called only once
+     * with the first timestamp in the recording as an argument.
+     *
+     * @private
+     * @param {!number} startTimestamp
+     *     The timestamp of the first frame in the recording, i.e. the start of
+     *     the recording.
+     */
+    function initializeKeyInterpreter(startTimestamp) {
 
-        // Don't call the callback if it was never set
-        if (!recording.ontext)
-            return;
+        keyEventInterpreter = new Guacamole.KeyEventInterpreter(null, startTimestamp);
 
-        // Convert to a recording-relative timestamp and pass through
-        recording.ontext(text, toRelativeTimestamp(timestamp));
+        // Pass through any received batches to the recording ontext handler
+        keyEventInterpreter.onbatch = function onbatch(batch) {
 
-    };
+            // Pass the batch through if a handler is set
+            if (recording.ontext)
+                recording.ontext(batch);
+
+        };
+    }
 
     /**
      * Handles a newly-received instruction, whether from the main Blob or a
@@ -436,6 +438,11 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
             frames.push(frame);
             frameStart = frameEnd;
 
+            // If this is the first frame, intialize the key event interpreter
+            // with the timestamp of the first frame
+            if (frames.length === 1)
+                initializeKeyInterpreter(timestamp);
+
             // This frame should eventually become a keyframe if enough data
             // has been processed and enough recording time has elapsed, or if
             // this is the absolute first frame
@@ -443,6 +450,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                     && timestamp - frames[lastKeyframe].timestamp >= KEYFRAME_TIME_INTERVAL)) {
                 frame.keyframe = true;
                 lastKeyframe = frames.length - 1;
+
             }
 
             // Notify that additional content is available
@@ -521,10 +529,9 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
                 // If there's any typed text that's yet to be sent to the ontext
                 // handler, send it now
-                var text = keyEventInterpreter.getCurrentText();
-                var timestamp = keyEventInterpreter.getCurrentTimestamp();
-                if (text && recording.ontext)
-                    recording.ontext(text, toRelativeTimestamp(timestamp));
+                var batch = keyEventInterpreter.getCurrentBatch();
+                if (batch && recording.ontext)
+                    recording.ontext(batch);
 
                 // Consider recording loaded if tunnel has closed without errors
                 if (!errorEncountered)
@@ -916,11 +923,8 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
      * is available.
      *
      * @event
-     * @param {!String} text
-     *     The typed text associated with the batch of text.
-     *
-     * @param {!number} timestamp
-     *     The relative timestamp associated with the batch of text.
+     * @param {!Guacamole.KeyEventInterpreter.KeyEventBatch} batch
+     *     The batch of extracted text.
      */
     this.ontext = null;
 

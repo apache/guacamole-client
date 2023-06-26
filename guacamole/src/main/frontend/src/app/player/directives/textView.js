@@ -25,9 +25,6 @@ const fuzzysort = require('fuzzysort')
 angular.module('player').directive('guacPlayerTextView',
         ['$injector', function guacPlayer($injector) {
 
-    // Required types
-    const TextBatch = $injector.get('TextBatch');
-
     // Required services
     const playerTimeService = $injector.get('playerTimeService');
 
@@ -41,7 +38,7 @@ angular.module('player').directive('guacPlayerTextView',
         /**
          * All the batches of text extracted from this recording.
          *
-         * @type {!TextBatch[]}
+         * @type {!Guacamole.KeyEventInterpeter.KeyEventBatch[]}
          */
         textBatches : '=',
 
@@ -77,7 +74,7 @@ angular.module('player').directive('guacPlayerTextView',
          * The text batches that match the current search phrase, or all
          * batches if no search phrase is set.
          *
-         * @type {!TextBatch[]}
+         * @type {!Guacamole.KeyEventInterpeter.KeyEventBatch[]}
          */
         $scope.filteredBatches = $scope.textBatches;
 
@@ -111,7 +108,7 @@ angular.module('player').directive('guacPlayerTextView',
             // batches for it
             if (searchPhrase)
                 $scope.filteredBatches = fuzzysort.go(
-                    searchPhrase, $scope.textBatches, {key: 'text'})
+                    searchPhrase, $scope.textBatches, {key: 'simpleValue'})
                 .map(result => result.obj);
 
             // Otherwise, do not filter the batches

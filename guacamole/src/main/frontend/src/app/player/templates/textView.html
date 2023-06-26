@@ -15,9 +15,15 @@
             translate-values="{RESULTS: filteredBatches.length}"></div>
 
     <div class="text-batches">
-        <div ng-repeat="batch in filteredBatches" class="text-batch" ng-click="seek({timestamp: batch.timestamp})">
-            <div class="timestamp">{{ formatTime(batch.timestamp) }}</div>
-            <div class="text">{{ batch.text }}</div>
+        <div ng-repeat="batch in filteredBatches" class="text-batch" ng-click="seek({timestamp: batch.events[0].timestamp})">
+            <div class="timestamp">{{ formatTime(batch.events[0].timestamp) }}</div>
+            <div class="text">
+                <span
+                    ng-repeat="event in batch.events"
+                    class="key-event"
+                    ng-class="{ 'not-typed' : !event.typed, 'future': event.timestamp >= currentPosition }"
+                >{{ event.text }}</span>
+            </div>
         </span>
     </div>
 </div>

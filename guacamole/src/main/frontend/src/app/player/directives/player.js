@@ -77,9 +77,6 @@
  */
 angular.module('player').directive('guacPlayer', ['$injector', function guacPlayer($injector) {
 
-    // Required types
-    const TextBatch = $injector.get('TextBatch');
-
     // Required services
     const playerTimeService = $injector.get('playerTimeService');
 
@@ -151,7 +148,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         /**
          * Any batches of text typed during the recording.
          *
-         * @type {TextBatch[]}
+         * @type {Guacamole.KeyEventInterpeter.KeyEventBatch[]}
          */
         $scope.textBatches = [];
 
@@ -277,6 +274,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
 
             resumeAfterSeekRequest && $scope.recording.play();
             $scope.recording.seek($scope.playbackPosition, function seekComplete() {
+                $scope.seekPosition = null;
                 $scope.operationMessage = null;
                 $scope.$evalAsync();
             });
@@ -357,8 +355,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 };
 
                 // Append any extracted batches of typed text
-                $scope.recording.ontext = function appendTextBatch(text, timestamp) {
-                    $scope.textBatches.push({text, timestamp});
+                $scope.recording.ontext = function appendTextBatch(batch) {
+                    $scope.textBatches.push(batch);
                 }
 
                 // Notify listeners when current position within the recording
