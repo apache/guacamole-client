@@ -21,6 +21,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { GuacGroupListComponent } from './components/guac-group-list/guac-group-list.component';
 import { ListModule } from '../list/list.module';
+import { GuacGroupListFilterComponent } from './components/guac-group-list-filter/guac-group-list-filter.component';
+import { FormsModule } from "@angular/forms";
 
 /**
  * Module for displaying the contents of a connection group, allowing the user
@@ -28,14 +30,17 @@ import { ListModule } from '../list/list.module';
  */
 @NgModule({
     declarations: [
-    GuacGroupListComponent
+    GuacGroupListComponent,
+    GuacGroupListFilterComponent
   ],
     imports: [
         CommonModule,
-        ListModule
+        ListModule,
+        FormsModule
     ],
     exports: [
-      GuacGroupListComponent
+      GuacGroupListComponent,
+      GuacGroupListFilterComponent
     ]
 })
 export class GroupListModule {

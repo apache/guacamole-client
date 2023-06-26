@@ -28,27 +28,16 @@ import {
     Signal,
     signal,
     SimpleChanges,
+    ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import {
-    AuthenticationService
-} from '../../../auth/service/authentication.service';
-import {
-    ClipboardService
-} from '../../../clipboard/services/clipboard.service';
-import {
-    GuacFrontendEventArguments
-} from '../../../events/types/GuacFrontendEventArguments';
-import {
-    ConnectionGroupService
-} from '../../../rest/service/connection-group.service';
+import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { ClipboardService } from '../../../clipboard/services/clipboard.service';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
+import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
 import { GuacEventService, ScrollState } from 'guacamole-frontend-lib';
-import {
-    DataSourceService
-} from '../../../rest/service/data-source-service.service';
-import {
-    PreferenceService
-} from '../../../settings/services/preference.service';
+import { DataSourceService } from '../../../rest/service/data-source-service.service';
+import { PreferenceService } from '../../../settings/services/preference.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { TunnelService } from '../../../rest/service/tunnel.service';
 import { UserPageService } from '../../../manage/services/user-page.service';
@@ -58,9 +47,7 @@ import { ManagedClientService } from '../../services/managed-client.service';
 import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 import { ConnectionListContext } from '../../types/ConnectionListContext';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import {
-    GuacClientManagerService
-} from '../../services/guac-client-manager.service';
+import { GuacClientManagerService } from '../../services/guac-client-manager.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import _filter from 'lodash/filter';
 import findIndex from 'lodash/findIndex';
@@ -73,15 +60,16 @@ import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { SharingProfile } from '../../../rest/types/SharingProfile';
 import { ManagedClientState } from '../../types/ManagedClientState';
 import { ManagedFilesystem } from '../../types/ManagedFilesystem';
-import {
-    ManagedFilesystemService
-} from '../../services/managed-filesystem.service';
-import {
-    NotificationAction
-} from '../../../notification/types/NotificationAction';
+import { ManagedFilesystemService } from '../../services/managed-filesystem.service';
+import { NotificationAction } from '../../../notification/types/NotificationAction';
 import { Protocol } from '../../../rest/types/Protocol';
 import { FormGroup } from '@angular/forms';
 import { FormService } from '../../../form/service/form.service';
+import { ConnectionGroupDataSource } from "../../../group-list/types/ConnectionGroupDataSource";
+import { FilterService } from "../../../list/services/filter.service";
+import {
+    GuacGroupListFilterComponent
+} from "../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component";
 
 /**
  * The Component for the page used to connect to a connection or balancing group.
@@ -156,7 +144,7 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Menu-specific properties.
      */
-    menu: ClientMenu = {
+    protected menu: ClientMenu = {
         shown: signal(false),
         inputMethod: signal(this.preferenceService.preferences.inputMethod),
         emulateAbsoluteMouse: signal(this.preferenceService.preferences.emulateAbsoluteMouse),
@@ -167,20 +155,20 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
     /**
      * Form group for editing connection parameters which may be modified while the connection is open.
      */
-    connectionParameters: FormGroup = new FormGroup({});
+    protected connectionParameters: FormGroup = new FormGroup({});
 
     /**
      * The currently-focused client within the current ManagedClientGroup. If
      * there is no current group, no client is focused, or multiple clients are
      * focused, this will be null.
      */
-    focusedClient: ManagedClient | null = null;
+    protected focusedClient: ManagedClient | null = null;
 
     /**
      * The set of clients that should be attached to the client UI. This will
      * be immediately initialized by a call to updateAttachedClients() below.
      */
-    clientGroup: ManagedClientGroup | null = null;
+    protected clientGroup: ManagedClientGroup | null = null;
 
     /**
      * The root connection groups of the connection hierarchy that should be
@@ -190,26 +178,25 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
      * been loaded or if the hierarchy is inapplicable due to only one
      * connection or balancing group being available.
      */
-    rootConnectionGroups: Record<string, ConnectionGroup> | null = null;
+    protected rootConnectionGroups: Record<string, ConnectionGroup> | null = null;
 
     /**
-     * TODO
+     * Filtered view of the root connection groups which satisfy the current
+     * search string.
      */
-    filteredRootConnectionGroups: Signal<Record<string, ConnectionGroup>> = computed(() => {
-        return this.rootConnectionGroups || {};
-    });
+    protected rootConnectionGroupsDataSource: ConnectionGroupDataSource;
 
     /**
      * Array of all connection properties that are filterable.
      */
-    filteredConnectionProperties: string[] = [
+    private filteredConnectionProperties: string[] = [
         'name'
     ];
 
     /**
      * Array of all connection group properties that are filterable.
      */
-    filteredConnectionGroupProperties: string[] = [
+    private filteredConnectionGroupProperties: string[] = [
         'name'
     ];
 
@@ -218,7 +205,7 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
      * their identifiers. If this information is not yet available, or no such
      * sharing profiles exist, this will be an empty object.
      */
-    sharingProfiles: Record<string, SharingProfile> = {};
+    protected sharingProfiles: Record<string, SharingProfile> = {};
 
     /**
      * Map of all substituted key presses.  If one key is pressed in place of another
@@ -247,7 +234,16 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
                 private destroyRef: DestroyRef,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private managedFilesystemService: ManagedFilesystemService,
-                private formService: FormService,) {
+                private formService: FormService,
+                private filterService: FilterService) {
+
+        // Create a new data source for the root connection groups
+        this.rootConnectionGroupsDataSource = new ConnectionGroupDataSource(this.filterService,
+            {}, // Start without any data
+            null, // Start without a search string
+            this.filteredConnectionProperties,
+            this.filteredConnectionGroupProperties);
+
     }
 
     ngOnInit(): void {
@@ -273,8 +269,10 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
                 // Store retrieved groups only if there are multiple connections or
                 // balancing groups available
                 const clientPages = this.userPageService.getClientPages(rootConnectionGroups);
-                if (clientPages.length > 1)
+                if (clientPages.length > 1) {
                     this.rootConnectionGroups = rootConnectionGroups;
+                    this.rootConnectionGroupsDataSource.updateSource(this.rootConnectionGroups);
+                }
 
             }, this.requestService.WARN);
 
@@ -284,19 +282,19 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(({newFocusedClient}) => {
 
-            const oldFocusedClient = this.focusedClient;
-            this.focusedClient = newFocusedClient;
+                const oldFocusedClient = this.focusedClient;
+                this.focusedClient = newFocusedClient;
 
-            // Apply any parameter changes when focus is changing
-            if (oldFocusedClient)
-                this.applyParameterChanges(oldFocusedClient);
+                // Apply any parameter changes when focus is changing
+                if (oldFocusedClient)
+                    this.applyParameterChanges(oldFocusedClient);
 
-            // Update available connection parameters, if there is a focused
-            // client
-            this.menu.connectionParameters = newFocusedClient ?
-                this.managedClientService.getArgumentModel(newFocusedClient) : {};
+                // Update available connection parameters, if there is a focused
+                // client
+                this.menu.connectionParameters = newFocusedClient ?
+                    this.managedClientService.getArgumentModel(newFocusedClient) : {};
 
-        });
+            });
 
         // Opening the Guacamole menu after Ctrl+Alt+Shift, preventing those
         // keypresses from reaching any Guacamole client
@@ -327,48 +325,63 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
         this.guacEventService.on('guacBeforeKeyup')
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(({event}) => {
-            if (this.menu.shown())
-                event.preventDefault();
-        });
+                if (this.menu.shown())
+                    event.preventDefault();
+            });
 
         // Send Ctrl-Alt-Delete when Ctrl-Alt-End is pressed.
         this.guacEventService.on('guacKeydown')
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(({event, keysym, keyboard}) => {
 
-            // If one of the End keys is pressed, and we have a one keysym from each
-            // of Ctrl and Alt groups, send Ctrl-Alt-Delete.
-            if (this.END_KEYS[keysym as any]
-                && findKey(this.ALT_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
-                && findKey(this.CTRL_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
-            ) {
+                // If one of the End keys is pressed, and we have a one keysym from each
+                // of Ctrl and Alt groups, send Ctrl-Alt-Delete.
+                if (this.END_KEYS[keysym as any]
+                    && findKey(this.ALT_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
+                    && findKey(this.CTRL_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
+                ) {
 
-                // Don't send this event through to the client.
-                event.preventDefault();
+                    // Don't send this event through to the client.
+                    event.preventDefault();
 
-                // Record the substituted key press so that it can be
-                // properly dealt with later.
-                this.substituteKeysPressed[keysym] = this.DEL_KEY;
+                    // Record the substituted key press so that it can be
+                    // properly dealt with later.
+                    this.substituteKeysPressed[keysym] = this.DEL_KEY;
 
-                // Send through the delete key.
-                this.guacEventService.broadcast('guacSyntheticKeydown', {keysym: this.DEL_KEY});
-            }
+                    // Send through the delete key.
+                    this.guacEventService.broadcast('guacSyntheticKeydown', {keysym: this.DEL_KEY});
+                }
 
-        });
+            });
 
         // Update pressed keys as they are released
         this.guacEventService.on('guacKeyup')
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(({event, keysym}) => {
 
-            // Deal with substitute key presses
-            if (this.substituteKeysPressed[keysym]) {
-                event.preventDefault();
-                this.guacEventService.broadcast('guacSyntheticKeyup', {keysym: this.substituteKeysPressed[keysym]});
-                delete this.substituteKeysPressed[keysym];
-            }
+                // Deal with substitute key presses
+                if (this.substituteKeysPressed[keysym]) {
+                    event.preventDefault();
+                    this.guacEventService.broadcast('guacSyntheticKeyup', {keysym: this.substituteKeysPressed[keysym]});
+                    delete this.substituteKeysPressed[keysym];
+                }
 
-        });
+            });
+
+    } // ngOnInit() end
+
+    /**
+     * Add the filter string observable to the data source when the filter
+     * component is available.
+     *
+     * @param filterComponent
+     *     The filter component which will provide the filter string.
+     */
+    @ViewChild(GuacGroupListFilterComponent, {static: false}) set filterComponent(filterComponent: GuacGroupListFilterComponent | undefined) {
+
+        if (filterComponent) {
+            this.rootConnectionGroupsDataSource.setSearchString(filterComponent.searchStringChange);
+        }
 
     }
 
@@ -382,14 +395,13 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
                 this.connectionParameters = this.formService.getFormGroup(this.focusedClient.forms);
                 this.connectionParameters.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
                     .subscribe(value => this.menu.connectionParameters = value);
-            }
-            else {
+            } else {
                 this.connectionParameters = new FormGroup({});
             }
 
         }
 
-    } // ngOnInit() end
+    }
 
 
     /**

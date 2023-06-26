@@ -26,11 +26,11 @@
             <div class="client-body" [guacTouchDrag]="menuDrag.bind(this)">
 
                 <!-- All connections in current display -->
-                               <guac-tiled-clients
-                                    [onClose]="closeClientTile.bind(this)"
-                                    [clientGroup]="clientGroup"
-                                    [emulateAbsoluteMouse]="menu.emulateAbsoluteMouse()">
-                                </guac-tiled-clients>
+                <guac-tiled-clients
+                    [onClose]="closeClientTile.bind(this)"
+                    [clientGroup]="clientGroup"
+                    [emulateAbsoluteMouse]="menu.emulateAbsoluteMouse()">
+                </guac-tiled-clients>
 
             </div>
 
@@ -72,13 +72,10 @@
                 <h2 class="connection-select-menu" [hidden]="!rootConnectionGroups">
                     <guac-menu [menuTitle]="getName(clientGroup!)" [interactive]="true">
                         <div class="all-connections">
-<!--                           TODO: <guac-group-list-filter connection-groups="rootConnectionGroups"-->
-<!--                                                    filtered-connection-groups="filteredRootConnectionGroups"-->
-<!--                                                    placeholder="'CLIENT.FIELD_PLACEHOLDER_FILTER' | transloco"-->
-<!--                                                    connection-properties="filteredConnectionProperties"-->
-<!--                                                    connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>-->
+                            <guac-group-list-filter [placeholder]="'CLIENT.FIELD_PLACEHOLDER_FILTER' | transloco">
+                            </guac-group-list-filter>
                             <guac-group-list
-                                [connectionGroups]="filteredRootConnectionGroups()"
+                                [connectionGroups]="rootConnectionGroupsDataSource.filteredConnectionGroups | async"
                                 [context]="connectionListContext"
                                 [templates]="{
                                     'connection'       : connection,
@@ -86,12 +83,12 @@
                                 }"
                                 [pageSize]="10"></guac-group-list>
 
-                            <ng-template #connection>
-<!--                               TODO: app/client/templates/connection.html-->
+                            <ng-template #connection let-context="ctx" let-item="item">
+                                <guac-connection [context]="context" [item]="item"></guac-connection>
                             </ng-template>
 
-                            <ng-template #connectionGroup>
-<!--                                TODO: -->
+                            <ng-template #connectionGroup let-context="ctx" let-item="item">
+                                <guac-connection-group [context]="context" [item]="item"></guac-connection-group>
                             </ng-template>
 
                         </div>
@@ -204,7 +201,9 @@
 
                         <!-- Touchscreen -->
                         <div class="choice">
-                            <input name="mouse-mode" (ngModelChange)="menu.emulateAbsoluteMouse.set($event); closeMenu()" [ngModel]="menu.emulateAbsoluteMouse()"
+                            <input name="mouse-mode"
+                                   (ngModelChange)="menu.emulateAbsoluteMouse.set($event); closeMenu()"
+                                   [ngModel]="menu.emulateAbsoluteMouse()"
                                    type="radio" [value]="true" checked="checked" id="absolute">
                             <div class="figure">
                                 <label for="absolute"><img src="images/settings/touchscreen.svg"
@@ -216,7 +215,9 @@
 
                         <!-- Touchpad -->
                         <div class="choice">
-                            <input name="mouse-mode" (ngModelChange)="menu.emulateAbsoluteMouse.set($event); closeMenu()" [ngModel]="menu.emulateAbsoluteMouse()"
+                            <input name="mouse-mode"
+                                   (ngModelChange)="menu.emulateAbsoluteMouse.set($event); closeMenu()"
+                                   [ngModel]="menu.emulateAbsoluteMouse()"
                                    type="radio" [value]="false" id="relative">
                             <div class="figure">
                                 <label for="relative"><img src="images/settings/touchpad.svg"
@@ -270,7 +271,7 @@
 
             <!-- Scrollable body -->
             <div class="menu-body">
-<!--                TODO: <guac-file-browser client="client" filesystem="filesystemMenuContents"></guac-file-browser>-->
+                <!-- TODO: <guac-file-browser client="client" filesystem="filesystemMenuContents"></guac-file-browser>-->
             </div>
 
         </div>

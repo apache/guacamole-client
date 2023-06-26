@@ -34,9 +34,11 @@ import { DataSourceService } from '../../../rest/service/data-source-service.ser
 import { RequestService } from '../../../rest/service/request.service';
 import { Connection } from '../../../rest/types/Connection';
 import { SortService } from '../../../list/services/sort.service';
-import { DataSource } from '../../../list/types/DataSource';
-import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
+import { DataSourceBuilderService } from "../../../list/services/data-source-builder.service";
+import { DataSource } from "../../../list/types/DataSource";
+import { SortOrder } from "../../../list/types/SortOrder";
+import { of } from "rxjs";
 
 /**
  * A component which displays the contents of a connection group within an
@@ -53,7 +55,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
      * The connection groups to display as a map of data source
      * identifier to corresponding root group.
      */
-    @Input({required: true}) connectionGroups!: Record<string, ConnectionGroup | GroupListItem>;
+    @Input() connectionGroups: Record<string, ConnectionGroup | GroupListItem> | null = null;
 
     /**
      * Arbitrary object which shall be made available to the connection
@@ -117,9 +119,15 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
     rootItems: GroupListItem[] = [];
 
     /**
-     * TODO: document
+     * A data source which provides a sorted, paginated list of
+     * all root-level items.
      */
-    dataSourceView: DataSource<GroupListItem> | null = null;
+    connectionGroupsDataSource: DataSource<GroupListItem> | null = null;
+
+    /**
+     * The sort order to apply to the root items.
+     */
+    private readonly sortOrder = new SortOrder(['weight', 'name']);
 
     /**
      * Inject required services.
@@ -127,15 +135,22 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
     constructor(private activeConnectionService: ActiveConnectionService,
                 private dataSourceService: DataSourceService,
                 private requestService: RequestService,
-                protected sortService: SortService,
-                private dataSourceBuilderService: DataSourceBuilderService) {
+                private dataSourceBuilderService: DataSourceBuilderService,
+                protected sortService: SortService) {
     }
 
+    /**
+     * Creates a new data source for the root items.
+     */
     ngOnInit(): void {
 
-        // Build the data source for the list entries.
-        this.dataSourceView = this.dataSourceBuilderService.getBuilder<GroupListItem>()
+        this.connectionGroupsDataSource = this.dataSourceBuilderService
+            .getBuilder<GroupListItem>()
+            // Start with an empty list
             .source(this.rootItems)
+            // Sort according to the specified sort order
+            .sort(of(this.sortOrder))
+            // Paginate using the GuacPagerComponent
             .paginate(this.pager.page)
             .build();
 
@@ -276,7 +291,8 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
         if (this.decorator)
             this.decorator(this.rootItems);
 
-        this.dataSourceView?.updateSource(this.rootItems);
+        // Update the data source with the new root items
+        this.connectionGroupsDataSource?.updateSource(this.rootItems);
 
     }
 

@@ -18,10 +18,10 @@
   -->
 <div class="group-list">
 
-    <div class="group-list-page" *ngIf="dataSourceView !== null">
+    <div class="group-list-page" *ngIf="connectionGroupsDataSource !== null">
 
         <!-- Root-level connections / groups -->
-        <div class="list-item" *ngFor="let childPage of dataSourceView.data | async">
+        <div class="list-item" *ngFor="let childPage of connectionGroupsDataSource.data | async">
             <ng-container *ngTemplateOutlet="nestedItem; context: {$implicit: childPage}"/>
 
             <ng-template #nestedItem let-item>
@@ -57,6 +57,6 @@
     </div>
 
     <!-- Pager for connections / groups -->
-    <guac-pager [pageSize]="pageSize!" [length]="dataSourceView?.totalLength | async"></guac-pager>
+    <guac-pager [pageSize]="pageSize" [length]="connectionGroupsDataSource?.totalLength | async"></guac-pager>
 
 </div>

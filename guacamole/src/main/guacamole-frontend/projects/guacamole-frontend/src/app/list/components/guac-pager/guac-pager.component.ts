@@ -70,14 +70,18 @@ export class GuacPagerComponent implements OnChanges {
      * assigned.
      * TODO
      */
-    page: BehaviorSubject<PagerEvent> = new BehaviorSubject<PagerEvent>({pageIndex: 0, pageSize: 0, previousPageIndex: 0});
+    page: BehaviorSubject<PagerEvent> = new BehaviorSubject<PagerEvent>({
+        pageIndex: 0,
+        pageSize: 0,
+        previousPageIndex: 0
+    });
 
     /**
      * The maximum number of items per page.
      *
      * @default {@link DEFAULT_PAGE_SIZE}
      */
-    @Input() pageSize: number = DEFAULT_PAGE_SIZE;
+    @Input() pageSize: number | null | undefined = DEFAULT_PAGE_SIZE;
 
     /**
      * The maximum number of page choices to provide, regardless of the
@@ -190,7 +194,11 @@ export class GuacPagerComponent implements OnChanges {
 
         // Select the chosen page
         this.currentPage = page;
-        this.page.next({pageIndex: page - 1, pageSize: this.pageSize, previousPageIndex: this.previousPage});
+        this.page.next({
+            pageIndex: page - 1,
+            pageSize: this.pageSize || DEFAULT_PAGE_SIZE,
+            previousPageIndex: this.previousPage
+        });
 
         // Update next/previous page numbers
         this.nextPage = Math.min(this.lastPage, this.currentPage + 1);
@@ -261,15 +269,20 @@ export class GuacPagerComponent implements OnChanges {
 
     ngOnChanges(changes: SimpleChanges): void {
 
+        // Use default page size if none is specified
+        if (changes['pageSize'])
+            this.pageSize = this.pageSize || DEFAULT_PAGE_SIZE;
+
+
         // Update available pages when available items or page count is changed
-        if (changes['length'] || changes['pageSize']) {
+        if (changes['length'] || changes['pageSize'])
             this.updatePages();
-        }
+
 
         // Update available page numbers when page count is changed
-        if (changes['length'] || changes['pageCount']) {
+        if (changes['length'] || changes['pageCount'])
             this.updatePageNumbers();
-        }
+
 
     }
 

@@ -321,7 +321,7 @@ export class GroupListItem {
 
         // Add any child connections
         if (connectionGroup.childConnections && includeConnections !== false) {
-            connectionGroup.childConnections.forEach(function addChildConnection(child) {
+            connectionGroup.childConnections.forEach(child => {
                 children.push(GroupListItem.fromConnection(dataSource, child,
                     includeSharingProfiles, countActiveConnections));
             });
@@ -329,7 +329,7 @@ export class GroupListItem {
 
         // Add any child groups
         if (connectionGroup.childConnectionGroups) {
-            connectionGroup.childConnectionGroups.forEach(function addChildGroup(child) {
+            connectionGroup.childConnectionGroups.forEach(child => {
                 children.push(GroupListItem.fromConnectionGroup(dataSource,
                     child, includeConnections, includeSharingProfiles,
                     countActiveConnections, countActiveConnectionGroups));

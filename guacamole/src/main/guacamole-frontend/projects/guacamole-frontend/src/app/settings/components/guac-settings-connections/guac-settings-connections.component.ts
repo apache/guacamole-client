@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnInit, signal, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { RequestService } from '../../../rest/service/request.service';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
@@ -29,6 +29,11 @@ import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { PermissionSet } from '../../../rest/types/PermissionSet';
 import { NonNullableProperties } from '../../../util/utility-types';
 import { GroupListItem } from '../../../group-list/types/GroupListItem';
+import {
+    GuacGroupListFilterComponent
+} from "../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component";
+import { ConnectionGroupDataSource } from "../../../group-list/types/ConnectionGroupDataSource";
+import { FilterService } from "../../../list/services/filter.service";
 
 /**
  * A component for managing all connections and connection groups in the system.
@@ -56,9 +61,14 @@ export class GuacSettingsConnectionsComponent implements OnInit {
     rootGroups: Record<string, ConnectionGroup> | null = null;
 
     /**
-     * Signal that contains the result of filtering the root groups.
+     * Reference to the instance of the filter component.
      */
-    filteredRootGroups = signal<Record<string, ConnectionGroup>>({})
+    @ViewChild(GuacGroupListFilterComponent, {static: true}) filter!: GuacGroupListFilterComponent;
+
+    /**
+     * TODO
+     */
+    rootGroupsDataSource: ConnectionGroupDataSource | null = null;
 
     /**
      * All permissions associated with the current user, or null if the
@@ -87,10 +97,19 @@ export class GuacSettingsConnectionsComponent implements OnInit {
                 private guacNotification: GuacNotificationService,
                 private permissionService: PermissionService,
                 private requestService: RequestService,
+                private filterService: FilterService,
                 private router: Router) {
     }
 
     ngOnInit(): void {
+
+        // Create a new data source for the root connection groups
+        this.rootGroupsDataSource = new ConnectionGroupDataSource(this.filterService,
+            {}, // Start without data
+            this.filter.searchStringChange,
+            this.filteredConnectionProperties,
+            this.filteredConnectionGroupProperties)
+
         // Retrieve current permissions
         this.permissionService.getEffectivePermissions(this.dataSource, this.currentUsername!)
             .subscribe({
@@ -116,8 +135,7 @@ export class GuacSettingsConnectionsComponent implements OnInit {
                     )
                         .then(rootGroups => {
                             this.rootGroups = rootGroups;
-                            // TODO: Remove the next line once the filter component sets the filteredRootGroups
-                            this.filteredRootGroups.set(rootGroups);
+                            this.rootGroupsDataSource?.updateSource(this.rootGroups);
                         }, this.requestService.PROMISE_DIE);
 
                 }, error: this.requestService.DIE
@@ -131,10 +149,12 @@ export class GuacSettingsConnectionsComponent implements OnInit {
      *     true if enough data has been loaded for the user interface
      *     to be useful, false otherwise.
      */
-    isLoaded(): this is NonNullableProperties<GuacSettingsConnectionsComponent, 'rootGroups' | 'permissions'> {
+    isLoaded(): this is NonNullableProperties<GuacSettingsConnectionsComponent,
+        'rootGroups' | 'permissions' | 'rootGroupsDataSource'> {
 
         return this.rootGroups !== null
-            && this.permissions !== null;
+            && this.permissions !== null
+            && this.rootGroupsDataSource !== null;
 
     }
 

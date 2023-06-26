@@ -16,11 +16,8 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<ng-template #loading>
-    <div class="home-view view loading"></div>
-</ng-template>
 
-<div class="home-view view" *ngIf="isLoaded(); else loading">
+<div class="home-view view" [ngClass]="{ 'loading' : !isLoaded() }">
 
     <div class="connection-list-ui">
 
@@ -29,20 +26,17 @@
             <h2 id="section-header-recent-connections">{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | transloco}}</h2>
             <guac-user-menu></guac-user-menu>
         </div>
-        <guac-recent-connections [rootGroups]="rootConnectionGroups || []"></guac-recent-connections>
+        <guac-recent-connections [rootGroups]="rootConnectionGroups || {}"></guac-recent-connections>
 
         <!-- All connections for this user -->
         <div class="header">
             <h2 id="section-header-all-connections">{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | transloco}}</h2>
-            <!--    TODO        <guac-group-list-filter connection-groups="rootConnectionGroups"-->
-            <!--                                    filtered-connection-groups="filteredRootConnectionGroups"-->
-            <!--                                    placeholder="'HOME.FIELD_PLACEHOLDER_FILTER' | transloco"-->
-            <!--                                    connection-properties="filteredConnectionProperties"-->
-            <!--                                    connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>-->
+            <guac-group-list-filter [placeholder]="'HOME.FIELD_PLACEHOLDER_FILTER' | transloco">
+            </guac-group-list-filter>
         </div>
         <div class="all-connections">
             <guac-group-list
-                [connectionGroups]="filteredRootConnectionGroups()"
+                [connectionGroups]="rootConnectionGroupsDataSource?.filteredConnectionGroups | async"
                 [templates]="{
                     'connection'       : connection,
                     'connection-group' : connectionGroup

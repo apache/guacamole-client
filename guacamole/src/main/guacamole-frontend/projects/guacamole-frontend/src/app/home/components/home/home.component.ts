@@ -17,13 +17,18 @@
  * under the License.
  */
 
-import { Component, OnInit, signal, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
 import { DataSourceService } from '../../../rest/service/data-source-service.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { NonNullableProperties } from '../../../util/utility-types';
+import { ConnectionGroupDataSource } from "../../../group-list/types/ConnectionGroupDataSource";
+import {
+    GuacGroupListFilterComponent
+} from "../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component";
+import { FilterService } from "../../../list/services/filter.service";
 
 /**
  * The component for the home page.
@@ -43,9 +48,14 @@ export class HomeComponent implements OnInit {
     rootConnectionGroups: Record<string, ConnectionGroup> | null = null;
 
     /**
+     * Reference to the instance of the filter component.
+     */
+    @ViewChild(GuacGroupListFilterComponent, {static: true}) filter!: GuacGroupListFilterComponent;
+
+    /**
      * TODO
      */
-    filteredRootConnectionGroups = signal<Record<string, ConnectionGroup>>({});
+    rootConnectionGroupsDataSource: ConnectionGroupDataSource | null = null;
 
     /**
      * Array of all connection properties that are filterable.
@@ -67,14 +77,20 @@ export class HomeComponent implements OnInit {
     constructor(private authenticationService: AuthenticationService,
                 private connectionGroupService: ConnectionGroupService,
                 private dataSourceService: DataSourceService,
-                private requestService: RequestService) {
+                private requestService: RequestService,
+                private filterService: FilterService) {
     }
 
-    /**
-     * Retrieve root groups and all descendants
-     */
     ngOnInit(): void {
 
+        // Create a new data source for the root connection groups
+        this.rootConnectionGroupsDataSource = new ConnectionGroupDataSource(this.filterService,
+            {},
+            this.filter.searchStringChange,
+            this.filteredConnectionProperties,
+            this.filteredConnectionGroupProperties);
+
+        // Retrieve root groups and all descendants
         this.dataSourceService.apply(
             (dataSource: string, connectionGroupID: string) => this.connectionGroupService.getConnectionGroupTree(dataSource, connectionGroupID),
             this.authenticationService.getAvailableDataSources(),
@@ -82,8 +98,7 @@ export class HomeComponent implements OnInit {
         )
             .then(rootConnectionGroups => {
                 this.rootConnectionGroups = rootConnectionGroups;
-                // TODO: remove the next line once the filter is implemented
-                this.filteredRootConnectionGroups.set(rootConnectionGroups);
+                this.rootConnectionGroupsDataSource?.updateSource(this.rootConnectionGroups)
             }, this.requestService.PROMISE_DIE);
     }
 
@@ -95,9 +110,10 @@ export class HomeComponent implements OnInit {
      *     true if enough data has been loaded for the user interface to be
      *     useful, false otherwise.
      */
-    isLoaded(): this is NonNullableProperties<HomeComponent, 'rootConnectionGroups'> {
+    isLoaded(): this is NonNullableProperties<HomeComponent, 'rootConnectionGroups' | 'rootConnectionGroupsDataSource'> {
 
-        return this.rootConnectionGroups !== null;
+        return this.rootConnectionGroups !== null
+            && this.rootConnectionGroupsDataSource !== null;
 
     }
 }

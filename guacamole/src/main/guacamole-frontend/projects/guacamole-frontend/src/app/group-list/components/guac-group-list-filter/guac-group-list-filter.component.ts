@@ -18,21 +18,23 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject } from "rxjs";
 
 /**
- * A component which provides a filtering text input field.
+ * A component which provides a filtering text input field
+ * to filter connection groups.
  */
 @Component({
-    selector: 'guac-filter',
-    templateUrl: './guac-filter.component.html',
+    selector: 'guac-group-list-filter',
+    templateUrl: './guac-group-list-filter.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class GuacFilterComponent {
+export class GuacGroupListFilterComponent {
 
     /**
-     * The property to which a subset of the provided array will be
-     * assigned.
+     * The filter search string to use to restrict the displayed
+     * connection groups. This subject will emit a new value whenever
+     * the search string changes.
      */
     searchStringChange: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
@@ -40,7 +42,7 @@ export class GuacFilterComponent {
      * The placeholder text to display within the filter input field
      * when no filter has been provided.
      */
-    @Input() placeholder?: string;
+    @Input({required: true}) placeholder!: string;
 
     /**
      * The filter search string to use to restrict the displayed items.
@@ -50,7 +52,8 @@ export class GuacFilterComponent {
     /**
      * TODO: Document
      */
-    searchStringChanged(searchString: string) {
+    protected searchStringChanged(searchString: string) {
         this.searchStringChange.next(searchString);
     }
+
 }

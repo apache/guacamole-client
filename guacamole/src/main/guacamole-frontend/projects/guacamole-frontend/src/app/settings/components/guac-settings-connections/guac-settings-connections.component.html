@@ -16,11 +16,8 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<ng-template #loading>
-    <div class="settings section connections loading"></div>
-</ng-template>
 
-<div class="settings section connections" *ngIf="isLoaded(); else loading">
+<div class="settings section connections" [ngClass]="{ 'loading': !isLoaded() }">
     <!-- Connection management -->
     <p>{{'SETTINGS_CONNECTIONS.HELP_CONNECTIONS' | transloco}}</p>
 
@@ -44,12 +41,9 @@
 
         </div>
 
-        <!-- TODO Connection filter -->
-        <!--        <guac-group-list-filter connection-groups="rootGroups"-->
-        <!--                                filtered-connection-groups="filteredRootGroups"-->
-        <!--                                placeholder="'SETTINGS_CONNECTIONS.FIELD_PLACEHOLDER_FILTER' | transloco"-->
-        <!--                                connection-properties="filteredConnectionProperties"-->
-        <!--                                connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>-->
+        <!-- Connection filter -->
+        <guac-group-list-filter [placeholder]="'SETTINGS_CONNECTIONS.FIELD_PLACEHOLDER_FILTER' | transloco" class="filter">
+        </guac-group-list-filter>
 
     </div>
 
@@ -57,7 +51,7 @@
     <div class="connection-list">
         <guac-group-list
             [pageSize]="25"
-            [connectionGroups]="filteredRootGroups()"
+            [connectionGroups]="rootGroupsDataSource?.filteredConnectionGroups | async"
             [decorator]="rootItemDecorator.bind(this)"
             [templates]="{
 

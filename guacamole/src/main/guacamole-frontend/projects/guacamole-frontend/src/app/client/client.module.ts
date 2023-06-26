@@ -26,11 +26,7 @@ import { GuacClientZoomComponent } from './components/guac-client-zoom/guac-clie
 import { TranslocoModule } from '@ngneat/transloco';
 import { FormsModule } from '@angular/forms';
 import { GuacThumbnailComponent } from './components/guac-thumbnail/guac-thumbnail.component';
-import {
-    ClientLibModule,
-    ElementModule, OskModule,
-    TouchModule
-} from 'guacamole-frontend-lib';
+import { ClientLibModule, ElementModule, OskModule, TouchModule } from 'guacamole-frontend-lib';
 import { GuacTiledThumbnailsComponent } from './components/guac-tiled-thumbnails/guac-tiled-thumbnails.component';
 import { GuacFileTransferComponent } from './components/guac-file-transfer/guac-file-transfer.component';
 import {
@@ -48,6 +44,8 @@ import { NotificationModule } from '../notification/notification.module';
 import { GuacClientComponent } from './components/guac-client/guac-client.component';
 import { GuacTiledClientsComponent } from './components/guac-tiled-clients/guac-tiled-clients.component';
 import { ClientPageComponent } from './components/client-page/client-page.component';
+import { ConnectionComponent } from './components/connection/connection.component';
+import { ConnectionGroupComponent } from './components/connection-group/connection-group.component';
 
 /**
  * The module for code used to connect to a connection or balancing group.
@@ -64,7 +62,9 @@ import { ClientPageComponent } from './components/client-page/client-page.compon
         GuacClientUserCountComponent,
         GuacClientNotificationComponent,
         GuacClientComponent,
-        GuacTiledClientsComponent
+        GuacTiledClientsComponent,
+        ConnectionComponent,
+        ConnectionGroupComponent
     ],
     imports: [
         CommonModule,

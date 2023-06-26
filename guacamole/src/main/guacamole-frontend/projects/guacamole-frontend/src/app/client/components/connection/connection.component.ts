@@ -18,39 +18,27 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { GroupListItem } from "../../../group-list/types/GroupListItem";
+import { ConnectionListContext } from "../../types/ConnectionListContext";
 
 /**
- * A component which provides a filtering text input field.
+ * TODO
  */
 @Component({
-    selector: 'guac-filter',
-    templateUrl: './guac-filter.component.html',
+    selector: 'guac-connection',
+    templateUrl: './connection.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class GuacFilterComponent {
+export class ConnectionComponent {
 
     /**
-     * The property to which a subset of the provided array will be
-     * assigned.
+     * TODO
      */
-    searchStringChange: BehaviorSubject<string> = new BehaviorSubject<string>('');
+    @Input({required: true}) context!: ConnectionListContext;
 
     /**
-     * The placeholder text to display within the filter input field
-     * when no filter has been provided.
+     * TODO
      */
-    @Input() placeholder?: string;
+    @Input({required: true}) item!: GroupListItem;
 
-    /**
-     * The filter search string to use to restrict the displayed items.
-     */
-    protected searchString: string | null = null;
-
-    /**
-     * TODO: Document
-     */
-    searchStringChanged(searchString: string) {
-        this.searchStringChange.next(searchString);
-    }
 }

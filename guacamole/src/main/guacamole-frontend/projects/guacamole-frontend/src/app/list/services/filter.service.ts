@@ -37,7 +37,7 @@ export class FilterService {
      * @param target
      * @param predicate
      */
-    filterByPredicate<T>(target: T[] | null, predicate: (value: T, index: number, array: T[]) => boolean): T[] {
+    filterByPredicate<T>(target: T[] | null | undefined, predicate: (value: T, index: number, array: T[]) => boolean): T[] {
         if (!target)
             return [];
 
