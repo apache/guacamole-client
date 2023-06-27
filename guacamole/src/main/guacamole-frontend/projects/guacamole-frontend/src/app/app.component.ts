@@ -18,49 +18,27 @@
  */
 
 import { DOCUMENT } from '@angular/common';
-import {
-    AfterViewChecked,
-    Component,
-    DestroyRef,
-    Inject,
-    OnInit,
-    Renderer2,
-    ViewEncapsulation
-} from '@angular/core';
+import { AfterViewChecked, Component, DestroyRef, Inject, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
-import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    distinctUntilChanged,
-    filter,
-    map,
-    of,
-    pairwise,
-    switchMap,
-    tap
-} from 'rxjs';
+import { distinctUntilChanged, filter, map, of, pairwise, switchMap, take, tap } from 'rxjs';
 import { AuthenticationService } from './auth/service/authentication.service';
-import {
-    GuacClientManagerService
-} from './client/services/guac-client-manager.service';
+import { GuacClientManagerService } from './client/services/guac-client-manager.service';
 import { ManagedClientGroup } from './client/types/ManagedClientGroup';
 import { ManagedClientState } from './client/types/ManagedClientState';
 import { ClipboardService } from './clipboard/services/clipboard.service';
-import {
-    GuacFrontendEventArguments
-} from './events/types/GuacFrontendEventArguments';
+import { GuacFrontendEventArguments } from './events/types/GuacFrontendEventArguments';
 import { ApplyPatchesService } from './index/services/apply-patches.service';
 import { StyleLoaderService } from './index/services/style-loader.service';
-import {
-    GuacNotificationService
-} from './notification/services/guac-notification.service';
+import { GuacNotificationService } from './notification/services/guac-notification.service';
 import { Error } from './rest/types/Error';
 import { Field } from './rest/types/Field';
 import { TranslatableMessage } from './rest/types/TranslatableMessage';
 import { ApplicationState } from './util/ApplicationState';
+import { Title } from "@angular/platform-browser";
 
 /**
  * The number of milliseconds that should elapse between client-side
@@ -340,14 +318,12 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 this.updateBodyClass(previousClass, nextClass);
             });
 
-        // TODO: Fetches the title from the route data and translates it.
-        this.route.title.pipe(
-            takeUntilDestroyed(this.destroyRef),
-            filter((title): title is string => title !== undefined),
-            switchMap((title) => this.translocoService.selectTranslate(title))
-        )
-            .subscribe((translatedTitle) => this.title.setTitle(translatedTitle));
-
+        // Set the initial title manually when the application starts
+        this.translocoService.selectTranslate('APP.NAME')
+            .pipe(take(1))
+            .subscribe((title) => {
+                this.title.setTitle(title);
+            });
     }
 
 
@@ -388,11 +364,13 @@ export class AppComponent implements OnInit, AfterViewChecked {
     private setApplicationState(state: ApplicationState): void {
         this.applicationState = state;
 
-        // TODO The title and class associated with the
-        //     current page are automatically reset to the standard values applicable
+
+        // TODO: In which cases is this necessary?
+        // The title and class associated with the
+        // current page are automatically reset to the standard values applicable
         // to the application as a whole (rather than any specific page).
-        // this.title.setTitle('APP.NAME');
         // this.page.bodyClassName = '';
+        // this.title.setTitle('APP.NAME');
     }
 
     /**

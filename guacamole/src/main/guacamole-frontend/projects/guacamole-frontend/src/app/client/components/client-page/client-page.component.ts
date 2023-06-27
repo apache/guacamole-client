@@ -18,6 +18,7 @@
  */
 
 import {
+    AfterViewChecked,
     Component,
     computed,
     DestroyRef,
@@ -70,6 +71,7 @@ import { FilterService } from "../../../list/services/filter.service";
 import {
     GuacGroupListFilterComponent
 } from "../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component";
+import { Title } from "@angular/platform-browser";
 
 /**
  * The Component for the page used to connect to a connection or balancing group.
@@ -79,7 +81,7 @@ import {
     templateUrl: './client-page.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
+export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked, OnDestroy {
 
     /**
      * TODO
@@ -235,7 +237,8 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private managedFilesystemService: ManagedFilesystemService,
                 private formService: FormService,
-                private filterService: FilterService) {
+                private filterService: FilterService,
+                private title: Title) {
 
         // Create a new data source for the root connection groups
         this.rootConnectionGroupsDataSource = new ConnectionGroupDataSource(this.filterService,
@@ -432,13 +435,6 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
      */
     getName(group: ManagedClientGroup): string {
         return ManagedClientGroup.getName(group);
-    }
-
-    /**
-     * @borrows ManagedClientGroup.getTitle
-     */
-    getTitle(group: ManagedClientGroup): string | undefined {
-        return ManagedClientGroup.getTitle(group);
     }
 
     /**
@@ -715,10 +711,20 @@ export class ClientPageComponent implements OnInit, OnChanges, OnDestroy {
 
     }
 
-    // TODO: Update page title when client title changes
-    // $scope.$watch('getTitle(clientGroup)', function clientTitleChanged(title) {
-    //     $scope.page.title = title;
-    // });
+    /**
+     * Update page title when client title changes.
+     */
+    ngAfterViewChecked(): void {
+        if (!this.clientGroup)
+            return;
+
+        const title = ManagedClientGroup.getTitle(this.clientGroup);
+
+        if (!title || title === this.title.getTitle())
+            return;
+
+        this.title.setTitle(title);
+    }
 
     /**
      * Returns whether the current connection has been flagged as unstable due

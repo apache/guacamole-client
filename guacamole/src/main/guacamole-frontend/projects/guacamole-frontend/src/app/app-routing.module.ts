@@ -18,7 +18,7 @@
  */
 
 import { inject, NgModule } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivateFn, Router, RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, ResolveFn, Router, RouterModule, Routes } from '@angular/router';
 import { ManageUserComponent } from './manage/components/manage-user/manage-user.component';
 import { ManageConnectionComponent } from './manage/components/manage-connection/manage-connection.component';
 import { SettingsComponent } from './settings/components/settings/settings.component';
@@ -41,10 +41,11 @@ import {
 import { HomeComponent } from './home/components/home/home.component';
 import { UserPageService } from './manage/services/user-page.service';
 import { AuthenticationService } from './auth/service/authentication.service';
-import { catchError, map, Observable, of, switchMap } from 'rxjs';
+import { catchError, map, Observable, of, switchMap, take } from 'rxjs';
 import { AuthenticationResult } from './auth/types/AuthenticationResult';
 import { ClientPageComponent } from './client/components/client-page/client-page.component';
 import { ManageUserGroupComponent } from './manage/components/manage-user-group/manage-user-group.component';
+import { TranslocoService } from "@ngneat/transloco";
 
 
 /**
@@ -142,6 +143,22 @@ const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boo
 };
 
 /**
+ * Uses the TranslocoService to resolve the title of the route for the
+ * current language.
+ *
+ * @param route
+ *     The route which was requested.
+ */
+const titleResolver: ResolveFn<string> = (route) => {
+
+    const translocoService = inject(TranslocoService);
+    const titleKey = route.data['titleKey'] || 'APP.NAME';
+
+    return translocoService.selectTranslate(titleKey).pipe(take(1));
+
+};
+
+/**
  * Configure each possible route.
  */
 export const appRoutes: Routes = [
@@ -149,9 +166,9 @@ export const appRoutes: Routes = [
     // Home screen
     {
         path: '',
-        title: 'APP.NAME',
         component: HomeComponent,
-        data: {bodyClassName: 'home'},
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'home'},
         // Run the canActivate guard on every navigation, even if the route hasn't changed
         runGuardsAndResolvers: 'always',
         canActivate: [routeToUserHomePage]
@@ -160,27 +177,27 @@ export const appRoutes: Routes = [
     // User editor
     {
         path: 'manage/:dataSource/users/:id',
-        title: 'APP.NAME',
         component: ManageUserComponent,
-        data: {bodyClassName: 'manage'},
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
         canActivate: [authGuard]
     },
 
     // User editor for creating a new user
     {
         path: 'manage/:dataSource/users',
-        title: 'APP.NAME',
         component: ManageUserComponent,
-        data: {bodyClassName: 'manage'},
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
         canActivate: [authGuard]
     },
 
     // Management screen
     {
         path: 'settings',
-        title: 'APP.NAME',
-        data: {bodyClassName: 'settings'},
         component: SettingsComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'settings'},
         canActivate: [authGuard],
         children: [
             {path: 'users', component: GuacSettingsUsersComponent},
@@ -195,36 +212,36 @@ export const appRoutes: Routes = [
     // Connection editor
     {
         path: 'manage/:dataSource/connections/:id',
-        title: 'APP.NAME',
         component: ManageConnectionComponent,
-        data: {bodyClassName: 'manage'},
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
         canActivate: [authGuard]
     },
 
     // Connection editor for creating a new connection
     {
         path: 'manage/:dataSource/connections',
-        title: 'APP.NAME',
         component: ManageConnectionComponent,
-        data: {bodyClassName: 'manage'},
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
         canActivate: [authGuard]
     },
 
     // User group editor
     {
         path: 'manage/:dataSource/userGroups/:id',
-        title: 'APP.NAME',
         component: ManageUserGroupComponent,
-        data: {bodyClassName: 'manage'},
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
         canActivate: [authGuard]
     },
 
     // User group editor for creating a new user group
     {
         path: 'manage/:dataSource/userGroups',
-        title: 'APP.NAME',
         component: ManageUserGroupComponent,
-        data: {bodyClassName: 'manage'},
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
         canActivate: [authGuard]
     },
 
@@ -236,16 +253,22 @@ export const appRoutes: Routes = [
         // f the option is set to false and the URL in the browser changes,
         // but the new URL maps to the same route, then a $routeUpdate event is broadcasted
         // on the root scope (without reloading the route).
-        canActivate: [authGuard],
-        data: {bodyClassName: 'client'},
+        data: {titleKey: 'APP.NAME', bodyClassName: 'client'},
+        canActivate: [authGuard]
 
     },
 
+    // Redirect to home screen if page not found
     {path: '**', redirectTo: ''}
 ];
 
 @NgModule({
-    imports: [RouterModule.forRoot(appRoutes, {bindToComponentInputs: true, useHash: true})],
+    imports: [RouterModule.forRoot(appRoutes, {
+        // Bind route parameters to component inputs
+        bindToComponentInputs: true,
+        // Disable HTML5 mode (use # for routing)
+        useHash: true
+    })],
     exports: [RouterModule]
 })
 export class AppRoutingModule {
