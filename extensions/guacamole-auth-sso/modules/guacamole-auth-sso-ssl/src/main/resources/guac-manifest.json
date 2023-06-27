@@ -10,7 +10,7 @@
     ],
 
     "listeners" : [
-        "org.apache.guacamole.auth.ssl.AuthenticationEventListener"
+        "org.apache.guacamole.auth.ssl.SSLAuthenticationEventListener"
     ],
 
     "css" : [

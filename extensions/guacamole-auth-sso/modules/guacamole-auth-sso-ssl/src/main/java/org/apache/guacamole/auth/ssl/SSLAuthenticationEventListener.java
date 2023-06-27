@@ -23,6 +23,8 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ssl.SSLAuthenticationSessionManager;
+import org.apache.guacamole.auth.sso.SSOAuthenticationEventListener;
+import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.event.AuthenticationFailureEvent;
 import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
 import org.apache.guacamole.net.event.listener.Listener;
@@ -31,8 +33,7 @@ import org.apache.guacamole.net.event.listener.Listener;
  * A Listener that will reactivate or invalidate SSL auth sessions depending on
  * overall auth success or failure.
  */
-@Singleton
-public class AuthenticationEventListener implements Listener {
+public class SSLAuthenticationEventListener extends SSOAuthenticationEventListener {
 
     /**
      * Session manager for generating and maintaining unique tokens to
@@ -44,31 +45,21 @@ public class AuthenticationEventListener implements Listener {
      * be constructed by guice.
      */
     @Inject
-    private static SSLAuthenticationSessionManager sessionManager;
+    protected static SSLAuthenticationSessionManager sessionManager;
 
     @Override
-    public void handleEvent(Object event) throws GuacamoleException {
+    protected String getSessionIdentifier(Credentials credentials) {
+        return AuthenticationProviderService.getSessionIdentifier(credentials);
+    }
 
-        if (event instanceof AuthenticationSuccessEvent)
+    @Override
+    protected void reactivateSession(String sessionIdentifier) {
+        sessionManager.reactivateSession(sessionIdentifier);
+    }
 
-            // After an auth attempt has fully succeeded, invalidate the session
-            // associated with the successful login event so it can't be reused
-            sessionManager.invalidateSession(
-                AuthenticationProviderService.getSessionIdentifier(
-                    ((AuthenticationSuccessEvent) event).getCredentials()));
-
-        else if (event instanceof AuthenticationFailureEvent)
-
-            // If the SSL auth succeeded, but other auth providers failed to
-            // authenticate the user associated with the credentials in this
-            // failure event, they may wish to make another login attempt. To
-            // avoid an infinite login attempt loop, re-enable the session
-            // associated with these credentials, allowing the auth attempt to be 
-            // resumed without requiring another round trip to the SSL service.
-            sessionManager.reactivateSession(
-                AuthenticationProviderService.getSessionIdentifier(
-                    ((AuthenticationFailureEvent) event).getCredentials()));
-
+    @Override
+    protected void invalidateSession(String sessionIdentifier) {
+        sessionManager.invalidateSession(sessionIdentifier);
     }
 
 }

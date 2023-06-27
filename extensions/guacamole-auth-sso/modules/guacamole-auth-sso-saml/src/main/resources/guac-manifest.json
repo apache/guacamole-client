@@ -10,7 +10,7 @@
     ],
 
     "listeners" : [
-        "org.apache.guacamole.auth.saml.AuthenticationEventListener"
+        "org.apache.guacamole.auth.saml.SAMLAuthenticationEventListener"
     ],
 
     "css" : [

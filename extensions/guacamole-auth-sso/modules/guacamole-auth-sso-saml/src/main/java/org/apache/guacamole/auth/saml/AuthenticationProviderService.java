@@ -74,11 +74,12 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
      * credentials, or null if no session identifier is found in the
      * credentials.
      *
-     * @param credentials The credentials from which to extract the session
-     * identifier.
+     * @param credentials
+     *     The credentials from which to extract the session identifier.
      *
-     * @return The session identifier associated with the given credentials, or
-     * null if no identifier is found.
+     * @return
+     *     The session identifier associated with the given credentials, or
+     *     null if no identifier is found.
      */
     public static String getSessionIdentifier(Credentials credentials) {
 

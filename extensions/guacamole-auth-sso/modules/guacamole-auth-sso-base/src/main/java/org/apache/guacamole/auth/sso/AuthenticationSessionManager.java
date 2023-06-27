@@ -19,8 +19,9 @@
 
 package org.apache.guacamole.auth.sso;
 
-import com.google.common.base.Predicates;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -38,6 +39,7 @@ import java.util.concurrent.TimeUnit;
  * @param <T>
  *     The type of sessions managed by this session manager.
  */
+@Singleton
 public class AuthenticationSessionManager<T extends AuthenticationSession> {
 
     /**
@@ -152,7 +154,8 @@ public class AuthenticationSessionManager<T extends AuthenticationSession> {
      */
     public T resume(String identifier) {
         if (identifier != null) {
-             T session = sessions.get(identifier);
+
+            T session = sessions.get(identifier);
 
             // Mark the session as pending. NOTE: Unless explicitly removed
             // from pending status via a call to reactivateSession(),

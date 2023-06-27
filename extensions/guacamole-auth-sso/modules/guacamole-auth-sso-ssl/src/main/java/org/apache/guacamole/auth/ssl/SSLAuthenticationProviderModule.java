@@ -36,7 +36,7 @@ public class SSLAuthenticationProviderModule extends AbstractModule {
         bind(NonceService.class).in(Scopes.SINGLETON);
         bind(SSLAuthenticationSessionManager.class);
 
-        requestStaticInjection(AuthenticationEventListener.class);
+        requestStaticInjection(SSLAuthenticationEventListener.class);
     }
 
 }
