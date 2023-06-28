@@ -356,10 +356,11 @@ export class GuacSettingsSessionsComponent implements OnInit {
         forkJoin(deletionRequests)
             .subscribe({
                 next: () => {
-                    // Remove deleted connections from wrapper array
+                    // Remove deleted connections from wrapper array and update view
                     this.wrappers = this.wrappers!.filter(wrapper => {
                         return !(wrapper.activeConnection.identifier! in (this.allSelectedWrappers[wrapper.dataSource] || {}));
                     });
+                    this.dataSourceView?.updateSource(this.wrappers);
 
                     // Clear selection
                     this.allSelectedWrappers = {};
