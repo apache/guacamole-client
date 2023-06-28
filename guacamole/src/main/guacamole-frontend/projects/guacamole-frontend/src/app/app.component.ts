@@ -21,7 +21,7 @@ import { DOCUMENT } from '@angular/common';
 import { AfterViewChecked, Component, DestroyRef, Inject, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
-import { NavigationEnd, Router, RoutesRecognized } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router, RoutesRecognized } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { distinctUntilChanged, filter, map, pairwise, startWith, take } from 'rxjs';
@@ -301,6 +301,12 @@ export class AppComponent implements OnInit, AfterViewChecked {
         this.translocoService.selectTranslate('APP.NAME')
             .pipe(take(1))
             .subscribe((title) => this.title.setTitle(title));
+
+        // Ensure new pages always start with clear keyboard state
+        this.router.events
+            .pipe(filter(event => event instanceof NavigationStart))
+            .subscribe(() => keyboard.reset());
+
 
         // Clear login screen if route change was successful (and thus
         // login was either successful or not required)
