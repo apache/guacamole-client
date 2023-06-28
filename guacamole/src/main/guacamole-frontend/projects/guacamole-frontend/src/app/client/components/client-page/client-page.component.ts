@@ -47,7 +47,7 @@ import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedClientService } from '../../services/managed-client.service';
 import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 import { ConnectionListContext } from '../../types/ConnectionListContext';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { GuacClientManagerService } from '../../services/guac-client-manager.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import _filter from 'lodash/filter';
@@ -56,7 +56,7 @@ import findKey from 'lodash/findKey';
 import intersection from 'lodash/intersection';
 import isEmpty from 'lodash/isEmpty';
 import pull from 'lodash/pull';
-import { filter, pairwise, startWith, tap } from 'rxjs';
+import { pairwise, startWith, tap } from 'rxjs';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { SharingProfile } from '../../../rest/types/SharingProfile';
 import { ManagedClientState } from '../../types/ManagedClientState';
@@ -247,19 +247,20 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
             this.filteredConnectionProperties,
             this.filteredConnectionGroupProperties);
 
+        // Automatically refresh display when filesystem menu is shown
+        toObservable(this.menu.shown).pipe(takeUntilDestroyed()).subscribe(() => {
+            // Refresh filesystem, if defined
+            const filesystem = this.filesystemMenuContents;
+            if (filesystem)
+                managedFilesystemService.refresh(filesystem, filesystem.currentDirectory());
+        });
+
     }
 
     ngOnInit(): void {
 
-        // Init sets of clients based on current URL ...
+        // Init sets of clients based on current URL.
         this.reparseRoute();
-
-        // TODO: ... and re-initialize those sets if the URL has changed without
-        // reloading the route
-        this.router.events.pipe(
-            filter(event => event instanceof NavigationEnd),
-            takeUntilDestroyed(this.destroyRef)
-        ).subscribe(() => this.reparseRoute());
 
         // Retrieve root groups and all descendants
         this.dataSourceService.apply(
@@ -388,8 +389,14 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
 
     }
 
-    ngOnChanges({focusedClient}: SimpleChanges): void {
-        if (focusedClient) {
+    ngOnChanges(changes: SimpleChanges): void {
+
+        // Re-initialize the client group if the group id has changed without reloading the route
+        if (changes['groupId'])
+            this.reparseRoute();
+
+
+        if (changes['focusedClient']) {
 
             /**
              * TODO: Document
@@ -828,16 +835,6 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
     isFilesystemMenuShown(): boolean {
         return !!this.filesystemMenuContents && this.menu.shown();
     }
-
-    // TODO: Automatically refresh display when filesystem menu is shown
-    // $scope.$watch('isFilesystemMenuShown()', function refreshFilesystem() {
-    //
-    //     // Refresh filesystem, if defined
-    //     var filesystem = $scope.filesystemMenuContents;
-    //     if (filesystem)
-    //         ManagedFilesystem.refresh(filesystem, filesystem.currentDirectory);
-    //
-    // });
 
     /**
      * Returns the full path to the given file as an ordered array of parent

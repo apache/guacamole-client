@@ -18,12 +18,11 @@
  */
 
 import {
+    AfterViewInit,
     Component,
-    DoCheck,
+    effect,
     ElementRef,
     Input,
-    KeyValueDiffer,
-    KeyValueDiffers,
     OnChanges,
     Renderer2,
     SimpleChanges,
@@ -41,7 +40,7 @@ import { ManagedClient } from '../../types/ManagedClient';
     templateUrl: './guac-thumbnail.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class GuacThumbnailComponent implements OnChanges, DoCheck {
+export class GuacThumbnailComponent implements AfterViewInit, OnChanges {
 
     /**
      * The client to display within this guacThumbnail directive.
@@ -62,20 +61,51 @@ export class GuacThumbnailComponent implements OnChanges, DoCheck {
     /**
      * The element which must contain the Guacamole display element.
      */
-    @ViewChild('display')
-    private displayContainer!: ElementRef<HTMLDivElement>;
+    @ViewChild('display') private displayContainer?: ElementRef<HTMLDivElement>;
 
     /**
-     * TODO
+     * Reference to the main containing element for the component.
      */
-    private clientDiffer?: KeyValueDiffer<string, any>;
+    @ViewChild('main') private mainRef!: ElementRef<HTMLDivElement>;
 
     /**
-     *
-     * @param main
-     *     The main containing element for the entire directive.
+     * The main containing element for the component.
      */
-    constructor(private main: ElementRef, private renderer: Renderer2, private differs: KeyValueDiffers) {
+    private main!: HTMLDivElement;
+
+    /**
+     * Inject required services.
+     */
+    constructor(private renderer: Renderer2) {
+
+        // Update scale when display is resized
+        effect(() => {
+            // Used to trigger this effect when the display size changes
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const newSize = this.client?.managedDisplay?.size()
+            this.updateDisplayScale();
+        });
+
+    }
+
+    /**
+     * Attach the given client after the view has been initialized.
+     */
+    ngAfterViewInit(): void {
+        this.main = this.mainRef.nativeElement;
+        this.attachClient(this.client);
+    }
+
+    /**
+     * When the client changes, attach the new client.
+     */
+    ngOnChanges(changes: SimpleChanges): void {
+
+        if (changes['client']) {
+            const managedClient = changes['client'].currentValue as ManagedClient | undefined;
+            this.attachClient(managedClient);
+        }
+
     }
 
     /**
@@ -88,54 +118,41 @@ export class GuacThumbnailComponent implements OnChanges, DoCheck {
 
         // Fit within available area
         this.display.scale(Math.min(
-            this.main.nativeElement.offsetWidth / Math.max(this.display.getWidth(), 1),
-            this.main.nativeElement.offsetHeight / Math.max(this.display.getHeight(), 1)
+            this.main.offsetWidth / Math.max(this.display.getWidth(), 1),
+            this.main.offsetHeight / Math.max(this.display.getHeight(), 1)
         ));
 
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
+    /**
+     * Attach any given managed client.
+     *
+     * @param managedClient
+     *     The managed client to attach.
+     */
+    attachClient(managedClient?: ManagedClient): void {
 
-        // Attach any given managed client
-        if (changes['client']) {
+        // Only proceed if a display container present
+        if (!this.displayContainer)
+            return;
 
-            const managedClient = changes['client'].currentValue as ManagedClient | undefined;
+        // Remove any existing display
+        this.renderer.setProperty(this.displayContainer.nativeElement, 'innerHTML', '')
 
-            this.clientDiffer = this.differs.find(managedClient).create();
+        // Only proceed if a client is given
+        if (!managedClient)
+            return;
 
-            // Remove any existing display
-            this.renderer.setProperty(this.displayContainer.nativeElement, 'innerHTML', '')
+        // Get Guacamole client instance
+        const client: Guacamole.Client = managedClient.client;
 
-            // Only proceed if a client is given
-            if (!managedClient)
-                return;
+        // Attach possibly new display
+        this.display = client.getDisplay();
 
-            // Get Guacamole client instance
-            const client: Guacamole.Client = managedClient.client;
-
-            // Attach possibly new display
-            this.display = client.getDisplay();
-
-            // Add display element
-            this.displayElement = this.display.getElement();
-            this.renderer.appendChild(this.displayContainer.nativeElement, this.displayElement);
-        }
-
-    }
-
-    ngDoCheck(): void {
-
-        if (!this.clientDiffer || !this.client) return;
-        const changes = this.clientDiffer.diff(this.client);
-        if (changes) {
-            console.log('TODO: Update scale when display is resized', changes);
-            // TODO: Update scale when display is resized
-            // $scope.$watch('client.managedDisplay.size', function setDisplaySize(size) {
-            //     $scope.$evalAsync($scope.updateDisplayScale);
-            // });
-        }
+        // Add display element
+        this.displayElement = this.display.getElement();
+        this.renderer.appendChild(this.displayContainer.nativeElement, this.displayElement);
 
     }
-
 
 }

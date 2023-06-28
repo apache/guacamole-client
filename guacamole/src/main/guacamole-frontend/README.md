@@ -50,7 +50,8 @@ package that implements end-to-end testing capabilities.
   once it is updated.
 - I included some Cypress E2E Tests in the `cypress` folder. They are not integrated in the build process and I did not
   include a proper configuration file because of the various possible testing setups.
-
+- I refactored the GuacFileBrowser to simply use an *ngFor loop. For my tests I didn't notice any performance
+  difference issues.
 ## Possible discussion points regarding the implementation
 
 - I removed workarounds for IE since Angular itself does no longer support IE. Should these IE workarounds still be

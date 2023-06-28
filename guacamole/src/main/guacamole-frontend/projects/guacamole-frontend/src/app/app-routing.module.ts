@@ -46,6 +46,9 @@ import { AuthenticationResult } from './auth/types/AuthenticationResult';
 import { ClientPageComponent } from './client/components/client-page/client-page.component';
 import { ManageUserGroupComponent } from './manage/components/manage-user-group/manage-user-group.component';
 import { TranslocoService } from "@ngneat/transloco";
+import {
+    ManageConnectionGroupComponent
+} from "./manage/components/manage-connection-group/manage-connection-group.component";
 
 
 /**
@@ -227,6 +230,24 @@ export const appRoutes: Routes = [
         canActivate: [authGuard]
     },
 
+    // Connection group editor
+    {
+        path: 'manage/:dataSource/connectionGroups/:id',
+        component: ManageConnectionGroupComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        canActivate: [authGuard]
+    },
+
+    // Connection group editor for creating a new connection group
+    {
+        path: 'manage/:dataSource/connectionGroups',
+        component: ManageConnectionGroupComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        canActivate: [authGuard]
+    },
+
     // User group editor
     {
         path: 'manage/:dataSource/userGroups/:id',
@@ -249,13 +270,8 @@ export const appRoutes: Routes = [
     {
         path: 'client/:id',
         component: ClientPageComponent,
-        // TODO: reloadOnUrl: false,
-        // f the option is set to false and the URL in the browser changes,
-        // but the new URL maps to the same route, then a $routeUpdate event is broadcasted
-        // on the root scope (without reloading the route).
         data: {titleKey: 'APP.NAME', bodyClassName: 'client'},
         canActivate: [authGuard]
-
     },
 
     // Redirect to home screen if page not found

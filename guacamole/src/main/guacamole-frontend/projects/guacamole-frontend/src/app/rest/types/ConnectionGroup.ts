@@ -89,7 +89,8 @@ export class ConnectionGroup {
      *     The object whose properties should be copied within the new
      *     ConnectionGroup.
      */
-    constructor(template: Optional<ConnectionGroup, 'parentIdentifier' | 'type' | 'attributes'>) {
+    constructor(template: Optional<ConnectionGroup, 'parentIdentifier' | 'type' | 'childConnections'
+        | 'childConnectionGroups' | 'attributes'>) {
         this.identifier = template.identifier;
         this.parentIdentifier = template.parentIdentifier || ConnectionGroup.ROOT_IDENTIFIER;
         this.name = template.name;

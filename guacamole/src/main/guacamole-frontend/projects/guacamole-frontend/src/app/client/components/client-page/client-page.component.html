@@ -265,13 +265,13 @@
                     (click)="changeDirectory(filesystemMenuContents!, filesystemMenuContents!.root)"></div>
                 <div
                     class="breadcrumb"
-                    *ngFor="let file of (filesystemMenuContents ? getPath(filesystemMenuContents.currentDirectory) : [])"
+                    *ngFor="let file of (filesystemMenuContents ? getPath(filesystemMenuContents.currentDirectory()) : [])"
                     (click)="changeDirectory(filesystemMenuContents!, file)">{{file.name}}</div>
             </div>
 
             <!-- Scrollable body -->
             <div class="menu-body">
-                <!-- TODO: <guac-file-browser client="client" filesystem="filesystemMenuContents"></guac-file-browser>-->
+                <guac-file-browser [filesystem]="filesystemMenuContents"></guac-file-browser>
             </div>
 
         </div>

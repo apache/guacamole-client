@@ -19,6 +19,7 @@
 
 import { ManagedClient } from './ManagedClient';
 import { Optional } from '../../util/utility-types';
+import { signal, WritableSignal } from "@angular/core";
 
 /**
  * Provides the ManagedFilesystem class used by ManagedClient to represent
@@ -56,7 +57,7 @@ export class ManagedFilesystem {
      * The current directory being viewed or manipulated within the
      * filesystem.
      */
-    currentDirectory: ManagedFilesystem.File;
+    currentDirectory: WritableSignal<ManagedFilesystem.File>;
 
     /**
      * Creates a new ManagedFilesystem. This constructor initializes the properties of the
@@ -71,7 +72,7 @@ export class ManagedFilesystem {
         this.object = template.object;
         this.name = template.name;
         this.root = template.root;
-        this.currentDirectory = template.currentDirectory || template.root;
+        this.currentDirectory = template.currentDirectory || signal(template.root);
     }
 
 }
@@ -117,7 +118,7 @@ export namespace ManagedFilesystem {
          * Map of all known files contained within this file by name. This is
          * only applicable to directories.
          */
-        files: Record<string, ManagedFilesystem.File>;
+        files: WritableSignal<Record<string, ManagedFilesystem.File>>;
 
         /**
          * Creates a new ManagedFilesystem.File object.
@@ -132,7 +133,7 @@ export namespace ManagedFilesystem {
             this.type = template.type;
             this.name = template.name;
             this.parent = template.parent;
-            this.files = template.files || {};
+            this.files = template.files || signal({});
         }
     }
 

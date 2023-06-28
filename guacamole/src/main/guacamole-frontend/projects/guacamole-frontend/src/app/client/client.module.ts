@@ -46,6 +46,9 @@ import { GuacTiledClientsComponent } from './components/guac-tiled-clients/guac-
 import { ClientPageComponent } from './components/client-page/client-page.component';
 import { ConnectionComponent } from './components/connection/connection.component';
 import { ConnectionGroupComponent } from './components/connection-group/connection-group.component';
+import { GuacClientPanelComponent } from './components/guac-client-panel/guac-client-panel.component';
+import { GuacFileBrowserComponent } from './components/guac-file-browser/guac-file-browser.component';
+import { FileComponent } from './components/file/file.component';
 
 /**
  * The module for code used to connect to a connection or balancing group.
@@ -64,7 +67,10 @@ import { ConnectionGroupComponent } from './components/connection-group/connecti
         GuacClientComponent,
         GuacTiledClientsComponent,
         ConnectionComponent,
-        ConnectionGroupComponent
+        ConnectionGroupComponent,
+        GuacClientPanelComponent,
+        GuacFileBrowserComponent,
+        FileComponent
     ],
     imports: [
         CommonModule,
@@ -81,6 +87,9 @@ import { ConnectionGroupComponent } from './components/connection-group/connecti
         FormModule,
         GroupListModule,
         NotificationModule
+    ],
+    exports: [
+      GuacClientPanelComponent
     ]
 })
 export class ClientModule {

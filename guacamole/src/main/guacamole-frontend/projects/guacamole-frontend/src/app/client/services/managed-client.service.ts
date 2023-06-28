@@ -613,7 +613,7 @@ export class ManagedClientService {
         // If a filesystem is given, determine the destination object and stream
         if (filesystem) {
             object = filesystem.object;
-            streamName = (directory || filesystem.currentDirectory).streamName + '/' + file.name;
+            streamName = (directory || filesystem.currentDirectory()).streamName + '/' + file.name;
         }
 
         // Start and manage file upload

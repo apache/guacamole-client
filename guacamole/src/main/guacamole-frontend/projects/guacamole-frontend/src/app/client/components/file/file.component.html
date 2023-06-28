@@ -16,14 +16,12 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<div class="thumbnail-main" (guacResize)="updateDisplayScale()" #main>
+<div class="file-browser-file list-item" [ngClass]="clazz" #listItem>
 
-    <!-- Display -->
-    <div class="displayOuter">
-        <div class="displayMiddle">
-            <div class="display" #display>
-            </div>
-        </div>
+    <!-- Filename and icon -->
+    <div class="caption">
+        <div class="icon"></div>
+        {{ file?.name }}
     </div>
 
 </div>

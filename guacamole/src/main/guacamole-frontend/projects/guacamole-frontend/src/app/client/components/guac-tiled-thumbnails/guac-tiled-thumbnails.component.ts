@@ -63,9 +63,4 @@ export class GuacTiledThumbnailsComponent {
         return ManagedClientGroup.getClientGrid(group);
     }
 
-    /**
-     * Inject required services.
-     */
-    constructor() {
-    }
 }

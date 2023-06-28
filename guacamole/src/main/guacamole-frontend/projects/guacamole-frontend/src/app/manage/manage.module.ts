@@ -25,15 +25,20 @@ import { TranslocoModule } from '@ngneat/transloco';
 import { FormsModule } from '@angular/forms';
 import { NavigationModule } from '../navigation/navigation.module';
 import { DataSourceTabsComponent } from './components/data-source-tabs/data-source-tabs.component';
-import { SystemPermissionEditorComponent } from './components/system-permission-editor/system-permission-editor.component';
+import {
+    SystemPermissionEditorComponent
+} from './components/system-permission-editor/system-permission-editor.component';
 import { IdentifierSetEditorComponent } from './components/identifier-set-editor/identifier-set-editor.component';
 import { ListModule } from '../list/list.module';
 import { ManagementButtonsComponent } from './components/management-buttons/management-buttons.component';
 import { ManageConnectionComponent } from './components/manage-connection/manage-connection.component';
 import { LocationChooserComponent } from './components/location-chooser/location-chooser.component';
 import { GroupListModule } from '../group-list/group-list.module';
-import { LocationChooserConnectionGroupComponent } from './components/location-chooser-connection-group/location-chooser-connection-group.component';
+import {
+    LocationChooserConnectionGroupComponent
+} from './components/location-chooser-connection-group/location-chooser-connection-group.component';
 import { ManageUserGroupComponent } from './components/manage-user-group/manage-user-group.component';
+import { ManageConnectionGroupComponent } from './components/manage-connection-group/manage-connection-group.component';
 
 /**
  * The module for the administration functionality.
@@ -48,7 +53,8 @@ import { ManageUserGroupComponent } from './components/manage-user-group/manage-
         ManageConnectionComponent,
         LocationChooserComponent,
         LocationChooserConnectionGroupComponent,
-        ManageUserGroupComponent
+        ManageUserGroupComponent,
+        ManageConnectionGroupComponent
     ],
     imports: [
         CommonModule,
@@ -68,7 +74,8 @@ import { ManageUserGroupComponent } from './components/manage-user-group/manage-
         ManagementButtonsComponent,
         ManageConnectionComponent,
         LocationChooserComponent,
-        LocationChooserConnectionGroupComponent
+        LocationChooserConnectionGroupComponent,
+        ManageConnectionGroupComponent
     ]
 })
 export class ManageModule {

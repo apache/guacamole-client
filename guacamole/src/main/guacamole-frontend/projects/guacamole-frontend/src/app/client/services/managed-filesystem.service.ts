@@ -80,7 +80,7 @@ export class ManagedFilesystemService {
                 // TODO: $rootScope.$evalAsync(function updateFileContents() {
 
                 // Empty contents
-                file.files = {};
+                file.files.set({});
 
                 // Determine the expected filename prefix of each stream
                 let expectedPrefix = file.streamName;
@@ -105,13 +105,13 @@ export class ManagedFilesystemService {
                         type = ManagedFilesystem.File.Type.DIRECTORY;
 
                     // Add file entry
-                    file.files[filename] = new ManagedFilesystem.File({
+                    file.files.mutate(files => files[filename] = new ManagedFilesystem.File({
                         mimetype: mimetypes[name],
                         streamName: name,
                         type: type,
                         parent: file,
                         name: filename
-                    });
+                    }));
 
                 }
 
@@ -206,7 +206,7 @@ export class ManagedFilesystemService {
         this.refresh(filesystem, file);
 
         // Set current directory
-        filesystem.currentDirectory = file;
+        filesystem.currentDirectory.set(file);
 
     }
 

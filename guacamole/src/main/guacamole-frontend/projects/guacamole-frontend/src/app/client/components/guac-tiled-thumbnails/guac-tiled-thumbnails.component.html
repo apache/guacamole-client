@@ -16,7 +16,7 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<div class="tiled-client-grid" [ngSwitch]="{
+<div class="tiled-client-grid" [ngStyle]="{
         'width' : width + 'px',
         'height' : height + 'px',
     }">
@@ -24,7 +24,7 @@
         <div class="tiled-client-cell" *ngFor="let client of clientRow">
 
             <div class="client-tile" *ngIf="client">
-                <guac-thumbnail [client]="client"></guac-thumbnail>
+                <guac-thumbnail [client]="client" class="thumbnail-main"></guac-thumbnail>
             </div>
 
         </div>

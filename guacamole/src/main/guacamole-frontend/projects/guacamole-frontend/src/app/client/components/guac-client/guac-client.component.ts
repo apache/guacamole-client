@@ -92,6 +92,9 @@ export class GuacClientComponent implements OnInit, OnChanges {
      */
     private displayContainer!: HTMLDivElement;
 
+    /**
+     * TODO
+     */
     @ViewChild('main', {static: true})
     private readonly mainRef!: ElementRef<HTMLDivElement>;
 

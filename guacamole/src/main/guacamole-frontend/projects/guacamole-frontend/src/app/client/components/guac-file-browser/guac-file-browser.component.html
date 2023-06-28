@@ -16,14 +16,21 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<div class="thumbnail-main" (guacResize)="updateDisplayScale()" #main>
+<div class="file-browser">
 
-    <!-- Display -->
-    <div class="displayOuter">
-        <div class="displayMiddle">
-            <div class="display" #display>
-            </div>
-        </div>
+    <!-- Current directory contents -->
+    <div class="current-directory-contents" *ngIf="files">
+
+        <ng-container *ngFor="let file of files(); let i = index; trackBy: trackByStreamName">
+            <guac-file [file]="file"
+                       (focusFile)="focusFile(i)"
+                       [isFocused]="i === focusedFileIndex"
+                       (changeDirectory)="changeDirectory(file)"
+                       (downloadFile)="downloadFile(file)"
+                       [ngClass]="{ 'focused': i === focusedFileIndex }"
+            ></guac-file>
+        </ng-container>
+
     </div>
 
 </div>

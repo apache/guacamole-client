@@ -53,6 +53,7 @@ export class FormComponent implements OnChanges {
      * The object which will receive all field values. Each field value
      * will be assigned to the property of this object having the same
      * name.
+     * TODO: Rename
      */
     @Input() myFormGroup?: FormGroup;
     // TODO: Replaced by formGroup? @Input() model?: Record<string, string>;

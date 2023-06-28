@@ -38,6 +38,9 @@ import { FormGroup } from '@angular/forms';
 import { FormService } from '../../../form/service/form.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
+/**
+ * The component for editing user groups.
+ */
 @Component({
     selector: 'guac-manage-user-group',
     templateUrl: './manage-user-group.component.html',

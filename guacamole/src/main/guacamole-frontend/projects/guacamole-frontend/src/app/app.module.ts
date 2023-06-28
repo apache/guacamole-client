@@ -35,6 +35,7 @@ import { SettingsModule } from './settings/settings.module';
 import { CommonModule } from '@angular/common';
 import { ManageModule } from './manage/manage.module';
 import { HomeModule } from './home/home.module';
+import { ClientModule } from "./client/client.module";
 
 @NgModule({
     declarations: [
@@ -53,7 +54,8 @@ import { HomeModule } from './home/home.module';
         ListModule,
         SettingsModule,
         ManageModule,
-        HomeModule
+        HomeModule,
+        ClientModule
     ],
     providers: [
         {provide: HTTP_INTERCEPTORS, useClass: DefaultHeadersInterceptor, multi: true},
