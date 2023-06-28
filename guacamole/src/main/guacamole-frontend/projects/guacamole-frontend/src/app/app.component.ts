@@ -21,10 +21,10 @@ import { DOCUMENT } from '@angular/common';
 import { AfterViewChecked, Component, DestroyRef, Inject, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RoutesRecognized } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import { distinctUntilChanged, filter, map, of, pairwise, switchMap, take, tap } from 'rxjs';
+import { distinctUntilChanged, filter, map, pairwise, startWith, take } from 'rxjs';
 import { AuthenticationService } from './auth/service/authentication.service';
 import { GuacClientManagerService } from './client/services/guac-client-manager.service';
 import { ManagedClientGroup } from './client/types/ManagedClientGroup';
@@ -128,7 +128,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 private styleLoaderService: StyleLoaderService,
                 private translocoService: TranslocoService,
                 private router: Router,
-                private route: ActivatedRoute,
                 private title: Title,
                 @Inject(DOCUMENT) private document: Document,
                 private renderer: Renderer2,
@@ -298,19 +297,30 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 this.reAuthenticating = false;
             });
 
-        // Add the CSS class provided in the route data property 'bodyClassName' to the body element
+        // Set the initial title manually when the application starts
+        this.translocoService.selectTranslate('APP.NAME')
+            .pipe(take(1))
+            .subscribe((title) => this.title.setTitle(title));
+
+        // Clear login screen if route change was successful (and thus
+        // login was either successful or not required)
+        this.router.events
+            .pipe(filter(event => event instanceof NavigationEnd))
+            .subscribe(() => this.setApplicationState(ApplicationState.READY));
+
+        // Set body CSS class based on current route
         this.router.events.pipe(
-            // Apply new class only when navigation was successful
-            filter(event => event instanceof NavigationEnd),
-            // Clear login screen if route change was successful (and thus
-            // login was either successful or not required)
-            tap(() => this.setApplicationState(ApplicationState.READY)),
+            // Check if a new class needs to be applied every time the route changes
+            filter((event): event is RoutesRecognized => event instanceof RoutesRecognized),
             // Get the current route data
-            switchMap(() => this.route.firstChild?.data || of({})),
+            map((event) => event.state.root.firstChild?.data || {}),
             // Extract the bodyClassName property
-            map((data: any) => data['bodyClassName'] || null),
+            filter((data) => !!data['bodyClassName']),
+            map((data) => data['bodyClassName']),
             // Only proceed if the class has changed
             distinctUntilChanged(),
+            // Start with null so that the first class is always applied
+            startWith(null),
             // Emit previous and current class name as a pair
             pairwise()
         )
@@ -318,12 +328,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 this.updateBodyClass(previousClass, nextClass);
             });
 
-        // Set the initial title manually when the application starts
-        this.translocoService.selectTranslate('APP.NAME')
-            .pipe(take(1))
-            .subscribe((title) => {
-                this.title.setTitle(title);
-            });
     }
 
 
@@ -398,7 +402,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
      * @param nextClass
      *     The class to add to the body element.
      */
-    private updateBodyClass(previousClass?: string, nextClass?: string): void {
+    private updateBodyClass(previousClass?: string | null, nextClass?: string | null): void {
         // Remove previous class
         if (previousClass)
             this.renderer.removeClass(this.document.body, previousClass);
