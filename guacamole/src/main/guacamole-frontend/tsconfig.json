@@ -4,7 +4,6 @@
         " ./cypress.config.ts",
         "node_modules",
         "cypress",
-        "**/*.spec.ts"
     ],
     "compilerOptions": {
         "baseUrl": "./",

@@ -116,14 +116,13 @@
                         ],
                         "tsConfig": "projects/guacamole-frontend/tsconfig.spec.json",
                         "assets": [
-                            "projects/guacamole-frontend/src/favicon.ico",
                             "projects/guacamole-frontend/src/assets"
                         ],
                         "styles": [
                             "projects/guacamole-frontend/src/styles.css"
                         ],
                         "scripts": [
-                            "node_modules/guacamole-frontend-lib/assets/guacamole-common-js.min.js"
+                            "projects/guacamole-frontend-lib/src/assets/guacamole-common-js.min.js"
                         ],
                         "karmaConfig": "projects/guacamole-frontend/karma.conf.js"
                     }
