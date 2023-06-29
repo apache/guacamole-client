@@ -46,12 +46,26 @@ package that implements end-to-end testing capabilities.
   authentication.
 - I'm not sure how to handle the automatic generation of the LICENSE and NOTICE files in the maven build.
   The angular build creates a `3rdpartylicenses.txt` file, but I don't know if this is enough and where to put it.
-- Type declarations for guacamole-common-js (`guacamole-frontend-lib/src/lib/types/Guacamole.ts`) will be replaced by the package @types/guacamole-common-js
+- Type declarations for guacamole-common-js (`projects/guacamole-frontend-lib/src/lib/types/Guacamole.ts`) will be
+  replaced by the package @types/guacamole-common-js
   once it is updated.
 - I included some Cypress E2E Tests in the `cypress` folder. They are not integrated in the build process and I did not
   include a proper configuration file because of the various possible testing setups.
-- I refactored the GuacFileBrowser to simply use an *ngFor loop. For my tests I didn't notice any performance
-  difference issues.
+- I refactored the GuacFileBrowser to simply use an *ngFor loop. In my tests I didn't notice any performance issues.
+
+## Extensions
+
+- Injecting additional HTML and CSS should work just like in AngularJS. See:
+    - `apply-patches.service.ts`
+      in `guacamole/src/main/guacamole-frontend/projects/guacamole-frontend/src/app/index/services/`
+    - `style-loader.service.ts`
+      in `guacamole/src/main/guacamole-frontend/projects/guacamole-frontend/src/app/index/services/`
+- More complex extensions can be implemented as a separat Angular application
+  - Extensions are loaded as a remote module via webpack module federation.
+  - Additional routes can be 
+  - `guacamole-frontend-ext-lib` provides a service which can be used to register additional form fields. 
+  - See `doc/guacamole-frontend-extension-example` for an example.
+
 ## Possible discussion points regarding the implementation
 
 - I removed workarounds for IE since Angular itself does no longer support IE. Should these IE workarounds still be

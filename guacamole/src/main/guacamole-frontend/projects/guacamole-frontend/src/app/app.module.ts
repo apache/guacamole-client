@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -36,6 +36,7 @@ import { CommonModule } from '@angular/common';
 import { ManageModule } from './manage/manage.module';
 import { HomeModule } from './home/home.module';
 import { ClientModule } from "./client/client.module";
+import { ExtensionLoaderService } from "./index/services/extension-loader.service";
 
 @NgModule({
     declarations: [
@@ -58,6 +59,16 @@ import { ClientModule } from "./client/client.module";
         ClientModule
     ],
     providers: [
+        // Uses the extension loader service to load the extension and set the router config
+        // before the app is initialized.
+        {
+            provide: APP_INITIALIZER,
+            useFactory: (extensionLoaderService: ExtensionLoaderService) =>
+                () => extensionLoaderService.loadExtensionAndSetRouterConfig(),
+            deps: [ExtensionLoaderService],
+            multi: true,
+        },
+
         {provide: HTTP_INTERCEPTORS, useClass: DefaultHeadersInterceptor, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true},
         {provide: HTTP_INTERCEPTORS, useClass: ErrorHandlingInterceptor, multi: true},

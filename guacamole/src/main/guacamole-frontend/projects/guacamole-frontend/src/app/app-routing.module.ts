@@ -18,7 +18,7 @@
  */
 
 import { inject, NgModule } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivateFn, ResolveFn, Router, RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, ResolveFn, Route, Router, RouterModule, Routes } from '@angular/router';
 import { ManageUserComponent } from './manage/components/manage-user/manage-user.component';
 import { ManageConnectionComponent } from './manage/components/manage-connection/manage-connection.component';
 import { SettingsComponent } from './settings/components/settings/settings.component';
@@ -152,7 +152,7 @@ const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boo
  * @param route
  *     The route which was requested.
  */
-const titleResolver: ResolveFn<string> = (route) => {
+export const titleResolver: ResolveFn<string> = (route) => {
 
     const translocoService = inject(TranslocoService);
     const titleKey = route.data['titleKey'] || 'APP.NAME';
@@ -272,14 +272,20 @@ export const appRoutes: Routes = [
         component: ClientPageComponent,
         data: {titleKey: 'APP.NAME', bodyClassName: 'client'},
         canActivate: [authGuard]
-    },
-
-    // Redirect to home screen if page not found
-    {path: '**', redirectTo: ''}
+    }
 ];
 
+/**
+ * Route to the home page for the current user.
+ * Defined as a separate route so that extension routes
+ * can be added before the redirect.
+ */
+export const fallbackRoute: Route = {
+    path: '**', redirectTo: ''
+}
+
 @NgModule({
-    imports: [RouterModule.forRoot(appRoutes, {
+    imports: [RouterModule.forRoot([...appRoutes, fallbackRoute], {
         // Bind route parameters to component inputs
         bindToComponentInputs: true,
         // Disable HTML5 mode (use # for routing)
