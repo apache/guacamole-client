@@ -41,21 +41,21 @@
     <table class="sorted user-list">
         <thead>
         <tr>
-            <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                [guacSortProperty]="'user.username'" class="username">
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="user.username" class="username">
                 {{'SETTINGS_USERS.TABLE_HEADER_USERNAME' | transloco}}
             </th>
-            <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                [guacSortProperty]="'user.attributes[\'guac-organization\']'"
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="user.attributes['guac-organization']"
                 class="organization">
                 {{'SETTINGS_USERS.TABLE_HEADER_ORGANIZATION' | transloco}}
             </th>
-            <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                [guacSortProperty]="'user.attributes[\'guac-full-name\']'" class="full-name">
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="user.attributes['guac-full-name']" class="full-name">
                 {{'SETTINGS_USERS.TABLE_HEADER_FULL_NAME' | transloco}}
             </th>
-            <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                [guacSortProperty]="'user.lastActive'" class="last-active">
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="user.lastActive" class="last-active">
                 {{'SETTINGS_USERS.TABLE_HEADER_LAST_ACTIVE' | transloco}}
             </th>
         </tr>

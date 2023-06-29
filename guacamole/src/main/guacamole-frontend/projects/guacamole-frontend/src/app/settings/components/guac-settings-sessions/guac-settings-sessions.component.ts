@@ -84,7 +84,7 @@ export class GuacSettingsSessionsComponent implements OnInit {
      * Initial SortOrder instance which maintains the sort order of the visible
      * connection wrappers.
      */
-    readonly initialOrder = new SortOrder([
+    private readonly initialOrder = new SortOrder([
         'activeConnection.username',
         'startDate',
         'activeConnection.remoteHost',

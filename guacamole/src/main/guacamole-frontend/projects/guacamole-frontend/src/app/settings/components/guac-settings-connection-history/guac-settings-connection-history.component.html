@@ -39,24 +39,24 @@
         <table class="sorted history-list">
             <thead>
             <tr>
-                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                    guacSortProperty="entry.username">
+                <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                    sortProperty="entry.username">
                     {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_USERNAME' | transloco}}
                 </th>
-                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                    guacSortProperty="entry.startDate">
+                <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                    sortProperty="entry.startDate">
                     {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE' | transloco}}
                 </th>
-                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                    guacSortProperty="duration">
+                <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                    sortProperty="duration">
                     {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION' | transloco}}
                 </th>
-                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                    guacSortProperty="entry.connectionName">
+                <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                    sortProperty="entry.connectionName">
                     {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME' | transloco}}
                 </th>
-                <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                    guacSortProperty="entry.remoteHost">
+                <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                    sortProperty="entry.remoteHost">
                     {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_REMOTEHOST' | transloco}}
                 </th>
                 <th>

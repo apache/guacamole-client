@@ -48,21 +48,31 @@ export class GuacSortOrderDirective implements OnInit, OnChanges {
     /**
      * The object defining the sorting order.
      */
-    @Input({alias: 'guacSortOrder', required: true}) sortOrder!: SortOrder;
-    @Output('guacSortOrderChange') sortOrderChange = new EventEmitter<SortOrder>();
+    @Input({required: true}) guacSortOrder: SortOrder | null = null;
+
+    /**
+     * Event raised when the sort order changes due to user interaction.
+     */
+    @Output() sortOrderChange = new EventEmitter<SortOrder>();
 
     /**
      * The name of the property whose priority within the sort order
      * is controlled by this directive.
      */
-    @Input('guacSortProperty') sortProperty!: string;
+    @Input() sortProperty!: string;
 
     /**
      * Update sort order when clicked.
      */
     @HostListener('click') onClick() {
-        this.sortOrder.togglePrimary(this.sortProperty);
+
+        if (!this.guacSortOrder) return;
+
+        this.guacSortOrder.togglePrimary(this.sortProperty);
         this.onSortOrderChange();
+
+        // Emit the new sort order
+        this.sortOrderChange.emit(new SortOrder(this.guacSortOrder.predicate));
     }
 
     /**
@@ -95,7 +105,7 @@ export class GuacSortOrderDirective implements OnInit, OnChanges {
      *     false otherwise.
      */
     private isPrimary(): boolean {
-        return this.sortOrder.primary === this.sortProperty;
+        return this.guacSortOrder?.primary === this.sortProperty;
     }
 
     /**
@@ -107,12 +117,12 @@ export class GuacSortOrderDirective implements OnInit, OnChanges {
      *     descending order, false otherwise.
      */
     private isDescending(): boolean {
-        return this.sortOrder.descending;
+        return !!this.guacSortOrder?.descending;
     }
 
     ngOnChanges(changes: SimpleChanges): void {
 
-        if (changes['sortOrder']) {
+        if (changes['guacSortOrder']) {
             this.onSortOrderChange();
         }
 
@@ -135,7 +145,6 @@ export class GuacSortOrderDirective implements OnInit, OnChanges {
         else
             this.renderer.removeClass(this.element, 'sort-descending');
 
-        this.sortOrderChange.emit(this.sortOrder);
     }
 
 

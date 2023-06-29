@@ -110,7 +110,7 @@ export class GuacSettingsUsersComponent implements OnInit {
      * SortOrder instance which stores the sort order of the listed
      * users.
      */
-    readonly initialOrder: SortOrder = new SortOrder([
+    private readonly initialOrder: SortOrder = new SortOrder([
         'user.username',
         '-user.lastActive',
         'user.attributes["guac-organization"]',

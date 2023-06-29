@@ -64,7 +64,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
      * The initial SortOrder instance which stores the sort order of the history
      * records.
      */
-    readonly initialOrder = new SortOrder([
+    private readonly initialOrder = new SortOrder([
         '-entry.startDate',
         '-duration',
         'entry.username',

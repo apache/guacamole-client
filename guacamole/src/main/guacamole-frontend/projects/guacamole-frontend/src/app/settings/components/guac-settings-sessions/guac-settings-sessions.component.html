@@ -34,20 +34,20 @@
         <thead>
         <tr>
             <th class="select-session"></th>
-            <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                guacSortProperty="activeConnection.username">
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="activeConnection.username">
                 {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_USERNAME' | transloco}}
             </th>
-            <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                guacSortProperty="startDate">
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="startDate">
                 {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_STARTDATE' | transloco}}
             </th>
-            <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                guacSortProperty="activeConnection.remoteHost">
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="activeConnection.remoteHost">
                 {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_REMOTEHOST' | transloco}}
             </th>
-            <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                guacSortProperty="name">
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="name">
                 {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_CONNECTION_NAME' | transloco}}
             </th>
         </tr>

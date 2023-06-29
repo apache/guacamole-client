@@ -89,7 +89,7 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
      * The initial SortOrder which stores the sort order of the listed
      * user groups.
      */
-    readonly initialOrder: SortOrder = new SortOrder([
+    private readonly initialOrder: SortOrder = new SortOrder([
         'userGroup.identifier'
     ]);
 

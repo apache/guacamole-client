@@ -60,7 +60,7 @@ export class SortService {
      *     The sorted collection.
      */
     orderByPredicate<T>(collection: T[] | null | undefined, predicates: string[]): T[] {
-        if (!collection) {
+        if (!collection || collection.length === 0) {
             return [];
         }
 
@@ -73,6 +73,11 @@ export class SortService {
             return (item: T) => {
                 const value = compile(expression)(item);
 
+                // If the value is a number, return it as-is
+                if (typeof value === 'number')
+                    return value;
+
+                // Try to convert to string and compare in a case-insensitive manner
                 if (value?.toString)
                     return value.toString().toLowerCase();
 

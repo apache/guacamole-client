@@ -38,8 +38,8 @@
     <table class="sorted user-group-list" *ngIf="isLoaded()">
         <thead>
         <tr>
-            <th [guacSortOrder]="initialOrder" (guacSortOrderChange)="order.next($event)"
-                guacSortProperty="userGroup.identifier" class="user-group-name">
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="userGroup.identifier" class="user-group-name">
                 {{'SETTINGS_USER_GROUPS.TABLE_HEADER_USER_GROUP_NAME' | transloco}}
             </th>
         </tr>
