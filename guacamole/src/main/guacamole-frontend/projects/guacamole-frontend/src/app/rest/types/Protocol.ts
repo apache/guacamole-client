@@ -18,7 +18,7 @@
  */
 
 import { Form } from './Form';
-import { canonicalize } from '../../form/components/form-field-base/form-field-base.component';
+import { canonicalize } from "../../locale/service/translation.service";
 
 /**
  * Returned by REST API calls when representing the data

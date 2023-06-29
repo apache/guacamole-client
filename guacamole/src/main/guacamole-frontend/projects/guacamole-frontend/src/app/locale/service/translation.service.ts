@@ -29,6 +29,22 @@ import { map, Observable, tap } from 'rxjs';
 export const DEFAULT_LANGUAGE = 'en';
 
 /**
+ * Given an arbitrary identifier, returns the corresponding translation
+ * table identifier. Translation table identifiers are uppercase strings,
+ * word components separated by single underscores. For example, the
+ * string "Swap red/blue" would become "SWAP_RED_BLUE".
+ *
+ * @param identifier
+ *     The identifier to transform into a translation table identifier.
+ *
+ * @returns
+ *     The translation table identifier.
+ */
+export const canonicalize = (identifier: string): string => {
+    return identifier.replace(/[^a-zA-Z0-9]+/g, '_').toUpperCase();
+}
+
+/**
  * Service for providing a configuration object for Transloco.
  */
 @Injectable({

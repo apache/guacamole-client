@@ -29,8 +29,8 @@ import { PermissionSet } from '../../rest/types/PermissionSet';
 import { ClientIdentifier } from '../../navigation/types/ClientIdentifier';
 import { catchError, forkJoin, from, map, Observable } from 'rxjs';
 import cloneDeep from 'lodash/cloneDeep';
-import { canonicalize } from '../../form/components/form-field-base/form-field-base.component';
 import { ClientIdentifierService } from '../../navigation/service/client-identifier.service';
+import { canonicalize } from "../../locale/service/translation.service";
 
 /**
  * A service for generating all the important pages a user can visit.

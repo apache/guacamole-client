@@ -22,7 +22,7 @@ import { Field } from '../../../rest/types/Field';
 import { Form } from '../../../rest/types/Form';
 import { FormService } from '../../service/form.service';
 import { FormControl, FormGroup } from '@angular/forms';
-import { canonicalize } from '../form-field-base/form-field-base.component';
+import { canonicalize } from "../../../locale/service/translation.service";
 
 /**
  * A component that allows editing of a collection of fields.

@@ -31,7 +31,8 @@ import {
 } from '@angular/core';
 import { FormService } from '../../service/form.service';
 import { LogService } from '../../../util/log.service';
-import { canonicalize, FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
+import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
+import { canonicalize } from "../../../locale/service/translation.service";
 
 /**
  * A component that allows editing of a field.

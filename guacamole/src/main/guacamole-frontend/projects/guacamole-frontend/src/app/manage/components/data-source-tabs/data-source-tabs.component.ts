@@ -21,7 +21,7 @@ import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@
 import { ManagementPermissions } from '../../types/ManagementPermissions';
 import { PageDefinition } from '../../../navigation/types/PageDefinition';
 import keys from 'lodash/keys';
-import { canonicalize } from '../../../form/components/form-field-base/form-field-base.component';
+import { canonicalize } from "../../../locale/service/translation.service";
 
 /**
  * Component which displays a set of tabs pointing to the same object within

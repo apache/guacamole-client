@@ -21,6 +21,7 @@ import { Component, Input } from '@angular/core';
 import { Field } from '../../../rest/types/Field';
 import { FormControl } from '@angular/forms';
 import { FormFieldComponentData } from "guacamole-frontend-ext-lib";
+import { canonicalize } from "../../../locale/service/translation.service";
 
 
 /**
@@ -61,26 +62,7 @@ export const getFieldOption = (field: Field | undefined, namespace?: string, val
 }
 
 /**
- * TODO: Move to separate file as this is used in multiple places
- * Given an arbitrary identifier, returns the corresponding translation
- * table identifier. Translation table identifiers are uppercase strings,
- * word components separated by single underscores. For example, the
- * string "Swap red/blue" would become "SWAP_RED_BLUE".
- *
- * @param identifier
- *     The identifier to transform into a translation table identifier.
- *
- * @returns
- *     The translation table identifier.
- */
-export const canonicalize = (identifier: string): string => {
-    return identifier.replace(/[^a-zA-Z0-9]+/g, '_').toUpperCase();
-}
-
-/**
  * Base class for form field components.
- *
- * TODO: move to shared library
  */
 @Component({'template': ''})
 export abstract class FormFieldBaseComponent implements FormFieldComponentData {
