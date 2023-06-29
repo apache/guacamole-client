@@ -77,7 +77,6 @@ export class ManagedFilesystemService {
 
             // Reset contents of directory
             reader.onend = function jsonReady() {
-                // TODO: $rootScope.$evalAsync(function updateFileContents() {
 
                 // Empty contents
                 file.files.set({});
@@ -115,7 +114,6 @@ export class ManagedFilesystemService {
 
                 }
 
-                // TODO: });
             };
 
         });

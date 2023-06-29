@@ -285,8 +285,8 @@ export class GuacSettingsPreferencesComponent implements OnInit {
      */
     isLoaded(): boolean {
 
-        return this.canUpdateSelf !== null
-        // TODO: && this.languages !== null;
+        return this.canUpdateSelf !== null;
+        // TODO: was '&& this.languages !== null;' but 'languages' doesn't exist
 
     }
 

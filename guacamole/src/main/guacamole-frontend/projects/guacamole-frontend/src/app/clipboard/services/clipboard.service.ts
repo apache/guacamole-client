@@ -295,7 +295,7 @@ export class ClipboardService {
         let currentBlock = '';
 
         // For each child of the given element
-        // TODO: Oder doch firstChild wie vorher?
+        // TODO: was 'element.firstChild'
         let current = element.firstElementChild;
         while (current) {
 
@@ -334,7 +334,7 @@ export class ClipboardService {
 
             }
 
-            // TODO: Oder doch nextSibling wie vorher?
+            // TODO: was 'current.nextSibling'
             current = current.nextElementSibling;
 
         }
@@ -391,7 +391,7 @@ export class ClipboardService {
     getImageContent(element: Element): string | null {
 
         // Return the source of the single child element, if it is an image
-        // TODO: FirstElement?
+        // TODO: was 'element.firstChild'
         const firstChild = element.firstElementChild;
         if (firstChild && firstChild.nodeName === 'IMG' && !firstChild.nextSibling)
             return firstChild.getAttribute('src');

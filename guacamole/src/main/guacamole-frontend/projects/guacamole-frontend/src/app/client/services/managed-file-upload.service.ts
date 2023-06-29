@@ -86,7 +86,6 @@ export class ManagedFileUploadService {
             stream = object.createOutputStream(file.type, streamName);
 
         // Notify that the file transfer is pending
-        // TODO: $rootScope.$evalAsync(function uploadStreamOpen() {
 
         // Init managed upload
         managedFileUpload.filename = file.name;
@@ -98,25 +97,20 @@ export class ManagedFileUploadService {
         ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
             ManagedFileTransferState.StreamState.OPEN);
 
-        // TODO: });
 
         // Upload file once stream is acknowledged
         stream.onack = (status: Guacamole.Status) => {
 
             // Notify of any errors from the Guacamole server
             if (status.isError()) {
-                // TODO: $rootScope.$apply(function uploadStreamError() {
                 ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
                     ManagedFileTransferState.StreamState.ERROR, status.code);
-                // TODO: });
                 return;
             }
 
             // Begin upload
             this.tunnelService.uploadToStream(tunnel.uuid, stream, file, length => {
-                // TODO: $rootScope.$apply(function uploadStreamProgress() {
                 managedFileUpload.progress = length;
-                // TODO: });
             })
 
                 // Notify if upload succeeds

@@ -76,7 +76,7 @@ export class GuacHistoryService {
         this.recentConnections.unshift(new HistoryEntry(
             id,
             thumbnail,
-            // TODO new Date().getTime() als dritter Parameter??
+            // TODO: new Date().getTime() as additional parameter?
         ));
 
         // Truncate history to ideal length

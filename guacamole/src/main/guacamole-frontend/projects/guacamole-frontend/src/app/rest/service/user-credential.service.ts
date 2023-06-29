@@ -31,12 +31,12 @@ import { Field } from '../types/Field';
 export class UserCredentialService {
 
     /**
-     * TODO: Document window
+     * Reference to the window object.
      */
     private window: Window;
 
     /**
-     * TODO: Document
+     * Inject a document reference to get a reference to the window object.
      */
     constructor(@Inject(DOCUMENT) private document: Document) {
         this.window = this.document.defaultView as Window;

@@ -21,6 +21,7 @@
  * TODO
  */
 export interface GuacEventArguments {
+
     // Keyboard events
     guacKeydown: { keysym: number; keyboard: Guacamole.Keyboard; };
     guacKeyup: { keysym: number; keyboard: Guacamole.Keyboard; };

@@ -389,6 +389,9 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
 
     }
 
+    /**
+     * TODO: Document
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Re-initialize the client group if the group id has changed without reloading the route

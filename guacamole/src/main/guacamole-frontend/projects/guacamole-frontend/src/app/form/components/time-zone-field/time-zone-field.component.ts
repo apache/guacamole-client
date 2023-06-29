@@ -120,8 +120,6 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
             this.updateDisabledState(disabled);
         }
 
-        // TODO: What if control changes?
-
     }
 
     /**

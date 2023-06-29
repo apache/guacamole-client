@@ -33,17 +33,15 @@
 
 
     <!-- Play button -->
-    <!--    TODO: Translate-->
     <button class="guac-player-play"
-            [attr.title]="'PLAYER.ACTION_PLAY'"
+            [attr.title]="'PLAYER.ACTION_PLAY' | transloco"
             (click)="recording?.play()"
             [hidden]="recording?.isPlaying()"
     ><span class="play-icon"></span></button>
 
     <!-- Pause button -->
-    <!--    TODO: Translate-->
     <button class="guac-player-pause"
-            [attr.title]="'PLAYER.ACTION_PAUSE'"
+            [attr.title]="'PLAYER.ACTION_PAUSE'  | transloco"
             (click)="recording?.pause()"
             [hidden]="!recording?.isPlaying()"><span class="pause-icon"></span></button>
 
@@ -57,10 +55,9 @@
 <!-- Modal status indicator -->
 <div class="guac-player-status" *ngIf="operationMessage">
     <guac-player-progress-indicator [progress]="operationProgress"></guac-player-progress-indicator>
-    <!--    TODO: Translate-->
-    <p>{{ operationMessage }}</p>
+    <p>{{ operationMessage  | transloco }}</p>
     <button class="guac-player-button guac-player-cancel"
             [hidden]="!cancelOperation"
-            (click)="cancelOperation()">PLAYER.ACTION_CANCEL
+            (click)="cancelOperation()">{{ 'PLAYER.ACTION_CANCEL'  | transloco }}
     </button>
 </div>

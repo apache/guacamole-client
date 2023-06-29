@@ -229,11 +229,9 @@ export class ManagedClientService {
 
         // Fire events for tunnel errors
         tunnel.onerror = function tunnelError(status: Guacamole.Status) {
-            // TODO: $rootScope.$apply(function handleTunnelError() {
             ManagedClientState.setConnectionState(managedClient.clientState,
                 ManagedClientState.ConnectionState.TUNNEL_ERROR,
                 status.code);
-            // TODO: });
         };
 
         // Pull protocol-specific information from tunnel once tunnel UUID is
@@ -249,7 +247,6 @@ export class ManagedClientService {
 
         // Update connection state as tunnel state changes
         tunnel.onstatechange = (state: number) => {
-            // TODO: 1 $rootScope.$evalAsync(function updateTunnelState() {
 
             switch (state) {
 
@@ -277,12 +274,10 @@ export class ManagedClientService {
 
             }
 
-            // TODO: 1 });
         };
 
         // Update connection state as client state changes
         client.onstatechange = (clientState: number) => {
-            // TODO: 2 $rootScope.$evalAsync(function updateClientState() {
 
             switch (clientState) {
 
@@ -329,12 +324,10 @@ export class ManagedClientService {
 
             }
 
-            // TODO: 2});
         };
 
         // Disconnect and update status when the client receives an error
         client.onerror = (status: Guacamole.Status) => {
-            // TODO: 3 $rootScope.$apply(function handleClientError() {
 
             // Disconnect, if connected
             client.disconnect();
@@ -344,12 +337,10 @@ export class ManagedClientService {
                 ManagedClientState.ConnectionState.CLIENT_ERROR,
                 status.code);
 
-            // TODO: 3 });
         };
 
         // Update user count when a new user joins
         client.onjoin = (id: string, username: string) => {
-            // TODO: 4 $rootScope.$apply(function usersChanged() {
 
             const connections = managedClient.users[username] || {};
             managedClient.users[username] = connections;
@@ -357,12 +348,10 @@ export class ManagedClientService {
             managedClient.userCount++;
             connections[id] = true;
 
-            // TODO: 4 });
         };
 
         // Update user count when a user leaves
         client.onleave = function userLeft(id: string, username: string) {
-            // TODO: 5 $rootScope.$apply(function usersChanged() {
 
             const connections = managedClient.users[username] || {};
             managedClient.users[username] = connections;
@@ -374,7 +363,6 @@ export class ManagedClientService {
             if (isEmpty(connections))
                 delete managedClient.users[username];
 
-            // TODO: 5 });
         };
 
         // Automatically update the client thumbnail
@@ -385,9 +373,7 @@ export class ManagedClientService {
 
             // Update thumbnail if it doesn't exist or is old
             if (!thumbnail || timestamp - thumbnail.timestamp >= this.THUMBNAIL_UPDATE_FREQUENCY) {
-                // TODO: 6 $rootScope.$apply(function updateClientThumbnail() {
                 this.updateThumbnail(managedClient);
-                // TODO: 6 });
             }
 
         };
@@ -468,9 +454,7 @@ export class ManagedClientService {
 
         // Update title when a "name" instruction is received
         client.onname = name => {
-            // TODO: 7 $rootScope.$apply(function updateClientTitle() {
             managedClient.title = name;
-            // TODO: 7 });
         };
 
         // Handle any received files
@@ -480,19 +464,15 @@ export class ManagedClientService {
 
         // Handle any received filesystem objects
         client.onfilesystem = (object: Guacamole.Object, name: string) => {
-            // TODO: 8 $rootScope.$apply(function exposeFilesystem() {
             managedClient.filesystems.push(this.managedFilesystemService.getInstance(managedClient, object, name));
-            // TODO: 8 });
         };
 
         // Handle any received prompts
         client.onrequired = (parameters: string[]) => {
-            // TODO: 9 $rootScope.$apply(function promptUser() {
             managedClient.requiredParameters = {};
             parameters.forEach(name => {
                 managedClient.requiredParameters![name] = '';
             });
-            // TODO: 9 });
         };
 
         // Manage the client display
@@ -799,7 +779,7 @@ export class ManagedClientService {
      * Returns whether the given client has any associated file transfers,
      * regardless of those file transfers' state.
      *
-     * @param client TODO: type was {GuacamoleClient}
+     * @param client
      *     The client for which file transfers should be checked.
      *
      * @returns

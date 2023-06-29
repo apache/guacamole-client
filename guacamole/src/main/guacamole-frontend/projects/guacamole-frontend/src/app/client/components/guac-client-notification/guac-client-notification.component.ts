@@ -94,7 +94,7 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
     @Input({required: true}) client!: ManagedClient;
 
     /**
-     * TODO: Document this property.
+     * TODO: Document
      * @private
      */
     private clientDiffer?: KeyValueDiffer<string, any>;
@@ -425,6 +425,7 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
     ngDoCheck(): void {
         if (!this.clientDiffer) return;
 
+        // TODO: Temporary workaround for $scope.$watchGroup
         const changes = this.clientDiffer.diff(this.client);
 
         // TODO: Show status dialog when connection status changes

@@ -20,18 +20,16 @@
     <div class="client-zoom-editor">
         <div (click)="zoomOut()" class="client-zoom-out"><img src="images/settings/zoom-out.svg" alt="-"></div>
         <div class="client-zoom-state">
+            <!-- TODO: "Expression has changed after it was checked: client.clientProperties.scale()" when a new client is added to the view -->
             <input type="number" guacZoomCtrl
                    [ngModel]="client.clientProperties.scale()"
                    [ngModelOptions]="{updateOn: 'blur' }"
                    (ngModelChange)="client.clientProperties.scale.set($event)">%
         </div>
-        <!-- TODO: Angular only allows one updateOn option    ng-model-options="{ updateOn: 'blur submit' }"-->
         <div (click)="zoomIn()" class="client-zoom-in"><img src="images/settings/zoom-in.svg" alt="+"></div>
     </div>
     <div class="client-zoom-autofit">
-        <label><input [(ngModel)]="client.clientProperties.autoFit"
-                      (ngModelChange)="changeAutoFit()"
-                      [disabled]="autoFitDisabled()" type="checkbox" id="auto-fit">
+        <label><input [(ngModel)]="client.clientProperties.autoFit" type="checkbox" id="auto-fit">
             {{'CLIENT.TEXT_ZOOM_AUTO_FIT' | transloco}}</label>
     </div>
 </div>

@@ -83,22 +83,17 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
     /**
      * The credentials that the authentication service is has already accepted,
-     * pending additional credentials, if any. If the user is logged in, or no
-     * credentials have been accepted, this will be null. If credentials have
-     * been accepted, this will be a map of name/value pairs corresponding to
+     * pending additional credentials, if any. If credentials have
+     * been accepted, this will contain a form control for each of
      * the parameters submitted in a previous authentication attempt.
-     *
-     * @type Record<string, string>
-     *     TODO: Ursprünglich null
      */
     acceptedCredentials: FormGroup = new FormGroup<any>({});
 
     /**
      * The credentials that the authentication service is currently expecting,
      * if any. If the user is logged in, this will be null.
-     * TODO: Ursprünglich null
      */
-    expectedCredentials: Field[] = [];
+    expectedCredentials: Field[] | null = null;
 
     /**
      * The current overall state of the client side of the application.
@@ -215,7 +210,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
         // Release all keys upon form submission (there may not be corresponding
         // keyup events for key presses involved in submitting a form)
-        // TODO: was $document.on; is this correct?
         this.document.addEventListener('submit', () => {
             keyboard.reset();
         });

@@ -132,7 +132,7 @@ export class ManagementButtonsComponent implements OnInit {
      * the page they started from.
      */
     navigateBack(): void {
-        this.return();//TODO ($scope.$parent);
+        this.return();
     }
 
     /**
@@ -147,7 +147,6 @@ export class ManagementButtonsComponent implements OnInit {
             next: () => this.navigateBack(),
             error: this.notificationService.SHOW_REQUEST_ERROR
         });
-        //TODO $scope['delete']($scope.$parent).then(navigateBack, guacNotification.SHOW_REQUEST_ERROR);
     }
 
     /**
@@ -169,7 +168,6 @@ export class ManagementButtonsComponent implements OnInit {
             next: () => this.navigateBack(),
             error: this.notificationService.SHOW_REQUEST_ERROR
         });
-        // TODO ($scope.$parent).then(navigateBack, guacNotification.SHOW_REQUEST_ERROR);
     }
 
     /**

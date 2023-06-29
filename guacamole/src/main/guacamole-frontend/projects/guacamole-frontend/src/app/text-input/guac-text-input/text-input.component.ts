@@ -283,9 +283,7 @@ export class TextInputComponent implements AfterViewInit {
         }
 
         // Display the text that was sent
-        // TODO $scope.$apply(function addSentText() {
         this.sentText.push(sentText);
-        // });
 
         // Remove text after one second
         setTimeout(() => {
@@ -300,10 +298,8 @@ export class TextInputComponent implements AfterViewInit {
     releaseStickyKeys(): void {
 
         // Reset all sticky keys
-        // TODO $scope.$apply(function clearAllStickyKeys() {
         this.altPressed = false;
         this.ctrlPressed = false;
-        // });
 
     }
 

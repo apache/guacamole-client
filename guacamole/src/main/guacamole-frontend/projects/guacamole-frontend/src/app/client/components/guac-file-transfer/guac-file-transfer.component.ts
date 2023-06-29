@@ -54,7 +54,7 @@ export class GuacFileTransferComponent implements DoCheck, OnChanges {
     translatedErrorMessage?: string = '';
 
     /**
-     * TODO
+     * TODO: remove
      */
     private transferDiffer?: KeyValueDiffer<string, any>;
 
@@ -222,13 +222,12 @@ export class GuacFileTransferComponent implements DoCheck, OnChanges {
 
     ngDoCheck(): void {
 
+        // TODO: $scope.$watch('transfer.transferState.statusCode',...
+        // Temporary workaround for $scope.$watch
         if (!this.transferDiffer || !this.transfer) return;
         const changes = this.transferDiffer.diff(this.transferDiffer);
 
-        if (changes) { // TODO: $scope.$watch('transfer.transferState.statusCode'
-
-            // TODO: Determine translation name of error
-            console.log('TODO: Determine translation name of error', changes);
+        if (changes) {
 
             // Determine translation name of error
             const errorName: string = 'CLIENT.ERROR_UPLOAD_' + this.transfer.transferState.statusCode.toString(16).toUpperCase();

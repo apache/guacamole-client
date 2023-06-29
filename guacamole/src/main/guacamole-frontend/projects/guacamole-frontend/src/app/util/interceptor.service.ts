@@ -23,7 +23,6 @@ import { HttpContextToken, HttpRequest } from '@angular/common/http';
 /**
  * HTTP context token that can be used to skip all interceptors when issuing a
  * request.
- * TODO: Maybe remove this and just use SKIP_AUTHENTICATION_INTERCEPTOR and SKIP_ERROR_HANDLING_INTERCEPTOR
  */
 export const SKIP_ALL_INTERCEPTORS: HttpContextToken<boolean> = new HttpContextToken<boolean>(() => false);
 
@@ -76,7 +75,7 @@ export class InterceptorService {
      *     true if the request should skip all interceptors, false otherwise.
      */
     skipErrorHandlingInterceptor(request: HttpRequest<any>): boolean {
-        return request.context.get(SKIP_ERROR_HANDLING_INTERCEPTOR);
+        return request.context.get(SKIP_ERROR_HANDLING_INTERCEPTOR) || this.skipAllInterceptors(request);
     }
 
     /**
@@ -89,7 +88,7 @@ export class InterceptorService {
      *     true if the request should skip all interceptors, false otherwise.
      */
     skipAuthenticationInterceptor(request: HttpRequest<any>): boolean {
-        return request.context.get(SKIP_AUTHENTICATION_INTERCEPTOR);
+        return request.context.get(SKIP_AUTHENTICATION_INTERCEPTOR) || this.skipAllInterceptors(request);
     }
 
 

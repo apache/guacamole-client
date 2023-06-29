@@ -27,7 +27,7 @@ import isObjectLike from 'lodash/isObjectLike';
  * Handles compilation of filtering predicates as used by
  * the {@link FilterService}. Predicates are compiled from a user-
  * specified search string.
- * TODO: Look at doc
+ * TODO: Rewrite documentation
  */
 export class FilterPattern {
 

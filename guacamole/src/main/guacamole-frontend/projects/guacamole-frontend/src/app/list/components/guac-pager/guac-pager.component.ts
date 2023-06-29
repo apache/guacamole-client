@@ -66,9 +66,8 @@ export interface PagerEvent {
 export class GuacPagerComponent implements OnChanges {
 
     /**
-     * The property to which a subset of the provided array will be
-     * assigned.
-     * TODO
+     * Behavior subject which emits information about the current page
+     * whenever the user selects a new page.
      */
     page: BehaviorSubject<PagerEvent> = new BehaviorSubject<PagerEvent>({
         pageIndex: 0,

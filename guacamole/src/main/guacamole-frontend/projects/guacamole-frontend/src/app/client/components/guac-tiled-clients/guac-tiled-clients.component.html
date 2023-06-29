@@ -37,8 +37,7 @@
                          [title]="'CLIENT.ACTION_DISCONNECT' | transloco"
                          src="images/x.svg">
                 </h3>
-<!--                TODO: added class="client-tile" as a workaround so that the client actually has a height > 0 and so -->
-<!--                the client.connect() is called-->
+
                 <guac-client [client]="client" [emulateAbsoluteMouse]="emulateAbsoluteMouse" class="client-tile"></guac-client>
 
                 <!-- Client-specific status/error dialog -->

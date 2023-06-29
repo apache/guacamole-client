@@ -236,7 +236,6 @@ export class PlayerComponent implements OnChanges, OnDestroy {
             this.resumeAfterSeekRequest && this.recording.play();
             this.recording.seek(this.playbackPosition, () => {
                 this.operationMessage = null;
-                // TODO $scope.$evalAsync();
                 this.cdr.detectChanges();
 
             });

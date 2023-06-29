@@ -53,15 +53,6 @@ export class GuacClientZoomComponent {
     }
 
     /**
-     * TODO: Got removed in commit b0febd340226c8d21de7ba4df2807149c8489c10
-     * Either remove this method and its call in the template or reimplement it.
-     */
-    zoomSet(): void {
-        // this.menu.autoFit = false;
-        // this.client.clientProperties.autoFit = false;
-    }
-
-    /**
      * Resets the client autofit setting to false.
      */
     clearAutoFit(): void {
@@ -80,20 +71,4 @@ export class GuacClientZoomComponent {
 
     }
 
-    /**
-     * TODO: Got removed in commit b0febd340226c8d21de7ba4df2807149c8489c10
-     * Either remove this method and its call in the template or reimplement it.
-     */
-    changeAutoFit() {
-
-    }
-
-    /**
-     * TODO: Got removed in commit b0febd340226c8d21de7ba4df2807149c8489c10
-     * Either remove this method and its call in the template or reimplement it.
-     */
-    autoFitDisabled() {
-        // return this.client.clientProperties.minZoom >= 1;
-        return false;
-    }
 }

@@ -47,11 +47,7 @@ export class LanguageService {
     getLanguages(): Observable<Record<string, string>> {
 
         // Retrieve available languages
-        // return authenticationService.request({
         // TODO     cache   : cacheService.languages,
-        //     method  : 'GET',
-        //     url     : 'api/languages'
-        // });
         return this.http.get<Record<string, string>>('api/languages');
 
     }

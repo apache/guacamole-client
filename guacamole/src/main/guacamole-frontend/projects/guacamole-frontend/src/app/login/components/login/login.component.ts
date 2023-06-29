@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit, OnChanges {
      * The login form or set of fields. This will be displayed to the user
      * to capture their credentials.
      */
-    @Input({required: true}) form!: Field[];
+    @Input({required: true}) form: Field[] | null = null
 
     /**
      * A form group of all field name/value pairs that have already been provided.

@@ -140,12 +140,12 @@ export class GuacTouchDragDirective {
 
             // Signal start/change in drag gesture
             if (this.inProgress) {
-                // TODO: $scope.$apply(function dragChanged() {
+
                 if (this.guacTouchDrag(true, this.startX, this.startY, (this.currentX as number),
                     (this.currentY as number), this.deltaX, this.deltaY) === false) {
                     e.preventDefault();
                 }
-                // });
+
             }
 
         }
@@ -156,12 +156,12 @@ export class GuacTouchDragDirective {
 
             // Signal end of drag gesture
             if (this.inProgress && this.guacTouchDrag) {
-                // TODO: $scope.$apply(function dragComplete() {
+
                 if (this.guacTouchDrag(true, this.startX, this.startY, (this.currentX as number),
                     (this.currentY as number), this.deltaX, this.deltaY) === false) {
                     e.preventDefault();
                 }
-                // });
+
             }
 
             this.startX = this.currentX = undefined;

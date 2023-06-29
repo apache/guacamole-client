@@ -246,7 +246,9 @@ export class FormService {
      *     while retrieving the field type, this Promise will be rejected.
      */
     insertFieldElement(fieldContainer: Element, fieldType: string, scope: FormFieldComponent): Promise<ComponentRef<any>> {
-        // TODO: Implement
+
+        // TODO: Add some comments
+
         return new Promise((resolve, reject) => {
 
             // Ensure field type is defined
@@ -266,15 +268,11 @@ export class FormService {
             this.cdr?.detectChanges();
             resolve(componentRef);
 
-            // if (!newInstance && this.injectedComponentInstance) {
-            //     this.injectedComponentInstance.destroy();
-            // }
-
         });
     }
 
     /**
-     *
+     * TODO: Document/rename
      * @param componentType
      * @param fieldContainer
      * @param scope
@@ -343,10 +341,13 @@ export class FormService {
     }
 
     /**
-     * TODO
+     * Produce set of forms from any given content.
+     *
      * @param content
+     *     The content to be converted to an array of forms.
      */
     asFormArray(content?: Form[] | Form | Field[] | Field | null): Form[] {
+
         // If no content provided, there are no forms
         if (!content) {
             return [];

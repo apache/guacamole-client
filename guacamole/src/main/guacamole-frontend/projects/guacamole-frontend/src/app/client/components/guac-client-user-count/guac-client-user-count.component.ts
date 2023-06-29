@@ -92,8 +92,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
     private oldClient: ManagedClient | null = null;
 
     /**
-     * TODO: Document
-     * @private
+     * TODO: remove
      */
     private clientDiffer?: KeyValueDiffer<string, any>;
 
@@ -215,6 +214,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
     ngDoCheck(): void {
         if (!this.clientDiffer) return;
 
+        // TODO: Temporary workaround for $scope.$watchGroup()
         const changes = this.clientDiffer.diff(this.client);
 
         // TODO:  $scope.$watchGroup([ 'client', 'client.userCount' ], function usersChanged() {

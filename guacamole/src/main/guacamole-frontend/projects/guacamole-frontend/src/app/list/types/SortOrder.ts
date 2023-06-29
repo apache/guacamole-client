@@ -21,7 +21,7 @@
  * Maintains a sorting predicate as required by the {@link SortService}.
  * The order of properties sorted by the predicate can be altered while
  * otherwise maintaining the sort order.
- * TODO: Look at doc
+ * TODO: Rewrite documentation
  */
 export class SortOrder {
 

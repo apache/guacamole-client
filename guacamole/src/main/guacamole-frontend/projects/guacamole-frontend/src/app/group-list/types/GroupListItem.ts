@@ -122,8 +122,6 @@ export class GroupListItem {
      * exposed within this GroupListItem. If the type of this GroupListItem
      * is not one of the types defined by GroupListItem.Type, then this
      * value may be anything.
-     *
-     * TODO: any? @type Connection|ConnectionGroup|SharingProfile|*
      */
     wrappedItem: Connection | ConnectionGroup | SharingProfile | any;
 
@@ -234,7 +232,7 @@ export class GroupListItem {
         if (connection.sharingProfiles && includeSharingProfiles !== false) {
             connection.sharingProfiles.forEach(function addSharingProfile(child) {
                 children.push(GroupListItem.fromSharingProfile(dataSource,
-                    child)); // TODO additional third parameter?: countActiveConnections
+                    child)); // TODO additional third parameter 'countActiveConnections'?
             });
         }
 

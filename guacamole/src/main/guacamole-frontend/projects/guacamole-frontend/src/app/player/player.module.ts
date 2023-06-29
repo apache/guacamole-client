@@ -24,6 +24,7 @@ import { PlayerComponent } from './player.component';
 import { PlayerDisplayComponent } from './player-display/player-display.component';
 import { ProgressIndicatorComponent } from './progress-indicator/progress-indicator.component';
 import { FormsModule } from '@angular/forms';
+import { TranslocoModule } from "@ngneat/transloco";
 
 @NgModule({
   declarations: [
@@ -31,11 +32,12 @@ import { FormsModule } from '@angular/forms';
     PlayerDisplayComponent,
     ProgressIndicatorComponent
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ElementModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ElementModule,
+        TranslocoModule
+    ],
   exports: [
     PlayerComponent,
     PlayerDisplayComponent,
