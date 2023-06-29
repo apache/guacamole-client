@@ -21,7 +21,7 @@
     <!-- Locale settings -->
     <div class="settings section locale">
         <p>{{'SETTINGS_PREFERENCES.HELP_LOCALE' | transloco}}</p>
-        <guac-form [content]="localeFields" [myFormGroup]="preferencesFormGroup"
+        <guac-form [content]="localeFields" [modelFormGroup]="preferencesFormGroup"
                    namespace="SETTINGS_PREFERENCES"></guac-form>
     </div>
 
@@ -125,7 +125,7 @@
     <!-- User attributes section -->
     <div class="attributes" [hidden]="!canUpdateSelf && attributes?.length">
         <guac-form *ngIf="attributes !== null" namespace="USER_ATTRIBUTES" [content]="attributes"
-                   [myFormGroup]="userAttributesFormGroup"></guac-form>
+                   [modelFormGroup]="userAttributesFormGroup"></guac-form>
 
         <!-- User attributes save button -->
         <button [hidden]="!attributes?.length" (click)="saveUser()"

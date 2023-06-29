@@ -67,7 +67,7 @@
         <!-- Connection attributes section -->
         <div class="attributes">
             <guac-form namespace="CONNECTION_ATTRIBUTES" [content]="attributes!"
-                       [myFormGroup]="connectionAttributesFormGroup"
+                       [modelFormGroup]="connectionAttributesFormGroup"
                        [modelOnly]="!managementPermissions.canChangeAllAttributes"></guac-form>
         </div>
 
@@ -76,7 +76,7 @@
         <div class="section connection-parameters" [ngClass]="{'loading': !parameters}">
             <guac-form [namespace]="getNamespace(connection.protocol)"
                        [content]="protocols[connection.protocol].connectionForms"
-                       [myFormGroup]="parametersFormGroup"></guac-form>
+                       [modelFormGroup]="parametersFormGroup"></guac-form>
         </div>
 
         <!-- Form action buttons -->

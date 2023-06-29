@@ -42,8 +42,8 @@
                     <guac-form
                         namespace="LOGIN"
                         [content]="remainingFields"
-                        [myFormGroup]="enteredValues"
-                        [myFocused]="relevantField?.name"
+                        [modelFormGroup]="enteredValues"
+                        [focusedField]="relevantField?.name"
                         [attr.data-disabled]="submitted"></guac-form>
                 </div>
 

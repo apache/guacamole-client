@@ -50,13 +50,11 @@ export class FormComponent implements OnChanges {
     @Input() content?: Form[] | Form | Field[] | Field;
 
     /**
-     * The object which will receive all field values. Each field value
-     * will be assigned to the property of this object having the same
+     * A form group which will receive all field values. Each field value
+     * will be assigned to a form control of this group having the same
      * name.
-     * TODO: Rename
      */
-    @Input() myFormGroup?: FormGroup;
-    // TODO: Replaced by formGroup? @Input() model?: Record<string, string>;
+    @Input() modelFormGroup?: FormGroup;
 
     /**
      * Whether the contents of the form should be restricted to those
@@ -74,7 +72,7 @@ export class FormComponent implements OnChanges {
     /**
      * The name of the field to be focused, if any.
      */
-    @Input() myFocused: string | undefined;
+    @Input() focusedField: string | undefined;
 
     /**
      * The array of all forms to display.
@@ -152,7 +150,7 @@ export class FormComponent implements OnChanges {
      *     true if the given field should be focused, false otherwise.
      */
     isFocused(field: Field): boolean {
-        return field && (field.name === this.myFocused);
+        return field && (field.name === this.focusedField);
     }
 
     /**
@@ -174,7 +172,7 @@ export class FormComponent implements OnChanges {
 
         // Otherwise, fields are only visible if they are present
         // within the form group
-        return field && !!this.myFormGroup && !!this.myFormGroup.get(field.name);
+        return field && !!this.modelFormGroup && !!this.modelFormGroup.get(field.name);
 
     }
 
@@ -215,6 +213,6 @@ export class FormComponent implements OnChanges {
      *     group has been provided, a dummy control will be returned.
      */
     getControl(field: Field): FormControl {
-        return this.myFormGroup ? this.myFormGroup.get(field.name) as FormControl : new FormControl('not found');
+        return this.modelFormGroup ? this.modelFormGroup.get(field.name) as FormControl : new FormControl('not found');
     }
 }

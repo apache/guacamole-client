@@ -149,7 +149,7 @@
                      *ngIf="focusedClient && focusedClient.protocol">
                     <guac-form [namespace]="getProtocolNamespace(focusedClient.protocol)"
                                [content]="focusedClient.forms"
-                               [myFormGroup]="connectionParameters"
+                               [modelFormGroup]="connectionParameters"
                                [modelOnly]="true"></guac-form>
                 </div>
 
