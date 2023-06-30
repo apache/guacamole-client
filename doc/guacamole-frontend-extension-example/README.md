@@ -1,7 +1,7 @@
 # Frontend Extension Example
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) 
-version 16.1.1 using the following commands
+version 16.1.1 using the following steps:
 
 ```bash
 # Create a new minimal Angular project
