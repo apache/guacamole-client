@@ -1,7 +1,7 @@
 {
-    
+
     "NAME" : "Italiano",
-    
+
     "APP" : {
 
         "ACTION_ACKNOWLEDGE"        : "OK",
@@ -26,7 +26,7 @@
 
         "ERROR_PASSWORD_BLANK"    : "La password non può essere vuota.",
         "ERROR_PASSWORD_MISMATCH" : "Le password inserite sono diverse!",
-        
+
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Re-inserisci la password:",
 
@@ -40,14 +40,14 @@
 
     "CLIENT" : {
 
-        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Pulisci i trasferimenti completati",
         "ACTION_DISCONNECT"                : "Disconnetti",
-        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
-        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK:@",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME:@",
         "ACTION_RECONNECT"                 : "Riconnetti",
-        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE:@",
         "ACTION_UPLOAD_FILES"              : "Carica un file",
 
         "DIALOG_HEADER_CONNECTING"       : "Connessione in corso",
@@ -87,7 +87,7 @@
         "ERROR_UPLOAD_31D"     : "Ci sono troppi file in coda per il trasferimento. Attendi che siano completati i trasferimenti in atto e riprova.",
         "ERROR_UPLOAD_DEFAULT" : "Si è verificato un errore sul server e la connessione è stata chiusa. Riprova o contatta il tuo amministratore di sistema.",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CLIPBOARD"           : "Il testo copiato/tagliato appare qui. I cambiamenti effettuati al testo qui sotto saranno riportati negli appunti remoti.",
         "HELP_INPUT_METHOD_NONE"   : "Non c'è nessun metodo di immissione. L'input da tastiera è accettato da una tastiera fisica connessa.",
@@ -137,12 +137,12 @@
 
     "HOME" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Nessuna connessione recente.",
-        
+
         "PASSWORD_CHANGED" : "Password modificata.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"    : "Tutte le Connessioni",
@@ -152,11 +152,11 @@
 
     "LOGIN": {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
-        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE:@",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN:@",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "ERROR_INVALID_LOGIN" : "Nome utente e/o password errati.",
 
@@ -167,20 +167,20 @@
 
     "MANAGE_CONNECTION" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Elimina connessione",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Location:",
         "FIELD_HEADER_NAME"     : "Name:",
         "FIELD_HEADER_PROTOCOL" : "Protocol:",
 
-        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
         "INFO_CONNECTION_ACTIVE_NOW"       : "Attiva adesso",
@@ -200,13 +200,13 @@
 
     "MANAGE_CONNECTION_GROUP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Elimina Gruppo di Connesisoni",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Location:",
         "FIELD_HEADER_NAME"     : "Nome:",
@@ -223,13 +223,13 @@
 
     "MANAGE_SHARING_PROFILE" : {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE:@",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_NAME" : "Name:",
 
@@ -239,27 +239,27 @@
 
     "MANAGE_USER" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Elimina utente",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Amministartore di sistema:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Cambia la tua password:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Crea un utente:",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Crea una connessione:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Crea un ruppo di connessioni:",
-        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
-        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD:@",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN:@",
         "FIELD_HEADER_USERNAME"                      : "Username:",
-        
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "SECTION_HEADER_CONNECTIONS" : "Connessioni",
         "SECTION_HEADER_EDIT_USER"   : "Modifica Utente",
@@ -268,7 +268,7 @@
         "TEXT_CONFIRM_DELETE" : "L'utente non può essere ripristinato dopo l'eliminazione. Sei sicuro di volere eliminare l'utente?"
 
     },
-    
+
     "PROTOCOL_RDP" : {
 
         "FIELD_HEADER_COLOR_DEPTH"     : "Color depth:",
@@ -305,10 +305,10 @@
         "FIELD_HEADER_SFTP_PASSWORD"   : "Password:",
         "FIELD_HEADER_SFTP_PORT"       : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Private key:",
-        "FIELD_HEADER_SFTP_USERNAME"   : "Username:",        
+        "FIELD_HEADER_SFTP_USERNAME"   : "Username:",
         "FIELD_HEADER_STATIC_CHANNELS" : "Static channel names:",
         "FIELD_HEADER_USERNAME"        : "Username:",
-        "FIELD_HEADER_WIDTH"           : "Width:",        
+        "FIELD_HEADER_WIDTH"           : "Width:",
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "True color (24-bit)",
@@ -471,17 +471,17 @@
 
     "SETTINGS_CONNECTIONS" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_CONNECTION"       : "Nuova Connessione",
         "ACTION_NEW_CONNECTION_GROUP" : "Nuovo Gruppo",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CONNECTIONS"   : "Fai click o tap sulla connessione qui sotto per gestire quella connessione. In base al tuo livello di accesso, le connessioni possono essere craete, eliminate, e le relative proprietà (protocol, hostname, port, etc.) possono essere cambiate.",
-        
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "SECTION_HEADER_CONNECTIONS"     : "Connessioni"
 
@@ -489,9 +489,9 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
 
@@ -504,14 +504,14 @@
 
     "SETTINGS_PREFERENCES" : {
 
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL:@",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD:@",
 
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK:@",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_LANGUAGE"           : "Lingua dell'interfaccia:",
         "FIELD_HEADER_PASSWORD"           : "Password:",
@@ -519,22 +519,22 @@
         "FIELD_HEADER_PASSWORD_NEW"       : "Nuova Password:",
         "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Conferma Nuova Password:",
         "FIELD_HEADER_USERNAME"           : "Username:",
-        
+
         "HELP_DEFAULT_INPUT_METHOD" : "The default input method determines how keyboard events are received by Guacamole. Changing this setting may be necessary when using a mobile device, or when typing through an IME. This setting can be overridden on a per-connection basis within the Guacamole menu.",
         "HELP_DEFAULT_MOUSE_MODE"   : "The default mouse emulation mode determines how the remote mouse will behave in new connections with respect to touches. This setting can be overridden on a per-connection basis within the Guacamole menu.",
-        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
-        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
-        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE:@",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK:@",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT:@",
         "HELP_LANGUAGE"             : "Select a different language below to change the language of all text within Guacamole. Available choices will depend on which languages are installed.",
-        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
-        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE:@",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE:@",
         "HELP_UPDATE_PASSWORD"      : "Se desideri cambiare la tua password, inserisci la tua password attuale e sotto scriti quella che desideri come nuova password, clicca \"Modifica Password\". La modifica avrà effetto immediato.",
 
         "INFO_PASSWORD_CHANGED" : "Password Modificata.",
 
-        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
-        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
-        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE:@",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK:@",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT:@",
 
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Default Input Method",
         "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Default Mouse Emulation Mode",
@@ -544,14 +544,14 @@
 
     "SETTINGS_USERS" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_USER"      : "Nuovo utente",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_USERS" : "Click or tap on a user below to manage that user. Depending on your access level, users can be added and deleted, and their passwords can be changed.",
 
@@ -560,44 +560,44 @@
         "TABLE_HEADER_USERNAME" : "Username"
 
     },
-    
+
     "SETTINGS_SESSIONS" : {
-        
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL:@",
         "ACTION_DELETE"      : "Termian Sessione",
-        
+
         "DIALOG_HEADER_CONFIRM_DELETE" : "Termina Sessione",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
-        
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-        
-        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
+
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_SESSIONS" : "Questa pagina verrà popolata con connessioni attualmente attive. Le connessioni elencate e la possibilità di uccidere tali connessioni dipende dal tuo livello di accesso. Se desideri uccidere una o più sessioni, seleziona la casella accanto a quelle sessioni e fai clic su \"Uccidi sessioni \". L'uccisione di una sessione interromperà immediatamente l'utente dalla connessione associata.",
-        
+
         "INFO_NO_SESSIONS" : "Nessuna sessione attiva",
 
         "SECTION_HEADER_SESSIONS" : "Sessioni Attive",
-        
+
         "TABLE_HEADER_SESSION_USERNAME"        : "Username",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Attivo da",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nome della connessione",
-        
+
         "TEXT_CONFIRM_DELETE" : "Sei sicuro di voler termianre la sessione selezionata? L'utente che sta utilizzando questa sessione sarà immediatamente disconnesso."
 
     },
 
     "USER_MENU" : {
 
-        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
-        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
-        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
-        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
-        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
-        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME"
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS:@",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES:@",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS:@",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS:@",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS:@",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME:@"
 
     }
 

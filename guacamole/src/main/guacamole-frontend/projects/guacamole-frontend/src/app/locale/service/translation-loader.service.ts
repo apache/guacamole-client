@@ -65,21 +65,6 @@ export class TranslationLoaderService implements TranslocoLoader {
     }
 
     /**
-     * TODO: Remove this if the link syntax from angular-translate ("@:") is replaced with the syntax from transloco ("{{...}}").
-     */
-    private replaceValues(obj: any): void {
-        if (typeof obj === 'object') {
-            for (const key in obj) {
-                if (typeof obj[key] === 'string' && obj[key].startsWith('@:')) {
-                    obj[key] = `{{${obj[key].substring(2)}}}`;
-                } else if (typeof obj[key] === 'object') {
-                    this.replaceValues(obj[key]);
-                }
-            }
-        }
-    }
-
-    /**
      * Satisfies a translation request for the given key by searching for the
      * translation files for each key in the given array, in order. The request
      * fails only if none of the files can be found.
@@ -143,7 +128,6 @@ export class TranslationLoaderService implements TranslocoLoader {
                         {context: httpContext}
                     ).subscribe({
                         next: (translationData) => {
-                            this.replaceValues(translationData);
                             resolve(translationData);
                         },
                         // Retry with remaining languages if translation file could not be

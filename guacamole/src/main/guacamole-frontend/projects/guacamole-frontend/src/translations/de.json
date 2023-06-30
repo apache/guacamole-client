@@ -1,7 +1,7 @@
 {
-    
+
     "NAME" : "Deutsch",
-    
+
     "APP" : {
 
         "ACTION_ACKNOWLEDGE"        : "OK",
@@ -32,7 +32,7 @@
         "ERROR_PAGE_UNAVAILABLE"  : "Ein Fehler ist aufgetreten und die gewünschte Aktion kann nicht fortgesetzt werden. Bitte informieren Sie ihren Systemadministrator oder prüfen Sie die Logdateien, falls das Problem bestehen bleiben sollte.",
         "ERROR_PASSWORD_BLANK"    : "Das Passwort darf nicht leer sein.",
         "ERROR_PASSWORD_MISMATCH" : "Die Passwörter stimmen nicht überein.",
-        
+
         "FIELD_HEADER_PASSWORD"       : "Passwort:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Wiederhole Passwort:",
 
@@ -49,15 +49,15 @@
 
     "CLIENT" : {
 
-        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Entferne abgeschlossene Übertragungen",
         "ACTION_DISCONNECT"                : "Trennen",
-        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
-        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK:@",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME:@",
         "ACTION_RECONNECT"                 : "Neu verbinden",
-        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
-        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE:@",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE:@",
         "ACTION_UPLOAD_FILES"              : "Dateien hochladen",
 
         "DIALOG_HEADER_CONNECTING"       : "Verbinden",
@@ -103,7 +103,7 @@
         "ERROR_UPLOAD_31D"     : "Die maximale Anzahl gleichzeitiger Dateiübertragungen erreicht. Bitte warten Sie bis eine oder mehrere laufende Dateiübertragungen abgeschlossen sind und versuche Sie es dann erneut.",
         "ERROR_UPLOAD_DEFAULT" : "Die Verbindung wurde aufgrund eines internen Fehlers im Guacamole Server beendet. Sollte dieses Problem weiterhin bestehen informieren Sie Ihren Systemadministrator oder überprüfen Sie die Protokolle.",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CLIPBOARD"           : "Kopierter oder ausgeschnittener Text aus Guacamole wird hier angezeigt. Änderungen am Text werden direkt auf die entfernte Zwischenablage angewandt.",
         "HELP_INPUT_METHOD_NONE"   : "Keine Eingabemethode in Verwendung. Tastatureingaben werden von der Hardwaretastatur akzeptiert.",
@@ -163,12 +163,12 @@
 
     "HOME" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Keine aktiven Verbindungen.",
-        
+
         "PASSWORD_CHANGED" : "Passwort geändert.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"    : "Alle Verbindungen",
@@ -184,11 +184,11 @@
 
     "LOGIN": {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
-        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE:@",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN:@",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "ERROR_INVALID_LOGIN" : "Anmeldungsfehler",
 
@@ -199,20 +199,20 @@
 
     "MANAGE_CONNECTION" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Verbindung löschen",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Standort:",
         "FIELD_HEADER_NAME"     : "Name:",
         "FIELD_HEADER_PROTOCOL" : "Protokoll:",
 
-        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
         "INFO_CONNECTION_ACTIVE_NOW"       : "Aktivieren",
@@ -228,20 +228,20 @@
         "TABLE_HEADER_HISTORY_REMOTEHOST" : "Entfernter Host",
 
         "TEXT_CONFIRM_DELETE"   : "Dieser Löschvorgang ist unumkehrbar. Soll diese Verbindung wirklich gelöscht werden?",
-        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION:@"
 
     },
 
     "MANAGE_CONNECTION_GROUP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Lösche Verbindungsgruppe",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Standort:",
         "FIELD_HEADER_NAME"     : "Name:",
@@ -258,14 +258,14 @@
 
     "MANAGE_SHARING_PROFILE" : {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Verteil-Profil löschen",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_NAME"               : "Name:",
         "FIELD_HEADER_PRIMARY_CONNECTION" : "Primäre Verbindung:",
@@ -279,16 +279,16 @@
 
     "MANAGE_USER" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Lösche Benutzer",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administration:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Eigenes Passwort ändern:",
@@ -297,11 +297,11 @@
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Neue Verbindung erstellen:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Neue Verbindungsgruppe erstellen:",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Neues Verteil-Profil erstellen:",
-        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
-        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD:@",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN:@",
         "FIELD_HEADER_USERNAME"                      : "Benutzername:",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_NO_USER_GROUPS" : "Dieser Benutzer gehört aktuell keiner Benutzergruppe an. Erweitern Sie diesen Abschnitt, um eine neue Benutzergruppe zu erstellen.",
 
@@ -321,47 +321,47 @@
 
     "MANAGE_USER_GROUP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Benutzergrupperuppe löschen",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
-        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
-        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
-        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
-        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
-        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
-        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM:@",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD:@",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS:@",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS:@",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS:@",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS:@",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES:@",
         "FIELD_HEADER_USER_GROUP_NAME"               : "Name der Benutzergruppe:",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_NO_USER_GROUPS"        : "Diese Benutzergruppe gehört keiner Benutzergruppe an. Erweitern Sie diesen Abschnitt um eine neue Benutzergruppe hinzuzufügen.",
         "HELP_NO_MEMBER_USER_GROUPS" : "Dieser Benutzergruppe gehört keine Benutzergruppe an. Erweitern Sie diesen Abschnitt um eine neue Benutzergruppe hinzuzufügen.",
         "HELP_NO_MEMBER_USERS"       : "Dieser Benutzergruppe gehört kein Benutzer an. Erweitern Sie diesen Abschnitt um einen neuen Benutzer hinzuzufügen.",
 
         "INFO_READ_ONLY"                : "Diese Benutzergruppe kann nicht bearbeitet werden.",
-        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE:@",
         "INFO_NO_USERS_AVAILABLE"       : "Keine Benutzer verfügbar.",
 
-        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
-        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
-        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS:@",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS:@",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS:@",
         "SECTION_HEADER_EDIT_USER_GROUP"     : "Gruppe bearbeiten",
         "SECTION_HEADER_MEMBER_USERS"        : "Mitglieder einer Benutzergruppe",
         "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Benutzergruppen",
-        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS:@",
         "SECTION_HEADER_USER_GROUPS"         : "Übergeordnete Benutzergruppen",
 
         "TEXT_CONFIRM_DELETE" : "Dieser Löschvorgang ist unumkehrbar. Möchten Sie diese Benutzergruppe wirklich löschen?"
 
     },
-    
+
     "PROTOCOL_RDP" : {
 
         "FIELD_HEADER_CLIENT_NAME"     : "Client-Name:",
@@ -700,14 +700,14 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
-        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD:@",
+        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "FILENAME_HISTORY_CSV" : "history.csv",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_CONNECTION_HISTORY" : "Die letzten Verbindungen werden hier historisch aufgelistet und können durch Klicken auf die Spaltenüberschriften sortiert werden. Zum Aufsuchen von bestimmten Datensätzen, geben Sie eine Filterzeichenfolge ein und klicken Sie auf \"Suchen\". Nur Datensätze, die die vorgesehenen Filterzeichenfolge entsprechen, werden aufgelistet.",
 
@@ -720,24 +720,24 @@
         "TABLE_HEADER_SESSION_STARTDATE"       : "Sitzung aktiv seit",
         "TABLE_HEADER_SESSION_USERNAME"        : "Benutzername",
 
-        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION:@"
 
     },
 
     "SETTINGS_CONNECTIONS" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_CONNECTION"       : "Neue Verbindung",
         "ACTION_NEW_CONNECTION_GROUP" : "Neue Verbindungsgruppe",
         "ACTION_NEW_SHARING_PROFILE"  : "Neues Verteil-Profil",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CONNECTIONS"   : "Klicken Sie auf eine Verbindung um diese zu verwalten. Abhängig von Ihrer Zugriffsebene können Verbindungen hinzugefügt, gelöscht oder Parameter (Protokoll, Hostname, Port, etc.) geändert werden.",
-        
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "SECTION_HEADER_CONNECTIONS"     : "Verbindungen"
 
@@ -745,14 +745,14 @@
 
     "SETTINGS_PREFERENCES" : {
 
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL:@",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD:@",
 
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK:@",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_LANGUAGE"           : "Anzeigesprache:",
         "FIELD_HEADER_PASSWORD"           : "Passwort:",
@@ -760,22 +760,22 @@
         "FIELD_HEADER_PASSWORD_NEW"       : "Neues Passwort:",
         "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Passwort wiederholen:",
         "FIELD_HEADER_USERNAME"           : "Benutzername:",
-        
+
         "HELP_DEFAULT_INPUT_METHOD" : "Die Standardeingabemethode bestimmt wie Tastaturereignisse an Guacamole weitergeleitet werden. Eine Änderung dieser Einstellung kann erforderlich sein, wenn ein mobiles Gerät verwendet wird oder bei der Eingabe durch einen IME. Dieses Verhalten kann im Menü innerhalb der Guacamole Verbindung geändert werden.",
         "HELP_DEFAULT_MOUSE_MODE"   : "Der Standard Mausemulationsmodus bestimmt wie sich die entfernte Maus bei Touchpad Berührungen verhält. Dieses Verhalten kann im Menü innerhalb der Guacamole Verbindung geändert werden.",
-        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
-        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
-        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE:@",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK:@",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT:@",
         "HELP_LANGUAGE"             : "Um die Spracheinstellungen von Guacamole zu ändern,  wählen Sie eine der verfügbaren Sprachen.",
-        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
-        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE:@",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE:@",
         "HELP_UPDATE_PASSWORD"      : "Wenn Sie das Passwort ändern wollen, geben Sie das aktuelle und das gewünschte Passwort ein und klicken Sie auf \"Ändere Passwort\". Die Änderung wird sofort wirksam.",
 
         "INFO_PASSWORD_CHANGED" : "Passwort geändert.",
 
-        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
-        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
-        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE:@",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK:@",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT:@",
 
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Standard Eingabemethode",
         "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Standard Mausemulationsmodus",
@@ -785,14 +785,14 @@
 
     "SETTINGS_USERS" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_USER"      : "Neuer Benutzer",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_USERS" : "Klicken Sie auf einen der unten stehenden Benutzer, um diesen zu modifizieren. Je nach Berechtigungsstufe können Sie Benutzer hinzufügen, bearbeiten, löschen oder die Passwörter ändern.",
 
@@ -807,14 +807,14 @@
 
     "SETTINGS_USER_GROUPS" : {
 
-        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_USER_GROUP" : "Neue Gruppe",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_USER_GROUPS" : "Klicken Sie auf eine der unten stehenden Gruppen, um diese zu modifizieren. Je nach Berechtigungsstufe können Sie Gruppen und deren Mitglieder hinzufügen, bearbeiten oder löschen.",
 
@@ -825,29 +825,29 @@
     },
 
     "SETTINGS_SESSIONS" : {
-        
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL:@",
         "ACTION_DELETE"      : "Beende Sitzung",
-        
+
         "DIALOG_HEADER_CONFIRM_DELETE" : "Beende Sitzung",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
-        
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-        
-        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
+
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_SESSIONS" : "Diese Seite wird mit derzeit aktiven Verbindungen gefüllt. Die aufgelisteten Verbindungen und die Möglichkeit, diese Verbindungen zu beenden, hängen von Ihrer Zugriffsebene ab. Wenn Sie eine oder mehrere Sitzungen beenden wollen, wählen Sie diese Sitzung durch Aktivierung der nebenstehende Box und klicken auf \"Beende Sitzung\". Beendung einer Sitzung trennt den Benutzer von dessen Verbindung unverzüglich.",
-        
+
         "INFO_NO_SESSIONS" : "Keine aktiven Sitzungen",
 
         "SECTION_HEADER_SESSIONS" : "Aktive Sitzungen",
-        
+
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindungsname",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Entfernter Host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Sitzung aktiv seit",
         "TABLE_HEADER_SESSION_USERNAME"        : "Benutzername",
-        
+
         "TEXT_CONFIRM_DELETE" : "Sind Sie sicher, dass alle ausgewählten Sitzungen beendet werden sollen? Die Benutzer dieser Sitzungen werden unverzüglich getrennt."
 
     },
@@ -863,15 +863,15 @@
 
     "USER_MENU" : {
 
-        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
-        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
-        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
-        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
-        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
-        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
-        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS:@",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES:@",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS:@",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS:@",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS:@",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS:@",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME:@",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY:@"
 
     }
 

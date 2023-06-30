@@ -1,5 +1,5 @@
 {
-    
+
     "NAME" : "Čeština",
 
     "APP" : {
@@ -40,7 +40,7 @@
         "ERROR_PASSWORD_BLANK"    : "Heslo nesmí být prázdné.",
         "ERROR_PASSWORD_MISMATCH" : "Hesla nesouhlasí.",
         "ERROR_SINGLE_FILE_ONLY"  : "Nahrajte prosím vždy pouze jeden soubor",
-        
+
         "FIELD_HEADER_PASSWORD"       : "Heslo:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Heslo znovu:",
 
@@ -59,18 +59,18 @@
 
     "CLIENT" : {
 
-        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL:@",
         "ACTION_CLEAR_CLIENT_MESSAGES"     : "Vyčistit",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Vyčistit",
-        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
+        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE:@",
         "ACTION_DISCONNECT"                : "Odpojit",
-        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
-        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK:@",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME:@",
         "ACTION_RECONNECT"                 : "Znovu připojit",
-        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
-        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE:@",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE:@",
         "ACTION_UPLOAD_FILES"              : "Nahrát soubory",
 
         "DIALOG_HEADER_CONNECTING"       : "Připojování",
@@ -116,7 +116,7 @@
         "ERROR_UPLOAD_31D"     : "V současné době se přenáší příliš mnoho souborů. Počkejte prosím na dokončení probíhajících přenosů a akci opakujte.",
         "ERROR_UPLOAD_DEFAULT" : "V rámci serveru Guacamole došlo k interní chybě a připojení bylo ukončeno. Pokud problém přetrvává, informujte prosím správce systému nebo zkontrolujte systémové protokoly.",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CLIPBOARD"           : "Zde se zobrazí text zkopírovaný / oříznutý v Guacamole. Změny níže uvedeného textu ovlivní vzdálenou schránku.",
         "HELP_INPUT_METHOD_NONE"   : "Není použita žádná metoda vstupu. Vstup z klávesnice je přijímán z připojené fyzické klávesnice.",
@@ -148,7 +148,7 @@
         "SECTION_HEADER_DISPLAY"         : "Zobrazení",
         "SECTION_HEADER_FILE_TRANSFERS"  : "Přenos souborů",
         "SECTION_HEADER_INPUT_METHOD"    : "Metoda vstupu",
-        
+
         "SECTION_HEADER_MOUSE_MODE"      : "Mód emulace myši",
 
         "TEXT_ANONYMOUS_USER_JOINED"      : "K připojení se připojil anonymní uživatel.",
@@ -171,9 +171,9 @@
 
     "COLOR_SCHEME" : {
 
-        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL:@",
         "ACTION_HIDE_DETAILS" : "Skrýt",
-        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE:@",
         "ACTION_SHOW_DETAILS" : "Zobrazit",
 
         "FIELD_HEADER_BACKGROUND" : "Pozadí",
@@ -187,15 +187,15 @@
 
     "IMPORT": {
 
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_BROWSE"             : "Vyhledejte soubor",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_CLEAR"              : "@:APP.ACTION_CLEAR",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLEAR"              : "@:APP.ACTION_CLEAR:@",
         "ACTION_VIEW_FORMAT_HELP"   : "Zobrazit tipy formátů",
-        "ACTION_IMPORT"             : "@:APP.ACTION_IMPORT",
+        "ACTION_IMPORT"             : "@:APP.ACTION_IMPORT:@",
         "ACTION_IMPORT_CONNECTIONS" : "Importovat připojení",
 
-        "DIALOG_HEADER_ERROR"   : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"   : "@:APP.DIALOG_HEADER_ERROR:@",
         "DIALOG_HEADER_SUCCESS" : "Úspěch",
 
         "ERROR_AMBIGUOUS_CSV_HEADER"         : "Nejednoznačné záhlaví CSV \"{HEADER}\", může být buď atribut nebo parametr připojení",
@@ -223,7 +223,7 @@
         "ERROR_REQUIRED_NAME_FILE"           : "V zadaném souboru nebyl nalezen žádný název připojení",
         "ERROR_REQUIRED_PROTOCOL_FILE"       : "V zadaném souboru nebyl nalezen žádný protokol připojení",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Nahradit/aktualizovat stávající připojení",
         "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "Obnovit oprávnění",
@@ -245,7 +245,7 @@
         "HELP_YAML_EXAMPLE"                 : "---\n  - name: prip1\n    protocol: vnc\n    parameters:\n      username: alice\n      password: heslo1\n      hostname: prip1.web.com\n    group: ROOT\n    users:\n      - guac uživatel 1\n      - guac uživatel 2\n    groups:\n    - Uživatelé Připojení 1\n    attributes:\n      guacd-encryption: none\n  - name: prip2\n    protocol: rdp\n    parameters:\n      username: bob\n      password: heslo2\n      hostname: prip2.web.com\n    group: ROOT/Nadřazená skupina\n    users:\n      - guac uživatel 1\n    attributes:\n      guacd-encryption: none\n  - name: prip3\n    protocol: ssh\n    parameters:\n      username: karolina\n      password: heslo3\n      hostname: prip3.web.com\n    group: ROOT/Nadřazená skupina/Podřízená skupina\n    users:\n      - guac uživatel 2\n      - guac uživatel 3\n  - name: prip4\n    protocol: kubernetes",
 
         "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "{NUMBER} {NUMBER, plural, one{připojení} other{připojení}} úspěšně importováno.",
-        
+
         "SECTION_HEADER_CONNECTION_IMPORT"           : "Import připojení",
         "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "Formát souboru importu připojení",
         "SECTION_HEADER_CSV"                         : "Formát CSV",
@@ -275,12 +275,12 @@
 
     "HOME" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Žádná nedávná spojení.",
-        
+
         "PASSWORD_CHANGED" : "Heslo bylo změněno.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"    : "Všechna spojení",
@@ -296,11 +296,11 @@
 
     "LOGIN" : {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
-        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE:@",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN:@",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "ERROR_INVALID_LOGIN" : "Neplatné přihlašovací jméno",
 
@@ -311,20 +311,20 @@
 
     "MANAGE_CONNECTION" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Smazat spojení",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Oblast:",
         "FIELD_HEADER_NAME"     : "Jméno:",
         "FIELD_HEADER_PROTOCOL" : "Protokol:",
 
-        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
         "INFO_CONNECTION_ACTIVE_NOW"       : "Nyní aktivní",
@@ -340,20 +340,20 @@
         "TABLE_HEADER_HISTORY_REMOTEHOST" : "Vzdálený host",
 
         "TEXT_CONFIRM_DELETE"   : "Spojení nemůže být obnoveno poté, co je smazáno. Opravdu chcete smazat toto spojení?",
-        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION:@"
 
     },
 
     "MANAGE_CONNECTION_GROUP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Smazat skupinu spojení",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Lokace:",
         "FIELD_HEADER_NAME"     : "Jméno:",
@@ -370,14 +370,14 @@
 
     "MANAGE_SHARING_PROFILE" : {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Odstranit profil sdílení",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_NAME"               : "Jméno:",
         "FIELD_HEADER_PRIMARY_CONNECTION" : "Primární spojení:",
@@ -391,16 +391,16 @@
 
     "MANAGE_USER" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Smazat uživatele",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Spravovat systém:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Změnit vlastní heslo:",
@@ -409,11 +409,11 @@
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Vytvořit nové spojení:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Vytvořit nové skupiny připojení:",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Vytvořit nový sdílený profil:",
-        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
-        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD:@",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN:@",
         "FIELD_HEADER_USERNAME"                      : "Uživatelské jméno:",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_NO_USER_GROUPS" : "Tento uživatel momentálně nepatří do žádné skupiny. Rozbalte tuto sekci, abyste mohli přidát skupiny.",
 
@@ -433,41 +433,41 @@
 
     "MANAGE_USER_GROUP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Smazat skupinu",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
-        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
-        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
-        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
-        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
-        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
-        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM:@",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD:@",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS:@",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS:@",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS:@",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS:@",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES:@",
         "FIELD_HEADER_USER_GROUP_NAME"               : "Jméno skupiny:",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_NO_USER_GROUPS"        : "Tato skupina momentálně nepatří do žádné skupiny. Rozbalením této sekce ji přidáte do skupiny.",
         "HELP_NO_MEMBER_USER_GROUPS" : "Tato skupina v současné době neobsahuje žádné skupiny. Rozbalením této sekce ji přidáte do skupiny.",
         "HELP_NO_MEMBER_USERS"       : "Tato skupina v současné době neobsahuje žádné uživatele. Rozbalením této sekce přidáte uživatele.",
 
         "INFO_READ_ONLY"                : "Je nám líto, ale tuto skupinu nelze upravovat.",
-        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE:@",
         "INFO_NO_USERS_AVAILABLE"       : "Žádní uživatelé nejsou k dispozici.",
 
-        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
-        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
-        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS:@",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS:@",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS:@",
         "SECTION_HEADER_EDIT_USER_GROUP"     : "Upravit skupinu",
         "SECTION_HEADER_MEMBER_USERS"        : "Členský uživatel",
         "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Členské skupiny",
-        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS:@",
         "SECTION_HEADER_USER_GROUPS"         : "Rodičovské skupiny",
 
         "TEXT_CONFIRM_DELETE" : "Skupiny nelze po jejich odstranění obnovit. Chcete opravdu smazat tuto skupinu?"
@@ -476,9 +476,9 @@
 
     "PLAYER" : {
 
-        "ACTION_CANCEL" : "@:APP.ACTION_CANCEL",
-        "ACTION_PAUSE"  : "@:APP.ACTION_PAUSE",
-        "ACTION_PLAY"   : "@:APP.ACTION_PLAY",
+        "ACTION_CANCEL" : "@:APP.ACTION_CANCEL:@",
+        "ACTION_PAUSE"  : "@:APP.ACTION_PAUSE:@",
+        "ACTION_PLAY"   : "@:APP.ACTION_PLAY:@",
 
         "INFO_LOADING_RECORDING" : "Vaše nahrávka se nyní načítá. Čekejte prosím...",
         "INFO_SEEK_IN_PROGRESS"  : "Hledání požadované pozice. Čekejte prosím..."
@@ -954,15 +954,15 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
-        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
-        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING",
+        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD:@",
+        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH:@",
+        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "FILENAME_HISTORY_CSV" : "history.csv",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_CONNECTION_HISTORY" : "Zde jsou uvedeny záznamy o historii připojení a lze je třídit kliknutím na záhlaví sloupců. Chcete-li vyhledat konkrétní záznamy, zadejte řetězec filtrů a klikněte na tlačítko Hledat. Zobrazí se pouze záznamy, které odpovídají zadanému řetězci filtrů.",
 
@@ -976,25 +976,25 @@
         "TABLE_HEADER_SESSION_STARTDATE"       : "Doba spuštění",
         "TABLE_HEADER_SESSION_USERNAME"        : "Uživatelské jméno",
 
-        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION:@"
 
     },
 
     "SETTINGS_CONNECTIONS" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_IMPORT"               : "@:APP.ACTION_IMPORT",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_IMPORT"               : "@:APP.ACTION_IMPORT:@",
         "ACTION_NEW_CONNECTION"       : "Nové připojení",
         "ACTION_NEW_CONNECTION_GROUP" : "Nový skupina",
         "ACTION_NEW_SHARING_PROFILE"  : "Nový sdílený profil",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CONNECTIONS" : "Toto připojení můžete spravovat klepnutím nebo klepnutím na níže uvedené připojení. V závislosti na vaší úrovni přístupu lze přidávat a mazat připojení a měnit jejich vlastnosti (protokol, název hostitele, port atd.).",
-        
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "SECTION_HEADER_CONNECTIONS" : "Připojení"
 
@@ -1002,15 +1002,15 @@
 
     "SETTINGS_PREFERENCES" : {
 
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
-        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL:@",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE:@",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD:@",
 
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK:@",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_LANGUAGE"           : "Jazyk zobrazení:",
         "FIELD_HEADER_PASSWORD"           : "Heslo:",
@@ -1019,23 +1019,23 @@
         "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Potvrďte nové heslo:",
         "FIELD_HEADER_TIMEZONE"           : "Časové pásmo:",
         "FIELD_HEADER_USERNAME"           : "Uživatelské jméno:",
-        
+
         "HELP_DEFAULT_INPUT_METHOD" : "Výchozí metoda vstupu určuje, jak Guacamole přijímá události klávesnice. Změna tohoto nastavení může být nezbytná při používání mobilního zařízení nebo při psaní přes IME. Toto nastavení může být přepsáno na základě připojení v rámci nabídky Guacamole.",
         "HELP_DEFAULT_MOUSE_MODE"   : "Výchozí režim emulace myši určuje, jak se bude vzdálená myš chovat v nových spojeních s ohledem na dotyky. Toto nastavení může být přepsáno na základě připojení v rámci nabídky Guacamole.",
-        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
-        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
-        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE:@",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK:@",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT:@",
         "HELP_LOCALE"               : "Níže uvedené možnosti se vztahují k místu uživatele a ovlivní způsob zobrazení různých částí rozhraní.",
-        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
-        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE:@",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE:@",
         "HELP_UPDATE_PASSWORD"      : "Pokud chcete změnit heslo, zadejte své aktuální heslo a níže požadované nové heslo a klikněte na tlačítko „Aktualizovat heslo“. Změna se projeví okamžitě.",
 
         "INFO_PASSWORD_CHANGED" : "Heslo bylo změněno.",
         "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "Uživatelská nastavení uložena.",
 
-        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
-        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
-        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE:@",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK:@",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT:@",
 
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Výchozí metoda vstupu",
         "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Výchozí mód emulace myši",
@@ -1045,14 +1045,14 @@
 
     "SETTINGS_USERS" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_USER"    : "Nový uživatel",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_USERS" : "Chcete-li spravovat daného uživatele, klepněte na něj nebo klepněte na něj. V závislosti na úrovni přístupu mohou být uživatelé přidáváni a mazáni a jejich hesla mohou být změněna.",
 
@@ -1067,14 +1067,14 @@
 
     "SETTINGS_USER_GROUPS" : {
 
-        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_USER_GROUP" : "Nová skupina",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_USER_GROUPS" : "Chcete-li tuto skupinu spravovat, klepněte na ni nebo klepněte na ni. V závislosti na úrovni přístupu lze skupiny přidávat a mazat a jejich členské uživatele a skupiny lze měnit.",
 
@@ -1085,29 +1085,29 @@
     },
 
     "SETTINGS_SESSIONS" : {
-        
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL:@",
         "ACTION_DELETE"      : "Ukončit sezení",
-        
+
         "DIALOG_HEADER_CONFIRM_DELETE" : "Ukončit sezení",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
-        
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-        
-        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
+
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_SESSIONS" : "Tato stránka bude naplněna aktuálně aktivními připojeními. Uvedená připojení a schopnost zabít tato připojení závisí na úrovni přístupu. Pokud chcete zabít jednu nebo více relací, zaškrtněte políčko vedle těchto relací a klepněte na tlačítko \"Zabít relace\". Zabití relace okamžitě odpojí uživatele od přidruženého připojení.",
-        
+
         "INFO_NO_SESSIONS" : "Žádné aktivní sezení",
 
         "SECTION_HEADER_SESSIONS" : "Aktivní sezení",
-        
+
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Název připojení",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Vzdálený host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Aktivní od",
         "TABLE_HEADER_SESSION_USERNAME"        : "Uživatelské jméno",
-        
+
         "TEXT_CONFIRM_DELETE" : "Jste si jisti, že chcete ukončit vybrané připojení? Uživatelé využívající toto připojení budou okamžitě odpojeni."
 
     },
@@ -1123,15 +1123,15 @@
 
     "USER_MENU" : {
 
-        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
-        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
-        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
-        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
-        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
-        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
-        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS:@",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES:@",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS:@",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS:@",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS:@",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS:@",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME:@",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY:@"
 
     }
 

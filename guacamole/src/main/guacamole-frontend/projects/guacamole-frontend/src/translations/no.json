@@ -1,7 +1,7 @@
 {
-    
+
     "NAME" : "Norsk Bokmål",
-    
+
     "APP" : {
 
         "ACTION_ACKNOWLEDGE"        : "OK",
@@ -28,7 +28,7 @@
 
         "ERROR_PASSWORD_BLANK"    : "Passordet ditt kan ikke være blankt.",
         "ERROR_PASSWORD_MISMATCH" : "Passordene er ikke like.",
-        
+
         "FIELD_HEADER_PASSWORD"       : "Passord:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Gjenta Passord:",
 
@@ -46,14 +46,14 @@
 
     "CLIENT" : {
 
-        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Tøm",
         "ACTION_DISCONNECT"                : "Koble fra",
-        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
-        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK:@",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME:@",
         "ACTION_RECONNECT"                 : "Koble til på nytt",
-        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE:@",
         "ACTION_UPLOAD_FILES"              : "Last Opp Filer",
 
         "DIALOG_HEADER_CONNECTING"       : "Kobler til",
@@ -93,7 +93,7 @@
         "ERROR_UPLOAD_31D"     : "For mange filer blir overført. Vent til aktive overføringer fullfører og prøv igjen.",
         "ERROR_UPLOAD_DEFAULT" : "En intern feil har oppstått i Guacamole og forbindelsen er terminert. Kontakt systemadministrator dersom problemet fortsetter eller sjekk systemloggene dine.",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CLIPBOARD"           : "Tekst som er kopiert eller klippet i Guacamole vises her. Endringer i teksten under vil påvirke den eksterne utklippstavlen.",
         "HELP_INPUT_METHOD_NONE"   : "Ingen innenhet er brukt. Tastetrykk fra et fysisk tilkoblet tastatur blir akseptert.",
@@ -148,12 +148,12 @@
 
     "HOME" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Ingen nylige tilkoblinger.",
-        
+
         "PASSWORD_CHANGED" : "Passord endret.",
 
         "SECTION_HEADER_ALL_CONNECTIONS"    : "Alle tilkoblinger",
@@ -163,11 +163,11 @@
 
     "LOGIN": {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
-        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE:@",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN:@",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "ERROR_INVALID_LOGIN" : "Ugyldig Pålogging",
 
@@ -178,20 +178,20 @@
 
     "MANAGE_CONNECTION" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Slett tilkobling",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Lokasjon:",
         "FIELD_HEADER_NAME"     : "Navn:",
         "FIELD_HEADER_PROTOCOL" : "Protokoll:",
 
-        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
         "INFO_CONNECTION_ACTIVE_NOW"       : "Aktiv Nå",
@@ -206,19 +206,19 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Varighet",
 
         "TEXT_CONFIRM_DELETE"   : "Tilkoblinger kan ikke gjennopprettes etter at de er slettet. Er du sikker på at du vil slette denne tilkoblingen?",
-        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION:@"
 
     },
 
     "MANAGE_CONNECTION_GROUP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Slett Tilkoblingsgruppe",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Lokasjon:",
         "FIELD_HEADER_NAME"     : "Navn:",
@@ -235,27 +235,27 @@
 
     "MANAGE_USER" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Slett Bruker",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administrer systemet:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Endre eget passord:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Opprett ny bruker:",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Opprett ny tilkobling:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Opprett ny tilkoblingsgruppe:",
-        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
-        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD:@",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN:@",
         "FIELD_HEADER_USERNAME"                      : "Brukernavn:",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "INFO_READ_ONLY" : "Beklager, denne brukerkontoen kan ikke redigeres.",
 
@@ -266,7 +266,7 @@
         "TEXT_CONFIRM_DELETE" : "Brukere kan ikke gjenopprettes etter at de er slettet. Er du sikker på du vil slette denne brukeren?"
 
     },
-    
+
     "PROTOCOL_RDP" : {
 
         "FIELD_HEADER_CLIENT_NAME"     : "Klientnavn:",
@@ -532,11 +532,11 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_CONNECTION_HISTORY" : "Tidligere forbindelser er listet her historisk og kan sorteres ved å klikke kolonneoverskriftene. For å lete etter spesifikke poster kan du legge inn en filtreringstekst og klikke \"Søk\". Bare poster som passer filtreringsteksten vil bli listet opp.",
 
@@ -548,23 +548,23 @@
         "TABLE_HEADER_SESSION_STARTDATE"       : "Starttidspunkt",
         "TABLE_HEADER_SESSION_USERNAME"        : "Brukernavn",
 
-        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION:@"
 
     },
 
     "SETTINGS_CONNECTIONS" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_CONNECTION"       : "Ny Forbindelse",
         "ACTION_NEW_CONNECTION_GROUP" : "Ny Gruppe",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CONNECTIONS"   : "Klikk eller berør en forbindelse under for å administrere forbindelsen. Avhengig av ditt tilgangsnivå kan forbindelser opprettes, slettes og egenskaper (protokoll, server, port, m.m.) kan endres.",
-        
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "SECTION_HEADER_CONNECTIONS"     : "Forbindelser"
 
@@ -572,14 +572,14 @@
 
     "SETTINGS_PREFERENCES" : {
 
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL:@",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD:@",
 
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK:@",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_LANGUAGE"           : "Visningsspråk:",
         "FIELD_HEADER_PASSWORD"           : "Passord:",
@@ -587,22 +587,22 @@
         "FIELD_HEADER_PASSWORD_NEW"       : "Nytt Passord:",
         "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Verifiser Nytt Passord:",
         "FIELD_HEADER_USERNAME"           : "Brukernavn:",
-    
+
         "HELP_DEFAULT_INPUT_METHOD" : "Standard inndatametode bestemmer hvordan tastetrykk mottas av Guacamole. Det kan være nødvendig å endre på dette når du bruker mobile enheter eller IME. Denne instillingen kan overstyres på hver forbindelse i Guacamolemenyen.",
         "HELP_DEFAULT_MOUSE_MODE"   : "Standard musemulering bestemmer hvordan den eksterne musen vil oppføre seg med hensyn til berøringer. Denne instillingen kan overstyres på hver forbindelse i Guacamolemenyen.",
-        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
-        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
-        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE:@",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK:@",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT:@",
         "HELP_LANGUAGE"             : "Velg et språk under for å endre språket på all tekst i Guacamole. Tilgjengelige valg er avhengig av hvilke språk som er installert.",
-        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
-        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE:@",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE:@",
         "HELP_UPDATE_PASSWORD"      : "Skriv inn ditt gamle passord og det nye passordet under dersom du ønsker å endre passord. Klikk \"Oppdater Passord\". Endringen trer i kraft umiddelbart.",
 
         "INFO_PASSWORD_CHANGED" : "Passord endret.",
 
-        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
-        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
-        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE:@",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK:@",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT:@",
 
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Standard Innenhet",
         "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Standard Metode For Musemulering",
@@ -612,14 +612,14 @@
 
     "SETTINGS_USERS" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_USER"      : "Ny Bruker",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_USERS" : "Klikk på en bruker under for å administrere den brukeren. Avhengig av din tilgang kan brukere legges til, slettes og passordet kan endres.",
 
@@ -628,45 +628,45 @@
         "TABLE_HEADER_USERNAME" : "Brukernavn"
 
     },
-    
+
     "SETTINGS_SESSIONS" : {
-        
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL:@",
         "ACTION_DELETE"      : "Avbryt sesjoner",
-        
+
         "DIALOG_HEADER_CONFIRM_DELETE" : "Avbryt Sesjoner",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
-        
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-        
-        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
+
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_SESSIONS" : "Denne siden vil bli fylt med nåværende aktive forbindelser. Tilkoblingene oppført og evnen til å drepe disse tilkoblingene er avhengig av tilgangsnivået ditt. Dersom du ønsker å avbryte en eller flere sesjoner haker du av boksen ved siden av sesjonen og klikker \"Avbryt sesjoner\". Avbrytes en sesjon vil brukeren umiddelbart kobles av den aktuelle sesjonen.",
-        
+
         "INFO_NO_SESSIONS" : "Ingen aktive sesjoner",
 
         "SECTION_HEADER_SESSIONS" : "Aktive Sesjoner",
-        
+
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Navn på forbindelse",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Server",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Aktiv siden",
         "TABLE_HEADER_SESSION_USERNAME"        : "Brukernavn",
-        
+
         "TEXT_CONFIRM_DELETE" : "Er du sikker på at du vil avslutte valgte sesjoner? Brukere av disse sesjonene vil bli frakoblet umiddelbart."
 
     },
 
     "USER_MENU" : {
 
-        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
-        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
-        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
-        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
-        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
-        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
-        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS:@",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES:@",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS:@",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS:@",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS:@",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME:@",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY:@"
 
     }
 

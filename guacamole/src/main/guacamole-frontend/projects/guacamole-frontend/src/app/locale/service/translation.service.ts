@@ -112,7 +112,6 @@ export class TranslationService {
             // If the file of the preferred language could not be loaded, fall back to English
             fallbackLang: DEFAULT_LANGUAGE,
 
-            // If a translation key is missing for the current language, fall back to English
             missingHandler: {
                 // If a translation key is missing for the current language, fall back to English
                 useFallbackTranslation: true,
@@ -120,6 +119,10 @@ export class TranslationService {
                 // Do not use the missing handler if a translation value is an empty string
                 allowEmpty: true
             },
+
+            // By default transloco uses {{...}} to reference other translation keys. We
+            // change it to @:...:@ to prevent transcloco from removing the parts of ICU messages.
+            interpolation: ['@:', ':@'],
 
             // Allow changing language at runtime
             reRenderOnLangChange: true,

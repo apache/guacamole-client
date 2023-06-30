@@ -44,14 +44,14 @@
 
     "CLIENT" : {
 
-        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Wis lijst",
         "ACTION_DISCONNECT"                : "Verbreek Verbinding",
-        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
-        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK:@",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME:@",
         "ACTION_RECONNECT"                 : "Verbind Opnieuw",
-        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE:@",
         "ACTION_UPLOAD_FILES"              : "Upload Bestanden",
 
         "DIALOG_HEADER_CONNECTING"       : "Aan Het Verbinden",
@@ -91,7 +91,7 @@
         "ERROR_UPLOAD_31D"     : "Er worden momenteel te veel bestanden overdragen. Gelieve te wachten tot de bestaande bestandsoverdracht is voltooid, en probeer het opnieuw.",
         "ERROR_UPLOAD_DEFAULT" : "Er is een interne fout opgetreden op de Guacamole server, en de verbinding is beëindigd. Als het probleem aanhoudt, neem dan contact op met uw systeembeheerder of kijk in uw systeem logs.",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CLIPBOARD"           : "Tekst gekopieerd / geknipt binnen Guacamole zal hier verschijnen. Wijzigingen in onderstaande tekst zal externe klembord beïnvloeden.",
         "HELP_INPUT_METHOD_NONE"   : "Geen invoer methode gebruiken. Toetsenbord invoer wordt geaccepteerd van een aangesloten, fysiek toetsenbord.",
@@ -148,9 +148,9 @@
 
     "HOME" : {
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Geen recente verbindingen.",
 
@@ -163,11 +163,11 @@
 
     "LOGIN": {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
-        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE:@",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN:@",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "ERROR_INVALID_LOGIN" : "Ongeldige Login",
 
@@ -178,20 +178,20 @@
 
     "MANAGE_CONNECTION" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Verwijder Verbinding",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Locatie:",
         "FIELD_HEADER_NAME"     : "Naam:",
         "FIELD_HEADER_PROTOCOL" : "Protocol:",
 
-        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
         "INFO_CONNECTION_ACTIVE_NOW"       : "Nu Actief",
@@ -206,19 +206,19 @@
         "TABLE_HEADER_HISTORY_DURATION" : "Tijdsduur",
 
         "TEXT_CONFIRM_DELETE"   : "Verbindingen kunnen niet worden hersteld nadat ze zijn verwijderd. Weet u zeker dat u deze verbinding wilt verwijderen?",
-        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION:@"
 
     },
 
     "MANAGE_CONNECTION_GROUP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Verwijder Verbindingsgroep",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_LOCATION" : "Locatie:",
         "FIELD_HEADER_NAME"     : "Naam:",
@@ -235,13 +235,13 @@
 
     "MANAGE_SHARING_PROFILE" : {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE:@",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
         "FIELD_HEADER_NAME" : "Naam:",
 
@@ -251,27 +251,27 @@
 
     "MANAGE_USER" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL:@",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE:@",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE:@",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE:@",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Verwijder Gebruiker",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Systeem Beheer:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Wijzigen eigen wachtwoord:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Nieuwe gebruikers aanmaken:",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Nieuwe verbindingen aanmaken:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Nieuwe verbindingsgroepen aanmaken:",
-        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
-        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD:@",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN:@",
         "FIELD_HEADER_USERNAME"                      : "Gebruikersnaam:",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "INFO_READ_ONLY" : "Sorry, maar dit gebruikers account kan niet gewijzigd worden",
 
@@ -551,11 +551,11 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH",
+        "ACTION_SEARCH" : "@:APP.ACTION_SEARCH:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_CONNECTION_HISTORY" : "De gebruikgeschiedenis van verbindingen wordt hier onder getoond en kan gesorteerd worden door op de titel van de kolom te klikken. Voer een zoekterm in en klik op \"Zoeken\", om op specifieke resultaten te zoeken. Alleen de resultaten die voldoen aan de zoekterm zullen dan getoond worden.",
 
@@ -567,23 +567,23 @@
         "TABLE_HEADER_SESSION_STARTDATE"       : "Starttijd",
         "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam",
 
-        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION:@"
 
     },
 
     "SETTINGS_CONNECTIONS" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_CONNECTION"       : "Nieuwe Verbinding",
         "ACTION_NEW_CONNECTION_GROUP" : "Nieuwe Verbindingsgroep",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
         "HELP_CONNECTIONS"   : "Klik of tik op een verbinding hieronder om die verbinding te beheren. Afhankelijk van uw toegangsniveau kunnen verbindingen worden toegevoegd en verwijderd en hun eigenschappen (protocol, hostname, port, etc.) worden gewijzigd. ",
 
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT:@",
 
         "SECTION_HEADER_CONNECTIONS"     : "Verbindingen"
 
@@ -591,14 +591,14 @@
 
     "SETTINGS_PREFERENCES" : {
 
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL:@",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD:@",
 
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK:@",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH:@",
 
         "FIELD_HEADER_LANGUAGE"           : "Taal Keuze:",
         "FIELD_HEADER_PASSWORD"           : "Wachtwoord:",
@@ -609,19 +609,19 @@
 
         "HELP_DEFAULT_INPUT_METHOD" : "De standaard invoer methode bepaalt hoe toetsenbord gebeurtenissen ontvangen worden door Guacamole. Het veranderen van deze instelling kan nodig zijn bij gebruik van een mobiel apparaat of wanneer er via een IME getypt wordt. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
         "HELP_DEFAULT_MOUSE_MODE"   : "De standaard muis emulatie modus bepaalt hoe de externe muis in nieuwe verbindingen omgaat met touch. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
-        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
-        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
-        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE:@",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK:@",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT:@",
         "HELP_LANGUAGE"             : "Selecteer onderstaand een andere taal om alle text in Guacamole hieraan aan te passen. De beschikbare keuzes zijn afhankelijk van welke talen er geinstalleerd zijn.",
-        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
-        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE:@",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE:@",
         "HELP_UPDATE_PASSWORD"      : "Als u uw wachtwoord wilt wijzigen, voer dan uw huidige wachtwoord en uw nieuwe wachtwoord hieronder in en klik op \"Wijzig Wachtwoord\". Deze wijziging zal meteen actief zijn.",
 
         "INFO_PASSWORD_CHANGED" : "Wachtwoord gewijzigd.",
 
-        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
-        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
-        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE:@",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK:@",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT:@",
 
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Standaard Invoer Methode",
         "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Standaard Muis Emulatie Modus",
@@ -631,14 +631,14 @@
 
     "SETTINGS_USERS" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE:@",
         "ACTION_NEW_USER"      : "Nieuwe Gebruiker",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_USERS" : "Klik of tik op een van de onderstaande gebruikers om die te beheren. Afhankelijk van uw toegangsniveau kunnen gebruikers worden toegevoegd, verwijderd en hun wachtwoorden gewijzigd.",
 
@@ -650,16 +650,16 @@
 
     "SETTINGS_SESSIONS" : {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE:@",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL:@",
         "ACTION_DELETE"      : "Beeindig Sessies",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Beeindig Sessie",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER:@",
 
-        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE:@",
 
         "HELP_SESSIONS" : "Deze pagina wordt gevuld met momenteel actieve verbindingen. De vermelde verbindingen en de mogelijkheid om die verbindingen te doden, zijn afhankelijk van uw toegangsniveau. Als u een of meerdere sessies wilt beeindigen, vink die sessie(s) dan aan en klik op \"Beeindig Sessies\". Door het verbreken van een sessie verliest de gebruiker ogenblikkelijk het contact met die sessie(s).",
 
@@ -678,14 +678,14 @@
 
     "USER_MENU" : {
 
-        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
-        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
-        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
-        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
-        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
-        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
-        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT:@",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS:@",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES:@",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS:@",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS:@",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS:@",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME:@",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY:@"
 
     }
 
