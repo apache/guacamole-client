@@ -117,6 +117,8 @@
                                 <exclude>**/templates/*.html</exclude>
                                 <exclude>src/licenses/**/*</exclude>
                                 <exclude>target/**/*</exclude>
+                                <exclude>**/dist/**/*</exclude>
+                                <exclude>**/.angular/**/*</exclude>
                             </excludes>
                             <skip>${ignoreLicenseErrors}</skip>
                         </configuration>
