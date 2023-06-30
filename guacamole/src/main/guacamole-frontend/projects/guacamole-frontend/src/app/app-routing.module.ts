@@ -49,6 +49,9 @@ import { TranslocoService } from "@ngneat/transloco";
 import {
     ManageConnectionGroupComponent
 } from "./manage/components/manage-connection-group/manage-connection-group.component";
+import {
+    ConnectionHistoryPlayerComponent
+} from "./settings/components/connection-history-player/connection-history-player.component";
 
 
 /**
@@ -263,6 +266,15 @@ export const appRoutes: Routes = [
         component: ManageUserGroupComponent,
         title: titleResolver,
         data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        canActivate: [authGuard]
+    },
+
+    // Recording player
+    {
+        path: 'settings/:dataSource/recording/:identifier/:name',
+        component: ConnectionHistoryPlayerComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'settings'},
         canActivate: [authGuard]
     },
 

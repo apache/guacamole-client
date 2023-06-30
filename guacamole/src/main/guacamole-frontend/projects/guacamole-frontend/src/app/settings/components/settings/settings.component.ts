@@ -37,6 +37,9 @@ export class SettingsComponent implements OnInit {
      */
     settingsPages: PageDefinition[] | null = null;
 
+    /**
+     * Inject required services.
+     */
     constructor(private userPageService: UserPageService) {
     }
 

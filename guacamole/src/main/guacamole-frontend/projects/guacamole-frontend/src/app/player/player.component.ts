@@ -27,9 +27,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    GuacFrontendEventArguments
-} from '../events/types/GuacFrontendEventArguments';
+import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArguments';
 
 /**
  * Component which plays back session recordings. This directive emits the
@@ -236,8 +234,6 @@ export class PlayerComponent implements OnChanges, OnDestroy {
             this.resumeAfterSeekRequest && this.recording.play();
             this.recording.seek(this.playbackPosition, () => {
                 this.operationMessage = null;
-                this.cdr.detectChanges();
-
             });
 
         }
@@ -291,14 +287,12 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                 this.recording.onload = () => {
                     this.operationMessage = null;
                     this.guacEventService.broadcast('guacPlayerLoaded');
-                    this.cdr.detectChanges();
                 };
 
                 // Notify listeners if an error occurs
                 this.recording.onerror = (message) => {
                     this.operationMessage = null;
                     this.guacEventService.broadcast('guacPlayerError', {message});
-                    this.cdr.detectChanges();
                 };
 
                 // Notify listeners when additional recording data has been
@@ -306,19 +300,16 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                 this.recording.onprogress = (duration, current) => {
                     this.operationProgress = (this.src as unknown as any)?.size ? current / (this.src as unknown as any).size : 0;
                     this.guacEventService.broadcast('guacPlayerProgress', {duration, current});
-                    this.cdr.detectChanges();
                 };
 
                 // Notify listeners when playback has started/resumed
                 this.recording.onplay = () => {
                     this.guacEventService.broadcast('guacPlayerPlay');
-                    this.cdr.detectChanges();
                 };
 
                 // Notify listeners when playback has paused
                 this.recording.onpause = () => {
                     this.guacEventService.broadcast('guacPlayerPause');
-                    this.cdr.detectChanges();
                 };
 
                 // Notify listeners when current position within the recording
@@ -336,7 +327,6 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                     }
 
                     this.guacEventService.broadcast('guacPlayerSeek', {position});
-                    this.cdr.detectChanges();
 
                 };
 
