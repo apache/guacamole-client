@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { Injector } from "@angular/core";
-import { Routes } from "@angular/router";
+import { Injector } from '@angular/core';
+import { Routes } from '@angular/router';
 
 /**
  * Function definition for the extension bootstrap function. This function

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { signal, WritableSignal } from "@angular/core";
+import { signal, WritableSignal } from '@angular/core';
 
 /**
  * A service for generating new guacClient properties objects.

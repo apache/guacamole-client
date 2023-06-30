@@ -23,7 +23,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArguments';
 import { isDefined } from '../util/is-defined';
-import { AuthenticationService } from "../auth/service/authentication.service";
+import { AuthenticationService } from '../auth/service/authentication.service';
 
 @Injectable({
     providedIn: 'root'

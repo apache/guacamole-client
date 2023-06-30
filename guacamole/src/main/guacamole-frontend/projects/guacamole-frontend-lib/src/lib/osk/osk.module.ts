@@ -19,9 +19,9 @@
 
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ElementModule } from "../element/element.module";
+import { ElementModule } from '../element/element.module';
 import { OskComponent } from './components/osk/osk.component';
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClientModule } from '@angular/common/http';
 
 /**
  * Module for displaying the Guacamole on-screen keyboard.

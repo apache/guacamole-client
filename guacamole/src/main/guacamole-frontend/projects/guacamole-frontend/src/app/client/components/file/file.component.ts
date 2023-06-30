@@ -29,7 +29,7 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { ManagedFilesystem } from "../../types/ManagedFilesystem";
+import { ManagedFilesystem } from '../../types/ManagedFilesystem';
 
 /**
  * This component displays a single file in a file browser. It shows the

@@ -18,9 +18,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { filter, Observable, Subject } from "rxjs";
-import { GuacEvent, GuacEventName } from "../types/GuacEvent";
-import { GuacEventArguments } from "../types/GuacEventArguments";
+import { filter, Observable, Subject } from 'rxjs';
+import { GuacEvent, GuacEventName } from '../types/GuacEvent';
+import { GuacEventArguments } from '../types/GuacEventArguments';
 
 /**
  * Service for broadcasting and subscribing to Guacamole frontend events.

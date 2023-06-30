@@ -18,12 +18,12 @@
  */
 
 import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
-import { SessionStorageFactory } from "../../../storage/session-storage-factory.service";
-import { ManagedClientGroup } from "../../types/ManagedClientGroup";
+import { SessionStorageFactory } from '../../../storage/session-storage-factory.service';
+import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 import findIndex from 'lodash/findIndex';
-import { ManagedClientState } from "../../types/ManagedClientState";
-import { GuacClientManagerService } from "../../services/guac-client-manager.service";
-import { SortService } from "../../../list/services/sort.service";
+import { ManagedClientState } from '../../types/ManagedClientState';
+import { GuacClientManagerService } from '../../services/guac-client-manager.service';
+import { SortService } from '../../../list/services/sort.service';
 
 /**
  * A toolbar/panel which displays a list of active Guacamole connections. The

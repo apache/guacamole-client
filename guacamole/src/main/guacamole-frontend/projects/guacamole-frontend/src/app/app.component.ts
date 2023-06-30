@@ -38,7 +38,7 @@ import { Error } from './rest/types/Error';
 import { Field } from './rest/types/Field';
 import { TranslatableMessage } from './rest/types/TranslatableMessage';
 import { ApplicationState } from './util/ApplicationState';
-import { Title } from "@angular/platform-browser";
+import { Title } from '@angular/platform-browser';
 
 /**
  * The number of milliseconds that should elapse between client-side

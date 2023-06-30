@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Manifest, RemoteConfig } from "@angular-architects/module-federation";
+import { Manifest, RemoteConfig } from '@angular-architects/module-federation';
 
 /**
  * TODO

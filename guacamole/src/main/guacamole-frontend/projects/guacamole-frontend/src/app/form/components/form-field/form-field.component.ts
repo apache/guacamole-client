@@ -32,7 +32,7 @@ import {
 import { FormService } from '../../service/form.service';
 import { LogService } from '../../../util/log.service';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
-import { canonicalize } from "../../../locale/service/translation.service";
+import { canonicalize } from '../../../locale/service/translation.service';
 
 /**
  * A component that allows editing of a field.

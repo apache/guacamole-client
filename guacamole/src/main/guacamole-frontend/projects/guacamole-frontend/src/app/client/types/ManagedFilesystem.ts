@@ -19,7 +19,7 @@
 
 import { ManagedClient } from './ManagedClient';
 import { Optional } from '../../util/utility-types';
-import { signal, WritableSignal } from "@angular/core";
+import { signal, WritableSignal } from '@angular/core';
 
 /**
  * Provides the ManagedFilesystem class used by ManagedClient to represent

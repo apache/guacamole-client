@@ -30,7 +30,7 @@ import { ClientIdentifier } from '../../navigation/types/ClientIdentifier';
 import { catchError, forkJoin, from, map, Observable } from 'rxjs';
 import cloneDeep from 'lodash/cloneDeep';
 import { ClientIdentifierService } from '../../navigation/service/client-identifier.service';
-import { canonicalize } from "../../locale/service/translation.service";
+import { canonicalize } from '../../locale/service/translation.service';
 
 /**
  * A service for generating all the important pages a user can visit.

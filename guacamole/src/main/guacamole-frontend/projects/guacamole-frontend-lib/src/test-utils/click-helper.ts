@@ -44,7 +44,7 @@ export const simulateMouseClick = (element: any) => {
     const coordX = box.left + (box.right - box.left) / 2;
     const coordY = box.top + (box.bottom - box.top) / 2;
 
-    dispatchEvent(element, "mousedown", coordX, coordY);
-    dispatchEvent(element, "mouseup", coordX, coordY);
-    dispatchEvent(element, "click", coordX, coordY);
+    dispatchEvent(element, 'mousedown', coordX, coordY);
+    dispatchEvent(element, 'mouseup', coordX, coordY);
+    dispatchEvent(element, 'click', coordX, coordY);
 };

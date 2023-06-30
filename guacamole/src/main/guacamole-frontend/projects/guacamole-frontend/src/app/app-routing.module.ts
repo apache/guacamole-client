@@ -45,13 +45,13 @@ import { catchError, map, Observable, of, switchMap, take } from 'rxjs';
 import { AuthenticationResult } from './auth/types/AuthenticationResult';
 import { ClientPageComponent } from './client/components/client-page/client-page.component';
 import { ManageUserGroupComponent } from './manage/components/manage-user-group/manage-user-group.component';
-import { TranslocoService } from "@ngneat/transloco";
+import { TranslocoService } from '@ngneat/transloco';
 import {
     ManageConnectionGroupComponent
-} from "./manage/components/manage-connection-group/manage-connection-group.component";
+} from './manage/components/manage-connection-group/manage-connection-group.component';
 import {
     ConnectionHistoryPlayerComponent
-} from "./settings/components/connection-history-player/connection-history-player.component";
+} from './settings/components/connection-history-player/connection-history-player.component';
 
 
 /**

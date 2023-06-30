@@ -21,7 +21,7 @@ import { TestBed } from '@angular/core/testing';
 import { TestScheduler } from 'rxjs/testing';
 import { getTestScheduler } from '../../../test-utils/test-scheduler';
 import { GuacEvent } from '../types/GuacEvent';
-import { GuacEventArguments } from "../types/GuacEventArguments";
+import { GuacEventArguments } from '../types/GuacEventArguments';
 import { GuacEventService } from './guac-event.service';
 
 interface TestEventArgs extends GuacEventArguments {

@@ -72,7 +72,7 @@ export class GuacTouchDragDirective {
     /**
      * Whether a drag gesture is in progress.
      */
-    inProgress: boolean = false;
+    inProgress = false;
 
     /**
      * The starting X location of the drag gesture.
@@ -97,12 +97,12 @@ export class GuacTouchDragDirective {
     /**
      * The change in X relative to drag start.
      */
-    deltaX: number = 0;
+    deltaX = 0;
 
     /**
      * The change in X relative to drag start.
      */
-    deltaY: number = 0;
+    deltaY = 0;
 
     /**
      * The element which will register the drag gesture.

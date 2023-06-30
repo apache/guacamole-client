@@ -18,7 +18,7 @@
  */
 
 import { ChangeDetectorRef, Directive, ElementRef, Inject, Input, OnInit } from '@angular/core';
-import { DOCUMENT } from "@angular/common";
+import { DOCUMENT } from '@angular/common';
 
 /**
  * A directive which allows files to be uploaded. Clicking on the associated

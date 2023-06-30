@@ -66,12 +66,12 @@ import { NotificationAction } from '../../../notification/types/NotificationActi
 import { Protocol } from '../../../rest/types/Protocol';
 import { FormGroup } from '@angular/forms';
 import { FormService } from '../../../form/service/form.service';
-import { ConnectionGroupDataSource } from "../../../group-list/types/ConnectionGroupDataSource";
-import { FilterService } from "../../../list/services/filter.service";
+import { ConnectionGroupDataSource } from '../../../group-list/types/ConnectionGroupDataSource';
+import { FilterService } from '../../../list/services/filter.service';
 import {
     GuacGroupListFilterComponent
-} from "../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component";
-import { Title } from "@angular/platform-browser";
+} from '../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component';
+import { Title } from '@angular/platform-browser';
 
 /**
  * The Component for the page used to connect to a connection or balancing group.

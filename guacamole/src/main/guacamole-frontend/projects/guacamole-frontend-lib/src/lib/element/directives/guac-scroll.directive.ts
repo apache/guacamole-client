@@ -24,7 +24,7 @@ import {
     OnChanges,
     SimpleChanges
 } from '@angular/core';
-import { ScrollState } from "../types/ScrollState";
+import { ScrollState } from '../types/ScrollState';
 
 /**
  * A directive which allows elements to be manually scrolled, and for their

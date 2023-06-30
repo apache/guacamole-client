@@ -18,26 +18,26 @@
  */
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { AuthenticationService } from "../../../auth/service/authentication.service";
-import { PermissionService } from "../../../rest/service/permission.service";
-import { RequestService } from "../../../rest/service/request.service";
-import { SchemaService } from "../../../rest/service/schema.service";
-import { ActivatedRoute, Router } from "@angular/router";
-import { ManagementPermissions } from "../../types/ManagementPermissions";
-import { Form } from "../../../rest/types/Form";
-import { NonNullableProperties, Optional } from "../../../util/utility-types";
-import { ConnectionGroup } from "../../../rest/types/ConnectionGroup";
-import { forkJoin, map, Observable, of } from "rxjs";
-import { ConnectionGroupService } from "../../../rest/service/connection-group.service";
-import { PermissionSet } from "../../../rest/types/PermissionSet";
-import { FormService } from "../../../form/service/form.service";
-import { FormGroup } from "@angular/forms";
+import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { PermissionService } from '../../../rest/service/permission.service';
+import { RequestService } from '../../../rest/service/request.service';
+import { SchemaService } from '../../../rest/service/schema.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ManagementPermissions } from '../../types/ManagementPermissions';
+import { Form } from '../../../rest/types/Form';
+import { NonNullableProperties, Optional } from '../../../util/utility-types';
+import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
+import { forkJoin, map, Observable, of } from 'rxjs';
+import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
+import { PermissionSet } from '../../../rest/types/PermissionSet';
+import { FormService } from '../../../form/service/form.service';
+import { FormGroup } from '@angular/forms';
 
 /**
  * Type of {@link ConnectionGroup} which has been cloned from another connection
  * group. For a cloned connection group, the identifier is optional.
  */
-type ClonedConnectionGroup = Optional<ConnectionGroup, "identifier">;
+type ClonedConnectionGroup = Optional<ConnectionGroup, 'identifier'>;
 
 /**
  * The component for editing or creating connection groups.
@@ -74,11 +74,11 @@ export class ManageConnectionGroupComponent implements OnInit {
      */
     types: { label: string; value: string }[] = [
         {
-            label: "MANAGE_CONNECTION_GROUP.NAME_TYPE_ORGANIZATIONAL",
+            label: 'MANAGE_CONNECTION_GROUP.NAME_TYPE_ORGANIZATIONAL',
             value: ConnectionGroup.Type.ORGANIZATIONAL
         },
         {
-            label: "MANAGE_CONNECTION_GROUP.NAME_TYPE_BALANCING",
+            label: 'MANAGE_CONNECTION_GROUP.NAME_TYPE_BALANCING',
             value: ConnectionGroup.Type.BALANCING
         }
     ];
@@ -244,9 +244,9 @@ export class ManageConnectionGroupComponent implements OnInit {
 
         // Use skeleton connection group object with specified parent
         this.connectionGroup = new ConnectionGroup({
-            identifier: "",
-            name: "",
-            type: "",
+            identifier: '',
+            name: '',
+            type: '',
             activeConnections: 0,
             parentIdentifier: this.route.snapshot.queryParamMap.get('parent') || undefined
         });

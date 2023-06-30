@@ -25,8 +25,8 @@ import {
     Input
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { GuacEventService } from "../../events/services/guac-event.service";
-import { GuacEventArguments } from "../../events/types/GuacEventArguments";
+import { GuacEventService } from '../../events/services/guac-event.service';
+import { GuacEventArguments } from '../../events/types/GuacEventArguments';
 
 /**
  * A callback that is invoked by the guacClick directive when a
@@ -65,14 +65,14 @@ export class GuacClickDirective {
     /**
      * Whether either Shift key is currently pressed.
      */
-    shift: boolean = false;
+    shift = false;
 
     /**
      * Whether either Ctrl key is currently pressed. To allow the
      * Command key to be used on Mac platforms, this flag also
      * considers the state of either Meta key.
      */
-    ctrl: boolean = false;
+    ctrl = false;
 
     // Fire provided callback for each mouse-initiated "click" event ...
     @HostListener('click', ['$event']) elementClicked(e: MouseEvent) {
@@ -130,6 +130,6 @@ export class GuacClickDirective {
             || keyboard.pressed[0xFFE8] // Right meta (command)
         );
 
-    };
+    }
 
 }

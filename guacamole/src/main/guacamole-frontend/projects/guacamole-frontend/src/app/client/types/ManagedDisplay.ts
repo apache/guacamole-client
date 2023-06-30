@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { signal, WritableSignal } from "@angular/core";
+import { signal, WritableSignal } from '@angular/core';
 
 declare namespace ManagedDisplay {
     type Dimensions = typeof ManagedDisplay.Dimensions.prototype;

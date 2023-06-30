@@ -18,7 +18,7 @@
  */
 
 import { TestBed } from '@angular/core/testing';
-import { GuacImageService } from "./guac-image.service";
+import { GuacImageService } from './guac-image.service';
 
 describe('GuacImageService', () => {
     let service: GuacImageService;

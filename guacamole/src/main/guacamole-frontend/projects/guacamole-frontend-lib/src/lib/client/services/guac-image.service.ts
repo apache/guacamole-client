@@ -98,11 +98,11 @@ export class GuacImageService {
      */
     getSupportedMimetypes(): Promise<string[]> {
         return this.deferredSupportedMimetypes;
-    };
+    }
 
     constructor() {
         // Test each possibly-supported image
-        for (let mimetype in this.testImages) {
+        for (const mimetype in this.testImages) {
             const data = this.testImages[mimetype];
 
             // Add promise for current image test

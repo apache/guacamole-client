@@ -76,12 +76,12 @@ export class GuacTouchPinchDirective {
     /**
      * The X coordinate of the current center of the pinch gesture.
      */
-    centerX: number = 0;
+    centerX = 0;
 
     /**
      * The Y coordinate of the current center of the pinch gesture.
      */
-    centerY: number = 0;
+    centerY = 0;
 
     /**
      * The element which will register the pinch gesture.
@@ -170,12 +170,12 @@ export class GuacTouchPinchDirective {
      */
     pinchCenterX(e: TouchEvent): number {
 
-        var touchA = e.touches[0];
-        var touchB = e.touches[1];
+        const touchA = e.touches[0];
+        const touchB = e.touches[1];
 
         return (touchA.clientX + touchB.clientX) / 2;
 
-    };
+    }
 
     /**
      * Given a touch event, calculates the center between the first two
@@ -189,12 +189,12 @@ export class GuacTouchPinchDirective {
      */
     pinchCenterY(e: TouchEvent): number {
 
-        var touchA = e.touches[0];
-        var touchB = e.touches[1];
+        const touchA = e.touches[0];
+        const touchB = e.touches[1];
 
         return (touchA.clientY + touchB.clientY) / 2;
 
-    };
+    }
 
 
 }

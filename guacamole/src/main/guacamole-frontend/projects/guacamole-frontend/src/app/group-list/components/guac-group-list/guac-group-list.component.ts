@@ -35,10 +35,10 @@ import { RequestService } from '../../../rest/service/request.service';
 import { Connection } from '../../../rest/types/Connection';
 import { SortService } from '../../../list/services/sort.service';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
-import { DataSourceBuilderService } from "../../../list/services/data-source-builder.service";
-import { DataSource } from "../../../list/types/DataSource";
-import { SortOrder } from "../../../list/types/SortOrder";
-import { of } from "rxjs";
+import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
+import { DataSource } from '../../../list/types/DataSource';
+import { SortOrder } from '../../../list/types/SortOrder';
+import { of } from 'rxjs';
 
 /**
  * A component which displays the contents of a connection group within an

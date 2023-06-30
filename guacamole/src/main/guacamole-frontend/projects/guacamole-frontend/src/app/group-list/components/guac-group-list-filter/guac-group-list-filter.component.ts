@@ -18,7 +18,7 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject } from 'rxjs';
 
 /**
  * A component which provides a filtering text input field

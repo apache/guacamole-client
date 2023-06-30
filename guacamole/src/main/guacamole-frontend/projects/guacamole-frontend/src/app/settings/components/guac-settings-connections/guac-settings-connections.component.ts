@@ -31,9 +31,9 @@ import { NonNullableProperties } from '../../../util/utility-types';
 import { GroupListItem } from '../../../group-list/types/GroupListItem';
 import {
     GuacGroupListFilterComponent
-} from "../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component";
-import { ConnectionGroupDataSource } from "../../../group-list/types/ConnectionGroupDataSource";
-import { FilterService } from "../../../list/services/filter.service";
+} from '../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component';
+import { ConnectionGroupDataSource } from '../../../group-list/types/ConnectionGroupDataSource';
+import { FilterService } from '../../../list/services/filter.service';
 
 /**
  * A component for managing all connections and connection groups in the system.

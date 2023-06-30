@@ -18,8 +18,8 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { GroupListItem } from "../../../group-list/types/GroupListItem";
-import { ConnectionListContext } from "../../types/ConnectionListContext";
+import { GroupListItem } from '../../../group-list/types/GroupListItem';
+import { ConnectionListContext } from '../../types/ConnectionListContext';
 
 /**
  * TODO

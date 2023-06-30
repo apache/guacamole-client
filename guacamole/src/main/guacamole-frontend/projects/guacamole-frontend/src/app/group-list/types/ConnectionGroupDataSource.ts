@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { GroupListItem } from "./GroupListItem";
-import { ConnectionGroup } from "../../rest/types/ConnectionGroup";
-import { FilterService } from "../../list/services/filter.service";
-import { map, Observable, of } from "rxjs";
-import cloneDeep from "lodash/cloneDeep";
-import { FilterPattern } from "../../list/types/FilterPattern";
+import { GroupListItem } from './GroupListItem';
+import { ConnectionGroup } from '../../rest/types/ConnectionGroup';
+import { FilterService } from '../../list/services/filter.service';
+import { map, Observable, of } from 'rxjs';
+import cloneDeep from 'lodash/cloneDeep';
+import { FilterPattern } from '../../list/types/FilterPattern';
 
 /**
  * A data source which provides a filtered view of a map of

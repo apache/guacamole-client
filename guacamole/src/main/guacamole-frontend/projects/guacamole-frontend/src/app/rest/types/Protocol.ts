@@ -18,7 +18,7 @@
  */
 
 import { Form } from './Form';
-import { canonicalize } from "../../locale/service/translation.service";
+import { canonicalize } from '../../locale/service/translation.service';
 
 /**
  * Returned by REST API calls when representing the data

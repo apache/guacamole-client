@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { GuacEventArguments } from "./GuacEventArguments";
+import { GuacEventArguments } from './GuacEventArguments';
 
 /**
  * Type which represents the names of all possible Guacamole events.

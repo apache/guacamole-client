@@ -24,11 +24,11 @@ import { DataSourceService } from '../../../rest/service/data-source-service.ser
 import { RequestService } from '../../../rest/service/request.service';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { NonNullableProperties } from '../../../util/utility-types';
-import { ConnectionGroupDataSource } from "../../../group-list/types/ConnectionGroupDataSource";
+import { ConnectionGroupDataSource } from '../../../group-list/types/ConnectionGroupDataSource';
 import {
     GuacGroupListFilterComponent
-} from "../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component";
-import { FilterService } from "../../../list/services/filter.service";
+} from '../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component';
+import { FilterService } from '../../../list/services/filter.service';
 
 /**
  * The component for the home page.

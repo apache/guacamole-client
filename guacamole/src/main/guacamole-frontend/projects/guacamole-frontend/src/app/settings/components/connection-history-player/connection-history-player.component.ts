@@ -18,7 +18,7 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { AuthenticationService } from "../../../auth/service/authentication.service";
+import { AuthenticationService } from '../../../auth/service/authentication.service';
 
 /**
  * The component for the session recording player page.

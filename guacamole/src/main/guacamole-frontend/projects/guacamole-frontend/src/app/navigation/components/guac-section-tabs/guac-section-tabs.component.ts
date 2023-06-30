@@ -18,7 +18,7 @@
  */
 
 import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
-import { canonicalize } from "../../../locale/service/translation.service";
+import { canonicalize } from '../../../locale/service/translation.service';
 
 /**
  * Component which displays a set of tabs dividing a section of a page into

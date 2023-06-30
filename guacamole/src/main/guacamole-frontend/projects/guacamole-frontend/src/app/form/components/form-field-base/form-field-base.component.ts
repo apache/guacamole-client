@@ -20,8 +20,8 @@
 import { Component, Input } from '@angular/core';
 import { Field } from '../../../rest/types/Field';
 import { FormControl } from '@angular/forms';
-import { FormFieldComponentData } from "guacamole-frontend-ext-lib";
-import { canonicalize } from "../../../locale/service/translation.service";
+import { FormFieldComponentData } from 'guacamole-frontend-ext-lib';
+import { canonicalize } from '../../../locale/service/translation.service';
 
 
 /**

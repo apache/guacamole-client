@@ -18,7 +18,7 @@
  */
 
 import { Injectable, Type } from '@angular/core';
-import { FormFieldComponentData } from "./FormFieldComponentData";
+import { FormFieldComponentData } from './FormFieldComponentData';
 
 /**
  * Service for managing all registered field types.

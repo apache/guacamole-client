@@ -24,9 +24,9 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { HttpClient } from "@angular/common/http";
-import { GuacEventService } from "../../../events/services/guac-event.service";
-import { GuacEventArguments } from "../../../events/types/GuacEventArguments";
+import { HttpClient } from '@angular/common/http';
+import { GuacEventService } from '../../../events/services/guac-event.service';
+import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
 
 
 /**
@@ -79,7 +79,7 @@ export class OskComponent implements OnChanges {
         if (this.keyboard)
             this.keyboard.resize(this.main.nativeElement.offsetWidth);
 
-    };
+    }
 
     /**
      * Load the new keyboard.

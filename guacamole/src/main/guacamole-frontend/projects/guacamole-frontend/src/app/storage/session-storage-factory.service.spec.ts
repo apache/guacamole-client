@@ -20,7 +20,7 @@
 import { TestBed } from '@angular/core/testing';
 
 import { SessionStorageFactory } from './session-storage-factory.service';
-import { HttpClientTestingModule } from "@angular/common/http/testing";
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SessionStorageFactoryService', () => {
   let service: SessionStorageFactory;

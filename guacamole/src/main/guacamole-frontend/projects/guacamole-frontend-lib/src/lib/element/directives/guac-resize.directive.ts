@@ -18,7 +18,7 @@
  */
 
 import { Directive, ElementRef, EventEmitter, Inject, Output } from '@angular/core';
-import { DOCUMENT } from "@angular/common";
+import { DOCUMENT } from '@angular/common';
 
 /**
  * A directive which calls a given callback when its associated element is
@@ -107,6 +107,6 @@ export class GuacResizeDirective {
 
         }
 
-    };
+    }
 
 }

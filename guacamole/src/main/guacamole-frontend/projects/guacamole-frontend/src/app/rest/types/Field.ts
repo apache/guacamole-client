@@ -18,7 +18,7 @@
  */
 
 import { TranslatableMessage } from './TranslatableMessage';
-import { FormField } from "guacamole-frontend-ext-lib";
+import { FormField } from 'guacamole-frontend-ext-lib';
 
 /**
  * The object returned by REST API calls when representing the data

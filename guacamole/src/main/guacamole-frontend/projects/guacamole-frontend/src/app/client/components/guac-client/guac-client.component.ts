@@ -482,11 +482,11 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
                 // If at minimum zoom level, hide scroll bars
                 if (scale === this.managedClient.clientProperties.minScale)
-                    this.main.style.overflow = "hidden";
+                    this.main.style.overflow = 'hidden';
 
                 // If not at minimum zoom level, show scroll bars
                 else
-                    this.main.style.overflow = "auto";
+                    this.main.style.overflow = 'auto';
 
                 // Apply scale if client attached
                 if (this.display)

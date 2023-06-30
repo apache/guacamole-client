@@ -35,8 +35,8 @@ import { SettingsModule } from './settings/settings.module';
 import { CommonModule } from '@angular/common';
 import { ManageModule } from './manage/manage.module';
 import { HomeModule } from './home/home.module';
-import { ClientModule } from "./client/client.module";
-import { ExtensionLoaderService } from "./index/services/extension-loader.service";
+import { ClientModule } from './client/client.module';
+import { ExtensionLoaderService } from './index/services/extension-loader.service';
 
 @NgModule({
     declarations: [

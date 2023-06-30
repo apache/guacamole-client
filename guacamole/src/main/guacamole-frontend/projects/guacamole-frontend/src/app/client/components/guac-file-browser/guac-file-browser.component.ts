@@ -28,11 +28,11 @@ import {
     SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
-import { ManagedFilesystem } from "../../types/ManagedFilesystem";
-import { ManagedFilesystemService } from "../../services/managed-filesystem.service";
-import { GuacEventService } from "guacamole-frontend-lib";
-import { GuacFrontendEventArguments } from "../../../events/types/GuacFrontendEventArguments";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { ManagedFilesystem } from '../../types/ManagedFilesystem';
+import { ManagedFilesystemService } from '../../services/managed-filesystem.service';
+import { GuacEventService } from 'guacamole-frontend-lib';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 /**
  * A component which displays the contents of a filesystem received through the
