@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.5.2",
+    "guacamoleVersion" : "1.5.3",
 
     "name"      : "Session Recording Storage",
     "namespace" : "recording-storage",
