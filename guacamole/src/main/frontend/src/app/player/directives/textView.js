@@ -38,7 +38,7 @@ angular.module('player').directive('guacPlayerTextView',
         /**
          * All the batches of text extracted from this recording.
          *
-         * @type {!Guacamole.KeyEventInterpeter.KeyEventBatch[]}
+         * @type {!TextBatch[]}
          */
         textBatches : '=',
 
@@ -74,7 +74,7 @@ angular.module('player').directive('guacPlayerTextView',
          * The text batches that match the current search phrase, or all
          * batches if no search phrase is set.
          *
-         * @type {!Guacamole.KeyEventInterpeter.KeyEventBatch[]}
+         * @type {!TextBatch[]}
          */
         $scope.filteredBatches = $scope.textBatches;
 

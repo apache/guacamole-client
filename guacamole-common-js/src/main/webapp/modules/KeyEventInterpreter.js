@@ -575,4 +575,5 @@ Guacamole.KeyEventInterpreter.KeyEventBatch = function KeyEventBatch(events, sim
      * @type {!String}
      */
     this.simpleValue = simpleValue || '';
+
 }
