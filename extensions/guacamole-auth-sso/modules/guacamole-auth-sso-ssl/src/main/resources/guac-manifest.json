@@ -9,6 +9,10 @@
         "org.apache.guacamole.auth.ssl.SSLAuthenticationProvider"
     ],
 
+    "listeners" : [
+        "org.apache.guacamole.auth.ssl.SSLAuthenticationEventListener"
+    ],
+
     "css" : [
         "styles/sso-providers.css"
     ],

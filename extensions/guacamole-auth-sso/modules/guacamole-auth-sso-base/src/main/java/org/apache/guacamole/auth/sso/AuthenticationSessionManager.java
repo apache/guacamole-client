@@ -19,8 +19,10 @@
 
 package org.apache.guacamole.auth.sso;
 
-import com.google.common.base.Predicates;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executors;
@@ -37,6 +39,7 @@ import java.util.concurrent.TimeUnit;
  * @param <T>
  *     The type of sessions managed by this session manager.
  */
+@Singleton
 public class AuthenticationSessionManager<T extends AuthenticationSession> {
 
     /**
@@ -52,6 +55,16 @@ public class AuthenticationSessionManager<T extends AuthenticationSession> {
     private final ConcurrentMap<String, T> sessions = new ConcurrentHashMap<>();
 
     /**
+     * Set of identifiers of all sessions that are in a pending state, meaning
+     * that the session was successfully created, but the overall auth result
+     * has not yet been determined.
+     *
+     * Exposed as a ConcurrentMap instead of a Set because there is no
+     * ConcurrentSet class offering the required atomic operations.
+     */
+    private final ConcurrentMap<String, Boolean> pendingSessions = new ConcurrentHashMap<>();
+
+    /**
      * Executor service which runs the periodic cleanup task
      */
     private final ScheduledExecutorService executor =
@@ -64,7 +77,13 @@ public class AuthenticationSessionManager<T extends AuthenticationSession> {
      */
     public AuthenticationSessionManager() {
         executor.scheduleAtFixedRate(() -> {
-            sessions.values().removeIf(Predicates.not(AuthenticationSession::isValid));
+
+            // Invalidate any stale sessions
+            for (Map.Entry<String, T> entry : sessions.entrySet()) {
+                if (!entry.getValue().isValid()) 
+                    invalidateSession(entry.getKey());
+            }
+
         }, 1, 1, TimeUnit.MINUTES);
     }
 
@@ -83,6 +102,43 @@ public class AuthenticationSessionManager<T extends AuthenticationSession> {
     }
 
     /**
+     * Remove the session associated with the given identifier, if any, from the
+     * map of sessions, and the set of pending sessions.
+     *
+     * @param identifier
+     *     The identifier of the session to remove, if one exists.
+     */
+    public void invalidateSession(String identifier) {
+
+        // Do not attempt to remove a null identifier
+        if (identifier == null)
+            return;
+
+        // Remove from the overall list of sessions
+        sessions.remove(identifier);
+
+        // Remove from the set of pending sessions
+        pendingSessions.remove(identifier);
+
+    }
+
+    /**
+     * Reactivate (remove from pending) the session associated with the given
+     * session identifier, if any. After calling this method, any session with
+     * the given identifier will be ready to be resumed again.
+     * 
+     * @param identifier
+     *     The identifier of the session to reactivate, if one exists.
+     */
+    public void reactivateSession(String identifier) {
+
+        // Remove from the set of pending sessions to reactivate
+        if (identifier != null)
+            pendingSessions.remove(identifier);
+
+    }
+
+    /**
      * Resumes the Guacamole side of the authentication process that was
      * previously deferred through a call to defer(). Once invoked, the
      * provided value ceases to be valid for future calls to resume().
@@ -97,9 +153,21 @@ public class AuthenticationSessionManager<T extends AuthenticationSession> {
      *     value was returned by defer().
      */
     public T resume(String identifier) {
-
         if (identifier != null) {
-            T session = sessions.remove(identifier);
+
+            T session = sessions.get(identifier);
+
+            // Mark the session as pending. NOTE: Unless explicitly removed
+            // from pending status via a call to reactivateSession(),
+            // the next attempt to resume this session will fail
+            if (pendingSessions.putIfAbsent(identifier, true) != null) {
+
+                // If the session was already marked as pending, invalidate it
+                invalidateSession(identifier);
+                return null;
+
+            }
+
             if (session != null && session.isValid())
                 return session;
         }

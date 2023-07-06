@@ -66,6 +66,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         var Field = $injector.get('Field');
 
         // Required services
+        var $location             = $injector.get('$location');
         var $rootScope            = $injector.get('$rootScope');
         var $route                = $injector.get('$route');
         var authenticationService = $injector.get('authenticationService');
@@ -173,11 +174,24 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         });
 
         /**
-         * Submits the currently-specified username and password to the
-         * authentication service, redirecting to the main view if successful.
+         * Submits the currently-specified fields to the authentication service,
+         * as well as any URL parameters set for the current page, preferring
+         * the values from the fields, and redirecting to the main view if
+         * successful.
          */
         $scope.login = function login() {
-            authenticationService.authenticate($scope.enteredValues)['catch'](requestService.IGNORE);
+
+            // Any values from URL paramters
+            const urlValues = $location.search();
+
+            // Values from the fields
+            const fieldValues = $scope.enteredValues;
+
+            // All the values to be submitted in the auth attempt, preferring
+            // any values from fields over those in the URL
+            const authParams = {...urlValues, ...fieldValues};
+
+            authenticationService.authenticate(authParams)['catch'](requestService.IGNORE);
         };
 
         /**
