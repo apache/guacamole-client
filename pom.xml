@@ -57,6 +57,13 @@
             or missing license headers). -->
         <ignoreLicenseErrors>false</ignoreLicenseErrors>
 
+        <!-- Set to "true" to perform automated checks for available dependency
+            updates, including whether the declared versions of any
+            dependencies have associated CVEs in NVD. Beware that both checks
+            may produce false positives and false negatives. Updates need to be
+            checked for compatibility and any changes in license information. -->
+        <checkDependencies>false</checkDependencies>
+
     </properties>
 
     <modules>
@@ -471,6 +478,91 @@
                             </execution>
                         </executions>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Perform automated dependency checks if "checkDependencies" is set to "true" -->
+        <profile>
+            <id>check-dependencies</id>
+            <activation>
+                <property>
+                    <name>checkDependencies</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+
+                    <!-- Checks for availability of likely-compatibile updates to
+                        dependencies -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>versions-maven-plugin</artifactId>
+                        <version>2.16.0</version>
+                        <configuration>
+                            <allowMajorUpdates>false</allowMajorUpdates>
+                            <dependencyExcludes>*:*:*:*:*:provided,*:*:*:*:*:system</dependencyExcludes>
+                            <outputFile>${project.build.directory}/dependency-update-report.txt</outputFile>
+                            <ruleSet>
+                                <ignoreVersions>
+                                    <ignoreVersion>
+                                        <type>regex</type>
+                                        <version>(.+-SNAPSHOT|.+-(M|RC)\d+)</version>
+                                    </ignoreVersion>
+                                    <ignoreVersion>
+                                        <type>regex</type>
+                                        <version>.+-(alpha|beta)\b.*?</version>
+                                    </ignoreVersion>
+                                </ignoreVersions>
+                                <rules>
+                                    <rule>
+                                        <groupId>ch.qos.logback</groupId>
+                                        <artifactId>logback-classic</artifactId>
+                                        <ignoreVersions>
+                                            <ignoreVersion>
+                                                <type>regex</type>
+                                                <version>1\.4\..+</version>
+                                            </ignoreVersion>
+                                        </ignoreVersions>
+                                    </rule>
+                                </rules>
+                            </ruleSet>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>check-dependency-updates</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>display-dependency-updates</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Checks for possible known CVEs against dependencies
+                        NOTE: This WILL produce false positives!!! -->
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>8.3.1</version>
+                        <configuration>
+                            <skipProvidedScope>true</skipProvidedScope>
+                            <skipSystemScope>true</skipSystemScope>
+                            <skipTestScope>true</skipTestScope>
+                            <nodeAuditAnalyzerUrl>/-/npm/v1/security/advisories/bulk</nodeAuditAnalyzerUrl>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>check-dependency-updates</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                 </plugins>
             </build>
         </profile>
