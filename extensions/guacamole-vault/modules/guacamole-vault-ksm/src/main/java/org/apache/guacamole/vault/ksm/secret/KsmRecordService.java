@@ -87,8 +87,15 @@ public class KsmRecordService {
      * Regular expression which matches the labels of custom fields containing
      * private keys.
      */
-    private static final Pattern PRIVATE_KEY_LABEL_PATTERN =
+    private static final Pattern PRIVATE_KEY_CUSTOM_LABEL_PATTERN =
             Pattern.compile("private\\s*key", Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Regular expression which matches the labels of standard fields containing
+     * private keys.
+     */
+    private static final Pattern PRIVATE_KEY_STANDARD_LABEL_PATTERN =
+            Pattern.compile("private\\s*pem\\s*key", Pattern.CASE_INSENSITIVE);
 
     /**
      * Regular expression which matches the filenames of private keys attached
@@ -523,9 +530,11 @@ public class KsmRecordService {
      * has no associated private key, or multiple private keys, null is
      * returned. Private keys are retrieved from "KeyPairs" fields.
      * Alternatively, private keys are retrieved from PEM-type attachments or
-     * custom fields with the label "private key" (case-insensitive, space
-     * optional) if they are "KeyPairs", "Password", or "Hidden" fields. If
-     * file downloads are required, they will be performed asynchronously.
+     * standard "Hidden" fields with the label "private pem key", or custom
+     * fields with the label "private key" if they are "KeyPairs", "Password",
+     * or "Hidden" fields. All label matching is case-insensitive, with spaces
+     * between words being optional. If file downloads are required, they will
+     * be performed asynchronously.
      *
      * @param record
      *     The record to retrieve the private key from.
@@ -538,7 +547,8 @@ public class KsmRecordService {
     public Future<String> getPrivateKey(KeeperRecord record) {
 
         // Attempt to find single matching keypair field
-        KeyPairs keyPairsField = getField(record, KeyPairs.class, PRIVATE_KEY_LABEL_PATTERN);
+        KeyPairs keyPairsField = getField(
+                record, KeyPairs.class, PRIVATE_KEY_CUSTOM_LABEL_PATTERN);
         if (keyPairsField != null) {
             String privateKey = getSingleStringValue(keyPairsField.getValue(), KeyPair::getPrivateKey);
             if (privateKey != null && !privateKey.isEmpty())
@@ -553,13 +563,21 @@ public class KsmRecordService {
         KeeperRecordData data = record.getData();
         List<KeeperRecordField> custom = data.getCustom();
 
-        // Use password "private key" custom field as fallback ...
-        Password passwordField = getField(custom, Password.class, PRIVATE_KEY_LABEL_PATTERN);
+        // Use a hidden "private pem key" standard field as fallback ...
+        HiddenField hiddenField = getField(
+                data.getFields(), HiddenField.class, PRIVATE_KEY_STANDARD_LABEL_PATTERN);
+        if (hiddenField != null)
+            return CompletableFuture.completedFuture(getSingleStringValue(hiddenField.getValue()));
+
+        // ... or password "private key" custom field ...
+        Password passwordField = getField(
+                custom, Password.class, PRIVATE_KEY_CUSTOM_LABEL_PATTERN);
         if (passwordField != null)
             return CompletableFuture.completedFuture(getSingleStringValue(passwordField.getValue()));
 
         // ... or hidden "private key" custom field
-        HiddenField hiddenField = getField(custom, HiddenField.class, PRIVATE_KEY_LABEL_PATTERN);
+        hiddenField = getField(
+                custom, HiddenField.class, PRIVATE_KEY_CUSTOM_LABEL_PATTERN);
         if (hiddenField != null)
             return CompletableFuture.completedFuture(getSingleStringValue(hiddenField.getValue()));
 

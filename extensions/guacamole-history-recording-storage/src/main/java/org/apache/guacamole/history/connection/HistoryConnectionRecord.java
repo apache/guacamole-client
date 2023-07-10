@@ -131,7 +131,9 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
      */
     private boolean isSessionRecording(File file) {
 
-        try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
+        Reader reader = null;
+        try {
+            reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
 
             GuacamoleReader guacReader = new ReaderGuacamoleReader(reader);
             if (guacReader.readInstruction() != null)
@@ -147,6 +149,24 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
             logger.warn("Possible session recording \"{}\" could not be "
                     + "identified as it cannot be read: {}", file, e.getMessage());
             logger.debug("Possible session recording \"{}\" could not be read.", file, e);
+        }
+        finally {
+
+            // If the reader was successfully constructed, close it
+            if (reader != null) {
+
+                try {
+                    reader.close();
+                }
+
+                catch (IOException e) {
+                    logger.warn("Unexpected error closing recording file \"{}\": {}",
+                            file, e.getMessage());
+                    logger.debug("Session recording file \"{}\" could not be closed.",
+                            file, e);
+                }
+
+            }
         }
 
         return false;

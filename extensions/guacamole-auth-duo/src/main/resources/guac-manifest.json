@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.5.1",
+    "guacamoleVersion" : "1.5.3",
 
     "name"      : "Duo TFA Authentication Backend",
     "namespace" : "duo",

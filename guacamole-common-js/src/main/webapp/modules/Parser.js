@@ -312,7 +312,7 @@ Guacamole.Parser.codePointCount = function codePointCount(str, start, end) {
  * those strings as length-prefixed elements of a complete Guacamole
  * instruction.
  *
- * @param {!*[]} elements
+ * @param {!Array.<*>} elements
  *     The values that should be encoded as the elements of a Guacamole
  *     instruction. Order of these elements is preserved. This array MUST have
  *     at least one element.

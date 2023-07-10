@@ -69,6 +69,27 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     @Inject
     private SAMLService saml;
 
+    /**
+     * Return the value of the session identifier associated with the given
+     * credentials, or null if no session identifier is found in the
+     * credentials.
+     *
+     * @param credentials
+     *     The credentials from which to extract the session identifier.
+     *
+     * @return
+     *     The session identifier associated with the given credentials, or
+     *     null if no identifier is found.
+     */
+    public static String getSessionIdentifier(Credentials credentials) {
+
+        // Return the session identifier from the request params, if set, or
+        // null otherwise
+        return credentials != null && credentials.getRequest() != null
+                ? credentials.getRequest().getParameter(AUTH_SESSION_QUERY_PARAM)
+                : null;
+    }
+
     @Override
     public SAMLAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
@@ -80,7 +101,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
             return null;
 
         // Use established SAML identity if already provided by the SAML IdP
-        AssertedIdentity identity = sessionManager.getIdentity(request.getParameter(AUTH_SESSION_QUERY_PARAM));
+        AssertedIdentity identity = sessionManager.getIdentity(
+                getSessionIdentifier(credentials));
+
         if (identity != null) {
 
             // Back-port the username to the credentials

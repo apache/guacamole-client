@@ -208,9 +208,16 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             .then(function permissionsRetrieved(permissions) {
 
                 // Add action for updaing password or user preferences if permission is granted
-                $scope.canUpdateSelf = PermissionSet.hasUserPermission(permissions,
-                        PermissionSet.ObjectPermissionType.UPDATE, username);
-                        
+                $scope.canUpdateSelf = (
+
+                        // If permission is explicitly granted
+                        PermissionSet.hasUserPermission(permissions,
+                            PermissionSet.ObjectPermissionType.UPDATE, username)
+
+                        // Or if implicitly granted through being an administrator
+                        || PermissionSet.hasSystemPermission(permissions,
+                            PermissionSet.SystemPermissionType.ADMINISTER));
+
             })
             ['catch'](requestService.createErrorCallback(function permissionsFailed(error) {
                 $scope.canUpdateSelf = false;
