@@ -1,2 +1,0 @@
-ch.qos.logback:logback-classic:jar:1.3.7
-ch.qos.logback:logback-core:jar:1.3.7

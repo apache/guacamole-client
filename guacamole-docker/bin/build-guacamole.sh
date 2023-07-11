@@ -83,7 +83,7 @@ tar -xzf extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-dist/target/
 #
 
 echo "Downloading MySQL Connector/J ..."
-curl -L "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-8.0.32.tar.gz" | \
+curl -L "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-j-$MYSQL_JDBC_VERSION.tar.gz" | \
 tar -xz                        \
     -C "$DESTINATION/mysql/"   \
     --wildcards                \
@@ -97,7 +97,8 @@ tar -xz                        \
 #
 
 echo "Downloading PostgreSQL JDBC driver ..."
-curl -L "https://jdbc.postgresql.org/download/postgresql-42.3.8.jar" > "$DESTINATION/postgresql/postgresql-42.3.8.jar"
+curl -L "https://jdbc.postgresql.org/download/postgresql-$PGSQL_JDBC_VERSION.jar" \
+    > "$DESTINATION/postgresql/postgresql-$PGSQL_JDBC_VERSION.jar"
 
 #
 # Copy SSO auth extensions
@@ -115,14 +116,8 @@ tar -xzf extensions/guacamole-auth-sso/modules/guacamole-auth-sso-dist/target/*.
 #
 
 echo "Downloading SQL Server JDBC driver ..."
-curl -L "https://go.microsoft.com/fwlink/?linkid=2183223&clcid=0x409" | \
-tar -xz                        \
-    -C "$DESTINATION/sqlserver/"   \
-    --wildcards                \
-    --no-anchored              \
-    --no-wildcards-match-slash \
-    --strip-components=2       \
-    "mssql-jdbc-*.jre8.jar"
+curl -L "https://github.com/microsoft/mssql-jdbc/releases/download/v$MSSQL_JDBC_VERSION/mssql-jdbc-$MSSQL_JDBC_VERSION.jre8.jar" \
+    > "$DESTINATION/sqlserver/mssql-jdbc-$MSSQL_JDBC_VERSION.jre8.jar"   \
 
 #
 # Copy LDAP auth extension and schema modifications

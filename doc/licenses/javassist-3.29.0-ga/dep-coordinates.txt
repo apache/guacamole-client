@@ -1,1 +1,0 @@
-org.javassist:javassist:jar:3.29.0-GA
