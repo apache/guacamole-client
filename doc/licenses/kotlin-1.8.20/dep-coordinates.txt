@@ -1,5 +1,0 @@
-org.jetbrains.kotlin:kotlin-reflect:jar:1.8.20
-org.jetbrains.kotlin:kotlin-stdlib:jar:1.8.20
-org.jetbrains.kotlin:kotlin-stdlib-common:jar:1.8.20
-org.jetbrains.kotlin:kotlin-stdlib-jdk8:jar:1.8.20
-org.jetbrains.kotlin:kotlin-stdlib-jdk7:jar:1.8.20
