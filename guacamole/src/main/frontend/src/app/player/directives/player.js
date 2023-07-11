@@ -363,7 +363,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     // Convert to the display-optimized TextBatch type
                     $scope.textBatches.push(new TextBatch(batch));
 
-                }
+                };
 
                 // Notify listeners when current position within the recording
                 // has changed

@@ -62,9 +62,9 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
      *
      * @constructor
      * @private
-     * @param {KEY_DEFINITION|object} [template={}]
+     * @param {KeyDefinition|object} [template={}]
      *     The object whose properties should be copied within the new
-     *     KEY_DEFINITION.
+     *     KeyDefinition.
      */
     var KeyDefinition = function KeyDefinition(template) {
 
@@ -278,38 +278,9 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
         if (keysym < 0x00 || (keysym > 0xFF && (keysym | 0xFFFF) != 0x0100FFFF))
             return null;
 
-        var codepoint = keysym & 0xFFFF;
-        var mask;
-        var bytes;
-
-        // Determine size and initial byte mask
-        if (codepoint <= 0x007F) {
-            mask  = 0x00;
-            bytes = 1;
-        }
-        else if (codepoint <= 0x7FF) {
-            mask  = 0xC0;
-            bytes = 2;
-        }
-        else {
-            mask  = 0xE0;
-            bytes = 3;
-        }
-
-        var byteArray = new ArrayBuffer(bytes);
-        var byteView = new Int8Array(byteArray);
-
-        // Add trailing bytes, if any
-        for (var i = 1; i < bytes; i++) {
-            byteView[bytes - i] = 0x80 | (codepoint & 0x3F);
-            codepoint >>= 6;
-        }
-
-        // Set initial byte
-        byteView[0] = mask | codepoint;
-
         // Convert to UTF8 string
-        var name = new TextDecoder("utf-8").decode(byteArray);
+        var codepoint = keysym & 0xFFFF;
+        var name = String.fromCharCode(codepoint);
 
         // Create and return the definition
         return new KeyDefinition({keysym: keysym, name: name, value: name, modifier: false});
@@ -482,7 +453,7 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
 
         }
 
-    }
+    };
 
     /**
      * Return the current batch of typed text. Note that the batch may be
@@ -494,8 +465,8 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
      */
     this.getCurrentBatch = function getCurrentBatch() {
         return currentBatch;
-    }
-}
+    };
+};
 
 /**
  * A granular description of an extracted key event, including a human-readable
@@ -576,4 +547,4 @@ Guacamole.KeyEventInterpreter.KeyEventBatch = function KeyEventBatch(events, sim
      */
     this.simpleValue = simpleValue || '';
 
-}
+};
