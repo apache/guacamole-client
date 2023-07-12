@@ -355,6 +355,14 @@ Guacamole.Keyboard = function Keyboard(element) {
         // We extend KeyEvent
         KeyEvent.call(this, orig);
 
+        // If unreliable caps lock was pressed and event was not marked, then
+        // we need to pretend that this is a keydown event because we obviously
+        // did not receive it (issue on macos with chrome)
+        if (this.keyCode == 20 && quirks.capsLockKeyupUnreliable) {
+          eventLog.push(new KeydownEvent(this));
+          return;
+        }
+
         // If key is known from keyCode or DOM3 alone, use that (keyCode is
         // still more reliable for keyup when dead keys are in use)
         this.keysym =  keysym_from_keycode(this.keyCode, this.location)
