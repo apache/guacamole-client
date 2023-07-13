@@ -693,7 +693,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         });
 
         // Read all the data into memory
-        $scope.fileReader.readAsBinaryString(file);
+        $scope.fileReader.readAsText(file);
     };
     
 }]);

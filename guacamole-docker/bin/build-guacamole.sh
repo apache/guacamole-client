@@ -97,7 +97,7 @@ tar -xz                        \
 #
 
 echo "Downloading PostgreSQL JDBC driver ..."
-curl -L "https://jdbc.postgresql.org/download/postgresql-42.2.24.jre7.jar" > "$DESTINATION/postgresql/postgresql-42.2.24.jre7.jar"
+curl -L "https://jdbc.postgresql.org/download/postgresql-42.3.8.jar" > "$DESTINATION/postgresql/postgresql-42.3.8.jar"
 
 #
 # Copy SSO auth extensions
@@ -197,3 +197,11 @@ if [ -f extensions/guacamole-auth-ban/target/guacamole-auth-ban*.jar ]; then
     cp extensions/guacamole-auth-ban/target/guacamole-auth-ban*.jar "$DESTINATION/ban"
 fi
 
+#
+# Copy history recording storage extension if it was built
+#
+
+if [ -f extensions/guacamole-history-recording-storage/target/guacamole-history-recording-storage*.jar ]; then
+    mkdir -p "$DESTINATION/recordings"
+    cp extensions/guacamole-history-recording-storage/target/guacamole-history-recording-storage*.jar "$DESTINATION/recordings"
+fi

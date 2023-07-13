@@ -4,7 +4,7 @@
     },
     "opts" : {
         "recurse" : true,
-        "destination" : "target/site/jsdoc"
+        "destination" : "target/apidocs"
     },
     "templates" : {
         "default" : {

@@ -24,14 +24,25 @@
 # Use args for Tomcat image label to allow image builder to choose alternatives
 # such as `--build-arg TOMCAT_JRE=jre8-alpine`
 #
-ARG TOMCAT_VERSION=8.5
-ARG TOMCAT_JRE=jdk8
+ARG TOMCAT_VERSION=10.1
+ARG TOMCAT_JRE=jdk17
 
 # Use official maven image for the build
-FROM maven:3-jdk-8 AS builder
+FROM maven:3-eclipse-temurin-8-focal AS builder
+
+# Use Mozilla's Firefox PPA (newer Ubuntu lacks a "firefox-esr" package and
+# provides only a transitional "firefox" package that actually requires Snap
+# and thus can't be used within Docker)
+RUN    apt-get update                                \
+    && apt-get upgrade -y                            \
+    && apt-get install -y software-properties-common \
+    && add-apt-repository -y ppa:mozillateam/ppa
+
+# Explicitly prefer packages from the Firefox PPA
+COPY guacamole-docker/mozilla-firefox.pref /etc/apt/preferences.d/
 
 # Install firefox browser for sake of JavaScript unit tests
-RUN apt-get update && apt-get install -y firefox-esr
+RUN apt-get update && apt-get install -y firefox
 
 # Arbitrary arguments that can be passed to the maven build. By default, an
 # argument will be provided to explicitly unskip any skipped tests. To, for

@@ -254,4 +254,22 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
      */
     public abstract boolean enforceAccessWindowsForActiveSessions() throws GuacamoleException;
 
+    /**
+     * Returns true if the JDBC batch executor should be used by default, false
+     * otherwise. The batch executor allows repeated updates to be batched
+     * together for improved performance. 
+     * See https://mybatis.org/mybatis-3/java-api.html#sqlSessions
+     *
+     * @return
+     *     true if the batch executor should be used by default, false otherwise.
+     */
+    public boolean shouldUseBatchExecutor() {
+
+        // Unless otherwise overwritten due to implementation-specific problems,
+        // all JDBC extensions should use the batch executor if possible to
+        // ensure the best performance for repetitive queries
+        return true;
+
+    }
+
 }
