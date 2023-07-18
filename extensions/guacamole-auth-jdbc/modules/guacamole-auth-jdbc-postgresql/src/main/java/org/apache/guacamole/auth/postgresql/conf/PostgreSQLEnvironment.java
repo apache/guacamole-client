@@ -398,5 +398,17 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
                 PostgreSQLGuacamoleProperties.POSTGRESQL_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS,
                 true);
     }
+    
+    @Override
+    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        
+        // By default, PostgreSQL does use case-sensitive string searches, so
+        // we will honor case-sensitive usernames.
+        return getProperty(
+                PostgreSQLGuacamoleProperties.POSTGRESQL_CASE_SENSITIVE_USERNAMES,
+                true
+        );
+        
+    }
 
 }

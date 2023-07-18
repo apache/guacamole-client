@@ -204,6 +204,18 @@ public class RadiusGuacamoleProperties {
         public String getName() { return "radius-nas-ip"; }
         
     };
+    
+    /**
+     * A property used to configure whether or not usernames within the RADIUS
+     * module should be treated as case-sensitive.
+     */
+    public static final BooleanGuacamoleProperty RADIUS_CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "radius-case-sensitive-usernames"; }
+        
+    };
 
 
 }

@@ -301,6 +301,14 @@ public class MySQLGuacamoleProperties {
         @Override
         public String getName() { return "mysql-batch-size"; }
 
-    };    
+    };
+    
+    public static final BooleanGuacamoleProperty MYSQL_CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+    
+        @Override
+        public String getName() { return "mysql-case-sensitive-usernames"; }
+                
+    };
     
 }

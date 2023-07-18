@@ -20,9 +20,13 @@
 package org.apache.guacamole.auth.json.user;
 
 import com.google.inject.Inject;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.json.ConfigurationService;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of AuthenticatedUser specific to the
@@ -32,11 +36,23 @@ import org.apache.guacamole.net.auth.Credentials;
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
 
     /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticatedUser.class);
+    
+    /**
      * Reference to the authentication provider associated with this
      * authenticated user.
      */
     @Inject
     private AuthenticationProvider authProvider;
+    
+    /**
+     * Reference to the configuration service associated with this
+     * authentication provider.
+     */
+    @Inject
+    private ConfigurationService confService;
 
     /**
      * The credentials provided when this user was authenticated.
@@ -65,6 +81,19 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
         this.credentials = credentials;
         this.userData = userData;
         setIdentifier(userData.getUsername());
+    }
+    
+    @Override
+    public boolean isCaseSensitive() {
+        try {
+            return confService.getCaseSensitiveUsernames();
+        }
+        catch (GuacamoleException e) {
+            LOGGER.error("Error when attempting to get the JSON configuration: {}. "
+                    + "Username comparisons will be case-sensitive.", e.getMessage());
+            LOGGER.debug("Exception caught while retrieving JSON configuration.", e);
+            return true;
+        }
     }
 
     @Override
