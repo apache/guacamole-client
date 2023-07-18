@@ -36,6 +36,12 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
      */
     @Inject
     private AuthenticationProvider authProvider;
+    
+    /**
+     * A reference to the configuration service associated with this module.
+     */
+    @Inject
+    private ConfigurationService confService;
 
     /**
      * The credentials provided when this user was authenticated.
@@ -61,6 +67,11 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
     @Override
     public Credentials getCredentials() {
         return credentials;
+    }
+    
+    @Override
+    public boolean isCaseSensitive() {
+        return confService.getCaseSensitiveUsernames();
     }
 
 }

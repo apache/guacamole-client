@@ -439,7 +439,18 @@ public class MySQLEnvironment extends JDBCEnvironment {
         // Enforce access window restrictions for active sessions unless explicitly disabled
         return getProperty(
                 MySQLGuacamoleProperties.MYSQL_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS,
-                true);
+                true
+        );
+    }
+    
+    @Override
+    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        
+        return getProperty(
+                MySQLGuacamoleProperties.MYSQL_CASE_SENSITIVE_USERNAMES,
+                false
+        );
+        
     }
 
 }

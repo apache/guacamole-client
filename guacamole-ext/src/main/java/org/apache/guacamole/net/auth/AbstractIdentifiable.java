@@ -34,12 +34,19 @@ public abstract class AbstractIdentifiable implements Identifiable {
 
     @Override
     public String getIdentifier() {
-        return identifier;
+        if (identifier == null || isCaseSensitive())
+            return identifier;
+        
+        return identifier.toLowerCase();
     }
 
     @Override
     public void setIdentifier(String identifier) {
-        this.identifier = identifier;
+        if (isCaseSensitive())
+            this.identifier = identifier;
+        else
+            if (identifier != null)
+                this.identifier = identifier.toLowerCase();
     }
 
     @Override
@@ -48,7 +55,10 @@ public abstract class AbstractIdentifiable implements Identifiable {
         if (identifier == null)
             return 0;
 
-        return identifier.hashCode();
+        if (isCaseSensitive())
+            return identifier.hashCode();
+        
+        return identifier.toLowerCase().hashCode();
     }
 
     @Override
@@ -65,8 +75,12 @@ public abstract class AbstractIdentifiable implements Identifiable {
         if (otherIdentifier == null)
             return identifier == null;
 
-        // Otherwise, equal only if strings are identical
-        return otherIdentifier.equals(identifier);
+        // If this identifier is case-sensitive, evaluate with case-sensitivity.
+        if (isCaseSensitive())
+            return otherIdentifier.equals(identifier);
+        
+        // The identifier should not be evaluated in a case-sensitive manner.
+        return otherIdentifier.equalsIgnoreCase(identifier);
 
     }
 

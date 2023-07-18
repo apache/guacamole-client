@@ -49,6 +49,11 @@ public abstract class AbstractUser extends AbstractIdentifiable
     public void setPassword(String password) {
         this.password = password;
     }
+    
+    @Override
+    public boolean isCaseSensitive() {
+        return false;
+    }
 
     /**
      * {@inheritDoc}
