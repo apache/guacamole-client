@@ -25,7 +25,7 @@
 # such as `--build-arg TOMCAT_JRE=jre8-alpine`
 #
 ARG TOMCAT_VERSION=10.1
-ARG TOMCAT_JRE=jdk17
+ARG TOMCAT_JRE=jdk11
 
 # Use official maven image for the build
 FROM maven:3-eclipse-temurin-8-focal AS builder
