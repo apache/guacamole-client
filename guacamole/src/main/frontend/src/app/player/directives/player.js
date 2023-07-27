@@ -77,6 +77,12 @@
  */
 angular.module('player').directive('guacPlayer', ['$injector', function guacPlayer($injector) {
 
+    // Required services
+    const playerTimeService = $injector.get('playerTimeService');
+
+    // Required types
+    const TextBatch = $injector.get('TextBatch');
+
     const config = {
         restrict : 'E',
         templateUrl : 'app/player/templates/player.html'
@@ -143,6 +149,21 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.seekPosition = null;
 
         /**
+         * Any batches of text typed during the recording.
+         *
+         * @type {TextBatch[]}
+         */
+        $scope.textBatches = [];
+
+        /**
+         * Whether or not the key log viewer should be displayed. False by
+         * default unless explicitly enabled by user interaction.
+         *
+         * @type {boolean}
+         */
+        $scope.showKeyLog = false;
+
+        /**
          * Whether a seek request is currently in progress. A seek request is
          * in progress if the user is attempting to change the current playback
          * position (the user is manipulating the playback position slider).
@@ -161,56 +182,28 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         var resumeAfterSeekRequest = false;
 
         /**
-         * Formats the given number as a decimal string, adding leading zeroes
-         * such that the string contains at least two digits. The given number
-         * MUST NOT be negative.
+         * Return true if any batches of key event logs are available for this
+         * recording, or false otherwise.
          *
-         * @param {!number} value
-         *     The number to format.
-         *
-         * @returns {!string}
-         *     The decimal string representation of the given value, padded
-         *     with leading zeroes up to a minimum length of two digits.
+         * @return
+         *     True if any batches of key event logs are avaiable for this
+         *     recording, or false otherwise.
          */
-        const zeroPad = function zeroPad(value) {
-            return value > 9 ? value : '0' + value;
+        $scope.hasTextBatches = function hasTextBatches () {
+            return $scope.textBatches.length >= 0;
         };
 
         /**
-         * Formats the given quantity of milliseconds as days, hours, minutes,
-         * and whole seconds, separated by colons (DD:HH:MM:SS). Hours are
-         * included only if the quantity is at least one hour, and days are
-         * included only if the quantity is at least one day. All included
-         * groups are zero-padded to two digits with the exception of the
-         * left-most group.
-         *
-         * @param {!number} value
-         *     The time to format, in milliseconds.
-         *
-         * @returns {!string}
-         *     The given quantity of milliseconds formatted as "DD:HH:MM:SS".
+         * Toggle the visibility of the text key log viewer.
          */
-        $scope.formatTime = function formatTime(value) {
-
-            // Round provided value down to whole seconds
-            value = Math.floor((value || 0) / 1000);
-
-            // Separate seconds into logical groups of seconds, minutes,
-            // hours, etc.
-            var groups = [ 1, 24, 60, 60 ];
-            for (var i = groups.length - 1; i >= 0; i--) {
-                var placeValue = groups[i];
-                groups[i] = zeroPad(value % placeValue);
-                value = Math.floor(value / placeValue);
-            }
-
-            // Format groups separated by colons, stripping leading zeroes and
-            // groups which are entirely zeroes, leaving at least minutes and
-            // seconds
-            var formatted = groups.join(':');
-            return /^[0:]*([0-9]{1,2}(?::[0-9]{2})+)$/.exec(formatted)[1];
-
+        $scope.toggleKeyLogView = function toggleKeyLogView() {
+            $scope.showKeyLog = !$scope.showKeyLog;
         };
+
+        /**
+         * @borrows playerTimeService.formatTime
+         */
+        $scope.formatTime = playerTimeService.formatTime;
 
         /**
          * Pauses playback and decouples the position slider from current
@@ -242,30 +235,52 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
             // If a recording is present and there is an active seek request,
             // restore the playback state at the time that request began and
             // begin seeking to the requested position
-            if ($scope.recording && pendingSeekRequest) {
-
-                $scope.seekPosition = null;
-                $scope.operationMessage = 'PLAYER.INFO_SEEK_IN_PROGRESS';
-                $scope.operationProgress = 0;
-
-                // Cancel seek when requested, updating playback position if
-                // that position changed
-                $scope.cancelOperation = function abortSeek() {
-                    $scope.recording.cancel();
-                    $scope.playbackPosition = $scope.seekPosition || $scope.playbackPosition;
-                };
-
-                resumeAfterSeekRequest && $scope.recording.play();
-                $scope.recording.seek($scope.playbackPosition, function seekComplete() {
-                    $scope.operationMessage = null;
-                    $scope.$evalAsync();
-                });
-
-            }
+            if ($scope.recording && pendingSeekRequest)
+                $scope.seekToPlaybackPosition();
 
             // Flag seek request as completed
             pendingSeekRequest = false;
 
+        };
+
+        /**
+         * Seek the recording to the specified position within the recording,
+         * in milliseconds.
+         *
+         * @param {Number} timestamp
+         *      The position to seek to within the current record,
+         *      in milliseconds.
+         */
+        $scope.seekToTimestamp = function seekToTimestamp(timestamp) {
+
+            // Set the timestamp and seek to it
+            $scope.playbackPosition = timestamp;
+            $scope.seekToPlaybackPosition();
+
+        };
+
+        /**
+         * Seek the recording to the current playback position value.
+         */
+        $scope.seekToPlaybackPosition = function seekToPlaybackPosition() {
+
+            $scope.seekPosition = null;
+            $scope.operationMessage = 'PLAYER.INFO_SEEK_IN_PROGRESS';
+            $scope.operationProgress = 0;
+
+            // Cancel seek when requested, updating playback position if
+            // that position changed
+            $scope.cancelOperation = function abortSeek() {
+                $scope.recording.cancel();
+                $scope.playbackPosition = $scope.seekPosition || $scope.playbackPosition;
+            };
+
+            resumeAfterSeekRequest && $scope.recording.play();
+            $scope.recording.seek($scope.playbackPosition, function seekComplete() {
+                $scope.seekPosition = null;
+                $scope.operationMessage = null;
+                $scope.$evalAsync();
+            });
         };
 
         /**
@@ -340,6 +355,14 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 $scope.recording.onpause = function playbackPaused() {
                     $scope.$emit('guacPlayerPause');
                     $scope.$evalAsync();
+                };
+
+                // Append any extracted batches of typed text
+                $scope.recording.ontext = function appendTextBatch(batch) {
+
+                    // Convert to the display-optimized TextBatch type
+                    $scope.textBatches.push(new TextBatch(batch));
+
                 };
 
                 // Notify listeners when current position within the recording

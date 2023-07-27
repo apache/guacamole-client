@@ -50,6 +50,11 @@ RUN apt-get update && apt-get install -y firefox
 # as well: `--build-arg MAVEN_ARGUMENTS="-P lgpl-extensions -DskipTests=false"`.
 ARG MAVEN_ARGUMENTS="-DskipTests=false"
 
+# Versions of JDBC drivers to bundle within image
+ARG MSSQL_JDBC_VERSION=9.4.1
+ARG MYSQL_JDBC_VERSION=8.0.33
+ARG PGSQL_JDBC_VERSION=42.6.0
+
 # Build environment variables
 ENV \
     BUILD_DIR=/tmp/guacamole-docker-BUILD

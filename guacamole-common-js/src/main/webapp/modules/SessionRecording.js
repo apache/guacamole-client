@@ -376,6 +376,38 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     playbackClient.getDisplay().showCursor(false);
 
     /**
+     * A key event interpreter to split all key events in this recording into
+     * human-readable batches of text. Constrcution is deferred until the first
+     * event is processed, to enable recording-relative timestamps.
+     *
+     * @type {!Guacamole.KeyEventInterpreter}
+     */
+    var keyEventInterpreter = null;
+
+    /**
+     * Initialize the key interpreter. This function should be called only once
+     * with the first timestamp in the recording as an argument.
+     *
+     * @private
+     * @param {!number} startTimestamp
+     *     The timestamp of the first frame in the recording, i.e. the start of
+     *     the recording.
+     */
+    function initializeKeyInterpreter(startTimestamp) {
+
+        keyEventInterpreter = new Guacamole.KeyEventInterpreter(null, startTimestamp);
+
+        // Pass through any received batches to the recording ontext handler
+        keyEventInterpreter.onbatch = function onbatch(batch) {
+
+            // Pass the batch through if a handler is set
+            if (recording.ontext)
+                recording.ontext(batch);
+
+        };
+    }
+
+    /**
      * Handles a newly-received instruction, whether from the main Blob or a
      * tunnel, adding new frames and keyframes as necessary. Load progress is
      * reported via onprogress automatically.
@@ -406,6 +438,11 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
             frames.push(frame);
             frameStart = frameEnd;
 
+            // If this is the first frame, intialize the key event interpreter
+            // with the timestamp of the first frame
+            if (frames.length === 1)
+                initializeKeyInterpreter(timestamp);
+
             // This frame should eventually become a keyframe if enough data
             // has been processed and enough recording time has elapsed, or if
             // this is the absolute first frame
@@ -413,6 +450,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                     && timestamp - frames[lastKeyframe].timestamp >= KEYFRAME_TIME_INTERVAL)) {
                 frame.keyframe = true;
                 lastKeyframe = frames.length - 1;
+
             }
 
             // Notify that additional content is available
@@ -421,6 +459,8 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
         }
 
+        else if (opcode === 'key')
+            keyEventInterpreter.handleKeyEvent(args);
     };
 
     /**
@@ -486,6 +526,12 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                     recordingBlob = new Blob([recordingBlob, instructionBuffer]);
                     instructionBuffer = '';
                 }
+
+                // If there's any typed text that's yet to be sent to the ontext
+                // handler, send it now
+                var batch = keyEventInterpreter.getCurrentBatch();
+                if (batch && recording.ontext)
+                    recording.ontext(batch);
 
                 // Consider recording loaded if tunnel has closed without errors
                 if (!errorEncountered)
@@ -871,6 +917,16 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
      * @event
      */
     this.onpause = null;
+
+    /**
+     * Fired whenever a new batch of typed text extracted from key events
+     * is available.
+     *
+     * @event
+     * @param {!Guacamole.KeyEventInterpreter.KeyEventBatch} batch
+     *     The batch of extracted text.
+     */
+    this.ontext = null;
 
     /**
      * Fired whenever the playback position within the recording changes.

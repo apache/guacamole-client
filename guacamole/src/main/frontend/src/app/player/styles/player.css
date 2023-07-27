@@ -50,7 +50,6 @@ guac-player {
 }
 
 guac-player .guac-player-display {
-    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -60,6 +59,7 @@ guac-player .guac-player-display {
 guac-player .guac-player-controls {
 
     position: absolute;
+    padding-bottom: 0;
     left: 0;
     bottom: 0;
     width: 100%;
@@ -107,6 +107,18 @@ guac-player .guac-player-controls {
     background-image: url('images/action-icons/guac-pause.svg');
 }
 
+.guac-player-controls .guac-player-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.guac-player-controls .guac-player-keys {
+    margin-left: auto;
+    padding-right: 0.5em;
+    cursor: pointer;
+}
+
 guac-player .guac-player-status {
 
     position: fixed;
@@ -145,3 +157,50 @@ guac-player .guac-player-status {
     flex-direction: column;
 
 }
+
+.guac-player-container {
+
+    height: 100%;
+
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+
+    -webkit-flex-direction: row;
+    -ms-flex-direction: row;
+    flex-direction: row;
+
+    -ms-flex-pack: space-between;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+
+}
+
+guac-player-display {
+
+    flex-grow: 5;
+
+    /* Required for horizontal resizing to work */
+    min-width: 0;
+
+}
+
+guac-player-text-view {
+
+    min-width: 25em;
+    flex-basis: 0;
+
+    /* Make room for the control bar at the bottom */
+    height: calc(100% - 48px);
+
+}
+
+guac-player-text-view.fullscreen {
+
+    min-width: 100%;
+
+}
+
