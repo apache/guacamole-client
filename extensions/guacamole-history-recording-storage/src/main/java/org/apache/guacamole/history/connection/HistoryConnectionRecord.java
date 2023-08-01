@@ -157,6 +157,7 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
 
                 try {
                     reader.close();
+                    logger.debug("Session recording on file \"{}\".", file);
                 }
 
                 catch (IOException e) {
@@ -289,6 +290,7 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
         // Convert file into deterministic name UUID within URL namespace
         UUID fileUUID;
         try {
+            logger.debug("Add activity log for file \"{}\".", file);
             byte[] urlBytes = file.toURI().toURL().toString().getBytes(StandardCharsets.UTF_8);
             fileUUID = UUID.nameUUIDFromBytes(ByteBuffer.allocate(16 + urlBytes.length)
                     .putLong(UUID_NAMESPACE_URL.getMostSignificantBits())
