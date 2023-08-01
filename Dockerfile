@@ -65,6 +65,8 @@ COPY guacamole-docker/bin/ /opt/guacamole/bin/
 # Copy source to container for sake of build
 COPY . "$BUILD_DIR"
 
+ENV IGNORE_LICENSE_ERRORS=true
+
 # Run the build itself
 RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole
 

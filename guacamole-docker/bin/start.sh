@@ -894,6 +894,11 @@ associate_header() {
     ln -s /opt/guacamole/header/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 }
 
+associate_procyon() {
+    # Add required .jar files to GUACAMOLE_EXT
+    ln -s /opt/guacamole/procyon/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+}
+
 ##
 ## Adds properties to guacamole.properties witch configure the CAS
 ## authentication service.
@@ -1167,6 +1172,8 @@ fi
 if [ -n "$DUO_API_HOSTNAME" ]; then
     associate_duo
 fi
+
+associate_procyon
 
 # Use header if specified.
 if [ "$HEADER_ENABLED" = "true" ]; then

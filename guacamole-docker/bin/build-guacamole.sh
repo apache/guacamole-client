@@ -175,6 +175,16 @@ if [ -f extensions/guacamole-auth-header/target/guacamole-auth-header*.jar ]; th
 fi
 
 #
+# Copy procyon auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-procyon/target/guacamole-auth-procyon*.jar ]; then
+    mkdir -p "$DESTINATION/procyon"
+    cp extensions/guacamole-auth-procyon/target/guacamole-auth-procyon*.jar "$DESTINATION/procyon"
+fi
+
+
+#
 # Copy json auth extension if it was built
 #
 

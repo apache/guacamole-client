@@ -1,0 +1,12 @@
+{
+
+    "guacamoleVersion" : "1.5.3",
+
+    "name"      : "Procyon Authentication Extension",
+    "namespace" : "procyon",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.procyon.ProcyonAuthenticationProvider"
+    ]
+
+}
