@@ -1114,6 +1114,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Active since",
         "TABLE_HEADER_SESSION_USERNAME"        : "Username",
+        "TABLE_HEADER_SESSION_JOIN"            : "Join Session",
         
         "TEXT_CONFIRM_DELETE" : "Are you sure you want to kill all selected sessions? The users using these sessions will be immediately disconnected."
 

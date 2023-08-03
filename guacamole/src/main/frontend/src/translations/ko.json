@@ -960,6 +960,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "원격 호스트",
         "TABLE_HEADER_SESSION_STARTDATE"       : "활성화된 시간",
         "TABLE_HEADER_SESSION_USERNAME"        : "사용자 이름",
+        "TABLE_HEADER_SESSION_JOIN"            : "세션 참여",
 
         "TEXT_CONFIRM_DELETE" : "선택한 세션을 모두 종료하시겠습니까? 이 세션을 사용 중인 사용자의 연결이 즉시 끊어질 것입니다."
 

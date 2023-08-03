@@ -811,6 +811,7 @@
         "TABLE_HEADER_SESSION_STARTDATE"       : "Активен с",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Удаленный узел",
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Название подключения",
+        "TABLE_HEADER_SESSION_JOIN"            : "присоединиться сеансу",
 
         "TEXT_CONFIRM_DELETE" : "Вы уверены, что хотите завершить все выбранные сессии? Пользователи, работающие в этих сессиях, будут немедленно отключены."
 

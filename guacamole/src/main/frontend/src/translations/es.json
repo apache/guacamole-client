@@ -985,6 +985,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Host Remoto",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Activo desde",
         "TABLE_HEADER_SESSION_USERNAME"        : "Usuario",
+        "TABLE_HEADER_SESSION_JOIN"            : "Unirse sesión",
 
         "TEXT_CONFIRM_DELETE" : "¿Está seguro que quiere finalizar las sesiones seleccionadas? Los usuarios que estan usando estas sesiones serán desconectados inmediatamente."
 

@@ -30,6 +30,7 @@
                 <th guac-sort-order="wrapperOrder" guac-sort-property="'name'">
                     {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_CONNECTION_NAME' | translate}}
                 </th>
+                <th>{{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_JOIN' | translate}}</th>
             </tr>
         </thead>
         <tbody>
@@ -43,6 +44,9 @@
                 <td><a ng-href="{{
                     getClientURL(wrapper.dataSource, wrapper.activeConnection)
                 }}">{{wrapper.name}}</a></td>
+                <td><a ng-repeat="link in wrapper.sharingLinks | toArray | orderBy: value.sharingProfile.name"
+                       href="{{link.value.href}}">
+                    {{link.value.sharingProfile.name}}</a><br></td>
             </tr>
         </tbody>
     </table>

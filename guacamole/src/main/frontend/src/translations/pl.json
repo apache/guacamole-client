@@ -1021,6 +1021,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Zdalny host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Aktywne od",
         "TABLE_HEADER_SESSION_USERNAME"        : "Użytkownik",
+        "TABLE_HEADER_SESSION_JOIN"            : "Dołączyć sesji",
 
         "TEXT_CONFIRM_DELETE" : "Czy na pewno chcesz zakończyć wszystkie wybrane sesje? Użytkownicy korzystający z tych sesji zostaną natychmiast rozłączeni."
 

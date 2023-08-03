@@ -1107,6 +1107,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Vzdálený host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Aktivní od",
         "TABLE_HEADER_SESSION_USERNAME"        : "Uživatelské jméno",
+        "TABLE_HEADER_SESSION_JOIN"            : "Zasedání připojit",
         
         "TEXT_CONFIRM_DELETE" : "Jste si jisti, že chcete ukončit vybrané připojení? Uživatelé využívající toto připojení budou okamžitě odpojeni."
 

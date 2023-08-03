@@ -1102,6 +1102,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "远程主机",
         "TABLE_HEADER_SESSION_STARTDATE"       : "开始时间",
         "TABLE_HEADER_SESSION_USERNAME"        : "用户名",
+        "TABLE_HEADER_SESSION_JOIN"            : "加入会议",
         
         "TEXT_CONFIRM_DELETE" : "确定要终止所选定的会话？对应的用户会被立即断开连接。"
 

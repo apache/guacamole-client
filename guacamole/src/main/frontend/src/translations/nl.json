@@ -671,6 +671,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Servernaam",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Actief sinds",
         "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam",
+        "TABLE_HEADER_SESSION_JOIN"            : "Deelnemen aan sessie",
 
         "TEXT_CONFIRM_DELETE" : "Weet u zeker dat u alle geselecteerde sessies wilt beeindigen? De gebruikers van deze sessies zullen ogenblikkelijk hun verbinding met deze sessies verliezen."
 
