@@ -195,7 +195,8 @@ angular.module('settings').directive('guacSettingsSessions', [function guacSetti
                                 dataSource       : dataSource,
                                 name             : connection.name,
                                 startDate        : $filter('date')(activeConnection.startDate, sessionDateFormat),
-                                activeConnection : activeConnection
+                                activeConnection : activeConnection,
+                                sharingLinks     : activeConnection.sharingLinks
                             }));
                         }
 
