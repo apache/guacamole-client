@@ -70,6 +70,14 @@ angular.module('settings').factory('ActiveConnectionWrapper', [
          */
         this.checked = template.checked || false;
 
+        /**
+         * All available share links generated for the client associated
+         * with this active connection
+         *
+         * @type Object.<String, ManagedShareLink>
+         */
+        this.sharingLinks = template.sharingLinks;
+        
     };
 
     return ActiveConnectionWrapper;
