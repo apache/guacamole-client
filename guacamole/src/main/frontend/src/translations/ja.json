@@ -810,6 +810,7 @@
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "接続名",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "接続元",
         "TABLE_HEADER_SESSION_USERNAME"        : "ユーザ名",
+        "TABLE_HEADER_SESSION_JOIN"            : "セッションに参加",
         
         "TEXT_CONFIRM_DELETE" : "選択したすべてのセッションを強制終了しますか？これらのセッションを使用しているユーザーは直ちに切断されます。"
 

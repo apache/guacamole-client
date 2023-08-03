@@ -652,6 +652,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Server",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Aktiv siden",
         "TABLE_HEADER_SESSION_USERNAME"        : "Brukernavn",
+        "TABLE_HEADER_SESSION_JOIN"            : "Bli med i sesjonen",
         
         "TEXT_CONFIRM_DELETE" : "Er du sikker på at du vil avslutte valgte sesjoner? Brukere av disse sesjonene vil bli frakoblet umiddelbart."
 

@@ -584,6 +584,7 @@
         "TABLE_HEADER_SESSION_STARTDATE"       : "Attivo da",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Remote host",
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nome della connessione",
+        "TABLE_HEADER_SESSION_JOIN"            : "Partecipa sessione",
         
         "TEXT_CONFIRM_DELETE" : "Sei sicuro di voler termianre la sessione selezionata? L'utente che sta utilizzando questa sessione sarà immediatamente disconnesso."
 

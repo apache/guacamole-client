@@ -969,6 +969,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Amfitrió remot",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Actiu des de",
         "TABLE_HEADER_SESSION_USERNAME"        : "Nom d'usuari",
+        "TABLE_HEADER_SESSION_JOIN"            : "Uneix-te sessió",
         
         "TEXT_CONFIRM_DELETE" : "Esteu segur que voleu matar totes les sessions seleccionades? Els usuaris que utilitzin aquestes sessions seran desconnectats immediatament."
 

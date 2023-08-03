@@ -979,6 +979,7 @@
         "TABLE_HEADER_SESSION_STARTDATE"       : "Ouvert depuis",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Hôte distant",
         "TABLE_HEADER_SESSION_USERNAME"        : "Identifiant",
+        "TABLE_HEADER_SESSION_JOIN"            : "Rejoindre session",
 
         "TEXT_CONFIRM_DELETE" : "Êtes-vous certains de vouloir fermer toutes les connexions sélectionnées ? Les utilisateurs utilisant ces sessions seront immédiatement déconnectés."
 

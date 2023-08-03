@@ -847,6 +847,7 @@
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Entfernter Host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Sitzung aktiv seit",
         "TABLE_HEADER_SESSION_USERNAME"        : "Benutzername",
+        "TABLE_HEADER_SESSION_JOIN"            : "Sitzung beitreten",
         
         "TEXT_CONFIRM_DELETE" : "Sind Sie sicher, dass alle ausgewählten Sitzungen beendet werden sollen? Die Benutzer dieser Sitzungen werden unverzüglich getrennt."
 
