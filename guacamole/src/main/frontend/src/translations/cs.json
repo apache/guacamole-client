@@ -1099,8 +1099,9 @@
 
         "HELP_SESSIONS" : "Tato stránka bude naplněna aktuálně aktivními připojeními. Uvedená připojení a schopnost zabít tato připojení závisí na úrovni přístupu. Pokud chcete zabít jednu nebo více relací, zaškrtněte políčko vedle těchto relací a klepněte na tlačítko \"Zabít relace\". Zabití relace okamžitě odpojí uživatele od přidruženého připojení.",
         
-        "INFO_NO_SESSIONS" : "Žádné aktivní sezení",
-
+        "INFO_NO_SESSIONS"     : "Žádné aktivní sezení",
+        "INFO_NO_SHARINGLINKS" : "Nebyly poskytnuty žádné odkazy na sdílení",
+        
         "SECTION_HEADER_SESSIONS" : "Aktivní sezení",
         
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Název připojení",

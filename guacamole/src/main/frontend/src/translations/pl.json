@@ -1013,10 +1013,11 @@
         "HELP_SESSIONS" : "Ta strona zostanie wypełniona aktualnie aktywnymi połączeniami. Lista połączeń i możliwość ich zakończenia zależy od Twojego poziomu dostępu. Jeśli chcesz zakończyć jedną lub więcej sesji, zaznacz pola obok tych sesji i kliknij \"Zakończ sesję\". Zakończenie sesji spowoduje natychmiastowe rozłączenie użytkownika z powiązanym połączeniem.",
 
 
-        "INFO_NO_SESSIONS" : "Brak aktywnych połączeń",
+        "INFO_NO_SESSIONS"     : "Brak aktywnych połączeń",
+        "INFO_NO_SHARINGLINKS" : "Nie podano linków do udostępniania",
 
         "SECTION_HEADER_SESSIONS" : "Aktywne Połączenia",
-
+ 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Nazwa połączenia",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Zdalny host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Aktywne od",

@@ -839,7 +839,8 @@
 
         "HELP_SESSIONS" : "Diese Seite wird mit derzeit aktiven Verbindungen gefüllt. Die aufgelisteten Verbindungen und die Möglichkeit, diese Verbindungen zu beenden, hängen von Ihrer Zugriffsebene ab. Wenn Sie eine oder mehrere Sitzungen beenden wollen, wählen Sie diese Sitzung durch Aktivierung der nebenstehende Box und klicken auf \"Beende Sitzung\". Beendung einer Sitzung trennt den Benutzer von dessen Verbindung unverzüglich.",
         
-        "INFO_NO_SESSIONS" : "Keine aktiven Sitzungen",
+        "INFO_NO_SESSIONS"     : "Keine aktiven Sitzungen",
+        "INFO_NO_SHARINGLINKS" : "Keine Sharing-Links bereitgestellt",
 
         "SECTION_HEADER_SESSIONS" : "Aktive Sitzungen",
         

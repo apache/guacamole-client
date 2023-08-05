@@ -663,7 +663,8 @@
 
         "HELP_SESSIONS" : "Deze pagina wordt gevuld met momenteel actieve verbindingen. De vermelde verbindingen en de mogelijkheid om die verbindingen te doden, zijn afhankelijk van uw toegangsniveau. Als u een of meerdere sessies wilt beeindigen, vink die sessie(s) dan aan en klik op \"Beeindig Sessies\". Door het verbreken van een sessie verliest de gebruiker ogenblikkelijk het contact met die sessie(s).",
 
-        "INFO_NO_SESSIONS" : "Geen actieve sessies",
+        "INFO_NO_SESSIONS"     : "Geen actieve sessies",
+        "INFO_NO_SHARINGLINKS" : "Er worden geen deellinks verstrekt",
 
         "SECTION_HEADER_SESSIONS" : "Actieve Sessies",
 

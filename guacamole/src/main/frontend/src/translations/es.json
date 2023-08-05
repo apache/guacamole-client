@@ -977,7 +977,8 @@
 
         "HELP_SESSIONS" : "En esta página se mostrarán las conexiones que estan activas actualmente. Las conexiones enumeradas y la capacidad de eliminar esas conexiones dependen de su nivel de acceso. Si quiere finalizar una o mas sesiones, marque la casilla correspondiente a esa/s sesión/es y haga clic en \"Finalizar Sesiones\". Si finaliza una sesión desconectará inmediatamente al usuario de la conexión asociada.",
 
-        "INFO_NO_SESSIONS" : "No hay sesiones activas",
+        "INFO_NO_SESSIONS"     : "No hay sesiones activas",
+        "INFO_NO_SHARINGLINKS" : "No se proporcionan enlaces para compartir",
 
         "SECTION_HEADER_SESSIONS" : "Sesiones Activas",
 
