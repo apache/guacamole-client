@@ -952,7 +952,8 @@
 
 		"HELP_SESSIONS" : "이 페이지는 현재 활성화된 연결로 이루어져 있습니다. 세션을 하나 이상 종료하려면, 해당 세션 옆의 체크 박스를 선택하고 \"세션 종료\"를 클릭하십시오. 세션을 종료하면 관련된 사용자의 연결이 즉시 끊어질 것입니다.",
 
-        "INFO_NO_SESSIONS" : "활성 세션 없음",
+        "INFO_NO_SESSIONS"     : "활성 세션 없음",
+        "INFO_NO_SHARINGLINKS" : "공유 링크가 제공되지 않음",
 
         "SECTION_HEADER_SESSIONS" : "활성 세션",
 

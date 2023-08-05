@@ -44,9 +44,18 @@
                 <td><a ng-href="{{
                     getClientURL(wrapper.dataSource, wrapper.activeConnection)
                 }}">{{wrapper.name}}</a></td>
-                <td><a ng-repeat="link in wrapper.sharingLinks | toArray | orderBy: value.sharingProfile.name"
-                       href="{{link.value.href}}">
-                    {{link.value.sharingProfile.name}}</a><br></td>
+                <td>
+                    <!-- Links to join session -->
+                    <div ng-show="wrapper.sharingLinks.length">
+                        <a ng-repeat="link in wrapper.sharingLinks | toArray | orderBy: value.sharingProfile.name"
+                           href="{{link.value.href}}">
+                            {{link.value.sharingProfile.name}}</a><br>
+                    </div>
+                    <!-- Text displayed if no links exist -->
+                    <div class="placeholderSharingLink" ng-hide="wrapper.sharingLinks.length">
+                        {{'SETTINGS_SESSIONS.INFO_NO_SHARINGLINKS' | translate}}
+                    </div>
+                </td>
             </tr>
         </tbody>
     </table>

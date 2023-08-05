@@ -961,7 +961,8 @@
 
         "HELP_SESSIONS" : "Aquesta pàgina s'omple de connexions actualment actives. Les connexions enumerades i la possibilitat de destruir aquestes connexions depèn del nivell d'accés. Si voleu destruir una o més sessions, marqueu la casella que hi ha al costat de les sessions i feu clic a \"Destruir Sessions\". Destruir una sessió desconnectarà immediatament l'usuari de la connexió associada.",
         
-        "INFO_NO_SESSIONS" : "No hi ha sessions actives",
+        "INFO_NO_SESSIONS"     : "No hi ha sessions actives",
+        "INFO_NO_SHARINGLINKS" : "No s'han proporcionat enllaços per compartir",
 
         "SECTION_HEADER_SESSIONS" : "Sessions actives",
         

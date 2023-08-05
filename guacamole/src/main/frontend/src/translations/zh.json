@@ -1094,7 +1094,8 @@
 
         "HELP_SESSIONS" : "该页面将填充当前活动的连接。 列出的连接和终止连接的能力取决于您的访问级别。如需终止一个或多个会话，勾选目标会话并点击“终止会话”。终止会话会立即断开对应用户的连接。",
         
-        "INFO_NO_SESSIONS" : "无活动会话",
+        "INFO_NO_SESSIONS"     : "无活动会话",
+        "INFO_NO_SHARINGLINKS" : "未提供分享链接",
 
         "SECTION_HEADER_SESSIONS" : "活动会话",
         

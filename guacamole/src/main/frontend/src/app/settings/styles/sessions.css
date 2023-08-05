@@ -29,3 +29,15 @@
     min-width: 2em;
     text-align: center;
 }
+
+.placeholderSharingLink {
+
+    color: rgba(255, 255, 255, 0.5);
+    text-shadow: -1px -1px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    opacity: 0.75;
+
+    font-size: 1em;
+    font-weight: bolder;
+
+}

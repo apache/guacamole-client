@@ -803,7 +803,8 @@
 
         "HELP_SESSIONS" : "Guacamoleのアクティブなセッションが全て表示されています。 もしセッションを強制切断したい場合、 チェックボックスにチェックを入れて、強制切断ボタンをクリックしてください。",
         
-        "INFO_NO_SESSIONS" : "アクティブセッションはありません",
+        "INFO_NO_SESSIONS"     : "アクティブセッションはありません",
+        "INFO_NO_SHARINGLINKS" : "シェアリンクはありません",
 
         "SECTION_HEADER_SESSIONS" : "アクティブセッション",
         
