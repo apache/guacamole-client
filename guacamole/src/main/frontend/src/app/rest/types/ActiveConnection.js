@@ -84,6 +84,14 @@ angular.module('rest').factory('ActiveConnection', [function defineActiveConnect
          */
         this.connectable = template.connectable;
 
+        /**
+         * All available share links generated for the client associated
+         * with this active connection
+         *
+         * @type Object.<String, ManagedShareLink>
+         */
+        this.sharingLinks = template.sharingLinks;
+
     };
 
     return ActiveConnection;
