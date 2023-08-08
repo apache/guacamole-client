@@ -261,6 +261,17 @@ public interface UserContext {
     Collection<Form> getUserGroupAttributes();
 
     /**
+     * Retrieves a collection of all attributes applicable to user groups. This
+     * collection will contain only those attributes which the current user has
+     * general permission to view or modify. If there are no such attributes,
+     * this collection will be empty.
+     *
+     * @return
+     *     A collection of all attributes applicable to user groups.
+     */
+    Collection<Form> getWorkAttributes();
+
+    /**
      * Retrieves a collection of all attributes applicable to connections. This
      * collection will contain only those attributes which the current user has
      * general permission to view or modify. If there are no such attributes,
