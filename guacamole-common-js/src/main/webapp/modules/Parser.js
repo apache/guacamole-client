@@ -208,7 +208,7 @@ Guacamole.Parser = function Parser() {
                     // Immediately truncate buffer if its contents have been
                     // completely parsed, so that the next call to receive()
                     // need not append to the buffer unnecessarily
-                    if (elementEnd + 1 === buffer.length) {
+                    if (!isBuffer && elementEnd + 1 === buffer.length) {
                         elementEnd = -1;
                         buffer = '';
                     }
