@@ -42,16 +42,18 @@ public class RequestValidationService {
      * Service for retrieving configuration information regarding the
      * JSONAuthenticationProvider.
      */
-    @Inject
     private ConfigurationService confService;
 
     /**
-     * Constructor that enables passing of an instance of
-     * ConfigurationService. (Only used for unit testing)
+     * Create a new instance of the request validation service, with the
+     * provided ConfigurationService object used to retrieve configuration
+     * properties for this extension.
      *
      * @param confService
-     *     The (mock) instance of ConfigurationService
+     *     The instance of ConfigurationService for retrieving configuration
+     *     properties for this extension.
      */
+    @Inject
     public RequestValidationService(ConfigurationService confService) {
         this.confService = confService;
     }
