@@ -78,10 +78,8 @@
 angular.module('player').directive('guacPlayer', ['$injector', function guacPlayer($injector) {
 
     // Required services
+    const keyEventDisplayService = $injector.get('keyEventDisplayService');
     const playerTimeService = $injector.get('playerTimeService');
-
-    // Required types
-    const TextBatch = $injector.get('TextBatch');
 
     const config = {
         restrict : 'E',
@@ -151,7 +149,7 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         /**
          * Any batches of text typed during the recording.
          *
-         * @type {TextBatch[]}
+         * @type {keyEventDisplayService.TextBatch[]}
          */
         $scope.textBatches = [];
 
@@ -357,11 +355,12 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     $scope.$evalAsync();
                 };
 
-                // Append any extracted batches of typed text
-                $scope.recording.ontext = function appendTextBatch(batch) {
+                // Extract key events from the recording
+                $scope.recording.onkeyevents = function keyEventsReceived(events) {
 
-                    // Convert to the display-optimized TextBatch type
-                    $scope.textBatches.push(new TextBatch(batch));
+                    // Convert to a display-optimized format
+                    $scope.textBatches = (
+                            keyEventDisplayService.parseEvents(events));
 
                 };
 

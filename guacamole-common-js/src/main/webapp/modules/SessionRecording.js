@@ -394,17 +394,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
      *     the recording.
      */
     function initializeKeyInterpreter(startTimestamp) {
-
-        keyEventInterpreter = new Guacamole.KeyEventInterpreter(null, startTimestamp);
-
-        // Pass through any received batches to the recording ontext handler
-        keyEventInterpreter.onbatch = function onbatch(batch) {
-
-            // Pass the batch through if a handler is set
-            if (recording.ontext)
-                recording.ontext(batch);
-
-        };
+        keyEventInterpreter = new Guacamole.KeyEventInterpreter(startTimestamp);
     }
 
     /**
@@ -527,11 +517,10 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                     instructionBuffer = '';
                 }
 
-                // If there's any typed text that's yet to be sent to the ontext
-                // handler, send it now
-                var batch = keyEventInterpreter.getCurrentBatch();
-                if (batch && recording.ontext)
-                    recording.ontext(batch);
+                // Now that the recording is fully processed, and all key events
+                // have been extracted, call the onkeyevents handler if defined
+                if (recording.onkeyevents)
+                    recording.onkeyevents(keyEventInterpreter.getEvents());
 
                 // Consider recording loaded if tunnel has closed without errors
                 if (!errorEncountered)
@@ -919,14 +908,15 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     this.onpause = null;
 
     /**
-     * Fired whenever a new batch of typed text extracted from key events
-     * is available.
+     * Fired with all extracted key events when the recording is fully
+     * processed. The callback will be invoked with an empty list
+     * if no key events were extracted.
      *
      * @event
-     * @param {!Guacamole.KeyEventInterpreter.KeyEventBatch} batch
-     *     The batch of extracted text.
+     * @param {!Guacamole.KeyEventInterpreter.KeyEvent[]} batch
+     *     The extracted key events.
      */
-    this.ontext = null;
+    this.onkeyevents = null;
 
     /**
      * Fired whenever the playback position within the recording changes.
