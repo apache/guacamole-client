@@ -153,6 +153,11 @@ public class DelegatingUserContext implements UserContext {
     }
 
     @Override
+    public Collection<Form> getWorkAttributes() {
+        return userContext.getWorkAttributes();
+    }
+
+    @Override
     public void invalidate() {
         userContext.invalidate();
     }

@@ -19,17 +19,5 @@
 
 package org.apache.guacamole.net.auth;
 
-import org.apache.guacamole.GuacamoleException;
-
-public interface Work extends Identifiable, Attributes, Permissions {
-    /**
-     *
-     * @return
-     *     The set of all readable works of which this work is a
-     *     member.
-     *
-     * @throws GuacamoleException
-     *     If an error occurs while retrieving the works.
-     */
-    RelatedObjectSet getWorks() throws GuacamoleException;
+public interface Work extends Identifiable, Attributes, Nameable {
 }

@@ -187,6 +187,25 @@ public class SchemaResource {
      *     If an error occurs while retrieving the available protocols.
      */
     @GET
+    @Path("workAttributes")
+    public Collection<Form> getWorkAttributes() throws GuacamoleException {
+
+        // Retrieve all possible work attributes
+        return userContext.getWorkAttributes();
+
+    }
+
+    /**
+     * Gets a map of protocols defined in the system - protocol name to protocol.
+     *
+     * @return
+     *     A map of protocol information, where each key is the unique name
+     *     associated with that protocol.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the available protocols.
+     */
+    @GET
     @Path("protocols")
     public Map<String, ProtocolInfo> getProtocols() throws GuacamoleException {
 

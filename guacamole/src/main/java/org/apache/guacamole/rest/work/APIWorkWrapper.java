@@ -21,12 +21,7 @@ package org.apache.guacamole.rest.work;
 
 import java.util.Map;
 
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.GuacamoleUnsupportedException;
-import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.Work;
-import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
-import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
 public class APIWorkWrapper implements Work {
     
@@ -67,48 +62,12 @@ public class APIWorkWrapper implements Work {
     }
 
     @Override
-    public SystemPermissionSet getSystemPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserGroupWrapper does not provide permission access.");
+    public String getName() {
+        return apiWork.getName();
     }
 
     @Override
-    public ObjectPermissionSet getConnectionPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserGroupWrapper does not provide permission access.");
-    }
-
-    @Override
-    public ObjectPermissionSet getConnectionGroupPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserGroupWrapper does not provide permission access.");
-    }
-
-    @Override
-    public ObjectPermissionSet getSharingProfilePermissions() throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserGroupWrapper does not provide permission access.");
-    }
-
-    @Override
-    public ObjectPermissionSet getUserPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserGroupWrapper does not provide permission access.");
-    }
-
-    @Override
-    public ObjectPermissionSet getUserGroupPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserGroupWrapper does not provide permission access.");
-    }
-
-    @Override
-    public ObjectPermissionSet getActiveConnectionPermissions()
-            throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserGroupWrapper does not provide permission access.");
-    }
-
-    @Override
-    public RelatedObjectSet getWorks() throws GuacamoleException {
-        throw new GuacamoleUnsupportedException("APIUserGroupWrapper does not provide group access.");
+    public void setName(String name) {
+        apiWork.setName(name);
     }
 }

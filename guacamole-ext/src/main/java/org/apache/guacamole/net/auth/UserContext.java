@@ -267,7 +267,7 @@ public interface UserContext {
      * this collection will be empty.
      *
      * @return
-     *     A collection of all attributes applicable to user groups.
+     *     A collection of all attributes applicable to work.
      */
     Collection<Form> getWorkAttributes();
 

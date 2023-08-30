@@ -246,6 +246,18 @@ public abstract class AbstractUserContext implements UserContext {
     /**
      * {@inheritDoc}
      *
+     * <p>This implementation simply returns an empty {@link Collection}.
+     * Implementations that wish to expose custom sharing profile attributes as
+     * fields within sharing profile edit screens should override this function.
+     */
+    @Override
+    public Collection<Form> getWorkAttributes() {
+        return Collections.<Form>emptyList();
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * <p>This implementation does nothing. Implementations that wish to perform
      * cleanup tasks when the user associated with this {@link UserContext} is
      * being logged out should override this function.

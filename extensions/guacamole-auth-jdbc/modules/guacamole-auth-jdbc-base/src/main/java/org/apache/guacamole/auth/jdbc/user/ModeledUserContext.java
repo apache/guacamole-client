@@ -39,6 +39,7 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileDirectory;
 import org.apache.guacamole.auth.jdbc.usergroup.ModeledUserGroup;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupDirectory;
+import org.apache.guacamole.auth.jdbc.work.ModeledWork;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.ActivityRecord;
@@ -297,6 +298,11 @@ public class ModeledUserContext extends RestrictedObject
     @Override
     public Collection<Form> getSharingProfileAttributes() {
         return ModeledSharingProfile.ATTRIBUTES;
+    }
+
+    @Override
+    public Collection<Form> getWorkAttributes() {
+        return ModeledWork.ATTRIBUTES;
     }
 
     @Override

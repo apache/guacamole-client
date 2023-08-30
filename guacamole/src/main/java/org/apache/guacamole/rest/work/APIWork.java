@@ -28,6 +28,7 @@ import org.apache.guacamole.net.auth.Work;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(value=Include.NON_NULL)
 public class APIWork {
+    private String name;
     private String identifier;
     private Map<String, String> attributes;
 
@@ -51,5 +52,13 @@ public class APIWork {
 
     public void setAttributes(Map<String, String> attributes) {
         this.attributes = attributes;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
