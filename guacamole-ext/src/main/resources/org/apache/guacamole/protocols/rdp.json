@@ -45,6 +45,15 @@
                     "name"    : "ignore-cert",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"    : "cert-tofu",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "cert-fingerprints",
+                    "type"    : "TEXT"
                 }
             ]
         },
