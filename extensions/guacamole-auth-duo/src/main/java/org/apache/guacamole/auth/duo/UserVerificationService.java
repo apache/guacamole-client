@@ -23,10 +23,13 @@ import com.duosecurity.Client;
 import com.duosecurity.exception.DuoException;
 import com.duosecurity.model.Token;
 import com.google.inject.Inject;
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -107,9 +110,63 @@ public class UserVerificationService {
     public void verifyAuthenticatedUser(AuthenticatedUser authenticatedUser)
             throws GuacamoleException {
 
-        // Ignore anonymous users (unverifiable)
+        // Pull the original HTTP request used to authenticate
+        Credentials credentials = authenticatedUser.getCredentials();
+        HttpServletRequest request = credentials.getRequest();
+        IPAddress clientAddr = new IPAddressString(request.getRemoteAddr()).getAddress();
+
+        // Ignore anonymous users
         String username = authenticatedUser.getIdentifier();
-        if (username.equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
+        if (username == null || username.equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
+            return;
+        
+        // We enforce by default
+        boolean enforceHost = true;
+        
+        // Check for a list of addresses that should be bypassed and iterate
+        List<IPAddress> bypassAddresses = confService.getBypassHosts();
+        for (IPAddress bypassAddr : bypassAddresses) {
+
+            // If the address contains current client address, flip enforce flag
+            // and break out
+            if (clientAddr != null && clientAddr.isIPAddress()
+                    && bypassAddr.getIPVersion().equals(clientAddr.getIPVersion())
+                    && bypassAddr.contains(clientAddr)) {
+                enforceHost = false;
+                break;
+            }
+        }
+        
+        // Check for a list of addresses that should be enforced and iterate
+        List<IPAddress> enforceAddresses = confService.getEnforceHosts();
+        
+        // Only continue processing if the list is not empty
+        if (!enforceAddresses.isEmpty()) {
+            
+            // If client address is not available or invalid, MFA will
+            // be enforced.
+            if (clientAddr == null || !clientAddr.isIPAddress()) {
+                enforceHost = true;
+            }
+            
+            else {
+                // With addresses set, this default changes to false.
+                enforceHost = false;
+
+                for (IPAddress enforceAddr : enforceAddresses) {
+                    
+                    // If there's a match, flip the enforce flag and break out of the loop
+                    if (enforceAddr.getIPVersion().equals(clientAddr.getIPVersion())
+                            && enforceAddr.contains(clientAddr)) {
+                        enforceHost = true;
+                        break;
+                    }
+                }
+            }
+        }
+            
+        // If the enforce flag has been changed, exit, bypassing Duo MFA.
+        if (!enforceHost)
             return;
 
         // Obtain a Duo client for redirecting the user to the Duo service and
@@ -136,11 +193,6 @@ public class UserVerificationService {
             throw new GuacamoleServerException("Duo authentication service is "
                     + "not currently available (failed health check).", e);
         }
-
-        // Pull the original HTTP request used to authenticate, as well as any
-        // associated credentials
-        Credentials credentials = authenticatedUser.getCredentials();
-        HttpServletRequest request = credentials.getRequest();
 
         // Retrieve signed Duo authentication code and session state from the
         // request (these will be absent if this is an initial authentication
