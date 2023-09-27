@@ -20,83 +20,21 @@
 var Guacamole = Guacamole || {};
 
 /**
- * An object that will accept raw key events and produce human readable text
- * batches, seperated by at least `batchSeperation` milliseconds, which can be
- * retrieved through the onbatch callback or by calling getCurrentBatch().
- *
- * NOTE: The event processing logic and output format is based on the `guaclog`
- * tool, with the addition of batching support.
+ * An object that will accept raw key events and produce a chronologically
+ * ordered array of key event objects. These events can be obtained by
+ * calling getEvents().
  *
  * @constructor
- *
- * @param {number} [batchSeperation=5000]
- *     The minimum number of milliseconds that must elapse between subsequent
- *     batches of key-event-generated text. If 0 or negative, no splitting will
- *     occur, resulting in a single batch for all provided key events.
- *
  * @param {number} [startTimestamp=0]
  *     The starting timestamp for the recording being intepreted. If provided,
  *     the timestamp of each intepreted event will be relative to this timestamp.
  *     If not provided, the raw recording timestamp will be used.
  */
-Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, startTimestamp) {
-
-    /**
-     * Reference to this Guacamole.KeyEventInterpreter.
-     *
-     * @private
-     * @type {!Guacamole.SessionRecording}
-     */
-    var interpreter = this;
-
-    // Default to 5 seconds if the batch seperation was not provided
-    if (batchSeperation === undefined || batchSeperation === null)
-        batchSeperation = 5000;
+Guacamole.KeyEventInterpreter = function KeyEventInterpreter(startTimestamp) {
 
     // Default to 0 seconds to keep the raw timestamps
     if (startTimestamp === undefined || startTimestamp === null)
         startTimestamp = 0;
-
-    /**
-     * A definition for a known key.
-     *
-     * @constructor
-     * @private
-     * @param {KeyDefinition|object} [template={}]
-     *     The object whose properties should be copied within the new
-     *     KeyDefinition.
-     */
-    var KeyDefinition = function KeyDefinition(template) {
-
-        /**
-         * The X11 keysym of the key.
-         * @type {!number}
-         */
-        this.keysym = parseInt(template.keysym);
-
-        /**
-         * A human-readable name for the key.
-         * @type {!String}
-         */
-        this.name = template.name;
-
-        /**
-         * The value which would be typed in a typical text editor, if any. If the
-         * key is not associated with any typable value, or if the typable value is
-         * not generally useful in an auditing context, this will be undefined.
-         * @type {String}
-         */
-        this.value = template.value;
-
-        /**
-         * Whether this key is a modifier which may affect the interpretation of
-         * other keys, and thus should be tracked as it is held down.
-         * @type {!boolean}
-         * @default false
-         */
-        this.modifier = template.modifier || false;
-
-    };
 
     /**
      * A precursor array to the KNOWN_KEYS map. The objects contained within
@@ -107,7 +45,7 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
      * @type {Object[]}
      */
     var _KNOWN_KEYS = [
-        {keysym: 0xFE03, name: 'AltGr', value: "", modifier: true },
+        {keysym: 0xFE03, name: 'AltGr' },
         {keysym: 0xFF08, name: 'Backspace' },
         {keysym: 0xFF09, name: 'Tab' },
         {keysym: 0xFF0B, name: 'Clear' },
@@ -178,19 +116,19 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
         {keysym: 0xFFD3, name: 'F22' },
         {keysym: 0xFFD4, name: 'F23' },
         {keysym: 0xFFD5, name: 'F24' },
-        {keysym: 0xFFE1, name: 'Shift', value: "", modifier: true },
-        {keysym: 0xFFE2, name: 'Shift', value: "", modifier: true },
-        {keysym: 0xFFE3, name: 'Ctrl', value: null, modifier: true },
-        {keysym: 0xFFE4, name: 'Ctrl', value: null, modifier: true },
+        {keysym: 0xFFE1, name: 'Shift' },
+        {keysym: 0xFFE2, name: 'Shift' },
+        {keysym: 0xFFE3, name: 'Ctrl' },
+        {keysym: 0xFFE4, name: 'Ctrl' },
         {keysym: 0xFFE5, name: 'Caps' },
-        {keysym: 0xFFE7, name: 'Meta', value: null, modifier: true },
-        {keysym: 0xFFE8, name: 'Meta', value: null, modifier: true },
-        {keysym: 0xFFE9, name: 'Alt', value: null, modifier: true },
-        {keysym: 0xFFEA, name: 'Alt', value: null, modifier: true },
-        {keysym: 0xFFEB, name: 'Super', value: null, modifier: true },
-        {keysym: 0xFFEC, name: 'Super', value: null, modifier: true },
-        {keysym: 0xFFED, name: 'Hyper', value: null, modifier: true },
-        {keysym: 0xFFEE, name: 'Hyper', value: null, modifier: true },
+        {keysym: 0xFFE7, name: 'Meta' },
+        {keysym: 0xFFE8, name: 'Meta' },
+        {keysym: 0xFFE9, name: 'Alt' },
+        {keysym: 0xFFEA, name: 'Alt' },
+        {keysym: 0xFFEB, name: 'Super' },
+        {keysym: 0xFFEC, name: 'Super' },
+        {keysym: 0xFFED, name: 'Hyper' },
+        {keysym: 0xFFEE, name: 'Hyper' },
         {keysym: 0xFFFF, name: 'Delete' }
     ];
 
@@ -205,60 +143,18 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
     _KNOWN_KEYS.forEach(function createKeyDefinitionMap(keyDefinition) {
 
         // Construct a map of keysym to KeyDefinition object
-        KNOWN_KEYS[keyDefinition.keysym] = new KeyDefinition(keyDefinition)
+        KNOWN_KEYS[keyDefinition.keysym] = (
+                new Guacamole.KeyEventInterpreter.KeyDefinition(keyDefinition));
 
     });
 
     /**
-     * A map of X11 keysyms to a KeyDefinition object, if the corresponding
-     * key is currently pressed. If a keysym has no entry in this map at all,
-     * it means that the key is not being pressed. Note that not all keysyms
-     * are necessarily tracked within this map - only those that are explicitly
-     * tracked.
+     * All key events parsed as of the most recent handleKeyEvent() invocation.
      *
      * @private
-     * @type {Object.<String,KeyDefinition> }
+     * @type {!Guacamole.KeyEventInterpreter.KeyEvent[]}
      */
-    var pressedKeys = {};
-
-    /**
-     * The current key event batch, containing a representation of all key
-     * events processed since the end of the last batch passed to onbatch.
-     * Null if no key events have been processed yet.
-     *
-     * @private
-     * @type {!KeyEventBatch}
-     */
-    var currentBatch = null;
-
-    /**
-     * The timestamp of the most recent key event processed.
-     *
-     * @private
-     * @type {Number}
-     */
-    var lastKeyEvent = 0;
-
-    /**
-     * Returns true if the currently-pressed keys are part of a shortcut, or
-     * false otherwise.
-     *
-     * @private
-     * @returns {!boolean}
-     *     True if the currently-pressed keys are part of a shortcut, or false
-     *     otherwise.
-     */
-    function isShortcut() {
-
-        // If one of the currently-pressed keys is non-printable, a shortcut
-        // is being typed
-        for (var keysym in pressedKeys) {
-            if (pressedKeys[keysym].value === null)
-                return true;
-        }
-
-        return false;
-    }
+    var parsedEvents = [];
 
     /**
      * If the provided keysym corresponds to a valid UTF-8 character, return
@@ -268,7 +164,7 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
      * @param {Number} keysym
      *     The keysym to produce a UTF-8 KeyDefinition for, if valid.
      *
-     * @returns {KeyDefinition}
+     * @returns {Guacamole.KeyEventInterpreter.KeyDefinition}
      *     A KeyDefinition for the provided keysym, if it's a valid UTF-8
      *     keysym, or null otherwise.
      */
@@ -283,7 +179,8 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
         var name = String.fromCharCode(codepoint);
 
         // Create and return the definition
-        return new KeyDefinition({keysym: keysym, name: name, value: name, modifier: false});
+        return new Guacamole.KeyEventInterpreter.KeyDefinition({
+                keysym: keysym, name: name, value: name});
 
     }
 
@@ -310,7 +207,7 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
 
         // If it's not UTF-8, return an unknown definition, with the name
         // just set to the hex value of the keysym
-        return new KeyDefinition({
+        return new Guacamole.KeyEventInterpreter.KeyDefinition({
             keysym: keysym,
             name: '0x' + String(keysym.toString(16))
         })
@@ -318,20 +215,8 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
     }
 
     /**
-     * Fired whenever a new batch of typed text extracted from key events
-     * is available. A new batch will be provided every time a new key event
-     * is processed after more than batchSeperation milliseconds after the
-     * previous key event.
-     *
-     * @event
-     * @param {!Guacamole.KeyEventInterpreter.KeyEventBatch}
-     */
-    this.onbatch = null;
-
-    /**
-     * Handles a raw key event, potentially appending typed text to the
-     * current batch, and calling onbatch with the current batch, if the
-     * callback is set and a new batch is about to be started.
+     * Handles a raw key event, appending a new key event object for every
+     * handled raw event.
      *
      * @param {!string[]} args
      *     The arguments of the key event.
@@ -347,111 +232,18 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
         // The timestamp when this key event occured
         var timestamp = parseInt(args[2]);
 
-        // If no current batch exists, start a new one now
-        if (!currentBatch)
-            currentBatch = new Guacamole.KeyEventInterpreter.KeyEventBatch();
+        // The timestamp relative to the provided initial timestamp
+        var relativeTimestap = timestamp - startTimestamp;
 
-        // Only switch to a new batch of text if sufficient time has passed
-        // since the last key event
-        var newBatch = (batchSeperation >= 0
-                && (timestamp - lastKeyEvent) >= batchSeperation);
-        lastKeyEvent = timestamp;
+        // Known information about the parsed key
+        var definition = getKeyDefinitionByKeysym(keysym);
 
-        if (newBatch) {
-
-            // Call the handler with the current batch of text and the timestamp
-            // at which the current batch started
-            if (currentBatch.events.length && interpreter.onbatch)
-                interpreter.onbatch(currentBatch);
-
-            // Move on to the next batch of text
-            currentBatch = new Guacamole.KeyEventInterpreter.KeyEventBatch();
-
-        }
-
-        var keyDefinition = getKeyDefinitionByKeysym(keysym);
-
-        // Mark down whether the key was pressed or released
-        if (keyDefinition.modifier) {
-            if (pressed)
-                pressedKeys[keysym] = keyDefinition;
-            else
-                delete pressedKeys[keysym];
-        }
-
-        // Append to the current typed value when a printable
-        // (non-modifier) key is pressed
-        else if (pressed) {
-
-            var relativeTimestap = timestamp - startTimestamp;
-
-            if (isShortcut()) {
-
-                var shortcutText = '<';
-
-                var firstKey = true;
-
-                // Compose entry by inspecting the state of each tracked key.
-                // At least one key must be pressed when in a shortcut.
-                for (var keysym in pressedKeys) {
-
-                    var pressedKeyDefinition = pressedKeys[keysym];
-
-                    // Print name of key
-                    if (firstKey) {
-                        shortcutText += pressedKeyDefinition.name;
-                        firstKey = false;
-                    }
-
-                    else
-                        shortcutText += ('+' + pressedKeyDefinition.name);
-
-                }
-
-                // Finally, append the printable key to close the shortcut
-                shortcutText += ('+' + keyDefinition.name + '>')
-
-                // Add the shortcut to the current batch
-                currentBatch.simpleValue += shortcutText;
-                currentBatch.events.push(new Guacamole.KeyEventInterpreter.KeyEvent(
-                        shortcutText, false, relativeTimestap));
-
-            }
-
-            // Print the key itself
-            else {
-
-                var keyText;
-                var typed;
-
-                // Print the value if explicitly defined
-                if (keyDefinition.value != null) {
-
-                    keyText = keyDefinition.value;
-                    typed = true;
-
-                }
-
-                // Otherwise print the name
-                else {
-
-                    keyText = ('<' + keyDefinition.name + '>');
-
-                    // While this is a representation for a single character,
-                    // the key text is the name of the key, not the actual
-                    // character itself
-                    typed = false;
-
-                }
-
-                // Add the key to the current batch
-                currentBatch.simpleValue += keyText;
-                currentBatch.events.push(new Guacamole.KeyEventInterpreter.KeyEvent(
-                        keyText, typed, relativeTimestap));
-
-            }
-
-        }
+        // Push the latest parsed event into the list
+        parsedEvents.push(new Guacamole.KeyEventInterpreter.KeyEvent({
+            definition: definition,
+            pressed: pressed,
+            timestamp: relativeTimestap
+        }));
 
     };
 
@@ -460,12 +252,47 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
      * incomplete, as more key events might be processed before the next
      * batch starts.
      *
-     * @returns {Guacamole.KeyEventInterpreter.KeyEventBatch}
+     * @returns {Guacamole.KeyEventInterpreter.KeyEvent[]}
      *     The current batch of text.
      */
-    this.getCurrentBatch = function getCurrentBatch() {
-        return currentBatch;
+    this.getEvents = function getEvents() {
+        return parsedEvents;
     };
+
+};
+
+/**
+ * A definition for a known key.
+ *
+ * @constructor
+ * @param {Guacamole.KeyEventInterpreter.KeyDefinition|object} [template={}]
+ *     The object whose properties should be copied within the new
+ *     KeyDefinition.
+ */
+Guacamole.KeyEventInterpreter.KeyDefinition = function KeyDefinition(template) {
+
+    // Use empty object by default
+    template = template || {};
+
+    /**
+     * The X11 keysym of the key.
+     * @type {!number}
+     */
+    this.keysym = parseInt(template.keysym);
+
+    /**
+     * A human-readable name for the key.
+     * @type {!String}
+     */
+    this.name = template.name;
+
+    /**
+     * The value which would be typed in a typical text editor, if any. If the
+     * key is not associated with any typeable value, this will be undefined.
+     * @type {String}
+     */
+    this.value = template.value;
+
 };
 
 /**
@@ -474,77 +301,35 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(batchSeperation, st
  * and the timestamp when the event occured.
  *
  * @constructor
- * @param {!String} text
- *     A human-readable representation of the event.
- *
- * @param {!boolean} typed
- *     True if this event represents a directly-typed character, or false
- *     otherwise.
- *
- * @param {!Number} timestamp
- *     The timestamp from the recording when this event occured.
+ * @param {Guacamole.KeyEventInterpreter.KeyEvent|object} [template={}]
+ *     The object whose properties should be copied within the new
+ *     KeyEvent.
  */
-Guacamole.KeyEventInterpreter.KeyEvent = function KeyEvent(text, typed, timestamp) {
+Guacamole.KeyEventInterpreter.KeyEvent = function KeyEvent(template) {
+
+    // Use empty object by default
+    template = template || {};
 
     /**
-     * A human-readable representation of the event. If a printable character
-     * was directly typed, this will just be that character. Otherwise it will
-     * be a string describing the event.
+     * The key definition for the pressed key.
      *
-     * @type {!String}
+     * @type {!Guacamole.KeyEventInterpreter.KeyDefinition}
      */
-    this.text = text;
+    this.definition = template.definition;
 
     /**
-     * True if this text of this event is exactly a typed character, or false
-     * otherwise.
+     * True if the key was pressed to create this event, or false if it was
+     * released.
      *
      * @type {!boolean}
      */
-    this.typed = typed;
+    this.pressed = !!template.pressed;
 
     /**
-     * The timestamp from the recording when this event occured. If a
-     * `startTimestamp` value was provided to the interpreter constructor, this
-     * will be relative to start of the recording. If not, it will be the raw
-     * timestamp from the key event.
+     * The timestamp from the recording when this event occured.
      *
      * @type {!Number}
      */
-    this.timestamp = timestamp;
-
-};
-
-/**
- * A series of intepreted key events, seperated by at least the configured
- * batchSeperation value from any other key events in the recording corresponding
- * to the interpreted key events. A batch will always consist of at least one key
- * event, and an associated simplified representation of the event(s).
- *
- * @constructor
- * @param {!Guacamole.KeyEventInterpreter.KeyEvent[]} events
- *     The interpreted key events for this batch.
- *
- * @param {!String} simpleValue
- *     The simplified, human-readable value representing the key events for
- *     this batch.
- */
-Guacamole.KeyEventInterpreter.KeyEventBatch = function KeyEventBatch(events, simpleValue) {
-
-    /**
-     * All key events for this batch.
-     *
-     * @type {!Guacamole.KeyEventInterpreter.KeyEvent[]}
-     */
-    this.events = events || [];
-
-    /**
-     * The simplified, human-readable value representing the key events for
-     * this batch, equivalent to concatenating the `text` field of all key
-     * events in the batch.
-     *
-     * @type {!String}
-     */
-    this.simpleValue = simpleValue || '';
+    this.timestamp = template.timestamp;
 
 };
