@@ -512,7 +512,7 @@
                                     </ignoreVersion>
                                     <ignoreVersion>
                                         <type>regex</type>
-                                        <version>.+-(alpha|beta)\b.*?</version>
+                                        <version>.+-(alpha|Alpha|beta|Beta)[0-9]*\b.*?</version>
                                     </ignoreVersion>
                                 </ignoreVersions>
                                 <rules>
