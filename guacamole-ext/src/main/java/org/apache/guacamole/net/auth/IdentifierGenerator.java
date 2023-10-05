@@ -17,10 +17,9 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.sso;
+package org.apache.guacamole.net.auth;
 
 import com.google.common.io.BaseEncoding;
-import com.google.inject.Singleton;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
@@ -29,14 +28,13 @@ import java.security.SecureRandom;
  * is an arbitrary, random string produced using a cryptographically-secure
  * random number generator.
  */
-@Singleton
 public class IdentifierGenerator {
 
     /**
      * Cryptographically-secure random number generator for generating unique
      * identifiers.
      */
-    private final SecureRandom secureRandom = new SecureRandom();
+    private static final SecureRandom secureRandom = new SecureRandom();
 
     /**
      * Generates a unique and unpredictable identifier. Each identifier is at
@@ -48,7 +46,7 @@ public class IdentifierGenerator {
      *     A unique and unpredictable identifier with at least 256 bits of
      *     entropy.
      */
-    public String generateIdentifier() {
+    public static String generateIdentifier() {
         return generateIdentifier(256);
     }
 
@@ -65,7 +63,7 @@ public class IdentifierGenerator {
      *     A unique and unpredictable identifier with at least the given number
      *     of bits of entropy.
      */
-    public String generateIdentifier(int minBits) {
+    public static String generateIdentifier(int minBits) {
         return generateIdentifier(minBits, true);
     }
 
@@ -87,7 +85,7 @@ public class IdentifierGenerator {
      *     A unique and unpredictable identifier with at least the given number
      *     of bits of entropy.
      */
-    public String generateIdentifier(int minBits, boolean caseSensitive) {
+    public static String generateIdentifier(int minBits, boolean caseSensitive) {
 
         // Generate a base64 identifier if we're allowed to vary by case
         if (caseSensitive) {

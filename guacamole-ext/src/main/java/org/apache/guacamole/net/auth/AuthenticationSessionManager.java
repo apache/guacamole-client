@@ -17,10 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.sso;
-
-import com.google.inject.Inject;
-import com.google.inject.Singleton;
+package org.apache.guacamole.net.auth;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,14 +36,7 @@ import java.util.concurrent.TimeUnit;
  * @param <T>
  *     The type of sessions managed by this session manager.
  */
-@Singleton
-public class AuthenticationSessionManager<T extends AuthenticationSession> {
-
-    /**
-     * Generator of arbitrary, unique, unpredictable identifiers.
-     */
-    @Inject
-    private IdentifierGenerator idGenerator;
+public abstract class AuthenticationSessionManager<T extends AuthenticationSession> {
 
     /**
      * Map of authentication session identifiers to their associated
@@ -98,7 +88,7 @@ public class AuthenticationSessionManager<T extends AuthenticationSession> {
      *     token.
      */
     public String generateInvalid() {
-        return idGenerator.generateIdentifier();
+        return IdentifierGenerator.generateIdentifier();
     }
 
     /**
@@ -193,7 +183,7 @@ public class AuthenticationSessionManager<T extends AuthenticationSession> {
      *     given session when calling resume().
      */
     public String defer(T session) {
-        String identifier = idGenerator.generateIdentifier();
+        String identifier = IdentifierGenerator.generateIdentifier();
         sessions.put(identifier, session);
         return identifier;
     }
