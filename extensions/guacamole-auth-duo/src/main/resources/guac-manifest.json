@@ -20,18 +20,6 @@
         "translations/pt.json",
         "translations/ru.json",
         "translations/zh.json"
-    ],
-
-    "js" : [
-        "duo.min.js"
-    ],
-
-    "css" : [
-        "duo.min.css"
-    ],
-
-    "resources" : {
-        "templates/duoSignedResponseField.html" : "text/html"
-    }
+    ]
 
 }
