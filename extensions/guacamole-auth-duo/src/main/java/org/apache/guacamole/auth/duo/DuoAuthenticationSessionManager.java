@@ -17,17 +17,18 @@
  * under the License.
  */
 
+package org.apache.guacamole.auth.duo;
+
+import com.google.inject.Singleton;
+import org.apache.guacamole.net.auth.AuthenticationSessionManager;
+
 /**
- * Config block which registers Duo-specific field types.
+ * An AuthenticationSessionManager implementation that temporarily stores
+ * authentication attempts for Duo MFA while they are underway.
  */
-angular.module('guacDuo').config(['formServiceProvider',
-    function guacDuoConfig(formServiceProvider) {
-
-    // Define field for the signed response from the Duo service
-    formServiceProvider.registerFieldType('GUAC_DUO_SIGNED_RESPONSE', {
-        module      : 'guacDuo',
-        controller  : 'duoSignedResponseController',
-        templateUrl : 'app/ext/duo/templates/duoSignedResponseField.html'
-    });
-
-}]);
+@Singleton
+public class DuoAuthenticationSessionManager extends AuthenticationSessionManager<DuoAuthenticationSession> {
+    
+    // Nothing to see here.
+    
+}

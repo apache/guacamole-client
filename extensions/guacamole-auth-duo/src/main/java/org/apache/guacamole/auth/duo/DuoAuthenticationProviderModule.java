@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.duo;
 
 import com.google.inject.AbstractModule;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.duo.api.DuoService;
 import org.apache.guacamole.auth.duo.conf.ConfigurationService;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
@@ -74,8 +73,8 @@ public class DuoAuthenticationProviderModule extends AbstractModule {
 
         // Bind Duo-specific services
         bind(ConfigurationService.class);
-        bind(DuoService.class);
         bind(UserVerificationService.class);
+        bind(DuoAuthenticationSessionManager.class);
 
     }
 
