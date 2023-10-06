@@ -124,6 +124,25 @@
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-fips</artifactId>
             <version>1.0.7</version>
+
+            <!-- Force usage of known version of bc-fips, rather than a future
+            unknown version (bcpkix-fips references bc-fips using a version
+            range, resulting in newer versions getting pulled in automatically,
+            breaking the automated license check) -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bc-fips</artifactId>
+                </exclusion>
+            </exclusions>
+
+        </dependency>
+
+        <!-- Force usage of known version of bc-fips (see bcpkix-fips above) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bc-fips</artifactId>
+            <version>1.0.2.4</version>
         </dependency>
 
     </dependencies>
