@@ -68,6 +68,13 @@
                 <configuration>
                     <workingDirectory>src/main/frontend</workingDirectory>
                     <installDirectory>${project.build.directory}</installDirectory>
+
+                    <!-- Newer Node.js requires the following to avoid an "ERR_OSSL_EVP_UNSUPPORTED"
+                    error when WebPack attempts to use its default hash (MD4) for content hashing -->
+                    <environmentVariables>
+                        <NODE_OPTIONS>--openssl-legacy-provider</NODE_OPTIONS>
+                    </environmentVariables>
+
                 </configuration>
                 <executions>
                     <execution>
@@ -76,7 +83,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v14.16.0</nodeVersion>
+                            <nodeVersion>v18.18.0</nodeVersion>
+                            <npmVersion>9.8.1</npmVersion>
                         </configuration>
                     </execution>
                     <execution>
