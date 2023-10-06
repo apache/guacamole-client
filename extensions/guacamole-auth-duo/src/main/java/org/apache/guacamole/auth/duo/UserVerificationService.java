@@ -37,12 +37,16 @@ import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service for verifying the identity of a user against Duo.
  */
 public class UserVerificationService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserVerificationService.class);
+    
     /**
      * The name of the parameter which Duo will return in it's GET call-back
      * that contains the code that the client will use to generate a token.
@@ -124,6 +128,7 @@ public class UserVerificationService {
 
             // Get a new session state from the Duo client
             duoState = duoClient.generateState();
+            LOGGER.debug(">>> DUO <<< STATE DEFER: {}", duoState);
             
             // Add this session 
             duoSessionManager.defer(new DuoAuthenticationSession(confService.getAuthTimeout(), duoState, username), duoState);
@@ -142,9 +147,13 @@ public class UserVerificationService {
             );
 
         }
+        
+        LOGGER.debug(">>> DUO <<< STATE RESUME: {}", duoState);
 
         // Retrieve the deferred authenticaiton attempt
         DuoAuthenticationSession duoSession = duoSessionManager.resume(duoState);
+        if (duoSession == null)
+            throw new GuacamoleServerException("Failed to resume Duo authentication session.");
         
         // Get the token from the DuoClient using the code and username, and check status
         Token token = duoClient.exchangeAuthorizationCodeFor2FAResult(duoCode, duoSession.getUsername());
