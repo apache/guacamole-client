@@ -92,13 +92,20 @@ class DependencyListPlugin {
         const logger = compiler.getInfrastructureLogger(PLUGIN_NAME);
 
         /**
+         * The directory receiving the dependency list file.
+         *
+         * @type {string}
+         */
+        const outputPath = this.options.path || compiler.options.output.path;
+
+        /**
          * The full path to the output file that should contain the list of
          * discovered NPM module dependencies.
          *
          * @type {string}
          */
         const outputFile = path.join(
-            this.options.path || compiler.options.output.path,
+            outputPath,
             this.options.filename || 'npm-dependencies.txt'
         );
 
@@ -131,6 +138,10 @@ class DependencyListPlugin {
                         relativePath);
 
             });
+
+            // Create output path if it doesn't yet exist
+            if (!fs.existsSync(outputPath))
+                fs.mkdirSync(outputPath, { recursive: true, mode: 0o755 });
 
             // Write all discovered NPM packages to configured output file
             const sortedCoords = Object.keys(moduleCoords).sort();

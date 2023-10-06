@@ -14,7 +14,7 @@
         "blob-polyfill": ">=7.0.20220408",
         "datalist-polyfill": "^1.25.1",
         "file-saver": "^2.0.5",
-        "jquery": "^3.6.4",
+        "jquery": "^3.7.1",
         "jstz": "^2.1.1",
         "lodash": "^4.17.21"
     },
@@ -29,7 +29,7 @@
         "google-closure-compiler": "20221004.0.0",
         "html-webpack-plugin": "^4.5.2",
         "mini-css-extract-plugin": "^1.6.2",
-        "webpack": "^4.46.0",
+        "webpack": "^4.47.0",
         "webpack-cli": "^4.10.0"
     }
 }

@@ -1,1 +1,0 @@
-org.apache.mina:mina-core:jar:2.2.1
