@@ -41,6 +41,11 @@ public class DuoAuthenticationProviderModule extends AbstractModule {
      * module has configured injection.
      */
     private final AuthenticationProvider authProvider;
+    
+    /**
+     * The session manager that stores authentication attempts.
+     */
+    private final DuoAuthenticationSessionManager authSessionManager;
 
     /**
      * Creates a new Duo authentication provider module which configures
@@ -61,6 +66,9 @@ public class DuoAuthenticationProviderModule extends AbstractModule {
 
         // Store associated auth provider
         this.authProvider = authProvider;
+        
+        // Create a new session manager
+        this.authSessionManager = new DuoAuthenticationSessionManager();
 
     }
 
@@ -72,9 +80,10 @@ public class DuoAuthenticationProviderModule extends AbstractModule {
         bind(Environment.class).toInstance(environment);
 
         // Bind Duo-specific services
+        bind(DuoAuthenticationSessionManager.class).toInstance(authSessionManager);
         bind(ConfigurationService.class);
         bind(UserVerificationService.class);
-        bind(DuoAuthenticationSessionManager.class);
+        
 
     }
 
