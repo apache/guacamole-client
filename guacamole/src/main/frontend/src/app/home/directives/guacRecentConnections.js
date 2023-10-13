@@ -50,6 +50,7 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
 
             // Required services
             var guacHistory       = $injector.get('guacHistory');
+            var preferenceService = $injector.get('preferenceService');
 
             /**
              * Array of all known and visible recently-used connections.
@@ -57,11 +58,21 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
              * @type RecentConnection[]
              */
             $scope.recentConnections = [];
+            
+            /**
+             * Returns whether or not recent connections should be displayed.
+             * 
+             * @returns {!boolean}
+             *     true if recent connections should be displayed, otherwise false.
+             */
+            $scope.willShowRecentConnections = function willShowRecentConnections() {
+                return preferenceService.preferences.showRecentConnections;
+            };
 
             /**
              * Returns whether recent connections are available for display.
              *
-             * @returns {Boolean}
+             * @returns {!boolean}
              *     true if recent connections are present, false otherwise.
              */
             $scope.hasRecentConnections = function hasRecentConnections() {
