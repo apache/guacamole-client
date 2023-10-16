@@ -538,9 +538,9 @@
         "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danès (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Suís alemany (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Alemany (Qwertz)",
-
         "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "Anglès del Regne Unit (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "Anglès dels Estats Units (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Espanyol (Qwerty)",
@@ -556,7 +556,6 @@
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portuguès brasiler (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portuguès (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Suec (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danès (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Q-Turc (Qwerty)",
 
         "NAME" : "RDP",

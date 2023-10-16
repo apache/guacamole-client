@@ -6,12 +6,15 @@
 
         "ACTION_ACKNOWLEDGE"        : "OK",
         "ACTION_CANCEL"             : "Abbruch",
+        "ACTION_CLEAR"              : "Bereinigen",
         "ACTION_CLONE"              : "Kopieren",
         "ACTION_CONTINUE"           : "Weiter",
         "ACTION_DELETE"             : "Löschen",
         "ACTION_DELETE_SESSIONS"    : "Sitzung beenden",
         "ACTION_DOWNLOAD"           : "Download",
+        "ACTION_IMPORT"             : "Import",
         "ACTION_LOGIN"              : "Anmelden",
+        "ACTION_LOGIN_AGAIN"        : "Neuanmelden",
         "ACTION_LOGOUT"             : "Abmelden",
         "ACTION_MANAGE_CONNECTIONS" : "Verbindungen",
         "ACTION_MANAGE_PREFERENCES" : "Einstellungen",
@@ -21,17 +24,21 @@
         "ACTION_MANAGE_USER_GROUPS" : "Gruppen",
         "ACTION_NAVIGATE_BACK"      : "Zurück",
         "ACTION_NAVIGATE_HOME"      : "Startseite",
+        "ACTION_PAUSE"              : "Pause",
+        "ACTION_PLAY"               : "Abspielen",
         "ACTION_SAVE"               : "Speichern",
         "ACTION_SEARCH"             : "Suche",
         "ACTION_SHARE"              : "Teilen",
         "ACTION_UPDATE_PASSWORD"    : "Passwort aktualisieren",
         "ACTION_VIEW_HISTORY"       : "Verlauf",
+        "ACTION_VIEW_RECORDING"     : "Ansicht",
 
         "DIALOG_HEADER_ERROR" : "Fehler",
 
         "ERROR_PAGE_UNAVAILABLE"  : "Ein Fehler ist aufgetreten und die gewünschte Aktion kann nicht fortgesetzt werden. Bitte informieren Sie ihren Systemadministrator oder prüfen Sie die Logdateien, falls das Problem bestehen bleiben sollte.",
         "ERROR_PASSWORD_BLANK"    : "Das Passwort darf nicht leer sein.",
         "ERROR_PASSWORD_MISMATCH" : "Die Passwörter stimmen nicht überein.",
+        "ERROR_SINGLE_FILE_ONLY"  : "Bitte nur eine Datei zeitgleich hochladen",
         
         "FIELD_HEADER_PASSWORD"       : "Passwort:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Wiederhole Passwort:",
@@ -41,16 +48,21 @@
         "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "In Benutzung durch {USERS} Benutzer.",
+        "INFO_LOGGED_OUT"        : "Sie wurden ausgeloggt.",
 
         "TEXT_ANONYMOUS_USER"   : "Anonymer Benutzer",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{Sekunde} other{Sekunden}}} minute{{VALUE, plural, one{Minute} other{Minuten}}} hour{{VALUE, plural, one{Stunde} other{Stunden}}} day{{VALUE, plural, one{Tag} other{Tage}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{Sekunde} other{Sekunden}}} minute{{VALUE, plural, one{Minute} other{Minuten}}} hour{{VALUE, plural, one{Stunde} other{Stunden}}} day{{VALUE, plural, one{Tag} other{Tage}}} other{}}",
+        "TEXT_UNTRANSLATED" : "{MESSAGE}"
 
     },
 
     "CLIENT" : {
 
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Entferne abgeschlossene Übertragungen",
+        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
         "ACTION_DISCONNECT"                : "Trennen",
         "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
         "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
@@ -114,8 +126,10 @@
         "HELP_MOUSE_MODE_RELATIVE" : "Den Mauszeiger zur Zielposition bewegen und klicken. Der Klick erfolgt an der Position des Mauszeigers.",
         "HELP_SHARE_LINK"          : "Die aktuelle Verbindung wird gegenwärtig geteilt und kann von jeder Person über den folgenden Link erreicht werden:",
 
-        "INFO_CONNECTION_SHARED" : "Diese Verbindung wird nun geteilt.",
-        "INFO_NO_FILE_TRANSFERS" : "Keine Dateiübertragungen.",
+        "INFO_ANONYMOUS_USER_COUNT" : "Anonym{COUNT, plural, one{} other{ (#)}}",
+        "INFO_CONNECTION_SHARED"    : "Diese Verbindung wird nun geteilt.",
+        "INFO_NO_FILE_TRANSFERS"    : "Keine Dateiübertragungen.",
+        "INFO_USER_COUNT"           : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
 
         "NAME_INPUT_METHOD_NONE"   : "Keine",
         "NAME_INPUT_METHOD_OSK"    : "Bildschirmtastatur",
@@ -127,24 +141,121 @@
         "NAME_MOUSE_MODE_ABSOLUTE" : "Touchscreen",
         "NAME_MOUSE_MODE_RELATIVE" : "Touchpad",
 
-        "SECTION_HEADER_CLIPBOARD"      : "Zwischenablage",
-        "SECTION_HEADER_DEVICES"        : "Geräte",
-        "SECTION_HEADER_DISPLAY"        : "Anzeige",
-        "SECTION_HEADER_FILE_TRANSFERS" : "Dateiübertragung",
-        "SECTION_HEADER_INPUT_METHOD"   : "Eingabemethode",
+        "SECTION_HEADER_CLIENT_MESSAGES" : "Nachrichten",
+        "SECTION_HEADER_CLIPBOARD"       : "Zwischenablage",
+        "SECTION_HEADER_DEVICES"         : "Geräte",
+        "SECTION_HEADER_DISPLAY"         : "Anzeige",
+        "SECTION_HEADER_FILE_TRANSFERS"  : "Dateiübertragung",
+        "SECTION_HEADER_INPUT_METHOD"    : "Eingabemethode",
+
         "SECTION_HEADER_MOUSE_MODE"     : "Mausemulationsmodus",
 
+        "TEXT_ANONYMOUS_USER_JOINED"      : "Ein unbekannter Benutzer ist der Verbindung beigetreten.",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "Ein unbekannter Benutzer hat die Verbindung verlassen.",
         "TEXT_ZOOM_AUTO_FIT"              : "Autoanpassung Fenstergröße",
         "TEXT_CLIENT_STATUS_IDLE"         : "Inaktiv.",
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Verbindungsaufbau zu Guacamole...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Verbindung wurde getrennt.",
         "TEXT_CLIENT_STATUS_UNSTABLE"     : "Die Verbindung zum Guacamole-Server ist nicht stabil.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Verbindungsaufbau zu Guacamole. Bitte warten...",
+        "TEXT_USER_JOINED"                : "{USERNAME} ist der Verbindung beigetreten.",
+        "TEXT_USER_LEFT"                  : "{USERNAME} hat die Verbindung verlassen.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Neuverbindung in {REMAINING} {REMAINING, plural, one{Sekunde} other{Sekunden}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+        "TEXT_CLIPBOARD_AWAITING_FOCUS"   : "Klicken um Zwischenablage anzuzeigen...",
 
         "URL_OSK_LAYOUT" : "layouts/de-de-qwertz.json"
 
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "Ausblenden",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "Anzeigen",
+
+        "FIELD_HEADER_BACKGROUND" : "Hintergrund",
+        "FIELD_HEADER_FOREGROUND" : "Vordergrund",
+
+        "FIELD_OPTION_CUSTOM" : "Benutzerdefiniert...",
+
+        "SECTION_HEADER_DETAILS" : "Details:"
+
+    },
+
+    "IMPORT": {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_BROWSE"             : "Datei auswählen",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR"              : "@:APP.ACTION_CLEAR",
+        "ACTION_VIEW_FORMAT_HELP"   : "Formatierungshinweise anzeigen",
+        "ACTION_IMPORT"             : "@:APP.ACTION_IMPORT",
+        "ACTION_IMPORT_CONNECTIONS" : "Verbindungen importieren",
+
+        "DIALOG_HEADER_ERROR"   : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_SUCCESS" : "Erfolgreich",
+
+        "ERROR_AMBIGUOUS_CSV_HEADER"         : "Mehrdeutige CSV Kopfzeile \"{HEADER}\" könnte ein Verbindungsattribute oder Parameter sein",
+        "ERROR_AMBIGUOUS_PARENT_GROUP"       : "group und parentIdentifier können nicht zeitgleich verwendet werden",
+        "ERROR_ARRAY_REQUIRED"               : "Die verwendete Datei muss eine Liste an Verbindungen beinhalten",
+        "ERROR_DETECTED_INVALID_TYPE"        : "Nicht unterstüzter Dateityp. Die Datei muss  CSV, JSON, oder YAML sein.",
+        "ERROR_DUPLICATE_CONNECTION_IN_FILE" : "Doppelte Verbindung \"{NAME}\" bei \"{PATH}\" in der Import Datei",
+        "ERROR_DUPLICATE_CSV_HEADER"         : "Doppelte CSV Kopfzeile: {HEADER}",
+        "ERROR_EMPTY_FILE"                   : "Die verwendete Datei ist leer",
+        "ERROR_INVALID_CSV_HEADER"           : "Ungültige CSV Kopfzeile \"{HEADER}\" ist weder ein Attribute noch ein Parameter",
+        "ERROR_INVALID_MIME_TYPE"            : "Nicht unterstüzter Dateityp: \"{TYPE}\"",
+        "ERROR_INVALID_GROUP"                : "Keine passende Gruppe \"{GROUP}\" gefunden",
+        "ERROR_INVALID_GROUP_IDENTIFIER"     : "Keine passende Verbindungsgruppe \"{IDENTIFIER}\" gefunden",
+        "ERROR_INVALID_GROUP_TYPE"           : "Ungültige Gruppe - Muss string sein.",
+        "ERROR_INVALID_PROTOCOL"             : "Ungültiges Protokoll \"{PROTOCOL}\"",
+        "ERROR_INVALID_USER_GROUPS_TYPE"     : "Ungültige Benutzergruppen - muss eine Liste mit Gruppen-IDs sein.",
+        "ERROR_INVALID_USERS_TYPE"           : "Ungültige Benutzer  - muss eine Liste mit Benutzer-IDs sein.",
+        "ERROR_NO_FILE_SUPPLIED"             : "Bitte eine Datei zum importieren auswählen",
+        "ERROR_PARSE_FAILURE_CSV"            : "Bitte prüfen, ob die Datei eine gültige CSV ist. Folgender Verarbeitungfehler ist aufgetreten \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_JSON"           : "Bitte prüfen, ob die Datei eine gültige JSON ist. Folgender Verarbeitungfehler ist aufgetreten \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_YAML"           : "Bitte prüfen, ob die Datei eine gültige YML ist. Folgender Verarbeitungfehler ist aufgetreten \"{ERROR}\". ",
+        "ERROR_REJECT_UPDATE_CONNECTION"     : "Verbindung  \"{NAME}\" bereits vorhanden bei \"{PATH}\"",
+        "ERROR_REQUIRED_NAME_CONNECTION"     : "Der Verbindungsname wird benötigt",
+        "ERROR_REQUIRED_PROTOCOL_CONNECTION" : "Das Verbindungsprotokoll wird benötigt",
+        "ERROR_REQUIRED_NAME_FILE"           : "Kein Verbindungsnamen gefunden in der verwendeten Datei",
+        "ERROR_REQUIRED_PROTOCOL_FILE"       : "Kein Verbindungsprotokoll gefunden in der verwendeten Datei",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Vorhandene Verbindungen ersetzen/aktualisieren",
+        "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "Berechtigungen zurücksetzen",
+
+        "HELP_CSV_DESCRIPTION"              : "Eine CSV-Verbindungsimportdatei verfügt über einen Verbindungsdatensatz pro Zeile. Jede Spalte gibt ein Verbindungsfeld an. Es müssen mindestens der Verbindungsname und das Protokoll angegeben werden.",
+        "HELP_CSV_EXAMPLE"                  : "name,protocol,username,password,hostname,group,users,groups,guacd-encryption (attribute)\nconn1,vnc,alice,pass1,conn1.web.com,ROOT,guac user 1;guac user 2,Connection 1 Users,none\nconn2,rdp,bob,pass2,conn2.web.com,ROOT/Parent Group,guac user 1,,ssl\nconn3,ssh,carol,pass3,conn3.web.com,ROOT/Parent Group/Child Group,guac user 2;guac user 3,,\nconn4,kubernetes,,,,,,,",
+        "HELP_CSV_MORE_DETAILS"             : "Die CSV Kopfzeile gibt das Verbindungsfeld für jede Zeile an. Die Verbindungsgruppen-ID, in welche die Verbindung importiert werden soll, kann direkt mit „parentIdentifier“ angegeben werden oder der Pfad zur übergeordneten Gruppe kann mit „group“ angegeben werden, wie unten gezeigt. In den meisten Fällen sollte es keinen Konflikt zwischen Feldern geben, aber bei Bedarf kann zur eindeutigen Unterscheidung das Suffix „(Attribut)“ oder „(Parameter)“ hinzugefügt werden. Listen mit Benutzer- oder Benutzergruppen-IDs müssen durch Semikolons getrennt sein.¹",
+        "HELP_FILE_TYPE_DESCRIPTION"        : "Für den Verbindungsimport werden drei Dateitypen unterstützt: CSV, JSON und YAML. Für jeden Dateityp können die gleichen Daten angegeben werden. Dies muss den Verbindungsnamen und das Protokoll enthalten. Optional können auch ein Verbindungsgruppenstandort, eine Liste von Benutzern und/oder Benutzergruppen, denen Zugriff gewährt werden soll, Verbindungsparameter oder Verbindungsprotokolle angegeben werden. Alle Benutzer oder Benutzergruppen, die in der aktuellen Datenquelle nicht vorhanden sind, werden automatisch erstellt. Beachten Sie, dass vorhandene Verbindungsberechtigungen für aktualisierte Verbindungen nicht entfernt werden, es sei denn, „Berechtigungen zurücksetzen“ ist aktiviert.",
+        "HELP_FILE_TYPE_HEADER"             : "Dateitypen",
+        "HELP_JSON_DESCRIPTION"             : "Eine JSON-Verbindungsimportdatei ist eine Liste von Verbindungsobjekten. In jedem Verbindungsobjekt müssen mindestens der Verbindungsname und das Protokoll angegeben werden.",
+        "HELP_JSON_EXAMPLE"                 : "[\n  \\{\n    \"name\": \"conn1\",\n    \"protocol\": \"vnc\",\n    \"parameters\": \\{ \"username\": \"alice\", \"password\": \"pass1\", \"hostname\": \"conn1.web.com\" \\},\n    \"parentIdentifier\": \"ROOT\",\n    \"users\": [ \"guac user 1\", \"guac user 2\" ],\n    \"groups\": [ \"Connection 1 Users\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn2\",\n    \"protocol\": \"rdp\",\n    \"parameters\": \\{ \"username\": \"bob\", \"password\": \"pass2\", \"hostname\": \"conn2.web.com\" \\},\n    \"group\": \"ROOT/Parent Group\",\n    \"users\": [ \"guac user 1\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn3\",\n    \"protocol\": \"ssh\",\n    \"parameters\": \\{ \"username\": \"carol\", \"password\": \"pass3\", \"hostname\": \"conn3.web.com\" \\},\n    \"group\": \"ROOT/Parent Group/Child Group\",\n    \"users\": [ \"guac user 2\", \"guac user 3\" ]\n  \\},\n  \\{\n    \"name\": \"conn4\",\n    \"protocol\": \"kubernetes\"\n  \\}\n]",
+        "HELP_JSON_MORE_DETAILS"            : "Die Verbindungsgruppen-ID, in welche die Verbindung importiert werden soll, kann direkt mit einem Feld „parentIdentifier“ angegeben werden oder der Pfad zur übergeordneten Gruppe kann wie unten gezeigt mit einem Feld „group“ angegeben werden. Pro Verbindung kann ein Array von Benutzer- und Benutzergruppen-IDs angegeben werden, denen Zugriff gewährt werden soll.",
+        "HELP_EXISTING_CONNECTION_MODE"     : "Vorhandene Verbindungen vollständig ersetzen/aktualisieren, wenn ihre Namen und übergeordneten Verbindungsgruppen mit den Werten in der bereitgestellten Datei übereinstimmen. Wenn diese Option deaktiviert ist, wird der Versuch, eine Verbindung mit demselben Namen und derselben übergeordneten Verbindungsgruppe wie eine vorhandene Verbindung zu importieren, als Fehler gewertet.",
+        "HELP_EXISTING_PERMISSION_MODE"     : "Setzen Sie die für alle Verbindungen in der bereitgestellten Datei gewährten Berechtigungen vollständig auf die in dieser Datei angegebenen Berechtigungen zurück. Wenn keine Berechtigungen angegeben werden, werden alle relevanten Verbindungsberechtigungen widerrufen. Wenn diese Option deaktiviert ist, bleiben vorhandene Berechtigungen erhalten und alle in der Datei angegebenen Berechtigungen werden hinzugefügt.",
+        "HELP_SEMICOLON_FOOTNOTE"           : "Falls vorhanden, können Semikolons mit einem Backslash maskiert werden, z.B. \"first\\\\;last\"",
+        "HELP_UPLOAD_DROP_TITLE"            : "Datei hier hinziehen",
+        "HELP_UPLOAD_FILE_TYPES"            : "CSV, JSON, oder YAML",
+        "HELP_YAML_DESCRIPTION"             : "Eine YAML-Verbindungsimportdatei ist eine Liste von Verbindungsobjekten mit genau der gleichen Struktur wie das JSON-Format.",
+        "HELP_YAML_EXAMPLE"                 : "---\n  - name: conn1\n    protocol: vnc\n    parameters:\n      username: alice\n      password: pass1\n      hostname: conn1.web.com\n    group: ROOT\n    users:\n      - guac user 1\n      - guac user 2\n    groups:\n    - Connection 1 Users\n    attributes:\n      guacd-encryption: none\n  - name: conn2\n    protocol: rdp\n    parameters:\n      username: bob\n      password: pass2\n      hostname: conn2.web.com\n    group: ROOT/Parent Group\n    users:\n      - guac user 1\n    attributes:\n      guacd-encryption: none\n  - name: conn3\n    protocol: ssh\n    parameters:\n      username: carol\n      password: pass3\n      hostname: conn3.web.com\n    group: ROOT/Parent Group/Child Group\n    users:\n      - guac user 2\n      - guac user 3\n  - name: conn4\n    protocol: kubernetes",
+
+        "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "{NUMBER} {NUMBER, plural, one{connection} other{connections}} erfolgreich importiert.",
+        
+        "SECTION_HEADER_CONNECTION_IMPORT"           : "Verbindungsimport",
+        "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "Dateiformat für Verbindungsimport",
+        "SECTION_HEADER_CSV"                         : "CSV Format",
+        "SECTION_HEADER_JSON"                        : "JSON Format",
+        "SECTION_HEADER_YAML"                        : "YAML Format",
+
+        "TABLE_HEADER_ERRORS"     : "Fehler",
+        "TABLE_HEADER_GROUP"      : "Gruppe",
+        "TABLE_HEADER_NAME"       : "Name",
+        "TABLE_HEADER_PROTOCOL"   : "Protokol",
+        "TABLE_HEADER_ROW_NUMBER" : "Zeile #"
     },
 
     "DATA_SOURCE_DEFAULT" : {
@@ -190,7 +301,7 @@
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
-        "ERROR_INVALID_LOGIN" : "Anmeldungsfehler",
+        "ERROR_INVALID_LOGIN" : "Anmeldungefehler",
 
         "FIELD_HEADER_USERNAME" : "Benutzername",
         "FIELD_HEADER_PASSWORD" : "Passwort"
@@ -222,9 +333,9 @@
         "SECTION_HEADER_HISTORY"         : "Verlauf",
         "SECTION_HEADER_PARAMETERS"      : "Parameter",
 
-        "TABLE_HEADER_HISTORY_USERNAME" : "Benutzername",
-        "TABLE_HEADER_HISTORY_START"    : "Beginn",
-        "TABLE_HEADER_HISTORY_DURATION" : "Dauer",
+        "TABLE_HEADER_HISTORY_USERNAME"   : "Benutzername",
+        "TABLE_HEADER_HISTORY_START"      : "Beginn",
+        "TABLE_HEADER_HISTORY_DURATION"   : "Dauer",
         "TABLE_HEADER_HISTORY_REMOTEHOST" : "Entfernter Host",
 
         "TEXT_CONFIRM_DELETE"   : "Dieser Löschvorgang ist unumkehrbar. Soll diese Verbindung wirklich gelöscht werden?",
@@ -361,21 +472,92 @@
         "TEXT_CONFIRM_DELETE" : "Dieser Löschvorgang ist unumkehrbar. Möchten Sie diese Benutzergruppe wirklich löschen?"
 
     },
-    
+
+    "PLAYER" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
+        "ACTION_SHOW_KEY_LOG" : "Tastenanschlag-Protokoll",
+
+        "INFO_LOADING_RECORDING" : "Aufnahme wird geladen. Bitte warten...",
+        "INFO_NO_KEY_LOG"        : "Tastenanschlag-Protokoll nicht vorhanden",
+        "INFO_NUMBER_OF_RESULTS" : "{RESULTS} {RESULTS, plural, one{Match} other{Matches}}",
+        "INFO_SEEK_IN_PROGRESS"  : "Spule zu gewünschten Stelle. Bitte warten...",
+
+        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+
+    },
+
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"       : "Rücktaste sendet:",
+        "FIELD_HEADER_CA_CERT"         : "Zertifikate der Zertifizierungsstelle:",
+        "FIELD_HEADER_CLIENT_CERT"     : "Client Zertifikat:",
+        "FIELD_HEADER_CLIENT_KEY"      : "Client Schlüssel:",
+        "FIELD_HEADER_COLOR_SCHEME"    : "Farbschema:",
+        "FIELD_HEADER_CONTAINER"       : "Container Name:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Aufname-Pfad automatisch erstellen:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Typescript-Pfad automatisch erstellen:",
+        "FIELD_HEADER_EXEC_COMMAND"    : "Befehl ausführen (exec):",
+        "FIELD_HEADER_FONT_NAME"       : "Schriftname:",
+        "FIELD_HEADER_FONT_SIZE"       : "Schriftgröße:",
+        "FIELD_HEADER_HOSTNAME"        : "Hostname:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Server-Zertifikate ignorieren:",
+        "FIELD_HEADER_NAMESPACE"       : "Namespace:",
+        "FIELD_HEADER_POD"             : "Pod Name:",
+        "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_READ_ONLY"       : "Schreibgeschützt:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Maus auschließen:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Grafik/Streams ausschließen:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Tasten-Ereignisse einschließen:",
+        "FIELD_HEADER_RECORDING_NAME"  : "Aufnahme-Name:",
+        "FIELD_HEADER_RECORDING_PATH"  : "Aufnahme-Pfad:",
+        "FIELD_HEADER_SCROLLBACK"      : "Maximale Scrollback Größe:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript Name:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript Pfad:",
+        "FIELD_HEADER_USE_SSL"         : "SSL/TLS verwenden",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Rücktaste (Strg-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Löschen (Strg-?)",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Schwarz auf Weiß",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grau auf Schwarz",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grün auf Schwarz",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Weiß auf Schwarz",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Authentifizierung",
+        "SECTION_HEADER_BEHAVIOR"       : "Konsolenverhalten",
+        "SECTION_HEADER_CONTAINER"      : "Container",
+        "SECTION_HEADER_DISPLAY"        : "Bildschirm",
+        "SECTION_HEADER_RECORDING"      : "Monitor-Aufnahme",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Aufnahme)",
+        "SECTION_HEADER_NETWORK"        : "Netzwerk"
+
+    },
+
     "PROTOCOL_RDP" : {
 
-        "FIELD_HEADER_CLIENT_NAME"     : "Client-Name:",
-        "FIELD_HEADER_COLOR_DEPTH"     : "Farbtiefe:",
-        "FIELD_HEADER_CONSOLE"         : "Mit Konsole verbinden (Windows 2003 / 2003 R2):",
-        "FIELD_HEADER_CONSOLE_AUDIO"   : "Audiounterstützung Konsole:",
-        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Austauschlaufwerk automatisch erstellen:",
-        "FIELD_HEADER_CREATE_RECORDING_PATH": "Aufzeichnungspfad automatisch erstellen:",
-        "FIELD_HEADER_DISABLE_AUDIO"   : "Audio deaktivieren:",
-        "FIELD_HEADER_DISABLE_AUTH"    : "Authentifizierung deaktivieren:",
-        "FIELD_HEADER_DOMAIN"          : "Domäne:",
-        "FIELD_HEADER_DPI"             : "Auflösung (DPI):",
-        "FIELD_HEADER_DRIVE_NAME"      : "Laufwerksname:",
-        "FIELD_HEADER_DRIVE_PATH"      : "Laufwerkspfad:",
+        "FIELD_HEADER_CERT_TOFU"             : "Vertraue Host Zertifikat bei erster Verwendung:",
+        "FIELD_HEADER_CERT_FINGERPRINTS"     : "Fingerprints bekannter Host Zertifikate:",
+        "FIELD_HEADER_CLIENT_NAME"           : "Client name:",
+        "FIELD_HEADER_COLOR_DEPTH"           : "Farbtiefe:",
+        "FIELD_HEADER_CONSOLE"               : "Mit Konsole verbinden (Windows 2003 / 2003 R2):",
+        "FIELD_HEADER_CONSOLE_AUDIO"         : "Audiounterstützung Konsole:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH"     : "Austauschlaufwerk automatisch erstellen:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Aufzeichnungspfad automatisch erstellen:",
+        "FIELD_HEADER_DISABLE_AUDIO"    : "Audio deaktivieren:",
+        "FIELD_HEADER_DISABLE_AUTH"     : "Authentifizierung deaktivieren:",
+        "FIELD_HEADER_DISABLE_COPY"     : "Kopieren deaktivieren:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "Dateidownload deaktivieren:",
+        "FIELD_HEADER_DISABLE_PASTE"    : "Einfügen deaktivieren:",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "Dateiupload deaktivieren:",
+        "FIELD_HEADER_DOMAIN"           : "Domäne:",
+        "FIELD_HEADER_DPI"              : "Auflösung (DPI):",
+        "FIELD_HEADER_DRIVE_NAME"       : "Laufwerksname:",
+        "FIELD_HEADER_DRIVE_PATH"       : "Laufwerkspfad:",
         "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Audioeingänge (Mikrofon) aktivieren:",
         "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Desktop Gestaltung (Aero) aktivieren:",
         "FIELD_HEADER_ENABLE_DRIVE"               : "Austauschlaufwerk aktivieren:",
@@ -385,10 +567,13 @@
         "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Bitmap-Zwischenspeicherung deaktivieren:",
         "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Offscreen-Caching deaktivieren:",
         "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Glyph-Caching deaktivieren:",
+        "FIELD_HEADER_DISABLE_GFX"                : "Grafik-Pipline-Erweiterung deaktivieren:",
         "FIELD_HEADER_ENABLE_PRINTING"            : "Druckunterstützung aktivieren:",
-        "FIELD_HEADER_ENABLE_SFTP"     : "SFTP aktivieren:",
+        "FIELD_HEADER_ENABLE_SFTP"                : "SFTP aktivieren:",
         "FIELD_HEADER_ENABLE_THEMING"             : "Themen-Unterstützung aktivieren:",
+        "FIELD_HEADER_ENABLE_TOUCH"               : "Multi-Touch-Unterstützung aktivieren:",
         "FIELD_HEADER_ENABLE_WALLPAPER"           : "Desktophintergrund aktivieren:",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "Verlustlose Kompression erzweingen:",
         "FIELD_HEADER_GATEWAY_DOMAIN"   : "Domäne:",
         "FIELD_HEADER_GATEWAY_HOSTNAME" : "Hostname:",
         "FIELD_HEADER_GATEWAY_PASSWORD" : "Passwort:",
@@ -399,6 +584,7 @@
         "FIELD_HEADER_IGNORE_CERT"     : "Serverzertifikat ignorieren:",
         "FIELD_HEADER_INITIAL_PROGRAM" : "Startprogramme:",
         "FIELD_HEADER_LOAD_BALANCE_INFO" : "Lastverteilungs-Info/Cookie:",
+        "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "Zeilenende:",
         "FIELD_HEADER_PASSWORD"        : "Passwort:",
         "FIELD_HEADER_PORT"            : "Port:",
         "FIELD_HEADER_PRINTER_NAME"    : "Name des weitergeleiteten Druckers:",
@@ -407,6 +593,7 @@
         "FIELD_HEADER_READ_ONLY"      : "Nur-Lesen:",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Mausaufzeichnung deaktivieren:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Aufzeichnung der Anzeige deaktivieren:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "Touch-Ereignisse deaktivieren:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Tastendrücke aufzeichnen:",
         "FIELD_HEADER_RECORDING_NAME" : "Aufzeichnungsname:",
         "FIELD_HEADER_RECORDING_PATH" : "Aufzeichnungspfad:",
@@ -417,6 +604,7 @@
         "FIELD_HEADER_SECURITY"        : "Sicherheitsmodus:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Tastaturlayout:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Standardverzeichnis:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Dateidownload deaktivieren:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Öffentlicher Schlüssel des Host (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Hostname:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP keepalive Intervall:",
@@ -425,10 +613,22 @@
         "FIELD_HEADER_SFTP_PORT"                  : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privater Schlüssel:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "SFTP-Wurzelverzeichnis:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Dateiupload deaktivieren:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Benutzername¨:",
         "FIELD_HEADER_STATIC_CHANNELS" : "Statische Kanäle:",
+        "FIELD_HEADER_TIMEZONE"        : "Zeitzone:",
         "FIELD_HEADER_USERNAME"        : "Benutzername:",
         "FIELD_HEADER_WIDTH"           : "Breite:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast Adresse für WoL-Paket:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC Adresse des Remote Hosts:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL Paket senden:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-Port für WoL Paket: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Wartezeit für Host-Boot:",
+
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "Belassen",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_UNIX"     : "Linux/Mac/Unix (LF)",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_WINDOWS"  : "Windows (CRLF)",
 
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Hohe Farbtiefe (16-bit)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "Echtfarben (24-bit)",
@@ -445,21 +645,29 @@
         "FIELD_OPTION_SECURITY_NLA"   : "NLA (Netzwerkebene Authentifizierung)",
         "FIELD_OPTION_SECURITY_RDP"   : "RDP Verschlüsselung",
         "FIELD_OPTION_SECURITY_TLS"   : "TLS Verschlüsselung",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
-        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY": "Dänisch (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Dänisch (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Deutsch (Schweiz) (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Deutsch (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
         "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "Englisch (GB) (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "Englisch (US) (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Spanisch (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Latein-Amerikanisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
-        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Schweiz/Französisch (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Französisch (Belgien) (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CA_QWERTY" : "Französisch (Kanada) (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Französisch (Schweiz) (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Französisch (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Ungarisch (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italienisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japanisch (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norwegisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polnisches (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portugiesisch (BR) (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portugiesisch (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Rumänisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Schwedisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Türkisch (Qwerty)",
 
@@ -471,33 +679,38 @@
         "SECTION_HEADER_DEVICE_REDIRECTION" : "Geräteumleitung",
         "SECTION_HEADER_DISPLAY"            : "Bildschirm",
         "SECTION_HEADER_GATEWAY"            : "Remote Desktop Gateway",
-        "SECTION_HEADER_LOAD_BALANCING"     : "Load Balancing",
+        "SECTION_HEADER_LOAD_BALANCING"     : "Lastverteilung",
         "SECTION_HEADER_NETWORK"            : "Netzwerk",
         "SECTION_HEADER_PERFORMANCE"        : "Geschwindigkeit",
         "SECTION_HEADER_PRECONNECTION_PDU"  : "Preconnection PDU / Hyper-V",
         "SECTION_HEADER_RECORDING"          : "Bildschirmaufzeichnung",
         "SECTION_HEADER_REMOTEAPP"          : "Entferntes Programm",
-        "SECTION_HEADER_SFTP"               : "SFTP"
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
 
     },
 
     "PROTOCOL_SSH" : {
 
-        "FIELD_HEADER_BACKSPACE"      : "Rücktaste:",
-        "FIELD_HEADER_COLOR_SCHEME"   : "Farbschema:",
+        "FIELD_HEADER_BACKSPACE"    : "Rücktaste:",
+        "FIELD_HEADER_COLOR_SCHEME" : "Farbschema:",
         "FIELD_HEADER_COMMAND"      : "Befehl ausführen:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Bildschirmaufzeichnungspfad automatisch erzeugen:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Textaufzeichnungspfad automatisch erzeugen:",
-        "FIELD_HEADER_FONT_NAME"      : "Schriftart:",
-        "FIELD_HEADER_FONT_SIZE"      : "Schriftgröße:",
+        "FIELD_HEADER_DISABLE_COPY"  : "Kopieren deaktivieren:",
+        "FIELD_HEADER_DISABLE_PASTE" : "Einfügen deaktivieren:",
+        "FIELD_HEADER_FONT_NAME"     : "Schriftart:",
+        "FIELD_HEADER_FONT_SIZE"     : "Schriftgröße:",
         "FIELD_HEADER_ENABLE_SFTP"   : "SFTP aktivieren:",
         "FIELD_HEADER_HOST_KEY"      : "Öffentlicher Schlüssel des Hosts (Base64):",
         "FIELD_HEADER_HOSTNAME"      : "Hostname:",
+        "FIELD_HEADER_LOCALE"        : "Sprache ($LANG):",
         "FIELD_HEADER_USERNAME"      : "Benutzername:",
         "FIELD_HEADER_PASSWORD"      : "Passwort:",
         "FIELD_HEADER_PASSPHRASE"    : "Passphrase:",
         "FIELD_HEADER_PORT"          : "Port:",
         "FIELD_HEADER_PRIVATE_KEY"   : "Privater Schlüssel:",
+        "FIELD_HEADER_SCROLLBACK"    : "Maximaler Scrollback:",
         "FIELD_HEADER_READ_ONLY"     : "Nur-Lesen:",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Mausaufzeichnung deaktivieren:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Aufzeichnung der Anzeige deaktivieren:",
@@ -505,10 +718,18 @@
         "FIELD_HEADER_RECORDING_NAME" : "Aufzeichnungsname:",
         "FIELD_HEADER_RECORDING_PATH" : "Aufzeichnungspfad:",
         "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Server keepalive Intervall:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "Dateidownload deaktivieren:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "SFTP-Wurzelverzeichnis:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "Dateiupload deaktivieren:",
         "FIELD_HEADER_TERMINAL_TYPE"   : "Terminaltyp:",
+        "FIELD_HEADER_TIMEZONE"        : "Zeitzone ($TZ):",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Textaufzeichnungsname:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Textaufzeichnungspfad:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast Adresse für WoL-Paket:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC Adresse des Remote Hosts:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL Paket senden:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-Port für WoL Paket: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Wartezeit für Host-Boot:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Rücktaste (Strg-H)",
@@ -554,7 +775,8 @@
         "SECTION_HEADER_RECORDING"      : "Bildschirmaufzeichnung",
         "SECTION_HEADER_SESSION"        : "Sitzung / Umgebung",
         "SECTION_HEADER_TYPESCRIPT"     : "Textaufzeichnung",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
 
     },
 
@@ -564,6 +786,8 @@
         "FIELD_HEADER_COLOR_SCHEME"   : "Farbschema:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Bildschirmaufzeichnungspfad automatisch erzeugen:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Textaufzeichnungspfad automatisch erzeugen:",
+        "FIELD_HEADER_DISABLE_COPY"   : "Kopieren deaktivieren:",
+        "FIELD_HEADER_DISABLE_PASTE"  : "Einfügen deaktivieren:",
         "FIELD_HEADER_FONT_NAME"      : "Schriftart:",
         "FIELD_HEADER_FONT_SIZE"      : "Schriftgröße:",
         "FIELD_HEADER_HOSTNAME"       : "Hostname:",
@@ -580,9 +804,15 @@
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Tastendrücke aufzeichnen:",
         "FIELD_HEADER_RECORDING_NAME" : "Aufzeichnungsname:",
         "FIELD_HEADER_RECORDING_PATH" : "Aufzeichnungspfad:",
+        "FIELD_HEADER_SCROLLBACK"     : "Maximaler Scrollback:",
         "FIELD_HEADER_TERMINAL_TYPE"   : "Terminaltyp:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Textaufzeichnungsname:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Textaufzeichnungspfad:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast Adresse für WoL-Paket:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC Adresse des Remote Hosts:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL Paket senden:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-Port für WoL Paket: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Wartezeit für Host-Boot:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Rücktaste (Strg-H)",
@@ -626,7 +856,8 @@
         "SECTION_HEADER_DISPLAY"        : "Bildschirm",
         "SECTION_HEADER_RECORDING"      : "Bildschirmaufzeichnung",
         "SECTION_HEADER_TYPESCRIPT"     : "Textaufzeichnung",
-        "SECTION_HEADER_NETWORK"        : "Netzwerk"
+        "SECTION_HEADER_NETWORK"        : "Netzwerk",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
 
     },
 
@@ -639,8 +870,11 @@
         "FIELD_HEADER_CURSOR"           : "Cursor:",
         "FIELD_HEADER_DEST_HOST"        : "Ziel Host:",
         "FIELD_HEADER_DEST_PORT"        : "Ziel Port:",
+        "FIELD_HEADER_DISABLE_COPY"     : "Kopieren deaktivieren:",
+        "FIELD_HEADER_DISABLE_PASTE"    : "Einfügen deaktivieren:",
         "FIELD_HEADER_ENABLE_AUDIO"     : "Audio aktivieren:",
         "FIELD_HEADER_ENABLE_SFTP"      : "SFTP aktivieren:",
+        "FIELD_HEADER_FORCE_LOSSLESS"   : "Verlustlose Kompression erzwingen:",
         "FIELD_HEADER_HOSTNAME"         : "Hostname:",
         "FIELD_HEADER_USERNAME"         : "Benutzername:",
         "FIELD_HEADER_PASSWORD"         : "Passwort:",
@@ -652,16 +886,23 @@
         "FIELD_HEADER_RECORDING_NAME" : "Aufzeichnungsname:",
         "FIELD_HEADER_RECORDING_PATH" : "Aufzeichnungspfad:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Standard Uploadverzeichnis:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Dateidownload deaktivieren:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Öffentlicher Schlüssel des Host (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Hostname:",
-        "FIELD_HEADER_SFTP_ROOT_DIRECTORY": "SFTP-Wurzelverzeichnis:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP keepalive Intervall:",
-        "FIELD_HEADER_SFTP_PASSPHRASE"  : "Passphrase:",
-        "FIELD_HEADER_SFTP_PASSWORD"    : "Passwort:",
-        "FIELD_HEADER_SFTP_PORT"        : "Port:",
-        "FIELD_HEADER_SFTP_PRIVATE_KEY" : "Privater Schlüssel:",
-        "FIELD_HEADER_SFTP_USERNAME"    : "Benutzername:",
-        "FIELD_HEADER_SWAP_RED_BLUE"    : "Vertausche rot/blau Komponenten:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Passphrase:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Passwort:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privater Schlüssel:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "SFTP-Wurzelverzeichnis:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Hochladen deaktivieren:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Benutzername:",
+        "FIELD_HEADER_SWAP_RED_BLUE"      : "Vertausche rot/blau Komponenten:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast Adresse für WoL-Paket:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC Adresse des Remote Hosts:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL Paket senden:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-Port für WoL Paket: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Wartezeit für Host-Boot:",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 Farben",
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Hohe Farbtiefe (16-bit)",
@@ -688,7 +929,8 @@
         "SECTION_HEADER_NETWORK"        : "Netzwerk",
         "SECTION_HEADER_RECORDING"      : "Bildschirmaufzeichnung",
         "SECTION_HEADER_REPEATER"       : "VNC Repeater",
-        "SECTION_HEADER_SFTP"           : "SFTP"
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
 
     },
 
@@ -700,8 +942,9 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
-        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
+        "ACTION_DOWNLOAD"       : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"         : "@:APP.ACTION_SEARCH",
+        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
@@ -716,6 +959,7 @@
 
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Verbindungsname",
         "TABLE_HEADER_SESSION_DURATION"        : "Verbindungsdauer",
+        "TABLE_HEADER_SESSION_LOGS"            : "Protokolle",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Entfernter Host",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Sitzung aktiv seit",
         "TABLE_HEADER_SESSION_USERNAME"        : "Benutzername",
@@ -727,6 +971,7 @@
     "SETTINGS_CONNECTIONS" : {
 
         "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_IMPORT"               : "@:APP.ACTION_IMPORT",
         "ACTION_NEW_CONNECTION"       : "Neue Verbindung",
         "ACTION_NEW_CONNECTION_GROUP" : "Neue Verbindungsgruppe",
         "ACTION_NEW_SHARING_PROFILE"  : "Neues Verteil-Profil",
@@ -747,6 +992,7 @@
 
         "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
         "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
 
         "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
@@ -759,6 +1005,7 @@
         "FIELD_HEADER_PASSWORD_OLD"       : "Aktuelles Passwort:",
         "FIELD_HEADER_PASSWORD_NEW"       : "Neues Passwort:",
         "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Passwort wiederholen:",
+        "FIELD_HEADER_TIMEZONE"           : "Zeitzone:",
         "FIELD_HEADER_USERNAME"           : "Benutzername:",
         
         "HELP_DEFAULT_INPUT_METHOD" : "Die Standardeingabemethode bestimmt wie Tastaturereignisse an Guacamole weitergeleitet werden. Eine Änderung dieser Einstellung kann erforderlich sein, wenn ein mobiles Gerät verwendet wird oder bei der Eingabe durch einen IME. Dieses Verhalten kann im Menü innerhalb der Guacamole Verbindung geändert werden.",
@@ -766,12 +1013,13 @@
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
         "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
         "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
-        "HELP_LANGUAGE"             : "Um die Spracheinstellungen von Guacamole zu ändern,  wählen Sie eine der verfügbaren Sprachen.",
+        "HELP_LOCALE"             : "Um die Spracheinstellungen von Guacamole zu ändern,  wählen Sie eine der verfügbaren Sprachen.",
         "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
         "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
         "HELP_UPDATE_PASSWORD"      : "Wenn Sie das Passwort ändern wollen, geben Sie das aktuelle und das gewünschte Passwort ein und klicken Sie auf \"Ändere Passwort\". Die Änderung wird sofort wirksam.",
 
         "INFO_PASSWORD_CHANGED" : "Passwort geändert.",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "Benutzereinstellungen gespeichert.",
 
         "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
         "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
