@@ -30,6 +30,7 @@ import com.keepersecurity.secretsManager.core.KeeperRecordField;
 import com.keepersecurity.secretsManager.core.KeyPair;
 import com.keepersecurity.secretsManager.core.KeyPairs;
 import com.keepersecurity.secretsManager.core.Login;
+import com.keepersecurity.secretsManager.core.PamHostnames;
 import com.keepersecurity.secretsManager.core.Password;
 import com.keepersecurity.secretsManager.core.SecretsManager;
 import com.keepersecurity.secretsManager.core.Text;
@@ -393,9 +394,11 @@ public class KsmRecordService {
     /**
      * Returns the single hostname (or address) associated with the given
      * record. If the record has no associated hostname, or multiple hostnames,
-     * null is returned. Hostnames are retrieved from "Hosts" fields, as well
-     * as "Text" and "Hidden" fields that have the label "hostname", "address",
-     * or "ip address" (case-insensitive, space optional).
+     * null is returned. Hostnames are retrieved from "Hosts" or "PamHostnames"
+     * fields, as well as "Text" and "Hidden" fields that have the label
+     * "hostname", "address", or "ip address" (case-insensitive, space optional).
+     * These field types are checked in the above order, and the first matching
+     * field is returned.
      *
      * @param record
      *     The record to retrieve the hostname from.
@@ -410,6 +413,11 @@ public class KsmRecordService {
         Hosts hostsField = getField(record, Hosts.class, null);
         if (hostsField != null)
             return getSingleStringValue(hostsField.getValue(), Host::getHostName);
+
+        // Next, try a PAM hostname
+        PamHostnames pamHostsField = getField(record, PamHostnames.class, null);
+        if (pamHostsField != null)
+            return getSingleStringValue(pamHostsField.getValue(), Host::getHostName);
 
         KeeperRecordData data = record.getData();
         List<KeeperRecordField> custom = data.getCustom();
