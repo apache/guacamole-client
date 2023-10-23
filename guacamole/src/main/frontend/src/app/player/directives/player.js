@@ -44,6 +44,8 @@
  * THE SOFTWARE.
  */
 
+/* global _ */
+
 /**
  * Directive which plays back session recordings. This directive emits the
  * following events based on state changes within the current recording:
@@ -77,6 +79,30 @@
  */
 angular.module('player').directive('guacPlayer', ['$injector', function guacPlayer($injector) {
 
+    /**
+     * The number of milliseconds after the last detected mouse activity after
+     * which the associated CSS class should be removed.
+     *
+     * @type {number}
+     */
+    const MOUSE_CLEANUP_DELAY = 4000;
+
+    /**
+     * The number of milliseconds after the last detected mouse activity before
+     * the cleanup timer to remove the associated CSS class should be scheduled.
+     *
+     * @type {number}
+     */
+    const MOUSE_DEBOUNCE_DELAY = 250;
+
+    /**
+     * The number of milliseconds, after the debounce delay, before the mouse
+     * activity cleanup timer should run.
+     *
+     * @type {number}
+     */
+    const MOUSE_CLEANUP_TIMER_DELAY = MOUSE_CLEANUP_DELAY - MOUSE_DEBOUNCE_DELAY;
+
     const config = {
         restrict : 'E',
         templateUrl : 'app/player/templates/player.html'
@@ -93,8 +119,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
 
     };
 
-    config.controller = ['$scope', '$element', '$injector',
-        function guacPlayerController($scope) {
+    config.controller = ['$scope', '$element', '$window',
+        function guacPlayerController($scope, $element, $window) {
 
         /**
          * Guacamole.SessionRecording instance to be used to playback the
@@ -159,6 +185,14 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
          * @type {boolean}
          */
         var resumeAfterSeekRequest = false;
+
+        /**
+         * A scheduled timer to clean up the mouse activity CSS class, or null
+         * if no timer is scheduled.
+         *
+         * @type {number}
+         */
+        var mouseActivityTimer = null;
 
         /**
          * Formats the given number as a decimal string, adding leading zeroes
@@ -379,6 +413,43 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.$on('$destroy', function playerDestroyed() {
             $scope.recording.pause();
             $scope.recording.abort();
+            mouseActivityTimer !== null && $window.clearTimeout(mouseActivityTimer);
+        });
+
+        /**
+         * Clean up the mouse movement class after no mouse activity has been
+         * detected for the appropriate time period.
+         */
+        const scheduleCleanupTimeout = _.debounce(() =>
+            mouseActivityTimer = $window.setTimeout(() => {
+                mouseActivityTimer = null;
+                $element.removeClass('recent-mouse-movement');
+            }, MOUSE_CLEANUP_TIMER_DELAY),
+
+            /*
+             * Only schedule the cleanup task after the mouse hasn't moved
+             * for a reasonable amount of time to ensure that the number of
+             * created cleanup timers remains reasonable.
+             */
+            MOUSE_DEBOUNCE_DELAY);
+
+        /*
+         * When the mouse moves inside the player, add a CSS class signifying
+         * recent mouse movement, to be automatically cleaned up after a period
+         * of time with no detected mouse movement.
+         */
+        $element.on('mousemove', () => {
+
+            // Clean up any existing cleanup timer
+            if (mouseActivityTimer !== null) {
+                $window.clearTimeout(mouseActivityTimer);
+                mouseActivityTimer = null;
+            }
+
+            // Add the marker CSS class, and schedule its removal
+            $element.addClass('recent-mouse-movement');
+            scheduleCleanupTimeout();
+
         });
 
     }];
