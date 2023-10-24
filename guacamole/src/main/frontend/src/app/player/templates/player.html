@@ -3,7 +3,11 @@
                      ng-click="togglePlayback()"></guac-player-display>
 
 <!-- Player controls -->
-<div class="guac-player-controls" ng-show="recording">
+<div class="guac-player-controls" ng-show="recording"
+        ng-class="{
+            'paused' : !recording.isPlaying(),
+            'playing' : recording.isPlaying()
+        }">
 
     <!-- Playback position slider -->
     <input class="guac-player-seek" type="range" min="0" step="1"
