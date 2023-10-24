@@ -112,3 +112,7 @@
     -o-transition-delay: 0s;
     transition-delay: 0s;
 }
+
+.settings.connectionHistoryPlayer guac-player.recent-mouse-movement .guac-player-controls.playing {
+    opacity: 1;
+}
