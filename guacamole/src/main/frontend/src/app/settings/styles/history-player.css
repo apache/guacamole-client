@@ -96,7 +96,7 @@
     background: rgba(0, 0, 0, 0.5);
 }
 
-.settings.connectionHistoryPlayer.playing .guac-player-controls {
+.settings.connectionHistoryPlayer .guac-player-controls.playing {
     opacity: 0;
     -webkit-transition: opacity 0.25s linear 0.25s;
     -moz-transition: opacity 0.25s linear 0.25s;
@@ -104,8 +104,8 @@
     transition: opacity 0.25s linear 0.25s;
 }
 
-.settings.connectionHistoryPlayer.paused .guac-player-controls,
-.settings.connectionHistoryPlayer.playing:hover .guac-player-controls {
+.settings.connectionHistoryPlayer .guac-player-controls.paused,
+.settings.connectionHistoryPlayer .guac-player-controls.playing:hover {
     opacity: 1;
     -webkit-transition-delay: 0s;
     -moz-transition-delay: 0s;
