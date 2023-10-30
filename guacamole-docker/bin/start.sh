@@ -1074,11 +1074,11 @@ set_property "guacd-port"     "$GUACD_PORT"
 set_property "guacd-ssl"      "$GUACD_SSL"
 
 # guacd ssl keystore
-if [ -n "$GUACD_SSL_KEYSTORE_FILE" ]; then
-    export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=${GUACD_SSL_KEYSTORE_FILE}"
+if [ -n "$JAVA_KEYSTORE_FILE" ]; then
+    export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=${JAVA_KEYSTORE_FILE}"
 fi
-if [ -n "$GUACD_SSL_KEYSTORE_PASS" ]; then
-    export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStorePassword=${GUACD_SSL_KEYSTORE_PASS}"
+if [ -n "$JAVA_KEYSTORE_PASS" ]; then
+    export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStorePassword=${JAVA_KEYSTORE_PASS}"
 fi
 
 # A comma-separated list of the identifiers of authentication providers that
