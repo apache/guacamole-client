@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.net.auth;
 
+import org.apache.guacamole.util.IpUtils;
+
 import java.io.Serializable;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -94,7 +96,7 @@ public class Credentials implements Serializable {
         this.request = request;
 
         // Set the remote address
-        this.remoteAddress = request.getRemoteAddr();
+        this.remoteAddress = IpUtils.getRealIp(request);
 
         // Get the remote hostname
         this.remoteHostname = request.getRemoteHost();
