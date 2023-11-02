@@ -116,3 +116,76 @@
 .settings.connectionHistoryPlayer guac-player.recent-mouse-movement .guac-player-controls.playing {
     opacity: 1;
 }
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map {
+    position: absolute;
+    width: 100%;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map svg {
+    position: absolute;
+    bottom: 7px;
+    height: 50px;
+    width: 100%;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    -webkit-transition: opacity 0.1s linear 0.1s;
+    -moz-transition: opacity 0.1s linear 0.1s;
+    -o-transition: opacity 0.1s linear 0.1s;
+    transition: opacity 0.1s linear 0.1s;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls:hover .heat-map svg {
+    opacity: 0.5;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    bottom: 65px;
+    right: 10px;
+    z-index: 100;
+    opacity: 0;
+    -webkit-transition: opacity 0.1s linear 0.1s;
+    -moz-transition: opacity 0.1s linear 0.1s;
+    -o-transition: opacity 0.1s linear 0.1s;
+    transition: opacity 0.1s linear 0.1s;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls:hover .heat-map .legend {
+    opacity: 1;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .key-events::after,
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .frame-events::after {
+    display: inline-block;
+    content: '';
+    width: 25px;
+    height: 10px;
+    margin-left: 3px;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .key-events::after {
+    background-color: #5BA300;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .frame-events::after {
+    background-color: #FFFFFF;
+}
+
+.settings.connectionHistoryPlayer .heat-map svg.key-events {
+
+    /* Convert to #5BA300 color */
+    filter: invert(69%) sepia(80%) saturate(5092%) hue-rotate(54deg) brightness(96%) contrast(101%);
+}
+
+.settings.connectionHistoryPlayer .heat-map svg.frame-events {
+
+    /* Convert to #FFFFFF color */
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+}

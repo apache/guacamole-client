@@ -483,10 +483,12 @@
         "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
         "ACTION_SHOW_KEY_LOG" : "Keystroke Log",
 
-        "INFO_LOADING_RECORDING" : "Your recording is now being loaded. Please wait...",
-        "INFO_NO_KEY_LOG"        : "Keystroke Log Unavailable",
-        "INFO_NUMBER_OF_RESULTS" : "{RESULTS} {RESULTS, plural, one{Match} other{Matches}}",
-        "INFO_SEEK_IN_PROGRESS"  : "Seeking to the requested position. Please wait...",
+        "INFO_FRAME_EVENTS_LEGEND" : "On-screen Activity",
+        "INFO_KEY_EVENTS_LEGEND"   : "Keyboard Activity",
+        "INFO_LOADING_RECORDING"   : "Your recording is now being loaded. Please wait...",
+        "INFO_NO_KEY_LOG"          : "Keystroke Log Unavailable",
+        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} {RESULTS, plural, one{Match} other{Matches}}",
+        "INFO_SEEK_IN_PROGRESS"    : "Seeking to the requested position. Please wait...",
 
         "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
 

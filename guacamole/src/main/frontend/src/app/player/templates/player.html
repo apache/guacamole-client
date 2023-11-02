@@ -28,6 +28,21 @@
            ng-model="playbackPosition"
            ng-on-change="commitSeekRequest()">
 
+    <div class="heat-map">
+        <svg class="frame-events" ng-attr-view_box="0 0 {{ HEATMAP_WIDTH }} {{ HEATMAP_HEIGHT }}" preserveAspectRatio="none">
+            <path ng-attr-d="{{ frameHeatmap }}"/>
+        </svg>
+
+        <svg class="key-events" ng-attr-view_box="0 0 {{ HEATMAP_WIDTH }} {{ HEATMAP_HEIGHT }}" preserveAspectRatio="none">
+            <path ng-attr-d="{{ keyHeatmap }}"/>
+        </svg>
+
+        <div class="legend">
+            <span class="frame-events">{{ 'PLAYER.INFO_FRAME_EVENTS_LEGEND' | translate }}</span>
+            <span class="key-events">{{ 'PLAYER.INFO_KEY_EVENTS_LEGEND' | translate }}</span>
+        </div>
+    </div>
+
     <div class="guac-player-buttons">
 
         <!-- Play button -->
