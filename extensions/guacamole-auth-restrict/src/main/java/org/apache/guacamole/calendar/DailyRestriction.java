@@ -122,7 +122,7 @@ public class DailyRestriction {
      *     otherwise false.
      */
     public boolean appliesNow() {
-        DayOfWeek currentDay = LocalDate.now().getDayOfWeek();
+        DayOfWeek currentDay = LocalDate.now(ZoneId.of("UTC")).getDayOfWeek();
         LocalTime currentTime = LocalTime.now(ZoneId.of("UTC"));
         
         // Check that we are in the specified time restriction

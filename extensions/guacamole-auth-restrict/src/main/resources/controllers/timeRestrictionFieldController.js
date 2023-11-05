@@ -135,7 +135,7 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
                 var entry = new TimeRestrictionEntry();
                 entry.weekDay = '' + currArray[1];
                 entry.startTime = new Date(Date.UTC(templateDate.getFullYear(), templateDate.getMonth(), templateDate.getDate(), parseInt(currArray[2].slice(0,2)), parseInt(currArray[2].slice(2))));
-                entry.endTime = new Date(Date.UTC(templateDate.getFullYear(), templateDate.getMonth(), templateDate.getDate(), parseInt(currArray[3].slice(0,2)), parseInt(currArray[3].slice(2))))
+                entry.endTime = new Date(Date.UTC(templateDate.getFullYear(), templateDate.getMonth(), templateDate.getDate(), parseInt(currArray[3].slice(0,2)), parseInt(currArray[3].slice(2))));
                 restrictions.push(entry);
             }
         }
@@ -156,15 +156,17 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
      *     a database.
      */
     const storeRestrictions = function storeRestrictions(restrictions) {
+        
         // If there are no members of the array, just return an empty string.
         if (restrictions === null || restrictions.length < 1)
             return '';
         
-        var restrString = '';
+        let restrString = '';
         for (let i = 0; i < restrictions.length; i++) {
             // If any of the properties are not defined, skip this one.
             if (!Object.hasOwn(restrictions[i], 'weekDay')
                     || restrictions[i].weekDay === null
+                    || restrictions[i].weekDay === ''
                     || !Object.hasOwn(restrictions[i], 'startTime')
                     || restrictions[i].startTime === null
                     || !(restrictions[i].startTime instanceof Date)
@@ -178,34 +180,56 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
                 restrString += ';';
             
             // Add the weekday component of the restriction, insuring it is a string.
-            var currString = '' + restrictions[i].weekDay;
+            let currString = '' + restrictions[i].weekDay.toString();
             currString += ':';
                 
+
+            // When the field first gets a value, it defaults to a year of 1970
+            // In order to avoid issues with Daylight Savings Time, we have to
+            // work around this.
+            if (restrictions[i].startTime instanceof Date && restrictions[i].startTime.getFullYear() === 1970) {
+                let startHour = restrictions[i].startTime.getHours();
+                let startMin = restrictions[i].startTime.getMinutes();
+                restrictions[i].startTime = new Date();
+                restrictions[i].startTime.setHours(startHour);
+                restrictions[i].startTime.setMinutes(startMin);
+            }
             // Retrieve startTime hours component and add it, adding leading zero if required.
-            startHours = restrictions[i].startTime.getUTCHours();
+            let startHours = restrictions[i].startTime.getUTCHours();
             if (startHours !== null && startHours < 10)
-                startHours = '0' + startHours;
-            currString += startHours;
+                currString += '0';
+            currString += startHours.toString();
 
             // Retrieve startTime minutes component and add it, adding leading zero if required.
-            startMins = restrictions[i].startTime.getUTCMinutes();
+            let startMins = restrictions[i].startTime.getUTCMinutes();
             if (startMins !== null && startMins < 10)
-                startMins = '0' + startMins;
-            currString += startMins;
+                currString += '0';
+            currString += startMins.toString();
             
             currString += '-';
             
+            // When the field first gets a value, it defaults to a year of 1970
+            // In order to avoid issues with Daylight Savings Time, we have to
+            // work around this.
+            if (restrictions[i].endTime instanceof Date && restrictions[i].endTime.getFullYear() === 1970) {
+                let endHour = restrictions[i].endTime.getHours();
+                let endMin = restrictions[i].endTime.getMinutes();
+                restrictions[i].endTime = new Date();
+                restrictions[i].endTime.setHours(endHour);
+                restrictions[i].endTime.setMinutes(endMin);
+            }
+
             // Retrieve endTime hours component and add it, adding leading zero if required.
-            endHours = restrictions[i].endTime.getUTCHours();
+            let endHours = restrictions[i].endTime.getUTCHours();
             if (endHours !== null && endHours < 10)
-                endHours = '0' + endHours;
-            currString += endHours;
+                currString += '0';
+            currString += endHours.toString();
 
             // Retrieve endTime minutes component and add it, adding leading zero if required.
-            endMins = restrictions[i].endTime.getUTCMinutes();
-            if (endMins < 10)
-                endMins = '0' + endMins;
-            currString += endMins;
+            let endMins = restrictions[i].endTime.getUTCMinutes();
+            if (endMins !== null && endMins < 10)
+                currString += '0';
+            currString += endMins.toString();
             
             // Add the newly-created string to the overall restriction string.
             restrString += currString;
