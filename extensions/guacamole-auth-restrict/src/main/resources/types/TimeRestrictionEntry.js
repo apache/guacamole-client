@@ -42,9 +42,9 @@ angular.module('guacRestrict').factory('TimeRestrictionEntry', [
          * The numerical representation of the day of the week this restriction
          * applies to.
          *
-         * @type Number
+         * @type {string}
          */
-        this.weekDay = template.weekDay;
+        this.weekDay = template.weekDay || '';
         
         /**
          * The hour and minute that this restriction starts, in 24-hour time,
