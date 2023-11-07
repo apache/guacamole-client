@@ -137,7 +137,7 @@
 }
 
 .settings.connectionHistoryPlayer .guac-player-controls:hover .heat-map svg {
-    opacity: 0.5;
+    opacity: 1;
 }
 
 .settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend {
@@ -148,6 +148,11 @@
     bottom: 65px;
     right: 10px;
     z-index: 100;
+    background-color: rgba(0, 0, 0, 0.85);
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 6px;
+    border-radius: 5px;
     opacity: 0;
     -webkit-transition: opacity 0.1s linear 0.1s;
     -moz-transition: opacity 0.1s linear 0.1s;
@@ -175,17 +180,17 @@
 }
 
 .settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .frame-events::after {
-    background-color: #FFFFFF;
+    background-color: #888888;
 }
 
-.settings.connectionHistoryPlayer .heat-map svg.key-events {
+.settings.connectionHistoryPlayer .heat-map svg.key-events path {
 
-    /* Convert to #5BA300 color */
-    filter: invert(69%) sepia(80%) saturate(5092%) hue-rotate(54deg) brightness(96%) contrast(101%);
+    /* #5BA300 color at 50% opacity */
+    fill: rgba(91, 163, 0, 0.5);
 }
 
-.settings.connectionHistoryPlayer .heat-map svg.frame-events {
+.settings.connectionHistoryPlayer .heat-map svg.frame-events path {
 
-    /* Convert to #FFFFFF color */
-    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(93deg) brightness(103%) contrast(103%);
+    /* #888888 color at 75% opacity */
+    fill: rgba(135, 135, 135, 0.75);
 }
