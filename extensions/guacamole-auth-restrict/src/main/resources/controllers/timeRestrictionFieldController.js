@@ -57,9 +57,11 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
     $scope.restrictions = [];
 
     /**
-     * Map of weekday identifier to display name.
+     * Map of weekday identifier to display name. Note that Sunday occurs
+     * twice - once for the 0-index and once for the 7 index.
      */
     $scope.weekDays = [
+        { id : '0', day : 'Sunday' },
         { id : '1', day : 'Monday' },
         { id : '2', day : 'Tuesday' },
         { id : '3', day : 'Wednesday' },
@@ -123,7 +125,7 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
             return restrictions;
         
         // Set up the RegEx and split the string using the separator.
-        const restrictionRegex = new RegExp('^([1-7*])(?::((?:[01][0-9]|2[0-3])[0-5][0-9])\-((?:[01][0-9]|2[0-3])[0-5][0-9]))$');
+        const restrictionRegex = new RegExp('^([0-7*])(?::((?:[01][0-9]|2[0-3])[0-5][0-9])\-((?:[01][0-9]|2[0-3])[0-5][0-9]))$');
         var restrArray = restrString.split(";");
 
         // Loop through split string and process each item
@@ -132,10 +134,40 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
             // Test if our regex matches
             if (restrictionRegex.test(restrArray[i])) {
                 var currArray = restrArray[i].match(restrictionRegex);
-                var entry = new TimeRestrictionEntry();
-                entry.weekDay = '' + currArray[1];
+                let entry = new TimeRestrictionEntry();
                 entry.startTime = new Date(Date.UTC(templateDate.getFullYear(), templateDate.getMonth(), templateDate.getDate(), parseInt(currArray[2].slice(0,2)), parseInt(currArray[2].slice(2))));
                 entry.endTime = new Date(Date.UTC(templateDate.getFullYear(), templateDate.getMonth(), templateDate.getDate(), parseInt(currArray[3].slice(0,2)), parseInt(currArray[3].slice(2))));
+                var origDay = currArray[1];
+                
+                if (currArray[1] === '*')
+                    entry.weekDay = '' + currArray[1];
+                
+                else {
+                    // If UTC day is greater than local day, we subtract a day,
+                    // wrapping as required.
+                    if (entry.startTime.getDay() < entry.startTime.getUTCDay()) {
+                        if (origDay <= 0) 
+                            entry.weekDay = '' + 6;
+                        else
+                            entry.weekDay = '' + (--origDay);
+
+                    }
+
+                    // If UTC day is less than local day, we add a day, 
+                    // wrapping as required.
+                    else if (entry.startTime.getDay() > entry.startTime.getUTCDay()) {
+                        if (origDay >= 6)
+                            entry.weekDay = '' + 0;
+                        else
+                            entry.weekDay = '' + (++origDay);
+                    }
+
+                    // Local day and UTC day are the same, adjust the display day
+                    else
+                        entry.weekDay = '' + origDay;
+
+                }
+
                 restrictions.push(entry);
             }
         }
@@ -179,12 +211,7 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
             if (restrString.length > 0)
                 restrString += ';';
             
-            // Add the weekday component of the restriction, insuring it is a string.
-            let currString = '' + restrictions[i].weekDay.toString();
-            currString += ':';
-                
-
-            // When the field first gets a value, it defaults to a year of 1970
+            // When these fields first gets a value, the default year is 1970
             // In order to avoid issues with Daylight Savings Time, we have to
             // work around this.
             if (restrictions[i].startTime instanceof Date && restrictions[i].startTime.getFullYear() === 1970) {
@@ -194,6 +221,40 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
                 restrictions[i].startTime.setHours(startHour);
                 restrictions[i].startTime.setMinutes(startMin);
             }
+            
+            if (restrictions[i].endTime instanceof Date && restrictions[i].endTime.getFullYear() === 1970) {
+                let endHour = restrictions[i].endTime.getHours();
+                let endMin = restrictions[i].endTime.getMinutes();
+                restrictions[i].endTime = new Date();
+                restrictions[i].endTime.setHours(endHour);
+                restrictions[i].endTime.setMinutes(endMin);
+            }
+            
+            // Process the start day, factoring in wrapping for local time to
+            // UTC adjustments.
+            let weekDay = restrictions[i].weekDay;
+            const startDay = restrictions[i].startTime.getDay();
+            const utcStartDay = restrictions[i].startTime.getUTCDay();
+            
+            // Local day is less than UTC day, so we add a day for storing,
+            // wrapping around as required.
+            if (weekDay !== '*' && startDay < utcStartDay) {
+                if (weekDay >= 6)
+                    weekDay = 0;
+                else
+                    weekDay++;
+            }
+            
+            else if (weekDay !== '*' && startDay > utcStartDay) {
+                if (weekDay <= 0)
+                    weekDay = 6;
+                else
+                    weekDay--;
+            }
+            
+            let currString = '' + weekDay.toString();
+            currString += ':';
+            
             // Retrieve startTime hours component and add it, adding leading zero if required.
             let startHours = restrictions[i].startTime.getUTCHours();
             if (startHours !== null && startHours < 10)
@@ -207,17 +268,6 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
             currString += startMins.toString();
             
             currString += '-';
-            
-            // When the field first gets a value, it defaults to a year of 1970
-            // In order to avoid issues with Daylight Savings Time, we have to
-            // work around this.
-            if (restrictions[i].endTime instanceof Date && restrictions[i].endTime.getFullYear() === 1970) {
-                let endHour = restrictions[i].endTime.getHours();
-                let endMin = restrictions[i].endTime.getMinutes();
-                restrictions[i].endTime = new Date();
-                restrictions[i].endTime.setHours(endHour);
-                restrictions[i].endTime.setMinutes(endMin);
-            }
 
             // Retrieve endTime hours component and add it, adding leading zero if required.
             let endHours = restrictions[i].endTime.getUTCHours();
