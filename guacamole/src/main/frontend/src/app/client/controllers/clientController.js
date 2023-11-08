@@ -39,6 +39,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     const clipboardService       = $injector.get('clipboardService');
     const dataSourceService      = $injector.get('dataSourceService');
     const guacClientManager      = $injector.get('guacClientManager');
+    const guacFullscreen         = $injector.get('guacFullscreen');
     const iconService            = $injector.get('iconService');
     const preferenceService      = $injector.get('preferenceService');
     const requestService         = $injector.get('requestService');
@@ -683,8 +684,22 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         callback  : $scope.disconnect
     };
 
+    /**
+     * Action that toggles fullscreen mode within the
+     * currently-connected client and then closes the menu.
+     */
+    var FULLSCREEN_MENU_ACTION = {
+        name      : 'CLIENT.ACTION_FULLSCREEN',
+        classname : 'fullscreen action',
+        callback  : function fullscreen() {
+            
+            guacFullscreen.toggleFullscreenMode();
+            $scope.menu.shown = false;
+        }
+    };
+
     // Set client-specific menu actions
-    $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION ];
+    $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION,FULLSCREEN_MENU_ACTION ];
 
     /**
      * @borrows Protocol.getNamespace
@@ -833,6 +848,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
         setAttachedGroup(null);
+
+        // always unset fullscreen mode to not confuse user 
+        guacFullscreen.setFullscreenMode(false);
     });
 
 }]);
