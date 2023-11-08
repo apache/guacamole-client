@@ -125,6 +125,14 @@ public class DailyRestriction {
         DayOfWeek currentDay = LocalDate.now(ZoneId.of("UTC")).getDayOfWeek();
         LocalTime currentTime = LocalTime.now(ZoneId.of("UTC"));
         
+        // If end time is less than the start time, we check the remainder of this
+        // day and the beginning of the next day.
+        if (endTime.isBefore(startTime)) {
+            if (weekDays.contains(currentDay) && currentTime.isAfter(startTime) && currentTime.isBefore(LocalTime.MAX))
+                return true;
+            return (weekDays.contains(currentDay.plus(1)) && currentTime.isAfter(LocalTime.MIDNIGHT) && currentTime.isBefore(endTime));
+        }
+        
         // Check that we are in the specified time restriction
         return (weekDays.contains(currentDay) && currentTime.isAfter(startTime) && currentTime.isBefore(endTime));
     }
