@@ -19,11 +19,12 @@
 
 package org.apache.guacamole.tunnel;
 
+import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.Credentials;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.Credentials;
 
 /**
  * Map which is automatically populated with the name/value pairs of all
@@ -35,6 +36,18 @@ public class StandardTokenMap extends HashMap<String, String> {
      * The name of the token containing the user's username.
      */
     public static final String USERNAME_TOKEN = "GUAC_USERNAME";
+
+    /**
+     * The name of the token containing the user's userid
+     * when multiple LDAP's is configured, logged-in username is DOMAIN_NAME/USER_NAME.
+     */
+    public static final String USERNAME_ID_TOKEN = "GUAC_USERNAME_ID";
+
+    /**
+     * The name of the token containing the user's domain
+     * when multiple LDAP's is configured, logged-in username is DOMAIN_NAME/USER_NAME.
+     */
+    public static final String USERNAME_DOMAIN_TOKEN = "GUAC_USERNAME_DOMAIN";
 
     /**
      * The name of the token containing the user's password.
@@ -102,6 +115,13 @@ public class StandardTokenMap extends HashMap<String, String> {
         else
             put(USERNAME_TOKEN, authenticatedUser.getIdentifier());
 
+        if (get(USERNAME_TOKEN).contains("\\")) {
+            put(USERNAME_DOMAIN_TOKEN, get(USERNAME_TOKEN).split("\\\\")[0]);
+            put(USERNAME_ID_TOKEN, get(USERNAME_TOKEN).split("\\\\")[1]);
+        } else {
+            put(USERNAME_DOMAIN_TOKEN, "");
+            put(USERNAME_ID_TOKEN, get(USERNAME_TOKEN));
+        }
         // Add password token
         String password = credentials.getPassword();
         if (password != null)
