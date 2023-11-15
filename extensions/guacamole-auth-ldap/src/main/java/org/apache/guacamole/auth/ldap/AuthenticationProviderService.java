@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.directory.api.ldap.model.entry.Attribute;
 import org.apache.directory.api.ldap.model.entry.Entry;
 import org.apache.directory.api.ldap.model.exception.LdapException;
@@ -64,6 +66,11 @@ public class AuthenticationProviderService {
      * The prefix that will be used when generating tokens.
      */
     public static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_";
+
+    /**
+     * The name of LDAP domain attribute.
+     */
+    public static final String LDAP_DOMAIN_TOKEN = "DOMAIN";
 
     /**
      * Service for creating and managing connections to LDAP servers.
@@ -286,18 +293,18 @@ public class AuthenticationProviderService {
                     CredentialsInfo.USERNAME_PASSWORD);
 
         try {
-        
+
             // Retrieve group membership of the user that just authenticated
             Set<String> effectiveGroups =
                     userGroupService.getParentUserGroupIdentifiers(config, config.getBindDN());
 
             // Return AuthenticatedUser if bind succeeds
             LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+
             authenticatedUser.init(config, credentials,
-                    getAttributeTokens(config), effectiveGroups);
+                    getUserTokens(config, credentials), effectiveGroups);
 
             return authenticatedUser;
-
         }
 
         catch (GuacamoleException | RuntimeException | Error e) {
@@ -308,25 +315,53 @@ public class AuthenticationProviderService {
     }
 
     /**
-     * Returns parameter tokens generated from LDAP attributes on the user
-     * currently bound under the given LDAP connection. The attributes to be
-     * converted into parameter tokens must be explicitly listed in
-     * guacamole.properties. If no attributes are specified or none are
-     * found on the LDAP user object, an empty map is returned.
+     * Returns the current LDAP domain token from the provided user credentials.
+     *
+     * @param credentials
+     *     The credentials used for authentication.
+     *
+     * @return
+     *     Domain name by splitting login username or null if no domain is detected.
+     */
+    private String getDomainToken(Credentials credentials) {
+        String username = credentials.getUsername();
+        //Regex is used to extract the domain from a username
+        //that is in either of these formats: DOMAIN\\username or username@domain.
+        Pattern pattern = Pattern.compile("^(.+)\\\\.*$|^.*@(.+)$");
+        Matcher matcher = pattern.matcher(username);
+        if (matcher.find()) {
+            return matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
+        }
+        return null;
+    }
+
+    /**
+     * Returns parameter tokens generated based on details specific to the user
+     * currently bound under the given LDAP connection. Both LDAP attributes on
+     * the user's associated LDAP object and the credentials submitted by the user
+     * to Guacamole are considered. If any tokens are to be derived from LDAP
+     * attributes, those attributes must be explicitly listed in
+     * guacamole.properties. If no tokens are applicable, an empty map is returned.
      *
      * @param config
      *     The configuration of the LDAP server being queried.
      *
+     * @param credentials
+     *     The credentials to use for authentication.
+     *
      * @return
-     *     A map of parameter tokens generated from attributes on the user
-     *     currently bound under the given LDAP connection, as a map of token
-     *     name to corresponding value, or an empty map if no attributes are
-     *     specified or none are found on the user object.
+     *     A map of parameter tokens. These tokens are generated based on
+     *     the attributes of the user currently bound under the given LDAP connection
+     *     and the user's credentials. The map's keys are the canonicalized attribute
+     *     names with an "LDAP_" prefix, and the values are the corresponding attribute
+     *     values. If the domain name is extracted from the user's credentials, it is added
+     *     to the map with the key "LDAP_DOMAIN". If no applicable tokens are found,
+     *     the method returns an empty map.
      *
      * @throws GuacamoleException
      *     If an error occurs retrieving the user DN or the attributes.
      */
-    private Map<String, String> getAttributeTokens(ConnectedLDAPConfiguration config)
+    private Map<String, String> getUserTokens(ConnectedLDAPConfiguration config, Credentials credentials)
             throws GuacamoleException {
 
         // Get attributes from configuration information
@@ -356,10 +391,16 @@ public class AuthenticationProviderService {
                 tokens.put(TokenName.canonicalize(attr.getId(),
                         LDAP_ATTRIBUTE_TOKEN_PREFIX), attr.getString());
             }
-
         }
         catch (LdapException e) {
             throw new GuacamoleServerException("Could not query LDAP user attributes.", e);
+        }
+
+        // Extracting the domain name from the user's credentials
+        String domainName = getDomainToken(credentials);
+        if (domainName != null) {
+            String tokenName = TokenName.canonicalize(LDAP_DOMAIN_TOKEN, LDAP_ATTRIBUTE_TOKEN_PREFIX);
+            tokens.put(tokenName, domainName);
         }
 
         return tokens;
