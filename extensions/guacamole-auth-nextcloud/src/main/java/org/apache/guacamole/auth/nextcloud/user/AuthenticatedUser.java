@@ -27,8 +27,8 @@ import org.apache.guacamole.net.auth.Credentials;
 
 /**
  * An implementation of AuthenticatedUser specific to the
- * JSONAuthenticationProvider, providing access to the decrypted contents of
- * the JSON provided during authentication.
+ * NextcloudJwtAuthenticationProvider, providing access to the decrypted contents of
+ * the JWT provided during authentication.
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
 

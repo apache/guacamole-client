@@ -48,11 +48,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Allows users to be authenticated using encrypted blobs of JSON data. The
- * username of the user, all available connections, and the parameters
- * associated with those connections are all determined by the contents of the
- * provided JSON. The JSON itself is authorized by virtue of being properly
- * encrypted with a shared key.
+ * Allows a pre-check of users with encrypted Nextcloud JWT data blocks.
+ * The username in the JWT will be compared with a list in guacamole.properties.
+ * The JWT will be verified with the public key. If the JWT is valid, the login
+ * page will be loaded. If the JWT is missing or invalid, an exception message
+ * will be displayed.
  */
 public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationProvider {
 
@@ -69,8 +69,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
     private static final Logger logger = LoggerFactory.getLogger(NextcloudJwtAuthenticationProvider.class);
 
     /**
-     * Creates a new JSON AuthenticationProvider that authenticates users
-     * using encrypted blobs of JSON data.
+     * Creates a new MextcloudJwtAuthenticationProvider that authenticates user.
      *
      * @throws GuacamoleException
      *     If a required property is missing, or an error occurs while parsing

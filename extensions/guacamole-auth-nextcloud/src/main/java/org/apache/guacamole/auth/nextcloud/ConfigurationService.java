@@ -31,7 +31,7 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.StringListProperty;
 
 /**
- * Service for retrieving configuration information regarding the JSON
+ * Service for retrieving configuration information regarding the Nextcloud JWT
  * authentication provider.
  */
 public class ConfigurationService {
@@ -79,7 +79,7 @@ public class ConfigurationService {
     /**
      * Returns the symmetric key which will be used to encrypt and sign all
      * JSON data and should be used to decrypt and verify any received JSON
-     * data. This is dictated by the "json-secret-key" property specified
+     * data. This is dictated by the "nextcloud-jwt-public-key" property specified
      * within guacamole.properties.
      *
      * @return
@@ -87,7 +87,7 @@ public class ConfigurationService {
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed, or if the
-     *     "json-secret-key" property is missing.
+     *     "nextcloud-jwt-public-key" property is missing.
      */
     public String getPublicKey() throws GuacamoleException {
         return environment.getRequiredProperty(NEXTCLOUD_JWT_PUBLIC_KEY);

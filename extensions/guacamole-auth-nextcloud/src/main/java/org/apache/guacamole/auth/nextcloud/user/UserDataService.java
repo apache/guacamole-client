@@ -66,7 +66,7 @@ public class UserDataService {
 
     /**
      * Service for retrieving configuration information regarding the
-     * JSONAuthenticationProvider.
+     * NextcloudJwtAuthenticationProvider.
      */
     @Inject
     private ConfigurationService confService;
@@ -350,7 +350,7 @@ public class UserDataService {
      * Returns the identifiers of all connection groups readable by the user
      * whose data is given by the provided UserData object. This will always be
      * a set containing only the root connection group identifier. The
-     * JSONAuthenticationProvider does not define any other connection groups.
+     * NextcloudJwtAuthenticationProvider does not define any other connection groups.
      *
      * @param userData
      *     All data associated with the user whose accessible connection group

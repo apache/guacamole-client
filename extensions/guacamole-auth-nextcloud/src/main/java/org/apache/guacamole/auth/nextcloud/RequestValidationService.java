@@ -41,7 +41,7 @@ public class RequestValidationService {
 
     /**
      * Service for retrieving configuration information regarding the
-     * JSONAuthenticationProvider.
+     * NextcloudJwtAuthenticationProvider.
      */
     private ConfigurationService confService;
 

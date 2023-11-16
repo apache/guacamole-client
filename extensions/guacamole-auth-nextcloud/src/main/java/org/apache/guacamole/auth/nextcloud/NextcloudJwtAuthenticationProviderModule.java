@@ -29,7 +29,7 @@ import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 
 /**
- * Guice module which configures injections specific to the JSON authentication
+ * Guice module which configures injections specific to the Nextcloud JWT authentication
  * provider.
  */
 public class NextcloudJwtAuthenticationProviderModule extends AbstractModule {
@@ -40,14 +40,14 @@ public class NextcloudJwtAuthenticationProviderModule extends AbstractModule {
     private final Environment environment;
 
     /**
-     * A reference to the JSONAuthenticationProvider on behalf of which this
+     * A reference to the NextcloudJwtAuthenticationProvider on behalf of which this
      * module has configured injection.
      */
     private final AuthenticationProvider authProvider;
 
     /**
-     * Creates a new JSON authentication provider module which configures
-     * injection for the JSONAuthenticationProvider.
+     * Creates a new Nextcloud JWT authentication provider module which configures
+     * injection for the NextcloudJwtAuthenticationProvider.
      *
      * @param authProvider
      *     The AuthenticationProvider for which injection is being configured.
@@ -74,7 +74,7 @@ public class NextcloudJwtAuthenticationProviderModule extends AbstractModule {
         bind(AuthenticationProvider.class).toInstance(authProvider);
         bind(Environment.class).toInstance(environment);
 
-        // Bind JSON-specific services
+        // Bind NextcloudJwt-specific services
         bind(ConfigurationService.class);
         bind(ConnectionService.class);
         bind(RequestValidationService.class);

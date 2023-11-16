@@ -28,7 +28,7 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 
 /**
- * An implementation of UserContext specific to the JSONAuthenticationProvider
+ * An implementation of UserContext specific to the NextcloudJwtAuthenticationProvider
  * which obtains all data from the encrypted JSON provided during
  * authentication.
  */
@@ -63,7 +63,7 @@ public class UserContext extends AbstractUserContext {
      * UserData object.
      *
      * @param userData
-     *     The UserData object derived from the JSON data received when the
+     *     The UserData object derived from the JWT data received when the
      *     user authenticated.
      */
     public void init(UserData userData) {
