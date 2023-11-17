@@ -562,11 +562,11 @@ END
 
     set_optional_property                  \
         "sqlserver-auto-create-accounts"  \
-        "$SQLSERVERQL_AUTO_CREATE_ACCOUNTS"
+        "$SQLSERVER_AUTO_CREATE_ACCOUNTS"
 
     set_optional_property      \
         "sqlserver-instance"  \
-        "$SQLSERVERQL_INSTANCE"
+        "$SQLSERVER_INSTANCE"
 
     # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
     ln -s /opt/guacamole/sqlserver/mssql-jdbc-*.jar "$GUACAMOLE_LIB"
