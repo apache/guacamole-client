@@ -57,18 +57,8 @@
 
     "CLIENT" : {
 
-        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
-        "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
-        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "@:APP.ACTION_CLEAR",
-        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
         "ACTION_DISCONNECT"                : "Desconnecta",
-        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
-        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
-        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_RECONNECT"                 : "Torneu a connectar",
-        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
-        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
         "ACTION_UPLOAD_FILES"              : "Carregueu fitxers",
 
         "DIALOG_HEADER_CONNECTING"       : "Connectant",
@@ -113,8 +103,6 @@
         "ERROR_UPLOAD_308"     : "La transferència de fitxers s'ha aturat. Això és habitualment causat per problemes de xarxa, com ara un senyal sense fils o una velocitat de xarxa molt lenta.",
         "ERROR_UPLOAD_31D"     : "Actualment s'estan transferint massa fitxers. Espereu que es completin les transferències existents i, després, torneu-ho a provar.",
         "ERROR_UPLOAD_DEFAULT" : "S'ha produït un error intern al servidor Guacamole i s'ha acabat la connexió. Si el problema continua, aviseu l'administrador del sistema o comproveu els registres del sistema.",
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "HELP_CLIPBOARD"           : "Aquí apareixerà un text copiat/tallat dins de Guacamole. Els canvis al text següent afectaran el porta-retalls remot.",
         "HELP_INPUT_METHOD_NONE"   : "No s'utilitza cap mètode d'entrada. S'accepta l'entrada de teclat des d'un teclat físic connectat.",
@@ -168,9 +156,7 @@
 
     "COLOR_SCHEME" : {
 
-        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
         "ACTION_HIDE_DETAILS" : "Amaga",
-        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
         "ACTION_SHOW_DETAILS" : "Mostra",
 
         "FIELD_HEADER_BACKGROUND" : "Background",
@@ -184,15 +170,10 @@
 
     "IMPORT": {
 
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_BROWSE"             : "Navega pels fitxers",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_CLEAR"              : "@:APP.ACTION_CLEAR",
         "ACTION_VIEW_FORMAT_HELP"   : "Veure l'ajuda de format",
-        "ACTION_IMPORT"             : "@:APP.ACTION_IMPORT",
         "ACTION_IMPORT_CONNECTIONS" : "Importa connexions",
 
-        "DIALOG_HEADER_ERROR"   : "@:APP.DIALOG_HEADER_ERROR",
         "DIALOG_HEADER_SUCCESS" : "Fet",
 
         "ERROR_AMBIGUOUS_CSV_HEADER"         : "La capçalera \"{HEADER}\" del CSV és ambigua, pot ser o bé un atribut de connexió o un paràmetre",
@@ -223,8 +204,6 @@
         "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Substituir/Actualitzar les connexions existents",
         "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "Reinicia els permisos",
 
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-
         "HELP_CSV_DESCRIPTION"              : "Un fitxer CSV d'importació de connexions ha de tenir un registre de connexió per línia. Cada columna especificarà un camp de la connexió. Com a mínim cal especificar el nom de la connexió i el protocol.",
         "HELP_CSV_EXAMPLE"                  : "name,protocol,username,password,hostname,group,users,groups,guacd-encryption (attribute)\nconn1,vnc,alice,pass1,conn1.web.com,ROOT,guac user 1;guac user 2,Connection 1 Users,none\nconn2,rdp,bob,pass2,conn2.web.com,ROOT/Parent Group,guac user 1,,ssl\nconn3,ssh,carol,pass3,conn3.web.com,ROOT/Parent Group/Child Group,guac user 2;guac user 3,,\nconn4,kubernetes,,,,,,,",
         "HELP_CSV_MORE_DETAILS"             : "La capçalera per cada fila especifica el camp de connexió. L'ID del grup de connexió on la connexió s'ha d'importar pot ser especificada directament amb \"parentIdentifier\", o el camí al grup pare es pot especificar utilitzant \"group\" tal com es mostra més avall. En la majoria de casos, no hi ha d'haver conflicte entre els camps, però si cal, un sufixe \" (attribute)\" o \" (parameter)\" es pot afegir per desambiguar. Les llistes d'usuaris o identificadors de grup d'usuaris s'ha de separar amb punt i comes.¹",
@@ -253,7 +232,9 @@
     },
 
     "DATA_SOURCE_DEFAULT" : {
+
         "NAME" : "Default (XML)"
+
     },
 
     "FORM" : {
@@ -267,10 +248,6 @@
     },
 
     "HOME" : {
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "INFO_NO_RECENT_CONNECTIONS" : "No hi ha connexions recents.",
         
@@ -289,12 +266,6 @@
 
     "LOGIN": {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
-        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
-
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
-
         "ERROR_INVALID_LOGIN" : "Accés incorrecte",
 
         "FIELD_HEADER_USERNAME" : "Nom d'usuari",
@@ -304,20 +275,12 @@
 
     "MANAGE_CONNECTION" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Suprimir la connexió",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_LOCATION" : "Ubicació:",
         "FIELD_HEADER_NAME"     : "Nom:",
         "FIELD_HEADER_PROTOCOL" : "Protocol:",
-
-        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
         "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
         "INFO_CONNECTION_ACTIVE_NOW"       : "Actiu ara",
@@ -339,14 +302,7 @@
 
     "MANAGE_CONNECTION_GROUP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
-
         "DIALOG_HEADER_CONFIRM_DELETE" : "Suprimeix el grup de connexió",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_LOCATION" : "Ubicació:",
         "FIELD_HEADER_NAME"     : "Nom:",
@@ -363,14 +319,7 @@
 
     "MANAGE_SHARING_PROFILE" : {
 
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
-
         "DIALOG_HEADER_CONFIRM_DELETE" : "Eliminar el perfil compartit",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_NAME"               : "Nom:",
         "FIELD_HEADER_PRIMARY_CONNECTION" : "Connexió primària:",
@@ -384,16 +333,8 @@
 
     "MANAGE_USER" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Eliminar l'usuari",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
-
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administrar el sistema:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Canviar la pròpia contrasenya:",
@@ -402,11 +343,7 @@
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Crear noves connexions:",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Crear grups de connexió nous:",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Crear nous perfils per compartir:",
-        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
-        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USERNAME"                      : "Nom d'usuari:",
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "HELP_NO_USER_GROUPS" : "Actualment, aquest usuari no pertany a cap grup. Amplieu aquesta secció per afegir-lo a grups.",
 
@@ -426,14 +363,8 @@
 
     "MANAGE_USER_GROUP" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
-        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
-        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
-        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
         "DIALOG_HEADER_CONFIRM_DELETE" : "Suprimeix el grup",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
@@ -443,8 +374,6 @@
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
         "FIELD_HEADER_USER_GROUP_NAME"               : "Nom del grup:",
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "HELP_NO_USER_GROUPS"        : "Actualment aquest grup no pertany a cap grup. Amplieu aquesta secció per afegir grups.",
         "HELP_NO_MEMBER_USER_GROUPS" : "Actualment aquest grup no conté cap grup. Amplieu aquesta secció per afegir grups.",
@@ -469,9 +398,6 @@
 
     "PLAYER" : {
 
-        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
-        "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
-        "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
         "ACTION_SHOW_KEY_LOG" : "Registre de tecleig",
 
         "INFO_LOADING_RECORDING" : "L'enregistrament s'està carregant. Espereu...",
@@ -934,15 +860,7 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "ACTION_DOWNLOAD" : "@:APP.ACTION_DOWNLOAD",
-        "ACTION_SEARCH"   : "@:APP.ACTION_SEARCH",
-        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING",
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-
         "FILENAME_HISTORY_CSV" : "history.csv",
-
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
         "HELP_CONNECTION_HISTORY" : "Aquí es llisten els registres d'historial de connexions anteriors i es poden ordenar fent clic a les capçaleres de columna. Per cercar registres específics, introduïu una cadena de filtre i feu clic a \"Cerca\". Només s'enumeraran els registres que coincideixin amb la cadena de filtre proporcionada.",
 
@@ -962,34 +880,17 @@
 
     "SETTINGS_CONNECTIONS" : {
 
-        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_NEW_CONNECTION"       : "Nova connexió",
         "ACTION_NEW_CONNECTION_GROUP" : "Nou grup",
         "ACTION_NEW_SHARING_PROFILE"  : "Nou perfil per compartir",
 
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-
         "HELP_CONNECTIONS"   : "Feu clic o toqueu una connexió per gestionar aquesta connexió. Segons el vostre nivell d'accés, es poden afegir i suprimir connexions i es poden canviar les seves propietats (protocol, nom d'amfitrió, port, etc.).",
-        
-        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
 
         "SECTION_HEADER_CONNECTIONS"     : "Connexions"
 
     },
 
     "SETTINGS_PREFERENCES" : {
-
-        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
-        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
-        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
-
-        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
-
-        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
-        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_LANGUAGE"           : "Llenguatge de visualització:",
         "FIELD_HEADER_PASSWORD"           : "Contrasenya:",
@@ -1024,14 +925,7 @@
 
     "SETTINGS_USERS" : {
 
-        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_NEW_USER"      : "Nou usuari",
-
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
         "HELP_USERS" : "Feu clic o toqueu un usuari per gestionar aquest usuari. En funció del vostre nivell d'accés, es poden afegir i eliminar els usuaris i es poden canviar les seves contrasenyes.",
 
@@ -1046,14 +940,7 @@
 
     "SETTINGS_USER_GROUPS" : {
 
-        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_NEW_USER_GROUP" : "Grup nou",
-
-        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
-
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-
-        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
         "HELP_USER_GROUPS" : "Feu clic o toqueu un grup següent per gestionar aquest grup. En funció del vostre nivell d'accés, es poden afegir i suprimir grups i es poden canviar els usuaris i grups.",
 
@@ -1065,16 +952,9 @@
 
     "SETTINGS_SESSIONS" : {
         
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
         "ACTION_DELETE"      : "Tanca sessions",
         
         "DIALOG_HEADER_CONFIRM_DELETE" : "Tancar sessions",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
-        
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-        
-        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
         "HELP_SESSIONS" : "Aquesta pàgina s'omple amb les connexions actualment actives. Les connexions enumerades i la possibilitat de tancar-les depèn del nivell d'accés. Si voleu tancar una o més sessions, marqueu la casella que hi ha al costat de les sessions i feu clic a \"Tanca sessions\". Tancant una sessió es desconnectarà immediatament l'usuari de la connexió associada.",
         
@@ -1097,20 +977,6 @@
         "FIELD_HEADER_GUAC_FULL_NAME"           : "Nom complet:",
         "FIELD_HEADER_GUAC_ORGANIZATION"        : "Organització:",
         "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "Rol:"
-
-    },
-
-    "USER_MENU" : {
-
-        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
-        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
-        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
-        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
-        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
-        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
-        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
-        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
-        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
 
     }
 
