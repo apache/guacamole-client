@@ -47,6 +47,7 @@ import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.properties.IPAddressListProperty;
 import org.apache.guacamole.totp.TOTPGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -319,57 +320,37 @@ public class UserVerificationService {
         HttpServletRequest request = credentials.getRequest();
         
         // Get the current client address
-        IPAddressString clientAddr = new IPAddressString(request.getRemoteAddr());
+        IPAddress clientAddr = new IPAddressString(request.getRemoteAddr()).getAddress();
 
         // Ignore anonymous users
         if (authenticatedUser.getIdentifier().equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
             return;
         
-        // We enforce by default
-        boolean enforceHost = true;
-        
-        // Check for a list of addresses that should be bypassed and iterate
+        // Pull address lists to check from configuration. Note that the enforce
+        // list will override the bypass list, which means that, if the client
+        // address happens to be in both lists, Duo MFA will be enforced.
         List<IPAddress> bypassAddresses = confService.getBypassHosts();
-        for (IPAddress bypassAddr : bypassAddresses) {
-            // If the address contains current client address, flip enforce flag
-            // and break out
-            if (clientAddr != null && clientAddr.isIPAddress()
-                    && bypassAddr.getIPVersion().equals(clientAddr.getIPVersion())
-                    && bypassAddr.contains(clientAddr.getAddress())) {
-                enforceHost = false;
-                break;
-            }
-        }
-        
-        // Check for a list of addresses that should be enforced and iterate
         List<IPAddress> enforceAddresses = confService.getEnforceHosts();
+        
+        // Check the bypass list for the client address, and set the enforce
+        // flag to the opposite.
+        boolean enforceHost = !(IPAddressListProperty.addressListContains(bypassAddresses, clientAddr));
         
         // Only continue processing if the list is not empty
         if (!enforceAddresses.isEmpty()) {
             
-            if (clientAddr == null || !clientAddr.isIPAddress()) {
-                logger.warn("Client address is not valid, "
-                + "MFA will be enforced.");
+            // If client address is not available or invalid, MFA will
+            // be enforced.
+            if (clientAddr == null || !clientAddr.isIPAddress())
                 enforceHost = true;
-            }
             
-            else {
-                // With addresses set, this default changes to false.
-                enforceHost = false;
-
-                for (IPAddress enforceAddr : enforceAddresses) {
-
-                    // If there's a match, flip the enforce flag and break out of the loop
-                    if (enforceAddr.getIPVersion().equals(clientAddr.getIPVersion())
-                            && enforceAddr.contains(clientAddr.getAddress())) {
-                        enforceHost = true;
-                        break;
-                    }
-                }
-            }
+            // Check the enforce list and set the flag if the client address
+            // is found in the list.
+            else
+                enforceHost = IPAddressListProperty.addressListContains(enforceAddresses, clientAddr);
         }
             
-        // If the enforce flag has been changed, exit, bypassing TOTP MFA.
+        // If the enforce flag is not true, bypass TOTP MFA.
         if (!enforceHost)
             return;
         

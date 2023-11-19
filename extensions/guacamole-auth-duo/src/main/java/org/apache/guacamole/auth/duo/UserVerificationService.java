@@ -40,6 +40,7 @@ import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.properties.IPAddressListProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -120,52 +121,30 @@ public class UserVerificationService {
         if (username == null || username.equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
             return;
         
-        // We enforce by default
-        boolean enforceHost = true;
-        
-        // Check for a list of addresses that should be bypassed and iterate
+        // Pull address lists to check from configuration. Note that the enforce
+        // list will override the bypass list, which means that, if the client
+        // address happens to be in both lists, Duo MFA will be enforced.
         List<IPAddress> bypassAddresses = confService.getBypassHosts();
-        for (IPAddress bypassAddr : bypassAddresses) {
-
-            // If the address contains current client address, flip enforce flag
-            // and break out
-            if (clientAddr != null && clientAddr.isIPAddress()
-                    && bypassAddr.getIPVersion().equals(clientAddr.getIPVersion())
-                    && bypassAddr.contains(clientAddr)) {
-                enforceHost = false;
-                break;
-            }
-        }
-        
-        // Check for a list of addresses that should be enforced and iterate
         List<IPAddress> enforceAddresses = confService.getEnforceHosts();
+        
+        // Check if the bypass list contains the client address, and set the
+        // enforce flag to the opposite.
+        boolean enforceHost = !(IPAddressListProperty.addressListContains(bypassAddresses, clientAddr));
         
         // Only continue processing if the list is not empty
         if (!enforceAddresses.isEmpty()) {
             
             // If client address is not available or invalid, MFA will
             // be enforced.
-            if (clientAddr == null || !clientAddr.isIPAddress()) {
+            if (clientAddr == null || !clientAddr.isIPAddress())
                 enforceHost = true;
-            }
             
-            else {
-                // With addresses set, this default changes to false.
-                enforceHost = false;
-
-                for (IPAddress enforceAddr : enforceAddresses) {
-                    
-                    // If there's a match, flip the enforce flag and break out of the loop
-                    if (enforceAddr.getIPVersion().equals(clientAddr.getIPVersion())
-                            && enforceAddr.contains(clientAddr)) {
-                        enforceHost = true;
-                        break;
-                    }
-                }
-            }
+            // Check the enforce list for the client address and set enforcement flag.
+            else
+                enforceHost = IPAddressListProperty.addressListContains(enforceAddresses, clientAddr);
         }
             
-        // If the enforce flag has been changed, exit, bypassing Duo MFA.
+        // If the enforce flag is not true, bypass Duo MFA.
         if (!enforceHost)
             return;
 
