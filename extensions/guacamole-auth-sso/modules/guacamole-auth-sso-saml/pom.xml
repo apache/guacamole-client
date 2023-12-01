@@ -74,15 +74,26 @@
             <groupId>com.onelogin</groupId>
             <artifactId>java-saml</artifactId>
             <version>2.9.0</version>
-            <!--
-                Replace vulnerable version of Woodstox until upstream
-                releases a version with fixed dependencies
-            -->
             <exclusions>
+
+                <!--
+                    Replace vulnerable version of Woodstox until upstream
+                    releases a version with fixed dependencies
+                -->
                 <exclusion>
                     <groupId>com.fasterxml.woodstox</groupId>
                     <artifactId>woodstox-core</artifactId>
                 </exclusion>
+
+                <!--
+                    Replace vulnerable version of xmlsec until upstream
+                    releases a version with fixed dependencies
+                -->
+                <exclusion>
+                    <groupId>org.apache.santuario</groupId>
+                    <artifactId>xmlsec</artifactId>
+                </exclusion>
+
             </exclusions>
         </dependency>
 
@@ -91,6 +102,13 @@
             <groupId>com.fasterxml.woodstox</groupId>
             <artifactId>woodstox-core</artifactId>
             <version>5.4.0</version>
+        </dependency>
+
+        <!-- Apache XML Security for Java -->
+        <dependency>
+            <groupId>org.apache.santuario</groupId>
+            <artifactId>xmlsec</artifactId>
+            <version>2.2.6</version>
         </dependency>
 
     </dependencies>
