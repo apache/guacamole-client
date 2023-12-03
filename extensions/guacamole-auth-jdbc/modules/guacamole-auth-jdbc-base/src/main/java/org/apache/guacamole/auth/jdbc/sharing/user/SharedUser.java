@@ -78,28 +78,6 @@ public class SharedUser implements User {
     public void setIdentifier(String identifier) {
         throw new UnsupportedOperationException("Users authenticated via share keys are immutable.");
     }
-    
-    /**
-     * {@inheritDoc}
-     * 
-     * <p>SharedUser accounts are always enabled, as access is controlled via
-     * the shared token.
-     */
-    @Override
-    public boolean isDisabled() {
-        return false;
-    }
-    
-    /**
-     * {@inheritDoc}
-     * 
-     * <p>This method silently ignores the value passed in the disabled parameter,
-     * as disabling the account is done by invalidating the sharing token.
-     */
-    @Override
-    public void setDisabled(boolean disabled) {
-        // Silently ignore the parameter
-    }
 
     @Override
     public Map<String, String> getAttributes() {

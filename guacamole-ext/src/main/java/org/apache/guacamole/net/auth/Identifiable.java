@@ -43,5 +43,26 @@ public interface Identifiable {
      *     The identifier to assign.
      */
     public void setIdentifier(String identifier);
+    
+    /**
+     * Returns true if this object is disabled, otherwise false.
+     * 
+     * @return 
+     *     True if this user account is disabled, otherwise false.
+     */
+    default public boolean isDisabled() {
+        return false;
+    }
+    
+    /**
+     * Set the disabled status of this object to the boolean value provided,
+     * true if the object should be disabled, otherwise false.
+     * 
+     * @param disabled 
+     *     True if the object should be disabled, otherwise false.
+     */
+    default public void setDisabled(boolean disabled) {
+        // Default implementation takes no action.
+    }
 
 }

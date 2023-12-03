@@ -64,28 +64,6 @@ public class SimpleUser extends AbstractUser {
     public SimpleUser(String username) {
         super.setIdentifier(username);
     }
-    
-    /**
-     * {@inheritDoc}
-     * 
-     * <p>This User implementation is always enabled, so this method will
-     * always return false.
-     */
-    @Override
-    public boolean isDisabled() {
-        return false;
-    }
-    
-    /**
-     * {@inheritDoc}
-     * 
-     * <p>This User implementation is always enabled, so this method will
-     * silently ignore the value passed in under the disabled parameter.
-     */
-    @Override
-    public void setDisabled(boolean disabled) {
-        // Silently ignore disabled value
-    }
 
     /**
      * Adds a new READ permission to the given set of permissions for each of
