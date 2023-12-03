@@ -17,31 +17,32 @@
  * under the License.
  */
 
-package org.apache.guacamole.net.auth.simple;
-
-import org.apache.guacamole.net.auth.AbstractUserGroup;
+package org.apache.guacamole.net.auth;
 
 /**
- * A read-only UserGroup implementation which has no members and no
- * permissions. Implementations that need to define members or permissions
- * should extend this class and override the associated getters.
+ * An interface that defines items that can be enabled or disabled.
  */
-public class SimpleUserGroup extends AbstractUserGroup {
-
+public interface Disableable {
+    
     /**
-     * Creates a completely uninitialized SimpleUserGroup.
+     * Returns true if this object is disabled, otherwise false.
+     * 
+     * @return 
+     *     True if this object is disabled, otherwise false.
      */
-    public SimpleUserGroup() {
+    default public boolean isDisabled() {
+        return false;
     }
-
+    
     /**
-     * Creates a new SimpleUserGroup having the given identifier.
-     *
-     * @param identifier
-     *     The identifier to assign to this SimpleUserGroup.
+     * Set the disabled status of this object to the boolean value provided,
+     * true if the object should be disabled, otherwise false.
+     * 
+     * @param disabled 
+     *     True if the object should be disabled, otherwise false.
      */
-    public SimpleUserGroup(String identifier) {
-        super.setIdentifier(identifier);
+    default public void setDisabled(boolean disabled) {
+        // Default implementation takes no action.
     }
-
+    
 }
