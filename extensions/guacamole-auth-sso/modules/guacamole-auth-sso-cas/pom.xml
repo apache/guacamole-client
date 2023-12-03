@@ -65,6 +65,17 @@
                     <groupId>org.glassfish.jaxb</groupId>
                     <artifactId>jaxb-core</artifactId>
                 </exclusion>
+                
+                <!--
+                    Replace slightly older commons-codec (1.15) with newer
+                    and identical version to that used by Apache Directory API
+                    for LDAP (1.16.0) so that we don't need two copies of the
+                    same license information.
+                -->
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
 
             </exclusions>
         </dependency>
@@ -116,6 +127,13 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>2.3.1</version>
+        </dependency>
+
+        <!-- Apache Commons Codec (see exclusions for cas-client-core) -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.16.0</version>
         </dependency>
 
     </dependencies>
