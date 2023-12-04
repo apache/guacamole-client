@@ -38,7 +38,7 @@
     </parent>
 
     <properties>
-        <kotlin.version>1.9.10</kotlin.version>
+        <kotlin.version>1.9.21</kotlin.version>
     </properties>
 
     <dependencies>
