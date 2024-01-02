@@ -94,7 +94,7 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
 
         // Notify whenever arguments of currently-focused client changes
         $scope.$watch('getFocusedClient().arguments', function focusedClientParametersChanged() {
-            $scope.$emit('guacClientFocused', $scope.getFocusedClient());
+            $scope.$emit('guacClientArgumentsUpdated', $scope.getFocusedClient());
         }, true);
 
         /**
