@@ -79,7 +79,14 @@ angular.module('form').directive('guacForm', [function form() {
              *
              * @type String
              */
-            focused : '='
+            focused : '=',
+
+            /**
+             * The client associated with this form, if any.
+             *
+             * @type ManagedClient
+             */
+            client: '='
 
         },
         templateUrl: 'app/form/templates/form.html',
