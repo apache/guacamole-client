@@ -487,6 +487,18 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
+    // Automatically update connection parameters that have been modified
+    // for the current focused client
+    $scope.$on('guacClientArgumentsUpdated', function focusedClientChanged(event, focusedClient) {
+
+        // Update available connection parameters, if the updated arguments are
+        // for the current focused client - otherwise ignore them
+        if ($scope.focusedClient && $scope.focusedClient === focusedClient)
+        $scope.menu.connectionParameters = focusedClient ?
+            ManagedClient.getArgumentModel(focusedClient) : {};
+
+    });
+
     // Update page icon when thumbnail changes
     $scope.$watch('focusedClient.thumbnail.canvas', function thumbnailChanged(canvas) {
         iconService.setIcons(canvas);
