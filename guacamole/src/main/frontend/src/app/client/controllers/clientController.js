@@ -494,8 +494,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Update available connection parameters, if the updated arguments are
         // for the current focused client - otherwise ignore them
         if ($scope.focusedClient && $scope.focusedClient === focusedClient)
-        $scope.menu.connectionParameters = focusedClient ?
-            ManagedClient.getArgumentModel(focusedClient) : {};
+            $scope.menu.connectionParameters = ManagedClient.getArgumentModel(focusedClient);
 
     });
 
