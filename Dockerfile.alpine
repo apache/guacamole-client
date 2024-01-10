@@ -1,0 +1,118 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+#
+# Dockerfile for guacamole-client
+#
+
+# Use args for Tomcat image label to allow image builder to choose alternatives
+# such as `--build-arg TOMCAT_JRE=jre8-alpine`
+#
+ARG TOMCAT_VERSION=8.5
+ARG TOMCAT_JRE=jdk8
+
+# Use official maven image for the build
+FROM maven:3-eclipse-temurin-8-focal AS builder
+
+# Use Mozilla's Firefox PPA (newer Ubuntu lacks a "firefox-esr" package and
+# provides only a transitional "firefox" package that actually requires Snap
+# and thus can't be used within Docker)
+
+RUN    apt-get update                                \
+    && apt-get upgrade -y                            \
+    && apt-get install -y software-properties-common \
+    && add-apt-repository -y ppa:mozillateam/ppa
+
+# Explicitly prefer packages from the Firefox PPA
+COPY guacamole-docker/mozilla-firefox.pref /etc/apt/preferences.d/
+
+# Install firefox browser for sake of JavaScript unit tests
+RUN apt-get update && apt-get install -y firefox
+
+# Install firefox browser for sake of JavaScript unit tests
+# Arbitrary arguments that can be passed to the maven build. By default, an
+# argument will be provided to explicitly unskip any skipped tests. To, for
+# example, allow the building of the RADIUS auth extension, pass a build profile
+# as well: `--build-arg MAVEN_ARGUMENTS="-P lgpl-extensions -DskipTests=false"`.
+ARG MAVEN_ARGUMENTS="-DskipTests=false"
+
+# Versions of JDBC drivers to bundle within image
+ARG MSSQL_JDBC_VERSION=9.4.1
+ARG MYSQL_JDBC_VERSION=8.0.33
+ARG PGSQL_JDBC_VERSION=42.6.0
+
+# Build environment variables
+ENV \
+    BUILD_DIR=/tmp/guacamole-docker-BUILD
+
+# Add configuration scripts
+COPY guacamole-docker/bin/ /opt/guacamole/bin/
+
+# Copy source to container for sake of build
+COPY . "$BUILD_DIR"
+
+# Run the build itself
+RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole
+
+# For the runtime image, we start with the official Tomcat distribution
+
+FROM alpine
+
+COPY --from=builder /opt/guacamole /opt/guacamole
+
+ENV TOMCAT_MAJOR=9                                                                                    \
+    TOMCAT_VERSION=9.0.78                                                                             \
+    CATALINA_HOME=/opt/guacamole
+
+RUN                                                                                                   \
+     apk add --update --no-cache                                                                      \
+             openjdk8-jre curl mariadb-client bash openssl busybox-extras                          && \
+     apk add paxctl --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community               && \
+     curl -jkSL -o /tmp/apache-tomcat.tar.gz                                                          \
+     http://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
+     gunzip /tmp/apache-tomcat.tar.gz                                                              && \
+     tar -C /opt -xf /tmp/apache-tomcat.tar                                                        && \
+     ln -s /opt/apache-tomcat-$TOMCAT_VERSION /usr/local/tomcat                                    && \
+     chmod -R a+rx /usr/local/tomcat/
+
+# cleanup
+RUN  paxctl -c /usr/lib/jvm/java-1.8-openjdk/bin/java                                          && \
+     paxctl -C /usr/lib/jvm/java-1.8-openjdk/bin/java                                          && \
+     paxctl -mps /usr/lib/jvm/java-1.8-openjdk/bin/java                                        && \
+     apk del curl                                                                                  && \
+     apk del paxctl                                                                                && \
+     rm -rf /tmp/* /var/cache/apk/* /usr/local/tomcat/webapps/*
+
+
+# Create a new user guacamole
+ARG UID=1001
+ARG GID=1001
+RUN addgroup -g $GID guacamole
+RUN adduser -S -D -s /usr/sbin/nologin -u $UID guacamole --ingroup guacamole
+
+# Run with user guacamole
+USER guacamole
+
+EXPOSE 8080
+
+WORKDIR $CATALINA_HOME
+
+# Start Guacamole under Tomcat, listening on 0.0.0.0:8080
+EXPOSE 8080
+CMD ["/opt/guacamole/bin/start.sh" ]
