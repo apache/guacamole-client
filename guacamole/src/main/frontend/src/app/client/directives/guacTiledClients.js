@@ -97,6 +97,11 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
             $scope.$emit('guacClientArgumentsUpdated', $scope.getFocusedClient());
         }, true);
 
+        // Notify whenever protocol of currently-focused client changes
+        $scope.$watch('getFocusedClient().protocol', function focusedClientParametersChanged() {
+            $scope.$emit('guacClientProtocolUpdated', $scope.getFocusedClient());
+        }, true);
+
         /**
          * Returns a callback for guacClick that assigns or updates keyboard
          * focus to the given client, allowing that client to receive and

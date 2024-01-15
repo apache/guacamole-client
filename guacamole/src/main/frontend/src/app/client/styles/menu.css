@@ -27,11 +27,11 @@
     background: #EEE;
     box-shadow: inset -1px 0 2px white, 1px 0 2px black;
     z-index: 100;
-    -webkit-transition: left 0.125s;
-    -moz-transition: left 0.125s;
-    -ms-transition: left 0.125s;
-    -o-transition: left 0.125s;
-    transition: left 0.125s;
+    -webkit-transition: left 0.125s, opacity 0.125s;
+    -moz-transition: left 0.125s, opacity 0.125s;
+    -ms-transition: left 0.125s, opacity 0.125s;
+    -o-transition: left 0.125s, opacity 0.125s;
+    transition: left 0.125s, opacity 0.125s;
 }
 
 .menu-content {
@@ -137,10 +137,10 @@
 .menu,
 .menu.closed {
     left: -480px;
-    visibility: hidden;
+    opacity: 0;
 }
 
 .menu.open {
     left: 0px;
-    visibility: visible;
+    opacity: 1;
 }

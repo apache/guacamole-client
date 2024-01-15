@@ -498,16 +498,33 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.menu.connectionParameters = newFocusedClient ?
             ManagedClient.getArgumentModel(newFocusedClient) : {};
 
+        // Re-broadcast the updated client
+        $scope.$broadcast('guacClientChanged', newFocusedClient);
+
+    });
+
+    // Track when the protocol changes for the current client - generally
+    // this will be when the protocol is first set for the client
+    $scope.$on('guacClientProtocolUpdated', function protocolChanged(event, focusedClient) {
+
+        // Ignore any updated protocol not for the current focused client
+        if ($scope.focusedClient && $scope.focusedClient === focusedClient)
+
+            // Re-broadcast the updated protocol
+            $scope.$broadcast('guacClientProtocolChanged', focusedClient);
     });
 
     // Automatically update connection parameters that have been modified
     // for the current focused client
-    $scope.$on('guacClientArgumentsUpdated', function focusedClientChanged(event, focusedClient) {
+    $scope.$on('guacClientArgumentsUpdated', function argumentsChanged(event, focusedClient) {
 
-        // Update available connection parameters, if the updated arguments are
-        // for the current focused client - otherwise ignore them
-        if ($scope.focusedClient && $scope.focusedClient === focusedClient)
+        // Ignore any updated arguments not for the current focused client
+        if ($scope.focusedClient && $scope.focusedClient === focusedClient) {
             $scope.menu.connectionParameters = ManagedClient.getArgumentModel(focusedClient);
+
+            // Re-broadcast the updated arguments
+            $scope.$broadcast('guacClientArgumentsChanged', focusedClient);
+        }
 
     });
 
