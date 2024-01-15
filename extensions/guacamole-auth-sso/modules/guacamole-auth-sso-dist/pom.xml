@@ -32,7 +32,7 @@
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-auth-sso</artifactId>
-        <version>1.5.3</version>
+        <version>1.5.4</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -42,28 +42,28 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-sso-cas</artifactId>
-            <version>1.5.3</version>
+            <version>1.5.4</version>
         </dependency>
 
         <!-- OpenID Authentication Extension -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-sso-openid</artifactId>
-            <version>1.5.3</version>
+            <version>1.5.4</version>
         </dependency>
 
         <!-- SAML Authentication Extension -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-sso-saml</artifactId>
-            <version>1.5.3</version>
+            <version>1.5.4</version>
         </dependency>
 
         <!-- SSL Authentication Extension -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-sso-ssl</artifactId>
-            <version>1.5.3</version>
+            <version>1.5.4</version>
         </dependency>
 
     </dependencies>

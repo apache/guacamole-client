@@ -26,14 +26,14 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>extensions</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.3</version>
+    <version>1.5.4</version>
     <name>extensions</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-client</artifactId>
-        <version>1.5.3</version>
+        <version>1.5.4</version>
         <relativePath>../</relativePath>
     </parent>
 

@@ -27,4 +27,4 @@ var Guacamole = Guacamole || {};
  *
  * @type {!string}
  */
-Guacamole.API_VERSION = "1.5.3";
+Guacamole.API_VERSION = "1.5.4";
