@@ -21,12 +21,15 @@ package org.apache.guacamole.auth.openid.token;
 
 import com.google.inject.Inject;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.auth.sso.NonceService;
+import org.apache.guacamole.token.TokenName;
 import org.jose4j.jwk.HttpsJwks;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
@@ -47,6 +50,11 @@ public class TokenValidationService {
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(TokenValidationService.class);
+
+    /**
+     * The prefix to use when generating token names.
+     */
+    public static final String OIDC_ATTRIBUTE_TOKEN_PREFIX = "OIDC_";
 
     /**
      * Service for retrieving OpenID configuration information.
@@ -201,5 +209,65 @@ public class TokenValidationService {
 
         // Could not retrieve groups from JWT
         return Collections.emptySet();
+    }
+
+    /**
+     * Parses the given JwtClaims, returning the attributes contained
+     * therein, as defined by the attributes claim type given in
+     * guacamole.properties. If the attributes claim type is missing or
+     * is invalid, an empty set is returned.
+     *
+     * @param claims
+     *     A valid JwtClaims to extract attributes from.
+     *
+     * @return
+     *     A Map of String,String representing the attributes and values
+     *     from the OpenID provider point of view, or an empty Map if
+     *     claim is not valid or the attributes claim type is missing.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties could not be parsed.
+     */
+    public Map<String, String> processAttributes(JwtClaims claims) throws GuacamoleException {
+        List<String> attributesClaim = confService.getAttributesClaimType();
+
+        if (claims != null && !attributesClaim.isEmpty()) {
+            try {
+                logger.debug("Iterating over attributes claim list : {}", attributesClaim);
+
+                // We suppose all claims are resolved, so the hashmap is initialised to
+                // the size of the configuration list
+                Map<String, String> tokens = new HashMap<String, String>(attributesClaim.size());
+
+                // We iterate over the configured attributes
+                for (String key: attributesClaim) {
+                    // Retrieve the corresponding claim
+                    String oidcAttr = claims.getStringClaimValue(key);
+
+                    // We do have a matching claim and it is not empty
+                    if (oidcAttr != null && !oidcAttr.isEmpty()) {
+                        // append the prefixed claim value to the token map with its value
+                        String tokenName = TokenName.canonicalize(key, OIDC_ATTRIBUTE_TOKEN_PREFIX);
+                        tokens.put(tokenName, oidcAttr);
+                        logger.debug("Claim {} found and set to {}", key, tokenName);
+                    }
+                    else {
+                        // wanted attribute is not found in the claim
+                        logger.debug("Claim {} not found in JWT.", key);
+                    }
+                }
+
+                // We did process all the expected claims
+                return Collections.unmodifiableMap(tokens);
+            }
+            catch (MalformedClaimException e) {
+                logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage());
+                logger.debug("Malformed claim within received JWT.", e);
+            }
+        }
+
+        // Could not retrieve attributes from JWT
+        logger.debug("Attributes claim not defined. Returning empty map.");
+        return Collections.emptyMap();
     }
 }
