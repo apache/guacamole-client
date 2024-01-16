@@ -63,7 +63,7 @@ public class SQLServerEnvironment extends JDBCEnvironment {
      * The default value for the default maximum number of connections to be
      * allowed per user to any one connection.
      */
-    private static final int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
+    private static final int DEFAULT_MAX_CONNECTIONS_PER_USER = 0;
 
     /**
      * The default value for the default maximum number of connections to be
