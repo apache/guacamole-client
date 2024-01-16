@@ -286,18 +286,23 @@ public class AuthenticationProviderService {
                     CredentialsInfo.USERNAME_PASSWORD);
 
         try {
-        
+
             // Retrieve group membership of the user that just authenticated
             Set<String> effectiveGroups =
                     userGroupService.getParentUserGroupIdentifiers(config, config.getBindDN());
 
             // Return AuthenticatedUser if bind succeeds
             LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+
+            Map<String, String> tokens = getAttributeTokens(config);
+            String domainName = getDomainToken(credentials);
+            if (domainName != null) {
+                tokens.put(TokenName.canonicalize("domain-name", LDAP_ATTRIBUTE_TOKEN_PREFIX), domainName);
+            }
             authenticatedUser.init(config, credentials,
-                    getAttributeTokens(config), effectiveGroups);
+                    tokens, effectiveGroups);
 
             return authenticatedUser;
-
         }
 
         catch (GuacamoleException | RuntimeException | Error e) {
@@ -305,6 +310,26 @@ public class AuthenticationProviderService {
             throw e;
         }
 
+    }
+    /**
+     * Returns parameter current ldap domain token generated from user credentials
+     * If no multiple LDAP are configured on GUACAMOLE_HOME
+     * a null is returned.
+     *
+     * @param credentials
+     *     The credentials to use for authentication.
+     *
+     * @return
+     *     Domain name by splitting logged username when multiple LDAP configuration is available
+     *     or null if no such configuration
+     */
+    private String getDomainToken(Credentials credentials) {
+       String ldapDomainName = null;
+        // Creating custom LDAP attribute token - domain name - when configured to multiple LDAP
+        if (credentials.getUsername().contains("\\")) {
+           ldapDomainName =credentials.getUsername().split("\\\\")[0];
+        }
+        return ldapDomainName;
     }
 
     /**
@@ -356,7 +381,6 @@ public class AuthenticationProviderService {
                 tokens.put(TokenName.canonicalize(attr.getId(),
                         LDAP_ATTRIBUTE_TOKEN_PREFIX), attr.getString());
             }
-
         }
         catch (LdapException e) {
             throw new GuacamoleServerException("Could not query LDAP user attributes.", e);
