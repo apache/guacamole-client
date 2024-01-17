@@ -212,7 +212,6 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
 
         // Track the originally-focused element prior to changing focus
         var originalElement = document.activeElement;
-        pushSelection();
 
         // Copy the given value into the clipboard DOM element
         if (typeof data.data === 'string')
@@ -234,11 +233,9 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
         else
             deferred.reject();
 
-        // Unfocus the clipboard DOM event to avoid mobile keyboard opening,
-        // restoring whichever element was originally focused
+        // Unfocus the clipboard DOM event to avoid mobile keyboard opening
         clipboardContent.blur();
         originalElement.focus();
-        popSelection();
 
         return deferred.promise;
     };
