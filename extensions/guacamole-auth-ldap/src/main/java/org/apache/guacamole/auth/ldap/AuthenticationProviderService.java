@@ -294,13 +294,8 @@ public class AuthenticationProviderService {
             // Return AuthenticatedUser if bind succeeds
             LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
 
-            Map<String, String> tokens = getAttributeTokens(config);
-            String domainName = getDomainToken(credentials);
-            if (domainName != null) {
-                tokens.put(TokenName.canonicalize("domain-name", LDAP_ATTRIBUTE_TOKEN_PREFIX), domainName);
-            }
             authenticatedUser.init(config, credentials,
-                    tokens, effectiveGroups);
+                    getAttributeTokens(config, credentials), effectiveGroups);
 
             return authenticatedUser;
         }
@@ -313,19 +308,18 @@ public class AuthenticationProviderService {
     }
     /**
      * Returns parameter current ldap domain token generated from user credentials
-     * If no multiple LDAP are configured on GUACAMOLE_HOME
+     * If no multiple LDAP are configured on GUACAMOLE_HOME such ldap-servers.yaml,
      * a null is returned.
      *
      * @param credentials
      *     The credentials to use for authentication.
      *
      * @return
-     *     Domain name by splitting logged username when multiple LDAP configuration is available
+     *     Domain name by splitting logged username(domain/username) when multiple LDAP configuration is available
      *     or null if no such configuration
      */
     private String getDomainToken(Credentials credentials) {
        String ldapDomainName = null;
-        // Creating custom LDAP attribute token - domain name - when configured to multiple LDAP
         if (credentials.getUsername().contains("\\")) {
            ldapDomainName =credentials.getUsername().split("\\\\")[0];
         }
@@ -336,11 +330,15 @@ public class AuthenticationProviderService {
      * Returns parameter tokens generated from LDAP attributes on the user
      * currently bound under the given LDAP connection. The attributes to be
      * converted into parameter tokens must be explicitly listed in
-     * guacamole.properties. If no attributes are specified or none are
-     * found on the LDAP user object, an empty map is returned.
+     * guacamole.properties or domain name of the LDAP connection when multiple auth enabled.
+     * If no attributes are specified or none are found on the LDAP user object
+     * or multiple auth not enabled, an empty map is returned.
      *
      * @param config
      *     The configuration of the LDAP server being queried.
+     *
+     * @param credentials
+     *     The credentials to use for authentication.
      *
      * @return
      *     A map of parameter tokens generated from attributes on the user
@@ -351,7 +349,7 @@ public class AuthenticationProviderService {
      * @throws GuacamoleException
      *     If an error occurs retrieving the user DN or the attributes.
      */
-    private Map<String, String> getAttributeTokens(ConnectedLDAPConfiguration config)
+    private Map<String, String> getAttributeTokens(ConnectedLDAPConfiguration config, Credentials credentials)
             throws GuacamoleException {
 
         // Get attributes from configuration information
@@ -381,6 +379,12 @@ public class AuthenticationProviderService {
                 tokens.put(TokenName.canonicalize(attr.getId(),
                         LDAP_ATTRIBUTE_TOKEN_PREFIX), attr.getString());
             }
+            String domainName = getDomainToken(credentials);
+            if (domainName != null) {
+                String tokenName = TokenName.canonicalize("domain_name", LDAP_ATTRIBUTE_TOKEN_PREFIX);
+                tokens.put(tokenName, domainName);
+            }
+
         }
         catch (LdapException e) {
             throw new GuacamoleServerException("Could not query LDAP user attributes.", e);
