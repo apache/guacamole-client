@@ -62,6 +62,9 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
     directive.controller = ['$scope', '$injector', '$element',
             function guacTiledClientsController($scope, $injector, $element) {
 
+        // Required services
+        const $rootScope = $injector.get('$rootScope');
+
         // Required types
         const ManagedClient      = $injector.get('ManagedClient');
         const ManagedClientGroup = $injector.get('ManagedClientGroup');
@@ -89,17 +92,17 @@ angular.module('client').directive('guacTiledClients', [function guacTiledClient
 
         // Notify whenever identify of currently-focused client changes
         $scope.$watch('getFocusedClient()', function focusedClientChanged(focusedClient) {
-            $scope.$emit('guacClientFocused', focusedClient);
+            $rootScope.$broadcast('guacClientFocused', focusedClient);
         });
 
         // Notify whenever arguments of currently-focused client changes
         $scope.$watch('getFocusedClient().arguments', function focusedClientParametersChanged() {
-            $scope.$emit('guacClientArgumentsUpdated', $scope.getFocusedClient());
+            $rootScope.$broadcast('guacClientArgumentsUpdated', $scope.getFocusedClient());
         }, true);
 
         // Notify whenever protocol of currently-focused client changes
         $scope.$watch('getFocusedClient().protocol', function focusedClientParametersChanged() {
-            $scope.$emit('guacClientProtocolUpdated', $scope.getFocusedClient());
+            $rootScope.$broadcast('guacClientProtocolUpdated', $scope.getFocusedClient());
         }, true);
 
         /**
