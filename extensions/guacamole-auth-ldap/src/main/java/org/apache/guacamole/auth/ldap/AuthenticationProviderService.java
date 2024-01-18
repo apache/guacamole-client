@@ -319,9 +319,11 @@ public class AuthenticationProviderService {
      *     or null if no such configuration
      */
     private String getDomainToken(Credentials credentials) {
-       String ldapDomainName = null;
+        String ldapDomainName = null;
         if (credentials.getUsername().contains("\\")) {
-           ldapDomainName =credentials.getUsername().split("\\\\")[0];
+            ldapDomainName = credentials.getUsername().split("\\\\")[0];
+        } else if (credentials.getUsername().contains("@")) {
+            ldapDomainName = credentials.getUsername().split("@")[1];
         }
         return ldapDomainName;
     }
