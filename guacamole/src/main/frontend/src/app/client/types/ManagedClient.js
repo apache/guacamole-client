@@ -836,8 +836,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.setArgument = function setArgument(managedClient, name, value) {
         var managedArgument = managedClient.arguments[name];
-        if (managedArgument && ManagedArgument.setValue(managedArgument, value))
-            delete managedClient.arguments[name];
+        managedArgument && ManagedArgument.setValue(managedArgument, value);
     };
 
     /**

@@ -468,7 +468,20 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         else if (menuShownPreviousState)
             $scope.applyParameterChanges($scope.focusedClient);
 
+        /* Broadcast changes to the menu display state */
+        $scope.$broadcast('guacMenuShown', menuShown);
+
     });
+
+    // Toggle the menu when the guacClientToggleMenu event is received
+    $scope.$on('guacToggleMenu',
+            () => $scope.menu.shown = !$scope.menu.shown);
+
+    // Show the menu when the guacClientShowMenu event is received
+    $scope.$on('guacShowMenu', () => $scope.menu.shown = true);
+
+    // Hide the menu when the guacClientHideMenu event is received
+    $scope.$on('guacHideMenu', () => $scope.menu.shown = false);
 
     // Automatically track and cache the currently-focused client
     $scope.$on('guacClientFocused', function focusedClientChanged(event, newFocusedClient) {
@@ -489,10 +502,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Automatically update connection parameters that have been modified
     // for the current focused client
-    $scope.$on('guacClientArgumentsUpdated', function focusedClientChanged(event, focusedClient) {
+    $scope.$on('guacClientArgumentsUpdated', function argumentsChanged(event, focusedClient) {
 
-        // Update available connection parameters, if the updated arguments are
-        // for the current focused client - otherwise ignore them
+        // Ignore any updated arguments not for the current focused client
         if ($scope.focusedClient && $scope.focusedClient === focusedClient)
             $scope.menu.connectionParameters = ManagedClient.getArgumentModel(focusedClient);
 
