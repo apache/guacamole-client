@@ -26,14 +26,14 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-vault-ksm</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.4</version>
+    <version>1.5.5</version>
     <name>guacamole-vault-ksm</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-vault</artifactId>
-        <version>1.5.4</version>
+        <version>1.5.5</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -54,7 +54,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-vault-base</artifactId>
-            <version>1.5.4</version>
+            <version>1.5.5</version>
         </dependency>
 
         <dependency>
