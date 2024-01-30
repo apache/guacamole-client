@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.5.4",
+    "guacamoleVersion" : "1.5.5",
 
     "name"      : "TOTP TFA Authentication Backend",
     "namespace" : "totp",
