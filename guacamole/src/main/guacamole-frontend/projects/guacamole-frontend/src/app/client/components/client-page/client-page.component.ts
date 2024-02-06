@@ -72,6 +72,7 @@ import {
     GuacGroupListFilterComponent
 } from '../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component';
 import { Title } from '@angular/platform-browser';
+import { IconService } from "../../../index/services/icon.service";
 
 /**
  * The Component for the page used to connect to a connection or balancing group.
@@ -225,7 +226,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
                 private clipboardService: ClipboardService,
                 private dataSourceService: DataSourceService,
                 private guacClientManager: GuacClientManagerService,
-                // TODO: private iconService: IconService,
+                private iconService: IconService,
                 private preferenceService: PreferenceService,
                 private requestService: RequestService,
                 private tunnelService: TunnelService,
