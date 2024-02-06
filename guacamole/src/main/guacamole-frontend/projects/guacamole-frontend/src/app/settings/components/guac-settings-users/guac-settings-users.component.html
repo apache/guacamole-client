@@ -61,7 +61,7 @@
         </tr>
         </thead>
         <tbody [ngClass]="{'loading': !isLoaded()}">
-        <tr *ngFor="let manageableUser of dataSourceView?.data | async" class="user">
+        <tr *ngFor="let manageableUser of dataSourceView?.data | async; trackBy: trackByUsername" class="user">
             <td class="username">
                 <a routerLink="/manage/{{manageableUser.dataSource }}/users/{{manageableUser.user.username }}">
                     <div class="icon user"></div>
@@ -70,7 +70,11 @@
             </td>
             <td class="organization">{{manageableUser.user.attributes['guac-organization']}}</td>
             <td class="full-name">{{manageableUser.user.attributes['guac-full-name']}}</td>
-            <td class="last-active">{{(manageableUser.user.lastActive || 0) | date : dateFormat || undefined}}</td>
+            <td class="last-active">{{
+                    (manageableUser.user.lastActive !== undefined)
+                        ? (manageableUser.user.lastActive | date : dateFormat || undefined)
+                        : ''
+                }}</td>
         </tr>
         </tbody>
     </table>
