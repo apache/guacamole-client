@@ -66,6 +66,11 @@ public class AuthenticationProviderService {
     public static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_";
 
     /**
+     * The name of LDAP domain attribute
+     */
+    public static final String LDAP_DOMAIN_TOKEN = "DOMAIN";
+
+    /**
      * Service for creating and managing connections to LDAP servers.
      */
     @Inject
@@ -322,7 +327,8 @@ public class AuthenticationProviderService {
         String ldapDomainName = null;
         if (credentials.getUsername().contains("\\")) {
             ldapDomainName = credentials.getUsername().split("\\\\")[0];
-        } else if (credentials.getUsername().contains("@")) {
+        }
+        else if (credentials.getUsername().contains("@")) {
             ldapDomainName = credentials.getUsername().split("@")[1];
         }
         return ldapDomainName;
@@ -383,7 +389,7 @@ public class AuthenticationProviderService {
             }
             String domainName = getDomainToken(credentials);
             if (domainName != null) {
-                String tokenName = TokenName.canonicalize("domain_name", LDAP_ATTRIBUTE_TOKEN_PREFIX);
+                String tokenName = TokenName.canonicalize(LDAP_DOMAIN_TOKEN, LDAP_ATTRIBUTE_TOKEN_PREFIX);
                 tokens.put(tokenName, domainName);
             }
 
