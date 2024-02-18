@@ -61,12 +61,17 @@ ENV \
 
 # Add configuration scripts
 COPY guacamole-docker/bin/ /opt/guacamole/bin/
+COPY guacamole-docker/build.d/ /opt/guacamole/build.d/
+COPY guacamole-docker/entrypoint.d/ /opt/guacamole/entrypoint.d/
+COPY guacamole-docker/environment/ /opt/guacamole/environment/
 
 # Copy source to container for sake of build
 COPY . "$BUILD_DIR"
 
 # Run the build itself
 RUN /opt/guacamole/bin/build-guacamole.sh "$BUILD_DIR" /opt/guacamole
+
+RUN rm -rf /opt/guacamole/build.d /opt/guacamole/bin/build-guacamole.sh
 
 # For the runtime image, we start with the official Tomcat distribution
 FROM tomcat:${TOMCAT_VERSION}-${TOMCAT_JRE}
@@ -91,6 +96,9 @@ RUN useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $G
 # Run with user guacamole
 USER guacamole
 
+# Environment variable defaults
+ENV GUACAMOLE_HOME=/etc/guacamole
+
 # Start Guacamole under Tomcat, listening on 0.0.0.0:8080
 EXPOSE 8080
-CMD ["/opt/guacamole/bin/start.sh" ]
+CMD ["/opt/guacamole/bin/entrypoint.sh" ]
