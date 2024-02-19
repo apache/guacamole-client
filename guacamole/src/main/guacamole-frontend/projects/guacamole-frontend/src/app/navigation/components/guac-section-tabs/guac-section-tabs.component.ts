@@ -110,7 +110,7 @@ export class GuacSectionTabsComponent {
     /**
      * Selects the tab having the given name. The name of the currently
      * selected tab will be communicated outside the directive through
-     * $scope.current.
+     * this.current.
      *
      * @param name
      *     The name of the tab to select.
@@ -123,7 +123,7 @@ export class GuacSectionTabsComponent {
     /**
      * Returns whether the tab having the given name is currently
      * selected. A tab is currently selected if its name is stored within
-     * $scope.current, as assigned externally or by selectTab().
+     * this.current, as assigned externally or by selectTab().
      *
      * @param name
      *     The name of the tab to test.
