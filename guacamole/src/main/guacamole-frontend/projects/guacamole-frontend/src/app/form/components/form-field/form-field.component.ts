@@ -146,7 +146,7 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
      */
     getFieldClasses(): Record<string, boolean> {
         return this.formService.getClasses('labeled-field-', this.field, {
-            empty: !this.control
+            empty: !this.control?.value
         });
     }
 

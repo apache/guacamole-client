@@ -28,8 +28,7 @@
         <div class="fields">
             <ng-container *ngFor="let field of form.fields">
 
-                <guac-form-field class="labeled-field"
-                                 [namespace]="namespace"
+                <guac-form-field [namespace]="namespace"
                                  *ngIf="isVisible(field)"
                                  [disabled]="disabled"
                                  [focused]="isFocused(field)"
