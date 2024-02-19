@@ -93,12 +93,12 @@
         </identifier-set-editor>
 
         <!-- Connection permissions section -->
-<!--        TODO <connection-permission-editor [hidden]="!managementPermissions[dataSource].canChangePermissions"-->
-<!--                                      data-data-source="dataSource"-->
-<!--                                      permission-flags="permissionFlags"-->
-<!--                                      permissions-added="permissionsAdded"-->
-<!--                                      permissions-removed="permissionsRemoved">-->
-<!--        </connection-permission-editor>-->
+        <connection-permission-editor [hidden]="!managementPermissions[dataSource].canChangePermissions"
+                                      [dataSource]="dataSource"
+                                      [permissionFlags]="permissionFlags"
+                                      [permissionsAdded]="permissionsAdded"
+                                      [permissionsRemoved]="permissionsRemoved">
+        </connection-permission-editor>
 
         <!-- Form action buttons -->
         <management-buttons namespace="MANAGE_USER_GROUP"

@@ -1,0 +1,13 @@
+<div class="connection-permission choice">
+
+    <!-- Connection icon -->
+    <div class="icon type" [ngClass]="item.protocol"></div>
+
+    <!-- Permission checkbox -->
+    <input type="checkbox" [(ngModel)]="context.getPermissionFlags().connectionPermissions['READ'][item.identifier!]"
+           (ngModelChange)="context.connectionPermissionChanged(item.identifier!)">
+
+    <!-- Connection name -->
+    <span class="name">{{item.name}}</span>
+
+</div>

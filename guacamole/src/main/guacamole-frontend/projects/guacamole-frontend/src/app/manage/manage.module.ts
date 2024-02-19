@@ -39,6 +39,10 @@ import {
 } from './components/location-chooser-connection-group/location-chooser-connection-group.component';
 import { ManageUserGroupComponent } from './components/manage-user-group/manage-user-group.component';
 import { ManageConnectionGroupComponent } from './components/manage-connection-group/manage-connection-group.component';
+import { ConnectionPermissionEditorComponent } from './components/connection-permission-editor/connection-permission-editor.component';
+import { ConnectionPermissionComponent } from './components/connection-permission/connection-permission.component';
+import { SharingProfilePermissionComponent } from './components/sharing-profile-permission/sharing-profile-permission.component';
+import { ConnectionGroupPermissionComponent } from './components/connection-group-permission/connection-group-permission.component';
 
 /**
  * The module for the administration functionality.
@@ -54,7 +58,11 @@ import { ManageConnectionGroupComponent } from './components/manage-connection-g
         LocationChooserComponent,
         LocationChooserConnectionGroupComponent,
         ManageUserGroupComponent,
-        ManageConnectionGroupComponent
+        ManageConnectionGroupComponent,
+        ConnectionPermissionEditorComponent,
+        ConnectionPermissionComponent,
+        SharingProfilePermissionComponent,
+        ConnectionGroupPermissionComponent
     ],
     imports: [
         CommonModule,

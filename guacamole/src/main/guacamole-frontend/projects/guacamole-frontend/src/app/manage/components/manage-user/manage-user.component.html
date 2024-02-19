@@ -71,41 +71,41 @@
             </div>
 
             <!-- System permissions section -->
-                    <system-permission-editor [hidden]="!managementPermissions[dataSource].canChangePermissions"
-                                              [username]="selfUsername"
-                                              [dataSource]="dataSource"
-                                              [permissionFlags]="permissionFlags!"
-                                              [permissionsAdded]="permissionsAdded"
-                                              [permissionsRemoved]="permissionsRemoved">
-                    </system-permission-editor>
+            <system-permission-editor [hidden]="!managementPermissions[dataSource].canChangePermissions"
+                                      [username]="selfUsername"
+                                      [dataSource]="dataSource"
+                                      [permissionFlags]="permissionFlags!"
+                                      [permissionsAdded]="permissionsAdded"
+                                      [permissionsRemoved]="permissionsRemoved">
+            </system-permission-editor>
 
             <!-- Parent group section -->
-                    <identifier-set-editor
-                        header="MANAGE_USER.SECTION_HEADER_USER_GROUPS"
-                        emptyPlaceholder="MANAGE_USER.HELP_NO_USER_GROUPS"
-                        unavailablePlaceholder="MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE"
-                        [identifiersAvailable]="availableGroups"
-                        [identifiers]="parentGroups!"
-                        [identifiersAdded]="parentGroupsAdded"
-                        [identifiersRemoved]="parentGroupsRemoved">
-                    </identifier-set-editor>
+            <identifier-set-editor
+                header="MANAGE_USER.SECTION_HEADER_USER_GROUPS"
+                emptyPlaceholder="MANAGE_USER.HELP_NO_USER_GROUPS"
+                unavailablePlaceholder="MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE"
+                [identifiersAvailable]="availableGroups"
+                [identifiers]="parentGroups!"
+                [identifiersAdded]="parentGroupsAdded"
+                [identifiersRemoved]="parentGroupsRemoved">
+            </identifier-set-editor>
 
             <!-- Connection permissions section -->
-            <!--        <connection-permission-editor [hidden]="!managementPermissions[dataSource].canChangePermissions"-->
-            <!--                                      data-data-source="dataSource"-->
-            <!--                                      permission-flags="permissionFlags"-->
-            <!--                                      permissions-added="permissionsAdded"-->
-            <!--                                      permissions-removed="permissionsRemoved">-->
-            <!--        </connection-permission-editor>-->
+            <connection-permission-editor [hidden]="!managementPermissions[dataSource].canChangePermissions"
+                                          [dataSource]="dataSource"
+                                          [permissionFlags]="permissionFlags"
+                                          [permissionsAdded]="permissionsAdded"
+                                          [permissionsRemoved]="permissionsRemoved">
+            </connection-permission-editor>
 
             <!-- Form action buttons -->
-                    <management-buttons namespace="MANAGE_USER"
-                                        [permissions]="managementPermissions[dataSource]"
-                                        [save]="saveUser.bind(this)"
-                                        [delete]="deleteUser.bind(this)"
-                                        [clone]="cloneUser.bind(this)"
-                                        [return]="returnToUserList.bind(this)">
-                    </management-buttons>
+            <management-buttons namespace="MANAGE_USER"
+                                [permissions]="managementPermissions[dataSource]"
+                                [save]="saveUser.bind(this)"
+                                [delete]="deleteUser.bind(this)"
+                                [clone]="cloneUser.bind(this)"
+                                [return]="returnToUserList.bind(this)">
+            </management-buttons>
 
         </div>
 
