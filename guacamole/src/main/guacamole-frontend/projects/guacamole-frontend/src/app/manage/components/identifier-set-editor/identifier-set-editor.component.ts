@@ -29,7 +29,7 @@ import { DataSourceBuilderService } from '../../../list/services/data-source-bui
 import { DataSource } from '../../../list/types/DataSource';
 
 /**
- * A directive for manipulating a set of objects sharing some common relation
+ * A component for manipulating a set of objects sharing some common relation
  * and represented by an array of their identifiers. The specific objects
  * added or removed are tracked within a separate pair of arrays of
  * identifiers.
@@ -181,7 +181,7 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
             // from the identifier set being edited (iff it is within the
             // identifiersAvailable array)
             this.isEditable = {};
-            this.identifiers.forEach(identifier => {
+            this.identifiersAvailable?.forEach(identifier => {
                 this.isEditable[identifier] = true;
             });
 
