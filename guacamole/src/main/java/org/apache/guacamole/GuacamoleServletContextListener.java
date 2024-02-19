@@ -95,13 +95,26 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
 
     /**
      * A property that determines whether environment variables are evaluated
-     * to override properties specified in guacamole.properties.
+     * to supply properties not specified in guacamole.properties.
      */
     private static final BooleanGuacamoleProperty ENABLE_ENVIRONMENT_PROPERTIES =
         new BooleanGuacamoleProperty() {
             @Override
             public String getName() {
                 return "enable-environment-properties";
+            }
+        };
+
+    /**
+     * A property that determines whether environment variables of the form
+     * "*_FILE" are evaluated to supply properties not specified in
+     * guacamole.properties nor in environment variables.
+     */
+    private static final BooleanGuacamoleProperty ENABLE_FILE_ENVIRONMENT_PROPERTIES =
+        new BooleanGuacamoleProperty() {
+            @Override
+            public String getName() {
+                return "enable-file-environment-properties";
             }
         };
 
@@ -170,6 +183,23 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
         catch (GuacamoleException e) {
             logger.error("Unable to configure support for environment properties: {}", e.getMessage());
             logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_ENVIRONMENT_PROPERTIES.getName(), e);
+        }
+
+        // For any values not defined in GUACAMOLE_HOME/guacamole.properties
+        // nor in the system environment, read from files pointed to by
+        // corresponding "*_FILE" variables in the system environment if
+        // "enable-file-environment-properties" is set to "true"
+        try {
+            if (environment.getProperty(ENABLE_FILE_ENVIRONMENT_PROPERTIES, false)) {
+                environment.addGuacamoleProperties(new SystemFileEnvironmentGuacamoleProperties());
+                logger.info("Additional configuration parameters may be read "
+                        + "from files pointed to by \"*_FILE\" environment "
+                        + "variables.");
+            }
+        }
+        catch (GuacamoleException e) {
+            logger.error("Unable to configure support for file environment properties: {}", e.getMessage());
+            logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_FILE_ENVIRONMENT_PROPERTIES.getName(), e);
         }
 
         // Now that at least the main guacamole.properties source of

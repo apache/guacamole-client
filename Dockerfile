@@ -97,7 +97,8 @@ RUN useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $G
 USER guacamole
 
 # Environment variable defaults
-ENV GUACAMOLE_HOME=/etc/guacamole
+ENV GUACAMOLE_HOME=/etc/guacamole \
+    ENABLE_FILE_ENVIRONMENT_PROPERTIES=true
 
 # Start Guacamole under Tomcat, listening on 0.0.0.0:8080
 EXPOSE 8080
