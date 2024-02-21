@@ -38,7 +38,7 @@ export class RequestService {
     }
 
     /**
-     * Creates a Observable error callback which invokes the given callback only
+     * Creates an Observable error callback which invokes the given callback only
      * if the Observable failed with a REST @link{Error} object. If the
      * Observable failed without an @link{Error} object, such as when a
      * JavaScript error occurs within a callback earlier in the Observable chain,
