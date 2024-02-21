@@ -30,5 +30,10 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
     encapsulation: ViewEncapsulation.None
 })
 export class ConnectionGroupComponent {
+
+    /**
+     * TODO
+     */
     @Input({required: true}) item!: GroupListItem;
+
 }
