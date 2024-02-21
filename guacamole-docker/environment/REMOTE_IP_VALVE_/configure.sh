@@ -24,49 +24,38 @@
 ## the REMOTE_IP_VALVE_ENABLED environment variable is set to "true".
 ##
 
-# Add <Valve> element
+##
+## Array of all xmlstarlet command-line options necessary to add the
+## RemoteIpValve attributes that correspond to various "REMOTE_IP_VALVE_*"
+## environment variables.
+##
+declare -a VALVE_ATTRIBUTES=( --type attr -n className -v org.apache.catalina.valves.RemoteIpValve )
+
+# Translate all properties supported by RemoteIpValve into corresponding
+# environment variables
+for ATTRIBUTE in \
+    remoteIpHeader \
+    internalProxies \
+    proxiesHeader \
+    trustedProxies \
+    protocolHeader \
+    protocolHeaderHttpsValue \
+    httpServerPort \
+    httpsServerPort; do
+
+    VAR_NAME="REMOTE_IP_VALVE_$(echo "$ATTRIBUTE" | sed 's/\([a-z]\)\([A-Z]\)/\1_\2/g' | tr 'a-z' 'A-Z')"
+    if [ -n "${!VAR_NAME}" ]; then
+        VALVE_ATTRIBUTES+=( --type attr -n "$ATTRIBUTE" -v "${!VAR_NAME}" )
+    else
+        echo "Using default RemoteIpValve value for \"$ATTRIBUTE\" attribute."
+    fi
+
+done
+
+# Programmatically add requested RemoteIpValve entry
 xmlstarlet edit --inplace \
     --insert '/Server/Service/Engine/Host/*' --type elem -n Valve \
-    --insert '/Server/Service/Engine/Host/Valve[not(@className)]' --type attr -n className -v org.apache.catalina.valves.RemoteIpValve \
-    $CATALINA_BASE/conf/server.xml
-
-# Allowed IPs
-if [ -z "$PROXY_ALLOWED_IPS_REGEX" ]; then
-    echo "Using default Tomcat allowed IPs regex"
-else
-    xmlstarlet edit --inplace \
-        --insert '/Server/Service/Engine/Host/Valve[@className="org.apache.catalina.valves.RemoteIpValve"]' \
-        --type attr -n internalProxies -v "$PROXY_ALLOWED_IPS_REGEX" \
-        $CATALINA_BASE/conf/server.xml
-fi
-
-# X-Forwarded-For
-if [ -z "$PROXY_IP_HEADER" ]; then
-    echo "Using default Tomcat proxy IP header"
-else
-    xmlstarlet edit --inplace \
-        --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
-        --type attr -n remoteIpHeader -v "$PROXY_IP_HEADER" \
-        $CATALINA_BASE/conf/server.xml
-fi
-
-# X-Forwarded-Proto
-if [ -z "$PROXY_PROTOCOL_HEADER" ]; then
-    echo "Using default Tomcat proxy protocol header"
-else
-    xmlstarlet edit --inplace \
-        --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
-        --type attr -n protocolHeader -v "$PROXY_PROTOCOL_HEADER" \
-        $CATALINA_BASE/conf/server.xml
-fi
-
-# X-Forwarded-By
-if [ -z "$PROXY_BY_HEADER" ]; then
-    echo "Using default Tomcat proxy forwarded by header"
-else
-    xmlstarlet edit --inplace \
-        --insert "/Server/Service/Engine/Host/Valve[@className='org.apache.catalina.valves.RemoteIpValve']" \
-        --type attr -n remoteIpProxiesHeader -v "$PROXY_BY_HEADER" \
-        $CATALINA_BASE/conf/server.xml
-fi
+    --insert '/Server/Service/Engine/Host/Valve[not(@className)]' \
+    "${VALVE_ATTRIBUTES[@]}" \
+    "$CATALINA_BASE/conf/server.xml"
 

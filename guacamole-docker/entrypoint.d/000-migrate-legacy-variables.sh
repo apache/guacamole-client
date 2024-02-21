@@ -103,3 +103,11 @@ deprecate_variable "SQLSERVER_USER" "SQLSERVER_USERNAME"
 # guacamole.properties.
 deprecate_variable_prefix "POSTGRES_" "POSTGRESQL_"
 
+# The old "PROXY_*" names for attributes supported by RemoteIpValve are being
+# replaced with "REMOTE_IP_VALVE_*" attributes that more closely and
+# predictably match their attribute names
+deprecate_variable "PROXY_ALLOWED_IPS_REGEX" "REMOTE_IP_VALVE_INTERNAL_PROXIES"
+deprecate_variable "PROXY_IP_HEADER"         "REMOTE_IP_VALVE_REMOTE_IP_HEADER"
+deprecate_variable "PROXY_PROTOCOL_HEADER"   "REMOTE_IP_VALVE_PROTOCOL_HEADER"
+# NOTE: PROXY_BY_HEADER never worked as there is no "remoteIpProxiesHeader" attribute for RemoteIpValve
+
