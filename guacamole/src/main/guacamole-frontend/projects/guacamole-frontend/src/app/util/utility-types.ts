@@ -28,3 +28,10 @@ export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 export type NonNullableProperties<T, K extends keyof T> = {
     [P in keyof T]: P extends K ? NonNullable<T[P]> : T[P];
 };
+
+/**
+ * From T make all properties non-nullable
+ */
+export type NonNullableAllProperties<T> = {
+    [P in keyof T]: NonNullable<T[P]>;
+};

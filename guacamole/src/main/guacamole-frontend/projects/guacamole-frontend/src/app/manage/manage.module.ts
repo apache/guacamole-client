@@ -43,6 +43,7 @@ import { ConnectionPermissionEditorComponent } from './components/connection-per
 import { ConnectionPermissionComponent } from './components/connection-permission/connection-permission.component';
 import { SharingProfilePermissionComponent } from './components/sharing-profile-permission/sharing-profile-permission.component';
 import { ConnectionGroupPermissionComponent } from './components/connection-group-permission/connection-group-permission.component';
+import { ManageSharingProfileComponent } from './components/manage-sharing-profile/manage-sharing-profile.component';
 
 /**
  * The module for the administration functionality.
@@ -62,7 +63,8 @@ import { ConnectionGroupPermissionComponent } from './components/connection-grou
         ConnectionPermissionEditorComponent,
         ConnectionPermissionComponent,
         SharingProfilePermissionComponent,
-        ConnectionGroupPermissionComponent
+        ConnectionGroupPermissionComponent,
+        ManageSharingProfileComponent
     ],
     imports: [
         CommonModule,

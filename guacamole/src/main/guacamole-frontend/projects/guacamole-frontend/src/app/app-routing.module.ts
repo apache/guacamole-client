@@ -52,6 +52,9 @@ import {
 import {
     ConnectionHistoryPlayerComponent
 } from './settings/components/connection-history-player/connection-history-player.component';
+import {
+    ManageSharingProfileComponent
+} from "./manage/components/manage-sharing-profile/manage-sharing-profile.component";
 
 
 /**
@@ -228,6 +231,24 @@ export const appRoutes: Routes = [
     {
         path: 'manage/:dataSource/connections',
         component: ManageConnectionComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        canActivate: [authGuard]
+    },
+
+    // Sharing profile editor
+    {
+        path: 'manage/:dataSource/sharingProfiles/:id',
+        component: ManageSharingProfileComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        canActivate: [authGuard]
+    },
+
+    // Sharing profile editor for creating a new sharing profile
+    {
+        path: 'manage/:dataSource/sharingProfiles',
+        component: ManageSharingProfileComponent,
         title: titleResolver,
         data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
         canActivate: [authGuard]

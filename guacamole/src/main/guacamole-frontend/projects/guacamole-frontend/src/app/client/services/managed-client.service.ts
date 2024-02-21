@@ -741,11 +741,11 @@ export class ManagedClientService {
     createShareLink(client: ManagedClient, sharingProfile: SharingProfile): Observable<UserCredentials> {
 
         // Retrieve sharing credentials for the sake of generating a share link
-        return this.tunnelService.getSharingCredentials(client.tunnel.uuid, sharingProfile.identifier)
+        return this.tunnelService.getSharingCredentials(client.tunnel.uuid, sharingProfile.identifier!)
             .pipe(
                 // Add a new share link once the credentials are ready
                 tap(sharingCredentials => {
-                    client.shareLinks[sharingProfile.identifier] =
+                    client.shareLinks[sharingProfile.identifier!] =
                         ManagedShareLink.getInstance(sharingProfile, sharingCredentials)
                 }),
                 catchError(this.requestService.WARN)

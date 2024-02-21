@@ -48,6 +48,7 @@ import { GuacSettingsSessionsComponent } from './components/guac-settings-sessio
 import { ConnectionHistoryPlayerComponent } from './components/connection-history-player/connection-history-player.component';
 import { ClientLibModule } from 'guacamole-frontend-lib';
 import { PlayerModule } from '../player/player.module';
+import { SharingProfileComponent } from './components/sharing-profile/sharing-profile.component';
 
 /**
  * The module for manipulation of general settings. This is distinct from the
@@ -67,7 +68,8 @@ import { PlayerModule } from '../player/player.module';
         NewSharingProfileComponent,
         GuacSettingsConnectionHistoryComponent,
         GuacSettingsSessionsComponent,
-        ConnectionHistoryPlayerComponent
+        ConnectionHistoryPlayerComponent,
+        SharingProfileComponent
     ],
     imports: [
         CommonModule,

@@ -19,7 +19,7 @@
 
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { map, Observable, tap } from 'rxjs';
 import { SharingProfile } from '../types/SharingProfile';
 
 /**
@@ -101,14 +101,14 @@ export class SharingProfileService {
      *     An observable for the HTTP call which will succeed if and only if the
      *     save operation is successful.
      */
-    saveSharingProfile(dataSource: string, sharingProfile: SharingProfile): Observable<SharingProfile | void> {
+    saveSharingProfile(dataSource: string, sharingProfile: SharingProfile): Observable<void> {
 
         // If sharing profile is new, add it and set the identifier automatically
         if (!sharingProfile.identifier) {
             return this.http.post<SharingProfile>(
                 'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles',
                 sharingProfile
-            ).pipe(tap((newSharingProfile) => {
+            ).pipe(map((newSharingProfile) => {
 
                 // Set the identifier on the new sharing profile and clear the cache
                 sharingProfile.identifier = newSharingProfile.identifier;
@@ -154,7 +154,7 @@ export class SharingProfileService {
 
         // Delete sharing profile
         return this.http.delete<void>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(sharingProfile.identifier)
+            'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(sharingProfile.identifier!)
         )
 
             // Clear the cache

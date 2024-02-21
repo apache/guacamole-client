@@ -26,7 +26,7 @@ export class SharingProfile {
     /**
      * The unique identifier associated with this sharing profile.
      */
-    identifier: string;
+    identifier?: string;
 
     /**
      * The unique identifier of the connection that this sharing profile
