@@ -233,7 +233,7 @@ export class ManageConnectionComponent implements OnInit {
      * connection, or creating an entirely new connection.
      *
      * @returns
-     *     A promise which is resolved when the interface has been prepared
+     *     An observable which completes when the interface has been prepared
      *     for performing the requested management task.
      */
     private loadRequestedConnection(): Observable<void> {
@@ -264,7 +264,7 @@ export class ManageConnectionComponent implements OnInit {
      *     The identifier of the connection to load.
      *
      * @returns
-     *     A promise which is resolved when the interface has been prepared for
+     *     An observable which completes when the interface has been prepared for
      *     editing the given connection.
      */
     private loadExistingConnection(dataSource: string, identifier: string): Observable<void> {
@@ -301,7 +301,7 @@ export class ManageConnectionComponent implements OnInit {
      *     The identifier of the connection being cloned.
      *
      * @returns
-     *     A promise which is resolved when the interface has been prepared for
+     *     An observable which completes when the interface has been prepared for
      *     cloning the given connection.
      */
     private loadClonedConnection(dataSource: string, identifier: string): Observable<void> {
@@ -329,7 +329,7 @@ export class ManageConnectionComponent implements OnInit {
      * new connection.
      *
      * @returns
-     *     A promise which is resolved when the interface has been prepared for
+     *     An observable which completes when the interface has been prepared for
      *     creating a new connection.
      */
     private loadSkeletonConnection(): Observable<void> {
@@ -363,7 +363,7 @@ export class ManageConnectionComponent implements OnInit {
      * within the selected data source.
      */
     returnToConnectionList(): void {
-        this.router.navigate(['settings', encodeURIComponent(this.selectedDataSource), 'connections'])
+        this.router.navigate(['settings', encodeURIComponent(this.selectedDataSource), 'connections']);
     }
 
     /**
@@ -371,43 +371,40 @@ export class ManageConnectionComponent implements OnInit {
      * which is prepopulated with the data from the connection currently being edited.
      */
     cloneConnection(): void {
-        this.router.navigate(['manage', encodeURIComponent(this.selectedDataSource), 'connections'], {queryParams: {clone: this.identifier}})
+        this.router.navigate(
+            ['manage', encodeURIComponent(this.selectedDataSource), 'connections'],
+            {queryParams: {clone: this.identifier}}
+        );
     }
 
     /**
      * Saves the current connection, creating a new connection or updating the
-     * existing connection, returning a promise which is resolved if the save
+     * existing connection, returning an observable which completes if the save
      * operation succeeds and rejected if the save operation fails.
      *
      * @returns
-     *     A promise which is resolved if the save operation succeeds and is
+     *     An observable which completes if the save operation succeeds and is
      *     rejected with an {@link Error} if the save operation fails.
      */
     saveConnection(): Observable<void> {
 
-        if (!this.connection)
-            return of(void (0));
-
-        this.connection.parameters = this.parameters || undefined;
+        this.connection!.parameters = this.parameters || undefined;
 
         // Save the connection
-        return this.connectionService.saveConnection(this.selectedDataSource, this.connection);
+        return this.connectionService.saveConnection(this.selectedDataSource, this.connection!);
 
     }
 
     /**
-     * Deletes the current connection, returning a promise which is resolved if
+     * Deletes the current connection, returning an observable which completes if
      * the delete operation succeeds and rejected if the delete operation fails.
      *
      * @returns
-     *     A promise which is resolved if the delete operation succeeds and is
+     *     An observable which completes if the delete operation succeeds and is
      *     rejected with an {@link Error} if the delete operation fails.
      */
     deleteConnection(): Observable<void> {
-        if (!this.connection)
-            return of(void (0));
-
-        return this.connectionService.deleteConnection(this.selectedDataSource, this.connection);
+        return this.connectionService.deleteConnection(this.selectedDataSource, this.connection!);
     }
 
 }
