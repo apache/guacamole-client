@@ -111,8 +111,12 @@
     width: 100%;
 }
 
-.notification .parameters .fields .labeled-field {
+.notification .parameters .fields guac-form-field {
     display: table-row;
+}
+
+.notification .parameters .fields .labeled-field {
+    display: contents;
 }
 
 .notification .parameters .fields .field-header,

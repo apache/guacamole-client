@@ -30,8 +30,12 @@
     margin: 1em;
 }
 
-.attributes .form .fields .labeled-field {
+.attributes .form .fields guac-form-field {
     display: table-row;
+}
+
+.attributes .form .fields .labeled-field {
+    display: contents;
 }
 
 .attributes .form .fields .field-header,

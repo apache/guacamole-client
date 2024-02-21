@@ -23,8 +23,12 @@
     border-left: 3px solid rgba(0,0,0,0.125);
 }
 
-.preferences .form .fields .labeled-field {
+.preferences .form .fields guac-form-field {
     display: table-row;
+}
+
+.preferences .form .fields .labeled-field {
+    display: contents;
 }
 
 .preferences .form .fields .field-header,

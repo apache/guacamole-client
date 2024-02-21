@@ -32,8 +32,12 @@
     width: 100%;
 }
 
-.connection-parameters .form .fields .labeled-field {
+.connection-parameters .form .fields guac-form-field {
     display: table-row;
+}
+
+.connection-parameters .form .fields .labeled-field {
+    display: contents;
 }
 
 .connection-parameters .form .fields .field-header,
