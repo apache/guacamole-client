@@ -29,7 +29,7 @@ export class ConnectionGroup {
     /**
      * The unique identifier associated with this connection group.
      */
-    identifier: string;
+    identifier?: string;
 
     /**
      * The unique identifier of the connection group that contains this

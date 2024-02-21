@@ -81,7 +81,7 @@ export class LocationChooserComponent implements OnInit, OnChanges {
     private mapConnectionGroups(group: ConnectionGroup): void {
 
         // Map given group
-        (this.connectionGroups)[group.identifier] = group;
+        (this.connectionGroups)[group.identifier!] = group;
 
         // Map all child groups
         if (group.childConnectionGroups)
@@ -133,7 +133,7 @@ export class LocationChooserComponent implements OnInit, OnChanges {
 
             // If no value is specified, default to the root identifier
             if (!this.value || !(this.value in this.connectionGroups))
-                this.value = this.rootGroup.identifier;
+                this.value = this.rootGroup.identifier!;
 
             this.chosenConnectionGroupName = this.connectionGroups[this.value].name;
         }

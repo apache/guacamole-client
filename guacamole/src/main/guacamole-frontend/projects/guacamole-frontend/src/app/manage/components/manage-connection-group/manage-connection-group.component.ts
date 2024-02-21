@@ -34,12 +34,6 @@ import { FormService } from '../../../form/service/form.service';
 import { FormGroup } from '@angular/forms';
 
 /**
- * Type of {@link ConnectionGroup} which has been cloned from another connection
- * group. For a cloned connection group, the identifier is optional.
- */
-type ClonedConnectionGroup = Optional<ConnectionGroup, 'identifier'>;
-
-/**
  * The component for editing or creating connection groups.
  */
 @Component({
@@ -91,7 +85,7 @@ export class ManageConnectionGroupComponent implements OnInit {
     /**
      * The connection group being modified.
      */
-    connectionGroup: ConnectionGroup | ClonedConnectionGroup | null = null;
+    connectionGroup: ConnectionGroup | null = null;
 
     /**
      * The management-related actions that the current user may perform on the
@@ -226,7 +220,7 @@ export class ManageConnectionGroupComponent implements OnInit {
             dataSource,
             identifier
         )
-            .pipe(map((connectionGroup: ClonedConnectionGroup) => {
+            .pipe(map((connectionGroup) => {
                 this.connectionGroup = connectionGroup;
                 delete this.connectionGroup.identifier;
             }));
@@ -296,8 +290,10 @@ export class ManageConnectionGroupComponent implements OnInit {
      * currently being edited.
      */
     cloneConnectionGroup() {
-        this.router.navigate(['manage', encodeURIComponent(this.selectedDataSource), 'connectionGroups'],
-            {queryParams: {clone: this.identifier}});
+        this.router.navigate(
+            ['manage', encodeURIComponent(this.selectedDataSource), 'connectionGroups'],
+            {queryParams: {clone: this.identifier}}
+        );
     }
 
     /**
@@ -311,7 +307,7 @@ export class ManageConnectionGroupComponent implements OnInit {
      *     fails with an {@link Error} if the save operation fails.
      */
     saveConnectionGroup(): Observable<void> {
-        return this.connectionGroupService.saveConnectionGroup(this.selectedDataSource, this.connectionGroup as ConnectionGroup);
+        return this.connectionGroupService.saveConnectionGroup(this.selectedDataSource, this.connectionGroup!);
     }
 
     /**
@@ -324,6 +320,6 @@ export class ManageConnectionGroupComponent implements OnInit {
      *     fails with an {@link Error} if the delete operation fails.
      */
     deleteConnectionGroup(): Observable<void> {
-        return this.connectionGroupService.deleteConnectionGroup(this.selectedDataSource, this.connectionGroup as ConnectionGroup);
+        return this.connectionGroupService.deleteConnectionGroup(this.selectedDataSource, this.connectionGroup!);
     }
 }
