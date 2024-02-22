@@ -17,6 +17,11 @@
  * under the License.
  */
 
+guac-menu,
+guac-user-menu {
+    display: contents;
+}
+
 .user-menu {
 
     /* IE10 */
