@@ -21,10 +21,13 @@ package org.apache.guacamole.auth.openid.conf;
 
 import com.google.inject.Inject;
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.StringListProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 
 /**
@@ -44,6 +47,11 @@ public class ConfigurationService {
      * groups.
      */
     private static final String DEFAULT_GROUPS_CLAIM_TYPE = "groups";
+
+    /**
+     * The default JWT claims list to map to tokens.
+     */
+    private static final List<String> DEFAULT_ATTRIBUTES_CLAIM_TYPE = Collections.emptyList();
 
     /**
      * The default space-separated list of OpenID scopes to request.
@@ -125,6 +133,16 @@ public class ConfigurationService {
         public String getName() { return "openid-groups-claim-type"; }
 
     };
+
+    /**
+     * The claims within any valid JWT that should be mapped to
+     * the authenticated user's tokens, as configured with guacamole.properties.
+     */
+    private static final StringListProperty OPENID_ATTRIBUTES_CLAIM_TYPE =
+            new StringListProperty() {
+                @Override
+                public String getName() { return "openid-attributes-claim-type"; }
+            };
 
     /**
      * The space-separated list of OpenID scopes to request.
@@ -324,6 +342,22 @@ public class ConfigurationService {
      */
     public String getGroupsClaimType() throws GuacamoleException {
         return environment.getProperty(OPENID_GROUPS_CLAIM_TYPE, DEFAULT_GROUPS_CLAIM_TYPE);
+    }
+
+    /**
+     * Returns the claims list within any valid JWT that should be mapped to
+     * the authenticated user's tokens, as configured with guacamole.properties.
+     * Empty by default.
+     *
+     * @return
+     *     The claims list within any valid JWT that should be mapped to
+     *     the authenticated user's tokens, as configured with guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public List<String> getAttributesClaimType() throws GuacamoleException {
+        return environment.getProperty(OPENID_ATTRIBUTES_CLAIM_TYPE, DEFAULT_ATTRIBUTES_CLAIM_TYPE);
     }
 
     /**
