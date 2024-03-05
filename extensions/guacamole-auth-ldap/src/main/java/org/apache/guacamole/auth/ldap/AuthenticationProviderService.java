@@ -311,17 +311,14 @@ public class AuthenticationProviderService {
         }
 
     }
+
     /**
      * Returns parameter current ldap domain token generated from user credentials
-     * If no multiple LDAP are configured on GUACAMOLE_HOME such ldap-servers.yaml,
-     * a null is returned.
-     *
      * @param credentials
-     *     The credentials to use for authentication.
+     *     The credentials used for authentication.
      *
      * @return
-     *     Domain name by splitting logged username(domain/username) when multiple LDAP configuration is available
-     *     or null if no such configuration
+     *     Domain name by splitting login username or null if no domain is detected.
      */
     private String getDomainToken(Credentials credentials) {
         String ldapDomainName = null;
