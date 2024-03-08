@@ -38,7 +38,7 @@
     </parent>
 
     <properties>
-        <kotlin.version>1.9.21</kotlin.version>
+        <kotlin.version>1.9.22</kotlin.version>
     </properties>
 
     <dependencies>
@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.keepersecurity.secrets-manager</groupId>
             <artifactId>core</artifactId>
-            <version>16.6.2</version>
+            <version>16.6.3</version>
 
             <!-- Correct version conflict (different versions across transitive
                 dependencies) -->
