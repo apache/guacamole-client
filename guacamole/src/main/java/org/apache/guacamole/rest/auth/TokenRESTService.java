@@ -23,6 +23,7 @@ import com.google.common.io.BaseEncoding;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
@@ -36,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
+import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
@@ -55,12 +57,21 @@ public class TokenRESTService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(TokenRESTService.class);
+    private static final String DEFAULT_LETTER_CASE = "mixed-case";
+
 
     /**
      * Service for authenticating users and managing their Guacamole sessions.
      */
     @Inject
     private AuthenticationService authenticationService;
+
+
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
 
     /**
      * Returns the credentials associated with the given request, using the
@@ -123,6 +134,35 @@ public class TokenRESTService {
     }
 
     /**
+     * Alters letter casing of username, if configured.
+     * Configuration options:
+     * <ul>
+     *     <li>mixed-case (default)</li>
+     *     <li>lower-case</li>
+     *     <li>upper-case</li>
+     * </ul>
+     * @param credentials
+     *     The Credentials provided by the user in the most recent
+     *     authentication attempt.
+     * @throws GuacamoleException If an error occurs while parsing the value
+     *                            for the given property in
+     *                            guacamole.properties, or if the property is
+     *                            not specified.
+     */
+    private void adaptUsernameLetterCase(Credentials credentials) throws GuacamoleException {
+        switch (environment.getProperty(Environment.USERNAME_LETTER_CASE,DEFAULT_LETTER_CASE)){
+            case "lower-case":
+                Optional.ofNullable(credentials.getUsername()).map(String::toLowerCase).ifPresent(credentials::setUsername);
+                break;
+            case "upper-case":
+                Optional.ofNullable(credentials.getUsername()).filter(un -> !"guacadmin".equals(un)).map(String::toUpperCase).ifPresent(credentials::setUsername);
+                break;
+            default:
+                /* don't change */
+        }
+    }
+
+    /**
      * Authenticates a user, generates an auth token, associates that auth token
      * with the user's UserContext for use by further requests. If an existing
      * token is provided, the authentication procedure will attempt to update
@@ -169,7 +209,7 @@ public class TokenRESTService {
 
         // Build credentials from request
         Credentials credentials = getCredentials(request, username, password);
-
+        adaptUsernameLetterCase(credentials);
         // Create/update session producing possibly-new token
         token = authenticationService.authenticate(credentials, token);
 

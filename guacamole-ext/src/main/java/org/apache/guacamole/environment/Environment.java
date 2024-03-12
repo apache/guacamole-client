@@ -68,6 +68,13 @@ public interface Environment {
 
     };
 
+    public static final StringGuacamoleProperty USERNAME_LETTER_CASE = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "username-letter-case"; }
+
+    };
+
     /**
      * Returns the Guacamole home directory as determined when this Environment
      * object was created. The Guacamole home directory is found by checking, in
