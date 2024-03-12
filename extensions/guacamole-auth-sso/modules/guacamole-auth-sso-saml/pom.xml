@@ -122,7 +122,7 @@
         <dependency>
             <groupId>com.fasterxml.woodstox</groupId>
             <artifactId>woodstox-core</artifactId>
-            <version>6.5.0</version>
+            <version>5.4.0</version>
         </dependency>
 
         <!-- Apache XML Security for Java (see exclusions for java-saml) -->
