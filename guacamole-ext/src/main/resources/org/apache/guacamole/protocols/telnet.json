@@ -156,6 +156,11 @@
                     "name"  : "create-recording-path",
                     "type"  : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-write-existing",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
