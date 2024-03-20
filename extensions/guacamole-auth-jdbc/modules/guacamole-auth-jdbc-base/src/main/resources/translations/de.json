@@ -88,7 +88,6 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "Login deaktiviert:",
         "FIELD_HEADER_EXPIRED"             : "Passwort abgelaufen:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "Zugriff nach dieser Uhrzeit nicht mehr erlauben:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "Zugriff erst nach dieser Uhrzeit erlauben:",
@@ -102,9 +101,7 @@
     },
 
     "USER_GROUP_ATTRIBUTES" : {
-
-        "FIELD_HEADER_DISABLED" : "Deaktiviert:",
-
+        
         "SECTION_HEADER_RESTRICTIONS" : "Gruppeneinschränkung"
 
     }

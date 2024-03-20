@@ -89,7 +89,6 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "已禁用登录:",
         "FIELD_HEADER_EXPIRED"             : "密码已过期:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "之后不允许访问:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "之后允许访问:",
@@ -103,8 +102,6 @@
     },
 
     "USER_GROUP_ATTRIBUTES" : {
-
-        "FIELD_HEADER_DISABLED" : "禁用:",
 
         "SECTION_HEADER_RESTRICTIONS" : "组限制"
 

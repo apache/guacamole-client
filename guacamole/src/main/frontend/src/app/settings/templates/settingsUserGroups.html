@@ -30,7 +30,7 @@
             </tr>
         </thead>
         <tbody ng-class="{loading: !isLoaded()}">
-            <tr ng-repeat="manageableUserGroup in manageableUserGroupPage" class="user-group">
+            <tr ng-repeat="manageableUserGroup in manageableUserGroupPage" class="user-group" ng-class="{disabled: manageableUserGroup.userGroup.disabled}">
                 <td class="user-group-name">
                     <a ng-href="#/manage/{{manageableUserGroup.dataSource | escape}}/userGroups/{{manageableUserGroup.userGroup.identifier | escape}}">
                         <div class="icon user-group"></div>
