@@ -120,17 +120,28 @@ public class AuthenticationProviderService {
      *     If required properties are missing, and thus the user DN cannot be
      *     determined.
      */
-    private Dn getUserBindDN(LDAPConfiguration config, String username)
-            throws GuacamoleException {
+    private Dn getUserBindDN(LDAPConfiguration config, String username, String password) throws GuacamoleException {
 
         // If a search DN is provided, search the LDAP directory for the DN
         // corresponding to the given username
-        String searchBindLogon = config.getSearchBindDN();
+
+        String searchBindLogon;
+        String searchBindPassword;
+        
+        if(confService.getUPNDomain() != "" && confService.getUPNDomain() != null){
+            searchBindLogon = username + "@" + confService.getUPNDomain();
+            searchBindPassword = password;
+        }else{
+            searchBindLogon = config.getSearchBindDN();
+            searchBindPassword = config.getSearchBindPassword();
+        }
         if (searchBindLogon != null) {
 
             // Create an LDAP connection using the search account
             LdapNetworkConnection searchConnection = ldapService.bindAs(config,
-                searchBindLogon, config.getSearchBindPassword());
+                searchBindLogon,
+                searchBindPassword
+            );
 
             // Warn of failure to find
             if (searchConnection == null) {
@@ -219,7 +230,8 @@ public class AuthenticationProviderService {
                     config.getServerHostname(), username, translatedUsername);
 
             // Derive DN of user within this LDAP server
-            Dn bindDn = getUserBindDN(config, translatedUsername);
+            
+            Dn bindDn = getUserBindDN(config, username, password);
             if (bindDn == null || bindDn.isEmpty()) {
                 logger.info("Unable to determine DN of user \"{}\" using LDAP "
                         + "server \"{}\". Proceeding with next server...",
