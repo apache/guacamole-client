@@ -126,10 +126,13 @@
             email_address,
             organization,
             organizational_role,
-            MAX(start_date) AS last_active
+            (SELECT start_date
+             FROM guacamole_user_history
+             WHERE user_id = guacamole_user.user_id
+             ORDER BY start_date desc
+             LIMIT 1) AS last_active
         FROM guacamole_user
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
-        LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
         WHERE guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -176,10 +179,13 @@
             email_address,
             organization,
             organizational_role,
-            MAX(start_date) AS last_active
+            (SELECT start_date
+             FROM guacamole_user_history
+             WHERE user_id = guacamole_user.user_id
+             ORDER BY start_date desc
+             LIMIT 1) AS last_active
         FROM guacamole_user
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
-        LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
         WHERE guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
@@ -238,10 +244,13 @@
             email_address,
             organization,
             organizational_role,
-            MAX(start_date) AS last_active
+            (SELECT start_date
+             FROM guacamole_user_history
+             WHERE user_id = guacamole_user.user_id
+             ORDER BY start_date desc
+             LIMIT 1) AS last_active
         FROM guacamole_user
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
-        LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
         WHERE
             guacamole_entity.name = #{username,jdbcType=VARCHAR}
             AND guacamole_entity.type = 'USER'::guacamole_entity_type
