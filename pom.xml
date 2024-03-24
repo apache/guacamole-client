@@ -522,7 +522,7 @@
                                         <ignoreVersions>
                                             <ignoreVersion>
                                                 <type>regex</type>
-                                                <version>1\.4\..+</version>
+                                                <version>1\.[45]\..+</version>
                                             </ignoreVersion>
                                         </ignoreVersions>
                                     </rule>
