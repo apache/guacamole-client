@@ -45,7 +45,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UserVerificationService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserVerificationService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserVerificationService.class);
     
     /**
      * The name of the parameter which Duo will return in it's GET call-back
@@ -63,20 +63,13 @@ public class UserVerificationService {
      * The value that will be returned in the token if Duo authentication
      * was successful.
      */
-    private static final String DUO_TOKEN_SUCCESS_VALUE = "ALLOW";
+    private static final String DUO_TOKEN_SUCCESS_VALUE = "allow";
     
     /**
      * Service for retrieving Duo configuration information.
      */
     @Inject
     private ConfigurationService confService;
-
-    /**
-     * The authentication session manager that temporarily stores in-progress
-     * authentication attempts.
-     */
-    @Inject
-    private DuoAuthenticationSessionManager duoSessionManager;
 
     /**
      * Verifies the identity of the given user via the Duo multi-factor
@@ -116,8 +109,7 @@ public class UserVerificationService {
                 confService.getRedirectUrl().toString())
                 .build();
         
-            duoClient.healthCheck();
-        
+        duoClient.healthCheck();
         
         // Retrieve signed Duo Code and State from the request
         String duoCode = request.getParameter(DUO_CODE_PARAMETER_NAME);
@@ -128,10 +120,7 @@ public class UserVerificationService {
 
             // Get a new session state from the Duo client
             duoState = duoClient.generateState();
-            LOGGER.debug(">>> DUO <<< STATE DEFER: {}", duoState);
-            
-            // Add this session 
-            duoSessionManager.defer(new DuoAuthenticationSession(confService.getAuthTimeout(), duoState, username), duoState);
+            long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthTimeout() * 1000L);
 
             // Request additional credentials
             throw new TranslatableGuacamoleInsufficientCredentialsException(
@@ -143,27 +132,21 @@ public class UserVerificationService {
                             new URI(duoClient.createAuthUrl(username, duoState)),
                             new TranslatableMessage("LOGIN.INFO_DUO_REDIRECT_PENDING")
                     )
-                ))
+                )),
+                duoState,
+                expirationTimestamp
             );
 
         }
         
-        LOGGER.debug(">>> DUO <<< STATE RESUME: {}", duoState);
-
-        // Retrieve the deferred authenticaiton attempt
-        DuoAuthenticationSession duoSession = duoSessionManager.resume(duoState);
-        if (duoSession == null)
-            throw new GuacamoleServerException("Failed to resume Duo authentication session.");
-        
         // Get the token from the DuoClient using the code and username, and check status
-        Token token = duoClient.exchangeAuthorizationCodeFor2FAResult(duoCode, duoSession.getUsername());
+        Token token = duoClient.exchangeAuthorizationCodeFor2FAResult(duoCode, username);
         if (token == null 
                 || token.getAuth_result() == null 
                 || !DUO_TOKEN_SUCCESS_VALUE.equals(token.getAuth_result().getStatus()))
             throw new TranslatableGuacamoleClientException("Provided Duo "
                     + "validation code is incorrect.",
                     "LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
-
         }
         catch (DuoException e) {
             throw new GuacamoleServerException("Duo Client error.", e);

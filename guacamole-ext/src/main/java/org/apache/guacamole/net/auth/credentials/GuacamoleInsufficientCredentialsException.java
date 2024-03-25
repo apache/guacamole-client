@@ -28,6 +28,57 @@ package org.apache.guacamole.net.auth.credentials;
  */
 public class GuacamoleInsufficientCredentialsException extends GuacamoleCredentialsException {
 
+/**
+ * The default state token to use when no specific state information is provided.
+ */
+private static final String DEFAULT_STATE = "";
+
+/**
+ * The default expiration timestamp to use when no specific expiration is provided,
+ * effectively indicating that the state token does not expire.
+ */
+private static final long DEFAULT_EXPIRES = -1L;
+
+/**
+ * An opaque value that may be used by a client to maintain state across requests
+ * which are part of the same authentication transaction.
+ */
+protected final String state;
+
+/**
+ * The timestamp after which the state token associated with the authentication process
+ * should no longer be considered valid, expressed as the number of milliseconds since
+ * UNIX epoch.
+ */
+protected final long expires;
+
+    /**
+     * Creates a new GuacamoleInsufficientCredentialsException with the specified
+     * message, the credential information required for authentication, the state
+     * token associated with the authentication process, and an expiration timestamp.
+     *
+     * @param message
+     *     A human-readable description of the exception that occurred.
+     *
+     * @param credentialsInfo
+     *     Information describing the form of valid credentials.
+     *
+     * @param state
+     *     An opaque value that may be used by a client to maintain state
+     *     across requests which are part of the same authentication transaction.
+     *
+     * @param expires
+     *     The timestamp after which the state token associated with the
+     *     authentication process should no longer be considered valid, expressed
+     *     as the number of milliseconds since UNIX epoch.
+     */
+   public GuacamoleInsufficientCredentialsException(String message,
+            CredentialsInfo credentialsInfo, String state, long expires) {
+        super(message, credentialsInfo);
+        this.state = state;
+        this.expires = expires;
+    }
+
     /**
      * Creates a new GuacamoleInsufficientCredentialsException with the given
      * message, cause, and associated credential information.
@@ -44,6 +95,8 @@ public class GuacamoleInsufficientCredentialsException extends GuacamoleCredenti
     public GuacamoleInsufficientCredentialsException(String message, Throwable cause,
             CredentialsInfo credentialsInfo) {
         super(message, cause, credentialsInfo);
+        this.state = DEFAULT_STATE;
+        this.expires = DEFAULT_EXPIRES;
     }
 
     /**
@@ -58,6 +111,8 @@ public class GuacamoleInsufficientCredentialsException extends GuacamoleCredenti
      */
     public GuacamoleInsufficientCredentialsException(String message, CredentialsInfo credentialsInfo) {
         super(message, credentialsInfo);
+        this.state = DEFAULT_STATE;
+        this.expires = DEFAULT_EXPIRES;
     }
 
     /**
@@ -72,6 +127,29 @@ public class GuacamoleInsufficientCredentialsException extends GuacamoleCredenti
      */
     public GuacamoleInsufficientCredentialsException(Throwable cause, CredentialsInfo credentialsInfo) {
         super(cause, credentialsInfo);
+        this.state = DEFAULT_STATE;
+        this.expires = DEFAULT_EXPIRES;
+    }
+
+    /**
+     * Retrieves the state token associated with the authentication process.
+     *
+     * @return The opaque state token used to maintain consistency across multiple
+     *         requests in the same authentication transaction.
+     */
+    public String getState() {
+        return state;
+    }
+
+    /**
+     * Retrieves the expiration timestamp of the state token, specified as the
+     * number of milliseconds since the UNIX epoch.
+     *
+     * @return The expiration timestamp of the state token, or a negative value if
+     *         the token does not expire.
+     */
+    public long getExpires() {
+        return expires;
     }
 
 }

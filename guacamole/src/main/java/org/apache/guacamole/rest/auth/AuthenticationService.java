@@ -21,11 +21,14 @@ package org.apache.guacamole.rest.auth;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import javax.inject.Inject;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -43,9 +46,12 @@ import org.glassfish.jersey.server.ContainerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Singleton;
+
 /**
  * A service for performing authentication checks in REST endpoints.
  */
+@Singleton
 public class AuthenticationService {
 
     /**
@@ -95,6 +101,11 @@ public class AuthenticationService {
      * token used by the Guacamole REST API.
      */
     public static final String TOKEN_PARAMETER_NAME = "token";
+
+    /** 
+     * Map to store resumable authentication states with an expiration time.
+     */ 
+    private Map<String, ResumableAuthenticationState> resumableStateMap = new ConcurrentHashMap<>();
 
     /**
      * Attempts authentication against all AuthenticationProviders, in order,
@@ -310,6 +321,17 @@ public class AuthenticationService {
                 try {
                     userContext = authProvider.getUserContext(authenticatedUser);
                 }
+                catch (GuacamoleInsufficientCredentialsException e) {
+                    // Store state and expiration
+                    String state = e.getState();
+                    long expiration = e.getExpires();
+
+                    resumableStateMap.put(state, new ResumableAuthenticationState(expiration, credentials));
+
+                    throw new GuacamoleAuthenticationProcessException("User "
+                    + "authentication aborted during initial "
+                    + "UserContext creation.", authProvider, e);
+                }
                 catch (GuacamoleException | RuntimeException | Error e) {
                     throw new GuacamoleAuthenticationProcessException("User "
                             + "authentication aborted during initial "
@@ -366,12 +388,30 @@ public class AuthenticationService {
 
         AuthenticatedUser authenticatedUser;
         String authToken;
+        Credentials actualCredentials = credentials;
+        String state;
+        ResumableAuthenticationState resumableState = null;
+
+        // Retrieve signed State from the request
+        HttpServletRequest request = credentials.getRequest();
+
+        // If state is provided, attempt to resume authentication
+        if ((state = request.getParameter("state")) != null && (resumableState = resumableStateMap.get(state)) != null) {
+            // The resumableState is removed as it should be a single-use token
+            resumableStateMap.remove(state);
+
+            // Check if the resumableState has expired
+            if (!resumableState.isExpired()) {
+                actualCredentials = resumableState.getCredentials();
+                actualCredentials.setRequest(request);
+            }
+        }
 
         try {
 
             // Get up-to-date AuthenticatedUser and associated UserContexts
-            authenticatedUser = getAuthenticatedUser(existingSession, credentials);
-            List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, credentials);
+            authenticatedUser = getAuthenticatedUser(existingSession, actualCredentials);
+            List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, actualCredentials);
 
             // Update existing session, if it exists
             if (existingSession != null) {
@@ -401,7 +441,7 @@ public class AuthenticationService {
         // Log and rethrow any authentication errors
         catch (GuacamoleAuthenticationProcessException e) {
 
-            listenerService.handleEvent(new AuthenticationFailureEvent(credentials,
+            listenerService.handleEvent(new AuthenticationFailureEvent(actualCredentials,
                     e.getAuthenticationProvider(), e.getCause()));
 
             // Rethrow exception

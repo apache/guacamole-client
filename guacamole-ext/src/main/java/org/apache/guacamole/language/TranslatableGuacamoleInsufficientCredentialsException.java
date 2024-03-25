@@ -136,6 +136,38 @@ public class TranslatableGuacamoleInsufficientCredentialsException
         this(message, new TranslatableMessage(key), credentialsInfo);
     }
 
+    /**
+     * Creates a new TranslatableGuacamoleInsufficientCredentialsException with the specified message,
+     * translation key, the credential information required for authentication, the state token, and
+     * an expiration timestamp for the state token. The message is provided in both a non-translatable
+     * form and as a translatable key which can be used to retrieve the localized message.
+     *
+     * @param message
+     *     A human-readable description of the exception that occurred. This
+     *     message should be readable on its own and as-written, without
+     *     requiring a translation service.
+     *
+     * @param key
+     *     The arbitrary key which can be used to look up the message to be
+     *     displayed in the user's native language.
+     *
+     * @param credentialsInfo
+     *     Information describing the form of valid credentials.
+     *
+     * @param state
+     *     An opaque value that may be used by a client to maintain state across requests which are part
+     *     of the same authentication transaction.
+     *
+     * @param expires
+     *     The timestamp after which the state token associated with the authentication process expires,
+     *     specified as the number of milliseconds since the UNIX epoch.
+     */
+    public TranslatableGuacamoleInsufficientCredentialsException(String message,
+            String key, CredentialsInfo credentialsInfo, String state, long expires) {
+                super(message, credentialsInfo, state, expires);
+                this.translatableMessage = new TranslatableMessage(key);
+    }
+
     @Override
     public TranslatableMessage getTranslatableMessage() {
         return translatableMessage;
