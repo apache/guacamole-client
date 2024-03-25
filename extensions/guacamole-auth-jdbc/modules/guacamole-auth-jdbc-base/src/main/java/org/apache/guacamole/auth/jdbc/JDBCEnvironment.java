@@ -271,18 +271,5 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
         return true;
 
     }
-    
-    /**
-     * Returns a boolean value that indicates whether or not usernames should
-     * be treated as case-sensitive.
-     * 
-     * @return
-     *     true if usernames should be treated as case-sensitive, or false if
-     *     usernames should be treated as case-insensitive.
-     * 
-     * @throws GuacamoleException 
-     *     If guacamole.properties cannot be parsed.
-     */
-    public abstract boolean getCaseSensitiveUsernames() throws GuacamoleException;
 
 }

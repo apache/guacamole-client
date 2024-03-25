@@ -28,19 +28,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.language.TranslatableGuacamoleClientOverrunException;
-import org.apache.guacamole.language.TranslatableMessage;
-import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
-import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObjectService;
+import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.auth.jdbc.permission.ConnectionPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
+import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
+import org.apache.guacamole.language.TranslatableGuacamoleClientOverrunException;
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
@@ -85,6 +86,12 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
      */
     @Inject
     private Provider<ModeledConnection> connectionProvider;
+    
+    /**
+     * The server environment for retrieving configuration.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Service for creating and tracking tunnels.
@@ -486,14 +493,16 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
         // Bypass permission checks if the user is privileged or has System-level audit permissions
         if (user.isPrivileged() || user.getUser().getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.AUDIT))
             searchResults = connectionRecordMapper.search(identifier,
-                    recordIdentifier, requiredContents, sortPredicates, limit);
+                    recordIdentifier, requiredContents, sortPredicates, limit,
+                    environment.getCaseSensitiveUsernames());
 
         // Otherwise only return explicitly readable history records
         else
             searchResults = connectionRecordMapper.searchReadable(identifier,
                     user.getUser().getModel(), recordIdentifier,
                     requiredContents, sortPredicates, limit,
-                    user.getEffectiveUserGroups());
+                    user.getEffectiveUserGroups(),
+                    environment.getCaseSensitiveUsernames());
 
         return getObjectInstances(searchResults);
 

@@ -402,11 +402,14 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
     @Override
     public boolean getCaseSensitiveUsernames() throws GuacamoleException {
         
-        // By default, PostgreSQL does use case-sensitive string searches, so
-        // we will honor case-sensitive usernames.
+        // By default, PostgreSQL does perform case-sensitive string comparisons.
+        // Even though usernames are generally not case-sensitive across
+        // most authenticaiton systems, we've elected to maintain case-
+        // sensitivity in this module in order to avoid surprising anyone who
+        // may be relying upon it.
         return getProperty(
                 PostgreSQLGuacamoleProperties.POSTGRESQL_CASE_SENSITIVE_USERNAMES,
-                true
+                super.getCaseSensitiveUsernames()
         );
         
     }

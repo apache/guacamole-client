@@ -795,6 +795,9 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
             return environment.getCaseSensitiveUsernames();
         }
         catch (GuacamoleException e) {
+            logger.error("Failed to retrieve the configuration for case-sensitive usernames: {}."
+                    + " Usernames comparisons will be case-sensitive.", e.getMessage());
+            logger.debug("Exception caught when attempting to read the configuration.", e);
             return true;
         }
     }

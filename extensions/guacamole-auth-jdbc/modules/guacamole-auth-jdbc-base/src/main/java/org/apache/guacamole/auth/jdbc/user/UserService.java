@@ -33,6 +33,7 @@ import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
@@ -155,6 +156,12 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      */
     @Inject
     private PasswordPolicyService passwordPolicyService;
+    
+    /**
+     * The server environment for retrieving configuration.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     @Override
     protected ModeledDirectoryObjectMapper<UserModel> getObjectMapper() {
@@ -241,7 +248,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             throw new GuacamoleClientException("The username must not be blank.");
         
         // Do not create duplicate users
-        Collection<UserModel> existing = userMapper.select(Collections.singleton(model.getIdentifier()));
+        Collection<UserModel> existing = userMapper.select(Collections.singleton(
+                    model.getIdentifier()), environment.getCaseSensitiveUsernames());
         if (!existing.isEmpty())
             throw new GuacamoleClientException("User \"" + model.getIdentifier() + "\" already exists.");
 
@@ -277,7 +285,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             throw new GuacamoleClientException("The username must not be blank.");
         
         // Check whether such a user is already present
-        UserModel existing = userMapper.selectOne(model.getIdentifier());
+        UserModel existing = userMapper.selectOne(model.getIdentifier(),
+                environment.getCaseSensitiveUsernames());
         if (existing != null) {
 
             // Do not rename to existing user
@@ -337,6 +346,17 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             throw new GuacamoleUnsupportedException("Deleting your own user is not allowed.");
 
     }
+    
+    @Override
+    public void deleteObject(ModeledAuthenticatedUser user, String identifier)
+        throws GuacamoleException {
+
+        beforeDelete(user, identifier);
+        
+        // Delete object
+        userMapper.delete(identifier, environment.getCaseSensitiveUsernames());
+
+    }
 
     @Override
     protected boolean isValidIdentifier(String identifier) {
@@ -375,7 +395,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         String password = credentials.getPassword();
 
         // Retrieve corresponding user model, if such a user exists
-        UserModel userModel = userMapper.selectOne(username);
+        UserModel userModel = userMapper.selectOne(username,
+                environment.getCaseSensitiveUsernames());
         if (userModel == null)
             return null;
 
@@ -416,7 +437,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
         // Retrieve corresponding user model, if such a user exists
-        UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier());
+        UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier(),
+                environment.getCaseSensitiveUsernames());
         if (userModel == null)
             return null;
 
@@ -614,14 +636,16 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Bypass permission checks if the user is privileged or has System-level audit permissions
         if (user.isPrivileged() || user.getUser().getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.AUDIT))
             searchResults = userRecordMapper.search(username, recordIdentifier,
-                    requiredContents, sortPredicates, limit);
+                    requiredContents, sortPredicates, limit,
+                    environment.getCaseSensitiveUsernames());
 
         // Otherwise only return explicitly readable history records
         else
             searchResults = userRecordMapper.searchReadable(username, 
                     user.getUser().getModel(), recordIdentifier,
                     requiredContents, sortPredicates, limit,
-                    user.getEffectiveUserGroups());
+                    user.getEffectiveUserGroups(),
+                    environment.getCaseSensitiveUsernames());
 
         return getObjectInstances(searchResults);
 

@@ -38,11 +38,16 @@ public interface ActivityRecordMapper<ModelType> {
      *
      * @param record
      *     The activity record to insert.
+     * 
+     * @param caseSensitive
+     *     Whether or not string comparisons should be done in a case-sensitive
+     *     manner.
      *
      * @return
      *     The number of rows inserted.
      */
-    int insert(@Param("record") ModelType record);
+    int insert(@Param("record") ModelType record,
+               @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Updates the given activity record in the database, assigning an end
@@ -85,6 +90,10 @@ public interface ActivityRecordMapper<ModelType> {
      *
      * @param limit
      *     The maximum number of records that should be returned.
+     * 
+     * @param caseSensitive
+     *     Whether or not string comparisons should be done in a case-sensitive
+     *     manner.
      *
      * @return
      *     The results of the search performed with the given parameters.
@@ -93,7 +102,8 @@ public interface ActivityRecordMapper<ModelType> {
             @Param("recordIdentifier") String recordIdentifier,
             @Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
-            @Param("limit") int limit);
+            @Param("limit") int limit,
+            @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Searches for up to <code>limit</code> activity records that contain
@@ -132,6 +142,10 @@ public interface ActivityRecordMapper<ModelType> {
      *     when determining the permissions effectively granted to the user. If
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
+     * 
+     * @param caseSensitive
+     *     Whether or not string comparisons should be done in a case-sensitive
+     *     manner.
      *
      * @return
      *     The results of the search performed with the given parameters.
@@ -142,6 +156,7 @@ public interface ActivityRecordMapper<ModelType> {
             @Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitive") boolean caseSensitive);
 
 }

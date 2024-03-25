@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc;
 
+import com.google.inject.Inject;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +56,12 @@ public class HistoryTrackingConnection extends DelegatingConnection {
      * established connections.
      */
     private final ConnectionRecordMapper connectionRecordMapper;
+    
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Creates a new HistoryConnection that wraps the given connection,
@@ -98,7 +105,8 @@ public class HistoryTrackingConnection extends DelegatingConnection {
         connectionRecordModel.setConnectionName(this.getDelegateConnection().getName());
 
         // Insert the connection history record to mark the start of this connection
-        connectionRecordMapper.insert(connectionRecordModel);
+        connectionRecordMapper.insert(connectionRecordModel,
+                environment.getCaseSensitiveUsernames());
 
         // Include history record UUID as token
         ModeledConnectionRecord modeledRecord = new ModeledConnectionRecord(connectionRecordModel);

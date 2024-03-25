@@ -316,8 +316,8 @@ public class PostgreSQLGuacamoleProperties {
     };
     
     /**
-     * A property that configures whether or not usernames should be treated as
-     * case-sensitive with the Postgres JDBC backend.
+     * A property used to configure whether or not usernames within the Postgres
+     * JDBC module should be treated as case-sensitive.
      */
     public static final BooleanGuacamoleProperty POSTGRESQL_CASE_SENSITIVE_USERNAMES =
             new BooleanGuacamoleProperty() {

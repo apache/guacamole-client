@@ -133,10 +133,26 @@
             ) AS last_active
         FROM [guacamole_user]
         JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
-        WHERE [guacamole_entity].name IN
+        WHERE
+            <choose>
+                <when test="caseSensitive">
+                    [guacamole_entity].name
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name)
+                </otherwise>
+            </choose>
+            IN
             <foreach collection="identifiers" item="identifier"
-                     open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
+                    open="(" separator="," close=")">
+                <choose>
+                    <when test="caseSensitive">
+                        #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
             </foreach>
             AND [guacamole_entity].type = 'USER';
 
@@ -147,10 +163,26 @@
         FROM [guacamole_user_attribute]
         JOIN [guacamole_user] ON [guacamole_user].user_id = [guacamole_user_attribute].user_id
         JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
-        WHERE [guacamole_entity].name IN
+        WHERE
+            <choose>
+                <when test="caseSensitive">
+                    [guacamole_entity].name
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name)
+                </otherwise>
+            </choose>
+            IN
             <foreach collection="identifiers" item="identifier"
-                     open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
+                    open="(" separator="," close=")">
+                <choose>
+                    <when test="caseSensitive">
+                        #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
             </foreach>
             AND [guacamole_entity].type = 'USER';
 
@@ -185,10 +217,26 @@
             ) AS last_active
         FROM [guacamole_user]
         JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
-        WHERE [guacamole_entity].name IN
+        WHERE
+            <choose>
+                <when test="caseSensitive">
+                    [guacamole_entity].name
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name)
+                </otherwise>
+            </choose>
+            IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
+                <choose>
+                    <when test="caseSensitive">
+                        #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
             </foreach>
             AND [guacamole_entity].type = 'USER'
             AND [guacamole_user].user_id IN (
@@ -205,10 +253,26 @@
         FROM [guacamole_user_attribute]
         JOIN [guacamole_user] ON [guacamole_user].user_id = [guacamole_user_attribute].user_id
         JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
-        WHERE [guacamole_entity].name IN
+        WHERE 
+            <choose>
+                <when test="caseSensitive">
+                    [guacamole_entity].name
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name)
+                </otherwise>
+            </choose>
+            IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
+                <choose>
+                    <when test="caseSensitive">
+                        #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
             </foreach>
             AND [guacamole_entity].type = 'USER'
             AND [guacamole_user].user_id IN (
@@ -250,7 +314,14 @@
         FROM [guacamole_user]
         JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
         WHERE
-            [guacamole_entity].name = #{username,jdbcType=VARCHAR}
+            <choose>
+                <when test="caseSensitive">
+                    [guacamole_entity].name = #{username,jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name) = LOWER(#{username,jdbcType=VARCHAR})
+                </otherwise>
+            </choose>
             AND [guacamole_entity].type = 'USER';
 
         SELECT
@@ -261,7 +332,14 @@
         JOIN [guacamole_user] ON [guacamole_user].user_id = [guacamole_user_attribute].user_id
         JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
         WHERE
-            [guacamole_entity].name = #{username,jdbcType=VARCHAR}
+            <choose>
+                <when test="caseSensitive">
+                    [guacamole_entity].name = #{username,jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name) = LOWER(#{username,jdbcType=VARCHAR})
+                </otherwise>
+            </choose>
             AND [guacamole_entity].type = 'USER'
 
     </select>
@@ -270,7 +348,14 @@
     <delete id="delete">
         DELETE FROM [guacamole_entity]
         WHERE
-            name = #{identifier,jdbcType=VARCHAR}
+            <choose>
+                <when test="caseSensitive">
+                    name = #{identifier,jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    LOWER(name) = LOWER(#{identifier,jdbcType=VARCHAR})
+                </otherwise>
+            </choose>
             AND type = 'USER'
     </delete>
 
@@ -332,7 +417,7 @@
             email_address = #{object.emailAddress,jdbcType=VARCHAR},
             organization = #{object.organization,jdbcType=VARCHAR},
             organizational_role = #{object.organizationalRole,jdbcType=VARCHAR}
-        WHERE user_id = #{object.objectID,jdbcType=VARCHAR}
+        WHERE user_id = #{object.objectID,jdbcType=INTEGER}
     </update>
 
     <!-- Delete attributes associated with user -->
