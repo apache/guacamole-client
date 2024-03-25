@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
+import java.util.Collection;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,10 +34,65 @@ public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
      *
      * @param username
      *     The username of the user to return.
+     * 
+     * @param caseSensitive
+     *     True if the search should evaluate case sensitively, otherwise
+     *     false.
      *
      * @return
      *     The user having the given username, or null if no such user exists.
      */
-    UserModel selectOne(@Param("username") String username);
+    UserModel selectOne(@Param("username") String username,
+                        @Param("caseSensitive") boolean caseSensitive);
+    
+    /**
+     * Selects all objects which have the given identifiers. If an identifier
+     * has no corresponding object, it will be ignored. This should only be
+     * called on behalf of a system administrator. If objects are needed by a
+     * non-administrative user who must have explicit read rights, use
+     * selectReadable() instead.
+     *
+     * @param identifiers
+     *     The identifiers of the objects to return.
+     * 
+     * @param caseSensitive
+     *     True if the query should be evaluated with case sensitivity, otherwise
+     *     false.
+     *
+     * @return 
+     *     A Collection of all objects having the given identifiers.
+     */
+    Collection<UserModel> select(@Param("identifiers") Collection<String> identifiers,
+                                 @Param("caseSensitive") boolean caseSensitive);
+    
+    /**
+     * Selects all objects which have the given identifiers and are explicitly
+     * readably by the given user. If an identifier has no corresponding
+     * object, or the corresponding object is unreadable, it will be ignored.
+     * If objects are needed by a system administrator (who, by definition,
+     * does not need explicit read rights), use select() instead.
+     *
+     * @param user
+     *    The user whose permissions should determine whether an object 
+     *    is returned.
+     *
+     * @param identifiers
+     *     The identifiers of the objects to return.
+     *
+     * @param effectiveGroups
+     *     The identifiers of any known effective groups that should be taken
+     *     into account, such as those defined externally to the database.
+     * 
+     * @param caseSensitive
+     *     True if the query should be run respecting case sensitivity, otherwise
+     *     false.
+     *
+     * @return 
+     *     A Collection of all objects having the given identifiers.
+     */
+    Collection<UserModel> selectReadable(@Param("user") UserModel user,
+            @Param("identifiers") Collection<String> identifiers,
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitive") boolean caseSensitive);
 
 }

@@ -61,6 +61,7 @@
             (SELECT user_id FROM guacamole_user
              JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
              WHERE
+                    <if test="caseSensitive">BINARY</if>
                    guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
                AND guacamole_entity.type = 'USER'),
             #{record.username,jdbcType=VARCHAR},
@@ -112,7 +113,9 @@
                     guacamole_connection_history.user_id IN (
                         SELECT user_id
                         FROM guacamole_user
-                        WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
+                        WHERE
+                            <if test="caseSensitive">BINARY</if>
+                            POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
                     )
 
                     OR guacamole_connection_history.connection_id IN (
@@ -200,6 +203,7 @@
                         FROM guacamole_user
                         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
                         WHERE
+                                <if test="caseSensitive">BINARY</if>
                                 POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
                             AND guacamole_entity.type = 'USER'
                     )

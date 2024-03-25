@@ -49,7 +49,8 @@
             (SELECT user_id FROM guacamole_user
              JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
              WHERE
-                   guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
+                    <if test="caseSensitive">BINARY</if>
+                    guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
                AND guacamole_entity.type = 'USER'),
             #{record.username,jdbcType=VARCHAR},
             #{record.startDate,jdbcType=TIMESTAMP},
@@ -81,6 +82,7 @@
         <where>
             
             <if test="identifier != null">
+                <if test="caseSensitive">BINARY</if>
                 guacamole_user_history.username = #{identifier,jdbcType=VARCHAR}
             </if>
             
@@ -92,6 +94,7 @@
                         FROM guacamole_user
                         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
                         WHERE
+                                <if test="caseSensitive">BINARY</if>
                                 POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
                             AND guacamole_entity.type = 'USER'),
                     )
@@ -146,7 +149,9 @@
             )
             
             <if test="identifier != null">
-                AND guacamole_entity.name = #{identifier,jdbcType=VARCHAR}
+                AND
+                <if test="caseSensitive">BINARY</if>
+                guacamole_entity.name = #{identifier,jdbcType=VARCHAR}
             </if>
             
             <foreach collection="terms" item="term" open=" AND " separator=" AND ">
@@ -157,6 +162,7 @@
                         FROM guacamole_user
                         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
                         WHERE
+                                <if test="caseSensitive">BINARY</if>
                                 POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
                             AND guacamole_entity.type = 'USER'
                     )

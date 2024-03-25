@@ -42,6 +42,9 @@
         JOIN guacamole_user affected_user ON guacamole_user_permission.affected_user_id = affected_user.user_id
         JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
+            <if test="caseSensitive">
+                BINARY
+            </if>
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
                 <property name="column"   value="guacamole_user_permission.entity_id"/>
                 <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
@@ -68,7 +71,11 @@
                 <property name="groups"   value="effectiveGroups"/>
             </include>
             AND permission = #{type,jdbcType=VARCHAR}
-            AND affected_entity.name = #{identifier,jdbcType=VARCHAR}
+            AND
+            <if test="caseSensitive">
+                BINARY
+            </if>
+            affected_entity.name = #{identifier,jdbcType=VARCHAR}
             AND affected_entity.type = 'USER'
 
     </select>
@@ -86,7 +93,11 @@
                 <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
                 <property name="groups"   value="effectiveGroups"/>
             </include>
-            AND affected_entity.name IN
+            AND 
+            <if test="caseSensitive">
+                BINARY
+            </if>
+            affected_entity.name IN
                 <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">
                     #{identifier,jdbcType=VARCHAR}
@@ -108,6 +119,9 @@
         JOIN guacamole_user affected_user ON guacamole_user_permission.affected_user_id = affected_user.user_id
         JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
+            <if test="caseSensitive">
+                BINARY
+            </if>
             (guacamole_user_permission.entity_id, permission, affected_entity.name) IN
                 <foreach collection="permissions" item="permission"
                          open="(" separator="," close=")">
@@ -140,6 +154,9 @@
             </foreach>
         AS permissions
         JOIN guacamole_entity affected_entity ON
+                <if test="caseSensitive">
+                    BINARY
+                </if>
                 affected_entity.name = permissions.affected_name
             AND affected_entity.type = 'USER'
         JOIN guacamole_user affected_user ON affected_user.entity_id = affected_entity.entity_id

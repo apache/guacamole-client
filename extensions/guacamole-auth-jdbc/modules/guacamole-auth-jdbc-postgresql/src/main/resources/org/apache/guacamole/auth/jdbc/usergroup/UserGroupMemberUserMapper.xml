@@ -58,10 +58,26 @@
             user_group_id = #{parent.objectID,jdbcType=INTEGER}
             AND guacamole_entity.entity_id = member_entity_id
             AND guacamole_entity.type = 'USER'::guacamole_entity_type
-            AND guacamole_entity.name IN
+            AND
+            <choose>
+                <if test="caseSensitive">
+                    guacamole_entity.name
+                </if>
+                <otherwise>
+                    LOWER(guacamole_entity.name)
+                </otherwise>
+            </choose>
+            IN
                 <foreach collection="children" item="identifier"
                          open="(" separator="," close=")">
-                    #{identifier,jdbcType=VARCHAR}
+                    <choose>
+                        <if test="caseSensitive">
+                            #{identifier,jdbcType=VARCHAR}
+                        </if>
+                        <otherwise>
+                            LOWER(#{identifier,jdbcType=VARCHAR})
+                        </otherwise>
+                    </choose>
                 </foreach>
     </delete>
 
@@ -76,10 +92,25 @@
             guacamole_entity.entity_id
         FROM guacamole_entity
         WHERE
-            guacamole_entity.name IN
+            <choose>
+                <if test="caseSensitive">
+                    guacamole_entity.name
+                </if>
+                <otherwise>
+                    LOWER(guacamole_entity.name)
+                </otherwise>
+            </choose>
+            IN
                 <foreach collection="children" item="identifier"
                          open="(" separator="," close=")">
-                    #{identifier}
+                    <choose>
+                        <if test="caseSensitive">
+                            #{identifier}
+                        </if>
+                        <otherwise>
+                            LOWER(#{identifier})
+                        </otherwise>
+                    </choose>
                 </foreach>
             AND guacamole_entity.type = 'USER'::guacamole_entity_type
             AND guacamole_entity.entity_id NOT IN (
