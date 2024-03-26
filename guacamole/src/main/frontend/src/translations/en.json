@@ -45,6 +45,7 @@
         
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Re-enter Password:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "Allow writing to existing recording file:",
 
         "FIELD_PLACEHOLDER_FILTER" : "Filter",
 
@@ -514,6 +515,7 @@
         "FIELD_HEADER_POD"             : "Pod name:",
         "FIELD_HEADER_PORT"            : "Port:",
         "FIELD_HEADER_READ_ONLY"       : "Read-only:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Include key events:",
@@ -615,6 +617,7 @@
         "FIELD_HEADER_PRECONNECTION_BLOB" : "Preconnection BLOB (VM ID):",
         "FIELD_HEADER_PRECONNECTION_ID"   : "RDP source ID:",
         "FIELD_HEADER_READ_ONLY"      : "Read-only:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "Exclude touch events:",
@@ -736,6 +739,7 @@
         "FIELD_HEADER_PRIVATE_KEY"   : "Private key:",
         "FIELD_HEADER_SCROLLBACK"    : "Maximum scrollback size:",
         "FIELD_HEADER_READ_ONLY"     : "Read-only:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Include key events:",
@@ -823,6 +827,7 @@
         "FIELD_HEADER_PASSWORD_REGEX" : "Password regular expression:",
         "FIELD_HEADER_PORT"           : "Port:",
         "FIELD_HEADER_READ_ONLY"      : "Read-only:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Include key events:",
@@ -904,6 +909,7 @@
         "FIELD_HEADER_PASSWORD"         : "Password:",
         "FIELD_HEADER_PORT"             : "Port:",
         "FIELD_HEADER_READ_ONLY"        : "Read-only:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Include key events:",
