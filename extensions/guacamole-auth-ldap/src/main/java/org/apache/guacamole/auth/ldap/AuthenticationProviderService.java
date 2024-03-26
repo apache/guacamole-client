@@ -66,6 +66,11 @@ public class AuthenticationProviderService {
     public static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_";
 
     /**
+     * The name of LDAP domain attribute
+     */
+    public static final String LDAP_DOMAIN_TOKEN = "DOMAIN";
+
+    /**
      * Service for creating and managing connections to LDAP servers.
      */
     @Inject
@@ -286,18 +291,18 @@ public class AuthenticationProviderService {
                     CredentialsInfo.USERNAME_PASSWORD);
 
         try {
-        
+
             // Retrieve group membership of the user that just authenticated
             Set<String> effectiveGroups =
                     userGroupService.getParentUserGroupIdentifiers(config, config.getBindDN());
 
             // Return AuthenticatedUser if bind succeeds
             LDAPAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+
             authenticatedUser.init(config, credentials,
-                    getAttributeTokens(config), effectiveGroups);
+                    getAttributeTokens(config, credentials), effectiveGroups);
 
             return authenticatedUser;
-
         }
 
         catch (GuacamoleException | RuntimeException | Error e) {
@@ -308,14 +313,37 @@ public class AuthenticationProviderService {
     }
 
     /**
+     * Returns parameter current ldap domain token generated from user credentials
+     * @param credentials
+     *     The credentials used for authentication.
+     *
+     * @return
+     *     Domain name by splitting login username or null if no domain is detected.
+     */
+    private String getDomainToken(Credentials credentials) {
+        String ldapDomainName = null;
+        if (credentials.getUsername().contains("\\")) {
+            ldapDomainName = credentials.getUsername().split("\\\\")[0];
+        }
+        else if (credentials.getUsername().contains("@")) {
+            ldapDomainName = credentials.getUsername().split("@")[1];
+        }
+        return ldapDomainName;
+    }
+
+    /**
      * Returns parameter tokens generated from LDAP attributes on the user
      * currently bound under the given LDAP connection. The attributes to be
      * converted into parameter tokens must be explicitly listed in
-     * guacamole.properties. If no attributes are specified or none are
-     * found on the LDAP user object, an empty map is returned.
+     * guacamole.properties or domain name of the LDAP connection when multiple auth enabled.
+     * If no attributes are specified or none are found on the LDAP user object
+     * or multiple auth not enabled, an empty map is returned.
      *
      * @param config
      *     The configuration of the LDAP server being queried.
+     *
+     * @param credentials
+     *     The credentials to use for authentication.
      *
      * @return
      *     A map of parameter tokens generated from attributes on the user
@@ -326,7 +354,7 @@ public class AuthenticationProviderService {
      * @throws GuacamoleException
      *     If an error occurs retrieving the user DN or the attributes.
      */
-    private Map<String, String> getAttributeTokens(ConnectedLDAPConfiguration config)
+    private Map<String, String> getAttributeTokens(ConnectedLDAPConfiguration config, Credentials credentials)
             throws GuacamoleException {
 
         // Get attributes from configuration information
@@ -355,6 +383,11 @@ public class AuthenticationProviderService {
             for (Attribute attr : attributes) {
                 tokens.put(TokenName.canonicalize(attr.getId(),
                         LDAP_ATTRIBUTE_TOKEN_PREFIX), attr.getString());
+            }
+            String domainName = getDomainToken(credentials);
+            if (domainName != null) {
+                String tokenName = TokenName.canonicalize(LDAP_DOMAIN_TOKEN, LDAP_ATTRIBUTE_TOKEN_PREFIX);
+                tokens.put(tokenName, domainName);
             }
 
         }
