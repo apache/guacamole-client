@@ -24,7 +24,6 @@ import com.onelogin.saml2.settings.IdPMetadataParser;
 import com.onelogin.saml2.settings.Saml2Settings;
 import com.onelogin.saml2.settings.SettingsBuilder;
 import com.onelogin.saml2.util.Constants;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;

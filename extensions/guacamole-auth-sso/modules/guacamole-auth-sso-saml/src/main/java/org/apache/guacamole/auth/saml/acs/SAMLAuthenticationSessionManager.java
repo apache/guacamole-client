@@ -20,7 +20,7 @@
 package org.apache.guacamole.auth.saml.acs;
 
 import com.google.inject.Singleton;
-import org.apache.guacamole.auth.sso.AuthenticationSessionManager;
+import org.apache.guacamole.net.auth.AuthenticationSessionManager;
 
 /**
  * Manager service that temporarily stores SAML authentication attempts while

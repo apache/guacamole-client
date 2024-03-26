@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.sso;
+package org.apache.guacamole.net.auth;
 
 /**
  * Representation of an in-progress authentication attempt.

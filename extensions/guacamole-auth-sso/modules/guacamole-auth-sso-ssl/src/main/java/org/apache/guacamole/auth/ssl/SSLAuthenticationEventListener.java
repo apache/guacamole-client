@@ -20,14 +20,8 @@
 package org.apache.guacamole.auth.ssl;
 
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.ssl.SSLAuthenticationSessionManager;
 import org.apache.guacamole.auth.sso.SSOAuthenticationEventListener;
 import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.event.AuthenticationFailureEvent;
-import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
-import org.apache.guacamole.net.event.listener.Listener;
 
 /**
  * A Listener that will reactivate or invalidate SSL auth sessions depending on

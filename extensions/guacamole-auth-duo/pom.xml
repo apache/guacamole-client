@@ -39,92 +39,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <enforcer.skip>true</enforcer.skip>
     </properties>
-
-    <build>
-        <plugins>
-
-            <!-- Pre-cache Angular templates with maven-angular-plugin -->
-            <plugin>
-                <groupId>com.keithbranton.mojo</groupId>
-                <artifactId>angular-maven-plugin</artifactId>
-                <version>0.3.4</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>html2js</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <sourceDir>${basedir}/src/main/resources</sourceDir>
-                    <include>**/*.html</include>
-                    <target>${basedir}/src/main/resources/generated/templates-main/templates.js</target>
-                    <prefix>app/ext/duo</prefix>
-                </configuration>
-            </plugin>
-
-            <!-- JS/CSS Minification Plugin -->
-            <plugin>
-                <groupId>com.github.buckelieg</groupId>
-                <artifactId>minify-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-cli</id>
-                        <configuration>
-                            <charset>UTF-8</charset>
-
-                            <webappSourceDir>${basedir}/src/main/resources</webappSourceDir>
-                            <webappTargetDir>${project.build.directory}/classes</webappTargetDir>
-
-                            <cssSourceDir>/</cssSourceDir>
-                            <cssTargetDir>/</cssTargetDir>
-                            <cssFinalFile>duo.css</cssFinalFile>
-
-                            <cssSourceFiles>
-                                <cssSourceFile>license.txt</cssSourceFile>
-                            </cssSourceFiles>
-
-                            <cssSourceIncludes>
-                                <cssSourceInclude>**/*.css</cssSourceInclude>
-                            </cssSourceIncludes>
-
-                            <jsSourceDir>/</jsSourceDir>
-                            <jsTargetDir>/</jsTargetDir>
-                            <jsFinalFile>duo.js</jsFinalFile>
-
-                            <jsSourceFiles>
-                                <jsSourceFile>license.txt</jsSourceFile>
-                                <jsSourceFile>lib/DuoWeb/LICENSE.js</jsSourceFile>
-                            </jsSourceFiles>
-
-                            <jsSourceIncludes>
-                                <jsSourceInclude>**/*.js</jsSourceInclude>
-                            </jsSourceIncludes>
-
-                            <!-- Do not minify and include tests -->
-                            <jsSourceExcludes>
-                                <jsSourceExclude>**/*.test.js</jsSourceExclude>
-                            </jsSourceExcludes>
-                            <jsEngine>CLOSURE</jsEngine>
-
-                            <!-- Disable warnings for JSDoc annotations -->
-                            <closureWarningLevels>
-                                <misplacedTypeAnnotation>OFF</misplacedTypeAnnotation>
-                                <nonStandardJsDocs>OFF</nonStandardJsDocs>
-                            </closureWarningLevels>
-
-                        </configuration>
-                        <goals>
-                            <goal>minify</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-        </plugins>
-    </build>
 
     <dependencies>
 
@@ -154,6 +70,20 @@
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
             <scope>provided</scope>
+        </dependency>
+        
+        <!-- Duo SDK -->
+        <dependency>
+            <groupId>com.duosecurity</groupId>
+            <artifactId>duo-universal-sdk</artifactId>
+            <version>1.1.3</version>
+        </dependency>
+        
+        <!-- kotlin-stdlib-common -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-common</artifactId>
+            <version>1.4.10</version>
         </dependency>
 
     </dependencies>

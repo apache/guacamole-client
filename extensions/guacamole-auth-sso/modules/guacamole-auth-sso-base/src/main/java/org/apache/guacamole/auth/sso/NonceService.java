@@ -19,23 +19,17 @@
 
 package org.apache.guacamole.auth.sso;
 
-import com.google.inject.Inject;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import org.apache.guacamole.net.auth.IdentifierGenerator;
 
 /**
  * Service for generating and validating single-use random tokens (nonces).
  * Each generated nonce is at least 128 bits and case-insensitive.
  */
 public class NonceService {
-
-    /**
-     * Generator of arbitrary, unique, unpredictable identifiers.
-     */
-    @Inject
-    private IdentifierGenerator idGenerator;
 
     /**
      * Map of all generated nonces to their corresponding expiration timestamps.
@@ -107,7 +101,7 @@ public class NonceService {
         sweepExpiredNonces();
 
         // Generate and store nonce, along with expiration timestamp
-        String nonce = idGenerator.generateIdentifier(NONCE_BITS, false);
+        String nonce = IdentifierGenerator.generateIdentifier(NONCE_BITS, false);
         nonces.put(nonce, System.currentTimeMillis() + maxAge);
         return nonce;
 
