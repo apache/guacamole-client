@@ -258,7 +258,7 @@ angular.module('settings').directive('guacSettingsPreferences', [function guacSe
             // Fetch the user record
             userService.getUser(dataSource, username).then(function saveUserData(user) {
                 $scope.user = user;
-            })
+            });
 
             // Fetch all user preference attribute forms defined
             schemaService.getUserPreferenceAttributes(dataSource).then(function saveAttributes(attributes) {

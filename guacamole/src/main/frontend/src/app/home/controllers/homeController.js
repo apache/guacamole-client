@@ -31,6 +31,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var dataSourceService      = $injector.get('dataSourceService');
+    var preferenceService      = $injector.get('preferenceService');
     var requestService         = $injector.get('requestService');
 
     /**
@@ -59,6 +60,16 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.filteredConnectionGroupProperties = [
         'name'
     ];
+    
+    /**
+     * Returns true if recent connections should be displayed on the Guacamole
+     * home page, otherwise false.
+     * 
+     * @returns {!boolean}
+     */
+    $scope.willShowRecentConnections = function willShowRecentConnections() {
+        return preferenceService.preferences.showRecentConnections;
+    };
 
     /**
      * Returns whether critical data has completed being loaded.

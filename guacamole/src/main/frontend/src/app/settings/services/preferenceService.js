@@ -143,6 +143,20 @@ angular.module('settings').provider('preferenceService', ['$injector',
         language : getDefaultLanguageKey(),
         
         /**
+         * The number of recent connections to display.
+         * 
+         * @type {!number}
+         */
+        numberOfRecentConnections: 6,
+        
+        /**
+         * Whether or not to show the "Recent Connections" section.
+         * 
+         * @type {!boolean}
+         */
+        showRecentConnections : true,
+        
+        /**
          * The timezone set by the user, in IANA zone key format (Olson time
          * zone database).
          * 
