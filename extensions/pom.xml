@@ -45,6 +45,7 @@
         <module>guacamole-auth-header</module>
         <module>guacamole-auth-jdbc</module>
         <module>guacamole-auth-json</module>
+        <module>guacamole-auth-nextcloud</module>
         <module>guacamole-auth-ldap</module>
         <module>guacamole-auth-quickconnect</module>
         <module>guacamole-auth-sso</module>

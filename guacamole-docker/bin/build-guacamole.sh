@@ -184,6 +184,15 @@ if [ -f extensions/guacamole-auth-json/target/guacamole-auth-json*.jar ]; then
 fi
 
 #
+# Copy nextcloud jwt auth extension if it was built
+#
+
+if [ -f extensions/guacamole-auth-nextcloud/target/guacamole-auth-nextcloud*.jar ]; then
+    mkdir -p "$DESTINATION/nextcloud"
+    cp extensions/guacamole-auth-nextcloud/target/guacamole-auth-nextcloud*.jar "$DESTINATION/nextcloud"
+fi
+
+#
 # Copy automatic brute-force banning auth extension if it was built
 #
 
