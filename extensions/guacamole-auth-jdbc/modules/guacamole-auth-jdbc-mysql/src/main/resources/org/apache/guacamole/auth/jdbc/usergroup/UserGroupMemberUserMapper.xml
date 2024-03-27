@@ -58,7 +58,9 @@
         WHERE
             user_group_id = #{parent.objectID,jdbcType=INTEGER}
             AND guacamole_entity.type = 'USER'
-            AND guacamole_entity.name IN
+            AND 
+                <if test="caseSensitive">BINARY</if>
+                guacamole_entity.name IN
                 <foreach collection="children" item="identifier"
                          open="(" separator="," close=")">
                     #{identifier,jdbcType=VARCHAR}
@@ -76,6 +78,7 @@
             guacamole_entity.entity_id
         FROM guacamole_entity
         WHERE
+            <if test="caseSensitive">BINARY</if>
             guacamole_entity.name IN
                 <foreach collection="children" item="identifier"
                          open="(" separator="," close=")">

@@ -362,5 +362,21 @@ public class ConfigurationService {
             throw new GuacamoleServerException("Unknown host specified for NAS IP.", e);
         }
     }
+    
+    /**
+     * Returns true if the usernames of users authenticated by this module
+     * should be treated as case-sensitive, otherwise false. By default RADIUS
+     * users will not be treated as case-sensitive.
+     * 
+     * @return
+     *     True if usernames of users authenticated by this module should be
+     *     treated as case-sensitive, otherwise false.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be read.
+     */
+    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        return environment.getProperty(RadiusGuacamoleProperties.RADIUS_CASE_SENSITIVE_USERNAMES, false);
+    }
 
 }

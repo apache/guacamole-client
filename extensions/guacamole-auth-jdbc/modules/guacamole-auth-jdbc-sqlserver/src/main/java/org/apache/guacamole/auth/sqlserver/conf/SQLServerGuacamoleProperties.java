@@ -257,5 +257,13 @@ public class SQLServerGuacamoleProperties {
         public String getName() { return "sqlserver-trust-all-server-certificates"; }
 
     };
+    
+    public static final BooleanGuacamoleProperty SQLSERVER_CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+                
+        @Override
+        public String getName() { return "sqlserver-case-sensitive-usernames" ; }
+                
+    };
 
 }

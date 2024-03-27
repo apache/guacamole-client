@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.ByteArrayProperty;
 import org.apache.guacamole.properties.StringListProperty;
 
@@ -39,6 +40,20 @@ public class ConfigurationService {
     @Inject
     private Environment environment;
 
+    /**
+     * Whether or not usernames of users associated with the JSON module should
+     * be treated as case-sensitive.
+     */
+    private static final BooleanGuacamoleProperty JSON_CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+      
+        @Override
+        public String getName() {
+            return "json-case-sensitive-usernames";
+        }
+        
+    };
+    
     /**
      * The encryption key to use for all decryption and signature verification.
      */
@@ -64,6 +79,23 @@ public class ConfigurationService {
         }
 
     };
+    
+    /**
+     * Returns true if the usernames of users authenticated by the JSON module
+     * should be treated as case-sensitive, or false if the usernames should
+     * be treated as case-insensitive. The default is false, usernames will
+     * be treated as case-insensitive.
+     * 
+     * @return
+     *     True if the usernames of users authenticated by this module should
+     *     be treated as case-sensitive, otherwise false.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        return environment.getProperty(JSON_CASE_SENSITIVE_USERNAMES, false);
+    }
 
     /**
      * Returns the symmetric key which will be used to encrypt and sign all
