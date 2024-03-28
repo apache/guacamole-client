@@ -46,6 +46,7 @@
         "FIELD_HEADER_PASSWORD"       : "Password:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Re-enter Password:",
         "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "Allow writing to existing recording file:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "Allow writing to existing typescript file:",
 
         "FIELD_PLACEHOLDER_FILTER" : "Filter",
 
@@ -524,6 +525,7 @@
         "FIELD_HEADER_SCROLLBACK"      : "Maximum scrollback size:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
         "FIELD_HEADER_USE_SSL"         : "Use SSL/TLS",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
@@ -753,6 +755,7 @@
         "FIELD_HEADER_TIMEZONE"        : "Time zone ($TZ):",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
@@ -837,6 +840,7 @@
         "FIELD_HEADER_TERMINAL_TYPE"   : "Terminal type:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcast address for WoL packet:",
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC address of the remote host:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
