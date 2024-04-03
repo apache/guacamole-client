@@ -73,7 +73,6 @@ public class DuoAuthenticationProviderModule extends AbstractModule {
         // Bind Duo-specific services
         bind(ConfigurationService.class);
         bind(UserVerificationService.class);
-        
     }
 
 }

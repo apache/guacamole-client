@@ -40,8 +40,29 @@ public class ResumableAuthenticationState {
     private Credentials credentials;
 
     /**
+     * A unique string identifying the authentication provider related to the state.
+     * This field allows the client to know which provider's authentication process
+     * should be resumed using this state.
+     */
+    private String providerIdentifier;
+
+    /**
+     * A unique string that can be used to identify a specific query within the
+     * authentication process for the identified provider. This identifier can
+     * help the resumption of an authentication process.
+     */
+    private String queryIdentifier;
+
+    /**
      * Constructs a new ResumableAuthenticationState object with the specified
      * expiration timestamp and user credentials.
+     *
+     * @param providerIdentifier
+     *     The identifier of the authentication provider to which this resumable state pertains.
+     *
+     * @param queryIdenifier
+     *     The identifier of the specific query within the provider's
+     *     authentication process that this state corresponds to.
      *
      * @param expirationTimestamp
      *     The timestamp in milliseconds since the Unix epoch when this state
@@ -51,9 +72,12 @@ public class ResumableAuthenticationState {
      *     The Credentials object initially submitted by the user and associated
      *     with this resumable state.
      */
-    public ResumableAuthenticationState(long expirationTimestamp, Credentials credentials) {
+    public ResumableAuthenticationState(String providerIdentifier, String queryIdentifier, 
+            long expirationTimestamp, Credentials credentials) {
         this.expirationTimestamp = expirationTimestamp;
         this.credentials = credentials;
+        this.providerIdentifier = providerIdentifier;
+        this.queryIdentifier = queryIdentifier;
     }
 
     /**
@@ -77,5 +101,28 @@ public class ResumableAuthenticationState {
      */
     public Credentials getCredentials() {
         return this.credentials;
+    }
+
+    /**
+     * Retrieves the identifier of the authentication provider associated with this state.
+     *
+     * @return 
+     *     The identifier of the authentication provider, providing context for this state
+     *     within the overall authentication sequence.
+     */
+    public String getProviderIdentifier() {
+        return this.providerIdentifier;
+    }
+
+    /**
+     * Retrieves the identifier for a specific query in the authentication
+     * process that is associated with this state.
+     *
+     * @return 
+     *     The query identifier used for retrieving a value representing the state within
+     *     the provider's authentication process that should be resumed.
+     */
+    public String getQueryIdentifier() {
+        return this.queryIdentifier;
     }
 }

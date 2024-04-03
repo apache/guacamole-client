@@ -47,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Singleton;
+import java.util.Iterator;
 
 /**
  * A service for performing authentication checks in REST endpoints.
@@ -325,12 +326,15 @@ public class AuthenticationService {
                     // Store state and expiration
                     String state = e.getState();
                     long expiration = e.getExpires();
+                    String queryIdentifier = e.getQueryIdentifier();
+                    String providerIdentifier = e.getProviderIdentifier();
 
-                    resumableStateMap.put(state, new ResumableAuthenticationState(expiration, credentials));
+                    resumableStateMap.put(state, new ResumableAuthenticationState(providerIdentifier, 
+                            queryIdentifier, expiration, credentials));
 
                     throw new GuacamoleAuthenticationProcessException("User "
-                    + "authentication aborted during initial "
-                    + "UserContext creation.", authProvider, e);
+                            + "authentication aborted during initial "
+                            + "UserContext creation.", authProvider, e);
                 }
                 catch (GuacamoleException | RuntimeException | Error e) {
                     throw new GuacamoleAuthenticationProcessException("User "
@@ -349,6 +353,82 @@ public class AuthenticationService {
 
         return userContexts;
 
+    }
+    
+    /**
+     * Resumes authentication using given credentials if a matching resumable 
+     * state is found.
+     *
+     * @param credentials 
+     *     The initial credentials containing the request object.
+     *
+     * @return 
+     *     Resumed credentials if a valid resumable state is found; otherwise, 
+     *     returns {@code null}.
+     */
+    private Credentials resumeAuthentication(Credentials credentials) {
+        
+        Credentials resumedCredentials = null;
+
+        // Retrieve signed State from the request
+        HttpServletRequest request = credentials.getRequest();
+        
+        // Retrieve the provider id from the query parameters.
+        String resumableProviderId = request.getParameter(Credentials.RESUME_QUERY);
+        // Check if a provider id is set.
+        if (resumableProviderId == null || resumableProviderId.isEmpty()) {
+            // return if a provider id is not set.
+            return null;
+        }
+
+        // Use an iterator to safely remove entries while iterating
+        Iterator<Map.Entry<String, ResumableAuthenticationState>> iterator = resumableStateMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, ResumableAuthenticationState> entry = iterator.next();
+            ResumableAuthenticationState resumableState = entry.getValue();
+
+            // Check if the provider ID from the request matches the one in the map entry.
+            boolean providerMatches = resumableProviderId.equals(resumableState.getProviderIdentifier());
+            if (!providerMatches) {
+                // If the provider doesn't match, skip to the next entry.
+                continue;
+            }
+
+            // Use the query identifier from the entry to retrieve the corresponding state parameter.
+            String stateQueryParameter = resumableState.getQueryIdentifier();
+            String stateFromParameter = request.getParameter(stateQueryParameter);
+
+            // Check if the `state` parameter is set.
+            if (stateFromParameter == null || stateFromParameter.isEmpty()) {
+                // Remove and continue if `state` is not provided or is empty.
+                iterator.remove(); 
+                continue;
+            }
+
+            // If the key in the entry (state) matches the state parameter provided in the request.
+            if (entry.getKey().equals(stateFromParameter)) {
+
+                // Remove the current entry from the map.
+                iterator.remove();                
+
+                // Check if the resumableState has expired
+                if (!resumableState.isExpired()) {
+
+                    // Set the actualCredentials to the credentials from the matched entry.
+                    resumedCredentials = resumableState.getCredentials();
+
+                    if (resumedCredentials != null) {
+                        resumedCredentials.setRequest(request);
+                    }
+
+                }
+
+                // Exit the loop since we've found the matching state and it's unique.
+                break;
+            }
+        }
+
+        return resumedCredentials;
     }
 
     /**
@@ -388,24 +468,11 @@ public class AuthenticationService {
 
         AuthenticatedUser authenticatedUser;
         String authToken;
-        Credentials actualCredentials = credentials;
-        String state;
-        ResumableAuthenticationState resumableState = null;
 
-        // Retrieve signed State from the request
-        HttpServletRequest request = credentials.getRequest();
-
-        // If state is provided, attempt to resume authentication
-        if ((state = request.getParameter("state")) != null && (resumableState = resumableStateMap.get(state)) != null) {
-            // The resumableState is removed as it should be a single-use token
-            resumableStateMap.remove(state);
-
-            // Check if the resumableState has expired
-            if (!resumableState.isExpired()) {
-                actualCredentials = resumableState.getCredentials();
-                actualCredentials.setRequest(request);
-            }
-        }
+        // Retrieve credentials if resuming authentication
+        Credentials actualCredentials = resumeAuthentication(credentials);
+        if (actualCredentials == null)
+            actualCredentials = credentials;
 
         try {
 

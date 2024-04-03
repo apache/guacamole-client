@@ -39,6 +39,7 @@ import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Service for verifying the identity of a user against Duo.
@@ -51,13 +52,13 @@ public class UserVerificationService {
      * The name of the parameter which Duo will return in it's GET call-back
      * that contains the code that the client will use to generate a token.
      */
-    private static final String DUO_CODE_PARAMETER_NAME = "duo_code";
+    public static final String DUO_CODE_PARAMETER_NAME = "duo_code";
     
     /**
      * The name of the parameter that will be used in the GET call-back that
      * contains the session state.
      */
-    private static final String DUO_STATE_PARAMETER_NAME = "state";
+    public static final String DUO_STATE_PARAMETER_NAME = "state";
     
     /**
      * The value that will be returned in the token if Duo authentication
@@ -101,12 +102,20 @@ public class UserVerificationService {
 
         try {
 
+        String redirectUrl = confService.getRedirectUrl().toString();
+
+        String builtUrl = UriComponentsBuilder
+                .fromUriString(redirectUrl)
+                .queryParam(Credentials.RESUME_QUERY, DuoAuthenticationProvider.PROVIDER_IDENTIFER)
+                .build()
+                .toUriString();
+
         // Set up the Duo Client
         Client duoClient = new Client.Builder(
                 confService.getClientId(),
                 confService.getClientSecret(),
                 confService.getAPIHostname(),
-                confService.getRedirectUrl().toString())
+                builtUrl)
                 .build();
         
         duoClient.healthCheck();
@@ -133,8 +142,8 @@ public class UserVerificationService {
                             new TranslatableMessage("LOGIN.INFO_DUO_REDIRECT_PENDING")
                     )
                 )),
-                duoState,
-                expirationTimestamp
+                duoState, DuoAuthenticationProvider.PROVIDER_IDENTIFER, 
+                DUO_STATE_PARAMETER_NAME, expirationTimestamp
             );
 
         }

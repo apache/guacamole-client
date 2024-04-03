@@ -157,15 +157,23 @@ public class TranslatableGuacamoleInsufficientCredentialsException
      * @param state
      *     An opaque value that may be used by a client to maintain state across requests which are part
      *     of the same authentication transaction.
+     * 
+     * @param providerIdentifier
+     *     The identifier of the authentication provider that this exception pertains to.
+     *
+     * @param queryIdentifier
+     *     The identifier of the specific query parameter within the
+     *     authentication process that this exception pertains to.
      *
      * @param expires
      *     The timestamp after which the state token associated with the authentication process expires,
      *     specified as the number of milliseconds since the UNIX epoch.
      */
     public TranslatableGuacamoleInsufficientCredentialsException(String message,
-            String key, CredentialsInfo credentialsInfo, String state, long expires) {
-                super(message, credentialsInfo, state, expires);
-                this.translatableMessage = new TranslatableMessage(key);
+            String key, CredentialsInfo credentialsInfo, String state, String providerIdentifier, 
+            String queryIdentifier, long expires) {
+        super(message, credentialsInfo, state, providerIdentifier, queryIdentifier, expires);
+        this.translatableMessage = new TranslatableMessage(key);
     }
 
     @Override

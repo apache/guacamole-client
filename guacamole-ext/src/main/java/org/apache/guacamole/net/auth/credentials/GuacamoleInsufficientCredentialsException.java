@@ -34,6 +34,20 @@ public class GuacamoleInsufficientCredentialsException extends GuacamoleCredenti
 private static final String DEFAULT_STATE = "";
 
 /**
+ * The default provider identifier to use when no specific provider is identified.
+ * This serves as a placeholder indicating that either no specific provider is
+ * responsible for the exception or the responsible provider has not been identified.
+ */
+private static final String DEFAULT_PROVIDER_IDENTIFIER = "";
+
+/**
+ * The default query identifier to use when no specific query is identified.
+ * This serves as a placeholder and indicates that the specific query related to
+ * the provider's state resume operation has not been provided.
+ */
+private static final String DEFAULT_QUERY_IDENTIFIER = "";
+
+/**
  * The default expiration timestamp to use when no specific expiration is provided,
  * effectively indicating that the state token does not expire.
  */
@@ -44,6 +58,20 @@ private static final long DEFAULT_EXPIRES = -1L;
  * which are part of the same authentication transaction.
  */
 protected final String state;
+
+    /**
+     * The identifier for the authentication provider that threw this exception.
+     * This is used to link the exception back to the originating source of the
+     * authentication attempt, allowing clients to determine which provider's
+     * authentication process should be resumed.
+     */
+    protected final String providerIdentifier;
+
+    /**
+     * An identifier for the specific query within the URL for this provider that can
+     * be checked to resume the authentication state.
+     */
+    protected final String queryIdentifier;
 
 /**
  * The timestamp after which the state token associated with the authentication process
@@ -67,15 +95,25 @@ protected final long expires;
      *     An opaque value that may be used by a client to maintain state
      *     across requests which are part of the same authentication transaction.
      *
+     * @param providerIdentifier
+     *     The identifier of the authentication provider that this exception pertains to.
+     *
+     * @param queryIdentifier
+     *     The identifier of the specific query parameter within the
+     *     authentication process that this exception pertains to.
+     * 
      * @param expires
      *     The timestamp after which the state token associated with the
      *     authentication process should no longer be considered valid, expressed
      *     as the number of milliseconds since UNIX epoch.
      */
    public GuacamoleInsufficientCredentialsException(String message,
-            CredentialsInfo credentialsInfo, String state, long expires) {
+            CredentialsInfo credentialsInfo, String state, String providerIdentifier, String queryIdentifier, 
+            long expires) {
         super(message, credentialsInfo);
         this.state = state;
+        this.providerIdentifier = providerIdentifier;
+        this.queryIdentifier = queryIdentifier;
         this.expires = expires;
     }
 
@@ -96,6 +134,8 @@ protected final long expires;
             CredentialsInfo credentialsInfo) {
         super(message, cause, credentialsInfo);
         this.state = DEFAULT_STATE;
+        this.providerIdentifier = DEFAULT_PROVIDER_IDENTIFIER;
+        this.queryIdentifier = DEFAULT_QUERY_IDENTIFIER;
         this.expires = DEFAULT_EXPIRES;
     }
 
@@ -112,6 +152,8 @@ protected final long expires;
     public GuacamoleInsufficientCredentialsException(String message, CredentialsInfo credentialsInfo) {
         super(message, credentialsInfo);
         this.state = DEFAULT_STATE;
+        this.providerIdentifier = DEFAULT_PROVIDER_IDENTIFIER;
+        this.queryIdentifier = DEFAULT_QUERY_IDENTIFIER;
         this.expires = DEFAULT_EXPIRES;
     }
 
@@ -128,6 +170,8 @@ protected final long expires;
     public GuacamoleInsufficientCredentialsException(Throwable cause, CredentialsInfo credentialsInfo) {
         super(cause, credentialsInfo);
         this.state = DEFAULT_STATE;
+        this.providerIdentifier = DEFAULT_PROVIDER_IDENTIFIER;
+        this.queryIdentifier = DEFAULT_QUERY_IDENTIFIER;
         this.expires = DEFAULT_EXPIRES;
     }
 
@@ -139,6 +183,27 @@ protected final long expires;
      */
     public String getState() {
         return state;
+    }
+
+    /**
+     * Retrieves the identifier of the authentication provider responsible for this exception.
+     *
+     * @return The identifier of the authentication provider, allowing clients to know
+     *         which provider's process should be resumed in response to this exception.
+     */
+    public String getProviderIdentifier() {
+        return providerIdentifier;
+    }
+
+    /**
+     * Retrieves the specific query identifier associated with the URL for the provider
+     * that can be checked to resume the authentication state.
+     *
+     * @return The query identifier that serves as a reference to a specific point or
+     *         transaction within the provider's authentication process.
+     */
+    public String getQueryIdentifier() {
+        return queryIdentifier;
     }
 
     /**
