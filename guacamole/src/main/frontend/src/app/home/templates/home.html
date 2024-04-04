@@ -2,12 +2,16 @@
 
     <div class="connection-list-ui">
 
-        <!-- The recent connections for this user -->
-        <div class="header">
-            <h2 id="section-header-recent-connections">{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
+        <div class="header header-app-name">
+            <h2 id="section-header-app-name">{{'APP.NAME' | translate}}</h2>
             <guac-user-menu></guac-user-menu>
         </div>
-        <guac-recent-connections root-groups="rootConnectionGroups"></guac-recent-connections>
+        
+        <!-- The recent connections for this user -->
+        <div class="header" ng-show="willShowRecentConnections()">
+            <h2 id="section-header-recent-connections">{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
+        </div>
+        <guac-recent-connections root-groups="rootConnectionGroups" ng-show="willShowRecentConnections()"></guac-recent-connections>
 
         <!-- All connections for this user -->
         <div class="header">
