@@ -89,7 +89,7 @@ public class ResumableAuthenticationState {
      *     indicating that the state is expired; false otherwise.
      */
     public boolean isExpired() {
-        return System.currentTimeMillis() > expirationTimestamp;
+        return System.currentTimeMillis() >= expirationTimestamp;
     }
 
     /**

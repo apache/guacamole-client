@@ -364,7 +364,7 @@ public class AuthenticationService {
      *
      * @return 
      *     Resumed credentials if a valid resumable state is found; otherwise, 
-     *     returns {@code null}.
+     *     returns null.
      */
     private Credentials resumeAuthentication(Credentials credentials) {
         
@@ -373,11 +373,11 @@ public class AuthenticationService {
         // Retrieve signed State from the request
         HttpServletRequest request = credentials.getRequest();
         
-        // Retrieve the provider id from the query parameters.
+        // Retrieve the provider id from the query parameters
         String resumableProviderId = request.getParameter(Credentials.RESUME_QUERY);
-        // Check if a provider id is set.
+        // Check if a provider id is set
         if (resumableProviderId == null || resumableProviderId.isEmpty()) {
-            // return if a provider id is not set.
+            // Return if a provider id is not set
             return null;
         }
 
@@ -387,34 +387,34 @@ public class AuthenticationService {
             Map.Entry<String, ResumableAuthenticationState> entry = iterator.next();
             ResumableAuthenticationState resumableState = entry.getValue();
 
-            // Check if the provider ID from the request matches the one in the map entry.
+            // Check if the provider ID from the request matches the one in the map entry
             boolean providerMatches = resumableProviderId.equals(resumableState.getProviderIdentifier());
             if (!providerMatches) {
-                // If the provider doesn't match, skip to the next entry.
+                // If the provider doesn't match, skip to the next entry
                 continue;
             }
 
-            // Use the query identifier from the entry to retrieve the corresponding state parameter.
+            // Use the query identifier from the entry to retrieve the corresponding state parameter
             String stateQueryParameter = resumableState.getQueryIdentifier();
             String stateFromParameter = request.getParameter(stateQueryParameter);
 
-            // Check if the `state` parameter is set.
+            // Check if a state parameter is set
             if (stateFromParameter == null || stateFromParameter.isEmpty()) {
-                // Remove and continue if `state` is not provided or is empty.
+                // Remove and continue if`state is not provided or is empty
                 iterator.remove(); 
                 continue;
             }
 
-            // If the key in the entry (state) matches the state parameter provided in the request.
+            // If the key in the entry (state) matches the state parameter provided in the request
             if (entry.getKey().equals(stateFromParameter)) {
 
-                // Remove the current entry from the map.
+                // Remove the current entry from the map
                 iterator.remove();                
 
                 // Check if the resumableState has expired
                 if (!resumableState.isExpired()) {
 
-                    // Set the actualCredentials to the credentials from the matched entry.
+                    // Set the actualCredentials to the credentials from the matched entry
                     resumedCredentials = resumableState.getCredentials();
 
                     if (resumedCredentials != null) {
@@ -423,7 +423,7 @@ public class AuthenticationService {
 
                 }
 
-                // Exit the loop since we've found the matching state and it's unique.
+                // Exit the loop since we've found the matching state and it's unique
                 break;
             }
         }

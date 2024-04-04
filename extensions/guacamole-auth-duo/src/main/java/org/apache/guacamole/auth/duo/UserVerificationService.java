@@ -102,60 +102,60 @@ public class UserVerificationService {
 
         try {
 
-        String redirectUrl = confService.getRedirectUrl().toString();
+            String redirectUrl = confService.getRedirectUri().toString();
 
-        String builtUrl = UriComponentsBuilder
-                .fromUriString(redirectUrl)
-                .queryParam(Credentials.RESUME_QUERY, DuoAuthenticationProvider.PROVIDER_IDENTIFER)
-                .build()
-                .toUriString();
+            String builtUrl = UriComponentsBuilder
+                    .fromUriString(redirectUrl)
+                    .queryParam(Credentials.RESUME_QUERY, DuoAuthenticationProvider.PROVIDER_IDENTIFER)
+                    .build()
+                    .toUriString();
 
-        // Set up the Duo Client
-        Client duoClient = new Client.Builder(
-                confService.getClientId(),
-                confService.getClientSecret(),
-                confService.getAPIHostname(),
-                builtUrl)
-                .build();
-        
-        duoClient.healthCheck();
-        
-        // Retrieve signed Duo Code and State from the request
-        String duoCode = request.getParameter(DUO_CODE_PARAMETER_NAME);
-        String duoState = request.getParameter(DUO_STATE_PARAMETER_NAME);
+            // Set up the Duo Client
+            Client duoClient = new Client.Builder(
+                    confService.getClientId(),
+                    confService.getClientSecret(),
+                    confService.getAPIHostname(),
+                    builtUrl)
+                    .build();
 
-        // If no code or state is received, assume Duo MFA redirect has not occured and do it.
-        if (duoCode == null || duoState == null) {
+            duoClient.healthCheck();
 
-            // Get a new session state from the Duo client
-            duoState = duoClient.generateState();
-            long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthTimeout() * 1000L);
+            // Retrieve signed Duo Code and State from the request
+            String duoCode = request.getParameter(DUO_CODE_PARAMETER_NAME);
+            String duoState = request.getParameter(DUO_STATE_PARAMETER_NAME);
 
-            // Request additional credentials
-            throw new TranslatableGuacamoleInsufficientCredentialsException(
-                "Verification using Duo is required before authentication "
-                + "can continue.", "LOGIN.INFO_DUO_AUTH_REQUIRED",
-                new CredentialsInfo(Collections.singletonList(
-                    new RedirectField(
-                            DUO_CODE_PARAMETER_NAME,
-                            new URI(duoClient.createAuthUrl(username, duoState)),
-                            new TranslatableMessage("LOGIN.INFO_DUO_REDIRECT_PENDING")
-                    )
-                )),
-                duoState, DuoAuthenticationProvider.PROVIDER_IDENTIFER, 
-                DUO_STATE_PARAMETER_NAME, expirationTimestamp
-            );
+            // If no code or state is received, assume Duo MFA redirect has not occured and do it
+            if (duoCode == null || duoState == null) {
 
-        }
-        
-        // Get the token from the DuoClient using the code and username, and check status
-        Token token = duoClient.exchangeAuthorizationCodeFor2FAResult(duoCode, username);
-        if (token == null 
-                || token.getAuth_result() == null 
-                || !DUO_TOKEN_SUCCESS_VALUE.equals(token.getAuth_result().getStatus()))
-            throw new TranslatableGuacamoleClientException("Provided Duo "
-                    + "validation code is incorrect.",
-                    "LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
+                // Get a new session state from the Duo client
+                duoState = duoClient.generateState();
+                long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthTimeout() * 1000L);
+
+                // Request additional credentials
+                throw new TranslatableGuacamoleInsufficientCredentialsException(
+                    "Verification using Duo is required before authentication "
+                    + "can continue.", "LOGIN.INFO_DUO_AUTH_REQUIRED",
+                    new CredentialsInfo(Collections.singletonList(
+                        new RedirectField(
+                                DUO_CODE_PARAMETER_NAME,
+                                new URI(duoClient.createAuthUrl(username, duoState)),
+                                new TranslatableMessage("LOGIN.INFO_DUO_REDIRECT_PENDING")
+                        )
+                    )),
+                    duoState, DuoAuthenticationProvider.PROVIDER_IDENTIFER, 
+                    DUO_STATE_PARAMETER_NAME, expirationTimestamp
+                );
+
+            }
+
+            // Get the token from the DuoClient using the code and username, and check status
+            Token token = duoClient.exchangeAuthorizationCodeFor2FAResult(duoCode, username);
+            if (token == null 
+                    || token.getAuth_result() == null 
+                    || !DUO_TOKEN_SUCCESS_VALUE.equals(token.getAuth_result().getStatus()))
+                throw new TranslatableGuacamoleClientException("Provided Duo "
+                        + "validation code is incorrect.",
+                        "LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
         }
         catch (DuoException e) {
             throw new GuacamoleServerException("Duo Client error.", e);

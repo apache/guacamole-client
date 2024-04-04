@@ -55,8 +55,8 @@ public class ConfigurationService {
     };
 
     /**
-     * The property within guacamole.properties which defines the integration
-     * key received from Duo for verifying Guacamole users. This value MUST be
+     * The property within guacamole.properties which defines the client id
+     * received from Duo for verifying Guacamole users. This value MUST be
      * exactly 20 characters.
      */
     private static final StringGuacamoleProperty DUO_CLIENT_ID =
@@ -79,17 +79,17 @@ public class ConfigurationService {
         public String getName() { return "duo-client-secret"; }
 
     };
-    
+
     /**
-     * The property within guacamole.properties which defines the redirect URL
+     * The property within guacamole.properties which defines the redirect URI
      * that Duo will call after the second factor has been completed. This
-     * should be the URL used to access Guacamole.
+     * should be the URI used to access Guacamole.
      */
-    private static final URIGuacamoleProperty DUO_REDIRECT_URL =
+    private static final URIGuacamoleProperty DUO_REDIRECT_URI =
             new URIGuacamoleProperty() {
-    
+
         @Override
-        public String getName() { return "duo-redirect-url"; }
+        public String getName() { return "duo-redirect-uri"; }
                 
     };
     
@@ -140,8 +140,8 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the client secert received from Duo for verifying Guacamole users,
-     * as defined in guacamole.properties by the "duo-client-secert" property.
+     * Returns the client secret received from Duo for verifying Guacamole users,
+     * as defined in guacamole.properties by the "duo-client-secret" property.
      * This value MUST be exactly 20 characters.
      *
      * @return
@@ -153,11 +153,11 @@ public class ConfigurationService {
     public String getClientSecret() throws GuacamoleException {
         return environment.getRequiredProperty(DUO_CLIENT_SECRET);
     }
-    
+
     /**
-     * Return the callback URL that will be called by Duo after authentication
-     * with Duo has been completed. This should be the URL to return the user
-     * to the Guacamole interface, and will be a full URL.
+     * Return the callback URI that will be called by Duo after authentication
+     * with Duo has been completed. This should be the URI to return the user
+     * to the Guacamole interface, and will be a full URI.
      * 
      * @return
      *     The URL for Duo to use to callback to the Guacamole interface after
@@ -167,8 +167,8 @@ public class ConfigurationService {
      *     If guacamole.properties cannot be read, or if the property is not
      *     defined.
      */
-    public URI getRedirectUrl() throws GuacamoleException {
-        return environment.getRequiredProperty(DUO_REDIRECT_URL);
+    public URI getRedirectUri() throws GuacamoleException {
+        return environment.getRequiredProperty(DUO_REDIRECT_URI);
     }
     
     /**

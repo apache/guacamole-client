@@ -28,36 +28,36 @@ package org.apache.guacamole.net.auth.credentials;
  */
 public class GuacamoleInsufficientCredentialsException extends GuacamoleCredentialsException {
 
-/**
- * The default state token to use when no specific state information is provided.
- */
-private static final String DEFAULT_STATE = "";
+    /**
+     * The default state token to use when no specific state information is provided.
+     */
+    private static final String DEFAULT_STATE = "";
 
-/**
- * The default provider identifier to use when no specific provider is identified.
- * This serves as a placeholder indicating that either no specific provider is
- * responsible for the exception or the responsible provider has not been identified.
- */
-private static final String DEFAULT_PROVIDER_IDENTIFIER = "";
+    /**
+     * The default provider identifier to use when no specific provider is identified.
+     * This serves as a placeholder indicating that either no specific provider is
+     * responsible for the exception or the responsible provider has not been identified.
+     */
+    private static final String DEFAULT_PROVIDER_IDENTIFIER = "";
 
-/**
- * The default query identifier to use when no specific query is identified.
- * This serves as a placeholder and indicates that the specific query related to
- * the provider's state resume operation has not been provided.
- */
-private static final String DEFAULT_QUERY_IDENTIFIER = "";
+    /**
+     * The default query identifier to use when no specific query is identified.
+     * This serves as a placeholder and indicates that the specific query related to
+     * the provider's state resume operation has not been provided.
+     */
+    private static final String DEFAULT_QUERY_IDENTIFIER = "";
 
-/**
- * The default expiration timestamp to use when no specific expiration is provided,
- * effectively indicating that the state token does not expire.
- */
-private static final long DEFAULT_EXPIRES = -1L;
+    /**
+     * The default expiration timestamp to use when no specific expiration is provided,
+     * effectively indicating that the state token does not expire.
+     */
+    private static final long DEFAULT_EXPIRES = -1L;
 
-/**
- * An opaque value that may be used by a client to maintain state across requests
- * which are part of the same authentication transaction.
- */
-protected final String state;
+    /**
+     * An opaque value that may be used by a client to maintain state across requests
+     * which are part of the same authentication transaction.
+     */
+    protected final String state;
 
     /**
      * The identifier for the authentication provider that threw this exception.
@@ -73,12 +73,12 @@ protected final String state;
      */
     protected final String queryIdentifier;
 
-/**
- * The timestamp after which the state token associated with the authentication process
- * should no longer be considered valid, expressed as the number of milliseconds since
- * UNIX epoch.
- */
-protected final long expires;
+    /**
+     * The timestamp after which the state token associated with the authentication process
+     * should no longer be considered valid, expressed as the number of milliseconds since
+     * UNIX epoch.
+     */
+    protected final long expires;
 
     /**
      * Creates a new GuacamoleInsufficientCredentialsException with the specified
@@ -107,9 +107,9 @@ protected final long expires;
      *     authentication process should no longer be considered valid, expressed
      *     as the number of milliseconds since UNIX epoch.
      */
-   public GuacamoleInsufficientCredentialsException(String message,
-            CredentialsInfo credentialsInfo, String state, String providerIdentifier, String queryIdentifier, 
-            long expires) {
+    public GuacamoleInsufficientCredentialsException(String message,
+            CredentialsInfo credentialsInfo, String state, 
+            String providerIdentifier, String queryIdentifier, long expires) {
         super(message, credentialsInfo);
         this.state = state;
         this.providerIdentifier = providerIdentifier;
