@@ -19,36 +19,58 @@
 
 package org.apache.guacamole.auth.duo;
 
+import com.duosecurity.Client;
+import com.duosecurity.exception.DuoException;
+import com.duosecurity.model.Token;
 import com.google.inject.Inject;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.duo.api.DuoService;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.duo.conf.ConfigurationService;
-import org.apache.guacamole.auth.duo.form.DuoSignedResponseField;
-import org.apache.guacamole.form.Field;
+import org.apache.guacamole.form.RedirectField;
 import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Service for verifying the identity of a user against Duo.
  */
 public class UserVerificationService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserVerificationService.class);
+    
+    /**
+     * The name of the parameter which Duo will return in it's GET call-back
+     * that contains the code that the client will use to generate a token.
+     */
+    public static final String DUO_CODE_PARAMETER_NAME = "duo_code";
+    
+    /**
+     * The name of the parameter that will be used in the GET call-back that
+     * contains the session state.
+     */
+    public static final String DUO_STATE_PARAMETER_NAME = "state";
+    
+    /**
+     * The value that will be returned in the token if Duo authentication
+     * was successful.
+     */
+    private static final String DUO_TOKEN_SUCCESS_VALUE = "allow";
+    
     /**
      * Service for retrieving Duo configuration information.
      */
     @Inject
     private ConfigurationService confService;
-
-    /**
-     * Service for verifying users against Duo.
-     */
-    @Inject
-    private DuoService duoService;
 
     /**
      * Verifies the identity of the given user via the Duo multi-factor
@@ -75,39 +97,72 @@ public class UserVerificationService {
         // Ignore anonymous users
         if (authenticatedUser.getIdentifier().equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
             return;
+        
+        String username = authenticatedUser.getIdentifier();
 
-        // Retrieve signed Duo response from request
-        String signedResponse = request.getParameter(DuoSignedResponseField.PARAMETER_NAME);
+        try {
 
-        // If no signed response, request one
-        if (signedResponse == null) {
+            String redirectUrl = confService.getRedirectUri().toString();
 
-            // Create field which requests a signed response from Duo that
-            // verifies the identity of the given user via the configured
-            // Duo API endpoint
-            Field signedResponseField = new DuoSignedResponseField(
+            String builtUrl = UriComponentsBuilder
+                    .fromUriString(redirectUrl)
+                    .queryParam(Credentials.RESUME_QUERY, DuoAuthenticationProvider.PROVIDER_IDENTIFER)
+                    .build()
+                    .toUriString();
+
+            // Set up the Duo Client
+            Client duoClient = new Client.Builder(
+                    confService.getClientId(),
+                    confService.getClientSecret(),
                     confService.getAPIHostname(),
-                    duoService.createSignedRequest(authenticatedUser));
+                    builtUrl)
+                    .build();
 
-            // Create an overall description of the additional credentials
-            // required to verify identity
-            CredentialsInfo expectedCredentials = new CredentialsInfo(
-                        Collections.singletonList(signedResponseField));
+            duoClient.healthCheck();
 
-            // Request additional credentials
-            throw new TranslatableGuacamoleInsufficientCredentialsException(
+            // Retrieve signed Duo Code and State from the request
+            String duoCode = request.getParameter(DUO_CODE_PARAMETER_NAME);
+            String duoState = request.getParameter(DUO_STATE_PARAMETER_NAME);
+
+            // If no code or state is received, assume Duo MFA redirect has not occured and do it
+            if (duoCode == null || duoState == null) {
+
+                // Get a new session state from the Duo client
+                duoState = duoClient.generateState();
+                long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthTimeout() * 1000L);
+
+                // Request additional credentials
+                throw new TranslatableGuacamoleInsufficientCredentialsException(
                     "Verification using Duo is required before authentication "
                     + "can continue.", "LOGIN.INFO_DUO_AUTH_REQUIRED",
-                    expectedCredentials);
+                    new CredentialsInfo(Collections.singletonList(
+                        new RedirectField(
+                                DUO_CODE_PARAMETER_NAME,
+                                new URI(duoClient.createAuthUrl(username, duoState)),
+                                new TranslatableMessage("LOGIN.INFO_DUO_REDIRECT_PENDING")
+                        )
+                    )),
+                    duoState, DuoAuthenticationProvider.PROVIDER_IDENTIFER, 
+                    DUO_STATE_PARAMETER_NAME, expirationTimestamp
+                );
 
+            }
+
+            // Get the token from the DuoClient using the code and username, and check status
+            Token token = duoClient.exchangeAuthorizationCodeFor2FAResult(duoCode, username);
+            if (token == null 
+                    || token.getAuth_result() == null 
+                    || !DUO_TOKEN_SUCCESS_VALUE.equals(token.getAuth_result().getStatus()))
+                throw new TranslatableGuacamoleClientException("Provided Duo "
+                        + "validation code is incorrect.",
+                        "LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
         }
-
-        // If signed response does not verify this user's identity, abort auth
-        if (!duoService.isValidSignedResponse(authenticatedUser, signedResponse))
-            throw new TranslatableGuacamoleClientException("Provided Duo "
-                    + "validation code is incorrect.",
-                    "LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
-
+        catch (DuoException e) {
+            throw new GuacamoleServerException("Duo Client error.", e);
+        }
+        catch (URISyntaxException e) {
+            throw new GuacamoleServerException("Error creating URI from Duo Authentication URL.", e);
+        }
     }
 
 }

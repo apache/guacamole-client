@@ -845,14 +845,13 @@ associate_totp() {
 
 ##
 ## Adds properties to guacamole.properties which configure the Duo two-factor
-## authentication service. Checks to see if all variables are defined and makes sure
-## DUO_APPLICATION_KEY is >= 40 characters.
+## authentication service. Checks to see if all variables are defined
 ##
 associate_duo() {
     # Verify required parameters are present
-    if [ -z "$DUO_INTEGRATION_KEY" ]      || \
-       [ -z "$DUO_SECRET_KEY" ]           || \
-       [ ${#DUO_APPLICATION_KEY} -lt 40 ]
+    if [ -z "$DUO_CLIENT_ID" ]            || \
+       [ -z "$DUO_CLIENT_SECRET" ]        || \
+       [ -z "$DUO_REDIRECT_URI" ]
     then
         cat <<END
 FATAL: Missing required environment variables
@@ -862,21 +861,20 @@ following environment variables:
 
     DUO_API_HOSTNAME        The hostname of the Duo API endpoint.
 
-    DUO_INTEGRATION_KEY     The integration key provided for Guacamole by Duo.
+    DUO_CLIENT_ID           The client id (or integration key) provided for Guacamole by Duo.
 
-    DUO_SECRET_KEY          The secret key provided for Guacamole by Duo.
+    DUO_CLIENT_SECRET       The secret key provided for Guacamole by Duo.
 
-    DUO_APPLICATION_KEY     An arbitrary, random key.
-                            This value must be at least 40 characters.
+    DUO_REDIRECT_URI        The URI to redirect back to upon successful authentication.
 END
         exit 1;
     fi
 
     # Update config file
     set_property "duo-api-hostname"                 "$DUO_API_HOSTNAME"
-    set_property "duo-integration-key"              "$DUO_INTEGRATION_KEY"
-    set_property "duo-secret-key"                   "$DUO_SECRET_KEY"
-    set_property "duo-application-key"              "$DUO_APPLICATION_KEY"
+    set_property "duo-client-id"                    "$DUO_CLIENT_ID"
+    set_property "duo-client-secret"                "$DUO_CLIENT_SECRET"
+    set_property "duo-redirect-uri"                 "$DUO_REDIRECT_URI"
 
     # Add required .jar files to GUACAMOLE_EXT
     ln -s /opt/guacamole/duo/guacamole-auth-*.jar   "$GUACAMOLE_EXT"

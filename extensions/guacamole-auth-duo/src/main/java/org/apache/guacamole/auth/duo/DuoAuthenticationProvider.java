@@ -34,6 +34,13 @@ import org.apache.guacamole.net.auth.UserContext;
 public class DuoAuthenticationProvider extends AbstractAuthenticationProvider {
 
     /**
+     * The unique identifier for this authentication provider. This is used in
+     * various parts of the Guacamole client to distinguish this provider from
+     * others, particularly when multiple authentication providers are used.
+     */
+    public static String PROVIDER_IDENTIFER = "duo";
+
+    /**
      * Injector which will manage the object graph of this authentication
      * provider.
      */
@@ -58,7 +65,7 @@ public class DuoAuthenticationProvider extends AbstractAuthenticationProvider {
 
     @Override
     public String getIdentifier() {
-        return "duo";
+        return PROVIDER_IDENTIFER;
     }
 
     @Override
