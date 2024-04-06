@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash
 #
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
@@ -562,11 +562,11 @@ END
 
     set_optional_property                  \
         "sqlserver-auto-create-accounts"  \
-        "$SQLSERVER_AUTO_CREATE_ACCOUNTS"
+        "$SQLSERVERQL_AUTO_CREATE_ACCOUNTS"
 
     set_optional_property      \
         "sqlserver-instance"  \
-        "$SQLSERVER_INSTANCE"
+        "$SQLSERVERQL_INSTANCE"
 
     # Add required .jar files to GUACAMOLE_LIB and GUACAMOLE_EXT
     ln -s /opt/guacamole/sqlserver/mssql-jdbc-*.jar "$GUACAMOLE_LIB"
@@ -1021,7 +1021,10 @@ associate_apisessiontimeout() {
 start_guacamole() {
 
     # User-only writable CATALINA_BASE
+    CATALINA_BASE=$HOME/tomcat
+    CATALINA_HOME=/usr/local/tomcat
     export CATALINA_BASE=$HOME/tomcat
+    export CATALINA_HOME=/usr/local/tomcat 
     for dir in logs temp webapps work; do
         mkdir -p $CATALINA_BASE/$dir
     done
@@ -1037,7 +1040,7 @@ start_guacamole() {
 
     # Start tomcat
     cd /usr/local/tomcat
-    exec catalina.sh run
+    exec bin/catalina.sh run
 
 }
 
@@ -1244,8 +1247,25 @@ if [ -n "$LOGBACK_LEVEL" ]; then
     sed -i "s/level=\"info\"/level=\"$LOGBACK_LEVEL\"/" $GUACAMOLE_HOME/logback.xml
 fi
 
+# Initialise database if not exists
+
+/opt/guacamole/bin/check_database.sh
+
+RESPONSE=$(echo $?);
+
+if [ "$RESPONSE" == "1" ]; then
+	echo "No any database accessible, exiting."
+	exit 1;
+elif [ "$RESPONSE" == "2" ]; then
+	echo "Database exists, continue running."
+else
+	echo "Database init was successsfully."
+fi
+
 #
 # Finally start Guacamole (under Tomcat)
 #
+
+	
 
 start_guacamole
