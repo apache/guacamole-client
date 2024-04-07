@@ -49,6 +49,7 @@ div.recent-connections div.connection {
     text-align: center;
     max-width: 75%;
     overflow: hidden;
+    position: relative;
 }
 
 a.home-connection, .empty.balancer a.home-connection-group {
@@ -79,4 +80,31 @@ a.home-connection, .empty.balancer a.home-connection-group {
 .header-app-name {
     font-size: 0.85em;
     box-shadow: none;
+}
+
+.recent-connections .connection .remove-recent::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 100%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    background-image: url('images/x.svg');
+}
+
+.recent-connections .connection .remove-recent {
+    background-color: red;
+    height: 1em;
+    width: 1em;
+    position: absolute;
+    top: 10px;
+    z-index: 10;
+    float: right;
+    right: 10px;
+    opacity: .2;
+}
+
+.recent-connections .connection .remove-recent:hover {
+    opacity: 1.0;
 }
