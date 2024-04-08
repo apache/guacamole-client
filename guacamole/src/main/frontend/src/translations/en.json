@@ -728,6 +728,7 @@
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
         "FIELD_HEADER_DISABLE_COPY"  : "Disable copying from terminal:",
         "FIELD_HEADER_DISABLE_PASTE" : "Disable pasting from client:",
+        "FIELD_HEADER_ENABLE_AGENT"  : "Enable SSH agent forwarding:",
         "FIELD_HEADER_FONT_NAME"     : "Font name:",
         "FIELD_HEADER_FONT_SIZE"     : "Font size:",
         "FIELD_HEADER_ENABLE_SFTP"   : "Enable SFTP:",

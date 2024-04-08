@@ -38,6 +38,11 @@
                 {
                     "name"  : "passphrase",
                     "type"  : "PASSWORD"
+                },
+                {
+                    "name"    : "enable-agent",
+                    "type"    : "BOOLEAN",
+                    "options" : ["true"]
                 }
             ]
         },
