@@ -19,6 +19,10 @@
 
 package org.apache.guacamole.servlet;
 
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -27,10 +31,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.security.SecureRandom;
 import java.util.Base64;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleConnectionClosedException;
 import org.apache.guacamole.GuacamoleException;
@@ -135,23 +135,6 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
     protected void registerTunnel(String tunnelSessionToken, GuacamoleTunnel tunnel) {
         tunnels.put(tunnelSessionToken, tunnel);
         logger.debug("Registered tunnel \"{}\".", tunnel.getUUID());
-    }
-
-    /**
-     * Deregisters the given tunnel such that future read/write requests to
-     * that tunnel will be rejected.
-     *
-     * @deprecated
-     *     This function has been deprecated in favor of {@link #deregisterTunnel(java.lang.String)},
-     *     which decouples identification of HTTP tunnel sessions from the
-     *     tunnel UUID.
-     *
-     * @param tunnel
-     *     The tunnel to deregister.
-     */
-    @Deprecated
-    protected void deregisterTunnel(GuacamoleTunnel tunnel) {
-        deregisterTunnel(tunnel.getUUID().toString());
     }
 
     /**
@@ -582,12 +565,4 @@ public abstract class GuacamoleHTTPTunnelServlet extends HttpServlet {
     }
 
 }
-
-/**
- * \example ExampleTunnelServlet.java
- *
- * A basic example demonstrating extending GuacamoleTunnelServlet and
- * implementing doConnect() to configure the Guacamole connection as
- * desired.
- */
 

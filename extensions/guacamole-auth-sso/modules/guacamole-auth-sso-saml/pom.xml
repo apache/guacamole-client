@@ -102,16 +102,25 @@
             <artifactId>guice</artifactId>
         </dependency>
 
-        <!-- Java servlet API -->
+        <!-- JakartaEE servlet API -->
+        <dependency>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+        </dependency>
+
+        <!-- Jakarta-RS Annotations -->
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        
+        <!-- javax required for OneLogin SAML -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
-        </dependency>
-
-        <!-- JAX-RS Annotations -->
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- OneLogin SAML Library -->
@@ -167,28 +176,22 @@
         <dependency>
             <groupId>com.fasterxml.woodstox</groupId>
             <artifactId>woodstox-core</artifactId>
-            <version>5.4.0</version>
+            <version>7.1.0</version>
         </dependency>
 
         <!-- Apache XML Security for Java (see exclusions for java-saml) -->
         <dependency>
             <groupId>org.apache.santuario</groupId>
             <artifactId>xmlsec</artifactId>
-            <version>2.2.6</version>
-            <exclusions>
+            <version>4.0.4</version>
 
-                <!--
-                    Replace slightly older commons-codec (1.15) with newer
-                    and identical version to that used by Apache Directory API
-                    for LDAP (1.17.1) so that we don't need two copies of the
-                    same license information.
-                -->
+            <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
                     <artifactId>commons-codec</artifactId>
                 </exclusion>
-
             </exclusions>
+
         </dependency>
 
         <!-- Apache Commons Lang (see exclusions for java-saml) -->
@@ -202,7 +205,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.17.1</version>
+            <version>1.21.0</version>
         </dependency>
 
     </dependencies>

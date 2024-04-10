@@ -39,7 +39,7 @@
     <properties>
         <kotlin.version>1.9.25</kotlin.version>
     </properties>
-
+    
     <dependencies>
 
         <!-- Guacamole Extension API -->
@@ -55,6 +55,7 @@
             <version>${revision}</version>
         </dependency>
 
+        <!-- Keeper Security Secrets Manager -->
         <dependency>
             <groupId>com.keepersecurity.secrets-manager</groupId>
             <artifactId>core</artifactId>

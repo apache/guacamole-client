@@ -21,9 +21,10 @@ package org.apache.guacamole.vault.ksm.conf;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-
-import javax.annotation.Nonnull;
-
+import com.keepersecurity.secretsManager.core.InMemoryStorage;
+import com.keepersecurity.secretsManager.core.KeyValueStorage;
+import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
+import jakarta.annotation.Nonnull;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
@@ -31,10 +32,6 @@ import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.LongGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
-
-import com.keepersecurity.secretsManager.core.InMemoryStorage;
-import com.keepersecurity.secretsManager.core.KeyValueStorage;
-import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
 
 /**
  * Service for retrieving configuration information regarding the Keeper

@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.resource;
 
+import jakarta.servlet.ServletContext;
 import java.io.InputStream;
-import javax.servlet.ServletContext;
 
 /**
  * A resource which is located within the classpath associated with another

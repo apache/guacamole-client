@@ -19,12 +19,12 @@
 
 package org.apache.guacamole.tunnel.http;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.tunnel.TunnelRequest;
 
 /**
