@@ -22,9 +22,9 @@
 #
 
 # Use args for Tomcat image label to allow image builder to choose alternatives
-# such as `--build-arg TOMCAT_JRE=jre8-alpine`
+# such as `--build-arg TOMCAT_JRE=jre11-alpine`
 #
-ARG TOMCAT_VERSION=9
+ARG TOMCAT_VERSION=10
 ARG TOMCAT_JRE=jdk21
 
 # Use official maven image for the build
