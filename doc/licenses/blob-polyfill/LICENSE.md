@@ -5,7 +5,7 @@
 # Source:  https://raw.githubusercontent.com/bjornstar/blob-polyfill/refs/tags/v${VERSION}/LICENSE.md
 #
 # --- BEGIN LICENSE FILE [9.0.20240710] ---
-Copyright © 2014 [Eli Grey][1].
+Copyright &copy; 2014 [Eli Grey][1].
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation

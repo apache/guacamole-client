@@ -6,10 +6,3 @@
 # Source:  https://raw.githubusercontent.com/apache/commons-configuration/refs/tags/commons-configuration-${VERSION}/NOTICE.txt
 # Source:  https://raw.githubusercontent.com/apache/commons-configuration/refs/tags/CONFIGURATION_${_VERSION_}/NOTICE.txt
 #
-# --- BEGIN LICENSE FILE [1.5] ---
-Apache Commons Configuration
-Copyright 2001-2007 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
-# --- END LICENSE FILE [1.5] ---

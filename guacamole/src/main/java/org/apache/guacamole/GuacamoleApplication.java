@@ -20,9 +20,9 @@
 package org.apache.guacamole;
 
 import com.google.inject.Injector;
-import javax.inject.Inject;
-import javax.servlet.ServletContext;
-import javax.ws.rs.ApplicationPath;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.ApplicationPath;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;

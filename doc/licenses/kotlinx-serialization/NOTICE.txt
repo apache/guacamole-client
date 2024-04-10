@@ -5,6 +5,12 @@
 # Source:  https://raw.githubusercontent.com/Kotlin/kotlinx.serialization/refs/tags/v${VERSION}/license/NOTICE.txt
 #
 # --- BEGIN LICENSE FILE [1.9.0] ---
+   =========================================================================
+   ==  NOTICE file corresponding to the section 4 d of                    ==
+   ==  the Apache License, Version 2.0,                                   ==
+   ==  in this case for the kotlix.serialization library.                 ==
+   =========================================================================
+
    kotlinx.serialization library.
    Copyright 2017-2019 JetBrains s.r.o and respective authors and developers
 # --- END LICENSE FILE [1.9.0] ---

@@ -10,4 +10,7 @@ Copyright 2007-2023 The Apache Software Foundation.
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
+
+Please refer to each LICENSE.<component>.txt file for the
+license terms of the components that Apache MINA depends on.
 # --- END LICENSE FILE [2.2.4] ---

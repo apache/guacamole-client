@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.rest.history;
 
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.rest.APIException;

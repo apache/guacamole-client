@@ -19,10 +19,9 @@
 
 package org.apache.guacamole.vault.secret;
 
+import jakarta.annotation.Nonnull;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
 
 /**
  * A class representing a Windows username, which may optionally also include

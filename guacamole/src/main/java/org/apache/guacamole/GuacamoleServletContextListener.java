@@ -25,11 +25,11 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Stage;
 import com.google.inject.servlet.GuiceServletContextListener;
+import jakarta.inject.Inject;
+import jakarta.servlet.ServletContextEvent;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.inject.Inject;
-import javax.servlet.ServletContextEvent;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.extension.ExtensionModule;
@@ -229,6 +229,7 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
 
     @Override
     protected Injector getInjector() {
+        logger.debug("Getting the Servlet Injector...");
         return guiceInjector.updateAndGet((current) -> {
 
             // Use existing injector if already created

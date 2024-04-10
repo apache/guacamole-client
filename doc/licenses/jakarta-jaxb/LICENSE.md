@@ -4,7 +4,7 @@
 # License: BSD 3-clause 
 # Source:  https://raw.githubusercontent.com/eclipse-ee4j/jaxb-ri/refs/tags/${VERSION}-RI/LICENSE.md
 #
-# --- BEGIN LICENSE FILE [2.3.2] ---
+# --- BEGIN LICENSE FILE [4.0.2] ---
 Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -33,4 +33,4 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# --- END LICENSE FILE [2.3.2] ---
+# --- END LICENSE FILE [4.0.2] ---

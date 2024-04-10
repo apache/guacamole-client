@@ -5,6 +5,12 @@
 # Source:  https://raw.githubusercontent.com/JetBrains/kotlin/refs/tags/v${VERSION}/license/NOTICE.txt
 #
 # --- BEGIN LICENSE FILE [1.9.25] ---
+   =========================================================================
+   ==  NOTICE file corresponding to the section 4 d of                    ==
+   ==  the Apache License, Version 2.0,                                   ==
+   ==  in this case for the Kotlin Compiler distribution.                 ==
+   =========================================================================
+
    Kotlin Compiler
    Copyright 2010-2023 JetBrains s.r.o and respective authors and developers
 # --- END LICENSE FILE [1.9.25] ---
