@@ -48,6 +48,12 @@ public class Credentials implements Serializable {
      * Unique identifier associated with this specific version of Credentials.
      */
     private static final long serialVersionUID = 1L;
+    
+    /**
+     * Flag indicating whether these credentials are part of an ongoing
+     * authentication process that is to be resumed.
+     */
+    private Boolean authenticationResumed;
 
     /**
      * An arbitrary username.
@@ -84,7 +90,7 @@ public class Credentials implements Serializable {
 
     /**
      * Construct a Credentials object with the given username, password,
-     * and HTTP request.  The information is assigned to the various
+     * and HTTP request. The information is assigned to the various
      * storage objects, and the remote hostname and address is parsed out
      * of the request object.
      * 
@@ -98,20 +104,43 @@ public class Credentials implements Serializable {
      *     The HTTP request associated with the authentication
      *     request.
      */
-    public Credentials(String username, String password, HttpServletRequest request) {
+    public Credentials(String username, String password, 
+            HttpServletRequest request) {
         this.username = username;
         this.password = password;
         this.request = request;
+        this.authenticationResumed = false;
+        
+        if (request != null) {
+            // Set the remote address
+            this.remoteAddress = request.getRemoteAddr();
 
-        // Set the remote address
-        this.remoteAddress = request.getRemoteAddr();
+            // Get the remote hostname
+            this.remoteHostname = request.getRemoteHost();
 
-        // Get the remote hostname
-        this.remoteHostname = request.getRemoteHost();
+            // If session exists get it, but don't create a new one.
+            this.session = request.getSession(false);
+        }
 
-        // If session exists get it, but don't create a new one.
-        this.session = request.getSession(false);
+    }
 
+    /**
+     * Checks if the current authentication process is a resumed one.
+     *
+     * @return True if authentication is resumed, otherwise false.
+     */
+    public Boolean isAuthenticationResumed() {
+        return authenticationResumed;
+    }
+
+    /**
+     * Sets the flag indicating whether the authentication process should be 
+     * resumed.
+     *
+     * @param authenticationResumed the flag indicating whether to resume authentication.
+     */
+    public void setAuthenticationResumed(Boolean authenticationResumed) {
+        this.authenticationResumed = authenticationResumed;
     }
     
     /**

@@ -328,6 +328,7 @@ public class AuthenticationService {
                     long expiration = e.getExpires();
                     String queryIdentifier = e.getQueryIdentifier();
                     String providerIdentifier = e.getProviderIdentifier();
+                    credentials.setAuthenticationResumed(true);
 
                     resumableStateMap.put(state, new ResumableAuthenticationState(providerIdentifier, 
                             queryIdentifier, expiration, credentials));

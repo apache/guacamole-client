@@ -27,6 +27,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.duo.conf.ConfigurationService;
@@ -39,7 +40,6 @@ import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.util.UriComponentsBuilder;
 
 /**
  * Service for verifying the identity of a user against Duo.
@@ -102,13 +102,9 @@ public class UserVerificationService {
 
         try {
 
-            String redirectUrl = confService.getRedirectUri().toString();
-
-            String builtUrl = UriComponentsBuilder
-                    .fromUriString(redirectUrl)
+            String builtUrl = UriBuilder.fromUri(confService.getRedirectUri().toString())
                     .queryParam(Credentials.RESUME_QUERY, DuoAuthenticationProvider.PROVIDER_IDENTIFER)
-                    .build()
-                    .toUriString();
+                    .build().toString();
 
             // Set up the Duo Client
             Client duoClient = new Client.Builder(
@@ -120,15 +116,10 @@ public class UserVerificationService {
 
             duoClient.healthCheck();
 
-            // Retrieve signed Duo Code and State from the request
-            String duoCode = request.getParameter(DUO_CODE_PARAMETER_NAME);
-            String duoState = request.getParameter(DUO_STATE_PARAMETER_NAME);
-
-            // If no code or state is received, assume Duo MFA redirect has not occured and do it
-            if (duoCode == null || duoState == null) {
+            if (!credentials.isAuthenticationResumed()) {
 
                 // Get a new session state from the Duo client
-                duoState = duoClient.generateState();
+                String duoState = duoClient.generateState();
                 long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthTimeout() * 1000L);
 
                 // Request additional credentials
@@ -147,6 +138,9 @@ public class UserVerificationService {
                 );
 
             }
+            
+            // Retrieve signed Duo Code and State from the request
+            String duoCode = request.getParameter(DUO_CODE_PARAMETER_NAME);
 
             // Get the token from the DuoClient using the code and username, and check status
             Token token = duoClient.exchangeAuthorizationCodeFor2FAResult(duoCode, username);
