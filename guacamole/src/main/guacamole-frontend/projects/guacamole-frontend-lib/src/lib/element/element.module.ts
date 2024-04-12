@@ -24,6 +24,7 @@ import { GuacFocusDirective } from './directives/guac-focus.directive';
  import { GuacResizeDirective } from './directives/guac-resize.directive';
 import { GuacScrollDirective } from './directives/guac-scroll.directive';
 import { GuacUploadDirective } from './directives/guac-upload.directive';
+import { GuacDropDirective } from './directives/guac-drop.directive';
 
 /**
  * Module for manipulating element state, such as focus or scroll position, as
@@ -35,7 +36,8 @@ import { GuacUploadDirective } from './directives/guac-upload.directive';
         GuacFocusDirective,
         GuacResizeDirective,
         GuacScrollDirective,
-        GuacUploadDirective
+        GuacUploadDirective,
+        GuacDropDirective
     ],
     imports: [
         CommonModule
@@ -45,7 +47,8 @@ import { GuacUploadDirective } from './directives/guac-upload.directive';
         GuacFocusDirective,
         GuacResizeDirective,
         GuacScrollDirective,
-        GuacUploadDirective
+        GuacUploadDirective,
+        GuacDropDirective
     ]
 })
 export class ElementModule {

@@ -33,6 +33,7 @@ export * from './lib/client/services/guac-video.service';
 // Element
 export * from './lib/element/element.module';
 export * from './lib/element/directives/guac-click.directive';
+export * from './lib/element/directives/guac-drop.directive';
 export * from './lib/element/directives/guac-focus.directive';
 export * from './lib/element/directives/guac-resize.directive';
 export * from './lib/element/directives/guac-scroll.directive';
