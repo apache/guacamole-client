@@ -65,7 +65,7 @@
             <artifactId>guava</artifactId>
         </dependency>
 
-        <!-- Java servlet API -->
+        <!-- Jakarta EE servlet API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>

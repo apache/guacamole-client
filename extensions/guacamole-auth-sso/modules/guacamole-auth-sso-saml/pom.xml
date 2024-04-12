@@ -57,12 +57,10 @@
             <artifactId>guice</artifactId>
         </dependency>
 
-        <!-- Java servlet API -->
+        <!-- JakartaEE servlet API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
-            <version>10.0.0</version>
-            <scope>provided</scope>
         </dependency>
 
         <!-- JAX-RS Annotations -->

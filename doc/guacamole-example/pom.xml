@@ -94,7 +94,7 @@
 
     <dependencies>
 
-        <!-- Servlet API -->
+        <!-- JakartaEE API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
@@ -119,10 +119,11 @@
             <scope>runtime</scope>
         </dependency>
 
+        <!-- slf4j logging library -->
 	<dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>slf4j-simple</artifactId>
-		<version>2.0.7</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>2.0.7</version>
 	</dependency>
 
 

@@ -75,6 +75,7 @@
 
     <dependencies>
         
+        <!-- Jakarta EE servlet API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>

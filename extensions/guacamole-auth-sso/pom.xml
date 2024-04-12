@@ -71,11 +71,11 @@
                 <version>1.5.5</version>
             </dependency>
 
-            <!-- Java servlet API -->
+            <!-- Jakarta EE servlet API -->
             <dependency>
-                <groupId>jakarta.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>6.1.0-M2</version>
+                <groupId>jakarta.platform</groupId>
+                <artifactId>jakarta.jakartaee-api</artifactId>
+                <version>10.0.0</version>
                 <scope>provided</scope>
             </dependency>
 

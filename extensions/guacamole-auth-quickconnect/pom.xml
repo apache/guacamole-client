@@ -108,7 +108,7 @@
             <artifactId>guice</artifactId>
         </dependency>
 
-        <!-- Jersey - JAX-RS Implementation -->
+        <!-- Jakarta EE servlet API -->
         <dependency>
             <groupId>jakarta.platform</groupId>
             <artifactId>jakarta.jakartaee-api</artifactId>
