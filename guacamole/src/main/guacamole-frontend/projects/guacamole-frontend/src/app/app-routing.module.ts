@@ -183,24 +183,6 @@ export const appRoutes: Routes = [
         canActivate: [routeToUserHomePage]
     },
 
-    // User editor
-    {
-        path: 'manage/:dataSource/users/:id',
-        component: ManageUserComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
-        canActivate: [authGuard]
-    },
-
-    // User editor for creating a new user
-    {
-        path: 'manage/:dataSource/users',
-        component: ManageUserComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
-        canActivate: [authGuard]
-    },
-
     // Management screen
     {
         path: 'settings',
@@ -267,6 +249,24 @@ export const appRoutes: Routes = [
     {
         path: 'manage/:dataSource/connectionGroups',
         component: ManageConnectionGroupComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        canActivate: [authGuard]
+    },
+
+    // User editor
+    {
+        path: 'manage/:dataSource/users/:id',
+        component: ManageUserComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        canActivate: [authGuard]
+    },
+
+    // User editor for creating a new user
+    {
+        path: 'manage/:dataSource/users',
+        component: ManageUserComponent,
         title: titleResolver,
         data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
         canActivate: [authGuard]
