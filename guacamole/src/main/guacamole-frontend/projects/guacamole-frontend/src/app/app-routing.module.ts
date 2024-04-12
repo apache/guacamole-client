@@ -305,7 +305,14 @@ export const appRoutes: Routes = [
         component: ClientPageComponent,
         data: {titleKey: 'APP.NAME', bodyClassName: 'client'},
         canActivate: [authGuard]
+    },
+
+    // Redirect to home screen if page not found
+    {
+        path: '**',
+        redirectTo: ''
     }
+
 ];
 
 /**
