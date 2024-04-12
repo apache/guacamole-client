@@ -112,18 +112,9 @@ public class UserVerificationService {
 
         // If no key is defined, attempt to generate a new key
         String secret = attributes.get(TOTPUser.TOTP_KEY_SECRET_ATTRIBUTE_NAME);
-        if (secret == null || secret.isEmpty()) {
-
-            // Generate random key for user
-            TOTPGenerator.Mode mode = confService.getMode();
-            UserTOTPKey generated = new UserTOTPKey(username,mode.getRecommendedKeyLength());
-            if (setKey(context, generated))
-                return generated;
-
-            // Fail if key cannot be set
-            return null;
-
-        }
+        
+        if (secret == null || secret.isEmpty()) 
+            return generateKey(context, username);
 
         // Parse retrieved base32 key value
         byte[] key;
@@ -143,6 +134,38 @@ public class UserVerificationService {
         boolean confirmed = "true".equals(attributes.get(TOTPUser.TOTP_KEY_CONFIRMED_ATTRIBUTE_NAME));
         return new UserTOTPKey(username, key, confirmed);
 
+    }
+    
+    /**
+     * Generate and set a new key for the specified user and context, returning
+     * the key if the set successfully or null if it fails.
+     * 
+     * @param context
+     *     The UserContext of the user whose TOTP key should be generated and set.
+     *
+     * @param username
+     *     The username of the user associated with the given UserContext.
+     * 
+     * @return
+     *     The generated and set key, or null if the operation failed.
+     * 
+     * @throws GuacamoleException
+     *     If a new key is generated, but the extension storing the associated
+     *     user fails while updating the user account, or if the configuration
+     *     cannot be retrieved.
+     */
+    private UserTOTPKey generateKey(UserContext context, String username)
+            throws GuacamoleException {
+        
+        // Generate random key for user
+        TOTPGenerator.Mode mode = confService.getMode();
+        UserTOTPKey generated = new UserTOTPKey(username,mode.getRecommendedKeyLength());
+        if (setKey(context, generated))
+            return generated;
+
+        // Fail if key cannot be set
+        return null;
+        
     }
 
     /**
@@ -316,6 +339,10 @@ public class UserVerificationService {
 
             // If the user hasn't completed enrollment, request that they do
             if (!key.isConfirmed()) {
+                
+                // If the key has not yet been confirmed, generate a new one.
+                key = generateKey(context, username);
+                
                 field.exposeKey(key);
                 throw new TranslatableGuacamoleInsufficientCredentialsException(
                         "TOTP enrollment must be completed before "
