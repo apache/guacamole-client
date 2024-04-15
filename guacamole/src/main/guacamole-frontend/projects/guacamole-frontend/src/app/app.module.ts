@@ -21,6 +21,7 @@ import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { ImportModule } from './import/import.module';
 import { LoginModule } from './login/login.module';
 import { NotificationModule } from './notification/notification.module';
 import { FormModule } from './form/form.module';
@@ -56,7 +57,8 @@ import { ExtensionLoaderService } from './index/services/extension-loader.servic
         SettingsModule,
         ManageModule,
         HomeModule,
-        ClientModule
+        ClientModule,
+        ImportModule
     ],
     providers: [
         // Uses the extension loader service to load the extension and set the router config

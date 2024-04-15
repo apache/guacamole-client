@@ -19,6 +19,10 @@
 
 import { inject, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, ResolveFn, Route, Router, RouterModule, Routes } from '@angular/router';
+import {
+    ConnectionImportFileHelpComponent
+} from './import/components/connection-import-file-help/connection-import-file-help.component';
+import { ImportConnectionsComponent } from './import/components/import-connections/import-connections.component';
 import { ManageUserComponent } from './manage/components/manage-user/manage-user.component';
 import { ManageConnectionComponent } from './manage/components/manage-connection/manage-connection.component';
 import { SettingsComponent } from './settings/components/settings/settings.component';
@@ -181,6 +185,24 @@ export const appRoutes: Routes = [
         // Run the canActivate guard on every navigation, even if the route hasn't changed
         runGuardsAndResolvers: 'always',
         canActivate: [routeToUserHomePage]
+    },
+
+    // Connection import page
+    {
+        path: 'import/:dataSource/connection',
+        component: ImportConnectionsComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'settings'},
+        canActivate: [authGuard]
+    },
+
+    // Connection import file format help page
+    {
+        path: 'import/connection/file-format-help',
+        component: ConnectionImportFileHelpComponent,
+        title: titleResolver,
+        data: {titleKey: 'APP.NAME', bodyClassName: 'settings'},
+        canActivate: [authGuard]
     },
 
     // Management screen

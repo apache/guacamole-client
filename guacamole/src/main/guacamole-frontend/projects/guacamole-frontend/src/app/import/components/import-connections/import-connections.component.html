@@ -1,0 +1,85 @@
+<div class="settings-view view import">
+
+    <div class="header">
+        <h2>{{ 'IMPORT.SECTION_HEADER_CONNECTION_IMPORT' | transloco }}</h2>
+        <guac-user-menu></guac-user-menu>
+    </div>
+
+    <div *ngIf="fileName" class="file-upload-container file-selected">
+        <div class="file-name"> {{ fileName }}</div>
+        <button class="danger clear" (click)="cancel()">
+            {{ 'IMPORT.ACTION_CLEAR' | transloco }}
+        </button>
+    </div>
+
+    <div *ngIf="!fileName" class="file-upload-container">
+
+        <div class="upload-header">
+            <span class="file-options">{{ 'IMPORT.HELP_UPLOAD_FILE_TYPES' | transloco }}</span>
+            <a
+                routerLink="/import/connection/file-format-help" target="_blank"
+                class="file-help-link">{{ 'IMPORT.ACTION_VIEW_FORMAT_HELP' | transloco }}
+            </a>
+        </div>
+
+        <div class="drop-target" [guacUpload]="handleFiles"
+             [guacDrop]="handleFiles" [guacMultiple]="false"
+             [guacDraggedClass]="'drop-pending'"
+             [guacDropError]="handleDropError"
+             [ngClass]="{'file-present': fileName}">
+
+            <div class="title">{{ 'IMPORT.HELP_UPLOAD_DROP_TITLE' | transloco }}</div>
+
+            <input type="file" class="file-upload-input"/>
+            <a class="browse-link">
+                {{ 'IMPORT.ACTION_BROWSE' | transloco }}
+            </a>
+
+            <div class="file-name"> {{ fileName }}</div>
+
+        </div>
+
+        <ul class="import-config">
+            <li>
+                <input type="checkbox"
+                       id="existing-connection-mode"
+                       [ngModel]="importConfig.existingConnectionMode === ExistingConnectionMode.REPLACE"
+                       (ngModelChange)="importConfig.existingConnectionMode = $event ? ExistingConnectionMode.REPLACE : ExistingConnectionMode.REJECT"/>
+                <label for="existing-connection-mode">
+                    {{ 'IMPORT.FIELD_HEADER_EXISTING_CONNECTION_MODE' | transloco }}
+                </label>
+                <span [attr.title]="'IMPORT.HELP_EXISTING_CONNECTION_MODE' | transloco" class="help"></span>
+            </li>
+            <li>
+                <input type="checkbox"
+                       id="existing-permission-mode"
+                       [ngModel]="importConfig.existingPermissionMode === ExistingPermissionMode.REPLACE"
+                       [disabled]="importConfig.existingConnectionMode === 'REJECT'"
+                       (ngModelChange)="importConfig.existingPermissionMode = $event ? ExistingPermissionMode.REPLACE : ExistingPermissionMode.PRESERVE"/>
+                <label for="existing-permission-mode">
+                    {{ 'IMPORT.FIELD_HEADER_EXISTING_PERMISSION_MODE' | transloco }}
+                </label>
+                <span [attr.title]="'IMPORT.HELP_EXISTING_PERMISSION_MODE' | transloco" class="help"></span>
+            </li>
+        </ul>
+
+    </div>
+
+    <div class="import-buttons">
+        <button
+            (click)="import()" [disabled]="importDisabled()" class="save import">
+            {{ 'IMPORT.ACTION_IMPORT' | transloco }}
+        </button>
+        <button
+            (click)="cancel()" [disabled]="cancelDisabled()" class="cancel">
+            {{ 'IMPORT.ACTION_CANCEL' | transloco }}
+        </button>
+    </div>
+
+    <div [hidden]="!isLoading()" class="loading"></div>
+
+    <!-- Connection specific errors, if there are any -->
+    <connection-import-errors *ngIf="hasErrors()" [parseResult]="parseResult" [patchFailure]="patchFailure"/>
+
+
+</div>

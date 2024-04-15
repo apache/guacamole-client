@@ -47,9 +47,8 @@
 
 @import "app/home/styles/home.css";
 
-/*TODO: Add CSS form import module*/
-/*@import "app/import/styles/help.css";*/
-/*@import "app/import/styles/import.css";*/
+@import "app/import/styles/help.css";
+@import "app/import/styles/import.css";
 
 @import "app/index/styles/animation.css";
 @import "app/index/styles/automatic-login-rejected.css";
