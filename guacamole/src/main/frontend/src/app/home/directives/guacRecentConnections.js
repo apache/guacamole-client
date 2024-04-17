@@ -60,6 +60,21 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
             $scope.recentConnections = [];
             
             /**
+             * Remove the connection from the recent connection list having the
+             * given identifier.
+             * 
+             * @param {!RecentConnection} recentConnection
+             *     The recent connection to remove from the history list.
+             *     
+             * @returns {boolean}
+             *     True if the removal was successful, otherwise false.
+             */
+            $scope.removeRecentConnection = function removeRecentConnection(recentConnection) {
+                return ($scope.recentConnections.splice($scope.recentConnections.indexOf(recentConnection), 1) 
+                        && guacHistory.removeEntry(recentConnection.entry.id));
+            };
+            
+            /**
              * Returns whether or not recent connections should be displayed.
              * 
              * @returns {!boolean}

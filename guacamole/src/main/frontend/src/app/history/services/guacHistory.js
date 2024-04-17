@@ -43,6 +43,22 @@ angular.module('history').factory('guacHistory', ['$injector',
     service.recentConnections = [];
 
     /**
+     * Remove from the list of connection history the item having the given
+     * identfier.
+     * 
+     * @param {String} id
+     *     The identifier of the item to remove from the history list.
+     *     
+     * @returns {boolean}
+     *     True if the removal was successful, otherwise false.
+     */
+    service.removeEntry = function removeEntry(id) {
+    
+        return _.remove(service.recentConnections, entry => entry.id === id).length > 0;
+    
+    };
+
+    /**
      * Updates the thumbnail and access time of the history entry for the
      * connection with the given ID.
      * 

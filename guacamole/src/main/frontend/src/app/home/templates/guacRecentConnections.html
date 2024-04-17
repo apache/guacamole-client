@@ -9,7 +9,7 @@
 
             <!-- Connection thumbnail -->
             <div class="thumbnail">
-                <img alt="{{recentConnection.name}}" ng-src="{{recentConnection.entry.thumbnail}}">
+                <img alt="{{recentConnection.name}}" ng-src="{{recentConnection.entry.thumbnail}}"/>
             </div>
 
             <!-- Connection name -->
@@ -18,6 +18,8 @@
             </div>
 
         </a>
+        <!-- Remove thumbnail -->
+        <div class="remove-recent" ng-click="removeRecentConnection(recentConnection)" />
     </div>
 
 </div>
