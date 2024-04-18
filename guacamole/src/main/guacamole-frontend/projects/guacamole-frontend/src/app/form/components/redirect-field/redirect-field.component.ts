@@ -17,9 +17,9 @@
  * under the License.
  */
 
+import { DOCUMENT } from '@angular/common';
 import { Component, Inject, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
-import { DOCUMENT } from '@angular/common';
 
 /**
  * Component for the redirect field, which redirects the user to the provided

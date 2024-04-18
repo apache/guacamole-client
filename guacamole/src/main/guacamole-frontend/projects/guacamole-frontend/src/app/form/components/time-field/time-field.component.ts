@@ -17,11 +17,11 @@
  * under the License.
  */
 
-import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { formatDate } from '@angular/common';
+import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
+import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 /**
  * Component for time fields.

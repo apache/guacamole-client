@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthenticationService } from '../../auth/service/authentication.service';
+import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { PermissionSet } from '../types/PermissionSet';
+import { AuthenticationService } from '../../auth/service/authentication.service';
 import { PermissionPatch } from '../types/PermissionPatch';
+import { PermissionSet } from '../types/PermissionSet';
 
 /**
  * Service for operating on user permissions via the REST API.

@@ -29,10 +29,10 @@ import {
     ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
-import { FormService } from '../../service/form.service';
-import { LogService } from '../../../util/log.service';
-import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 import { canonicalize } from '../../../locale/service/translation.service';
+import { LogService } from '../../../util/log.service';
+import { FormService } from '../../service/form.service';
+import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 /**
  * A component that allows editing of a field.

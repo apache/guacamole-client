@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
 import { InterceptorService } from '../../util/interceptor.service';
 import { Error } from '../types/Error';

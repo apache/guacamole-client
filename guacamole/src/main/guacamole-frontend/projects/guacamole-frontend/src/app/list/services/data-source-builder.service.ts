@@ -18,10 +18,10 @@
  */
 
 import { Injectable } from '@angular/core';
-import { SortService } from './sort.service';
+import { DataSourceBuilder } from '../types/DataSourceBuilder';
 import { FilterService } from './filter.service';
 import { PaginationService } from './pagination.service';
-import { DataSourceBuilder } from '../types/DataSourceBuilder';
+import { SortService } from './sort.service';
 
 /**
  * A service that allows to create a DataSource instance by using a builder.

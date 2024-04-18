@@ -17,13 +17,13 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GuacFilterComponent } from './components/guac-filter/guac-filter.component';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { GuacFilterComponent } from './components/guac-filter/guac-filter.component';
 import { GuacPagerComponent } from './components/guac-pager/guac-pager.component';
-import { GuacSortOrderDirective } from './directives/guac-sort-order.directive';
 import { GuacUserItemComponent } from './components/guac-user-item/guac-user-item.component';
+import { GuacSortOrderDirective } from './directives/guac-sort-order.directive';
 
 /**
  * Module for displaying, sorting, and filtering the contents of a list, split

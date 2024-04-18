@@ -17,10 +17,10 @@
  * under the License.
  */
 
-import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import { UserCredentials } from '../types/UserCredentials';
+import { Inject, Injectable } from '@angular/core';
 import { Field } from '../types/Field';
+import { UserCredentials } from '../types/UserCredentials';
 
 /**
  * Service which provides functions for working with UserCredentials

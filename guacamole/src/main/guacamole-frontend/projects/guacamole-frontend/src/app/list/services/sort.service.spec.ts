@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { SortService } from './sort.service';
 import { TestBed } from '@angular/core/testing';
+import { SortService } from './sort.service';
 
 describe('orderByPredicate', () => {
 

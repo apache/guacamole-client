@@ -17,9 +17,9 @@
  * under the License.
  */
 
-import { Field } from './Field';
-import { inject } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { inject } from '@angular/core';
+import { Field } from './Field';
 
 /**
  * Returned by REST API calls to define a full set of valid

@@ -17,10 +17,10 @@
  * under the License.
  */
 
+import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { PatchService } from '../../rest/service/patch.service';
 import { PatchOperation } from '../types/PatchOperation';
-import { DOCUMENT } from '@angular/common';
 
 /**
  * Applies HTML patches defined within Guacamole extensions to the DOM.

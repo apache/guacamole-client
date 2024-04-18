@@ -18,11 +18,11 @@
  */
 
 import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { ColorScheme } from '../../types/ColorScheme';
-import { FormFieldBaseComponent, getFieldOption } from '../form-field-base/form-field-base.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import includes from 'lodash/includes';
+import { ColorScheme } from '../../types/ColorScheme';
+import { FormFieldBaseComponent, getFieldOption } from '../form-field-base/form-field-base.component';
 
 /**
  * The string value which is assigned to selectedColorScheme if a custom

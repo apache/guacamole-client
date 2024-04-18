@@ -18,8 +18,8 @@
  */
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 import { LanguageService } from '../../../rest/service/language.service';
+import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 /**
  * Component to display language fields. The language field type allows the

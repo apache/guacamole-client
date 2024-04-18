@@ -17,12 +17,12 @@
  * under the License.
  */
 
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { AuthenticationInterceptor } from '../interceptor/authentication.interceptor';
 
 import { AuthenticationService } from './authentication.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthenticationInterceptor } from '../interceptor/authentication.interceptor';
 
 describe('AuthenticationService', () => {
     let service: AuthenticationService;

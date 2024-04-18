@@ -17,33 +17,33 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TimeZoneFieldComponent } from './components/time-zone-field/time-zone-field.component';
-import { ElementModule } from 'guacamole-frontend-lib';
-import { FormFieldComponent } from './components/form-field/form-field.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { FormComponent } from './components/form/form.component';
 import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TranslocoModule } from '@ngneat/transloco';
+import { ElementModule } from 'guacamole-frontend-lib';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
 import { DateFieldComponent } from './components/date-field/date-field.component';
-import { GuacLenientDateDirective } from './directives/guac-lenient-date.directive';
+import { EmailFieldComponent } from './components/email-field/email-field.component';
+import { FormFieldComponent } from './components/form-field/form-field.component';
+import { FormComponent } from './components/form/form.component';
+import { GuacInputColorComponent } from './components/guac-input-color/guac-input-color.component';
 import { LanguageFieldComponent } from './components/language-field/language-field.component';
 import { NumberFieldComponent } from './components/number-field/number-field.component';
 import { PasswordFieldComponent } from './components/password-field/password-field.component';
 import { RedirectFieldComponent } from './components/redirect-field/redirect-field.component';
 import { SelectFieldComponent } from './components/select-field/select-field.component';
-import { TextFieldComponent } from './components/text-field/text-field.component';
-import { TextAreaFieldComponent } from './components/text-area-field/text-area-field.component';
-import { TimeFieldComponent } from './components/time-field/time-field.component';
-import { GuacLenientTimeDirective } from './directives/guac-lenient-time.directive';
-import { EmailFieldComponent } from './components/email-field/email-field.component';
-import { UsernameFieldComponent } from './components/username-field/username-field.component';
 import {
     TerminalColorSchemeFieldComponent
 } from './components/terminal-color-scheme-field/terminal-color-scheme-field.component';
-import { GuacInputColorComponent } from './components/guac-input-color/guac-input-color.component';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TextAreaFieldComponent } from './components/text-area-field/text-area-field.component';
+import { TextFieldComponent } from './components/text-field/text-field.component';
+import { TimeFieldComponent } from './components/time-field/time-field.component';
+import { TimeZoneFieldComponent } from './components/time-zone-field/time-zone-field.component';
+import { UsernameFieldComponent } from './components/username-field/username-field.component';
+import { GuacLenientDateDirective } from './directives/guac-lenient-date.directive';
+import { GuacLenientTimeDirective } from './directives/guac-lenient-time.directive';
 
 /**
  * Module for displaying dynamic forms.

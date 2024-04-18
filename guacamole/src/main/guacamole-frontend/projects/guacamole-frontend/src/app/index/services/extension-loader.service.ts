@@ -17,12 +17,12 @@
  * under the License.
  */
 
+import { getManifest, loadRemoteModule } from '@angular-architects/module-federation';
 import { Injectable, Injector } from '@angular/core';
 import { Route, Router, Routes } from '@angular/router';
-import { getManifest, loadRemoteModule } from '@angular-architects/module-federation';
-import { ModuleFederationManifest } from '../types/ModuleFederationManifest';
-import { appRoutes, fallbackRoute, titleResolver } from '../../app-routing.module';
 import { BootsrapExtensionFunction } from 'guacamole-frontend-ext-lib';
+import { appRoutes, fallbackRoute, titleResolver } from '../../app-routing.module';
+import { ModuleFederationManifest } from '../types/ModuleFederationManifest';
 
 /**
  * A service which dynamically loads all extensions defined in the

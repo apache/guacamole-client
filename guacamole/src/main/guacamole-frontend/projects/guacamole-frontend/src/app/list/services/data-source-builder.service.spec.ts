@@ -18,13 +18,13 @@
  */
 
 import { TestBed } from '@angular/core/testing';
+import { from, map, of } from 'rxjs';
 import { TestScheduler } from 'rxjs/internal/testing/TestScheduler';
 import { getTestScheduler } from '../../util/test-helper';
-import { DataSourceBuilderService } from './data-source-builder.service';
-import { from, map, of } from 'rxjs';
-import { SortOrder } from '../types/SortOrder';
 import { PagerEvent } from '../components/guac-pager/guac-pager.component';
 import { DataSource } from '../types/DataSource';
+import { SortOrder } from '../types/SortOrder';
+import { DataSourceBuilderService } from './data-source-builder.service';
 
 interface Person {
     id: number;

@@ -17,11 +17,11 @@
  * under the License.
  */
 
-import { Injectable } from '@angular/core';
-import { ActiveConnection } from '../types/ActiveConnection';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { UserCredentials } from '../types/UserCredentials';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { ActiveConnection } from '../types/ActiveConnection';
+import { UserCredentials } from '../types/UserCredentials';
 
 /**
  * Service for operating on active connections via the REST API.

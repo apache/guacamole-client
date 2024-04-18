@@ -19,8 +19,8 @@
 
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { TranslocoService } from '@ngneat/transloco';
-import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
 import { take } from 'rxjs';
+import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
 
 /**
  * A component which graphically represents an individual user.

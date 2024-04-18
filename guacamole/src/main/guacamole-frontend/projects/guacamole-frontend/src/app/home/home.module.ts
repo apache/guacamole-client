@@ -17,18 +17,18 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GuacRecentConnectionsComponent } from './components/guac-recent-connections/guac-recent-connections.component';
+import { NgModule } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { TranslocoModule } from '@ngneat/transloco';
-import { ConnectionComponent } from './components/connection/connection.component';
-import { ConnectionGroupComponent } from './components/connection-group/connection-group.component';
-import { HomeComponent } from './components/home/home.component';
+import { ClientModule } from '../client/client.module';
 import { GroupListModule } from '../group-list/group-list.module';
 import { NavigationModule } from '../navigation/navigation.module';
-import { ClientModule } from '../client/client.module';
 import { RestModule } from '../rest/rest.module';
-import { RouterModule } from '@angular/router';
+import { ConnectionGroupComponent } from './components/connection-group/connection-group.component';
+import { ConnectionComponent } from './components/connection/connection.component';
+import { GuacRecentConnectionsComponent } from './components/guac-recent-connections/guac-recent-connections.component';
+import { HomeComponent } from './components/home/home.component';
 
 
 @NgModule({

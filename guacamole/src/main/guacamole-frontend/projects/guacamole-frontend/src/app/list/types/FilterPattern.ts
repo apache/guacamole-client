@@ -18,10 +18,10 @@
  */
 
 import { compile } from 'angular-expressions';
+import isObjectLike from 'lodash/isObjectLike';
+import { FilterToken } from './FilterToken';
 import { IPv4Network } from './IPv4Network';
 import { IPv6Network } from './IPv6Network';
-import { FilterToken } from './FilterToken';
-import isObjectLike from 'lodash/isObjectLike';
 
 /**
  * Handles compilation of filtering predicates as used by

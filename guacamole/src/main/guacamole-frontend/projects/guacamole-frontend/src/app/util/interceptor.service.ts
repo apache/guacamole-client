@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { Injectable } from '@angular/core';
 import { HttpContextToken, HttpRequest } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
 /**
  * HTTP context token that can be used to skip all interceptors when issuing a

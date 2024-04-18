@@ -17,18 +17,16 @@
  * under the License.
  */
 
+import { HttpClient, HttpContext, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    GuacFrontendEventArguments
-} from '../../events/types/GuacFrontendEventArguments';
-import { LocalStorageService } from '../../storage/local-storage.service';
-import { AuthenticationResult } from '../types/AuthenticationResult';
+import { catchError, from, map, Observable, of, switchMap, throwError } from 'rxjs';
+import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { RequestService } from '../../rest/service/request.service';
 import { Error } from '../../rest/types/Error';
-import { HttpClient, HttpContext, HttpHeaders, HttpParams } from '@angular/common/http';
+import { LocalStorageService } from '../../storage/local-storage.service';
 import { AUTHENTICATION_TOKEN } from '../../util/interceptor.service';
-import { catchError, from, map, Observable, of, switchMap, throwError } from 'rxjs';
+import { AuthenticationResult } from '../types/AuthenticationResult';
 
 /**
  * The unique identifier of the local storage key which stores the latest

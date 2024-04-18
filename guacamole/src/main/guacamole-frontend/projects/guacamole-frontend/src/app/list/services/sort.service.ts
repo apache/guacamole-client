@@ -18,8 +18,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import orderBy from 'lodash/orderBy';
 import { compile } from 'angular-expressions';
+import orderBy from 'lodash/orderBy';
 
 /**
  * TODO: Document

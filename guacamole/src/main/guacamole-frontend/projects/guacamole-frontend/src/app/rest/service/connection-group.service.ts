@@ -17,10 +17,10 @@
  * under the License.
  */
 
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { ConnectionGroup } from '../types/ConnectionGroup';
-import { HttpClient, HttpParams } from '@angular/common/http';
 
 /**
  * Service for operating on connection groups via the REST API.

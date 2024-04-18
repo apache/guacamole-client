@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { Form } from './Form';
 import { canonicalize } from '../../locale/service/translation.service';
+import { Form } from './Form';
 
 /**
  * Returned by REST API calls when representing the data

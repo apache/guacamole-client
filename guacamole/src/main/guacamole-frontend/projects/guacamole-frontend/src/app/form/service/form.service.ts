@@ -26,28 +26,28 @@ import {
     Type,
     ViewContainerRef
 } from '@angular/core';
-import { Form } from '../../rest/types/Form';
+import { FormControl, FormGroup } from '@angular/forms';
+import { FieldTypeService, FormFieldComponentData } from 'guacamole-frontend-ext-lib';
 import { Field } from '../../rest/types/Field';
-import { FormFieldComponent } from '../components/form-field/form-field.component';
-import { TimeZoneFieldComponent } from '../components/time-zone-field/time-zone-field.component';
+import { Form } from '../../rest/types/Form';
+import { isArray } from '../../util/is-array';
 import { CheckboxFieldComponent } from '../components/checkbox-field/checkbox-field.component';
 import { DateFieldComponent } from '../components/date-field/date-field.component';
+import { EmailFieldComponent } from '../components/email-field/email-field.component';
+import { FormFieldComponent } from '../components/form-field/form-field.component';
 import { LanguageFieldComponent } from '../components/language-field/language-field.component';
 import { NumberFieldComponent } from '../components/number-field/number-field.component';
 import { PasswordFieldComponent } from '../components/password-field/password-field.component';
 import { RedirectFieldComponent } from '../components/redirect-field/redirect-field.component';
 import { SelectFieldComponent } from '../components/select-field/select-field.component';
-import { TextFieldComponent } from '../components/text-field/text-field.component';
-import { TextAreaFieldComponent } from '../components/text-area-field/text-area-field.component';
-import { TimeFieldComponent } from '../components/time-field/time-field.component';
-import { EmailFieldComponent } from '../components/email-field/email-field.component';
-import { UsernameFieldComponent } from '../components/username-field/username-field.component';
 import {
     TerminalColorSchemeFieldComponent
 } from '../components/terminal-color-scheme-field/terminal-color-scheme-field.component';
-import { FormControl, FormGroup } from '@angular/forms';
-import { isArray } from '../../util/is-array';
-import { FieldTypeService, FormFieldComponentData } from 'guacamole-frontend-ext-lib';
+import { TextAreaFieldComponent } from '../components/text-area-field/text-area-field.component';
+import { TextFieldComponent } from '../components/text-field/text-field.component';
+import { TimeFieldComponent } from '../components/time-field/time-field.component';
+import { TimeZoneFieldComponent } from '../components/time-zone-field/time-zone-field.component';
+import { UsernameFieldComponent } from '../components/username-field/username-field.component';
 
 /**
  * A service for maintaining form-related metadata and linking that data to

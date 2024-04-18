@@ -17,9 +17,9 @@
  * under the License.
  */
 
+import { formatDate } from '@angular/common';
 import { Directive, ElementRef, forwardRef, HostListener, Renderer2 } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { formatDate } from '@angular/common';
 
 /**
  * A directive which modifies the parsing and formatting of a form control value when used

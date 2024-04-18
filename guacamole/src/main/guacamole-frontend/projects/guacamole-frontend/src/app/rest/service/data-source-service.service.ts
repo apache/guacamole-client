@@ -18,9 +18,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { RequestService } from './request.service';
-import { Error } from '../types/Error';
 import { Observable } from 'rxjs';
+import { Error } from '../types/Error';
+import { RequestService } from './request.service';
 
 /**
  * Service which contains all REST API response caches.

@@ -17,10 +17,10 @@
  * under the License.
  */
 
-import {Injectable} from '@angular/core';
-import {NavigationEnd, Router} from '@angular/router';
-import {filter} from 'rxjs';
-import $ from "jquery";
+import { Injectable } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import $ from 'jquery';
+import { filter } from 'rxjs';
 
 /**
  * A service for updating or resetting the favicon of the current page.

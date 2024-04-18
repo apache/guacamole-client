@@ -17,15 +17,15 @@
  * under the License.
  */
 
-import { Inject, Injectable } from '@angular/core';
-import { AuthenticationService } from '../../auth/service/authentication.service';
 import { DOCUMENT } from '@angular/common';
-import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Inject, Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
+import { AuthenticationService } from '../../auth/service/authentication.service';
+import { Error } from '../types/Error';
 import { Protocol } from '../types/Protocol';
 import { SharingProfile } from '../types/SharingProfile';
 import { UserCredentials } from '../types/UserCredentials';
-import { Error } from '../types/Error';
 
 /**
  * Service for operating on the tunnels of in-progress connections (and their

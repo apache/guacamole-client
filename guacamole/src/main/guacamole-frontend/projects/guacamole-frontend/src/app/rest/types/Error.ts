@@ -17,10 +17,10 @@
  * under the License.
  */
 
-import { Field } from './Field';
 import { HttpErrorResponse } from '@angular/common/http';
-import { TranslatableMessage } from './TranslatableMessage';
 import { DirectoryPatchOutcome } from './DirectoryPatchOutcome';
+import { Field } from './Field';
+import { TranslatableMessage } from './TranslatableMessage';
 
 /**
  * Returned by REST API calls when an error occurs.

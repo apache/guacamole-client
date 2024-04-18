@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { Connection } from './Connection';
 import { Optional } from '../../util/utility-types';
+import { Connection } from './Connection';
 
 /**
  * Returned by REST API calls when representing the data

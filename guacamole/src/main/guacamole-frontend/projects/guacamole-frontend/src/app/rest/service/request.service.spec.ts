@@ -17,13 +17,13 @@
  * under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { catchError, throwError } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
 import { getTestScheduler } from '../../util/test-helper';
-import { RequestService } from './request.service';
-import { TestBed } from '@angular/core/testing';
 import { Error } from '../types/Error';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RequestService } from './request.service';
 import Type = Error.Type;
 
 describe('RequestService', () => {

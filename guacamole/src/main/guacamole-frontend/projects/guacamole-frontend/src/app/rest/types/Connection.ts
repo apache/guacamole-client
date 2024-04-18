@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { SharingProfile } from './SharingProfile';
 import { Optional } from '../../util/utility-types';
+import { SharingProfile } from './SharingProfile';
 
 /**
  * Returned by REST API calls when representing the data

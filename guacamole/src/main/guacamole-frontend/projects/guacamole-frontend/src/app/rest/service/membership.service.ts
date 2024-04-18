@@ -17,11 +17,11 @@
  * under the License.
  */
 
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { RelatedObjectPatch } from '../types/RelatedObjectPatch';
-import { AuthenticationService } from '../../auth/service/authentication.service';
+import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
+import { AuthenticationService } from '../../auth/service/authentication.service';
+import { RelatedObjectPatch } from '../types/RelatedObjectPatch';
 
 /**
  * Service for operating on user group memberships via the REST API.

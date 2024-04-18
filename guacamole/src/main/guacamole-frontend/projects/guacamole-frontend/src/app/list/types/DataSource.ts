@@ -18,12 +18,12 @@
  */
 
 import { combineLatest, finalize, map, Observable, of, Subject, takeUntil } from 'rxjs';
-import { SortService } from '../services/sort.service';
+import { PagerEvent } from '../components/guac-pager/guac-pager.component';
 import { FilterService } from '../services/filter.service';
 import { PaginationService } from '../services/pagination.service';
-import { SortOrder } from './SortOrder';
-import { PagerEvent } from '../components/guac-pager/guac-pager.component';
+import { SortService } from '../services/sort.service';
 import { FilterPattern } from './FilterPattern';
+import { SortOrder } from './SortOrder';
 
 /**
  * A data source which wraps a source array and applies filtering, sorting and pagination.

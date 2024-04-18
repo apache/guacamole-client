@@ -18,13 +18,13 @@
  */
 
 import { Observable } from 'rxjs';
-import { SortOrder } from './SortOrder';
 import { PagerEvent } from '../components/guac-pager/guac-pager.component';
-
-import { DataSource } from './DataSource';
-import { SortService } from '../services/sort.service';
 import { FilterService } from '../services/filter.service';
 import { PaginationService } from '../services/pagination.service';
+import { SortService } from '../services/sort.service';
+
+import { DataSource } from './DataSource';
+import { SortOrder } from './SortOrder';
 
 /**
  * A builder that allows to create a DataSource instance. A data source can be

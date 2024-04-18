@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { login, passwordElement, usernameElement } from "../../support/auth";
+import { login, passwordElement, usernameElement } from '../../support/auth';
 
 describe('Login Page', () => {
 

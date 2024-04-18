@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { UserGroup } from '../types/UserGroup';
 import { DirectoryPatch } from '../types/DirectoryPatch';
 import { DirectoryPatchResponse } from '../types/DirectoryPatchResponse';
+import { UserGroup } from '../types/UserGroup';
 
 /**
  * Service for operating on user groups via the REST API.

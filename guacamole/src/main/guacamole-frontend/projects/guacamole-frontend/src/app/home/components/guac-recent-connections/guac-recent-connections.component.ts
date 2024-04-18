@@ -19,11 +19,11 @@
 
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { GuacHistoryService } from '../../../history/guac-history.service';
+import { ClientIdentifierService } from '../../../navigation/service/client-identifier.service';
+import { ClientIdentifier } from '../../../navigation/types/ClientIdentifier';
+import { Connection } from '../../../rest/types/Connection';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { RecentConnection } from '../../types/RecentConnection';
-import { Connection } from '../../../rest/types/Connection';
-import { ClientIdentifier } from '../../../navigation/types/ClientIdentifier';
-import { ClientIdentifierService } from '../../../navigation/service/client-identifier.service';
 
 /**
  * A component which displays the recently-accessed connections nested beneath

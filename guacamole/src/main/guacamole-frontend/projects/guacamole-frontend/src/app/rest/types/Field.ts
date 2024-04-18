@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { TranslatableMessage } from './TranslatableMessage';
 import { FormField } from 'guacamole-frontend-ext-lib';
+import { TranslatableMessage } from './TranslatableMessage';
 
 /**
  * The object returned by REST API calls when representing the data
