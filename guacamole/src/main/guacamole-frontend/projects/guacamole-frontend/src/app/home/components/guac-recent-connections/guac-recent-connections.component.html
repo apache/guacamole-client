@@ -19,7 +19,7 @@
 <div class="recent-connections">
 
     <!-- Text displayed if no recent connections exist -->
-    <p class="placeholder" [hidden]="hasRecentConnections()">{{'HOME.INFO_NO_RECENT_CONNECTIONS' | transloco}}</p>
+    <p class="placeholder" [hidden]="hasRecentConnections()">{{ 'HOME.INFO_NO_RECENT_CONNECTIONS' | transloco }}</p>
 
     <!-- All recent connections -->
     <div *ngFor="let recentConnection of recentConnections" class="connection">
@@ -32,7 +32,7 @@
 
             <!-- Connection name -->
             <div class="caption">
-                <span class="name">{{recentConnection.name}}</span>
+                <span class="name">{{ recentConnection.name }}</span>
             </div>
 
         </a>

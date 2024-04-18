@@ -59,7 +59,7 @@
 
     <!-- Connection stability warning -->
     <div id="connection-warning" [hidden]="!isConnectionUnstable()">
-        {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | transloco}}
+        {{ 'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | transloco }}
     </div>
 
     <!-- Menu -->
@@ -97,7 +97,7 @@
                 <div class="share-menu" [hidden]="!canShareConnection()">
                     <guac-menu [menuTitle]="'CLIENT.ACTION_SHARE' | transloco">
                         <ul *ngFor="let sharingProfile of sharingProfiles | keyvalue">
-                            <li><a (click)="share(sharingProfile.value)">{{sharingProfile.value.name}}</a></li>
+                            <li><a (click)="share(sharingProfile.value)">{{ sharingProfile.value.name }}</a></li>
                         </ul>
                     </guac-menu>
                 </div>
@@ -110,15 +110,15 @@
                 <!-- Connection sharing -->
                 <div class="menu-section" id="share-links" [hidden]="!isShared()">
                     <div class="content">
-                        <h3>{{'CLIENT.INFO_CONNECTION_SHARED' | transloco}}</h3>
+                        <h3>{{ 'CLIENT.INFO_CONNECTION_SHARED' | transloco }}</h3>
                         <p class="description"
                            transloco="CLIENT.HELP_SHARE_LINK"
                            [translocoParams]="{LINKS : getShareLinkCount()}"></p>
                         <table>
                             <!--  TODO: | orderBy: value.name-->
                             <tr *ngFor="let link of (focusedClient?.shareLinks || {}) | keyvalue ">
-                                <th>{{link.value.name}}</th>
-                                <td><a [routerLink]="link.value.href" target="_blank">{{link.value.href}}</a></td>
+                                <th>{{ link.value.name }}</th>
+                                <td><a [routerLink]="link.value.href" target="_blank">{{ link.value.href }}</a></td>
                             </tr>
                         </table>
                     </div>
@@ -126,20 +126,20 @@
 
                 <!-- Clipboard -->
                 <div class="menu-section" id="clipboard-settings">
-                    <h3>{{'CLIENT.SECTION_HEADER_CLIPBOARD' | transloco}}</h3>
+                    <h3>{{ 'CLIENT.SECTION_HEADER_CLIPBOARD' | transloco }}</h3>
                     <div class="content">
-                        <p class="description">{{'CLIENT.HELP_CLIPBOARD' | transloco}}</p>
+                        <p class="description">{{ 'CLIENT.HELP_CLIPBOARD' | transloco }}</p>
                         <guac-clipboard></guac-clipboard>
                     </div>
                 </div>
 
                 <!-- Devices -->
                 <div class="menu-section" id="devices" *ngIf="focusedClient && focusedClient.filesystems?.length">
-                    <h3>{{'CLIENT.SECTION_HEADER_DEVICES' | transloco}}</h3>
+                    <h3>{{ 'CLIENT.SECTION_HEADER_DEVICES' | transloco }}</h3>
                     <div class="content">
                         <div class="device filesystem" *ngFor="let filesystem of focusedClient.filesystems"
                              (click)="showFilesystemMenu(filesystem)">
-                            {{filesystem.name}}
+                            {{ filesystem.name }}
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,7 @@
 
                 <!-- Input method -->
                 <div class="menu-section" id="keyboard-settings">
-                    <h3>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | transloco}}</h3>
+                    <h3>{{ 'CLIENT.SECTION_HEADER_INPUT_METHOD' | transloco }}</h3>
                     <div class="content">
 
                         <!-- No IME -->
@@ -163,9 +163,9 @@
                             <label><input id="ime-none" name="input-method"
                                           (ngModelChange)="menu.inputMethod.set($event); closeMenu()"
                                           [ngModel]="menu.inputMethod()" type="radio"
-                                          value="none"> {{'CLIENT.NAME_INPUT_METHOD_NONE' | transloco}}</label>
+                                          value="none"> {{ 'CLIENT.NAME_INPUT_METHOD_NONE' | transloco }}</label>
                             <p class="caption"><label
-                                for="ime-none">{{'CLIENT.HELP_INPUT_METHOD_NONE' | transloco}}</label></p>
+                                for="ime-none">{{ 'CLIENT.HELP_INPUT_METHOD_NONE' | transloco }}</label></p>
                         </div>
 
                         <!-- Text input -->
@@ -175,9 +175,9 @@
                             <label><input id="ime-text" name="input-method"
                                           (ngModelChange)="menu.inputMethod.set($event); closeMenu()"
                                           [ngModel]="menu.inputMethod()" type="radio"
-                                          value="text"> {{'CLIENT.NAME_INPUT_METHOD_TEXT' | transloco}}</label>
+                                          value="text"> {{ 'CLIENT.NAME_INPUT_METHOD_TEXT' | transloco }}</label>
                             <p class="caption"><label
-                                for="ime-text">{{'CLIENT.HELP_INPUT_METHOD_TEXT' | transloco}} </label></p>
+                                for="ime-text">{{ 'CLIENT.HELP_INPUT_METHOD_TEXT' | transloco }} </label></p>
                         </div>
 
                         <!-- Guac OSK -->
@@ -185,9 +185,9 @@
                             <label><input id="ime-osk" name="input-method"
                                           (ngModelChange)="menu.inputMethod.set($event); closeMenu()"
                                           [ngModel]="menu.inputMethod()" type="radio"
-                                          value="osk"> {{'CLIENT.NAME_INPUT_METHOD_OSK' | transloco}}</label>
+                                          value="osk"> {{ 'CLIENT.NAME_INPUT_METHOD_OSK' | transloco }}</label>
                             <p class="caption"><label
-                                for="ime-osk">{{'CLIENT.HELP_INPUT_METHOD_OSK' | transloco}}</label></p>
+                                for="ime-osk">{{ 'CLIENT.HELP_INPUT_METHOD_OSK' | transloco }}</label></p>
                         </div>
 
                     </div>
@@ -195,9 +195,9 @@
 
                 <!-- Mouse mode -->
                 <div class="menu-section" id="mouse-settings">
-                    <h3>{{'CLIENT.SECTION_HEADER_MOUSE_MODE' | transloco}}</h3>
+                    <h3>{{ 'CLIENT.SECTION_HEADER_MOUSE_MODE' | transloco }}</h3>
                     <div class="content">
-                        <p class="description">{{'CLIENT.HELP_MOUSE_MODE' | transloco}}</p>
+                        <p class="description">{{ 'CLIENT.HELP_MOUSE_MODE' | transloco }}</p>
 
                         <!-- Touchscreen -->
                         <div class="choice">
@@ -209,7 +209,7 @@
                                 <label for="absolute"><img src="images/settings/touchscreen.svg"
                                                            alt="{{'CLIENT.NAME_MOUSE_MODE_ABSOLUTE' | transloco}}"></label>
                                 <p class="caption"><label
-                                    for="absolute">{{'CLIENT.HELP_MOUSE_MODE_ABSOLUTE' | transloco}}</label></p>
+                                    for="absolute">{{ 'CLIENT.HELP_MOUSE_MODE_ABSOLUTE' | transloco }}</label></p>
                             </div>
                         </div>
 
@@ -223,7 +223,7 @@
                                 <label for="relative"><img src="images/settings/touchpad.svg"
                                                            alt="{{'CLIENT.NAME_MOUSE_MODE_RELATIVE' | transloco}}"></label>
                                 <p class="caption"><label
-                                    for="relative">{{'CLIENT.HELP_MOUSE_MODE_RELATIVE' | transloco}}</label></p>
+                                    for="relative">{{ 'CLIENT.HELP_MOUSE_MODE_RELATIVE' | transloco }}</label></p>
                             </div>
                         </div>
 
@@ -232,7 +232,7 @@
 
                 <!-- Display options -->
                 <div class="menu-section" id="display-settings" *ngIf="focusedClient">
-                    <h3>{{'CLIENT.SECTION_HEADER_DISPLAY' | transloco}}</h3>
+                    <h3>{{ 'CLIENT.SECTION_HEADER_DISPLAY' | transloco }}</h3>
                     <div class="content">
                         <div id="zoom-settings">
                             <guac-client-zoom [client]="focusedClient"></guac-client-zoom>
@@ -251,11 +251,13 @@
 
             <!-- Stationary header -->
             <div class="header">
-                <h2>{{filesystemMenuContents?.name}}</h2>
+                <h2>{{ filesystemMenuContents?.name }}</h2>
                 <button class="upload button"
-                        [guacUpload]="uploadFiles.bind(this)">{{'CLIENT.ACTION_UPLOAD_FILES' | transloco}}</button>
+                        [guacUpload]="uploadFiles.bind(this)">{{ 'CLIENT.ACTION_UPLOAD_FILES' | transloco }}
+                </button>
                 <button class="back"
-                        (click)="hideFilesystemMenu()">{{'CLIENT.ACTION_NAVIGATE_BACK' | transloco}}</button>
+                        (click)="hideFilesystemMenu()">{{ 'CLIENT.ACTION_NAVIGATE_BACK' | transloco }}
+                </button>
             </div>
 
             <!-- Breadcrumbs -->
@@ -266,7 +268,8 @@
                 <div
                     class="breadcrumb"
                     *ngFor="let file of (filesystemMenuContents ? getPath(filesystemMenuContents.currentDirectory()) : [])"
-                    (click)="changeDirectory(filesystemMenuContents!, file)">{{file.name}}</div>
+                    (click)="changeDirectory(filesystemMenuContents!, file)">{{ file.name }}
+                </div>
             </div>
 
             <!-- Scrollable body -->

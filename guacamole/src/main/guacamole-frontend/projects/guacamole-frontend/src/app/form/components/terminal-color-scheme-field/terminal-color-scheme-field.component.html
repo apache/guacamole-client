@@ -27,7 +27,8 @@
             [formControl]="selectedColorScheme">
         <!--        TODO: | orderBy: value-->
         <option *ngFor="let option of field.options"
-                [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}</option>
+                [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}
+        </option>
         <option value="custom">{{ 'COLOR_SCHEME.FIELD_OPTION_CUSTOM' | transloco }}</option>
     </select>
 
@@ -83,11 +84,11 @@
 
     <!-- Show/hide details -->
     <h4 class="custom-color-scheme-details-header" [hidden]="!isCustom()">
-        {{'COLOR_SCHEME.SECTION_HEADER_DETAILS' | transloco}}
+        {{ 'COLOR_SCHEME.SECTION_HEADER_DETAILS' | transloco }}
         <a class="custom-color-scheme-show-details"
-           (click)="showDetails()">{{'COLOR_SCHEME.ACTION_SHOW_DETAILS' | transloco}}</a>
+           (click)="showDetails()">{{ 'COLOR_SCHEME.ACTION_SHOW_DETAILS' | transloco }}</a>
         <a class="custom-color-scheme-hide-details"
-           (click)="hideDetails()">{{'COLOR_SCHEME.ACTION_HIDE_DETAILS' | transloco}}</a>
+           (click)="hideDetails()">{{ 'COLOR_SCHEME.ACTION_HIDE_DETAILS' | transloco }}</a>
     </h4>
 
     <!-- Custom color scheme details (internal representation -->

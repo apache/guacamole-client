@@ -35,7 +35,8 @@
                  (click)="expand()" height="64" width="64">
             <img ngSrc="images/arrows/down.svg" alt="Collapse" class="collapse" [hidden]="!expanded"
                  (click)="collapse()" height="64" width="64">
-            <p *ngIf="!(identifiersDataSourceView?.totalLength | async)" class="no-related-objects">{{ emptyPlaceholder | transloco }}</p>
+            <p *ngIf="!(identifiersDataSourceView?.totalLength | async)"
+               class="no-related-objects">{{ emptyPlaceholder | transloco }}</p>
             <ul>
                 <li *ngFor="let identifier of identifiersDataSourceView?.data | async">
                     <label><img ngSrc="images/x-red.svg" alt="Remove" class="remove"

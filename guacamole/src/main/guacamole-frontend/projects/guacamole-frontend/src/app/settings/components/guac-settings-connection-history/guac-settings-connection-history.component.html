@@ -19,7 +19,7 @@
 <div class="settings section connectionHistory">
 
     <!-- Connection history -->
-    <p>{{'SETTINGS_CONNECTION_HISTORY.HELP_CONNECTION_HISTORY' | transloco}}</p>
+    <p>{{ 'SETTINGS_CONNECTION_HISTORY.HELP_CONNECTION_HISTORY' | transloco }}</p>
 
     <!-- Search controls -->
     <form class="filter" (ngSubmit)="search()">
@@ -29,7 +29,8 @@
                [ngModelOptions]="{standalone: true}">
         <input class="search-button" type="submit" value="{{'SETTINGS_CONNECTION_HISTORY.ACTION_SEARCH' | transloco}}">
         <button type="button"
-                (click)="downloadCSV()">{{'SETTINGS_CONNECTION_HISTORY.ACTION_DOWNLOAD' | transloco}}</button>
+                (click)="downloadCSV()">{{ 'SETTINGS_CONNECTION_HISTORY.ACTION_DOWNLOAD' | transloco }}
+        </button>
     </form>
 
     <!-- Search results -->
@@ -41,26 +42,26 @@
             <tr>
                 <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                     sortProperty="entry.username">
-                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_USERNAME' | transloco}}
+                    {{ 'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_USERNAME' | transloco }}
                 </th>
                 <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                     sortProperty="entry.startDate">
-                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE' | transloco}}
+                    {{ 'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_STARTDATE' | transloco }}
                 </th>
                 <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                     sortProperty="duration">
-                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION' | transloco}}
+                    {{ 'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_DURATION' | transloco }}
                 </th>
                 <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                     sortProperty="entry.connectionName">
-                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME' | transloco}}
+                    {{ 'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_CONNECTION_NAME' | transloco }}
                 </th>
                 <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                     sortProperty="entry.remoteHost">
-                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_REMOTEHOST' | transloco}}
+                    {{ 'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_REMOTEHOST' | transloco }}
                 </th>
                 <th>
-                    {{'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_LOGS' | transloco}}
+                    {{ 'SETTINGS_CONNECTION_HISTORY.TABLE_HEADER_SESSION_LOGS' | transloco }}
                 </th>
             </tr>
             </thead>
@@ -74,18 +75,18 @@
                 <td>
                     <guac-user-item [username]="historyEntryWrapper.entry.username"></guac-user-item>
                 </td>
-                <td>{{historyEntryWrapper.entry.startDate || 0 | date : dateFormat || undefined}}</td>
+                <td>{{ historyEntryWrapper.entry.startDate || 0 | date : dateFormat || undefined }}</td>
                 <td [transloco]="historyEntryWrapper.readableDurationText"
                     [translocoParams]="{VALUE: historyEntryWrapper.readableDuration?.value, UNIT: historyEntryWrapper.readableDuration?.unit}"></td>
-                <td>{{historyEntryWrapper.entry.connectionName}}</td>
-                <td>{{historyEntryWrapper.entry.remoteHost}}</td>
+                <td>{{ historyEntryWrapper.entry.connectionName }}</td>
+                <td>{{ historyEntryWrapper.entry.remoteHost }}</td>
                 <td>
                     <a class="history-session-recording"
                        [hidden]="!historyEntryWrapper.sessionRecording"
                        [routerLink]="historyEntryWrapper.sessionRecording?.url"
                        [title]="historyEntryWrapper.sessionRecording?.description | async">
                             <span
-                                class="history-action-description">{{'SETTINGS_CONNECTION_HISTORY.ACTION_VIEW_RECORDING' | transloco}}</span>
+                                class="history-action-description">{{ 'SETTINGS_CONNECTION_HISTORY.ACTION_VIEW_RECORDING' | transloco }}</span>
                     </a>
                 </td>
             </tr>
@@ -94,7 +95,7 @@
 
         <!-- Text displayed if no history exists -->
         <p class="placeholder" [hidden]="!isHistoryEmpty()">
-            {{'SETTINGS_CONNECTION_HISTORY.INFO_NO_HISTORY' | transloco}}
+            {{ 'SETTINGS_CONNECTION_HISTORY.INFO_NO_HISTORY' | transloco }}
         </p>
 
         <!-- Pager for history list -->

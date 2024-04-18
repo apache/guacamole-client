@@ -24,7 +24,7 @@
 
     <!-- User group header and data source tabs -->
     <div class="header tabbed">
-        <h2>{{'MANAGE_USER_GROUP.SECTION_HEADER_EDIT_USER_GROUP' | transloco}}</h2>
+        <h2>{{ 'MANAGE_USER_GROUP.SECTION_HEADER_EDIT_USER_GROUP' | transloco }}</h2>
         <guac-user-menu></guac-user-menu>
     </div>
 
@@ -35,10 +35,10 @@
         <div class="section">
             <table class="properties">
                 <tr>
-                    <th>{{'MANAGE_USER_GROUP.FIELD_HEADER_USER_GROUP_NAME' | transloco}}</th>
+                    <th>{{ 'MANAGE_USER_GROUP.FIELD_HEADER_USER_GROUP_NAME' | transloco }}</th>
                     <td>
                         <input [hidden]="!canEditIdentifier()" [(ngModel)]="userGroup.identifier" type="text">
-                        <span  [hidden]="canEditIdentifier()">{{userGroup.identifier}}</span>
+                        <span [hidden]="canEditIdentifier()">{{ userGroup.identifier }}</span>
                     </td>
                 </tr>
             </table>

@@ -22,6 +22,6 @@
             [id]="fieldId"
             [name]="field.name"
             [formControl]="control">
-        <option *ngFor="let language of languages | keyvalue" [value]="language.key">{{language.value}}</option>
+        <option *ngFor="let language of languages | keyvalue" [value]="language.key">{{ language.value }}</option>
     </select>
 </div>

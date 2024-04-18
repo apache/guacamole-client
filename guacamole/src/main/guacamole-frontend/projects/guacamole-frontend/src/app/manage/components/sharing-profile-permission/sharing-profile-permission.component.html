@@ -23,10 +23,11 @@
     <div class="icon type"></div>
 
     <!-- Permission checkbox -->
-    <input type="checkbox" [(ngModel)]="context.getPermissionFlags().sharingProfilePermissions['READ'][item.identifier!]"
+    <input type="checkbox"
+           [(ngModel)]="context.getPermissionFlags().sharingProfilePermissions['READ'][item.identifier!]"
            (ngModelChange)="context.sharingProfilePermissionChanged(item.identifier!)">
 
     <!-- Sharing profile name -->
-    <span class="name">{{item.name}}</span>
+    <span class="name">{{ item.name }}</span>
 
 </div>

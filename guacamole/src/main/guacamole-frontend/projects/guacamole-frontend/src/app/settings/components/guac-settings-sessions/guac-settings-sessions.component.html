@@ -18,12 +18,13 @@
   -->
 <div class="settings section sessions" [ngClass]="{'loading': !isLoaded()}">
     <!-- User Session management -->
-    <p>{{'SETTINGS_SESSIONS.HELP_SESSIONS' | transloco}}</p>
+    <p>{{ 'SETTINGS_SESSIONS.HELP_SESSIONS' | transloco }}</p>
 
     <!-- Form action buttons -->
     <div class="action-buttons">
         <button class="delete-sessions danger" [disabled]="!canDeleteSessions()"
-                (click)="deleteSessions()">{{'SETTINGS_SESSIONS.ACTION_DELETE' | transloco}}</button>
+                (click)="deleteSessions()">{{ 'SETTINGS_SESSIONS.ACTION_DELETE' | transloco }}
+        </button>
     </div>
 
     <!-- Session filter -->
@@ -36,19 +37,19 @@
             <th class="select-session"></th>
             <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                 sortProperty="activeConnection.username">
-                {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_USERNAME' | transloco}}
+                {{ 'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_USERNAME' | transloco }}
             </th>
             <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                 sortProperty="startDate">
-                {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_STARTDATE' | transloco}}
+                {{ 'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_STARTDATE' | transloco }}
             </th>
             <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                 sortProperty="activeConnection.remoteHost">
-                {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_REMOTEHOST' | transloco}}
+                {{ 'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_REMOTEHOST' | transloco }}
             </th>
             <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                 sortProperty="name">
-                {{'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_CONNECTION_NAME' | transloco}}
+                {{ 'SETTINGS_SESSIONS.TABLE_HEADER_SESSION_CONNECTION_NAME' | transloco }}
             </th>
         </tr>
         </thead>
@@ -60,18 +61,18 @@
             <td>
                 <guac-user-item [username]="wrapper.activeConnection.username"></guac-user-item>
             </td>
-            <td>{{wrapper.startDate}}</td>
-            <td>{{wrapper.activeConnection.remoteHost}}</td>
-            <td><a [routerLink]="getClientURL(wrapper.dataSource, wrapper.activeConnection)">{{wrapper.name}}</a></td>
+            <td>{{ wrapper.startDate }}</td>
+            <td>{{ wrapper.activeConnection.remoteHost }}</td>
+            <td><a [routerLink]="getClientURL(wrapper.dataSource, wrapper.activeConnection)">{{ wrapper.name }}</a></td>
         </tr>
         </tbody>
     </table>
 
     <!-- Text displayed if no sessions exist -->
     <p class="placeholder" [hidden]="dataSourceView?.totalLength | async">
-        {{'SETTINGS_SESSIONS.INFO_NO_SESSIONS' | transloco}}
+        {{ 'SETTINGS_SESSIONS.INFO_NO_SESSIONS' | transloco }}
     </p>
 
     <!-- Pager for session list -->
-        <guac-pager [pageSize]="25" [length]="dataSourceView?.totalLength | async"></guac-pager>
+    <guac-pager [pageSize]="25" [length]="dataSourceView?.totalLength | async"></guac-pager>
 </div>

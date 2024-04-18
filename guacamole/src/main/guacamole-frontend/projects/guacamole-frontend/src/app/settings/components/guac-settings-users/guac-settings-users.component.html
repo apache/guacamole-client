@@ -19,7 +19,7 @@
 <div class="settings section users" [ngClass]="{'loading': !isLoaded()}">
 
     <!-- User management -->
-    <p>{{'SETTINGS_USERS.HELP_USERS' | transloco}}</p>
+    <p>{{ 'SETTINGS_USERS.HELP_USERS' | transloco }}</p>
 
 
     <!-- User management toolbar -->
@@ -29,7 +29,7 @@
         <div class="action-buttons">
             <a class="add-user button" [hidden]="!canCreateUsers()"
                routerLink="/manage/{{getDefaultDataSource()}}/users"
-            >{{'SETTINGS_USERS.ACTION_NEW_USER' | transloco}}</a>
+            >{{ 'SETTINGS_USERS.ACTION_NEW_USER' | transloco }}</a>
         </div>
 
         <!-- User filter -->
@@ -43,20 +43,20 @@
         <tr>
             <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                 sortProperty="user.username" class="username">
-                {{'SETTINGS_USERS.TABLE_HEADER_USERNAME' | transloco}}
+                {{ 'SETTINGS_USERS.TABLE_HEADER_USERNAME' | transloco }}
             </th>
             <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                 sortProperty="user.attributes['guac-organization']"
                 class="organization">
-                {{'SETTINGS_USERS.TABLE_HEADER_ORGANIZATION' | transloco}}
+                {{ 'SETTINGS_USERS.TABLE_HEADER_ORGANIZATION' | transloco }}
             </th>
             <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                 sortProperty="user.attributes['guac-full-name']" class="full-name">
-                {{'SETTINGS_USERS.TABLE_HEADER_FULL_NAME' | transloco}}
+                {{ 'SETTINGS_USERS.TABLE_HEADER_FULL_NAME' | transloco }}
             </th>
             <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                 sortProperty="user.lastActive" class="last-active">
-                {{'SETTINGS_USERS.TABLE_HEADER_LAST_ACTIVE' | transloco}}
+                {{ 'SETTINGS_USERS.TABLE_HEADER_LAST_ACTIVE' | transloco }}
             </th>
         </tr>
         </thead>
@@ -65,16 +65,17 @@
             <td class="username">
                 <a routerLink="/manage/{{manageableUser.dataSource }}/users/{{manageableUser.user.username }}">
                     <div class="icon user"></div>
-                    <span class="name">{{manageableUser.user.username}}</span>
+                    <span class="name">{{ manageableUser.user.username }}</span>
                 </a>
             </td>
-            <td class="organization">{{manageableUser.user.attributes['guac-organization']}}</td>
-            <td class="full-name">{{manageableUser.user.attributes['guac-full-name']}}</td>
+            <td class="organization">{{ manageableUser.user.attributes['guac-organization'] }}</td>
+            <td class="full-name">{{ manageableUser.user.attributes['guac-full-name'] }}</td>
             <td class="last-active">{{
                     (manageableUser.user.lastActive !== undefined)
                         ? (manageableUser.user.lastActive | date : dateFormat || undefined)
                         : ''
-                }}</td>
+                }}
+            </td>
         </tr>
         </tbody>
     </table>

@@ -21,7 +21,7 @@
 
     <!-- Notification title -->
     <div [hidden]="!notification.title" class="title-bar">
-        <div class="title">{{notification.title | transloco}}</div>
+        <div class="title">{{ notification.title | transloco }}</div>
     </div>
 
     <div class="body">
@@ -60,7 +60,8 @@
     <!-- Buttons -->
     <div [hidden]="!notification?.actions?.length" class="buttons">
         <button *ngFor="let action of notification.actions" (click)="action.callback()"
-                [ngClass]="action.className">{{action.name | transloco}}</button>
+                [ngClass]="action.className">{{ action.name | transloco }}
+        </button>
     </div>
 
 </form>

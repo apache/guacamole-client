@@ -30,7 +30,7 @@
         <ul class="action-list">
             <li *ngFor="let action of localActions">
                 <a [ngClass]="action.className" (click)="action.callback()">
-                    {{action.name | transloco}}
+                    {{ action.name | transloco }}
                 </a>
             </li>
         </ul>
@@ -42,7 +42,7 @@
         <ul class="action-list">
             <li *ngFor="let action of actions">
                 <a [ngClass]="action.className" (click)="action.callback()">
-                    {{action.name | transloco}}
+                    {{ action.name | transloco }}
                 </a>
             </li>
         </ul>

@@ -27,12 +27,12 @@
                 <!-- If page.name is an array of translatable keys, translate all of them-->
                 <ng-container *ngIf="isArray(page.name); else singleName">
                     <ng-container *ngFor="let name of page.name">
-                        {{name | transloco }}
+                        {{ name | transloco }}
                     </ng-container>
                 </ng-container>
 
                 <ng-template #singleName>
-                    {{$any(page.name) | transloco }}
+                    {{ $any(page.name) | transloco }}
                 </ng-template>
             </a>
         </li>

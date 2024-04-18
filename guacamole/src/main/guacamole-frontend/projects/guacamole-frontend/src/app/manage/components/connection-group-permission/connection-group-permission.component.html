@@ -23,10 +23,11 @@
     <div class="icon type"></div>
 
     <!-- Permission checkbox -->
-    <input type="checkbox" [(ngModel)]="context.getPermissionFlags().connectionGroupPermissions['READ'][item.identifier!]"
+    <input type="checkbox"
+           [(ngModel)]="context.getPermissionFlags().connectionGroupPermissions['READ'][item.identifier!]"
            (ngModelChange)="context.connectionGroupPermissionChanged(item.identifier!)">
 
     <!-- Connection group name -->
-    <span class="name">{{item.name}}</span>
+    <span class="name">{{ item.name }}</span>
 
 </div>

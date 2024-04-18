@@ -17,17 +17,17 @@
   under the License.
   -->
 <div class="system-permissions">
-    <h2 class="header">{{'MANAGE_USER.SECTION_HEADER_PERMISSIONS' | transloco}}</h2>
+    <h2 class="header">{{ 'MANAGE_USER.SECTION_HEADER_PERMISSIONS' | transloco }}</h2>
     <div class="section">
         <table class="properties">
             <tr *ngFor="let systemPermissionType of systemPermissionTypes"
                 [hidden]="!canChangeSystemPermissions()">
-                <th>{{systemPermissionType.label | transloco}}</th>
+                <th>{{ systemPermissionType.label | transloco }}</th>
                 <td><input type="checkbox" [(ngModel)]="permissionFlags.systemPermissions[systemPermissionType.value]"
                            (ngModelChange)="systemPermissionChanged(systemPermissionType.value)"></td>
             </tr>
             <tr *ngIf="username">
-                <th>{{'MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD' | transloco}}</th>
+                <th>{{ 'MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD' | transloco }}</th>
                 <td><input type="checkbox" [(ngModel)]="permissionFlags.userPermissions['UPDATE'][username]"
                            (ngModelChange)="userPermissionChanged( ObjectPermissionType.UPDATE, username)"></td>
             </tr>

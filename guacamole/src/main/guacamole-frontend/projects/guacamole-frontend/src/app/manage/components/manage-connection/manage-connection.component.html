@@ -23,7 +23,7 @@
 
         <!-- Main property editor -->
         <div class="header">
-            <h2>{{'MANAGE_CONNECTION.SECTION_HEADER_EDIT_CONNECTION' | transloco}}</h2>
+            <h2>{{ 'MANAGE_CONNECTION.SECTION_HEADER_EDIT_CONNECTION' | transloco }}</h2>
             <guac-user-menu></guac-user-menu>
         </div>
         <div class="section">
@@ -31,14 +31,14 @@
 
                 <!-- Edit connection name -->
                 <tr>
-                    <th>{{'MANAGE_CONNECTION.FIELD_HEADER_NAME' | transloco}}</th>
+                    <th>{{ 'MANAGE_CONNECTION.FIELD_HEADER_NAME' | transloco }}</th>
 
                     <td><input type="text" [(ngModel)]="connection.name" autocorrect="off" autocapitalize="off"></td>
                 </tr>
 
                 <!-- Edit connection location -->
                 <tr>
-                    <th>{{'MANAGE_CONNECTION.FIELD_HEADER_LOCATION' | transloco}}</th>
+                    <th>{{ 'MANAGE_CONNECTION.FIELD_HEADER_LOCATION' | transloco }}</th>
 
                     <td>
                         <guac-location-chooser
@@ -50,7 +50,7 @@
 
                 <!-- Edit connection protocol -->
                 <tr>
-                    <th>{{'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | transloco}}</th>
+                    <th>{{ 'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | transloco }}</th>
                     <td>
                         <select [(ngModel)]="connection.protocol">
                             <!--                        TODO: orderBy: value.name-->
@@ -72,7 +72,7 @@
         </div>
 
         <!-- Connection parameters -->
-        <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | transloco}}</h2>
+        <h2 class="header">{{ 'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | transloco }}</h2>
         <div class="section connection-parameters" [ngClass]="{'loading': !parameters}">
             <guac-form [namespace]="getNamespace(connection.protocol)"
                        [content]="protocols[connection.protocol].connectionForms"
@@ -91,18 +91,18 @@
     </ng-container>
 
     <!-- Connection history -->
-    <h2 class="header">{{'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | transloco}}</h2>
+    <h2 class="header">{{ 'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | transloco }}</h2>
     <div class="history section" [ngClass]="{'loading': !historyEntryWrappers || dataSourceView === null}">
-        <p [hidden]="dataSourceView?.totalLength | async">{{'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | transloco}}</p>
+        <p [hidden]="dataSourceView?.totalLength | async">{{ 'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | transloco }}</p>
 
         <!-- History list -->
         <table [hidden]="!(dataSourceView?.totalLength | async)">
             <thead>
             <tr>
-                <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_USERNAME' | transloco}}</th>
-                <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_START' | transloco}}</th>
-                <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_DURATION' | transloco}}</th>
-                <th>{{'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_REMOTEHOST' | transloco}}</th>
+                <th>{{ 'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_USERNAME' | transloco }}</th>
+                <th>{{ 'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_START' | transloco }}</th>
+                <th>{{ 'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_DURATION' | transloco }}</th>
+                <th>{{ 'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_REMOTEHOST' | transloco }}</th>
             </tr>
             </thead>
             <tbody>
@@ -110,11 +110,11 @@
                 <td class="username">
                     <guac-user-item [username]="wrapper.entry.username"></guac-user-item>
                 </td>
-                <td class="start">{{wrapper.entry.startDate | date:historyDateFormat}}</td>
+                <td class="start">{{ wrapper.entry.startDate | date:historyDateFormat }}</td>
                 <td class="duration"
                     [transloco]="wrapper.durationText"
                     [translocoParams]="{VALUE: wrapper.duration?.value, UNIT: wrapper.duration?.unit}"></td>
-                <td class="remoteHost">{{wrapper.entry.remoteHost}}</td>
+                <td class="remoteHost">{{ wrapper.entry.remoteHost }}</td>
             </tr>
             </tbody>
         </table>

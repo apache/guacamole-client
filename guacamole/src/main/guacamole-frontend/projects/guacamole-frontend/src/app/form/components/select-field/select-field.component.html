@@ -24,6 +24,7 @@
             [formControl]="control">
         <!--TODO: OrderBy Value-->
         <option *ngFor="let option of field.options"
-                [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}</option>
+                [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}
+        </option>
     </select>
 </div>

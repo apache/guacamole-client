@@ -18,7 +18,7 @@
   -->
 <div class="settings section user-groups" [ngClass]="{ 'loading' : !isLoaded() }">
     <!-- User group management -->
-    <p>{{'SETTINGS_USER_GROUPS.HELP_USER_GROUPS' | transloco}}</p>
+    <p>{{ 'SETTINGS_USER_GROUPS.HELP_USER_GROUPS' | transloco }}</p>
 
     <!-- User management toolbar -->
     <div class="toolbar">
@@ -26,7 +26,7 @@
         <!-- Form action buttons -->
         <div class="action-buttons">
             <a class="add-user-group button" [hidden]="!canCreateUserGroups()"
-               routerLink="/manage/{{getDefaultDataSource() || '' | escape}}/userGroups/">{{'SETTINGS_USER_GROUPS.ACTION_NEW_USER_GROUP' | transloco}}</a>
+               routerLink="/manage/{{getDefaultDataSource() || '' | escape}}/userGroups/">{{ 'SETTINGS_USER_GROUPS.ACTION_NEW_USER_GROUP' | transloco }}</a>
         </div>
 
         <!-- User group filter -->
@@ -40,7 +40,7 @@
         <tr>
             <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
                 sortProperty="userGroup.identifier" class="user-group-name">
-                {{'SETTINGS_USER_GROUPS.TABLE_HEADER_USER_GROUP_NAME' | transloco}}
+                {{ 'SETTINGS_USER_GROUPS.TABLE_HEADER_USER_GROUP_NAME' | transloco }}
             </th>
         </tr>
         </thead>
@@ -49,7 +49,7 @@
             <td class="user-group-name">
                 <a routerLink="/manage/{{manageableUserGroup.dataSource | escape}}/userGroups/{{manageableUserGroup.userGroup.identifier! | escape}}">
                     <div class="icon user-group"></div>
-                    <span class="name">{{manageableUserGroup.userGroup.identifier}}</span>
+                    <span class="name">{{ manageableUserGroup.userGroup.identifier }}</span>
                 </a>
             </td>
         </tr>

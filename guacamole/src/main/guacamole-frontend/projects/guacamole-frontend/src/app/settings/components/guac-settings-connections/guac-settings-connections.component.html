@@ -19,7 +19,7 @@
 
 <div class="settings section connections" [ngClass]="{ 'loading': !isLoaded() }">
     <!-- Connection management -->
-    <p>{{'SETTINGS_CONNECTIONS.HELP_CONNECTIONS' | transloco}}</p>
+    <p>{{ 'SETTINGS_CONNECTIONS.HELP_CONNECTIONS' | transloco }}</p>
 
     <!-- Connection management toolbar -->
     <div class="toolbar">
@@ -29,20 +29,21 @@
 
             <a class="import-connections button"
                [hidden]="!canAdminister()"
-               routerLink="/import/{{dataSource | escape}}/connection/">{{'SETTINGS_CONNECTIONS.ACTION_IMPORT' | transloco}}</a>
+               routerLink="/import/{{dataSource | escape}}/connection/">{{ 'SETTINGS_CONNECTIONS.ACTION_IMPORT' | transloco }}</a>
 
             <a class="add-connection button"
                [hidden]="!canCreateConnections()"
-               routerLink="/manage/{{dataSource | escape}}/connections/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | transloco}}</a>
+               routerLink="/manage/{{dataSource | escape}}/connections/">{{ 'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | transloco }}</a>
 
             <a class="add-connection-group button"
                [hidden]="!canCreateConnectionGroups()"
-               routerLink="/manage/{{dataSource | escape}}/connectionGroups/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | transloco}}</a>
+               routerLink="/manage/{{dataSource | escape}}/connectionGroups/">{{ 'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | transloco }}</a>
 
         </div>
 
         <!-- Connection filter -->
-        <guac-group-list-filter [placeholder]="'SETTINGS_CONNECTIONS.FIELD_PLACEHOLDER_FILTER' | transloco" class="filter">
+        <guac-group-list-filter [placeholder]="'SETTINGS_CONNECTIONS.FIELD_PLACEHOLDER_FILTER' | transloco"
+                                class="filter">
         </guac-group-list-filter>
 
     </div>

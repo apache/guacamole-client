@@ -24,6 +24,6 @@
            (ngModelChange)="context.updateAttachedClients(clientIdentifier)">
     <a [routerLink]="item.getClientURL()">
         <div [hidden]="!item.balancing" class="icon type balancer"></div>
-        <span class="name">{{item.name}}</span>
+        <span class="name">{{ item.name }}</span>
     </a>
 </div>

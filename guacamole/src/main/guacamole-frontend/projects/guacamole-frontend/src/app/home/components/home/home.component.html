@@ -23,14 +23,14 @@
 
         <!-- The recent connections for this user -->
         <div class="header">
-            <h2 id="section-header-recent-connections">{{'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | transloco}}</h2>
+            <h2 id="section-header-recent-connections">{{ 'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | transloco }}</h2>
             <guac-user-menu></guac-user-menu>
         </div>
         <guac-recent-connections [rootGroups]="rootConnectionGroups || {}"></guac-recent-connections>
 
         <!-- All connections for this user -->
         <div class="header">
-            <h2 id="section-header-all-connections">{{'HOME.SECTION_HEADER_ALL_CONNECTIONS' | transloco}}</h2>
+            <h2 id="section-header-all-connections">{{ 'HOME.SECTION_HEADER_ALL_CONNECTIONS' | transloco }}</h2>
             <guac-group-list-filter [placeholder]="'HOME.FIELD_PLACEHOLDER_FILTER' | transloco">
             </guac-group-list-filter>
         </div>

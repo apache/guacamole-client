@@ -20,30 +20,30 @@
 
     <!-- Locale settings -->
     <div class="settings section locale">
-        <p>{{'SETTINGS_PREFERENCES.HELP_LOCALE' | transloco}}</p>
+        <p>{{ 'SETTINGS_PREFERENCES.HELP_LOCALE' | transloco }}</p>
         <guac-form [content]="localeFields" [modelFormGroup]="preferencesFormGroup"
                    namespace="SETTINGS_PREFERENCES"></guac-form>
     </div>
 
     <!-- Password update -->
     <h2 class="header"
-        [hidden]="!canUpdateSelf">{{'SETTINGS_PREFERENCES.SECTION_HEADER_UPDATE_PASSWORD' | transloco}}</h2>
+        [hidden]="!canUpdateSelf">{{ 'SETTINGS_PREFERENCES.SECTION_HEADER_UPDATE_PASSWORD' | transloco }}</h2>
     <div class="settings section update-password" [hidden]="!canUpdateSelf">
-        <p>{{'SETTINGS_PREFERENCES.HELP_UPDATE_PASSWORD' | transloco}}</p>
+        <p>{{ 'SETTINGS_PREFERENCES.HELP_UPDATE_PASSWORD' | transloco }}</p>
 
         <!-- Password editor -->
         <div class="form">
             <table class="fields">
                 <tr>
-                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_OLD' | transloco}}</th>
+                    <th>{{ 'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_OLD' | transloco }}</th>
                     <td><input [(ngModel)]="oldPassword" type="password"></td>
                 </tr>
                 <tr>
-                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_NEW' | transloco}}</th>
+                    <th>{{ 'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_NEW' | transloco }}</th>
                     <td><input [(ngModel)]="newPassword" type="password"></td>
                 </tr>
                 <tr>
-                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_NEW_AGAIN' | transloco}}</th>
+                    <th>{{ 'SETTINGS_PREFERENCES.FIELD_HEADER_PASSWORD_NEW_AGAIN' | transloco }}</th>
                     <td><input [(ngModel)]="newPasswordMatch" type="password"></td>
                 </tr>
             </table>
@@ -52,70 +52,76 @@
         <!-- Form action buttons -->
         <div class="action-buttons">
             <button class="change-password"
-                    (click)="updatePassword()">{{'SETTINGS_PREFERENCES.ACTION_UPDATE_PASSWORD' | transloco}}</button>
+                    (click)="updatePassword()">{{ 'SETTINGS_PREFERENCES.ACTION_UPDATE_PASSWORD' | transloco }}
+            </button>
         </div>
     </div>
 
     <!-- Input method -->
-    <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_DEFAULT_INPUT_METHOD' | transloco}}</h2>
+    <h2 class="header">{{ 'SETTINGS_PREFERENCES.SECTION_HEADER_DEFAULT_INPUT_METHOD' | transloco }}</h2>
     <div class="settings section input-method">
-        <p>{{'SETTINGS_PREFERENCES.HELP_DEFAULT_INPUT_METHOD' | transloco}}</p>
+        <p>{{ 'SETTINGS_PREFERENCES.HELP_DEFAULT_INPUT_METHOD' | transloco }}</p>
         <div class="choices">
 
             <!-- No IME -->
             <div class="choice">
-                <label><input id="ime-none" name="input-method" [(ngModel)]="preferenceService.preferences.inputMethod" type="radio"
-                              value="none"> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_NONE' | transloco}}</label>
+                <label><input id="ime-none" name="input-method" [(ngModel)]="preferenceService.preferences.inputMethod"
+                              type="radio"
+                              value="none"> {{ 'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_NONE' | transloco }}</label>
                 <p class="caption"><label
-                    for="ime-none">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_NONE' | transloco}}</label></p>
+                    for="ime-none">{{ 'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_NONE' | transloco }}</label></p>
             </div>
 
             <!-- Text input -->
             <div class="choice">
-                <label><input id="ime-text" name="input-method" [(ngModel)]="preferenceService.preferences.inputMethod" type="radio"
-                              value="text"> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_TEXT' | transloco}}</label>
+                <label><input id="ime-text" name="input-method" [(ngModel)]="preferenceService.preferences.inputMethod"
+                              type="radio"
+                              value="text"> {{ 'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_TEXT' | transloco }}</label>
                 <p class="caption"><label
-                    for="ime-text">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_TEXT' | transloco}} </label></p>
+                    for="ime-text">{{ 'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_TEXT' | transloco }} </label></p>
             </div>
 
             <!-- Guac OSK -->
             <div class="choice">
-                <label><input id="ime-osk" name="input-method" [(ngModel)]="preferenceService.preferences.inputMethod" type="radio"
-                              value="osk"> {{'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_OSK' | transloco}}</label>
+                <label><input id="ime-osk" name="input-method" [(ngModel)]="preferenceService.preferences.inputMethod"
+                              type="radio"
+                              value="osk"> {{ 'SETTINGS_PREFERENCES.NAME_INPUT_METHOD_OSK' | transloco }}</label>
                 <p class="caption"><label
-                    for="ime-osk">{{'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_OSK' | transloco}}</label></p>
+                    for="ime-osk">{{ 'SETTINGS_PREFERENCES.HELP_INPUT_METHOD_OSK' | transloco }}</label></p>
             </div>
 
         </div>
     </div>
 
     <!-- Mouse mode -->
-    <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_DEFAULT_MOUSE_MODE' | transloco}}</h2>
+    <h2 class="header">{{ 'SETTINGS_PREFERENCES.SECTION_HEADER_DEFAULT_MOUSE_MODE' | transloco }}</h2>
     <div class="settings section mouse-mode">
-        <p>{{'SETTINGS_PREFERENCES.HELP_DEFAULT_MOUSE_MODE' | transloco}}</p>
+        <p>{{ 'SETTINGS_PREFERENCES.HELP_DEFAULT_MOUSE_MODE' | transloco }}</p>
         <div class="choices">
 
             <!-- Touchscreen -->
             <div class="choice">
-                <input name="mouse-mode" [(ngModel)]="preferenceService.preferences.emulateAbsoluteMouse" type="radio" [value]="true"
+                <input name="mouse-mode" [(ngModel)]="preferenceService.preferences.emulateAbsoluteMouse" type="radio"
+                       [value]="true"
                        checked="checked" id="absolute">
                 <div class="figure">
                     <label for="absolute"><img src="images/settings/touchscreen.svg"
                                                alt="{{'SETTINGS_PREFERENCES.NAME_MOUSE_MODE_ABSOLUTE' | transloco}}"></label>
                     <p class="caption"><label
-                        for="absolute">{{'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_ABSOLUTE' | transloco}}</label></p>
+                        for="absolute">{{ 'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_ABSOLUTE' | transloco }}</label></p>
                 </div>
             </div>
 
             <!-- Touchpad -->
             <div class="choice">
-                <input name="mouse-mode" [(ngModel)]="preferenceService.preferences.emulateAbsoluteMouse" type="radio" [value]="false"
+                <input name="mouse-mode" [(ngModel)]="preferenceService.preferences.emulateAbsoluteMouse" type="radio"
+                       [value]="false"
                        id="relative">
                 <div class="figure">
                     <label for="relative"><img src="images/settings/touchpad.svg"
                                                alt="{{'SETTINGS_PREFERENCES.NAME_MOUSE_MODE_RELATIVE' | transloco}}"></label>
                     <p class="caption"><label
-                        for="relative">{{'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_RELATIVE' | transloco}}</label></p>
+                        for="relative">{{ 'SETTINGS_PREFERENCES.HELP_MOUSE_MODE_RELATIVE' | transloco }}</label></p>
                 </div>
             </div>
 
@@ -129,7 +135,8 @@
 
         <!-- User attributes save button -->
         <button [hidden]="!attributes?.length" (click)="saveUser()"
-                class="save">{{'SETTINGS_PREFERENCES.ACTION_SAVE' | transloco}}</button>
+                class="save">{{ 'SETTINGS_PREFERENCES.ACTION_SAVE' | transloco }}
+        </button>
     </div>
 
 </div>

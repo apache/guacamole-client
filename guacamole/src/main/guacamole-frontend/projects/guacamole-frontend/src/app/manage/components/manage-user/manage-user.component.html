@@ -25,7 +25,7 @@
 
         <!-- User header and data source tabs -->
         <div class="header tabbed">
-            <h2>{{'MANAGE_USER.SECTION_HEADER_EDIT_USER' | transloco}}</h2>
+            <h2>{{ 'MANAGE_USER.SECTION_HEADER_EDIT_USER' | transloco }}</h2>
             <guac-user-menu></guac-user-menu>
         </div>
         <data-source-tabs [hidden]="cloneSourceUsername"
@@ -35,7 +35,7 @@
 
         <!-- Warn if user is read-only -->
         <div class="section" [hidden]="managementPermissions?.[dataSource]?.canSaveObject">
-            <p class="notice read-only">{{'MANAGE_USER.INFO_READ_ONLY' | transloco}}</p>
+            <p class="notice read-only">{{ 'MANAGE_USER.INFO_READ_ONLY' | transloco }}</p>
         </div>
 
         <!-- Sections applicable to non-read-only users -->
@@ -45,18 +45,18 @@
             <div class="section">
                 <table class="properties">
                     <tr>
-                        <th>{{'MANAGE_USER.FIELD_HEADER_USERNAME' | transloco}}</th>
+                        <th>{{ 'MANAGE_USER.FIELD_HEADER_USERNAME' | transloco }}</th>
                         <td>
                             <input [hidden]="!canEditUsername()" [(ngModel)]="user.username" type="text">
-                            <span [hidden]="canEditUsername()">{{user.username}}</span>
+                            <span [hidden]="canEditUsername()">{{ user.username }}</span>
                         </td>
                     </tr>
                     <tr>
-                        <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD' | transloco}}</th>
+                        <th>{{ 'MANAGE_USER.FIELD_HEADER_PASSWORD' | transloco }}</th>
                         <td><input [(ngModel)]="user.password" type="password"></td>
                     </tr>
                     <tr>
-                        <th>{{'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | transloco}}</th>
+                        <th>{{ 'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | transloco }}</th>
                         <td><input [(ngModel)]="passwordMatch" type="password"></td>
                     </tr>
                 </table>

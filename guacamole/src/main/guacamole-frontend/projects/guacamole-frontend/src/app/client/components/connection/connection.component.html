@@ -22,6 +22,6 @@
            (ngModelChange)="context.updateAttachedClients(clientIdentifier)">
     <a [routerLink]="item.getClientURL()">
         <div class="icon type" [ngClass]="item.protocol"></div>
-        <span class="name">{{item.name}}</span>
+        <span class="name">{{ item.name }}</span>
     </a>
 </div>

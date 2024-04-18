@@ -18,10 +18,13 @@
   -->
 <div class="action-buttons">
     <button [hidden]="!permissions.canSaveObject" (click)="saveObject()"
-            class="save">{{namespace + '.ACTION_SAVE' | transloco}}</button>
+            class="save">{{ namespace + '.ACTION_SAVE' | transloco }}
+    </button>
     <button [hidden]="!permissions.canCloneObject" (click)="cloneObject()"
-            class="clone">{{namespace + '.ACTION_CLONE' | transloco}}</button>
-    <button (click)="navigateBack()" class="cancel">{{namespace + '.ACTION_CANCEL' | transloco}}</button>
+            class="clone">{{ namespace + '.ACTION_CLONE' | transloco }}
+    </button>
+    <button (click)="navigateBack()" class="cancel">{{ namespace + '.ACTION_CANCEL' | transloco }}</button>
     <button [hidden]="!permissions.canDeleteObject" (click)="deleteObject()"
-            class="danger delete">{{namespace + '.ACTION_DELETE' | transloco}}</button>
+            class="danger delete">{{ namespace + '.ACTION_DELETE' | transloco }}
+    </button>
 </div>

@@ -32,7 +32,8 @@
         <li class="set-page"
             [ngClass]="{'current': isSelected(pageNumber)}"
             *ngFor="let pageNumber of pageNumbers"
-            (click)="selectPage(pageNumber)">{{pageNumber}}</li>
+            (click)="selectPage(pageNumber)">{{ pageNumber }}
+        </li>
     </ul>
 
     <!-- Indicator of the existence of pages beyond the last page number shown -->

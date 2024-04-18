@@ -35,7 +35,8 @@
             [attr.name]="field.name"
             [formControl]="control">
         <option *ngFor="let timeZone of timeZones[region.value] | keyvalue"
-                [value]="timeZone.value">{{timeZone.key}}</option>
+                [value]="timeZone.value">{{ timeZone.key }}
+        </option>
     </select>
 
 </div>
