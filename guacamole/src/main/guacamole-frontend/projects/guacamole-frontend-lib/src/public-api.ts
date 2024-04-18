@@ -21,8 +21,6 @@
  * Public API Surface of guacamole-frontend-lib
  */
 
-import './lib/types/Guacamole'
-
 // Client lib
 export * from './lib/client/client.module';
 export * from './lib/client/components/viewport.component';
