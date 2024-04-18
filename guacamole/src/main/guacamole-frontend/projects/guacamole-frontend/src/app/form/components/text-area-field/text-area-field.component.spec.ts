@@ -22,19 +22,19 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TextAreaFieldComponent } from './text-area-field.component';
 
 describe('TestAreaFieldComponent', () => {
-  let component: TextAreaFieldComponent;
-  let fixture: ComponentFixture<TextAreaFieldComponent>;
+    let component: TextAreaFieldComponent;
+    let fixture: ComponentFixture<TextAreaFieldComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      declarations: [TextAreaFieldComponent]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            declarations: [TextAreaFieldComponent]
+        });
+        fixture = TestBed.createComponent(TextAreaFieldComponent);
+        component = fixture.componentInstance;
+        fixture.detectChanges();
     });
-    fixture = TestBed.createComponent(TextAreaFieldComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should create', () => {
+        expect(component).toBeTruthy();
+    });
 });

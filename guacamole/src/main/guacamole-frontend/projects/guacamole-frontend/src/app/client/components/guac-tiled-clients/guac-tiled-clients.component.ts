@@ -18,14 +18,12 @@
  */
 
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import {
-    GuacFrontendEventArguments
-} from '../../../events/types/GuacFrontendEventArguments';
-import { ManagedClientGroup } from '../../types/ManagedClientGroup';
-import { ManagedClient } from '../../types/ManagedClient';
-import filter from 'lodash/filter';
 import { GuacClickCallback, GuacEventService } from 'guacamole-frontend-lib';
+import filter from 'lodash/filter';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { ManagedClientService } from '../../services/managed-client.service';
+import { ManagedClient } from '../../types/ManagedClient';
+import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 
 /**
  * A component which displays one or more Guacamole clients in an evenly-tiled
@@ -33,8 +31,8 @@ import { ManagedClientService } from '../../services/managed-client.service';
  * automatically determined by the number of clients present.
  */
 @Component({
-    selector: 'guac-tiled-clients',
-    templateUrl: './guac-tiled-clients.component.html',
+    selector     : 'guac-tiled-clients',
+    templateUrl  : './guac-tiled-clients.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacTiledClientsComponent implements OnChanges {
@@ -44,19 +42,19 @@ export class GuacTiledClientsComponent implements OnChanges {
      * client tile is clicked. The ManagedClient that is closed will be
      * supplied as the function argument.
      */
-    @Input({required: true}) onClose!: (client: ManagedClient) => void;
+    @Input({ required: true }) onClose!: (client: ManagedClient) => void;
 
     /**
      * The group of Guacamole clients that should be displayed in an
      * evenly-tiled grid arrangement.
      */
-    @Input({required: true}) clientGroup!: ManagedClientGroup | null;
+    @Input({ required: true }) clientGroup!: ManagedClientGroup | null;
 
     /**
      * Whether translation of touch to mouse events should emulate an
      * absolute pointer device, or a relative pointer device.
      */
-    @Input({required: true}) emulateAbsoluteMouse!: boolean;
+    @Input({ required: true }) emulateAbsoluteMouse!: boolean;
 
     /**
      * The currently-focused ManagedClient or null if there are no focused
@@ -92,14 +90,14 @@ export class GuacTiledClientsComponent implements OnChanges {
 
     }
 
-    ngOnChanges({clientGroup}: SimpleChanges): void {
+    ngOnChanges({ clientGroup }: SimpleChanges): void {
 
         if (clientGroup) {
             const newFocusedClient = this.getFocusedClient();
 
             // Notify whenever identify of currently-focused client changes
             if (this.focusedClient !== newFocusedClient)
-                this.guacEventService.broadcast('guacClientFocused', {newFocusedClient})
+                this.guacEventService.broadcast('guacClientFocused', { newFocusedClient })
 
             this.focusedClient = newFocusedClient;
         }

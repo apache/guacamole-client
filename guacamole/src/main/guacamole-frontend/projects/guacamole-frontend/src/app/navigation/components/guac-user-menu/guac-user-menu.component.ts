@@ -18,21 +18,21 @@
  */
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { MenuAction } from '../../types/MenuAction';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { UserPageService } from '../../../manage/services/user-page.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { UserService } from '../../../rest/service/user.service';
-import { UserPageService } from '../../../manage/services/user-page.service';
-import { PageDefinition } from '../../types/PageDefinition';
 import { User } from '../../../rest/types/User';
+import { MenuAction } from '../../types/MenuAction';
+import { PageDefinition } from '../../types/PageDefinition';
 
 /**
  * A directive which provides a user-oriented menu containing options for
  * navigation and configuration.
  */
 @Component({
-    selector: 'guac-user-menu',
-    templateUrl: './guac-user-menu.component.html',
+    selector     : 'guac-user-menu',
+    templateUrl  : './guac-user-menu.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacUserMenuComponent implements OnInit {
@@ -85,9 +85,9 @@ export class GuacUserMenuComponent implements OnInit {
      * to the login screen after logout completes.
      */
     private readonly LOGOUT_ACTION: MenuAction = {
-        name: 'USER_MENU.ACTION_LOGOUT',
+        name     : 'USER_MENU.ACTION_LOGOUT',
         className: 'logout',
-        callback: () => this.logout()
+        callback : () => this.logout()
     };
 
     /**

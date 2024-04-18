@@ -17,22 +17,22 @@
  * under the License.
  */
 
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
 import { SessionStorageFactory } from './session-storage-factory.service';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('SessionStorageFactoryService', () => {
-  let service: SessionStorageFactory;
+    let service: SessionStorageFactory;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-        imports: [HttpClientTestingModule]
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            imports: [HttpClientTestingModule]
+        });
+        service = TestBed.inject(SessionStorageFactory);
     });
-    service = TestBed.inject(SessionStorageFactory);
-  });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+    it('should be created', () => {
+        expect(service).toBeTruthy();
+    });
 });

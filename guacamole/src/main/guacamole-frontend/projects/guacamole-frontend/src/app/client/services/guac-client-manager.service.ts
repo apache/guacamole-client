@@ -17,16 +17,14 @@
  * under the License.
  */
 
-import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
-import {
-    SessionStorageFactory
-} from '../../storage/session-storage-factory.service';
-import { ManagedClient } from '../types/ManagedClient';
-import { ManagedClientGroup } from '../types/ManagedClientGroup';
+import { Inject, Injectable } from '@angular/core';
 import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
 import remove from 'lodash/remove';
+import { SessionStorageFactory } from '../../storage/session-storage-factory.service';
+import { ManagedClient } from '../types/ManagedClient';
+import { ManagedClientGroup } from '../types/ManagedClientGroup';
 import { ManagedClientService } from './managed-client.service';
 
 /**

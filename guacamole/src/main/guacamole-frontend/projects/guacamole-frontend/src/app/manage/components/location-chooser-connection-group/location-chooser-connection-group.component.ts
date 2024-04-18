@@ -18,15 +18,15 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { GroupListItem } from '../../../group-list/types/GroupListItem';
+import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 
 @Component({
-    selector: 'guac-location-chooser-connection-group',
-    templateUrl: './location-chooser-connection-group.component.html',
+    selector     : 'guac-location-chooser-connection-group',
+    templateUrl  : './location-chooser-connection-group.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class LocationChooserConnectionGroupComponent {
-    @Input({required: true}) context!: { chooseGroup: (item: ConnectionGroup) => void };
-    @Input({required: true}) item!: GroupListItem;
+    @Input({ required: true }) context!: { chooseGroup: (item: ConnectionGroup) => void };
+    @Input({ required: true }) item!: GroupListItem;
 }

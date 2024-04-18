@@ -18,12 +18,12 @@
  */
 
 import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
-import { SessionStorageFactory } from '../../../storage/session-storage-factory.service';
-import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 import findIndex from 'lodash/findIndex';
-import { ManagedClientState } from '../../types/ManagedClientState';
-import { GuacClientManagerService } from '../../services/guac-client-manager.service';
 import { SortService } from '../../../list/services/sort.service';
+import { SessionStorageFactory } from '../../../storage/session-storage-factory.service';
+import { GuacClientManagerService } from '../../services/guac-client-manager.service';
+import { ManagedClientGroup } from '../../types/ManagedClientGroup';
+import { ManagedClientState } from '../../types/ManagedClientState';
 
 /**
  * A toolbar/panel which displays a list of active Guacamole connections. The
@@ -31,8 +31,8 @@ import { SortService } from '../../../list/services/sort.service';
  * manually hidden/exposed by the user.
  */
 @Component({
-    selector: 'guac-client-panel',
-    templateUrl: './guac-client-panel.component.html',
+    selector     : 'guac-client-panel',
+    templateUrl  : './guac-client-panel.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacClientPanelComponent implements AfterViewInit {
@@ -41,7 +41,7 @@ export class GuacClientPanelComponent implements AfterViewInit {
      * The ManagedClientGroup instances associated with the active
      * connections to be displayed within this panel.
      */
-    @Input({required: true}) clientGroups!: ManagedClientGroup[];
+    @Input({ required: true }) clientGroups!: ManagedClientGroup[];
 
     /**
      * Getter/setter for the boolean flag controlling whether the client panel

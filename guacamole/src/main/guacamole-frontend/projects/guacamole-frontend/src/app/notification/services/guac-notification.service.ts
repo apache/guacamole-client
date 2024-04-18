@@ -18,12 +18,12 @@
  */
 
 import { Injectable } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { filter, Observable, throwError } from 'rxjs';
 import { RequestService } from '../../rest/service/request.service';
 import { SessionStorageFactory } from '../../storage/session-storage-factory.service';
-import { NotificationAction } from '../types/NotificationAction';
 import { Notification } from '../types/Notification';
-import { filter, Observable, throwError } from 'rxjs';
-import { NavigationEnd, Router } from '@angular/router';
+import { NotificationAction } from '../types/NotificationAction';
 
 /**
  * Service for displaying notifications and modal status dialogs.
@@ -58,7 +58,7 @@ export class GuacNotificationService {
      * closes the currently-shown status dialog.
      */
     readonly ACKNOWLEDGE_ACTION: NotificationAction = {
-        name: 'APP.ACTION_ACKNOWLEDGE',
+        name    : 'APP.ACTION_ACKNOWLEDGE',
         callback: () => {
             this.showStatus(false);
         }
@@ -115,9 +115,9 @@ export class GuacNotificationService {
     readonly SHOW_REQUEST_ERROR: (error: any) => Observable<any> = this.requestService.createErrorCallback(error => {
         this.showStatus({
             className: 'error',
-            title: 'APP.DIALOG_HEADER_ERROR',
-            text: error.translatableMessage,
-            actions: [this.ACKNOWLEDGE_ACTION]
+            title    : 'APP.DIALOG_HEADER_ERROR',
+            text     : error.translatableMessage,
+            actions  : [this.ACKNOWLEDGE_ACTION]
         });
 
         return throwError(() => error);

@@ -34,7 +34,7 @@ export class DefaultHeadersInterceptor implements HttpInterceptor {
             request = request.clone({
                 setHeaders: {
                     'Cache-Control': 'no-cache',
-                    'Pragma': 'no-cache'
+                    'Pragma'       : 'no-cache'
                 }
             });
         }

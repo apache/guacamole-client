@@ -27,8 +27,8 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Guacamole web application.
  */
 @Component({
-    selector: 'guac-language-field',
-    templateUrl: './language-field.component.html',
+    selector     : 'guac-language-field',
+    templateUrl  : './language-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class LanguageFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
@@ -60,7 +60,7 @@ export class LanguageFieldComponent extends FormFieldBaseComponent implements On
         // Interpret undefined/null as empty string
         this.control?.valueChanges.subscribe(value => {
             if (!value && value !== '')
-                this.control?.setValue('', {emitEvent: false});
+                this.control?.setValue('', { emitEvent: false });
         });
     }
 

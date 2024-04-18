@@ -18,10 +18,10 @@
  */
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { ManagementPermissions } from '../../types/ManagementPermissions';
 import { Observable } from 'rxjs';
 import { MenuAction } from '../../../navigation/types/MenuAction';
 import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
+import { ManagementPermissions } from '../../types/ManagementPermissions';
 
 /**
  * Component which displays a set of object management buttons (save, delete,
@@ -29,8 +29,8 @@ import { GuacNotificationService } from '../../../notification/services/guac-not
  * context of the object being edited/created.
  */
 @Component({
-    selector: 'management-buttons',
-    templateUrl: './management-buttons.component.html',
+    selector     : 'management-buttons',
+    templateUrl  : './management-buttons.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ManagementButtonsComponent implements OnInit {
@@ -47,13 +47,13 @@ export class ManagementButtonsComponent implements OnInit {
      *     - DIALOG_HEADER_CONFIRM_DELETE
      *     - TEXT_CONFIRM_DELETE
      */
-    @Input({required: true}) namespace!: string;
+    @Input({ required: true }) namespace!: string;
 
     /**
      * The permissions which dictate the management actions available
      * to the current user.
      */
-    @Input({required: true}) permissions!: ManagementPermissions;
+    @Input({ required: true }) permissions!: ManagementPermissions;
 
     /**
      * The function to invoke to save the arbitrary object being edited
@@ -62,7 +62,7 @@ export class ManagementButtonsComponent implements OnInit {
      * operation succeeds and fail with an {@link Error} if the
      * save operation fails.
      */
-    @Input({required: true}) save!: () => Observable<void>;
+    @Input({ required: true }) save!: () => Observable<void>;
 
     /**
      * The function to invoke when the current user chooses to clone
@@ -70,7 +70,7 @@ export class ManagementButtonsComponent implements OnInit {
      * actions necessary to produce an interface which will clone the
      * object.
      */
-    @Input({required: true}) clone!: () => void;
+    @Input({ required: true }) clone!: () => void;
 
     /**
      * The function to invoke to delete the arbitrary object being edited
@@ -79,7 +79,7 @@ export class ManagementButtonsComponent implements OnInit {
      * operation succeeds and is rejected with an {@link Error} if the
      * delete operation fails.
      */
-    @Input({required: true}) delete!: () => Observable<void>;
+    @Input({ required: true }) delete!: () => Observable<void>;
 
     /**
      * The function to invoke when the current user chooses to cancel
@@ -87,7 +87,7 @@ export class ManagementButtonsComponent implements OnInit {
      * succeeded. The provided function MUST perform the actions
      * necessary to return the user to a reasonable starting point.
      */
-    @Input({required: true}) return!: () => void;
+    @Input({ required: true }) return!: () => void;
 
     /**
      * An action to be provided along with the object sent to showStatus which
@@ -110,16 +110,16 @@ export class ManagementButtonsComponent implements OnInit {
     ngOnInit(): void {
 
         this.DELETE_ACTION = {
-            name: this.namespace + '.ACTION_DELETE',
+            name     : this.namespace + '.ACTION_DELETE',
             className: 'danger',
-            callback: () => {
+            callback : () => {
                 this.deleteObjectImmediately();
                 this.notificationService.showStatus(false);
             }
         };
 
         this.CANCEL_ACTION = {
-            name: this.namespace + '.ACTION_CANCEL',
+            name    : this.namespace + '.ACTION_CANCEL',
             callback: () => {
                 this.notificationService.showStatus(false);
             }
@@ -144,7 +144,7 @@ export class ManagementButtonsComponent implements OnInit {
      */
     private deleteObjectImmediately(): void {
         this.delete().subscribe({
-            next: () => this.navigateBack(),
+            next : () => this.navigateBack(),
             error: this.notificationService.SHOW_REQUEST_ERROR
         });
     }
@@ -165,7 +165,7 @@ export class ManagementButtonsComponent implements OnInit {
      */
     saveObject(): void {
         this.save().subscribe({
-            next: () => this.navigateBack(),
+            next : () => this.navigateBack(),
             error: this.notificationService.SHOW_REQUEST_ERROR
         });
     }
@@ -182,8 +182,8 @@ export class ManagementButtonsComponent implements OnInit {
 
         // Confirm deletion request
         this.notificationService.showStatus({
-            title: this.namespace + '.DIALOG_HEADER_CONFIRM_DELETE',
-            text: {key: this.namespace + '.TEXT_CONFIRM_DELETE'},
+            title  : this.namespace + '.DIALOG_HEADER_CONFIRM_DELETE',
+            text   : { key: this.namespace + '.TEXT_CONFIRM_DELETE' },
             actions: [this.DELETE_ACTION, this.CANCEL_ACTION]
         });
 

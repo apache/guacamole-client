@@ -149,7 +149,7 @@ export class ManagedDisplay {
         display.onresize = function setClientSize() {
 
             managedDisplay.size.set(new ManagedDisplay.Dimensions({
-                width: display.getWidth(),
+                width : display.getWidth(),
                 height: display.getHeight()
             }));
 
@@ -160,8 +160,8 @@ export class ManagedDisplay {
 
             managedDisplay.cursor.set(new ManagedDisplay.Cursor({
                 canvas: canvas,
-                x: x,
-                y: y
+                x     : x,
+                y     : y
             }));
 
         };

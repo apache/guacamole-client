@@ -17,31 +17,31 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GuacModalComponent } from './components/guac-modal/guac-modal.component';
-import { GuacNotificationComponent } from './components/guac-notification/guac-notification.component';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@ngneat/transloco';
 import { FormModule } from '../form/form.module';
-import { FormsModule } from '@angular/forms';
+import { GuacModalComponent } from './components/guac-modal/guac-modal.component';
+import { GuacNotificationComponent } from './components/guac-notification/guac-notification.component';
 
 /**
  * The module for code used to display arbitrary notifications.
  */
 @NgModule({
     declarations: [
-    GuacModalComponent,
-    GuacNotificationComponent
-  ],
-    imports: [
+        GuacModalComponent,
+        GuacNotificationComponent
+    ],
+    imports     : [
         CommonModule,
         TranslocoModule,
         FormModule,
         FormsModule
     ],
-    exports: [
-      GuacModalComponent,
-      GuacNotificationComponent
+    exports     : [
+        GuacModalComponent,
+        GuacNotificationComponent
     ]
 })
 export class NotificationModule {

@@ -24,8 +24,8 @@ import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@
  * arbitrary operation.
  */
 @Component({
-    selector: 'guac-player-progress-indicator',
-    templateUrl: './progress-indicator.component.html',
+    selector     : 'guac-player-progress-indicator',
+    templateUrl  : './progress-indicator.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ProgressIndicatorComponent implements OnChanges {

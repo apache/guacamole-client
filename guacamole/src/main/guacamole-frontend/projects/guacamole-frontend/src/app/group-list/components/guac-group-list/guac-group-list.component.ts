@@ -45,8 +45,8 @@ import { of } from 'rxjs';
  * automatically-paginated view.
  */
 @Component({
-    selector: 'guac-group-list',
-    templateUrl: './guac-group-list.component.html',
+    selector     : 'guac-group-list',
+    templateUrl  : './guac-group-list.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacGroupListComponent implements OnInit, OnChanges {
@@ -74,7 +74,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
      * not be rendered. All standard types are defined by
      * @link{GroupListItem.Type}, but use of custom types is legal.
      */
-    @Input({required: true}) templates!: Record<string, TemplateRef<any>>;
+    @Input({ required: true }) templates!: Record<string, TemplateRef<any>>;
 
     /**
      * Whether the root of the connection group hierarchy given should
@@ -100,7 +100,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
     /**
      * Reference to the instance of the pager component.
      */
-    @ViewChild(GuacPagerComponent, {static: true}) pager!: GuacPagerComponent;
+    @ViewChild(GuacPagerComponent, { static: true }) pager!: GuacPagerComponent;
 
     /**
      * Map of data source identifier to the number of active

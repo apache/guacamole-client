@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { Injectable } from '@angular/core';
-import { LanguageService } from '../../rest/service/language.service';
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { SKIP_ALL_INTERCEPTORS } from '../../util/interceptor.service';
+import { Injectable } from '@angular/core';
 import { Translation, TranslocoLoader } from '@ngneat/transloco';
 import { TranslocoLoaderData } from '@ngneat/transloco/lib/transloco.loader';
+import { LanguageService } from '../../rest/service/language.service';
+import { SKIP_ALL_INTERCEPTORS } from '../../util/interceptor.service';
 
 /**
  * Service for loading translation definition files.
@@ -125,7 +125,7 @@ export class TranslationLoaderService implements TranslocoLoader {
                     httpContext.set(SKIP_ALL_INTERCEPTORS, true);
                     this.http.get<Translation>(
                         'translations/' + encodeURIComponent(currentKey) + '.json',
-                        {context: httpContext}
+                        { context: httpContext }
                     ).subscribe({
                         next: (translationData) => {
                             resolve(translationData);

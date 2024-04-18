@@ -30,9 +30,9 @@ describe('AuthenticationService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports  : [HttpClientTestingModule],
             providers: [
-                {provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true}
+                { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
             ]
         });
         service = TestBed.inject(AuthenticationService);

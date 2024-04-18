@@ -17,11 +17,11 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
 import { ElementModule } from '../element/element.module';
 import { OskComponent } from './components/osk/osk.component';
-import { HttpClientModule } from '@angular/common/http';
 
 /**
  * Module for displaying the Guacamole on-screen keyboard.
@@ -30,12 +30,12 @@ import { HttpClientModule } from '@angular/common/http';
     declarations: [
         OskComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         HttpClientModule,
         ElementModule
     ],
-    exports: [
+    exports     : [
         OskComponent
     ]
 })

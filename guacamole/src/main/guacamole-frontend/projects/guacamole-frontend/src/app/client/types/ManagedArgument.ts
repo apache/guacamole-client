@@ -85,8 +85,8 @@ export class ManagedArgument {
             // returned only once mutability of the associated connection parameter
             // has been verified
             const managedArgument = new ManagedArgument({
-                name: name,
-                value: value,
+                name  : name,
+                value : value,
                 stream: managedClient.client.createArgumentValueStream('text/plain', name)
             });
 

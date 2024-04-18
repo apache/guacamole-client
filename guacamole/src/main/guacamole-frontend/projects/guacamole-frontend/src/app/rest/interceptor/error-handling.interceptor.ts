@@ -73,6 +73,6 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
 
         // Fall back to a generic internal error if the request couldn't
         // even be issued (webapp is down, etc.)
-        return throwError(() => new Error({message: 'Unknown failure sending HTTP request'}));
+        return throwError(() => new Error({ message: 'Unknown failure sending HTTP request' }));
     }
 }

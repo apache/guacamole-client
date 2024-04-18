@@ -17,29 +17,29 @@
  * under the License.
  */
 
+import { formatDate } from '@angular/common';
 import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { TranslocoService } from '@ngneat/transloco';
+import { saveAs } from 'file-saver';
+import { BehaviorSubject, combineLatest, take } from 'rxjs';
+import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
+import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
+import { SortService } from '../../../list/services/sort.service';
+import { DataSource } from '../../../list/types/DataSource';
+import { FilterToken } from '../../../list/types/FilterToken';
+import { SortOrder } from '../../../list/types/SortOrder';
 import { HistoryService } from '../../../rest/service/history.service';
 import { RequestService } from '../../../rest/service/request.service';
-import { CsvService } from '../../services/csv.service';
-import { TranslocoService } from '@ngneat/transloco';
-import { SortOrder } from '../../../list/types/SortOrder';
-import { BehaviorSubject, combineLatest, take } from 'rxjs';
 import { NonNullableProperties } from '../../../util/utility-types';
-import { FilterToken } from '../../../list/types/FilterToken';
+import { CsvService } from '../../services/csv.service';
 import { ConnectionHistoryEntryWrapper } from '../../types/ConnectionHistoryEntryWrapper';
-import { SortService } from '../../../list/services/sort.service';
-import { formatDate } from '@angular/common';
-import { saveAs } from 'file-saver';
-import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
-import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
-import { DataSource } from '../../../list/types/DataSource';
 
 /**
  * A component for viewing connection history records.
  */
 @Component({
-    selector: 'guac-settings-connection-history',
-    templateUrl: './guac-settings-connection-history.component.html',
+    selector     : 'guac-settings-connection-history',
+    templateUrl  : './guac-settings-connection-history.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacSettingsConnectionHistoryComponent implements OnInit {
@@ -47,12 +47,12 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
     /**
      * The identifier of the currently-selected data source.
      */
-    @Input({required: true}) dataSource!: string;
+    @Input({ required: true }) dataSource!: string;
 
     /**
      * Reference to the instance of the pager component.
      */
-    @ViewChild(GuacPagerComponent, {static: true}) pager!: GuacPagerComponent;
+    @ViewChild(GuacPagerComponent, { static: true }) pager!: GuacPagerComponent;
 
     /**
      * All wrapped matching connection history entries, or null if these
@@ -99,7 +99,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
      * $scope.order.
      */
     private readonly apiSortProperties: Record<string, string> = {
-        'entry.startDate': 'startDate',
+        'entry.startDate' : 'startDate',
         '-entry.startDate': '-startDate'
     };
 
@@ -232,7 +232,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
             this.toAPISortPredicate(this.order.getValue().predicate)
         )
             .subscribe({
-                next: historyEntries => {
+                next    : historyEntries => {
 
                     // Wrap all history entries for sake of display
                     this.historyEntryWrappers = [];

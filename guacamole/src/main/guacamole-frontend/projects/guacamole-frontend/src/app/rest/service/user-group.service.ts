@@ -63,13 +63,13 @@ export class UserGroupService {
         // Add permission filter if specified
         let httpParameters = new HttpParams();
         if (permissionTypes)
-            httpParameters = httpParameters.appendAll({permission: permissionTypes});
+            httpParameters = httpParameters.appendAll({ permission: permissionTypes });
 
         // Retrieve user groups
         // TODO: cache: cacheService.users,
         return this.http.get<Record<string, UserGroup>>(
             'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups',
-            {params: httpParameters}
+            { params: httpParameters }
         );
 
     }

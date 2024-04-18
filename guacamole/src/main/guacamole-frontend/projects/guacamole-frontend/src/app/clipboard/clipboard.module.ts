@@ -29,10 +29,10 @@ import { ClipboardComponent } from './components/clipboard/clipboard.component';
     declarations: [
         ClipboardComponent
     ],
-    imports: [
+    imports     : [
         CommonModule
     ],
-    exports: [
+    exports     : [
         ClipboardComponent
     ]
 })

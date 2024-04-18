@@ -17,38 +17,38 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ClipboardModule } from '../clipboard/clipboard.module';
-import { TextInputModule } from '../text-input/text-input.module';
-import { GuacZoomCtrlDirective } from './directives/guac-zoom-ctrl.directive';
-import { GuacClientZoomComponent } from './components/guac-client-zoom/guac-client-zoom.component';
-import { TranslocoModule } from '@ngneat/transloco';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { GuacThumbnailComponent } from './components/guac-thumbnail/guac-thumbnail.component';
-import { ClientLibModule, ElementModule, OskModule, TouchModule } from 'guacamole-frontend-lib';
-import { GuacTiledThumbnailsComponent } from './components/guac-tiled-thumbnails/guac-tiled-thumbnails.component';
-import { GuacFileTransferComponent } from './components/guac-file-transfer/guac-file-transfer.component';
-import {
-    GuacFileTransferManagerComponent
-} from './components/guac-file-transfer-manager/guac-file-transfer-manager.component';
-import { NavigationModule } from '../navigation/navigation.module';
 import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@ngneat/transloco';
+import { ClientLibModule, ElementModule, OskModule, TouchModule } from 'guacamole-frontend-lib';
+import { ClipboardModule } from '../clipboard/clipboard.module';
 import { FormModule } from '../form/form.module';
 import { GroupListModule } from '../group-list/group-list.module';
-import { GuacClientUserCountComponent } from './components/guac-client-user-count/guac-client-user-count.component';
+import { NavigationModule } from '../navigation/navigation.module';
+import { NotificationModule } from '../notification/notification.module';
+import { TextInputModule } from '../text-input/text-input.module';
+import { ClientPageComponent } from './components/client-page/client-page.component';
+import { ConnectionGroupComponent } from './components/connection-group/connection-group.component';
+import { ConnectionComponent } from './components/connection/connection.component';
+import { FileComponent } from './components/file/file.component';
 import {
     GuacClientNotificationComponent
 } from './components/guac-client-notification/guac-client-notification.component';
-import { NotificationModule } from '../notification/notification.module';
-import { GuacClientComponent } from './components/guac-client/guac-client.component';
-import { GuacTiledClientsComponent } from './components/guac-tiled-clients/guac-tiled-clients.component';
-import { ClientPageComponent } from './components/client-page/client-page.component';
-import { ConnectionComponent } from './components/connection/connection.component';
-import { ConnectionGroupComponent } from './components/connection-group/connection-group.component';
 import { GuacClientPanelComponent } from './components/guac-client-panel/guac-client-panel.component';
+import { GuacClientUserCountComponent } from './components/guac-client-user-count/guac-client-user-count.component';
+import { GuacClientZoomComponent } from './components/guac-client-zoom/guac-client-zoom.component';
+import { GuacClientComponent } from './components/guac-client/guac-client.component';
 import { GuacFileBrowserComponent } from './components/guac-file-browser/guac-file-browser.component';
-import { FileComponent } from './components/file/file.component';
+import {
+    GuacFileTransferManagerComponent
+} from './components/guac-file-transfer-manager/guac-file-transfer-manager.component';
+import { GuacFileTransferComponent } from './components/guac-file-transfer/guac-file-transfer.component';
+import { GuacThumbnailComponent } from './components/guac-thumbnail/guac-thumbnail.component';
+import { GuacTiledClientsComponent } from './components/guac-tiled-clients/guac-tiled-clients.component';
+import { GuacTiledThumbnailsComponent } from './components/guac-tiled-thumbnails/guac-tiled-thumbnails.component';
+import { GuacZoomCtrlDirective } from './directives/guac-zoom-ctrl.directive';
 
 /**
  * The module for code used to connect to a connection or balancing group.
@@ -72,7 +72,7 @@ import { FileComponent } from './components/file/file.component';
         GuacFileBrowserComponent,
         FileComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         TranslocoModule,
         FormsModule,
@@ -88,8 +88,8 @@ import { FileComponent } from './components/file/file.component';
         GroupListModule,
         NotificationModule
     ],
-    exports: [
-      GuacClientPanelComponent
+    exports     : [
+        GuacClientPanelComponent
     ]
 })
 export class ClientModule {

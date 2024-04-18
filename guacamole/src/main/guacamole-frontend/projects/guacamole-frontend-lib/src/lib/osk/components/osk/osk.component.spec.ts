@@ -17,18 +17,15 @@
  * under the License.
  */
 
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { simulateMouseClick } from '../../../../test-utils/click-helper';
 import { ElementModule } from '../../../element/element.module';
 import { GuacEventService } from '../../../events/services/guac-event.service';
 import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
 import { OskComponent } from './osk.component';
-import { SimpleChange } from '@angular/core';
-import {
-    HttpClientTestingModule,
-    HttpTestingController
-} from '@angular/common/http/testing';
-import { By } from '@angular/platform-browser';
 
 describe('OskComponent', () => {
     let component: OskComponent;
@@ -42,7 +39,7 @@ describe('OskComponent', () => {
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [OskComponent],
-            imports: [HttpClientTestingModule, ElementModule],
+            imports     : [HttpClientTestingModule, ElementModule],
         })
             .compileComponents();
 
@@ -61,7 +58,7 @@ describe('OskComponent', () => {
     it('loads layout and displays osk', async () => {
         component.layout = layout;
         fixture.detectChanges();
-        component.ngOnChanges({layout: new SimpleChange(undefined, layout, true)});
+        component.ngOnChanges({ layout: new SimpleChange(undefined, layout, true) });
 
         const req = httpTestingController.expectOne(layout);
         expect(req.request.method).toEqual('GET');
@@ -75,7 +72,7 @@ describe('OskComponent', () => {
 
         component.layout = layout;
         fixture.detectChanges();
-        component.ngOnChanges({layout: new SimpleChange(undefined, layout, true)});
+        component.ngOnChanges({ layout: new SimpleChange(undefined, layout, true) });
 
         const req = httpTestingController.expectOne(layout);
         expect(req.request.method).toEqual('GET');
@@ -87,8 +84,8 @@ describe('OskComponent', () => {
 
         simulateMouseClick(divA);
 
-        expect(guacEventService.broadcast).toHaveBeenCalledWith('guacSyntheticKeydown', {keysym: 97});
-        expect(guacEventService.broadcast).toHaveBeenCalledWith('guacSyntheticKeyup', {keysym: 97});
+        expect(guacEventService.broadcast).toHaveBeenCalledWith('guacSyntheticKeydown', { keysym: 97 });
+        expect(guacEventService.broadcast).toHaveBeenCalledWith('guacSyntheticKeyup', { keysym: 97 });
 
     });
 

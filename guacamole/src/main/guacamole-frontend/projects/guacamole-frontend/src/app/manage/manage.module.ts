@@ -17,33 +17,39 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { ManageUserComponent } from './components/manage-user/manage-user.component';
-import { FormModule } from '../form/form.module';
-import { TranslocoModule } from '@ngneat/transloco';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { NavigationModule } from '../navigation/navigation.module';
-import { DataSourceTabsComponent } from './components/data-source-tabs/data-source-tabs.component';
-import {
-    SystemPermissionEditorComponent
-} from './components/system-permission-editor/system-permission-editor.component';
-import { IdentifierSetEditorComponent } from './components/identifier-set-editor/identifier-set-editor.component';
-import { ListModule } from '../list/list.module';
-import { ManagementButtonsComponent } from './components/management-buttons/management-buttons.component';
-import { ManageConnectionComponent } from './components/manage-connection/manage-connection.component';
-import { LocationChooserComponent } from './components/location-chooser/location-chooser.component';
+import { TranslocoModule } from '@ngneat/transloco';
+import { FormModule } from '../form/form.module';
 import { GroupListModule } from '../group-list/group-list.module';
+import { ListModule } from '../list/list.module';
+import { NavigationModule } from '../navigation/navigation.module';
+import {
+    ConnectionGroupPermissionComponent
+} from './components/connection-group-permission/connection-group-permission.component';
+import {
+    ConnectionPermissionEditorComponent
+} from './components/connection-permission-editor/connection-permission-editor.component';
+import { ConnectionPermissionComponent } from './components/connection-permission/connection-permission.component';
+import { DataSourceTabsComponent } from './components/data-source-tabs/data-source-tabs.component';
+import { IdentifierSetEditorComponent } from './components/identifier-set-editor/identifier-set-editor.component';
 import {
     LocationChooserConnectionGroupComponent
 } from './components/location-chooser-connection-group/location-chooser-connection-group.component';
-import { ManageUserGroupComponent } from './components/manage-user-group/manage-user-group.component';
+import { LocationChooserComponent } from './components/location-chooser/location-chooser.component';
 import { ManageConnectionGroupComponent } from './components/manage-connection-group/manage-connection-group.component';
-import { ConnectionPermissionEditorComponent } from './components/connection-permission-editor/connection-permission-editor.component';
-import { ConnectionPermissionComponent } from './components/connection-permission/connection-permission.component';
-import { SharingProfilePermissionComponent } from './components/sharing-profile-permission/sharing-profile-permission.component';
-import { ConnectionGroupPermissionComponent } from './components/connection-group-permission/connection-group-permission.component';
+import { ManageConnectionComponent } from './components/manage-connection/manage-connection.component';
 import { ManageSharingProfileComponent } from './components/manage-sharing-profile/manage-sharing-profile.component';
+import { ManageUserGroupComponent } from './components/manage-user-group/manage-user-group.component';
+import { ManageUserComponent } from './components/manage-user/manage-user.component';
+import { ManagementButtonsComponent } from './components/management-buttons/management-buttons.component';
+import {
+    SharingProfilePermissionComponent
+} from './components/sharing-profile-permission/sharing-profile-permission.component';
+import {
+    SystemPermissionEditorComponent
+} from './components/system-permission-editor/system-permission-editor.component';
 
 /**
  * The module for the administration functionality.
@@ -66,7 +72,7 @@ import { ManageSharingProfileComponent } from './components/manage-sharing-profi
         ConnectionGroupPermissionComponent,
         ManageSharingProfileComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         FormModule,
         TranslocoModule,
@@ -76,7 +82,7 @@ import { ManageSharingProfileComponent } from './components/manage-sharing-profi
         NgOptimizedImage,
         GroupListModule
     ],
-    exports: [
+    exports     : [
         ManageUserComponent,
         DataSourceTabsComponent,
         SystemPermissionEditorComponent,

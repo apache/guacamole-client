@@ -18,12 +18,10 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    GuacFrontendEventArguments
-} from '../../events/types/GuacFrontendEventArguments';
-import { KeyComponent } from './key.component';
 import { TranslocoTestingModule } from '@ngneat/transloco';
+import { GuacEventService } from 'guacamole-frontend-lib';
+import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
+import { KeyComponent } from './key.component';
 
 describe('KeyComponent', () => {
     let component: KeyComponent;
@@ -33,7 +31,7 @@ describe('KeyComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [KeyComponent],
-            imports: [
+            imports     : [
                 TranslocoTestingModule.forRoot({})
             ],
         });
@@ -81,7 +79,7 @@ describe('KeyComponent', () => {
 
         component.updateKey(new MouseEvent('click'));
 
-        expect(guacEventService.broadcast).toHaveBeenCalledWith('guacSyntheticKeydown', {keysym: 65});
-        expect(guacEventService.broadcast).toHaveBeenCalledWith('guacSyntheticKeyup', {keysym: 65});
+        expect(guacEventService.broadcast).toHaveBeenCalledWith('guacSyntheticKeydown', { keysym: 65 });
+        expect(guacEventService.broadcast).toHaveBeenCalledWith('guacSyntheticKeyup', { keysym: 65 });
     });
 });

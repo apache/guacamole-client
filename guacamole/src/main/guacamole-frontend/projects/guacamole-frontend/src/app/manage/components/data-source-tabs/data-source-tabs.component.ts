@@ -18,10 +18,10 @@
  */
 
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { ManagementPermissions } from '../../types/ManagementPermissions';
-import { PageDefinition } from '../../../navigation/types/PageDefinition';
 import keys from 'lodash/keys';
 import { canonicalize } from '../../../locale/service/translation.service';
+import { PageDefinition } from '../../../navigation/types/PageDefinition';
+import { ManagementPermissions } from '../../types/ManagementPermissions';
 
 /**
  * Component which displays a set of tabs pointing to the same object within
@@ -29,8 +29,8 @@ import { canonicalize } from '../../../locale/service/translation.service';
  * sources.
  */
 @Component({
-    selector: 'data-source-tabs',
-    templateUrl: './data-source-tabs.component.html',
+    selector     : 'data-source-tabs',
+    templateUrl  : './data-source-tabs.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class DataSourceTabsComponent implements OnChanges {
@@ -83,8 +83,8 @@ export class DataSourceTabsComponent implements OnChanges {
 
                 // Add page entry
                 this.pages!.push(new PageDefinition({
-                    name: canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
-                    url: this.url?.(dataSource) || '',
+                    name     : canonicalize('DATA_SOURCE_' + dataSource) + '.NAME',
+                    url      : this.url?.(dataSource) || '',
                     className: className
                 }));
 

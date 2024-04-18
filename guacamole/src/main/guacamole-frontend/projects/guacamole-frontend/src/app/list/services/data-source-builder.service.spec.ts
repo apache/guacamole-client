@@ -35,16 +35,16 @@ describe('DataSourceBuilderService', () => {
     let service: DataSourceBuilderService;
     let testScheduler: TestScheduler;
     const source: Person[] = [
-        {id: 1, name: 'John'},
-        {id: 2, name: 'Jane'},
-        {id: 3, name: 'Jack'},
-        {id: 4, name: 'Jill'},
-        {id: 5, name: 'Joe'},
-        {id: 6, name: 'Jenny'},
-        {id: 7, name: 'Jim'},
-        {id: 8, name: 'Jen'},
-        {id: 9, name: 'Jesse'},
-        {id: 10, name: 'Jasmine'}
+        { id: 1, name: 'John' },
+        { id: 2, name: 'Jane' },
+        { id: 3, name: 'Jack' },
+        { id: 4, name: 'Jill' },
+        { id: 5, name: 'Joe' },
+        { id: 6, name: 'Jenny' },
+        { id: 7, name: 'Jim' },
+        { id: 8, name: 'Jen' },
+        { id: 9, name: 'Jesse' },
+        { id: 10, name: 'Jasmine' }
     ];
 
     beforeEach(() => {
@@ -60,7 +60,7 @@ describe('DataSourceBuilderService', () => {
     describe('source', () => {
 
         it('should return source and complete if noting else is configured', () => {
-            testScheduler.run(({expectObservable}) => {
+            testScheduler.run(({ expectObservable }) => {
 
                 const dataSource = service.getBuilder().source(source).build();
 
@@ -76,19 +76,19 @@ describe('DataSourceBuilderService', () => {
 
 
         it('should return source length if no filter is configured', () => {
-            testScheduler.run(({expectObservable}) => {
+            testScheduler.run(({ expectObservable }) => {
 
                 const dataSource = service.getBuilder().source(source).build();
                 const length = dataSource.totalLength;
 
-                expectObservable(length).toBe('(a|)', {a: source.length});
+                expectObservable(length).toBe('(a|)', { a: source.length });
 
             });
         });
 
 
         it('should return length filtered source', () => {
-            testScheduler.run(({expectObservable}) => {
+            testScheduler.run(({ expectObservable }) => {
 
                 const dataSource: DataSource<Person> = service.getBuilder<Person>()
                     .source(source)
@@ -97,7 +97,7 @@ describe('DataSourceBuilderService', () => {
 
                 const length = dataSource.totalLength;
 
-                expectObservable(length).toBe('(a|)', {a: 2});
+                expectObservable(length).toBe('(a|)', { a: 2 });
 
             });
         });
@@ -107,7 +107,7 @@ describe('DataSourceBuilderService', () => {
     describe('sort', () => {
 
         it('should return source sorted by name ascending', () => {
-            testScheduler.run(({expectObservable}) => {
+            testScheduler.run(({ expectObservable }) => {
 
                 const dataSource: DataSource<Person> = service.getBuilder<Person>()
                     .source(source)
@@ -125,7 +125,7 @@ describe('DataSourceBuilderService', () => {
         });
 
         it('should return source sorted by name descending', () => {
-            testScheduler.run(({expectObservable}) => {
+            testScheduler.run(({ expectObservable }) => {
 
                 const dataSource: DataSource<Person> = service.getBuilder<Person>()
                     .source(source)
@@ -148,13 +148,13 @@ describe('DataSourceBuilderService', () => {
 
         it('should return source paginated', () => {
 
-            testScheduler.run(({expectObservable}) => {
+            testScheduler.run(({ expectObservable }) => {
 
                 const pageEvents: PagerEvent[] = [
-                    {pageIndex: 0, pageSize: 3, previousPageIndex: 0},
-                    {pageIndex: 1, pageSize: 3, previousPageIndex: 0},
-                    {pageIndex: 2, pageSize: 3, previousPageIndex: 1},
-                    {pageIndex: 3, pageSize: 3, previousPageIndex: 2},
+                    { pageIndex: 0, pageSize: 3, previousPageIndex: 0 },
+                    { pageIndex: 1, pageSize: 3, previousPageIndex: 0 },
+                    { pageIndex: 2, pageSize: 3, previousPageIndex: 1 },
+                    { pageIndex: 3, pageSize: 3, previousPageIndex: 2 },
                 ]
 
 
@@ -184,7 +184,7 @@ describe('DataSourceBuilderService', () => {
     describe('updateSource', () => {
 
         it('should update source and emit new data', () => {
-            testScheduler.run(({expectObservable, flush}) => {
+            testScheduler.run(({ expectObservable, flush }) => {
 
                 const firstSource: Person[] = source.slice(0, 5);
                 const secondSource: Person[] = source.slice(5, 10);

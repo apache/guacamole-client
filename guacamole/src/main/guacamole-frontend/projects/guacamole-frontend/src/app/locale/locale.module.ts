@@ -26,11 +26,11 @@ import {
     TranslocoMissingHandler,
     TranslocoModule
 } from '@ngneat/transloco';
-import { TranslationService } from './service/translation.service';
-import { TranslationLoaderService } from './service/translation-loader.service';
-import { Observable } from 'rxjs';
 import { TranslocoMessageFormatModule } from '@ngneat/transloco-messageformat';
 import { HashMap } from '@ngneat/transloco/lib/types';
+import { Observable } from 'rxjs';
+import { TranslationLoaderService } from './service/translation-loader.service';
+import { TranslationService } from './service/translation.service';
 
 /**
  * Initializes the translation service.
@@ -64,7 +64,7 @@ export const VALUE_IF_MISSING_PROPERTY = 'valueIfMissing';
  *     The value to return if the requested translation is not available.
  */
 export const translationValueIfMissing = (value: any): HashMap => {
-    return {[VALUE_IF_MISSING_PROPERTY]: value};
+    return { [VALUE_IF_MISSING_PROPERTY]: value };
 };
 
 /**
@@ -96,30 +96,30 @@ export class GuacMissingHandler implements TranslocoMissingHandler {
  * Module for handling common localization-related tasks.
  */
 @NgModule({
-    exports: [TranslocoModule],
+    exports  : [TranslocoModule],
     providers: [
         {
-            provide: APP_INITIALIZER,
+            provide   : APP_INITIALIZER,
             useFactory: (translationService: TranslationService) =>
                 () => initializeTranslationService(translationService),
-            deps: [TranslationService],
-            multi: true,
+            deps      : [TranslationService],
+            multi     : true,
         },
         {
-            provide: TRANSLOCO_CONFIG,
+            provide   : TRANSLOCO_CONFIG,
             useFactory: translocoConfigFactory,
-            deps: [TranslationService],
+            deps      : [TranslationService],
         },
         {
-            provide: TRANSLOCO_LOADER,
+            provide : TRANSLOCO_LOADER,
             useClass: TranslationLoaderService
         },
         {
-            provide: TRANSLOCO_MISSING_HANDLER,
+            provide : TRANSLOCO_MISSING_HANDLER,
             useClass: GuacMissingHandler
         }
     ],
-    imports: [
+    imports  : [
         // TODO: By default, messageformat initializes all locales.
         TranslocoMessageFormatModule.forRoot()
     ]

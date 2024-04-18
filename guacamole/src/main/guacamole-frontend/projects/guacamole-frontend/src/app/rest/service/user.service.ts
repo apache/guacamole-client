@@ -63,12 +63,12 @@ export class UserService {
 
         // Add permission filter if specified
         if (permissionTypes) {
-            httpParameters.appendAll({permission: permissionTypes});
+            httpParameters.appendAll({ permission: permissionTypes });
         }
 
         // Retrieve users
         // TODO:  cache   : cacheService.users,
-        return this.http.get<Record<string, User>>(`api/session/data/${encodeURIComponent(dataSource)}/users`, {params: httpParameters});
+        return this.http.get<Record<string, User>>(`api/session/data/${encodeURIComponent(dataSource)}/users`, { params: httpParameters });
     }
 
 

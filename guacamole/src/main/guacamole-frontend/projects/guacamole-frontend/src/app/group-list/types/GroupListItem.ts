@@ -163,16 +163,16 @@ export class GroupListItem {
             if (this.type === GroupListItem.Type.CONNECTION)
                 return ClientIdentifierService.getString({
                     dataSource: this.dataSource,
-                    type: ClientIdentifier.Types.CONNECTION,
-                    id: this.identifier
+                    type      : ClientIdentifier.Types.CONNECTION,
+                    id        : this.identifier
                 });
 
             // If the item is a connection group, generate a connection group identifier
             if (this.type === GroupListItem.Type.CONNECTION_GROUP && this.balancing)
                 return ClientIdentifierService.getString({
                     dataSource: this.dataSource,
-                    type: ClientIdentifier.Types.CONNECTION_GROUP,
-                    id: this.identifier
+                    type      : ClientIdentifier.Types.CONNECTION_GROUP,
+                    id        : this.identifier
                 });
 
             // Otherwise, no such identifier can exist
@@ -240,14 +240,14 @@ export class GroupListItem {
         return new GroupListItem({
 
             // Identifying information
-            name: connection.name,
+            name      : connection.name,
             identifier: connection.identifier,
-            protocol: connection.protocol,
+            protocol  : connection.protocol,
             dataSource: dataSource,
 
             // Type information
             expandable: includeSharingProfiles !== false,
-            type: GroupListItem.Type.CONNECTION,
+            type      : GroupListItem.Type.CONNECTION,
 
             // Already-converted children
             children: children,
@@ -338,13 +338,13 @@ export class GroupListItem {
         return new GroupListItem({
 
             // Identifying information
-            name: connectionGroup.name,
+            name      : connectionGroup.name,
             identifier: connectionGroup.identifier,
             dataSource: dataSource,
 
             // Type information
-            type: GroupListItem.Type.CONNECTION_GROUP,
-            balancing: connectionGroup.type === ConnectionGroup.Type.BALANCING,
+            type      : GroupListItem.Type.CONNECTION_GROUP,
+            balancing : connectionGroup.type === ConnectionGroup.Type.BALANCING,
             expandable: true,
 
             // Already-converted children
@@ -390,7 +390,7 @@ export class GroupListItem {
         return new GroupListItem({
 
             // Identifying information
-            name: sharingProfile.name,
+            name      : sharingProfile.name,
             identifier: sharingProfile.identifier,
             dataSource: dataSource,
 

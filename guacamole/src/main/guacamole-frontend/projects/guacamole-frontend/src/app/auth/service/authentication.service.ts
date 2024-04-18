@@ -194,7 +194,7 @@ export class AuthenticationService {
         const parametersPromise = Promise.resolve(parameters);
 
         // Notify that a fresh authentication request is underway
-        this.guacEventService.broadcast('guacLoginPending', {parameters: parametersPromise});
+        this.guacEventService.broadcast('guacLoginPending', { parameters: parametersPromise });
 
         // Attempt authentication after auth parameters are available ...
         return from(parametersPromise).pipe(
@@ -203,7 +203,7 @@ export class AuthenticationService {
                         'api/tokens',
                         this.toHttpParams(requestParams),
                         {
-                            headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'}),
+                            headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
                         }
                     )
                 }
@@ -224,7 +224,7 @@ export class AuthenticationService {
 
                     // Notify of login and new token
                     this.setAuthenticationResult(new AuthenticationResult(data));
-                    this.guacEventService.broadcast('guacLogin', {authToken: data.authToken});
+                    this.guacEventService.broadcast('guacLogin', { authToken: data.authToken });
 
                 }
                     // Update cached authentication result, even if the token remains
@@ -241,7 +241,7 @@ export class AuthenticationService {
 
                         // Notify of generic login failure, for any event consumers that
                         // wish to handle all types of failures at once
-                        this.guacEventService.broadcast('guacLoginFailed', {parameters: parametersPromise, error});
+                        this.guacEventService.broadcast('guacLoginFailed', { parameters: parametersPromise, error });
 
                         // Request credentials if provided credentials were invalid
                         if (error.type === Error.Type.INVALID_CREDENTIALS) {
@@ -263,7 +263,7 @@ export class AuthenticationService {
 
                         // Abort rendering of page if an internal error occurs
                         else if (error.type === Error.Type.INTERNAL_ERROR)
-                            this.guacEventService.broadcast('guacFatalPageError', {error});
+                            this.guacEventService.broadcast('guacFatalPageError', { error });
 
                         // Authentication failed
                         return throwError(() => error);
@@ -320,7 +320,7 @@ export class AuthenticationService {
 
         // Add any additional parameters
         if (parameters)
-            httpParameters = {...httpParameters, ...parameters};
+            httpParameters = { ...httpParameters, ...parameters };
 
         // Make the request
         return this.authenticate(httpParameters);
@@ -422,7 +422,7 @@ export class AuthenticationService {
         this.clearAuthenticationResult();
 
         // Notify listeners that a token is being destroyed
-        this.guacEventService.broadcast('guacLogout', {token});
+        this.guacEventService.broadcast('guacLogout', { token });
 
         // Delete old token
         return this.revokeToken(token);

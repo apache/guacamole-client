@@ -21,8 +21,8 @@ import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 @Component({
-    selector: 'guac-username-field',
-    templateUrl: './username-field.component.html',
+    selector     : 'guac-username-field',
+    templateUrl  : './username-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class UsernameFieldComponent extends FormFieldBaseComponent implements OnChanges {

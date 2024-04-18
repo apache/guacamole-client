@@ -17,11 +17,11 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { TranslocoModule } from '@ngneat/transloco';
-import { TextInputComponent } from './guac-text-input/text-input.component';
 import { KeyComponent } from './guac-key/key.component';
+import { TextInputComponent } from './guac-text-input/text-input.component';
 
 
 /**
@@ -32,11 +32,11 @@ import { KeyComponent } from './guac-key/key.component';
         TextInputComponent,
         KeyComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         TranslocoModule,
     ],
-    exports: [
+    exports     : [
         TextInputComponent,
         KeyComponent
     ]

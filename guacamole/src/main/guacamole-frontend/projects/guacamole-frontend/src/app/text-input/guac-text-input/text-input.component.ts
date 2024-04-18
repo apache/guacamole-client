@@ -77,8 +77,8 @@ const ALLOWED_KEYS: Record<number, boolean> = {
  * A component which displays the Guacamole text input method.
  */
 @Component({
-    selector: 'guac-text-input',
-    templateUrl: './text-input.component.html',
+    selector     : 'guac-text-input',
+    templateUrl  : './text-input.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class TextInputComponent implements AfterViewInit {
@@ -163,8 +163,7 @@ export class TextInputComponent implements AfterViewInit {
                 for (i = 0; i < deleteCount; i++)
                     this.sendKeysym(0xFFFF);
 
-            }
-            else
+            } else
                 this.sendString(content);
 
             // Reset content
@@ -181,7 +180,7 @@ export class TextInputComponent implements AfterViewInit {
         // If the text input UI has focus, prevent keydown events
         this.guacEventService.on('guacBeforeKeydown')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({event, keysym}) => {
+            .subscribe(({ event, keysym }) => {
                 // filterKeydown
                 if (this.hasFocus && !ALLOWED_KEYS[keysym])
                     event.preventDefault();
@@ -190,7 +189,7 @@ export class TextInputComponent implements AfterViewInit {
         // If the text input UI has focus, prevent keyup events
         this.guacEventService.on('guacBeforeKeyup')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({event, keysym}) => {
+            .subscribe(({ event, keysym }) => {
                 // filterKeyup
                 if (this.hasFocus && !ALLOWED_KEYS[keysym])
                     event.preventDefault();
@@ -236,8 +235,8 @@ export class TextInputComponent implements AfterViewInit {
      * @param keysym The keysym of the key to send.
      */
     sendKeysym(keysym: number): void {
-        this.guacEventService.broadcast('guacSyntheticKeydown', {keysym});
-        this.guacEventService.broadcast('guacSyntheticKeyup', {keysym});
+        this.guacEventService.broadcast('guacSyntheticKeydown', { keysym });
+        this.guacEventService.broadcast('guacSyntheticKeyup', { keysym });
     }
 
     /**

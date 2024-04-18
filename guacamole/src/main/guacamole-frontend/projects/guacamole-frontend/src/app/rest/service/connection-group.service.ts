@@ -62,7 +62,7 @@ export class ConnectionGroupService {
         // Add permission filter if specified
         let httpParameters = new HttpParams();
         if (permissionTypes)
-            httpParameters = httpParameters.appendAll({'permission': permissionTypes});
+            httpParameters = httpParameters.appendAll({ 'permission': permissionTypes });
 
         // TODO: cache: cacheService.connections,
         // Retrieve connection group

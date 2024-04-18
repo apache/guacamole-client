@@ -24,8 +24,8 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Component to display password fields.
  */
 @Component({
-    selector: 'guac-password-field',
-    templateUrl: './password-field.component.html',
+    selector     : 'guac-password-field',
+    templateUrl  : './password-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class PasswordFieldComponent extends FormFieldBaseComponent implements OnChanges {

@@ -17,13 +17,7 @@
  * under the License.
  */
 
-import {
-    Directive,
-    ElementRef,
-    Input,
-    OnChanges,
-    SimpleChanges
-} from '@angular/core';
+import { Directive, ElementRef, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ScrollState } from '../types/ScrollState';
 
 /**
@@ -38,7 +32,7 @@ export class GuacScrollDirective implements OnChanges {
     /**
      * The current scroll state of the element.
      */
-    @Input({required: false}) guacScroll!: ScrollState;
+    @Input({ required: false }) guacScroll!: ScrollState;
 
     /**
      * The element which is being scrolled, or monitored for changes

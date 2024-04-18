@@ -25,8 +25,8 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
  * list of accessible connections and groups.
  */
 @Component({
-    selector: 'guac-connection-group',
-    templateUrl: './connection-group.component.html',
+    selector     : 'guac-connection-group',
+    templateUrl  : './connection-group.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ConnectionGroupComponent {
@@ -34,6 +34,6 @@ export class ConnectionGroupComponent {
     /**
      * TODO
      */
-    @Input({required: true}) item!: GroupListItem;
+    @Input({ required: true }) item!: GroupListItem;
 
 }

@@ -25,10 +25,10 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
  * connection within the list of accessible connections and groups.
  */
 @Component({
-    selector: 'guac-new-sharing-profile',
-    templateUrl: './new-sharing-profile.component.html',
+    selector     : 'guac-new-sharing-profile',
+    templateUrl  : './new-sharing-profile.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class NewSharingProfileComponent {
-    @Input({required: true}) item!: GroupListItem;
+    @Input({ required: true }) item!: GroupListItem;
 }

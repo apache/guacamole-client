@@ -117,44 +117,44 @@ export class PermissionFlagSet {
         this.systemPermissions = template.systemPermissions || {};
 
         this.connectionPermissions = template.connectionPermissions || {
-            'READ': {},
-            'UPDATE': {},
-            'DELETE': {},
+            'READ'      : {},
+            'UPDATE'    : {},
+            'DELETE'    : {},
             'ADMINISTER': {}
         };
 
         this.connectionGroupPermissions = template.connectionGroupPermissions || {
-            'READ': {},
-            'UPDATE': {},
-            'DELETE': {},
+            'READ'      : {},
+            'UPDATE'    : {},
+            'DELETE'    : {},
             'ADMINISTER': {}
         };
 
         this.sharingProfilePermissions = template.sharingProfilePermissions || {
-            'READ': {},
-            'UPDATE': {},
-            'DELETE': {},
+            'READ'      : {},
+            'UPDATE'    : {},
+            'DELETE'    : {},
             'ADMINISTER': {}
         };
 
         this.activeConnectionPermissions = template.activeConnectionPermissions || {
-            'READ': {},
-            'UPDATE': {},
-            'DELETE': {},
+            'READ'      : {},
+            'UPDATE'    : {},
+            'DELETE'    : {},
             'ADMINISTER': {}
         };
 
         this.userPermissions = template.userPermissions || {
-            'READ': {},
-            'UPDATE': {},
-            'DELETE': {},
+            'READ'      : {},
+            'UPDATE'    : {},
+            'DELETE'    : {},
             'ADMINISTER': {}
         };
 
         this.userGroupPermissions = template.userGroupPermissions || {
-            'READ': {},
-            'UPDATE': {},
-            'DELETE': {},
+            'READ'      : {},
+            'UPDATE'    : {},
+            'DELETE'    : {},
             'ADMINISTER': {}
         };
     }

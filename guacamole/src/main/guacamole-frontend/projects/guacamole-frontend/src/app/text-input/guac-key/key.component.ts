@@ -19,17 +19,15 @@
 
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    GuacFrontendEventArguments
-} from '../../events/types/GuacFrontendEventArguments';
+import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 
 /**
  * A component which displays a button that controls the pressed state of a
  * single keyboard key.
  */
 @Component({
-    selector: 'guac-key',
-    templateUrl: './key.component.html',
+    selector     : 'guac-key',
+    templateUrl  : './key.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class KeyComponent implements OnChanges {
@@ -38,13 +36,13 @@ export class KeyComponent implements OnChanges {
      * The text to display within the key. This will be run through the
      * translation filter prior to display.
      */
-    @Input({required: true}) text!: string;
+    @Input({ required: true }) text!: string;
 
     /**
      * The keysym to send within keyup and keydown events when this key
      * is pressed or released.
      */
-    @Input({required: true}) keysym!: number;
+    @Input({ required: true }) keysym!: number;
 
     /**
      * Whether this key is sticky. Sticky keys toggle their pressed
@@ -84,8 +82,8 @@ export class KeyComponent implements OnChanges {
 
         // For all non-sticky keys, press and release key immediately
         else {
-            this.guacEventService.broadcast('guacSyntheticKeydown', {keysym: this.keysym});
-            this.guacEventService.broadcast('guacSyntheticKeyup', {keysym: this.keysym});
+            this.guacEventService.broadcast('guacSyntheticKeydown', { keysym: this.keysym });
+            this.guacEventService.broadcast('guacSyntheticKeyup', { keysym: this.keysym });
         }
 
         // Prevent loss of focus due to interaction with buttons
@@ -101,11 +99,11 @@ export class KeyComponent implements OnChanges {
 
             // If the key is pressed now, send keydown
             if (isPressed)
-                this.guacEventService.broadcast('guacSyntheticKeydown', {keysym: this.keysym});
+                this.guacEventService.broadcast('guacSyntheticKeydown', { keysym: this.keysym });
 
             // If the key was pressed, but is not pressed any longer, send keyup
             else if (wasPressed)
-                this.guacEventService.broadcast('guacSyntheticKeyup', {keysym: this.keysym});
+                this.guacEventService.broadcast('guacSyntheticKeyup', { keysym: this.keysym });
         }
     }
 }

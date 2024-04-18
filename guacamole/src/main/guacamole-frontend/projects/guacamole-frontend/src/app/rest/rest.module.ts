@@ -27,7 +27,7 @@ import { StorageModule } from '../storage/storage.module';
  */
 @NgModule({
     declarations: [],
-    imports: [
+    imports     : [
         CommonModule,
         StorageModule
     ]

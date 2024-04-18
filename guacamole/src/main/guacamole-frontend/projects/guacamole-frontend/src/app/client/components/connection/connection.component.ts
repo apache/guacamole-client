@@ -25,8 +25,8 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
  * TODO
  */
 @Component({
-    selector: 'guac-connection',
-    templateUrl: './connection.component.html',
+    selector     : 'guac-connection',
+    templateUrl  : './connection.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ConnectionComponent {
@@ -34,11 +34,11 @@ export class ConnectionComponent {
     /**
      * TODO
      */
-    @Input({required: true}) context!: ConnectionListContext;
+    @Input({ required: true }) context!: ConnectionListContext;
 
     /**
      * TODO
      */
-    @Input({required: true}) item!: GroupListItem;
+    @Input({ required: true }) item!: GroupListItem;
 
 }

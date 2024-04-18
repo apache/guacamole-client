@@ -31,20 +31,20 @@ import { GuacSortOrderDirective } from './directives/guac-sort-order.directive';
  */
 @NgModule({
     declarations: [
-    GuacFilterComponent,
-    GuacPagerComponent,
-    GuacSortOrderDirective,
-    GuacUserItemComponent
-  ],
-    imports: [
+        GuacFilterComponent,
+        GuacPagerComponent,
+        GuacSortOrderDirective,
+        GuacUserItemComponent
+    ],
+    imports     : [
         CommonModule,
         FormsModule
     ],
-    exports: [
-      GuacFilterComponent,
-      GuacPagerComponent,
-      GuacSortOrderDirective,
-      GuacUserItemComponent
+    exports     : [
+        GuacFilterComponent,
+        GuacPagerComponent,
+        GuacSortOrderDirective,
+        GuacUserItemComponent
     ]
 })
 export class ListModule {

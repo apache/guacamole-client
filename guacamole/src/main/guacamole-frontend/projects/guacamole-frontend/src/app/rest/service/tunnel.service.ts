@@ -346,17 +346,17 @@ export class TunnelService {
                 // Warn of lack of permission of a proxy rejects the upload
                 else if (xhr.status >= 400 && xhr.status < 500)
                     reject(new Error({
-                        type: Error.Type.STREAM_ERROR,
+                        type      : Error.Type.STREAM_ERROR,
                         statusCode: Guacamole.Status.Code.CLIENT_FORBIDDEN,
-                        message: 'HTTP ' + xhr.status
+                        message   : 'HTTP ' + xhr.status
                     }));
 
                 // Assume internal error for all other cases
                 else
                     reject(new Error({
-                        type: Error.Type.STREAM_ERROR,
+                        type      : Error.Type.STREAM_ERROR,
                         statusCode: Guacamole.Status.Code.INTERNAL_ERROR,
-                        message: 'HTTP ' + xhr.status
+                        message   : 'HTTP ' + xhr.status
                     }));
 
             };

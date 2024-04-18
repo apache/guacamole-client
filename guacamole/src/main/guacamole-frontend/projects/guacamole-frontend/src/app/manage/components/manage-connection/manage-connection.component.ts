@@ -18,35 +18,35 @@
  */
 
 import { Component, DestroyRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
+import { forkJoin, map, Observable, of } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
-import { ConnectionService } from '../../../rest/service/connection.service';
+import { FormService } from '../../../form/service/form.service';
+import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
+import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
+import { DataSource } from '../../../list/types/DataSource';
 import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
+import { ConnectionService } from '../../../rest/service/connection.service';
 import { PermissionService } from '../../../rest/service/permission.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { SchemaService } from '../../../rest/service/schema.service';
-import { Form } from '../../../rest/types/Form';
-import { ManagementPermissions } from '../../types/ManagementPermissions';
-import { HistoryEntryWrapper } from '../../types/HistoryEntryWrapper';
-import { Protocol } from '../../../rest/types/Protocol';
-import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { Connection } from '../../../rest/types/Connection';
-import { forkJoin, map, Observable, of } from 'rxjs';
+import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
+import { Form } from '../../../rest/types/Form';
 import { PermissionSet } from '../../../rest/types/PermissionSet';
-import { TranslocoService } from '@ngneat/transloco';
-import { FormGroup } from '@angular/forms';
-import { FormService } from '../../../form/service/form.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
-import { DataSource } from '../../../list/types/DataSource';
-import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
+import { Protocol } from '../../../rest/types/Protocol';
+import { HistoryEntryWrapper } from '../../types/HistoryEntryWrapper';
+import { ManagementPermissions } from '../../types/ManagementPermissions';
 
 /**
  * Component for editing or creating connections.
  */
 @Component({
-    selector: 'guac-manage-connection',
-    templateUrl: './manage-connection.component.html',
+    selector     : 'guac-manage-connection',
+    templateUrl  : './manage-connection.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ManageConnectionComponent implements OnInit {
@@ -60,7 +60,7 @@ export class ManageConnectionComponent implements OnInit {
     /**
      * Reference to the instance of the pager component.
      */
-    @ViewChild(GuacPagerComponent, {static: true}) pager!: GuacPagerComponent;
+    @ViewChild(GuacPagerComponent, { static: true }) pager!: GuacPagerComponent;
 
 
     /**
@@ -170,7 +170,7 @@ export class ManageConnectionComponent implements OnInit {
             this.connectionGroupService.getConnectionGroupTree(this.selectedDataSource, ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
         ])
             .subscribe({
-                next: ([connectionData, attributes, permissions, protocols, rootGroup]) => {
+                next    : ([connectionData, attributes, permissions, protocols, rootGroup]) => {
 
                     this.dataSourceView?.updateSource(this.historyEntryWrappers!);
 
@@ -337,7 +337,7 @@ export class ManageConnectionComponent implements OnInit {
         // Use skeleton connection object with no associated permissions,
         // history, or parameters
         this.connection = new Connection({
-            protocol: 'vnc',
+            protocol        : 'vnc',
             parentIdentifier: this.route.snapshot.queryParamMap.get('parent') || undefined
         });
 
@@ -373,7 +373,7 @@ export class ManageConnectionComponent implements OnInit {
     cloneConnection(): void {
         this.router.navigate(
             ['manage', encodeURIComponent(this.selectedDataSource), 'connections'],
-            {queryParams: {clone: this.identifier}}
+            { queryParams: { clone: this.identifier } }
         );
     }
 

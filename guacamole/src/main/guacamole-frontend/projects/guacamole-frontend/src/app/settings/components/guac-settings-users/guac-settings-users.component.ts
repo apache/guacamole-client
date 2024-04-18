@@ -18,31 +18,31 @@
  */
 
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ManageableUser } from '../../../manage/types/ManageableUser';
-import { PermissionSet } from '../../../rest/types/PermissionSet';
-import { SortOrder } from '../../../list/types/SortOrder';
-import { AuthenticationService } from '../../../auth/service/authentication.service';
-import { TranslocoService } from '@ngneat/transloco';
-import { BehaviorSubject, take } from 'rxjs';
-import keys from 'lodash/keys';
-import { DataSourceService } from '../../../rest/service/data-source-service.service';
 import { Router } from '@angular/router';
-import { RequestService } from '../../../rest/service/request.service';
-import { PermissionService } from '../../../rest/service/permission.service';
-import { UserService } from '../../../rest/service/user.service';
-import { User } from '../../../rest/types/User';
-import { SortService } from '../../../list/services/sort.service';
-import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
+import { TranslocoService } from '@ngneat/transloco';
+import keys from 'lodash/keys';
+import { BehaviorSubject, take } from 'rxjs';
+import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';
-import { DataSource } from '../../../list/types/DataSource';
+import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
 import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
+import { SortService } from '../../../list/services/sort.service';
+import { DataSource } from '../../../list/types/DataSource';
+import { SortOrder } from '../../../list/types/SortOrder';
+import { ManageableUser } from '../../../manage/types/ManageableUser';
+import { DataSourceService } from '../../../rest/service/data-source-service.service';
+import { PermissionService } from '../../../rest/service/permission.service';
+import { RequestService } from '../../../rest/service/request.service';
+import { UserService } from '../../../rest/service/user.service';
+import { PermissionSet } from '../../../rest/types/PermissionSet';
+import { User } from '../../../rest/types/User';
 
 /**
  * A component for managing all users in the system.
  */
 @Component({
-    selector: 'guac-settings-users',
-    templateUrl: './guac-settings-users.component.html',
+    selector     : 'guac-settings-users',
+    templateUrl  : './guac-settings-users.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacSettingsUsersComponent implements OnInit {
@@ -50,12 +50,12 @@ export class GuacSettingsUsersComponent implements OnInit {
     /**
      * Reference to the instance of the pager component.
      */
-    @ViewChild(GuacPagerComponent, {static: true}) pager!: GuacPagerComponent;
+    @ViewChild(GuacPagerComponent, { static: true }) pager!: GuacPagerComponent;
 
     /**
      * Reference to the instance of the filter component.
      */
-    @ViewChild(GuacFilterComponent, {static: true}) filter!: GuacFilterComponent;
+    @ViewChild(GuacFilterComponent, { static: true }) filter!: GuacFilterComponent;
 
     /**
      * Identifier of the current user
@@ -220,7 +220,7 @@ export class GuacSettingsUsersComponent implements OnInit {
                             addedUsers[user.username] = user;
                             manageableUsers.push(new ManageableUser({
                                 dataSource: dataSource,
-                                user: user
+                                user      : user
                             }));
 
                         }

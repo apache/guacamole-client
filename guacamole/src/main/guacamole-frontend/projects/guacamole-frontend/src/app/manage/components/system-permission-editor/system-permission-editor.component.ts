@@ -18,12 +18,12 @@
  */
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { PermissionFlagSet } from '../../../rest/types/PermissionFlagSet';
-import { PermissionSet } from '../../../rest/types/PermissionSet';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { DataSourceService } from '../../../rest/service/data-source-service.service';
 import { PermissionService } from '../../../rest/service/permission.service';
 import { RequestService } from '../../../rest/service/request.service';
+import { PermissionFlagSet } from '../../../rest/types/PermissionFlagSet';
+import { PermissionSet } from '../../../rest/types/PermissionSet';
 
 /**
  * A directive for manipulating the system permissions granted within a given
@@ -33,8 +33,8 @@ import { RequestService } from '../../../rest/service/request.service';
  * password/attributes) may also be manipulated.
  */
 @Component({
-    selector: 'system-permission-editor',
-    templateUrl: './system-permission-editor.component.html',
+    selector     : 'system-permission-editor',
+    templateUrl  : './system-permission-editor.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class SystemPermissionEditorComponent implements OnInit {
@@ -43,7 +43,7 @@ export class SystemPermissionEditorComponent implements OnInit {
      * The unique identifier of the data source associated with the
      * permissions being manipulated.
      */
-    @Input({required: true}) dataSource!: string;
+    @Input({ required: true }) dataSource!: string;
 
     /**
      * The username of the user whose self-update permission (whether
@@ -58,19 +58,19 @@ export class SystemPermissionEditorComponent implements OnInit {
      * {@link PermissionFlagSet} will be modified as changes are made
      * through this permission editor.
      */
-    @Input({required: true}) permissionFlags!: PermissionFlagSet;
+    @Input({ required: true }) permissionFlags!: PermissionFlagSet;
 
     /**
      * The set of permissions that have been added, relative to the
      * initial state of the permissions being manipulated.
      */
-    @Input({required: true}) permissionsAdded!: PermissionSet;
+    @Input({ required: true }) permissionsAdded!: PermissionSet;
 
     /**
      * The set of permissions that have been removed, relative to the
      * initial state of the permissions being manipulated.
      */
-    @Input({required: true}) permissionsRemoved!: PermissionSet;
+    @Input({ required: true }) permissionsRemoved!: PermissionSet;
 
     /**
      * The identifiers of all data sources currently available to the

@@ -27,8 +27,8 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Component for time fields.
  */
 @Component({
-    selector: 'guac-time-field',
-    templateUrl: './time-field.component.html',
+    selector     : 'guac-time-field',
+    templateUrl  : './time-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class TimeFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
@@ -58,14 +58,14 @@ export class TimeFieldComponent extends FormFieldBaseComponent implements OnInit
 
         // Set initial value of typed control
         const initialValue: Date | null = this.control?.value ? this.parseTime(this.control.value) : null;
-        this.typedControl.setValue(initialValue, {emitEvent: false});
+        this.typedControl.setValue(initialValue, { emitEvent: false });
 
         // Update typed value when model is changed
         this.control?.valueChanges
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(value => {
                 const newTypedValue = value ? this.parseTime(value) : null;
-                this.typedControl.setValue(newTypedValue, {emitEvent: false});
+                this.typedControl.setValue(newTypedValue, { emitEvent: false });
             });
 
         // Update string value in model when typed value is changed

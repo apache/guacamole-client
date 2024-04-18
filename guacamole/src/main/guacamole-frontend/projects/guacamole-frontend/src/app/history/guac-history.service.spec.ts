@@ -18,9 +18,9 @@
  */
 
 import { TestBed } from '@angular/core/testing';
+import { LocalStorageService } from '../storage/local-storage.service';
 
 import { GuacHistoryService } from './guac-history.service';
-import { LocalStorageService } from '../storage/local-storage.service';
 
 describe('GuacHistoryService Unit-Test', () => {
     let service: GuacHistoryService;
@@ -28,15 +28,15 @@ describe('GuacHistoryService Unit-Test', () => {
     const fakeLocalStorageService = jasmine.createSpyObj<LocalStorageService>(
         'LocalStorageService',
         {
-            getItem: null,
-            setItem: undefined,
+            getItem   : null,
+            setItem   : undefined,
             removeItem: undefined,
         }
     );
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            providers: [{provide: LocalStorageService, useValue: fakeLocalStorageService}]
+            providers: [{ provide: LocalStorageService, useValue: fakeLocalStorageService }]
         });
         service = TestBed.inject(GuacHistoryService);
     });

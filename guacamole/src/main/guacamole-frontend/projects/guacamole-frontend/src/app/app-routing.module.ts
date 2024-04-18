@@ -19,46 +19,46 @@
 
 import { inject, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, ResolveFn, Route, Router, RouterModule, Routes } from '@angular/router';
+import { TranslocoService } from '@ngneat/transloco';
+import { catchError, map, Observable, of, switchMap, take } from 'rxjs';
+import { AuthenticationService } from './auth/service/authentication.service';
+import { AuthenticationResult } from './auth/types/AuthenticationResult';
+import { ClientPageComponent } from './client/components/client-page/client-page.component';
+import { HomeComponent } from './home/components/home/home.component';
 import {
     ConnectionImportFileHelpComponent
 } from './import/components/connection-import-file-help/connection-import-file-help.component';
 import { ImportConnectionsComponent } from './import/components/import-connections/import-connections.component';
-import { ManageUserComponent } from './manage/components/manage-user/manage-user.component';
-import { ManageConnectionComponent } from './manage/components/manage-connection/manage-connection.component';
-import { SettingsComponent } from './settings/components/settings/settings.component';
-import { GuacSettingsUsersComponent } from './settings/components/guac-settings-users/guac-settings-users.component';
-import {
-    GuacSettingsPreferencesComponent
-} from './settings/components/guac-settings-preferences/guac-settings-preferences.component';
-import {
-    GuacSettingsUserGroupsComponent
-} from './settings/components/guac-settings-user-groups/guac-settings-user-groups.component';
-import {
-    GuacSettingsConnectionsComponent
-} from './settings/components/guac-settings-connections/guac-settings-connections.component';
-import {
-    GuacSettingsConnectionHistoryComponent
-} from './settings/components/guac-settings-connection-history/guac-settings-connection-history.component';
-import {
-    GuacSettingsSessionsComponent
-} from './settings/components/guac-settings-sessions/guac-settings-sessions.component';
-import { HomeComponent } from './home/components/home/home.component';
-import { UserPageService } from './manage/services/user-page.service';
-import { AuthenticationService } from './auth/service/authentication.service';
-import { catchError, map, Observable, of, switchMap, take } from 'rxjs';
-import { AuthenticationResult } from './auth/types/AuthenticationResult';
-import { ClientPageComponent } from './client/components/client-page/client-page.component';
-import { ManageUserGroupComponent } from './manage/components/manage-user-group/manage-user-group.component';
-import { TranslocoService } from '@ngneat/transloco';
 import {
     ManageConnectionGroupComponent
 } from './manage/components/manage-connection-group/manage-connection-group.component';
+import { ManageConnectionComponent } from './manage/components/manage-connection/manage-connection.component';
+import {
+    ManageSharingProfileComponent
+} from './manage/components/manage-sharing-profile/manage-sharing-profile.component';
+import { ManageUserGroupComponent } from './manage/components/manage-user-group/manage-user-group.component';
+import { ManageUserComponent } from './manage/components/manage-user/manage-user.component';
+import { UserPageService } from './manage/services/user-page.service';
 import {
     ConnectionHistoryPlayerComponent
 } from './settings/components/connection-history-player/connection-history-player.component';
 import {
-    ManageSharingProfileComponent
-} from "./manage/components/manage-sharing-profile/manage-sharing-profile.component";
+    GuacSettingsConnectionHistoryComponent
+} from './settings/components/guac-settings-connection-history/guac-settings-connection-history.component';
+import {
+    GuacSettingsConnectionsComponent
+} from './settings/components/guac-settings-connections/guac-settings-connections.component';
+import {
+    GuacSettingsPreferencesComponent
+} from './settings/components/guac-settings-preferences/guac-settings-preferences.component';
+import {
+    GuacSettingsSessionsComponent
+} from './settings/components/guac-settings-sessions/guac-settings-sessions.component';
+import {
+    GuacSettingsUserGroupsComponent
+} from './settings/components/guac-settings-user-groups/guac-settings-user-groups.component';
+import { GuacSettingsUsersComponent } from './settings/components/guac-settings-users/guac-settings-users.component';
+import { SettingsComponent } from './settings/components/settings/settings.component';
 
 
 /**
@@ -178,160 +178,160 @@ export const appRoutes: Routes = [
 
     // Home screen
     {
-        path: '',
+        path     : '',
         component: HomeComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'home'},
+        title    : titleResolver,
+        data     : { titleKey: 'APP.NAME', bodyClassName: 'home' },
         // Run the canActivate guard on every navigation, even if the route hasn't changed
         runGuardsAndResolvers: 'always',
-        canActivate: [routeToUserHomePage]
+        canActivate          : [routeToUserHomePage]
     },
 
     // Connection import page
     {
-        path: 'import/:dataSource/connection',
-        component: ImportConnectionsComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'settings'},
+        path       : 'import/:dataSource/connection',
+        component  : ImportConnectionsComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'settings' },
         canActivate: [authGuard]
     },
 
     // Connection import file format help page
     {
-        path: 'import/connection/file-format-help',
-        component: ConnectionImportFileHelpComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'settings'},
+        path       : 'import/connection/file-format-help',
+        component  : ConnectionImportFileHelpComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'settings' },
         canActivate: [authGuard]
     },
 
     // Management screen
     {
-        path: 'settings',
-        component: SettingsComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'settings'},
+        path       : 'settings',
+        component  : SettingsComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'settings' },
         canActivate: [authGuard],
-        children: [
-            {path: 'users', component: GuacSettingsUsersComponent},
-            {path: 'userGroups', component: GuacSettingsUserGroupsComponent},
-            {path: ':dataSource/connections', component: GuacSettingsConnectionsComponent},
-            {path: ':dataSource/history', component: GuacSettingsConnectionHistoryComponent},
-            {path: 'sessions', component: GuacSettingsSessionsComponent},
-            {path: 'preferences', component: GuacSettingsPreferencesComponent}
+        children   : [
+            { path: 'users', component: GuacSettingsUsersComponent },
+            { path: 'userGroups', component: GuacSettingsUserGroupsComponent },
+            { path: ':dataSource/connections', component: GuacSettingsConnectionsComponent },
+            { path: ':dataSource/history', component: GuacSettingsConnectionHistoryComponent },
+            { path: 'sessions', component: GuacSettingsSessionsComponent },
+            { path: 'preferences', component: GuacSettingsPreferencesComponent }
         ]
     },
 
     // Connection editor
     {
-        path: 'manage/:dataSource/connections/:id',
-        component: ManageConnectionComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/connections/:id',
+        component  : ManageConnectionComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // Connection editor for creating a new connection
     {
-        path: 'manage/:dataSource/connections',
-        component: ManageConnectionComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/connections',
+        component  : ManageConnectionComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // Sharing profile editor
     {
-        path: 'manage/:dataSource/sharingProfiles/:id',
-        component: ManageSharingProfileComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/sharingProfiles/:id',
+        component  : ManageSharingProfileComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // Sharing profile editor for creating a new sharing profile
     {
-        path: 'manage/:dataSource/sharingProfiles',
-        component: ManageSharingProfileComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/sharingProfiles',
+        component  : ManageSharingProfileComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // Connection group editor
     {
-        path: 'manage/:dataSource/connectionGroups/:id',
-        component: ManageConnectionGroupComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/connectionGroups/:id',
+        component  : ManageConnectionGroupComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // Connection group editor for creating a new connection group
     {
-        path: 'manage/:dataSource/connectionGroups',
-        component: ManageConnectionGroupComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/connectionGroups',
+        component  : ManageConnectionGroupComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // User editor
     {
-        path: 'manage/:dataSource/users/:id',
-        component: ManageUserComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/users/:id',
+        component  : ManageUserComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // User editor for creating a new user
     {
-        path: 'manage/:dataSource/users',
-        component: ManageUserComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/users',
+        component  : ManageUserComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // User group editor
     {
-        path: 'manage/:dataSource/userGroups/:id',
-        component: ManageUserGroupComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/userGroups/:id',
+        component  : ManageUserGroupComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // User group editor for creating a new user group
     {
-        path: 'manage/:dataSource/userGroups',
-        component: ManageUserGroupComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'manage'},
+        path       : 'manage/:dataSource/userGroups',
+        component  : ManageUserGroupComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'manage' },
         canActivate: [authGuard]
     },
 
     // Recording player
     {
-        path: 'settings/:dataSource/recording/:identifier/:name',
-        component: ConnectionHistoryPlayerComponent,
-        title: titleResolver,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'settings'},
+        path       : 'settings/:dataSource/recording/:identifier/:name',
+        component  : ConnectionHistoryPlayerComponent,
+        title      : titleResolver,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'settings' },
         canActivate: [authGuard]
     },
 
     // Client view
     {
-        path: 'client/:id',
-        component: ClientPageComponent,
-        data: {titleKey: 'APP.NAME', bodyClassName: 'client'},
+        path       : 'client/:id',
+        component  : ClientPageComponent,
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'client' },
         canActivate: [authGuard]
     },
 
     // Redirect to home screen if page not found
     {
-        path: '**',
+        path      : '**',
         redirectTo: ''
     }
 

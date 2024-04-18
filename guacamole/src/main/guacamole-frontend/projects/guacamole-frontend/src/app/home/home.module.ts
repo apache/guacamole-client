@@ -38,7 +38,7 @@ import { HomeComponent } from './components/home/home.component';
         ConnectionGroupComponent,
         HomeComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         TranslocoModule,
         GroupListModule,
@@ -47,7 +47,7 @@ import { HomeComponent } from './components/home/home.component';
         RestModule,
         RouterModule
     ],
-    exports: [
+    exports     : [
         HomeComponent,
     ]
 })

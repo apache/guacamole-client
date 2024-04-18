@@ -30,17 +30,17 @@ import { FormsModule } from '@angular/forms';
  */
 @NgModule({
     declarations: [
-    GuacGroupListComponent,
-    GuacGroupListFilterComponent
-  ],
-    imports: [
+        GuacGroupListComponent,
+        GuacGroupListFilterComponent
+    ],
+    imports     : [
         CommonModule,
         ListModule,
         FormsModule
     ],
-    exports: [
-      GuacGroupListComponent,
-      GuacGroupListFilterComponent
+    exports     : [
+        GuacGroupListComponent,
+        GuacGroupListFilterComponent
     ]
 })
 export class GroupListModule {

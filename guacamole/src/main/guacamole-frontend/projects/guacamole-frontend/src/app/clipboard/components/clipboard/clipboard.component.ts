@@ -19,16 +19,14 @@
 
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    GuacFrontendEventArguments
-} from '../../../events/types/GuacFrontendEventArguments';
-import { ClipboardData } from '../../types/ClipboardData';
-import { ClipboardService } from '../../services/clipboard.service';
 import { Subject } from 'rxjs';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
+import { ClipboardService } from '../../services/clipboard.service';
+import { ClipboardData } from '../../types/ClipboardData';
 
 @Component({
-    selector: 'guac-clipboard',
-    templateUrl: './clipboard.component.html',
+    selector     : 'guac-clipboard',
+    templateUrl  : './clipboard.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -94,7 +92,7 @@ export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         // Update remote clipboard if local clipboard changes
         this.guacEventService.on('guacClipboard')
-            .subscribe(({data}) => {
+            .subscribe(({ data }) => {
                 this.updateClipboardEditor(data);
             });
     }

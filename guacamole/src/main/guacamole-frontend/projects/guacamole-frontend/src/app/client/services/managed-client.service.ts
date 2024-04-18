@@ -17,39 +17,35 @@
  * under the License.
  */
 
-import { Inject, Injectable } from '@angular/core';
-import { ClientIdentifier } from '../../navigation/types/ClientIdentifier';
-import {
-    GuacAudioService,
-    GuacImageService,
-    GuacVideoService,
-} from 'guacamole-frontend-lib';
 import { DOCUMENT } from '@angular/common';
-import { AuthenticationService } from '../../auth/service/authentication.service';
-import { PreferenceService } from '../../settings/services/preference.service';
-import { ManagedClient } from '../types/ManagedClient';
-import { TunnelService } from '../../rest/service/tunnel.service';
-import { RequestService } from '../../rest/service/request.service';
+import { Inject, Injectable } from '@angular/core';
+import { GuacAudioService, GuacImageService, GuacVideoService, } from 'guacamole-frontend-lib';
 import isEmpty from 'lodash/isEmpty';
-import { ManagedArgument } from '../types/ManagedArgument';
-import { NOOP } from '../../util/noop';
-import { ManagedFilesystemService } from './managed-filesystem.service';
-import { ConnectionGroupService } from '../../rest/service/connection-group.service';
-import { ActiveConnectionService } from '../../rest/service/active-connection.service';
-import { ConnectionService } from '../../rest/service/connection.service';
-import { ManagedFilesystem } from '../types/ManagedFilesystem';
-import { SharingProfile } from '../../rest/types/SharingProfile';
 import { catchError, Observable, tap } from 'rxjs';
-import { ManagedShareLink } from '../types/ManagedShareLink';
-import { UserCredentials } from '../../rest/types/UserCredentials';
-import { ManagedFileUploadService } from './managed-file-upload.service';
-import { ClientIdentifierService } from '../../navigation/service/client-identifier.service';
-import { GuacHistoryService } from '../../history/guac-history.service';
+import { AuthenticationService } from '../../auth/service/authentication.service';
 import { ClipboardService } from '../../clipboard/services/clipboard.service';
-import { ManagedClientState } from '../types/ManagedClientState';
 import { ClipboardData } from '../../clipboard/types/ClipboardData';
+import { GuacHistoryService } from '../../history/guac-history.service';
+import { ClientIdentifierService } from '../../navigation/service/client-identifier.service';
+import { ClientIdentifier } from '../../navigation/types/ClientIdentifier';
+import { ActiveConnectionService } from '../../rest/service/active-connection.service';
+import { ConnectionGroupService } from '../../rest/service/connection-group.service';
+import { ConnectionService } from '../../rest/service/connection.service';
+import { RequestService } from '../../rest/service/request.service';
+import { TunnelService } from '../../rest/service/tunnel.service';
+import { SharingProfile } from '../../rest/types/SharingProfile';
+import { UserCredentials } from '../../rest/types/UserCredentials';
+import { PreferenceService } from '../../settings/services/preference.service';
+import { NOOP } from '../../util/noop';
+import { ManagedArgument } from '../types/ManagedArgument';
+import { ManagedClient } from '../types/ManagedClient';
+import { ManagedClientState } from '../types/ManagedClientState';
 import { ManagedClientThumbnail } from '../types/ManagedClientThumbnail';
 import { ManagedDisplay } from '../types/ManagedDisplay';
+import { ManagedFilesystem } from '../types/ManagedFilesystem';
+import { ManagedShareLink } from '../types/ManagedShareLink';
+import { ManagedFileUploadService } from './managed-file-upload.service';
+import { ManagedFilesystemService } from './managed-filesystem.service';
 
 /**
  * A service for working with ManagedClient objects.
@@ -222,7 +218,7 @@ export class ManagedClientService {
 
         // Associate new managed client with new client and tunnel
         const managedClient: ManagedClient = new ManagedClient({
-            id: id,
+            id    : id,
             client: client,
             tunnel: tunnel
         });
@@ -238,7 +234,7 @@ export class ManagedClientService {
         // known
         tunnel.onuuid = (uuid: string) => {
             this.tunnelService.getProtocol(uuid).subscribe({
-                next: protocol => {
+                next    : protocol => {
                     managedClient.protocol = protocol.name !== undefined ? protocol.name : null;
                     managedClient.forms = protocol.connectionForms;
                 }, error: this.requestService.WARN
@@ -426,8 +422,8 @@ export class ManagedClientService {
                 reader.onend = () => {
                     this.clipboardService.setClipboard(new ClipboardData({
                         source: managedClient.id,
-                        type: mimetype,
-                        data: data
+                        type  : mimetype,
+                        data  : data
                     })).catch(NOOP);
                 };
 
@@ -439,8 +435,8 @@ export class ManagedClientService {
                 reader.onend = () => {
                     this.clipboardService.setClipboard(new ClipboardData({
                         source: managedClient.id,
-                        type: mimetype,
-                        data: (reader as Guacamole.BlobReader).getBlob()
+                        type  : mimetype,
+                        data  : (reader as Guacamole.BlobReader).getBlob()
                     })).catch(NOOP);
                 };
             }
@@ -488,7 +484,7 @@ export class ManagedClientService {
         if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
             this.connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id!)
                 .subscribe({
-                    next: connection => {
+                    next    : connection => {
                         managedClient.name = managedClient.title = connection.name;
                     }, error: this.requestService.WARN
                 });
@@ -498,7 +494,7 @@ export class ManagedClientService {
         else if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION_GROUP) {
             this.connectionGroupService.getConnectionGroup(clientIdentifier.dataSource, clientIdentifier.id)
                 .subscribe({
-                    next: group => {
+                    next    : group => {
                         managedClient.name = managedClient.title = group.name;
                     }, error: this.requestService.WARN
                 });
@@ -509,14 +505,14 @@ export class ManagedClientService {
         else if (clientIdentifier.type === ClientIdentifier.Types.ACTIVE_CONNECTION) {
             this.activeConnectionService.getActiveConnection(clientIdentifier.dataSource, clientIdentifier.id!)
                 .subscribe({
-                    next: activeConnection => {
+                    next    : activeConnection => {
 
                         // Attempt to retrieve connection details only if the
                         // underlying connection is known
                         if (activeConnection.connectionIdentifier) {
                             this.connectionService.getConnection(clientIdentifier.dataSource, activeConnection.connectionIdentifier)
                                 .subscribe({
-                                    next: connection => {
+                                    next    : connection => {
                                         managedClient.name = managedClient.title = connection.name;
                                     }, error: this.requestService.WARN
                                 });
@@ -826,7 +822,7 @@ export class ManagedClientService {
             // Store updated thumbnail within client
             managedClient.thumbnail = new ManagedClientThumbnail({
                 timestamp: new Date().getTime(),
-                canvas: thumbnail
+                canvas   : thumbnail
             });
 
             // Update historical thumbnail

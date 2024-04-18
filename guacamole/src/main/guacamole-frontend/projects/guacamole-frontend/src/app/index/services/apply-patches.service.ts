@@ -93,7 +93,7 @@ export class ApplyPatchesService {
     applyPatches(): void {
 
         // Apply each operation implied by the meta tags
-        this.patches.forEach(({operations, elements}) => {
+        this.patches.forEach(({ operations, elements }) => {
             operations.forEach(operation => {
                 operation.apply([this.document.body], elements);
             });

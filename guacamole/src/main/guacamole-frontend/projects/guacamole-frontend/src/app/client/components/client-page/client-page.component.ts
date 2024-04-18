@@ -32,24 +32,11 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { AuthenticationService } from '../../../auth/service/authentication.service';
-import { ClipboardService } from '../../../clipboard/services/clipboard.service';
-import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
-import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
-import { GuacEventService, ScrollState } from 'guacamole-frontend-lib';
-import { DataSourceService } from '../../../rest/service/data-source-service.service';
-import { PreferenceService } from '../../../settings/services/preference.service';
-import { RequestService } from '../../../rest/service/request.service';
-import { TunnelService } from '../../../rest/service/tunnel.service';
-import { UserPageService } from '../../../manage/services/user-page.service';
-import { ClientMenu } from '../../types/ClientMenu';
-import { ManagedClient } from '../../types/ManagedClient';
-import { ManagedClientService } from '../../services/managed-client.service';
-import { ManagedClientGroup } from '../../types/ManagedClientGroup';
-import { ConnectionListContext } from '../../types/ConnectionListContext';
-import { ActivatedRoute, Router } from '@angular/router';
-import { GuacClientManagerService } from '../../services/guac-client-manager.service';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { FormGroup } from '@angular/forms';
+import { Title } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
+import { GuacEventService, ScrollState } from 'guacamole-frontend-lib';
 import _filter from 'lodash/filter';
 import findIndex from 'lodash/findIndex';
 import findKey from 'lodash/findKey';
@@ -57,29 +44,42 @@ import intersection from 'lodash/intersection';
 import isEmpty from 'lodash/isEmpty';
 import pull from 'lodash/pull';
 import { pairwise, startWith, tap } from 'rxjs';
-import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
-import { SharingProfile } from '../../../rest/types/SharingProfile';
-import { ManagedClientState } from '../../types/ManagedClientState';
-import { ManagedFilesystem } from '../../types/ManagedFilesystem';
-import { ManagedFilesystemService } from '../../services/managed-filesystem.service';
-import { NotificationAction } from '../../../notification/types/NotificationAction';
-import { Protocol } from '../../../rest/types/Protocol';
-import { FormGroup } from '@angular/forms';
+import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { ClipboardService } from '../../../clipboard/services/clipboard.service';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { FormService } from '../../../form/service/form.service';
-import { ConnectionGroupDataSource } from '../../../group-list/types/ConnectionGroupDataSource';
-import { FilterService } from '../../../list/services/filter.service';
 import {
     GuacGroupListFilterComponent
 } from '../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component';
-import { Title } from '@angular/platform-browser';
-import { IconService } from "../../../index/services/icon.service";
+import { ConnectionGroupDataSource } from '../../../group-list/types/ConnectionGroupDataSource';
+import { IconService } from '../../../index/services/icon.service';
+import { FilterService } from '../../../list/services/filter.service';
+import { UserPageService } from '../../../manage/services/user-page.service';
+import { NotificationAction } from '../../../notification/types/NotificationAction';
+import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
+import { DataSourceService } from '../../../rest/service/data-source-service.service';
+import { RequestService } from '../../../rest/service/request.service';
+import { TunnelService } from '../../../rest/service/tunnel.service';
+import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
+import { Protocol } from '../../../rest/types/Protocol';
+import { SharingProfile } from '../../../rest/types/SharingProfile';
+import { PreferenceService } from '../../../settings/services/preference.service';
+import { GuacClientManagerService } from '../../services/guac-client-manager.service';
+import { ManagedClientService } from '../../services/managed-client.service';
+import { ManagedFilesystemService } from '../../services/managed-filesystem.service';
+import { ClientMenu } from '../../types/ClientMenu';
+import { ConnectionListContext } from '../../types/ConnectionListContext';
+import { ManagedClient } from '../../types/ManagedClient';
+import { ManagedClientGroup } from '../../types/ManagedClientGroup';
+import { ManagedClientState } from '../../types/ManagedClientState';
+import { ManagedFilesystem } from '../../types/ManagedFilesystem';
 
 /**
  * The Component for the page used to connect to a connection or balancing group.
  */
 @Component({
-    selector: 'guac-client-page',
-    templateUrl: './client-page.component.html',
+    selector     : 'guac-client-page',
+    templateUrl  : './client-page.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked, OnDestroy {
@@ -87,7 +87,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
     /**
      * TODO
      */
-    @Input({required: true, alias: 'id'}) groupId!: string;
+    @Input({ required: true, alias: 'id' }) groupId!: string;
 
     /**
      * The minimum number of pixels a drag gesture must move to result in the
@@ -148,10 +148,10 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
      * Menu-specific properties.
      */
     protected menu: ClientMenu = {
-        shown: signal(false),
-        inputMethod: signal(this.preferenceService.preferences.inputMethod),
+        shown               : signal(false),
+        inputMethod         : signal(this.preferenceService.preferences.inputMethod),
         emulateAbsoluteMouse: signal(this.preferenceService.preferences.emulateAbsoluteMouse),
-        scrollState: signal(new ScrollState()),
+        scrollState         : signal(new ScrollState()),
         connectionParameters: {}
     };
 
@@ -285,7 +285,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
         // Automatically track and cache the currently-focused client
         this.guacEventService.on('guacClientFocused')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({newFocusedClient}) => {
+            .subscribe(({ newFocusedClient }) => {
 
                 const oldFocusedClient = this.focusedClient;
                 this.focusedClient = newFocusedClient;
@@ -305,7 +305,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
         // keypresses from reaching any Guacamole client
         this.guacEventService.on('guacBeforeKeydown')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({event, keyboard}) => {
+            .subscribe(({ event, keyboard }) => {
 
                 // Toggle menu if menu shortcut (Ctrl+Alt+Shift) is pressed
                 if (this.isMenuShortcutPressed(keyboard)) {
@@ -329,7 +329,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
         // Prevent all keyup events while menu is open
         this.guacEventService.on('guacBeforeKeyup')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({event}) => {
+            .subscribe(({ event }) => {
                 if (this.menu.shown())
                     event.preventDefault();
             });
@@ -337,7 +337,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
         // Send Ctrl-Alt-Delete when Ctrl-Alt-End is pressed.
         this.guacEventService.on('guacKeydown')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({event, keysym, keyboard}) => {
+            .subscribe(({ event, keysym, keyboard }) => {
 
                 // If one of the End keys is pressed, and we have a one keysym from each
                 // of Ctrl and Alt groups, send Ctrl-Alt-Delete.
@@ -354,7 +354,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
                     this.substituteKeysPressed[keysym] = this.DEL_KEY;
 
                     // Send through the delete key.
-                    this.guacEventService.broadcast('guacSyntheticKeydown', {keysym: this.DEL_KEY});
+                    this.guacEventService.broadcast('guacSyntheticKeydown', { keysym: this.DEL_KEY });
                 }
 
             });
@@ -362,12 +362,12 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
         // Update pressed keys as they are released
         this.guacEventService.on('guacKeyup')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({event, keysym}) => {
+            .subscribe(({ event, keysym }) => {
 
                 // Deal with substitute key presses
                 if (this.substituteKeysPressed[keysym]) {
                     event.preventDefault();
-                    this.guacEventService.broadcast('guacSyntheticKeyup', {keysym: this.substituteKeysPressed[keysym]});
+                    this.guacEventService.broadcast('guacSyntheticKeyup', { keysym: this.substituteKeysPressed[keysym] });
                     delete this.substituteKeysPressed[keysym];
                 }
 
@@ -382,7 +382,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
      * @param filterComponent
      *     The filter component which will provide the filter string.
      */
-    @ViewChild(GuacGroupListFilterComponent, {static: false}) set filterComponent(filterComponent: GuacGroupListFilterComponent | undefined) {
+    @ViewChild(GuacGroupListFilterComponent, { static: false }) set filterComponent(filterComponent: GuacGroupListFilterComponent | undefined) {
 
         if (filterComponent) {
             this.rootConnectionGroupsDataSource.setSearchString(filterComponent.searchStringChange);
@@ -454,7 +454,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
      * Guacamole menu.
      */
     connectionListContext: ConnectionListContext = {
-        attachedClients: {},
+        attachedClients      : {},
         updateAttachedClients: id => {
             this.addRemoveClient(id, !this.connectionListContext.attachedClients[id]);
         }
@@ -790,9 +790,9 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
      * any.
      */
     private DISCONNECT_MENU_ACTION: NotificationAction = {
-        name: 'CLIENT.ACTION_DISCONNECT',
+        name     : 'CLIENT.ACTION_DISCONNECT',
         className: 'danger disconnect',
-        callback: () => this.disconnect()
+        callback : () => this.disconnect()
     };
 
     // Set client-specific menu actions

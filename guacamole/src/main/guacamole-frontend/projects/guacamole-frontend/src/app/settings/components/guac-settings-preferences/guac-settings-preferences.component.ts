@@ -18,30 +18,30 @@
  */
 
 import { Component, DestroyRef, OnInit, ViewEncapsulation } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormGroup } from '@angular/forms';
+import { TranslocoService } from '@ngneat/transloco';
+import { EMPTY, forkJoin } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { FormService } from '../../../form/service/form.service';
+import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
+import { NotificationAction } from '../../../notification/types/NotificationAction';
 import { PermissionService } from '../../../rest/service/permission.service';
-import { PreferenceService } from '../../services/preference.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { SchemaService } from '../../../rest/service/schema.service';
 import { UserService } from '../../../rest/service/user.service';
-import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
-import { NotificationAction } from '../../../notification/types/NotificationAction';
-import { User } from '../../../rest/types/User';
-import { Form } from '../../../rest/types/Form';
 import { Field } from '../../../rest/types/Field';
+import { Form } from '../../../rest/types/Form';
 import { PermissionSet } from '../../../rest/types/PermissionSet';
-import { EMPTY, forkJoin } from 'rxjs';
-import { FormGroup } from '@angular/forms';
-import { FormService } from '../../../form/service/form.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { TranslocoService } from '@ngneat/transloco';
+import { User } from '../../../rest/types/User';
+import { PreferenceService } from '../../services/preference.service';
 
 /**
  * A component for managing preferences local to the current user.
  */
 @Component({
-    selector: 'guac-settings-preferences',
-    templateUrl: './guac-settings-preferences.component.html',
+    selector     : 'guac-settings-preferences',
+    templateUrl  : './guac-settings-preferences.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacSettingsPreferencesComponent implements OnInit {
@@ -75,8 +75,8 @@ export class GuacSettingsPreferencesComponent implements OnInit {
      * $scope.preferences.
      */
     localeFields: Field[] = [
-        {type: Field.Type.LANGUAGE, name: 'language'},
-        {type: Field.Type.TIMEZONE, name: 'timezone'}
+        { type: Field.Type.LANGUAGE, name: 'language' },
+        { type: Field.Type.TIMEZONE, name: 'timezone' }
     ];
 
     /**
@@ -160,7 +160,7 @@ export class GuacSettingsPreferencesComponent implements OnInit {
         // Retrieve current permissions
         this.permissionService.getEffectivePermissions(this.dataSource!, this.username!)
             .subscribe({
-                next: permissions => {
+                next : permissions => {
 
                     // Add action for updating password or user preferences if permission is granted
                     this.canUpdateSelf = (
@@ -215,7 +215,7 @@ export class GuacSettingsPreferencesComponent implements OnInit {
                     this.translocoService.setActiveLang(value.language);
                 }
 
-                const newPreferences = {...this.preferenceService.preferences, ...value};
+                const newPreferences = { ...this.preferenceService.preferences, ...value };
                 this.preferenceService.preferences = newPreferences;
             });
 
@@ -231,11 +231,11 @@ export class GuacSettingsPreferencesComponent implements OnInit {
         if (this.newPasswordMatch !== this.newPassword) {
             this.guacNotification.showStatus({
                 className: 'error',
-                title: 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
-                text: {
+                title    : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
+                text     : {
                     key: 'SETTINGS_PREFERENCES.ERROR_PASSWORD_MISMATCH'
                 },
-                actions: [this.ACKNOWLEDGE_ACTION]
+                actions  : [this.ACKNOWLEDGE_ACTION]
             });
             return;
         }
@@ -244,11 +244,11 @@ export class GuacSettingsPreferencesComponent implements OnInit {
         if (!this.newPassword) {
             this.guacNotification.showStatus({
                 className: 'error',
-                title: 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
-                text: {
+                title    : 'SETTINGS_PREFERENCES.DIALOG_HEADER_ERROR',
+                text     : {
                     key: 'SETTINGS_PREFERENCES.ERROR_PASSWORD_BLANK'
                 },
-                actions: [this.ACKNOWLEDGE_ACTION]
+                actions  : [this.ACKNOWLEDGE_ACTION]
             });
             return;
         }
@@ -256,7 +256,7 @@ export class GuacSettingsPreferencesComponent implements OnInit {
         // Save the user with the new password
         this.userService.updateUserPassword(this.dataSource!, this.username!, this.oldPassword!, this.newPassword)
             .subscribe({
-                next: () => {
+                next : () => {
 
                     // Clear the password fields
                     this.oldPassword = null;
@@ -265,7 +265,7 @@ export class GuacSettingsPreferencesComponent implements OnInit {
 
                     // Indicate that the password has been changed
                     this.guacNotification.showStatus({
-                        text: {
+                        text   : {
                             key: 'SETTINGS_PREFERENCES.INFO_PASSWORD_CHANGED'
                         },
                         actions: [this.ACKNOWLEDGE_ACTION]
@@ -297,7 +297,7 @@ export class GuacSettingsPreferencesComponent implements OnInit {
     saveUser(): void {
         this.userService.saveUser(this.dataSource!, this.user!)
             .subscribe({
-                next: () => this.guacNotification.showStatus({
+                next : () => this.guacNotification.showStatus({
                     text: {
                         key: 'SETTINGS_PREFERENCES.INFO_PREFERENCE_ATTRIBUTES_CHANGED'
                     },

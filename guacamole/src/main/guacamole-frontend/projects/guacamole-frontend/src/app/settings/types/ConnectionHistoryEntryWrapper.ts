@@ -17,10 +17,10 @@
  * under the License.
  */
 
-import { ConnectionHistoryEntry } from '../../rest/types/ConnectionHistoryEntry';
+import { translate } from '@ngneat/transloco';
 import findKey from 'lodash/findKey';
 import { ActivityLog } from '../../rest/types/ActivityLog';
-import { translate } from '@ngneat/transloco';
+import { ConnectionHistoryEntry } from '../../rest/types/ConnectionHistoryEntry';
 
 declare namespace ConnectionHistoryEntryWrapper {
     type Log = typeof ConnectionHistoryEntryWrapper.Log.prototype;

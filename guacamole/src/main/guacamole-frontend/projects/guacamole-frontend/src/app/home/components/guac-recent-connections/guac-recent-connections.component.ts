@@ -30,8 +30,8 @@ import { RecentConnection } from '../../types/RecentConnection';
  * each of the given connection groups.
  */
 @Component({
-    selector: 'guac-recent-connections',
-    templateUrl: './guac-recent-connections.component.html',
+    selector     : 'guac-recent-connections',
+    templateUrl  : './guac-recent-connections.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacRecentConnectionsComponent implements OnChanges {
@@ -89,8 +89,8 @@ export class GuacRecentConnectionsComponent implements OnChanges {
         // Add given connection to set of visible objects
         this.visibleObjects[this.clientIdentifierService.getString({
             dataSource: dataSource,
-            type: ClientIdentifier.Types.CONNECTION,
-            id: connection.identifier
+            type      : ClientIdentifier.Types.CONNECTION,
+            id        : connection.identifier
         })] = connection;
 
     }
@@ -112,8 +112,8 @@ export class GuacRecentConnectionsComponent implements OnChanges {
         // Add given connection group to set of visible objects
         (this.visibleObjects)[this.clientIdentifierService.getString({
             dataSource: dataSource,
-            type: ClientIdentifier.Types.CONNECTION_GROUP,
-            id: connectionGroup.identifier
+            type      : ClientIdentifier.Types.CONNECTION_GROUP,
+            id        : connectionGroup.identifier
         })] = connectionGroup;
 
         // Add all child connections

@@ -17,13 +17,13 @@
  * under the License.
  */
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { GuacPageListComponent } from './guac-page-list.component';
-import { By } from '@angular/platform-browser';
-import { SimpleChange } from '@angular/core';
-import { LocaleModule } from '../../../locale/locale.module';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { SimpleChange } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { LocaleModule } from '../../../locale/locale.module';
+import { GuacPageListComponent } from './guac-page-list.component';
 
 describe('PageListComponent', () => {
     let component: GuacPageListComponent;
@@ -32,7 +32,7 @@ describe('PageListComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [GuacPageListComponent],
-            imports: [
+            imports     : [
                 HttpClientTestingModule,
                 RouterTestingModule,
                 LocaleModule
@@ -52,12 +52,12 @@ describe('PageListComponent', () => {
         const selector = By.css('a');
 
         component.pages = [
-            {name: 'Page 1', url: '/page1'},
-            {name: 'Page 2', url: '/page2'},
-            {name: 'Page 3', url: '/page3'}
+            { name: 'Page 1', url: '/page1' },
+            { name: 'Page 2', url: '/page2' },
+            { name: 'Page 3', url: '/page3' }
         ];
 
-        component.ngOnChanges({pages: new SimpleChange([], component.pages, false)});
+        component.ngOnChanges({ pages: new SimpleChange([], component.pages, false) });
         fixture.detectChanges();
 
         const elements = fixture.debugElement.queryAll(selector);
@@ -69,11 +69,11 @@ describe('PageListComponent', () => {
         const selector = By.css('a');
 
         component.pages = [
-            {name: 'Page 0', url: '/'},
-            {name: 'Page 1', url: '/page1'},
+            { name: 'Page 0', url: '/' },
+            { name: 'Page 1', url: '/page1' },
         ];
 
-        component.ngOnChanges({pages: new SimpleChange([], component.pages, false)});
+        component.ngOnChanges({ pages: new SimpleChange([], component.pages, false) });
         fixture.detectChanges();
 
         const elements = fixture.debugElement.queryAll(selector);

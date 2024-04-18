@@ -17,14 +17,14 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { TranslocoModule } from '@ngneat/transloco';
 import { GuacMenuComponent } from './components/guac-menu/guac-menu.component';
 import { GuacPageListComponent } from './components/guac-page-list/guac-page-list.component';
 import { GuacSectionTabsComponent } from './components/guac-section-tabs/guac-section-tabs.component';
-import { TranslocoModule } from '@ngneat/transloco';
 import { GuacUserMenuComponent } from './components/guac-user-menu/guac-user-menu.component';
-import { RouterLink } from '@angular/router';
 
 /**
  * Module for generating and implementing user navigation options.
@@ -36,13 +36,13 @@ import { RouterLink } from '@angular/router';
         GuacSectionTabsComponent,
         GuacUserMenuComponent
     ],
-    exports: [
+    exports     : [
         GuacMenuComponent,
         GuacPageListComponent,
         GuacSectionTabsComponent,
         GuacUserMenuComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         TranslocoModule,
         RouterLink,

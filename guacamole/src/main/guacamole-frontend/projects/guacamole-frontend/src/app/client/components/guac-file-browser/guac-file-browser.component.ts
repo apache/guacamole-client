@@ -28,19 +28,19 @@ import {
     SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
-import { ManagedFilesystem } from '../../types/ManagedFilesystem';
-import { ManagedFilesystemService } from '../../services/managed-filesystem.service';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ManagedFilesystemService } from '../../services/managed-filesystem.service';
+import { ManagedFilesystem } from '../../types/ManagedFilesystem';
 
 /**
  * A component which displays the contents of a filesystem received through the
  * Guacamole client.
  */
 @Component({
-    selector: 'guac-file-browser',
-    templateUrl: './guac-file-browser.component.html',
+    selector     : 'guac-file-browser',
+    templateUrl  : './guac-file-browser.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacFileBrowserComponent implements OnInit, OnChanges {
@@ -48,7 +48,7 @@ export class GuacFileBrowserComponent implements OnInit, OnChanges {
     /**
      * The filesystem to display.
      */
-    @Input({required: true}) filesystem: ManagedFilesystem | null = null;
+    @Input({ required: true }) filesystem: ManagedFilesystem | null = null;
 
     /**
      * Signal which fires whenever the files that should be displayed change.

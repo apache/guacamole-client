@@ -21,11 +21,11 @@ import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEnca
 import isEmpty from 'lodash/isEmpty';
 import sortedIndex from 'lodash/sortedIndex';
 import sortedIndexOf from 'lodash/sortedIndexOf';
+import { BehaviorSubject } from 'rxjs';
+import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
+import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
 import { FilterService } from '../../../list/services/filter.service';
 import { SortService } from '../../../list/services/sort.service';
-import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
-import { BehaviorSubject } from 'rxjs';
-import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
 import { DataSource } from '../../../list/types/DataSource';
 
 /**
@@ -35,8 +35,8 @@ import { DataSource } from '../../../list/types/DataSource';
  * identifiers.
  */
 @Component({
-    selector: 'identifier-set-editor',
-    templateUrl: './identifier-set-editor.component.html',
+    selector     : 'identifier-set-editor',
+    templateUrl  : './identifier-set-editor.component.html',
     encapsulation: ViewEncapsulation.None,
 })
 export class IdentifierSetEditorComponent implements OnInit, OnChanges {
@@ -45,19 +45,19 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
      * The translation key of the text which should be displayed within
      * the main header of the identifier set editor.
      */
-    @Input({required: true}) header!: string;
+    @Input({ required: true }) header!: string;
 
     /**
      * The translation key of the text which should be displayed if no
      * identifiers are currently present within the set.
      */
-    @Input({required: true}) emptyPlaceholder!: string;
+    @Input({ required: true }) emptyPlaceholder!: string;
 
     /**
      * The translation key of the text which should be displayed if no
      * identifiers are available to be added within the set.
      */
-    @Input({required: true}) unavailablePlaceholder!: string;
+    @Input({ required: true }) unavailablePlaceholder!: string;
 
     /**
      * All identifiers which are available to be added to or removed
@@ -76,18 +76,18 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
      * The set of identifiers that have been added, relative to the
      * initial state of the identifier set being manipulated.
      */
-    @Input({required: true}) identifiersAdded!: string[];
+    @Input({ required: true }) identifiersAdded!: string[];
 
     /**
      * The set of identifiers that have been removed, relative to the
      * initial state of the identifier set being manipulated.
      */
-    @Input({required: true}) identifiersRemoved!: string[];
+    @Input({ required: true }) identifiersRemoved!: string[];
 
     /**
      * Reference to the instance of the pager component.
      */
-    @ViewChild(GuacPagerComponent, {static: true}) pager!: GuacPagerComponent;
+    @ViewChild(GuacPagerComponent, { static: true }) pager!: GuacPagerComponent;
 
     /**
      * Filtered and paginated view of all identifiers which are available

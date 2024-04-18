@@ -31,10 +31,10 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { ManagedClient } from '../../types/ManagedClient';
 import { TranslocoService } from '@ngneat/transloco';
 import { take } from 'rxjs';
 import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
+import { ManagedClient } from '../../types/ManagedClient';
 
 /**
  * A component that displays a status indicator showing the number of users
@@ -43,8 +43,8 @@ import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
  * join/leave the connection.
  */
 @Component({
-    selector: 'guac-client-user-count',
-    templateUrl: './guac-client-user-count.component.html',
+    selector     : 'guac-client-user-count',
+    templateUrl  : './guac-client-user-count.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, DoCheck {
@@ -52,7 +52,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
     /**
      * The client whose current users should be displayed.
      */
-    @Input({required: true}) client!: ManagedClient;
+    @Input({ required: true }) client!: ManagedClient;
 
     /**
      * The maximum number of messages displayed by this directive at any
@@ -122,7 +122,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
      *     The username of the user in question.
      */
     private notify(str: string, username: string): void {
-        this.translocoService.selectTranslate(str, {'USERNAME': username})
+        this.translocoService.selectTranslate(str, { 'USERNAME': username })
             .pipe(take(1))
             .subscribe(text => {
 
@@ -205,7 +205,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
         return this.isAnonymous(username) ? 'CLIENT.INFO_ANONYMOUS_USER_COUNT' : 'CLIENT.INFO_USER_COUNT';
     }
 
-    ngOnChanges({client}: SimpleChanges): void {
+    ngOnChanges({ client }: SimpleChanges): void {
         if (client) {
             this.clientDiffer = this.differs.find(client.currentValue).create();
         }
@@ -220,7 +220,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
         // TODO:  $scope.$watchGroup([ 'client', 'client.userCount' ], function usersChanged() {
 
         // Update visible notifications as users join/leave
-        if(changes) {
+        if (changes) {
 
             // Resynchronize directive with state of any attached client when
             // the client changes, to ensure notifications are only shown for

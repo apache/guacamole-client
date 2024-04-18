@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { Directive, ElementRef, EventEmitter, Inject, Output } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { Directive, ElementRef, EventEmitter, Inject, Output } from '@angular/core';
 
 /**
  * A directive which calls a given callback when its associated element is
@@ -99,7 +99,7 @@ export class GuacResizeDirective {
             || this.element.offsetHeight !== this.lastHeight) {
 
             // Call resize callback, if defined
-            this.guacResize.emit({width: this.element.offsetWidth, height: this.element.offsetHeight});
+            this.guacResize.emit({ width: this.element.offsetWidth, height: this.element.offsetHeight });
 
             // Update stored size
             this.lastWidth = this.element.offsetWidth;

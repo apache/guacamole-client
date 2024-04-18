@@ -18,16 +18,16 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { ConnectionListContext } from "../../types/ConnectionListContext";
-import { GroupListItem } from "../../../group-list/types/GroupListItem";
+import { GroupListItem } from '../../../group-list/types/GroupListItem';
+import { ConnectionListContext } from '../../types/ConnectionListContext';
 
 /**
  * A component which displays a sharing profile for a specific
  * connection and allows manipulation of the sharing profile permissions.
  */
 @Component({
-    selector: 'guac-sharing-profile-permission',
-    templateUrl: './sharing-profile-permission.component.html',
+    selector     : 'guac-sharing-profile-permission',
+    templateUrl  : './sharing-profile-permission.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class SharingProfilePermissionComponent {
@@ -35,11 +35,11 @@ export class SharingProfilePermissionComponent {
     /**
      * TODO
      */
-    @Input({required: true}) context!: ConnectionListContext;
+    @Input({ required: true }) context!: ConnectionListContext;
 
     /**
      * TODO
      */
-    @Input({required: true}) item!: GroupListItem;
+    @Input({ required: true }) item!: GroupListItem;
 
 }

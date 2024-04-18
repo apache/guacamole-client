@@ -194,7 +194,7 @@ export class FormService {
 
         // Add CSS class name to provided base object (without touching
         // base object)
-        const classes = {...object};
+        const classes = { ...object };
         classes[className] = true;
         return classes;
 

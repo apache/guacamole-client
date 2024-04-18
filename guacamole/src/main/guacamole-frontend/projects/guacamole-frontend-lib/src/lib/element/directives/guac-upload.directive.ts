@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { ChangeDetectorRef, Directive, ElementRef, Inject, Input, OnInit } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { ChangeDetectorRef, Directive, ElementRef, Inject, Input, OnInit } from '@angular/core';
 
 /**
  * A directive which allows files to be uploaded. Clicking on the associated
@@ -35,7 +35,7 @@ export class GuacUploadDirective implements OnInit {
      * provided a single parameter: the FileList containing all chosen
      * files.
      */
-    @Input({required: true}) guacUpload!: (files: FileList) => void;
+    @Input({ required: true }) guacUpload!: (files: FileList) => void;
 
     /**
      * Whether upload of multiple files should be allowed. If false, the

@@ -24,8 +24,8 @@ import { AuthenticationService } from '../../../auth/service/authentication.serv
  * The component for the session recording player page.
  */
 @Component({
-    selector: 'guac-connection-history-player',
-    templateUrl: './connection-history-player.component.html',
+    selector     : 'guac-connection-history-player',
+    templateUrl  : './connection-history-player.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ConnectionHistoryPlayerComponent {
@@ -33,18 +33,18 @@ export class ConnectionHistoryPlayerComponent {
     /**
      * The data source of the session recording to play.
      */
-    @Input({required: true}) dataSource!: string;
+    @Input({ required: true }) dataSource!: string;
 
     /**
      * The identifier of the connection associated with the session
      * recording to play.
      */
-    @Input({required: true}) identifier!: string;
+    @Input({ required: true }) identifier!: string;
 
     /**
      * The name of the session recording to play.
      */
-    @Input({required: true}) name!: string;
+    @Input({ required: true }) name!: string;
 
     /**
      * The URL of the REST API resource exposing the requested session

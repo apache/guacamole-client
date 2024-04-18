@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { FormField } from './FormField';
 import { FormControl } from '@angular/forms';
+import { FormField } from './FormField';
 
 /**
  * An interface which defines the basic properties of a form field component.

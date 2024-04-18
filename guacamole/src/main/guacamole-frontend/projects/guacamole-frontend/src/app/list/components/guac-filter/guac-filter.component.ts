@@ -24,8 +24,8 @@ import { BehaviorSubject } from 'rxjs';
  * A component which provides a filtering text input field.
  */
 @Component({
-    selector: 'guac-filter',
-    templateUrl: './guac-filter.component.html',
+    selector     : 'guac-filter',
+    templateUrl  : './guac-filter.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacFilterComponent {

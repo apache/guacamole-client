@@ -18,30 +18,30 @@
  */
 
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Router } from '@angular/router';
+import keys from 'lodash/keys';
+import { BehaviorSubject } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';
+import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
+import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
+import { DataSource } from '../../../list/types/DataSource';
+import { SortOrder } from '../../../list/types/SortOrder';
+import { ManageableUserGroup } from '../../../manage/types/ManageableUserGroup';
 import { DataSourceService } from '../../../rest/service/data-source-service.service';
 import { PermissionService } from '../../../rest/service/permission.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { UserGroupService } from '../../../rest/service/user-group.service';
 import { PermissionSet } from '../../../rest/types/PermissionSet';
-import { SortOrder } from '../../../list/types/SortOrder';
-import { ManageableUserGroup } from '../../../manage/types/ManageableUserGroup';
-import keys from 'lodash/keys';
 import { UserGroup } from '../../../rest/types/UserGroup';
-import { Router } from '@angular/router';
 import { NonNullableProperties } from '../../../util/utility-types';
-import { BehaviorSubject } from 'rxjs';
-import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
-import { DataSource } from '../../../list/types/DataSource';
-import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
-import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';
 
 /**
  * A component for managing all user groups in the system.
  */
 @Component({
-    selector: 'guac-settings-user-groups',
-    templateUrl: './guac-settings-user-groups.component.html',
+    selector     : 'guac-settings-user-groups',
+    templateUrl  : './guac-settings-user-groups.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacSettingsUserGroupsComponent implements OnInit {
@@ -49,12 +49,12 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
     /**
      * Reference to the instance of the pager component.
      */
-    @ViewChild(GuacPagerComponent, {static: true}) pager!: GuacPagerComponent;
+    @ViewChild(GuacPagerComponent, { static: true }) pager!: GuacPagerComponent;
 
     /**
      * Reference to the instance of the filter component.
      */
-    @ViewChild(GuacFilterComponent, {static: true}) filter!: GuacFilterComponent;
+    @ViewChild(GuacFilterComponent, { static: true }) filter!: GuacFilterComponent;
 
     /**
      * Identifier of the current user.
@@ -305,7 +305,7 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
                 addedUserGroups[userGroup.identifier!] = userGroup;
                 this.manageableUserGroups!.push(new ManageableUserGroup({
                     'dataSource': dataSource,
-                    'userGroup': userGroup
+                    'userGroup' : userGroup
                 }));
 
             }

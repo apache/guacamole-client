@@ -19,8 +19,8 @@
 
 import { Injectable } from '@angular/core';
 import { TunnelService } from '../../rest/service/tunnel.service';
-import { ManagedFilesystem } from '../types/ManagedFilesystem';
 import { ManagedClient } from '../types/ManagedClient';
+import { ManagedFilesystem } from '../types/ManagedFilesystem';
 
 /**
  * A service for working with ManagedFilesystem objects.
@@ -105,11 +105,11 @@ export class ManagedFilesystemService {
 
                     // Add file entry
                     file.files.mutate(files => files[filename] = new ManagedFilesystem.File({
-                        mimetype: mimetypes[name],
+                        mimetype  : mimetypes[name],
                         streamName: name,
-                        type: type,
-                        parent: file,
-                        name: filename
+                        type      : type,
+                        parent    : file,
+                        name      : filename
                     }));
 
                 }
@@ -144,13 +144,13 @@ export class ManagedFilesystemService {
         const managedFilesystem = new ManagedFilesystem({
             client: client,
             object: object,
-            name: name,
-            root: new ManagedFilesystem.File({
+            name  : name,
+            root  : new ManagedFilesystem.File({
                 // @ts-ignore
                 mimetype: Guacamole.Object.STREAM_INDEX_MIMETYPE,
                 // @ts-ignore
                 streamName: Guacamole.Object.ROOT_STREAM,
-                type: ManagedFilesystem.File.Type.DIRECTORY
+                type      : ManagedFilesystem.File.Type.DIRECTORY
             })
         });
 

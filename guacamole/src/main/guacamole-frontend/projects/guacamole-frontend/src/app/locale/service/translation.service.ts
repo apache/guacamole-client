@@ -19,9 +19,9 @@
 
 import { Injectable, isDevMode } from '@angular/core';
 import { translocoConfig, TranslocoConfig } from '@ngneat/transloco';
+import { map, Observable, tap } from 'rxjs';
 import { LanguageService } from '../../rest/service/language.service';
 import { PreferenceService } from '../../settings/services/preference.service';
-import { map, Observable, tap } from 'rxjs';
 
 /**
  * The default language to use if no preference is specified or other languages are not available.
@@ -126,7 +126,7 @@ export class TranslationService {
 
             // Allow changing language at runtime
             reRenderOnLangChange: true,
-            prodMode: !isDevMode()
+            prodMode            : !isDevMode()
         });
     }
 }

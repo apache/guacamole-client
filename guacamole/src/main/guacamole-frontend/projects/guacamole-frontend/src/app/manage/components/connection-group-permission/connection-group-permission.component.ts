@@ -18,16 +18,16 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { ConnectionListContext } from "../../types/ConnectionListContext";
-import { GroupListItem } from "../../../group-list/types/GroupListItem";
+import { GroupListItem } from '../../../group-list/types/GroupListItem';
+import { ConnectionListContext } from '../../types/ConnectionListContext';
 
 /**
  * A component which displays a single connection group and allows
  * manipulation of the connection group permissions.
  */
 @Component({
-    selector: 'guac-connection-group-permission',
-    templateUrl: './connection-group-permission.component.html',
+    selector     : 'guac-connection-group-permission',
+    templateUrl  : './connection-group-permission.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ConnectionGroupPermissionComponent {
@@ -35,11 +35,11 @@ export class ConnectionGroupPermissionComponent {
     /**
      * TODO
      */
-    @Input({required: true}) context!: ConnectionListContext;
+    @Input({ required: true }) context!: ConnectionListContext;
 
     /**
      * TODO
      */
-    @Input({required: true}) item!: GroupListItem;
+    @Input({ required: true }) item!: GroupListItem;
 
 }

@@ -67,8 +67,8 @@ export class ExtensionLoaderService {
         for (const key of keys) {
             const entry = config[key];
             const module = await loadRemoteModule({
-                type: 'manifest',
-                remoteName: key,
+                type         : 'manifest',
+                remoteName   : key,
                 exposedModule: entry.entrypoint
             });
 
@@ -78,7 +78,7 @@ export class ExtensionLoaderService {
 
             // Add the routes of the extension to the routes of the main application
             const extensionRoute: Route = {
-                path: entry.routePath,
+                path    : entry.routePath,
                 children: moduleRoutes
             };
 
@@ -87,7 +87,7 @@ export class ExtensionLoaderService {
             if (entry.pageTitle)
                 extensionRoute.title = entry.pageTitle;
             else {
-                extensionRoute.data = {title: 'APP.NAME'};
+                extensionRoute.data = { title: 'APP.NAME' };
                 extensionRoute.title = titleResolver;
             }
 

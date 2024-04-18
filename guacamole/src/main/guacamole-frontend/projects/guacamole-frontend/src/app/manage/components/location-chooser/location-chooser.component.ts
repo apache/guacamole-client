@@ -24,8 +24,8 @@ import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
  * A component for choosing the location of a connection or connection group.
  */
 @Component({
-    selector: 'guac-location-chooser',
-    templateUrl: './location-chooser.component.html',
+    selector     : 'guac-location-chooser',
+    templateUrl  : './location-chooser.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class LocationChooserComponent implements OnInit, OnChanges {
@@ -40,7 +40,7 @@ export class LocationChooserComponent implements OnInit, OnChanges {
      * The root connection group of the connection group hierarchy to
      * display.
      */
-    @Input({required: true}) rootGroup!: ConnectionGroup;
+    @Input({ required: true }) rootGroup!: ConnectionGroup;
 
     /**
      * The unique identifier of the currently-selected connection

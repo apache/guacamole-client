@@ -18,17 +18,17 @@
  */
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { PageDefinition } from '../../types/PageDefinition';
-import { isArray } from '../../../util/is-array';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
+import { isArray } from '../../../util/is-array';
+import { PageDefinition } from '../../types/PageDefinition';
 
 /**
  * A directive which provides a list of links to specific pages.
  */
 @Component({
-    selector: 'guac-page-list',
-    templateUrl: './guac-page-list.component.html',
+    selector     : 'guac-page-list',
+    templateUrl  : './guac-page-list.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacPageListComponent implements OnInit, OnChanges {
@@ -138,10 +138,10 @@ export class GuacPageListComponent implements OnInit, OnChanges {
             // Store new page if it doesn't yet exist at this level
             if (!pages[name]) {
                 pages[name] = new PageDefinition({
-                    name: name,
-                    url: isCurrentPage ? this.currentURL : page.url,
+                    name     : name,
+                    url      : isCurrentPage ? this.currentURL : page.url,
                     className: page.className,
-                    weight: page.weight || (weight + i)
+                    weight   : page.weight || (weight + i)
                 });
             }
 

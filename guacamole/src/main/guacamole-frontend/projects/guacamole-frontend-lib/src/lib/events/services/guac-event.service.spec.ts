@@ -45,19 +45,19 @@ describe('GuacEventService', () => {
     });
 
     it('should emit test event', () => {
-        testScheduler.run(({expectObservable, cold}) => {
+        testScheduler.run(({ expectObservable, cold }) => {
 
             const age = 25;
             const expected = {
                 a: {
-                    age: age,
+                    age  : age,
                     event: new GuacEvent<TestEventArgs>('test')
                 }
             };
             const events = service.on('test');
 
             // Delay the broadcast for one time unit to allow expectObservable to subscribe to the subject
-            cold('-a').subscribe(() => service.broadcast('test', {age}));
+            cold('-a').subscribe(() => service.broadcast('test', { age }));
 
             expectObservable(events).toBe('-a', expected);
 
@@ -66,11 +66,11 @@ describe('GuacEventService', () => {
     });
 
     it('handles multiple subscribers to the same event', () => {
-        testScheduler.run(({expectObservable, cold}) => {
+        testScheduler.run(({ expectObservable, cold }) => {
             const age = 25;
             const expected = {
                 a: {
-                    age: age,
+                    age  : age,
                     event: new GuacEvent<TestEventArgs>('test')
                 }
             };
@@ -79,7 +79,7 @@ describe('GuacEventService', () => {
             const events2 = service.on('test');
 
             // Delay the broadcast for one time unit to allow expectObservable to subscribe to the subject
-            cold('-a').subscribe(() => service.broadcast('test', {age}));
+            cold('-a').subscribe(() => service.broadcast('test', { age }));
 
             expectObservable(events1).toBe('-a', expected);
             expectObservable(events2).toBe('-a', expected);

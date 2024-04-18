@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { ViewportComponent } from './components/viewport.component';
 
 /**
@@ -28,11 +28,12 @@ import { ViewportComponent } from './components/viewport.component';
     declarations: [
         ViewportComponent
     ],
-    imports: [
+    imports     : [
         CommonModule
     ],
-    exports: [
+    exports     : [
         ViewportComponent
     ]
 })
-export class ClientLibModule {}
+export class ClientLibModule {
+}

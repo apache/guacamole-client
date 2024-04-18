@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import { DOCUMENT } from '@angular/common';
 import {
     Component,
     DestroyRef,
@@ -27,18 +28,17 @@ import {
     SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
-import { Notification } from '../../types/Notification';
-import { DOCUMENT } from '@angular/common';
-import { FormService } from '../../../form/service/form.service';
-import { FormGroup } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormGroup } from '@angular/forms';
+import { FormService } from '../../../form/service/form.service';
+import { Notification } from '../../types/Notification';
 
 /**
  * A directive for displaying notifications.
  */
 @Component({
-    selector: 'guac-notification',
-    templateUrl: './guac-notification.component.html',
+    selector     : 'guac-notification',
+    templateUrl  : './guac-notification.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacNotificationComponent implements OnChanges, OnDestroy {
@@ -46,7 +46,7 @@ export class GuacNotificationComponent implements OnChanges, OnDestroy {
     /**
      * The notification to display.
      */
-    @Input({required: true}) notification!: Notification | any;
+    @Input({ required: true }) notification!: Notification | any;
 
     /**
      * The percentage of the operation that has been completed, if known.

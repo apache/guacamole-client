@@ -58,14 +58,14 @@ export class MembershipService {
 
         identifiersToAdd?.forEach(identifier => {
             patch.push(new RelatedObjectPatch({
-                op: RelatedObjectPatch.Operation.ADD,
+                op   : RelatedObjectPatch.Operation.ADD,
                 value: identifier
             }));
         });
 
         identifiersToRemove?.forEach(identifier => {
             patch.push(new RelatedObjectPatch({
-                op: RelatedObjectPatch.Operation.REMOVE,
+                op   : RelatedObjectPatch.Operation.REMOVE,
                 value: identifier
             }));
         });

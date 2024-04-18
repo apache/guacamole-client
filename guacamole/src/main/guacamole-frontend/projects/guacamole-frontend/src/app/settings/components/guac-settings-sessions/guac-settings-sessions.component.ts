@@ -17,37 +17,37 @@
  * under the License.
  */
 
+import { formatDate } from '@angular/common';
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { ActiveConnectionService } from '../../../rest/service/active-connection.service';
+import { TranslocoService } from '@ngneat/transloco';
+import { BehaviorSubject, forkJoin, Observable, take } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';
+import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
+import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
+import { SortService } from '../../../list/services/sort.service';
+import { DataSource } from '../../../list/types/DataSource';
+import { SortOrder } from '../../../list/types/SortOrder';
+import { ClientIdentifierService } from '../../../navigation/service/client-identifier.service';
+import { ClientIdentifier } from '../../../navigation/types/ClientIdentifier';
+import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
+import { NotificationAction } from '../../../notification/types/NotificationAction';
+import { ActiveConnectionService } from '../../../rest/service/active-connection.service';
 import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
 import { DataSourceService } from '../../../rest/service/data-source-service.service';
 import { RequestService } from '../../../rest/service/request.service';
-import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
-import { ActiveConnectionWrapper } from '../../types/ActiveConnectionWrapper';
-import { SortOrder } from '../../../list/types/SortOrder';
 import { ActiveConnection } from '../../../rest/types/ActiveConnection';
 import { Connection } from '../../../rest/types/Connection';
-import { formatDate } from '@angular/common';
-import { NonNullableProperties } from '../../../util/utility-types';
-import { NotificationAction } from '../../../notification/types/NotificationAction';
-import { BehaviorSubject, forkJoin, Observable, take } from 'rxjs';
-import { ClientIdentifier } from '../../../navigation/types/ClientIdentifier';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
-import { TranslocoService } from '@ngneat/transloco';
-import { SortService } from '../../../list/services/sort.service';
-import { ClientIdentifierService } from '../../../navigation/service/client-identifier.service';
-import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
-import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';
-import { DataSource } from '../../../list/types/DataSource';
-import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
+import { NonNullableProperties } from '../../../util/utility-types';
+import { ActiveConnectionWrapper } from '../../types/ActiveConnectionWrapper';
 
 /**
  * A component for managing all active Guacamole sessions.
  */
 @Component({
-    selector: 'guac-guac-settings-sessions',
-    templateUrl: './guac-settings-sessions.component.html',
+    selector     : 'guac-guac-settings-sessions',
+    templateUrl  : './guac-settings-sessions.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacSettingsSessionsComponent implements OnInit {
@@ -55,12 +55,12 @@ export class GuacSettingsSessionsComponent implements OnInit {
     /**
      * Reference to the instance of the pager component.
      */
-    @ViewChild(GuacPagerComponent, {static: true}) pager!: GuacPagerComponent;
+    @ViewChild(GuacPagerComponent, { static: true }) pager!: GuacPagerComponent;
 
     /**
      * Reference to the instance of the filter component.
      */
-    @ViewChild(GuacFilterComponent, {static: true}) filter!: GuacFilterComponent;
+    @ViewChild(GuacFilterComponent, { static: true }) filter!: GuacFilterComponent;
 
     /**
      * The identifiers of all data sources accessible by the current
@@ -279,9 +279,9 @@ export class GuacSettingsSessionsComponent implements OnInit {
                 // Add wrapper
                 if (activeConnection.username !== null) {
                     this.wrappers.push(new ActiveConnectionWrapper({
-                        dataSource: dataSource,
-                        name: connection.name,
-                        startDate: formatDate(activeConnection.startDate || 0, this.sessionDateFormat, 'en-US'),
+                        dataSource      : dataSource,
+                        name            : connection.name,
+                        startDate       : formatDate(activeConnection.startDate || 0, this.sessionDateFormat, 'en-US'),
                         activeConnection: activeConnection
                     }));
                 }
@@ -324,7 +324,7 @@ export class GuacSettingsSessionsComponent implements OnInit {
      * sessions.
      */
     private readonly DELETE_ACTION: NotificationAction = {
-        name: 'SETTINGS_SESSIONS.ACTION_DELETE',
+        name     : 'SETTINGS_SESSIONS.ACTION_DELETE',
         className: 'danger',
         // Handle action
         callback: () => {
@@ -355,7 +355,7 @@ export class GuacSettingsSessionsComponent implements OnInit {
         // Update interface
         forkJoin(deletionRequests)
             .subscribe({
-                next: () => {
+                next : () => {
                     // Remove deleted connections from wrapper array and update view
                     this.wrappers = this.wrappers!.filter(wrapper => {
                         return !(wrapper.activeConnection.identifier! in (this.allSelectedWrappers[wrapper.dataSource] || {}));
@@ -377,8 +377,8 @@ export class GuacSettingsSessionsComponent implements OnInit {
     deleteSessions(): void {
         // Confirm deletion request
         this.guacNotification.showStatus({
-            'title': 'SETTINGS_SESSIONS.DIALOG_HEADER_CONFIRM_DELETE',
-            'text': {
+            'title'  : 'SETTINGS_SESSIONS.DIALOG_HEADER_CONFIRM_DELETE',
+            'text'   : {
                 'key': 'SETTINGS_SESSIONS.TEXT_CONFIRM_DELETE'
             },
             'actions': [this.DELETE_ACTION, this.CANCEL_ACTION]
@@ -409,8 +409,8 @@ export class GuacSettingsSessionsComponent implements OnInit {
 
         return '/client/' + encodeURIComponent(this.clientIdentifierService.getString({
             dataSource: dataSource,
-            type: ClientIdentifier.Types.ACTIVE_CONNECTION,
-            id: activeConnection.identifier
+            type      : ClientIdentifier.Types.ACTIVE_CONNECTION,
+            id        : activeConnection.identifier
         }));
 
     }

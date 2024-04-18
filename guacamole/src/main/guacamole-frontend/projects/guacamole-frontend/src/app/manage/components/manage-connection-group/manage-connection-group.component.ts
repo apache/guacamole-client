@@ -18,27 +18,27 @@
  */
 
 import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin, map, Observable, of } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { FormService } from '../../../form/service/form.service';
+import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
 import { PermissionService } from '../../../rest/service/permission.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { SchemaService } from '../../../rest/service/schema.service';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ManagementPermissions } from '../../types/ManagementPermissions';
-import { Form } from '../../../rest/types/Form';
-import { NonNullableProperties, Optional } from '../../../util/utility-types';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
-import { forkJoin, map, Observable, of } from 'rxjs';
-import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
+import { Form } from '../../../rest/types/Form';
 import { PermissionSet } from '../../../rest/types/PermissionSet';
-import { FormService } from '../../../form/service/form.service';
-import { FormGroup } from '@angular/forms';
+import { NonNullableProperties } from '../../../util/utility-types';
+import { ManagementPermissions } from '../../types/ManagementPermissions';
 
 /**
  * The component for editing or creating connection groups.
  */
 @Component({
-    selector: 'guac-manage-connection-group',
-    templateUrl: './manage-connection-group.component.html',
+    selector     : 'guac-manage-connection-group',
+    templateUrl  : './manage-connection-group.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ManageConnectionGroupComponent implements OnInit {
@@ -47,13 +47,13 @@ export class ManageConnectionGroupComponent implements OnInit {
      * The identifier of the user group being edited. If a new user group is
      * being created, this will not be defined.
      */
-    @Input({alias: 'id'}) private identifier?: string;
+    @Input({ alias: 'id' }) private identifier?: string;
 
     /**
      * The unique identifier of the data source containing the connection group
      * being edited.
      */
-    @Input({alias: 'dataSource'}) selectedDataSource!: string;
+    @Input({ alias: 'dataSource' }) selectedDataSource!: string;
 
     /**
      * The identifier of the original connection group from which this
@@ -132,7 +132,7 @@ export class ManageConnectionGroupComponent implements OnInit {
         forkJoin([connectionGroupData, attributes, permissions, rootGroup])
             .subscribe({
 
-                next: ([_, attributes, permissions, rootGroup]) => {
+                next    : ([_, attributes, permissions, rootGroup]) => {
 
                     this.attributes = attributes;
                     this.rootGroup = rootGroup;
@@ -238,11 +238,11 @@ export class ManageConnectionGroupComponent implements OnInit {
 
         // Use skeleton connection group object with specified parent
         this.connectionGroup = new ConnectionGroup({
-            identifier: '',
-            name: '',
-            type: '',
+            identifier       : '',
+            name             : '',
+            type             : '',
             activeConnections: 0,
-            parentIdentifier: this.route.snapshot.queryParamMap.get('parent') || undefined
+            parentIdentifier : this.route.snapshot.queryParamMap.get('parent') || undefined
         });
 
         return of(void (0));
@@ -292,7 +292,7 @@ export class ManageConnectionGroupComponent implements OnInit {
     cloneConnectionGroup() {
         this.router.navigate(
             ['manage', encodeURIComponent(this.selectedDataSource), 'connectionGroups'],
-            {queryParams: {clone: this.identifier}}
+            { queryParams: { clone: this.identifier } }
         );
     }
 

@@ -24,8 +24,8 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Component for textarea fields.
  */
 @Component({
-    selector: 'guac-text-area-field',
-    templateUrl: './text-area-field.component.html',
+    selector     : 'guac-text-area-field',
+    templateUrl  : './text-area-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class TextAreaFieldComponent extends FormFieldBaseComponent implements OnChanges {

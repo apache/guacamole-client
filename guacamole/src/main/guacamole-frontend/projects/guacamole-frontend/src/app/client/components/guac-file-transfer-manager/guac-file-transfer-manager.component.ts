@@ -18,17 +18,17 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { ManagedClientService } from '../../services/managed-client.service';
+import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 import { ManagedFileTransferState } from '../../types/ManagedFileTransferState';
-import { ManagedClient } from '../../types/ManagedClient';
-import { ManagedClientService } from '../../services/managed-client.service';
 
 /**
  * Component which displays all active file transfers.
  */
 @Component({
-    selector: 'guac-file-transfer-manager',
-    templateUrl: './guac-file-transfer-manager.component.html',
+    selector     : 'guac-file-transfer-manager',
+    templateUrl  : './guac-file-transfer-manager.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacFileTransferManagerComponent {
@@ -37,7 +37,7 @@ export class GuacFileTransferManagerComponent {
      * The client group whose file transfers should be managed by this
      * directive.
      */
-    @Input({required: true}) clientGroup!: ManagedClientGroup | null;
+    @Input({ required: true }) clientGroup!: ManagedClientGroup | null;
 
     /**
      * Inject required services.

@@ -17,14 +17,12 @@
  * under the License.
  */
 
+import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    GuacFrontendEventArguments
-} from '../../events/types/GuacFrontendEventArguments';
-import { ClipboardData } from '../types/ClipboardData';
-import { DOCUMENT } from '@angular/common';
+import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { SessionStorageFactory } from '../../storage/session-storage-factory.service';
+import { ClipboardData } from '../types/ClipboardData';
 
 /**
  * The amount of time to wait before actually serving a request to read
@@ -274,7 +272,7 @@ export class ClipboardService {
 
         // Produce a proper blob containing the data and type provided in
         // the data URL
-        return new Blob([buffer], {type: type});
+        return new Blob([buffer], { type: type });
     }
 
     /**
@@ -615,7 +613,7 @@ export class ClipboardService {
             // Update internal clipboard and broadcast event notifying of
             // updated contents
             this.storedClipboardData(data);
-            this.guacEventService.broadcast('guacClipboard', {data});
+            this.guacEventService.broadcast('guacClipboard', { data });
 
         });
     }

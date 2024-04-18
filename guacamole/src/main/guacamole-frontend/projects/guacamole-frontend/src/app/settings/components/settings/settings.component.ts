@@ -18,15 +18,15 @@
  */
 
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { PageDefinition } from '../../../navigation/types/PageDefinition';
 import { UserPageService } from '../../../manage/services/user-page.service';
+import { PageDefinition } from '../../../navigation/types/PageDefinition';
 
 /**
  * The component for the general settings page.
  */
 @Component({
-    selector: 'guac-settings',
-    templateUrl: './settings.component.html',
+    selector     : 'guac-settings',
+    templateUrl  : './settings.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class SettingsComponent implements OnInit {

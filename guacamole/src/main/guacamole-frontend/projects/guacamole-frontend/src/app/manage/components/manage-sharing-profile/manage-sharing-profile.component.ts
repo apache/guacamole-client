@@ -18,31 +18,31 @@
  */
 
 import { Component, DestroyRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { SharingProfileService } from "../../../rest/service/sharing-profile.service";
-import { AuthenticationService } from "../../../auth/service/authentication.service";
-import { ConnectionService } from "../../../rest/service/connection.service";
-import { PermissionService } from "../../../rest/service/permission.service";
-import { RequestService } from "../../../rest/service/request.service";
-import { SchemaService } from "../../../rest/service/schema.service";
-import { Protocol } from "../../../rest/types/Protocol";
-import { SharingProfile } from "../../../rest/types/SharingProfile";
-import { ManagementPermissions } from "../../types/ManagementPermissions";
-import { Form } from "../../../rest/types/Form";
-import { FormGroup } from "@angular/forms";
-import { Connection } from "../../../rest/types/Connection";
-import { forkJoin, map, Observable, of, switchMap, tap } from "rxjs";
-import { ActivatedRoute, Router } from "@angular/router";
-import { PermissionSet } from "../../../rest/types/PermissionSet";
-import { FormService } from "../../../form/service/form.service";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
-import { NonNullableAllProperties } from "../../../util/utility-types";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin, map, Observable, switchMap, tap } from 'rxjs';
+import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { FormService } from '../../../form/service/form.service';
+import { ConnectionService } from '../../../rest/service/connection.service';
+import { PermissionService } from '../../../rest/service/permission.service';
+import { RequestService } from '../../../rest/service/request.service';
+import { SchemaService } from '../../../rest/service/schema.service';
+import { SharingProfileService } from '../../../rest/service/sharing-profile.service';
+import { Connection } from '../../../rest/types/Connection';
+import { Form } from '../../../rest/types/Form';
+import { PermissionSet } from '../../../rest/types/PermissionSet';
+import { Protocol } from '../../../rest/types/Protocol';
+import { SharingProfile } from '../../../rest/types/SharingProfile';
+import { NonNullableAllProperties } from '../../../util/utility-types';
+import { ManagementPermissions } from '../../types/ManagementPermissions';
 
 /**
  * Component for editing or creating sharing profiles.
  */
 @Component({
-    selector: 'guac-manage-sharing-profile',
-    templateUrl: './manage-sharing-profile.component.html',
+    selector     : 'guac-manage-sharing-profile',
+    templateUrl  : './manage-sharing-profile.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ManageSharingProfileComponent implements OnInit {
@@ -138,7 +138,7 @@ export class ManageSharingProfileComponent implements OnInit {
             this.schemaService.getProtocols(this.selectedDataSource),
             this.permissionService.getEffectivePermissions(this.selectedDataSource, this.authenticationService.getCurrentUsername()!)
         ]).subscribe({
-            next: ([_, attributes, protocols, permissions]) => {
+            next : ([_, attributes, protocols, permissions]) => {
 
                 this.attributes = attributes;
                 this.protocols = protocols;
@@ -353,7 +353,7 @@ export class ManageSharingProfileComponent implements OnInit {
     cloneSharingProfile(): void {
         this.router.navigate(
             ['manage', encodeURIComponent(this.selectedDataSource), 'sharingProfiles'],
-            {queryParams: {clone: this.identifier}}
+            { queryParams: { clone: this.identifier } }
         );
     }
 

@@ -27,18 +27,18 @@ import {
     SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
-import { ManagedFileUpload } from '../../types/ManagedFileUpload';
-import { ManagedFileTransferState } from '../../types/ManagedFileTransferState';
 import { saveAs } from 'file-saver';
 import { GuacTranslateService } from '../../services/guac-translate.service';
+import { ManagedFileTransferState } from '../../types/ManagedFileTransferState';
+import { ManagedFileUpload } from '../../types/ManagedFileUpload';
 
 /**
  * Component which displays an active file transfer, providing links for
  * downloads, if applicable.
  */
 @Component({
-    selector: 'guac-file-transfer',
-    templateUrl: './guac-file-transfer.component.html',
+    selector     : 'guac-file-transfer',
+    templateUrl  : './guac-file-transfer.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacFileTransferComponent implements DoCheck, OnChanges {
@@ -46,7 +46,7 @@ export class GuacFileTransferComponent implements DoCheck, OnChanges {
     /**
      * The file transfer to display.
      */
-    @Input({required: true}) transfer!: ManagedFileUpload;
+    @Input({ required: true }) transfer!: ManagedFileUpload;
 
     /**
      * The translated error message for the current status code.

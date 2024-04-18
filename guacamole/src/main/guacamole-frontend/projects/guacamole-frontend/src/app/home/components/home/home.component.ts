@@ -34,8 +34,8 @@ import { NonNullableProperties } from '../../../util/utility-types';
  * The component for the home page.
  */
 @Component({
-    selector: 'guac-home',
-    templateUrl: './home.component.html',
+    selector     : 'guac-home',
+    templateUrl  : './home.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class HomeComponent implements OnInit {
@@ -50,7 +50,7 @@ export class HomeComponent implements OnInit {
     /**
      * Reference to the instance of the filter component.
      */
-    @ViewChild(GuacGroupListFilterComponent, {static: true}) filter!: GuacGroupListFilterComponent;
+    @ViewChild(GuacGroupListFilterComponent, { static: true }) filter!: GuacGroupListFilterComponent;
 
     /**
      * TODO

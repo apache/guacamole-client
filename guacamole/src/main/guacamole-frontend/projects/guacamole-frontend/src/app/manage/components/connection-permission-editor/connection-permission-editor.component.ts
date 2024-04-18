@@ -18,19 +18,19 @@
  */
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
-import { PermissionFlagSet } from "../../../rest/types/PermissionFlagSet";
-import { PermissionSet } from "../../../rest/types/PermissionSet";
-import { ConnectionGroupService } from "../../../rest/service/connection-group.service";
-import { DataSourceService } from "../../../rest/service/data-source-service.service";
-import { RequestService } from "../../../rest/service/request.service";
-import { GroupListItem } from "../../../group-list/types/GroupListItem";
-import { ConnectionGroup } from "../../../rest/types/ConnectionGroup";
 import {
     GuacGroupListFilterComponent
-} from "../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component";
-import { ConnectionGroupDataSource } from "../../../group-list/types/ConnectionGroupDataSource";
-import { ConnectionListContext } from "../../types/ConnectionListContext";
-import { FilterService } from "../../../list/services/filter.service";
+} from '../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component';
+import { ConnectionGroupDataSource } from '../../../group-list/types/ConnectionGroupDataSource';
+import { GroupListItem } from '../../../group-list/types/GroupListItem';
+import { FilterService } from '../../../list/services/filter.service';
+import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
+import { DataSourceService } from '../../../rest/service/data-source-service.service';
+import { RequestService } from '../../../rest/service/request.service';
+import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
+import { PermissionFlagSet } from '../../../rest/types/PermissionFlagSet';
+import { PermissionSet } from '../../../rest/types/PermissionSet';
+import { ConnectionListContext } from '../../types/ConnectionListContext';
 
 /**
  * A component for manipulating the connection permissions granted within a
@@ -38,8 +38,8 @@ import { FilterService } from "../../../list/services/filter.service";
  * removed within a separate pair of {@link PermissionSet} objects.
  */
 @Component({
-    selector: 'connection-permission-editor',
-    templateUrl: './connection-permission-editor.component.html',
+    selector     : 'connection-permission-editor',
+    templateUrl  : './connection-permission-editor.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
@@ -48,31 +48,31 @@ export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
      * The unique identifier of the data source associated with the
      * permissions being manipulated.
      */
-    @Input({required: true}) dataSource!: string;
+    @Input({ required: true }) dataSource!: string;
 
     /**
      * The current state of the permissions being manipulated. This
      * {@link PermissionFlagSet} will be modified as changes are made
      * through this permission editor.
      */
-    @Input({required: true}) permissionFlags: PermissionFlagSet | null = null;
+    @Input({ required: true }) permissionFlags: PermissionFlagSet | null = null;
 
     /**
      * The set of permissions that have been added, relative to the
      * initial state of the permissions being manipulated.
      */
-    @Input({required: true}) permissionsAdded!: PermissionSet;
+    @Input({ required: true }) permissionsAdded!: PermissionSet;
 
     /**
      * The set of permissions that have been removed, relative to the
      * initial state of the permissions being manipulated.
      */
-    @Input({required: true}) permissionsRemoved!: PermissionSet;
+    @Input({ required: true }) permissionsRemoved!: PermissionSet;
 
     /**
      * Reference to the instance of the filter component.
      */
-    @ViewChild(GuacGroupListFilterComponent, {static: true}) filter!: GuacGroupListFilterComponent;
+    @ViewChild(GuacGroupListFilterComponent, { static: true }) filter!: GuacGroupListFilterComponent;
 
     /**
      * Filtered view of the root connection groups which satisfy the current
@@ -544,7 +544,7 @@ export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
                 this.removeConnectionGroupPermission(identifier);
 
         },
-        sharingProfilePermissionChanged: (identifier: string) => {
+        sharingProfilePermissionChanged : (identifier: string) => {
 
             // Determine current permission setting
             const granted = this.permissionFlags!.sharingProfilePermissions['READ'][identifier];

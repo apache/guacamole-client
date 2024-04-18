@@ -18,32 +18,32 @@
  */
 
 import { Component, DestroyRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { UserGroup } from '../../../rest/types/UserGroup';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { catchError, forkJoin, from, map, Observable, of, switchMap } from 'rxjs';
+import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { FormService } from '../../../form/service/form.service';
+import { DataSourceService } from '../../../rest/service/data-source-service.service';
+import { MembershipService } from '../../../rest/service/membership.service';
+import { PermissionService } from '../../../rest/service/permission.service';
+import { RequestService } from '../../../rest/service/request.service';
+import { SchemaService } from '../../../rest/service/schema.service';
+import { UserGroupService } from '../../../rest/service/user-group.service';
+import { UserService } from '../../../rest/service/user.service';
+import { Form } from '../../../rest/types/Form';
 import { PermissionFlagSet } from '../../../rest/types/PermissionFlagSet';
 import { PermissionSet } from '../../../rest/types/PermissionSet';
-import { ManagementPermissions } from '../../types/ManagementPermissions';
-import { Form } from '../../../rest/types/Form';
-import { UserService } from '../../../rest/service/user.service';
-import { UserGroupService } from '../../../rest/service/user-group.service';
-import { SchemaService } from '../../../rest/service/schema.service';
-import { RequestService } from '../../../rest/service/request.service';
-import { PermissionService } from '../../../rest/service/permission.service';
-import { MembershipService } from '../../../rest/service/membership.service';
-import { DataSourceService } from '../../../rest/service/data-source-service.service';
-import { AuthenticationService } from '../../../auth/service/authentication.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { UserGroup } from '../../../rest/types/UserGroup';
 import { NonNullableProperties } from '../../../util/utility-types';
-import { catchError, forkJoin, from, map, Observable, of, switchMap } from 'rxjs';
-import { FormGroup } from '@angular/forms';
-import { FormService } from '../../../form/service/form.service';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ManagementPermissions } from '../../types/ManagementPermissions';
 
 /**
  * The component for editing user groups.
  */
 @Component({
-    selector: 'guac-manage-user-group',
-    templateUrl: './manage-user-group.component.html',
+    selector     : 'guac-manage-user-group',
+    templateUrl  : './manage-user-group.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ManageUserGroupComponent implements OnInit {
@@ -52,13 +52,13 @@ export class ManageUserGroupComponent implements OnInit {
      * The identifier of the user group being edited. If a new user group is
      * being created, this will not be defined.
      */
-    @Input({alias: 'id'}) private identifier?: string;
+    @Input({ alias: 'id' }) private identifier?: string;
 
     /**
      * The unique identifier of the data source containing the user group being
      * edited.
      */
-    @Input({required: true}) dataSource!: string;
+    @Input({ required: true }) dataSource!: string;
 
     /**
      * The identifiers of all data sources currently available to the
@@ -245,7 +245,7 @@ export class ManageUserGroupComponent implements OnInit {
             this.schemaService.getUserGroupAttributes(this.dataSource)
         ])
             .subscribe({
-                next: ([userGroupData, permissions, userGroups, users, attributes]) => {
+                next    : ([userGroupData, permissions, userGroups, users, attributes]) => {
 
                     this.attributes = attributes;
 
@@ -512,7 +512,7 @@ export class ManageUserGroupComponent implements OnInit {
     cloneUserGroup(): void {
         this.router.navigate(
             ['manage', encodeURIComponent(this.dataSource), 'userGroups'],
-            {queryParams: {clone: this.identifier}}
+            { queryParams: { clone: this.identifier } }
         );
     }
 

@@ -25,8 +25,8 @@ import { ManagedClient } from '../../types/ManagedClient';
  * a single Guacamole client.
  */
 @Component({
-    selector: 'guac-client-zoom',
-    templateUrl: './guac-client-zoom.component.html',
+    selector     : 'guac-client-zoom',
+    templateUrl  : './guac-client-zoom.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacClientZoomComponent {
@@ -34,7 +34,7 @@ export class GuacClientZoomComponent {
     /**
      * The client to control the zoom/autofit of.
      */
-    @Input({required: true}) client!: ManagedClient;
+    @Input({ required: true }) client!: ManagedClient;
 
     /**
      * Zooms in by 10%, automatically disabling autofit.

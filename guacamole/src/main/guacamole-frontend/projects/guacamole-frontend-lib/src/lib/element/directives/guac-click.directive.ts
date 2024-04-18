@@ -17,13 +17,7 @@
  * under the License.
  */
 
-import {
-    DestroyRef,
-    Directive,
-    ElementRef,
-    HostListener,
-    Input
-} from '@angular/core';
+import { DestroyRef, Directive, ElementRef, HostListener, Input } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from '../../events/services/guac-event.service';
 import { GuacEventArguments } from '../../events/types/GuacEventArguments';
@@ -55,7 +49,7 @@ export class GuacClickDirective {
      * A callback that is invoked by the guacClick directive when a
      * click or click-like event is received.
      */
-    @Input({required: true}) guacClick!: GuacClickCallback;
+    @Input({ required: true }) guacClick!: GuacClickCallback;
 
     /**
      * The element which will register the click.
@@ -96,14 +90,14 @@ export class GuacClickDirective {
         // Update tracking of modifier states for each key press
         this.guacEventService.on('guacKeydown')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({keyboard}) => {
+            .subscribe(({ keyboard }) => {
                 this.updateModifiers(keyboard);
             });
 
         // Update tracking of modifier states for each key release
         this.guacEventService.on('guacKeyup')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({keyboard}) => {
+            .subscribe(({ keyboard }) => {
                 this.updateModifiers(keyboard);
             });
     }

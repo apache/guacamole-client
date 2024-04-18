@@ -17,31 +17,32 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ElementModule } from 'guacamole-frontend-lib';
-import { PlayerComponent } from './player.component';
-import { PlayerDisplayComponent } from './player-display/player-display.component';
-import { ProgressIndicatorComponent } from './progress-indicator/progress-indicator.component';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@ngneat/transloco';
+import { ElementModule } from 'guacamole-frontend-lib';
+import { PlayerDisplayComponent } from './player-display/player-display.component';
+import { PlayerComponent } from './player.component';
+import { ProgressIndicatorComponent } from './progress-indicator/progress-indicator.component';
 
 @NgModule({
-  declarations: [
-    PlayerComponent,
-    PlayerDisplayComponent,
-    ProgressIndicatorComponent
-  ],
-    imports: [
+    declarations: [
+        PlayerComponent,
+        PlayerDisplayComponent,
+        ProgressIndicatorComponent
+    ],
+    imports     : [
         CommonModule,
         FormsModule,
         ElementModule,
         TranslocoModule
     ],
-  exports: [
-    PlayerComponent,
-    PlayerDisplayComponent,
-    ProgressIndicatorComponent
-  ]
+    exports     : [
+        PlayerComponent,
+        PlayerDisplayComponent,
+        ProgressIndicatorComponent
+    ]
 })
-export class PlayerModule { }
+export class PlayerModule {
+}

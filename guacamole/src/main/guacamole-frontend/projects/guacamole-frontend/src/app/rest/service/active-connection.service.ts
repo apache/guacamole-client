@@ -86,12 +86,12 @@ export class ActiveConnectionService {
         // Add permission filter if specified
         let httpParameters = new HttpParams();
         if (permissionTypes)
-            httpParameters = httpParameters.appendAll({permission: permissionTypes});
+            httpParameters = httpParameters.appendAll({ permission: permissionTypes });
 
         // Retrieve tunnels
         return this.http.get<Record<string, ActiveConnection>>(
             'api/session/data/' + encodeURIComponent(dataSource) + '/activeConnections',
-            {params: httpParameters}
+            { params: httpParameters }
         );
 
     }
@@ -118,7 +118,7 @@ export class ActiveConnectionService {
         const activeConnectionPatch: any[] = [];
         identifiers.forEach(function addActiveConnectionPatch(identifier) {
             activeConnectionPatch.push({
-                op: 'remove',
+                op  : 'remove',
                 path: '/' + identifier
             });
         });

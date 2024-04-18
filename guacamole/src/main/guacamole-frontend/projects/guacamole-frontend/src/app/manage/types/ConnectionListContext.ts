@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { PermissionFlagSet } from "../../rest/types/PermissionFlagSet";
+import { PermissionFlagSet } from '../../rest/types/PermissionFlagSet';
 
 /**
  * Expose permission query and modification functions to group list template.

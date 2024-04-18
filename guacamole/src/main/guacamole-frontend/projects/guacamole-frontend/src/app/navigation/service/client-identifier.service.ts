@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { Inject, Injectable } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable } from '@angular/core';
 import { AuthenticationService } from '../../auth/service/authentication.service';
 import { ClientIdentifier } from '../types/ClientIdentifier';
 
@@ -153,8 +153,8 @@ export class ClientIdentifierService {
         try {
             const values = base64urlDecode(str).split('\0');
             return new ClientIdentifier({
-                id: values[0],
-                type: values[1],
+                id        : values[0],
+                type      : values[1],
                 dataSource: values[2]
             });
         }
@@ -162,8 +162,8 @@ export class ClientIdentifierService {
             // If the provided string is invalid, transform into a reasonable guess
         catch (e) {
             return new ClientIdentifier({
-                id: str,
-                type: ClientIdentifier.Types.CONNECTION,
+                id        : str,
+                type      : ClientIdentifier.Types.CONNECTION,
                 dataSource: this.authenticationService.getDataSource() || 'default'
             });
         }

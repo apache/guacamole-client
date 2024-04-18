@@ -70,14 +70,14 @@ import { GuacLenientTimeDirective } from './directives/guac-lenient-time.directi
         TerminalColorSchemeFieldComponent,
         GuacInputColorComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         HttpClientModule,
         ElementModule,
         ReactiveFormsModule,
         TranslocoModule
     ],
-    exports: [
+    exports     : [
         TimeZoneFieldComponent,
         FormFieldComponent,
         FormComponent,

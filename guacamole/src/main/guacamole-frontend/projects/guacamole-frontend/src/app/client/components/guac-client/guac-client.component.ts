@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import { DOCUMENT } from '@angular/common';
 import {
     Component,
     DestroyRef,
@@ -35,16 +36,15 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
-import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedClientService } from '../../services/managed-client.service';
-import { DOCUMENT } from '@angular/common';
+import { ManagedClient } from '../../types/ManagedClient';
 
 /**
  * A component for the guacamole client.
  */
 @Component({
-    selector: 'guac-client',
-    templateUrl: './guac-client.component.html',
+    selector     : 'guac-client',
+    templateUrl  : './guac-client.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacClientComponent implements OnInit, OnChanges {
@@ -52,13 +52,13 @@ export class GuacClientComponent implements OnInit, OnChanges {
     /**
      * The client to display within this guacClient directive.
      */
-    @Input({required: true, alias: 'client'}) managedClient!: ManagedClient;
+    @Input({ required: true, alias: 'client' }) managedClient!: ManagedClient;
 
     /**
      * Whether translation of touch to mouse events should emulate an
      * absolute pointer device, or a relative pointer device.
      */
-    @Input({required: true}) emulateAbsoluteMouse!: boolean;
+    @Input({ required: true }) emulateAbsoluteMouse!: boolean;
 
     /**
      * Whether the local, hardware mouse cursor is in use.
@@ -84,7 +84,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
     /**
      * A reference to the element which must contain the Guacamole display element.
      */
-    @ViewChild('display', {static: true})
+    @ViewChild('display', { static: true })
     private readonly displayContainerRef!: ElementRef<HTMLDivElement>;
 
     /**
@@ -95,7 +95,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
     /**
      * TODO
      */
-    @ViewChild('main', {static: true})
+    @ViewChild('main', { static: true })
     private readonly mainRef!: ElementRef<HTMLDivElement>;
 
     /**
@@ -169,14 +169,14 @@ export class GuacClientComponent implements OnInit, OnChanges {
         // Update remote clipboard if local clipboard changes
         this.guacEventService.on('guacClipboard')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({data}) => {
+            .subscribe(({ data }) => {
                 this.managedClientService.setClipboard(this.managedClient, data);
             });
 
         // Translate local keydown events to remote keydown events if keyboard is enabled
         this.guacEventService.on('guacKeydown')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({event, keysym}) => {
+            .subscribe(({ event, keysym }) => {
                 if (this.managedClient.clientProperties.focused) {
                     this.guacamoleClient?.sendKeyEvent(1, keysym);
                     event.preventDefault();
@@ -186,7 +186,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
         // Translate local keyup events to remote keyup events if keyboard is enabled
         this.guacEventService.on('guacKeyup')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({event, keysym}) => {
+            .subscribe(({ event, keysym }) => {
                 if (this.managedClient.clientProperties.focused) {
                     this.guacamoleClient?.sendKeyEvent(0, keysym);
                     event.preventDefault();
@@ -196,7 +196,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
         // Universally handle all synthetic keydown events
         this.guacEventService.on('guacSyntheticKeydown')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({keysym}) => {
+            .subscribe(({ keysym }) => {
                 if (this.managedClient.clientProperties.focused)
                     this.guacamoleClient?.sendKeyEvent(1, keysym);
             });
@@ -204,7 +204,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
         // Universally handle all synthetic keyup events
         this.guacEventService.on('guacSyntheticKeyup')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({keysym}) => {
+            .subscribe(({ keysym }) => {
                 if (this.managedClient.clientProperties.focused)
                     this.guacamoleClient?.sendKeyEvent(0, keysym);
             });
@@ -451,7 +451,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
                 const displaySize = this.managedClient.managedDisplay?.size();
                 this.updateDisplayScale();
 
-            }, {injector: this.injector, allowSignalWrites: true});
+            }, { injector: this.injector, allowSignalWrites: true });
 
 
             // Keep local cursor up-to-date
@@ -465,7 +465,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
                 if (cursor && cursor.canvas && cursor.x && cursor.y)
                     this.localCursor = this.mouse.setCursor(cursor.canvas, cursor.x, cursor.y);
 
-            }, {injector: this.injector});
+            }, { injector: this.injector });
 
 
             // Adjust scale if modified externally
@@ -495,7 +495,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
                 if (scale !== this.managedClient.clientProperties.scale())
                     this.managedClient.clientProperties.scale.set(scale);
 
-            }, {injector: this.injector, allowSignalWrites: true});
+            }, { injector: this.injector, allowSignalWrites: true });
 
         }
 

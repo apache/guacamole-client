@@ -28,12 +28,12 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
  * is undefined.
  */
 @Directive({
-    selector: '[guacLenientTime]',
+    selector : '[guacLenientTime]',
     providers: [
         {
-            provide: NG_VALUE_ACCESSOR,
+            provide    : NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => GuacLenientTimeDirective),
-            multi: true
+            multi      : true
         }
     ]
 })

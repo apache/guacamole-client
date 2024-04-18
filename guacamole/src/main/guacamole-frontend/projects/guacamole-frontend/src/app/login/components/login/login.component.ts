@@ -32,8 +32,8 @@ import { Error } from '../../../rest/types/Error';
 import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
-    selector: 'guac-login',
-    templateUrl: './login.component.html',
+    selector     : 'guac-login',
+    templateUrl  : './login.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class LoginComponent implements OnInit, OnChanges {
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit, OnChanges {
      * The login form or set of fields. This will be displayed to the user
      * to capture their credentials.
      */
-    @Input({required: true}) form: Field[] | null = null
+    @Input({ required: true }) form: Field[] | null = null
 
     /**
      * A form group of all field name/value pairs that have already been provided.
@@ -131,7 +131,7 @@ export class LoginComponent implements OnInit, OnChanges {
         // they have no corresponding input fields
         if (changes['values']) {
             const values = changes['values'].currentValue as FormGroup;
-            this.enteredValues = new FormGroup({...this.enteredValues.controls, ...values.controls});
+            this.enteredValues = new FormGroup({ ...this.enteredValues.controls, ...values.controls });
             // angular.extend($scope.enteredValues, values || {});
         }
 
@@ -210,13 +210,13 @@ export class LoginComponent implements OnInit, OnChanges {
         this.guacEventService.on('guacLogin')
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
-                this.router.navigate([this.router.url], {onSameUrlNavigation: 'reload'});
+                this.router.navigate([this.router.url], { onSameUrlNavigation: 'reload' });
             });
 
         // Reset upon failure
         this.guacEventService.on('guacLoginFailed')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({error}) => {
+            .subscribe(({ error }) => {
 
                 // Initial submission is complete and has failed
                 this.submitted = false;

@@ -41,8 +41,8 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
  * the user can click on it to initiate a download.
  */
 @Component({
-    selector: 'guac-file',
-    templateUrl: './file.component.html',
+    selector     : 'guac-file',
+    templateUrl  : './file.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class FileComponent implements OnInit, OnChanges {
@@ -50,14 +50,14 @@ export class FileComponent implements OnInit, OnChanges {
     /**
      * The file to be displayed by the component.
      */
-    @Input({required: true}) file: ManagedFilesystem.File | null = null;
+    @Input({ required: true }) file: ManagedFilesystem.File | null = null;
 
     /**
      * Indicates whether the file is currently focused. If true, the next
      * click on the file will trigger a changeDirectory or downloadFile
      * event based on the type of the file.
      */
-    @Input({required: true}) isFocused = false;
+    @Input({ required: true }) isFocused = false;
 
     /**
      * Event emitted when the file is clicked and should be focused.
@@ -79,7 +79,7 @@ export class FileComponent implements OnInit, OnChanges {
     /**
      * Reference to the HTML element backing the component.
      */
-    @ViewChild('listItem', {static: true}) elementRef?: ElementRef<HTMLDivElement>;
+    @ViewChild('listItem', { static: true }) elementRef?: ElementRef<HTMLDivElement>;
 
     /**
      * The HTML element backing the component.

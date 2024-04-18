@@ -26,8 +26,8 @@ import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
  * A component which graphically represents an individual user.
  */
 @Component({
-    selector: 'guac-user-item',
-    templateUrl: './guac-user-item.component.html',
+    selector     : 'guac-user-item',
+    templateUrl  : './guac-user-item.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacUserItemComponent implements OnChanges {

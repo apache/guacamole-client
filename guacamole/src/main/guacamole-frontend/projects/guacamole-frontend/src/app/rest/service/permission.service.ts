@@ -243,8 +243,8 @@ export class PermissionService {
         // Add system operations to patch
         permissions.systemPermissions.forEach(function addSystemPatch(type) {
             patch.push({
-                op: operation,
-                path: '/systemPermissions',
+                op   : operation,
+                path : '/systemPermissions',
                 value: type
             });
         });
@@ -277,8 +277,8 @@ export class PermissionService {
         for (const identifier in permissions) {
             permissions[identifier].forEach(function addObjectPatch(type) {
                 patch.push({
-                    op: operation,
-                    path: path + '/' + identifier,
+                    op   : operation,
+                    path : path + '/' + identifier,
                     value: type
                 });
             });

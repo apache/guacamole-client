@@ -17,31 +17,31 @@
  * under the License.
  */
 
-import { Component, DestroyRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { Component, DestroyRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { catchError, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { FormService } from '../../../form/service/form.service';
 import { DataSourceService } from '../../../rest/service/data-source-service.service';
+import { MembershipService } from '../../../rest/service/membership.service';
 import { PermissionService } from '../../../rest/service/permission.service';
 import { RequestService } from '../../../rest/service/request.service';
+import { SchemaService } from '../../../rest/service/schema.service';
 import { UserGroupService } from '../../../rest/service/user-group.service';
 import { UserService } from '../../../rest/service/user.service';
-import { MembershipService } from '../../../rest/service/membership.service';
-import { SchemaService } from '../../../rest/service/schema.service';
-import { User } from '../../../rest/types/User';
+import { Error } from '../../../rest/types/Error';
 import { Form } from '../../../rest/types/Form';
 import { PermissionFlagSet } from '../../../rest/types/PermissionFlagSet';
 import { PermissionSet } from '../../../rest/types/PermissionSet';
+import { User } from '../../../rest/types/User';
 import { ManagementPermissions } from '../../types/ManagementPermissions';
-import { catchError, forkJoin, map, Observable, of, switchMap, throwError } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { Error } from '../../../rest/types/Error';
-import { FormGroup } from '@angular/forms';
-import { FormService } from '../../../form/service/form.service';
 
 @Component({
-    selector: 'guac-manage-user',
-    templateUrl: './manage-user.component.html',
+    selector     : 'guac-manage-user',
+    templateUrl  : './manage-user.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ManageUserComponent implements OnInit {
@@ -210,7 +210,7 @@ export class ManageUserComponent implements OnInit {
         forkJoin([userData, permissions, userGroups, attributes])
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
-                next: ([userData, permissions, userGroups, attributes]) => {
+                next    : ([userData, permissions, userGroups, attributes]) => {
 
                     this.attributes = attributes;
 
@@ -492,7 +492,7 @@ export class ManageUserComponent implements OnInit {
     cloneUser(): void {
         this.router.navigate(
             ['manage', encodeURIComponent(this.dataSource), 'users'],
-            {queryParams: {clone: this.username}}
+            { queryParams: { clone: this.username } }
         );
     }
 

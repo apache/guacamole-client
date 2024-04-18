@@ -85,9 +85,9 @@ export class ManagedShareLink {
 
         // Generate new share link using the given profile and credentials
         return new ManagedShareLink({
-            name: sharingProfile.name,
-            href: UserCredentials.getLink(sharingCredentials),
-            sharingProfile: sharingProfile,
+            name              : sharingProfile.name,
+            href              : UserCredentials.getLink(sharingCredentials),
+            sharingProfile    : sharingProfile,
             sharingCredentials: sharingCredentials
         });
 

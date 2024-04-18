@@ -26,12 +26,12 @@
  */
 const dispatchEvent = (element: any, eventName: string, coordX: any, coordY: any) => {
     element.dispatchEvent(new MouseEvent(eventName, {
-        view: window,
-        bubbles: true,
+        view      : window,
+        bubbles   : true,
         cancelable: true,
-        clientX: coordX,
-        clientY: coordY,
-        button: 0
+        clientX   : coordX,
+        clientY   : coordY,
+        button    : 0
     }));
 };
 

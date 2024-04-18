@@ -55,11 +55,11 @@ export class GuacTouchPinchDirective {
      *     false if the default action of the touch event should be
      *     prevented, any other value otherwise.
      */
-    @Input({required: true}) guacTouchPinch!: (inProgress: boolean,
-                                               startLength: number,
-                                               currentLength: number,
-                                               centerX: number,
-                                               centerY: number) => boolean;
+    @Input({ required: true }) guacTouchPinch!: (inProgress: boolean,
+                                                 startLength: number,
+                                                 currentLength: number,
+                                                 centerX: number,
+                                                 centerY: number) => boolean;
 
     /**
      * The starting pinch distance, or null if the gesture has not yet

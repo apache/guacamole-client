@@ -69,7 +69,7 @@ export class GuacTranslateService {
 
                     // If the requested translation is available, use that
                     if (translation !== null)
-                        return of(new TranslationResult({id: translationId, message: translation}));
+                        return of(new TranslationResult({ id: translationId, message: translation }));
 
                     // Otherwise, try the default translation ID
                     return this.translocoService.selectTranslate<string | null>(defaultTranslationId, params)
@@ -80,13 +80,13 @@ export class GuacTranslateService {
                                 // Default translation worked, so use that
                                 if (defaultTranslation !== null)
                                     return of(new TranslationResult({
-                                        id: defaultTranslationId,
+                                        id     : defaultTranslationId,
                                         message: defaultTranslation
                                     }));
 
                                 // Neither translation is available; as a fallback, return default ID for both
                                 return of(new TranslationResult({
-                                    id: defaultTranslationId,
+                                    id     : defaultTranslationId,
                                     message: defaultTranslationId
                                 }));
                             })

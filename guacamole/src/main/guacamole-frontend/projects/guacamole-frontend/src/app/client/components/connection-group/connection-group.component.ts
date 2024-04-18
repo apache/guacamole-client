@@ -18,16 +18,16 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { ConnectionListContext } from '../../types/ConnectionListContext';
 import { GroupListItem } from '../../../group-list/types/GroupListItem';
+import { ConnectionListContext } from '../../types/ConnectionListContext';
 
 /**
  * TODO
  */
 @Component({
-    selector: 'guac-connection-group',
-    templateUrl: './connection-group.component.html',
-    styles: [],
+    selector     : 'guac-connection-group',
+    templateUrl  : './connection-group.component.html',
+    styles       : [],
     encapsulation: ViewEncapsulation.None
 })
 export class ConnectionGroupComponent {
@@ -35,10 +35,10 @@ export class ConnectionGroupComponent {
     /**
      * TODO
      */
-    @Input({required: true}) context!: ConnectionListContext;
+    @Input({ required: true }) context!: ConnectionListContext;
 
     /**
      * TODO
      */
-    @Input({required: true}) item!: GroupListItem;
+    @Input({ required: true }) item!: GroupListItem;
 }

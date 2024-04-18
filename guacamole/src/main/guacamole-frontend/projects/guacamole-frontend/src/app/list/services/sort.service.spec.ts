@@ -35,62 +35,62 @@ describe('orderByPredicate', () => {
 
     it('should sort the collection in ascending order based on a single predicate', () => {
         const collection = [
-            {name: 'John', age: 30},
-            {name: 'Jane', age: 25},
-            {name: 'Bob', age: 35},
+            { name: 'John', age: 30 },
+            { name: 'Jane', age: 25 },
+            { name: 'Bob', age: 35 },
         ];
         const predicates = ['age'];
 
         const result = service.orderByPredicate(collection, predicates);
 
         expect(result).toEqual([
-            {name: 'Jane', age: 25},
-            {name: 'John', age: 30},
-            {name: 'Bob', age: 35},
+            { name: 'Jane', age: 25 },
+            { name: 'John', age: 30 },
+            { name: 'Bob', age: 35 },
         ]);
     });
 
     it('should sort the collection in descending order based on a single predicate', () => {
         const collection = [
-            {name: 'John', age: 30},
-            {name: 'Jane', age: 25},
-            {name: 'Bob', age: 35},
+            { name: 'John', age: 30 },
+            { name: 'Jane', age: 25 },
+            { name: 'Bob', age: 35 },
         ];
         const predicates = ['-age'];
 
         const result = service.orderByPredicate(collection, predicates);
 
         expect(result).toEqual([
-            {name: 'Bob', age: 35},
-            {name: 'John', age: 30},
-            {name: 'Jane', age: 25},
+            { name: 'Bob', age: 35 },
+            { name: 'John', age: 30 },
+            { name: 'Jane', age: 25 },
         ]);
     });
 
     it('should sort the collection based on multiple predicates', () => {
         const collection = [
-            {name: 'John', age: 30, salary: 50000},
-            {name: 'Jane', age: 25, salary: 60000},
-            {name: 'Bob', age: 35, salary: 40000},
-            {name: 'Alice', age: 25, salary: 50000},
+            { name: 'John', age: 30, salary: 50000 },
+            { name: 'Jane', age: 25, salary: 60000 },
+            { name: 'Bob', age: 35, salary: 40000 },
+            { name: 'Alice', age: 25, salary: 50000 },
         ];
         const predicates = ['age', '-salary'];
 
         const result = service.orderByPredicate(collection, predicates);
 
         expect(result).toEqual([
-            {name: 'Jane', age: 25, salary: 60000},
-            {name: 'Alice', age: 25, salary: 50000},
-            {name: 'John', age: 30, salary: 50000},
-            {name: 'Bob', age: 35, salary: 40000},
+            { name: 'Jane', age: 25, salary: 60000 },
+            { name: 'Alice', age: 25, salary: 50000 },
+            { name: 'John', age: 30, salary: 50000 },
+            { name: 'Bob', age: 35, salary: 40000 },
         ]);
     });
 
     it('should return the same collection if no predicates are provided', () => {
         const collection = [
-            {name: 'John', age: 30},
-            {name: 'Jane', age: 25},
-            {name: 'Bob', age: 35},
+            { name: 'John', age: 30 },
+            { name: 'Jane', age: 25 },
+            { name: 'Bob', age: 35 },
         ];
         const predicates: string[] = [];
 

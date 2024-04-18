@@ -17,17 +17,18 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 
 
 /**
  * Module which provides generic storage services.
  */
 @NgModule({
-  declarations: [],
-  imports: [
-    CommonModule
-  ]
+    declarations: [],
+    imports     : [
+        CommonModule
+    ]
 })
-export class StorageModule { }
+export class StorageModule {
+}

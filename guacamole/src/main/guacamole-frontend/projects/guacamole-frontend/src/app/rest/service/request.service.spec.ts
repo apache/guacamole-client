@@ -40,21 +40,21 @@ describe('RequestService', () => {
 
     describe('createErrorCallback', () => {
         it('should invoke the given callback if the error is a REST Error', () => {
-            testScheduler.run(({expectObservable}) => {
+            testScheduler.run(({ expectObservable }) => {
 
-                const restError = new Error({type: Type.NOT_FOUND});
+                const restError = new Error({ type: Type.NOT_FOUND });
                 const defaultValue = 'foo';
 
                 const observable = throwError(() => restError).pipe(
                     catchError(service.defaultValue(defaultValue))
                 );
 
-                expectObservable(observable).toBe('(a|)', {a: defaultValue});
+                expectObservable(observable).toBe('(a|)', { a: defaultValue });
             });
         });
 
         it('should rethrow all other errors', () => {
-            testScheduler.run(({expectObservable}) => {
+            testScheduler.run(({ expectObservable }) => {
                 const otherError = 'Other Error';
                 const defaultValue = 'foo';
 

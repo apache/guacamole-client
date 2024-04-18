@@ -17,37 +17,41 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { TranslocoModule } from '@ngneat/transloco';
-import { ListModule } from '../list/list.module';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { SettingsComponent } from './components/settings/settings.component';
-import { NavigationModule } from '../navigation/navigation.module';
-import { GuacSettingsUsersComponent } from './components/guac-settings-users/guac-settings-users.component';
-import {
-    GuacSettingsPreferencesComponent
-} from './components/guac-settings-preferences/guac-settings-preferences.component';
-import { FormModule } from '../form/form.module';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import {
-    GuacSettingsUserGroupsComponent
-} from './components/guac-settings-user-groups/guac-settings-user-groups.component';
+import { RouterLink, RouterOutlet } from '@angular/router';
+import { TranslocoModule } from '@ngneat/transloco';
+import { ClientLibModule } from 'guacamole-frontend-lib';
+import { FormModule } from '../form/form.module';
+import { GroupListModule } from '../group-list/group-list.module';
 import { IndexModule } from '../index/index.module';
+import { ListModule } from '../list/list.module';
+import { NavigationModule } from '../navigation/navigation.module';
+import { PlayerModule } from '../player/player.module';
+import { ConnectionGroupComponent } from './components/connection-group/connection-group.component';
+import {
+    ConnectionHistoryPlayerComponent
+} from './components/connection-history-player/connection-history-player.component';
+import { ConnectionComponent } from './components/connection/connection.component';
+import {
+    GuacSettingsConnectionHistoryComponent
+} from './components/guac-settings-connection-history/guac-settings-connection-history.component';
 import {
     GuacSettingsConnectionsComponent
 } from './components/guac-settings-connections/guac-settings-connections.component';
-import { GroupListModule } from '../group-list/group-list.module';
-import { ConnectionComponent } from './components/connection/connection.component';
-import { ConnectionGroupComponent } from './components/connection-group/connection-group.component';
-import { NewConnectionComponent } from './components/new-connection/new-connection.component';
-import { NewConnectionGroupComponent } from './components/new-connection-group/new-connection-group.component';
-import { NewSharingProfileComponent } from './components/new-sharing-profile/new-sharing-profile.component';
-import { GuacSettingsConnectionHistoryComponent } from './components/guac-settings-connection-history/guac-settings-connection-history.component';
+import {
+    GuacSettingsPreferencesComponent
+} from './components/guac-settings-preferences/guac-settings-preferences.component';
 import { GuacSettingsSessionsComponent } from './components/guac-settings-sessions/guac-settings-sessions.component';
-import { ConnectionHistoryPlayerComponent } from './components/connection-history-player/connection-history-player.component';
-import { ClientLibModule } from 'guacamole-frontend-lib';
-import { PlayerModule } from '../player/player.module';
+import {
+    GuacSettingsUserGroupsComponent
+} from './components/guac-settings-user-groups/guac-settings-user-groups.component';
+import { GuacSettingsUsersComponent } from './components/guac-settings-users/guac-settings-users.component';
+import { NewConnectionGroupComponent } from './components/new-connection-group/new-connection-group.component';
+import { NewConnectionComponent } from './components/new-connection/new-connection.component';
+import { NewSharingProfileComponent } from './components/new-sharing-profile/new-sharing-profile.component';
+import { SettingsComponent } from './components/settings/settings.component';
 import { SharingProfileComponent } from './components/sharing-profile/sharing-profile.component';
 
 /**
@@ -71,7 +75,7 @@ import { SharingProfileComponent } from './components/sharing-profile/sharing-pr
         ConnectionHistoryPlayerComponent,
         SharingProfileComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         TranslocoModule,
         ListModule,
@@ -86,7 +90,7 @@ import { SharingProfileComponent } from './components/sharing-profile/sharing-pr
         ClientLibModule,
         PlayerModule,
     ],
-    exports: [
+    exports     : [
         GuacSettingsUsersComponent,
         SettingsComponent,
         GuacSettingsPreferencesComponent,

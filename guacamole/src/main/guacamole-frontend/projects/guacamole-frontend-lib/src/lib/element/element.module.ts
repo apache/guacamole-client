@@ -17,14 +17,14 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { GuacClickDirective } from './directives/guac-click.directive';
+import { GuacDropDirective } from './directives/guac-drop.directive';
 import { GuacFocusDirective } from './directives/guac-focus.directive';
- import { GuacResizeDirective } from './directives/guac-resize.directive';
+import { GuacResizeDirective } from './directives/guac-resize.directive';
 import { GuacScrollDirective } from './directives/guac-scroll.directive';
 import { GuacUploadDirective } from './directives/guac-upload.directive';
-import { GuacDropDirective } from './directives/guac-drop.directive';
 
 /**
  * Module for manipulating element state, such as focus or scroll position, as
@@ -39,10 +39,10 @@ import { GuacDropDirective } from './directives/guac-drop.directive';
         GuacUploadDirective,
         GuacDropDirective
     ],
-    imports: [
+    imports     : [
         CommonModule
     ],
-    exports: [
+    exports     : [
         GuacClickDirective,
         GuacFocusDirective,
         GuacResizeDirective,

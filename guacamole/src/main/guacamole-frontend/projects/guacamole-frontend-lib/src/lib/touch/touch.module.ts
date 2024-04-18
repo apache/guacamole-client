@@ -17,26 +17,27 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { GuacTouchPinchDirective } from './directives/guac-touch-pinch.directive';
+import { NgModule } from '@angular/core';
 import { GuacTouchDragDirective } from './directives/guac-touch-drag.directive';
+import { GuacTouchPinchDirective } from './directives/guac-touch-pinch.directive';
 
 
 /**
  * Module for handling common touch gestures, like panning or pinch-to-zoom.
  */
 @NgModule({
-  declarations: [
-    GuacTouchPinchDirective,
-    GuacTouchDragDirective
-  ],
-  imports: [
-    CommonModule
-  ],
-  exports: [
-    GuacTouchPinchDirective,
-    GuacTouchDragDirective
-  ]
+    declarations: [
+        GuacTouchPinchDirective,
+        GuacTouchDragDirective
+    ],
+    imports     : [
+        CommonModule
+    ],
+    exports     : [
+        GuacTouchPinchDirective,
+        GuacTouchDragDirective
+    ]
 })
-export class TouchModule { }
+export class TouchModule {
+}

@@ -18,12 +18,12 @@
  */
 
 import { TestBed } from '@angular/core/testing';
-import { TestScheduler } from 'rxjs/testing';
-import { GuacTranslateService } from './guac-translate.service';
 import { TRANSLOCO_MISSING_HANDLER, TranslocoService, TranslocoTestingModule } from '@ngneat/transloco';
+import { TestScheduler } from 'rxjs/testing';
 import { GuacMissingHandler } from '../../locale/locale.module';
 import { getTestScheduler } from '../../util/test-helper';
 import { TranslationResult } from '../types/TranslationResult';
+import { GuacTranslateService } from './guac-translate.service';
 
 
 describe('GuacTranslateService', () => {
@@ -34,20 +34,20 @@ describe('GuacTranslateService', () => {
     beforeEach(() => {
         testScheduler = getTestScheduler();
         TestBed.configureTestingModule({
-            imports: [
+            imports  : [
                 TranslocoTestingModule.forRoot({
-                    langs: {},
+                    langs          : {},
                     translocoConfig: {
                         availableLangs: ['en'],
-                        defaultLang: 'en',
+                        defaultLang   : 'en',
 
                     },
-                    preloadLangs: true,
+                    preloadLangs   : true,
                 })
             ],
             providers: [
                 {
-                    provide: TRANSLOCO_MISSING_HANDLER,
+                    provide : TRANSLOCO_MISSING_HANDLER,
                     useClass: GuacMissingHandler
                 }
             ]
@@ -64,48 +64,48 @@ describe('GuacTranslateService', () => {
     });
 
     it('should return requested translation if available', () => {
-        testScheduler.run(({expectObservable}) => {
+        testScheduler.run(({ expectObservable }) => {
 
             const translationId = 'ID';
             const translationMessage = 'message';
             const defaultTranslationId = 'DEFAULT_ID';
 
-            transloco.setTranslation({[translationId]: translationMessage});
+            transloco.setTranslation({ [translationId]: translationMessage });
 
             const result = service.translateWithFallback(translationId, defaultTranslationId);
 
             const expected = new TranslationResult({
-                id: translationId,
+                id     : translationId,
                 message: translationMessage
             });
 
-            expectObservable(result).toBe('(a|)', {a: expected});
+            expectObservable(result).toBe('(a|)', { a: expected });
         });
     });
 
 
     it('should return translation for default id if available but requested id is not', () => {
-        testScheduler.run(({expectObservable}) => {
+        testScheduler.run(({ expectObservable }) => {
 
             const translationId = 'ID';
             const defaultTranslationId = 'DEFAULT_ID';
             const defaultTranslationMessage = 'default message';
 
-            transloco.setTranslation({[defaultTranslationId]: defaultTranslationMessage});
+            transloco.setTranslation({ [defaultTranslationId]: defaultTranslationMessage });
 
             const result = service.translateWithFallback(translationId, defaultTranslationId);
 
             const expected = new TranslationResult({
-                id: defaultTranslationId,
+                id     : defaultTranslationId,
                 message: defaultTranslationMessage
             });
 
-            expectObservable(result).toBe('(a|)', {a: expected});
+            expectObservable(result).toBe('(a|)', { a: expected });
         });
     });
 
     it('should return the literal value of `defaultTranslationId` for both the ID and message if neither id could be translated', () => {
-        testScheduler.run(({expectObservable}) => {
+        testScheduler.run(({ expectObservable }) => {
 
             const translationId = 'ID';
             const defaultTranslationId = 'DEFAULT_ID';
@@ -113,11 +113,11 @@ describe('GuacTranslateService', () => {
             const result = service.translateWithFallback(translationId, defaultTranslationId);
 
             const expected = new TranslationResult({
-                id: defaultTranslationId,
+                id     : defaultTranslationId,
                 message: defaultTranslationId
             });
 
-            expectObservable(result).toBe('(a|)', {a: expected});
+            expectObservable(result).toBe('(a|)', { a: expected });
         });
     });
 

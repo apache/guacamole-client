@@ -19,11 +19,11 @@
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { TranslocoTestingModule } from '@ngneat/transloco';
+import { LocaleModule } from '../../../locale/locale.module';
 
 import { GuacSectionTabsComponent } from './guac-section-tabs.component';
-import { By } from '@angular/platform-browser';
-import { LocaleModule } from '../../../locale/locale.module';
 
 describe('SectionTabsComponent', () => {
     let component: GuacSectionTabsComponent;
@@ -32,7 +32,7 @@ describe('SectionTabsComponent', () => {
     beforeEach(() => {
         TestBed.configureTestingModule({
             declarations: [GuacSectionTabsComponent],
-            imports: [
+            imports     : [
                 LocaleModule,
                 TranslocoTestingModule.forRoot({
                     langs: {

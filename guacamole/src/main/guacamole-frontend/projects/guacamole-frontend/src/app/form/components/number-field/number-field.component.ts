@@ -26,8 +26,8 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Component to display number fields.
  */
 @Component({
-    selector: 'guac-number-field',
-    templateUrl: './number-field.component.html',
+    selector     : 'guac-number-field',
+    templateUrl  : './number-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class NumberFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
@@ -57,13 +57,13 @@ export class NumberFieldComponent extends FormFieldBaseComponent implements OnIn
     ngOnInit(): void {
         // Set initial value of typed control
         const initialValue: number | null = this.control?.value ? Number(this.control.value) : null;
-        this.typedControl.setValue(initialValue, {emitEvent: false});
+        this.typedControl.setValue(initialValue, { emitEvent: false });
 
         // Update typed value when model is changed
         this.control?.valueChanges
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(value => {
-                this.typedControl.setValue((value ? Number(value) : null), {emitEvent: false});
+                this.typedControl.setValue((value ? Number(value) : null), { emitEvent: false });
             });
 
         // Update string value in model when typed value is changed

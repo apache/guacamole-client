@@ -26,13 +26,13 @@ import { EscapePipe } from './pipes/escape.pipe';
  */
 @NgModule({
     declarations: [
-    EscapePipe
-  ],
-    imports: [
+        EscapePipe
+    ],
+    imports     : [
         CommonModule
     ],
-    exports: [
-      EscapePipe
+    exports     : [
+        EscapePipe
     ]
 })
 export class IndexModule {

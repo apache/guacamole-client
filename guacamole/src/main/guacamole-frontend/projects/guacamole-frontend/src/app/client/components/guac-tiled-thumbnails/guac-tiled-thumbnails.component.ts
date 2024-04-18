@@ -18,16 +18,16 @@
  */
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 import { ManagedClient } from '../../types/ManagedClient';
+import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 
 /**
  * A component for displaying a group of Guacamole clients as a non-interactive
  * thumbnail of tiled client displays.
  */
 @Component({
-    selector: 'guac-tiled-thumbnails',
-    templateUrl: './guac-tiled-thumbnails.component.html',
+    selector     : 'guac-tiled-thumbnails',
+    templateUrl  : './guac-tiled-thumbnails.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacTiledThumbnailsComponent {
@@ -36,7 +36,7 @@ export class GuacTiledThumbnailsComponent {
      * The group of clients to display as a thumbnail of tiled client
      * displays.
      */
-    @Input({required: true}) clientGroup!: ManagedClientGroup;
+    @Input({ required: true }) clientGroup!: ManagedClientGroup;
 
     /**
      * The overall height of the thumbnail view of the tiled grid of

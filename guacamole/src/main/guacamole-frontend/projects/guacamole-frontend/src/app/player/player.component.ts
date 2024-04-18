@@ -61,8 +61,8 @@ import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArg
  *         of milliseconds since the start of the recording.
  */
 @Component({
-    selector: 'guac-player',
-    templateUrl: './player.component.html',
+    selector     : 'guac-player',
+    templateUrl  : './player.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class PlayerComponent implements OnChanges, OnDestroy {
@@ -292,14 +292,14 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                 // Notify listeners if an error occurs
                 this.recording.onerror = (message) => {
                     this.operationMessage = null;
-                    this.guacEventService.broadcast('guacPlayerError', {message});
+                    this.guacEventService.broadcast('guacPlayerError', { message });
                 };
 
                 // Notify listeners when additional recording data has been
                 // loaded
                 this.recording.onprogress = (duration, current) => {
                     this.operationProgress = (this.src as unknown as any)?.size ? current / (this.src as unknown as any).size : 0;
-                    this.guacEventService.broadcast('guacPlayerProgress', {duration, current});
+                    this.guacEventService.broadcast('guacPlayerProgress', { duration, current });
                 };
 
                 // Notify listeners when playback has started/resumed
@@ -326,7 +326,7 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                         this.operationProgress = current / total;
                     }
 
-                    this.guacEventService.broadcast('guacPlayerSeek', {position});
+                    this.guacEventService.broadcast('guacPlayerSeek', { position });
 
                 };
 

@@ -88,7 +88,7 @@ export class ColorPickerService {
         forkJoin({
             saveString,
             cancelString
-        }).subscribe(({saveString, cancelString}) => {
+        }).subscribe(({ saveString, cancelString }) => {
             this.saveString = saveString;
             this.cancelString = cancelString;
 
@@ -175,13 +175,13 @@ export class ColorPickerService {
 
                     // Include hue and color preview controls
                     preview: true,
-                    hue: true,
+                    hue    : true,
 
                     // Display only a text color input field and the save and
                     // cancel buttons (no clear button)
                     interaction: {
-                        input: true,
-                        save: true,
+                        input : true,
+                        save  : true,
                         cancel: true
                     }
 
@@ -189,7 +189,7 @@ export class ColorPickerService {
 
                 // Assign translated strings to button text
                 i18n: {
-                    'btn:save': this.saveString,
+                    'btn:save'  : this.saveString,
                     'btn:cancel': this.cancelString
                 }
 

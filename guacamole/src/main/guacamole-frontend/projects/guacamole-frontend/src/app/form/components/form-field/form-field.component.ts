@@ -38,8 +38,8 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * A component that allows editing of a field.
  */
 @Component({
-    selector: 'guac-form-field',
-    templateUrl: './form-field.component.html',
+    selector     : 'guac-form-field',
+    templateUrl  : './form-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class FormFieldComponent extends FormFieldBaseComponent implements AfterViewInit, OnChanges {
@@ -59,7 +59,7 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
      * View container reference which is used to dynamically create and insert
      * field components.
      */
-    @ViewChild('formField', {read: ViewContainerRef}) viewContainer!: ViewContainerRef;
+    @ViewChild('formField', { read: ViewContainerRef }) viewContainer!: ViewContainerRef;
 
     /**
      * Reference to the dynamically created field component.

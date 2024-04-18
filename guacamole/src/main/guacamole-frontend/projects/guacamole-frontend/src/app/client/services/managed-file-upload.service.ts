@@ -19,15 +19,13 @@
 
 import { Injectable } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import {
-    GuacFrontendEventArguments
-} from '../../events/types/GuacFrontendEventArguments';
+import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { RequestService } from '../../rest/service/request.service';
 import { TunnelService } from '../../rest/service/tunnel.service';
-import { ManagedFileUpload } from '../types/ManagedFileUpload';
+import { Error } from '../../rest/types/Error';
 import { ManagedClient } from '../types/ManagedClient';
 import { ManagedFileTransferState } from '../types/ManagedFileTransferState';
-import { Error } from '../../rest/types/Error';
+import { ManagedFileUpload } from '../types/ManagedFileUpload';
 
 /**
  * A service for creating new ManagedFileUpload instances.
@@ -125,7 +123,7 @@ export class ManagedFileUploadService {
                             ManagedFileTransferState.StreamState.CLOSED);
 
                         // Notify of upload completion
-                        this.guacEventService.broadcast('guacUploadComplete', {filename: file.name});
+                        this.guacEventService.broadcast('guacUploadComplete', { filename: file.name });
                     },
 
                     // Notify if upload fails

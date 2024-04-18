@@ -21,6 +21,7 @@ import { DOCUMENT } from '@angular/common';
 import { AfterViewChecked, Component, DestroyRef, Inject, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
+import { Title } from '@angular/platform-browser';
 import { NavigationEnd, NavigationStart, Router, RoutesRecognized } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
@@ -38,7 +39,6 @@ import { Error } from './rest/types/Error';
 import { Field } from './rest/types/Field';
 import { TranslatableMessage } from './rest/types/TranslatableMessage';
 import { ApplicationState } from './util/ApplicationState';
-import { Title } from '@angular/platform-browser';
 
 /**
  * The number of milliseconds that should elapse between client-side
@@ -58,8 +58,8 @@ const EXTENSION_STYLES_FILENAME = 'app.css';
  * The Component for the root of the application.
  */
 @Component({
-    selector: 'guac-root',
-    templateUrl: './app.component.html',
+    selector     : 'guac-root',
+    templateUrl  : './app.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class AppComponent implements OnInit, AfterViewChecked {
@@ -152,7 +152,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
             // Warn of pending keydown
             const guacBeforeKeydownEvent = this.guacEventService.broadcast('guacBeforeKeydown',
-                {keysym, keyboard}
+                { keysym, keyboard }
             );
             if (guacBeforeKeydownEvent.defaultPrevented)
                 return true;
@@ -183,7 +183,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 return;
 
             // If not prevented via guacBeforeKeyup, fire corresponding keydown event
-            this.guacEventService.broadcast('guacKeyup', {keysym, keyboard});
+            this.guacEventService.broadcast('guacKeyup', { keysym, keyboard });
 
         };
 
@@ -231,7 +231,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         this.guacEventService
             .on('guacInvalidCredentials')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({error}) => {
+            .subscribe(({ error }) => {
 
                 this.setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
@@ -245,7 +245,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         this.guacEventService
             .on('guacInsufficientCredentials')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({parameters, error}) => {
+            .subscribe(({ parameters, error }) => {
 
                 this.setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
@@ -259,7 +259,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         // interactive login form
         this.guacEventService.on('guacLoginFailed')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({error}) => {
+            .subscribe(({ error }) => {
 
                 // All errors related to an interactive login form are handled elsewhere
                 if (this.applicationState === ApplicationState.AWAITING_CREDENTIALS
@@ -277,7 +277,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         // cannot be displayed due to an error
         this.guacEventService.on('guacFatalPageError')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({error}) => {
+            .subscribe(({ error }) => {
                 this.setApplicationState(ApplicationState.FATAL_ERROR);
                 this.fatalError = error;
             });
@@ -389,7 +389,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
         // Clear out URL state to conveniently bring user back to home screen
         // upon relogin
-        this.router.navigate(['/'], {onSameUrlNavigation: 'reload'});
+        this.router.navigate(['/'], { onSameUrlNavigation: 'reload' });
     }
 
     /**

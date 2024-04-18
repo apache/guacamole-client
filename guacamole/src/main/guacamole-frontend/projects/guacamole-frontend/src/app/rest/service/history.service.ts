@@ -70,16 +70,16 @@ export class HistoryService {
 
         // Filter according to contents if restrictions are specified
         if (requiredContents)
-            httpParameters = httpParameters.appendAll({contains: requiredContents});
+            httpParameters = httpParameters.appendAll({ contains: requiredContents });
 
         // Sort according to provided predicates, if any
         if (sortPredicates)
-            httpParameters = httpParameters.appendAll({sort: sortPredicates});
+            httpParameters = httpParameters.appendAll({ sort: sortPredicates });
 
         // Retrieve connection history
         return this.http.get<ConnectionHistoryEntry[]>(
             'api/session/data/' + encodeURIComponent(dataSource) + '/history/connections',
-            {params: httpParameters}
+            { params: httpParameters }
         );
 
     }

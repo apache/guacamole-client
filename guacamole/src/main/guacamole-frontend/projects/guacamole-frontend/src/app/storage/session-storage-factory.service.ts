@@ -21,9 +21,9 @@ import { Injectable } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
+import { AuthenticationService } from '../auth/service/authentication.service';
 import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArguments';
 import { isDefined } from '../util/is-defined';
-import { AuthenticationService } from '../auth/service/authentication.service';
 
 @Injectable({
     providedIn: 'root'

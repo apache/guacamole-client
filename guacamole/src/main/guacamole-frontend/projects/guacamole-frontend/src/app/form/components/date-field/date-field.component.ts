@@ -27,8 +27,8 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Component to display date fields.
  */
 @Component({
-    selector: 'guac-date-field',
-    templateUrl: './date-field.component.html',
+    selector     : 'guac-date-field',
+    templateUrl  : './date-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class DateFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
@@ -57,14 +57,14 @@ export class DateFieldComponent extends FormFieldBaseComponent implements OnInit
     ngOnInit(): void {
         // Set initial value of the typed control
         const initialValue: Date | null = this.control?.value ? this.parseDate(this.control.value) : null;
-        this.typedControl.setValue(initialValue, {emitEvent: false});
+        this.typedControl.setValue(initialValue, { emitEvent: false });
 
         // Update typed value when model is changed
         this.control?.valueChanges
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(value => {
                 const newTypedValue = value ? this.parseDate(value) : null;
-                this.typedControl.setValue(newTypedValue, {emitEvent: false});
+                this.typedControl.setValue(newTypedValue, { emitEvent: false });
             });
 
         // Update string value in model when typed value is changed

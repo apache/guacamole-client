@@ -29,8 +29,8 @@ import { ColorPickerService } from '../../service/color-picker.service';
  * @see colorPickerService
  */
 @Component({
-    selector: 'guac-input-color',
-    templateUrl: './guac-input-color.component.html',
+    selector     : 'guac-input-color',
+    templateUrl  : './guac-input-color.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacInputColorComponent {
@@ -40,7 +40,7 @@ export class GuacInputColorComponent {
      * RGB notation. When the user selects a different color using this
      * directive, this value will be updated accordingly.
      */
-    @Input({required: true}) control!: FormControl<string | null>;
+    @Input({ required: true }) control!: FormControl<string | null>;
 
     /**
      * An optional array of colors to include within the color picker as a
@@ -52,7 +52,7 @@ export class GuacInputColorComponent {
     /**
      * Reference to div element that should be used as a button to open the color picker.
      */
-    @ViewChild('colorPicker', {static: true}) colorInput!: ElementRef<HTMLDivElement>;
+    @ViewChild('colorPicker', { static: true }) colorInput!: ElementRef<HTMLDivElement>;
 
     /**
      * Inject required services.

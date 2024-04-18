@@ -59,8 +59,8 @@ export interface PagerEvent {
  * subset of the elements of some given array.
  */
 @Component({
-    selector: 'guac-pager',
-    templateUrl: './guac-pager.component.html',
+    selector     : 'guac-pager',
+    templateUrl  : './guac-pager.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacPagerComponent implements OnChanges {
@@ -70,8 +70,8 @@ export class GuacPagerComponent implements OnChanges {
      * whenever the user selects a new page.
      */
     page: BehaviorSubject<PagerEvent> = new BehaviorSubject<PagerEvent>({
-        pageIndex: 0,
-        pageSize: 0,
+        pageIndex        : 0,
+        pageSize         : 0,
         previousPageIndex: 0
     });
 
@@ -93,7 +93,7 @@ export class GuacPagerComponent implements OnChanges {
     /**
      * The length of the array to paginate.
      */
-    @Input({required: true}) length!: number | null;
+    @Input({ required: true }) length!: number | null;
 
     /**
      * The number of the first selectable page.
@@ -194,8 +194,8 @@ export class GuacPagerComponent implements OnChanges {
         // Select the chosen page
         this.currentPage = page;
         this.page.next({
-            pageIndex: page - 1,
-            pageSize: this.pageSize || DEFAULT_PAGE_SIZE,
+            pageIndex        : page - 1,
+            pageSize         : this.pageSize || DEFAULT_PAGE_SIZE,
             previousPageIndex: this.previousPage
         });
 

@@ -24,8 +24,8 @@ import { FormFieldBaseComponent, getFieldOption } from '../form-field-base/form-
  * Component for text fields.
  */
 @Component({
-    selector: 'guac-text-field',
-    templateUrl: './text-field.component.html',
+    selector     : 'guac-text-field',
+    templateUrl  : './text-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class TextFieldComponent extends FormFieldBaseComponent implements OnChanges, OnInit {

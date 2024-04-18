@@ -64,7 +64,7 @@ export const getFieldOption = (field: Field | undefined, namespace?: string, val
 /**
  * Base class for form field components.
  */
-@Component({'template': ''})
+@Component({ 'template': '' })
 export abstract class FormFieldBaseComponent implements FormFieldComponentData {
 
     /**
@@ -79,7 +79,7 @@ export abstract class FormFieldBaseComponent implements FormFieldComponentData {
     /**
      * The field to display.
      */
-    @Input({required: true}) field!: Field;
+    @Input({ required: true }) field!: Field;
 
     /**
      * The form control which contains this fields current value. When this
@@ -115,9 +115,9 @@ export abstract class FormFieldBaseComponent implements FormFieldComponentData {
      */
     protected setDisabledState(control: FormControl | undefined, disabled: boolean): void {
         if (disabled) {
-            control?.disable({emitEvent: false});
+            control?.disable({ emitEvent: false });
         } else {
-            control?.enable({emitEvent: false});
+            control?.enable({ emitEvent: false });
         }
     }
 }

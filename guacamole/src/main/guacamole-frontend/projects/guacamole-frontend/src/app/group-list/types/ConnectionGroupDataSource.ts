@@ -95,10 +95,10 @@ export class ConnectionGroupDataSource {
         this.filteredConnectionGroups =
             (this.searchString || of(''))
                 .pipe(
-            map((searchString) => {
-                return this.applyFilter(searchString);
-            })
-        );
+                    map((searchString) => {
+                        return this.applyFilter(searchString);
+                    })
+                );
     }
 
     /**

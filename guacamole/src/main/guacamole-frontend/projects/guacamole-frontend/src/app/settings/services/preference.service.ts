@@ -24,9 +24,7 @@ import { getBrowserLang } from '@ngneat/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import * as jstz from 'jstz';
 import { filter } from 'rxjs';
-import {
-    GuacFrontendEventArguments
-} from '../../events/types/GuacFrontendEventArguments';
+import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { DEFAULT_LANGUAGE } from '../../locale/service/translation.service';
 import { LocalStorageService } from '../../storage/local-storage.service';
 import { Preferences } from '../types/Preferences';
@@ -93,15 +91,15 @@ export class PreferenceService {
 
         this.preferences = {
             emulateAbsoluteMouse: true,
-            inputMethod: this.inputMethods.NONE,
-            language: this.getDefaultLanguageKey(),
-            timezone: this.getDetectedTimezone()
+            inputMethod         : this.inputMethods.NONE,
+            language            : this.getDefaultLanguageKey(),
+            timezone            : this.getDetectedTimezone()
         };
 
         // Get stored preferences from localStorage
         const storedPreferences = this.localStorageService.getItem(GUAC_PREFERENCES_STORAGE_KEY);
         if (storedPreferences)
-            this.preferences = {...this.preferences, ...storedPreferences};
+            this.preferences = { ...this.preferences, ...storedPreferences };
 
         // Persist settings when window is unloaded
         this.window.addEventListener('unload', this.save);

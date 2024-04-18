@@ -61,13 +61,13 @@ export class GuacTouchDragDirective {
      *     false if the default action of the touch event should be
      *     prevented, any other value otherwise.
      */
-    @Input({required: true}) guacTouchDrag!: (inProgress: boolean,
-                                              startX: number,
-                                              startY: number,
-                                              currentX: number,
-                                              currentY: number,
-                                              deltaX: number,
-                                              deltaY: number) => boolean;
+    @Input({ required: true }) guacTouchDrag!: (inProgress: boolean,
+                                                startX: number,
+                                                startY: number,
+                                                currentX: number,
+                                                currentY: number,
+                                                deltaX: number,
+                                                deltaY: number) => boolean;
 
     /**
      * Whether a drag gesture is in progress.

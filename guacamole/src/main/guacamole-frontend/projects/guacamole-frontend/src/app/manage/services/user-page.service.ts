@@ -18,19 +18,19 @@
  */
 
 import { Injectable } from '@angular/core';
+import cloneDeep from 'lodash/cloneDeep';
+import { catchError, forkJoin, from, map, Observable } from 'rxjs';
 import { AuthenticationService } from '../../auth/service/authentication.service';
+import { canonicalize } from '../../locale/service/translation.service';
+import { ClientIdentifierService } from '../../navigation/service/client-identifier.service';
+import { ClientIdentifier } from '../../navigation/types/ClientIdentifier';
+import { PageDefinition } from '../../navigation/types/PageDefinition';
 import { ConnectionGroupService } from '../../rest/service/connection-group.service';
 import { DataSourceService } from '../../rest/service/data-source-service.service';
 import { PermissionService } from '../../rest/service/permission.service';
 import { RequestService } from '../../rest/service/request.service';
-import { PageDefinition } from '../../navigation/types/PageDefinition';
 import { ConnectionGroup } from '../../rest/types/ConnectionGroup';
 import { PermissionSet } from '../../rest/types/PermissionSet';
-import { ClientIdentifier } from '../../navigation/types/ClientIdentifier';
-import { catchError, forkJoin, from, map, Observable } from 'rxjs';
-import cloneDeep from 'lodash/cloneDeep';
-import { ClientIdentifierService } from '../../navigation/service/client-identifier.service';
-import { canonicalize } from '../../locale/service/translation.service';
 
 /**
  * A service for generating all the important pages a user can visit.
@@ -46,7 +46,7 @@ export class UserPageService {
      */
     private readonly SYSTEM_HOME_PAGE: PageDefinition = new PageDefinition({
         name: 'USER_MENU.ACTION_NAVIGATE_HOME',
-        url: '/'
+        url : '/'
     });
 
     /**
@@ -117,10 +117,10 @@ export class UserPageService {
         connectionGroup.childConnections?.forEach((connection) => {
             clientPages.push(new PageDefinition({
                 name: connection.name!,
-                url: '/client/' + this.clientIdentifierService.getString({
+                url : '/client/' + this.clientIdentifierService.getString({
                     dataSource: dataSource,
-                    type: ClientIdentifier.Types.CONNECTION,
-                    id: connection.identifier
+                    type      : ClientIdentifier.Types.CONNECTION,
+                    id        : connection.identifier
                 })
             }));
         });
@@ -131,10 +131,10 @@ export class UserPageService {
             if (connectionGroup.type === ConnectionGroup.Type.BALANCING) {
                 clientPages.push(new PageDefinition({
                     name: connectionGroup.name,
-                    url: '/client/' + this.clientIdentifierService.getString({
+                    url : '/client/' + this.clientIdentifierService.getString({
                         dataSource: dataSource,
-                        type: ClientIdentifier.Types.CONNECTION_GROUP,
-                        id: connectionGroup.identifier
+                        type      : ClientIdentifier.Types.CONNECTION_GROUP,
+                        id        : connectionGroup.identifier
                     })
                 }));
             }
@@ -315,7 +315,7 @@ export class UserPageService {
         // Add link to Session management (always accessible)
         pages.push(new PageDefinition({
             name: 'USER_MENU.ACTION_MANAGE_SESSIONS',
-            url: '/settings/sessions'
+            url : '/settings/sessions'
         }));
 
         // If user can manage connections, add links for connection management pages
@@ -325,7 +325,7 @@ export class UserPageService {
                     'USER_MENU.ACTION_VIEW_HISTORY',
                     canonicalize('DATA_SOURCE_' + dataSource) + '.NAME'
                 ],
-                url: '/settings/' + encodeURIComponent(dataSource) + '/history'
+                url : '/settings/' + encodeURIComponent(dataSource) + '/history'
             }));
         });
 
@@ -333,7 +333,7 @@ export class UserPageService {
         if (canManageUsers.length) {
             pages.push(new PageDefinition({
                 name: 'USER_MENU.ACTION_MANAGE_USERS',
-                url: '/settings/users'
+                url : '/settings/users'
             }));
         }
 
@@ -341,7 +341,7 @@ export class UserPageService {
         if (canManageUserGroups.length) {
             pages.push(new PageDefinition({
                 name: 'USER_MENU.ACTION_MANAGE_USER_GROUPS',
-                url: '/settings/userGroups'
+                url : '/settings/userGroups'
             }));
         }
 
@@ -352,14 +352,14 @@ export class UserPageService {
                     'USER_MENU.ACTION_MANAGE_CONNECTIONS',
                     canonicalize('DATA_SOURCE_' + dataSource) + '.NAME'
                 ],
-                url: '/settings/' + encodeURIComponent(dataSource) + '/connections'
+                url : '/settings/' + encodeURIComponent(dataSource) + '/connections'
             }));
         });
 
         // Add link to user preferences (always accessible)
         pages.push(new PageDefinition({
             name: 'USER_MENU.ACTION_MANAGE_PREFERENCES',
-            url: '/settings/preferences'
+            url : '/settings/preferences'
         }));
 
         return pages;
@@ -425,7 +425,7 @@ export class UserPageService {
         if (settingsPages.length) {
             pages.push(new PageDefinition({
                 name: 'USER_MENU.ACTION_MANAGE_SETTINGS',
-                url: settingsPages[0].url
+                url : settingsPages[0].url
             }));
         }
 

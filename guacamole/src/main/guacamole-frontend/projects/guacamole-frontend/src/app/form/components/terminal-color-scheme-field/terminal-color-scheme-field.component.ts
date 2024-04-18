@@ -54,8 +54,8 @@ type TerminalColorIndex = typeof terminalColorIndices[number];
  * Component for terminal color scheme fields.
  */
 @Component({
-    selector: 'guac-terminal-color-scheme-field',
-    templateUrl: './terminal-color-scheme-field.component.html',
+    selector     : 'guac-terminal-color-scheme-field',
+    templateUrl  : './terminal-color-scheme-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
@@ -141,7 +141,7 @@ export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent im
         this.customColorSchemeFormGroup = this.fb.group({
             background: this.fb.control(''),
             foreground: this.fb.control(''),
-            colors: this.fb.group(colorFormControls)
+            colors    : this.fb.group(colorFormControls)
         });
 
     }
@@ -162,7 +162,7 @@ export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent im
                 acc[index] = customColorScheme.colors[index];
                 return acc;
             }, {} as Record<TerminalColorIndex, string>)
-        }, {onlySelf: true, emitEvent: false});
+        }, { onlySelf: true, emitEvent: false });
     }
 
     /**
@@ -175,7 +175,7 @@ export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent im
         return new ColorScheme({
             background: this.customColorSchemeBackground.value,
             foreground: this.customColorSchemeForeground.value,
-            colors: terminalColorIndices.map(index => this.customColorSchemeColorFormControl(index).value)
+            colors    : terminalColorIndices.map(index => this.customColorSchemeColorFormControl(index).value)
         });
     }
 
@@ -191,9 +191,9 @@ export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent im
         const updateComponentData = (value: string | null): void => {
             if (this.selectedColorScheme.value === CUSTOM_COLOR_SCHEME || (value && !includes(this.field.options, value))) {
                 this.setCustomColorScheme(ColorScheme.fromString(value as string));
-                this.selectedColorScheme.setValue(CUSTOM_COLOR_SCHEME, {emitEvent: false});
+                this.selectedColorScheme.setValue(CUSTOM_COLOR_SCHEME, { emitEvent: false });
             } else
-                this.selectedColorScheme.setValue(value || '', {emitEvent: false});
+                this.selectedColorScheme.setValue(value || '', { emitEvent: false });
         }
 
         // Set initial value of the selected color scheme control

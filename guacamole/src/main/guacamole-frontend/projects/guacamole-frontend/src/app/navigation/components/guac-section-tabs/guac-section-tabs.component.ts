@@ -27,8 +27,8 @@ import { canonicalize } from '../../../locale/service/translation.service';
  * attribute. No navigation occurs as a result of selecting a tab.
  */
 @Component({
-    selector: 'guac-section-tabs',
-    templateUrl: './guac-section-tabs.component.html',
+    selector     : 'guac-section-tabs',
+    templateUrl  : './guac-section-tabs.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacSectionTabsComponent {

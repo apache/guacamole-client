@@ -28,8 +28,8 @@ import { FormService } from '../../service/form.service';
  * A component that allows editing of a collection of fields.
  */
 @Component({
-    selector: 'guac-form',
-    templateUrl: './form.component.html',
+    selector     : 'guac-form',
+    templateUrl  : './form.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class FormComponent implements OnChanges {

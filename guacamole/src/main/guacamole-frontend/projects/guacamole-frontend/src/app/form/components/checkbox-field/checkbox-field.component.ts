@@ -26,8 +26,8 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Checkbox field component
  */
 @Component({
-    selector: 'guac-checkbox-field',
-    templateUrl: './checkbox-field.component.html',
+    selector     : 'guac-checkbox-field',
+    templateUrl  : './checkbox-field.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class CheckboxFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
@@ -56,13 +56,13 @@ export class CheckboxFieldComponent extends FormFieldBaseComponent implements On
     ngOnInit(): void {
         // Set initial value of typed control
         const initialValue: boolean = this.control?.value === this.field.options![0];
-        this.typedControl.setValue(initialValue, {emitEvent: false});
+        this.typedControl.setValue(initialValue, { emitEvent: false });
 
         // Update typed value when model is changed
         this.control?.valueChanges
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(value => {
-                this.typedControl.setValue(value === this.field.options![0], {emitEvent: false});
+                this.typedControl.setValue(value === this.field.options![0], { emitEvent: false });
             });
 
         // Update string value in model when typed value is changed

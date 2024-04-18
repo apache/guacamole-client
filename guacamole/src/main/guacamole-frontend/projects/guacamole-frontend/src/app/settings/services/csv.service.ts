@@ -39,7 +39,7 @@ export class CsvService {
      *     A new Blob containing each provided record in CSV format.
      */
     toBlob(records: any[][]): Blob {
-        return new Blob([this.encodeCSV(records)], {type: 'text/csv'});
+        return new Blob([this.encodeCSV(records)], { type: 'text/csv' });
     }
 
     /**

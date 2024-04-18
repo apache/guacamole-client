@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { NotificationCountdown } from './NotificationCountdown';
-import { NotificationProgress } from './NotificationProgress';
 import { Field } from '../../rest/types/Field';
 import { Form } from '../../rest/types/Form';
-import { NotificationAction } from './NotificationAction';
 import { TranslatableMessage } from '../../rest/types/TranslatableMessage';
+import { NotificationAction } from './NotificationAction';
+import { NotificationCountdown } from './NotificationCountdown';
+import { NotificationProgress } from './NotificationProgress';
 
 /**
  * Provides the Notification class.

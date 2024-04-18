@@ -25,8 +25,8 @@ import { BehaviorSubject } from 'rxjs';
  * to filter connection groups.
  */
 @Component({
-    selector: 'guac-group-list-filter',
-    templateUrl: './guac-group-list-filter.component.html',
+    selector     : 'guac-group-list-filter',
+    templateUrl  : './guac-group-list-filter.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacGroupListFilterComponent {
@@ -42,7 +42,7 @@ export class GuacGroupListFilterComponent {
      * The placeholder text to display within the filter input field
      * when no filter has been provided.
      */
-    @Input({required: true}) placeholder!: string;
+    @Input({ required: true }) placeholder!: string;
 
     /**
      * The filter search string to use to restrict the displayed items.

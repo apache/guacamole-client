@@ -48,7 +48,7 @@ export class GuacSortOrderDirective implements OnInit, OnChanges {
     /**
      * The object defining the sorting order.
      */
-    @Input({required: true}) guacSortOrder: SortOrder | null = null;
+    @Input({ required: true }) guacSortOrder: SortOrder | null = null;
 
     /**
      * Event raised when the sort order changes due to user interaction.

@@ -49,8 +49,8 @@ export class GuacEventService<Args extends GuacEventArguments> {
      * @param args
      */
     broadcast<T extends GuacEventName<Args>>(eventName: T, args?: Args[T]): GuacEvent<Args> {
-        const guacEvent = {event: new GuacEvent<Args>(eventName)};
-        const eventArgs = args ? {...args, ...guacEvent} : guacEvent;
+        const guacEvent = { event: new GuacEvent<Args>(eventName) };
+        const eventArgs = args ? { ...args, ...guacEvent } : guacEvent;
         this.events.next(eventArgs);
         return guacEvent.event;
     }
@@ -68,7 +68,7 @@ export class GuacEventService<Args extends GuacEventArguments> {
         event: GuacEvent<Args>
     } & Args[T]> {
         return this.events.pipe(
-            filter(({event}) => eventName === event.name)
+            filter(({ event }) => eventName === event.name)
         );
     }
 }

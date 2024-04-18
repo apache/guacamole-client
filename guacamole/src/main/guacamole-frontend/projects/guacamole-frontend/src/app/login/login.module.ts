@@ -31,13 +31,13 @@ import { TranslocoModule } from '@ngneat/transloco';
     declarations: [
         LoginComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         FormModule,
         FormsModule,
         TranslocoModule
     ],
-    exports: [
+    exports     : [
         LoginComponent
     ]
 })

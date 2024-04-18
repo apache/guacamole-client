@@ -17,14 +17,8 @@
  * under the License.
  */
 
-import {
-    Component, ElementRef,
-    Input,
-    OnChanges, SimpleChanges,
-    ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
 import { GuacEventService } from '../../../events/services/guac-event.service';
 import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
 
@@ -33,8 +27,8 @@ import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
  * A component which displays the Guacamole on-screen keyboard.
  */
 @Component({
-    selector: 'guac-osk',
-    templateUrl: './osk.component.html',
+    selector     : 'guac-osk',
+    templateUrl  : './osk.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class OskComponent implements OnChanges {
@@ -42,7 +36,7 @@ export class OskComponent implements OnChanges {
     /**
      * The URL for the Guacamole on-screen keyboard layout to use.
      */
-    @Input({required: true}) layout!: string;
+    @Input({ required: true }) layout!: string;
 
     /**
      * The current on-screen keyboard, if any.
@@ -116,12 +110,12 @@ export class OskComponent implements OnChanges {
 
                     // Broadcast keydown for each key pressed
                     this.keyboard.onkeydown = (keysym: number) => {
-                        this.guacEventService.broadcast('guacSyntheticKeydown', {keysym});
+                        this.guacEventService.broadcast('guacSyntheticKeydown', { keysym });
                     };
 
                     // Broadcast keydown for each key released
                     this.keyboard.onkeyup = (keysym: number) => {
-                        this.guacEventService.broadcast('guacSyntheticKeyup', {keysym});
+                        this.guacEventService.broadcast('guacSyntheticKeyup', { keysym });
                     };
                 });
         }

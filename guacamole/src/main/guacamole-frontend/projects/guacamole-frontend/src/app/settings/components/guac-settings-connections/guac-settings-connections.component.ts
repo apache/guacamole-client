@@ -18,29 +18,29 @@
  */
 
 import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { RequestService } from '../../../rest/service/request.service';
-import { AuthenticationService } from '../../../auth/service/authentication.service';
-import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
-import { DataSourceService } from '../../../rest/service/data-source-service.service';
-import { PermissionService } from '../../../rest/service/permission.service';
-import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
 import { Router } from '@angular/router';
-import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
-import { PermissionSet } from '../../../rest/types/PermissionSet';
-import { NonNullableProperties } from '../../../util/utility-types';
-import { GroupListItem } from '../../../group-list/types/GroupListItem';
+import { AuthenticationService } from '../../../auth/service/authentication.service';
 import {
     GuacGroupListFilterComponent
 } from '../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component';
 import { ConnectionGroupDataSource } from '../../../group-list/types/ConnectionGroupDataSource';
+import { GroupListItem } from '../../../group-list/types/GroupListItem';
 import { FilterService } from '../../../list/services/filter.service';
+import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
+import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
+import { DataSourceService } from '../../../rest/service/data-source-service.service';
+import { PermissionService } from '../../../rest/service/permission.service';
+import { RequestService } from '../../../rest/service/request.service';
+import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
+import { PermissionSet } from '../../../rest/types/PermissionSet';
+import { NonNullableProperties } from '../../../util/utility-types';
 
 /**
  * A component for managing all connections and connection groups in the system.
  */
 @Component({
-    selector: 'guac-settings-connections',
-    templateUrl: './guac-settings-connections.component.html',
+    selector     : 'guac-settings-connections',
+    templateUrl  : './guac-settings-connections.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacSettingsConnectionsComponent implements OnInit {
@@ -53,7 +53,7 @@ export class GuacSettingsConnectionsComponent implements OnInit {
     /**
      * The identifier of the currently-selected data source.
      */
-    @Input({required: true}) dataSource!: string;
+    @Input({ required: true }) dataSource!: string;
 
     /**
      * The root connection group of the connection group hierarchy.
@@ -63,7 +63,7 @@ export class GuacSettingsConnectionsComponent implements OnInit {
     /**
      * Reference to the instance of the filter component.
      */
-    @ViewChild(GuacGroupListFilterComponent, {static: true}) filter!: GuacGroupListFilterComponent;
+    @ViewChild(GuacGroupListFilterComponent, { static: true }) filter!: GuacGroupListFilterComponent;
 
     /**
      * TODO
@@ -113,7 +113,7 @@ export class GuacSettingsConnectionsComponent implements OnInit {
         // Retrieve current permissions
         this.permissionService.getEffectivePermissions(this.dataSource, this.currentUsername!)
             .subscribe({
-                next: permissions => {
+                next    : permissions => {
 
                     // Store retrieved permissions
                     this.permissions = permissions;
@@ -367,9 +367,9 @@ export class GuacSettingsConnectionsComponent implements OnInit {
         // permission to do so
         if (this.canCreateConnections())
             items.push(new GroupListItem({
-                type: 'new-connection',
-                dataSource: this.dataSource,
-                weight: 1,
+                type       : 'new-connection',
+                dataSource : this.dataSource,
+                weight     : 1,
                 wrappedItem: parent
             }));
 
@@ -377,9 +377,9 @@ export class GuacSettingsConnectionsComponent implements OnInit {
         // has permission to do so
         if (this.canCreateConnectionGroups())
             items.push(new GroupListItem({
-                type: 'new-connection-group',
-                dataSource: this.dataSource,
-                weight: 1,
+                type       : 'new-connection-group',
+                dataSource : this.dataSource,
+                weight     : 1,
                 wrappedItem: parent
             }));
 
@@ -409,9 +409,9 @@ export class GuacSettingsConnectionsComponent implements OnInit {
         // has permission to do so
         if (this.canCreateSharingProfiles())
             items.push(new GroupListItem({
-                type: 'new-sharing-profile',
-                dataSource: this.dataSource,
-                weight: 1,
+                type       : 'new-sharing-profile',
+                dataSource : this.dataSource,
+                weight     : 1,
                 wrappedItem: parent
             }));
 
