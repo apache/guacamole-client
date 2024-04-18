@@ -22,7 +22,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
-import { forkJoin, map, Observable, of } from 'rxjs';
+import { forkJoin, map, Observable, of, Subscription } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { FormService } from '../../../form/service/form.service';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
@@ -91,6 +91,30 @@ export class ManageConnectionComponent implements OnInit {
     connection?: Connection;
 
     /**
+     * The currently selected protocol for the connection being modified.
+     *
+     * @returns The protocol of the connection.
+     */
+    get selectedProtocol(): string | undefined {
+
+        return this.connection?.protocol;
+
+    }
+
+    /**
+     * Sets the protocol for the connection being modified and updates the
+     * form group for editing connection parameters.
+     *
+     * @param value The protocol to be set for the connection.
+     */
+    set selectedProtocol(value: string) {
+
+        this.connection!.protocol = value;
+        this.updateParametersFormGroup();
+
+    }
+
+    /**
      * The parameter name/value pairs associated with the connection being
      * modified.
      */
@@ -100,6 +124,11 @@ export class ManageConnectionComponent implements OnInit {
      * The form group for editing connection parameters.
      */
     parametersFormGroup: FormGroup = new FormGroup({});
+
+    /**
+     * The subscription to changes in the parameters form group.
+     */
+    parametersFormGroupSubscription?: Subscription;
 
     /**
      * The date format for use within the connection history.
@@ -175,18 +204,10 @@ export class ManageConnectionComponent implements OnInit {
                     this.dataSourceView?.updateSource(this.historyEntryWrappers!);
 
                     this.attributes = attributes;
-                    this.connectionAttributesFormGroup = this.formService.getFormGroup(attributes);
-                    this.connectionAttributesFormGroup.patchValue(this.connection?.attributes || {});
-                    this.connectionAttributesFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
-                        this.connection!.attributes = value;
-                    });
+                    this.updateAttributesFormGroup();
 
                     this.protocols = protocols;
-                    this.parametersFormGroup = this.formService.getFormGroup(this.protocols[this.connection!.protocol].connectionForms);
-                    this.parametersFormGroup.patchValue(this.parameters || {});
-                    this.parametersFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
-                        this.parameters = value;
-                    });
+                    this.updateParametersFormGroup();
 
                     this.rootGroup = rootGroup;
 
@@ -203,6 +224,33 @@ export class ManageConnectionComponent implements OnInit {
         this.translocoService.selectTranslate('MANAGE_CONNECTION.FORMAT_HISTORY_START').subscribe(historyDateFormat => {
             this.historyDateFormat = historyDateFormat;
         });
+    }
+
+    /**
+     * Updates the form group for editing connection attributes.
+     */
+    private updateAttributesFormGroup(): void {
+
+        this.connectionAttributesFormGroup = this.formService.getFormGroup(this.attributes!);
+        this.connectionAttributesFormGroup.patchValue(this.connection?.attributes || {});
+        this.connectionAttributesFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
+            this.connection!.attributes = value;
+        });
+
+    }
+
+    /**
+     * Updates the form group for editing connection parameters based on the selected protocol.
+     */
+    private updateParametersFormGroup(): void {
+
+        this.parametersFormGroupSubscription?.unsubscribe();
+        this.parametersFormGroup = this.formService.getFormGroup(this.protocols![this.selectedProtocol!].connectionForms);
+        this.parametersFormGroup.patchValue(this.parameters || {});
+        this.parametersFormGroupSubscription = this.parametersFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
+            this.parameters = value;
+        });
+
     }
 
     /**
