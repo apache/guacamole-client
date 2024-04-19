@@ -22,8 +22,7 @@
             [name]="field.name"
             [guacFocus]="focused"
             [formControl]="control">
-        <!--TODO: OrderBy Value-->
-        <option *ngFor="let option of field.options"
+        <option *ngFor="let option of field.options | orderBy"
                 [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}
         </option>
     </select>

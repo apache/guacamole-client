@@ -53,8 +53,7 @@
                     <th>{{ 'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | transloco }}</th>
                     <td>
                         <select [(ngModel)]="selectedProtocol">
-                            <!--                        TODO: orderBy: value.name-->
-                            <option *ngFor="let protocol of protocols! | keyvalue"
+                            <option *ngFor="let protocol of protocols! | keyvalue | orderBy: 'value.name'"
                                     [value]="protocol.key"
                                     [transloco]="getProtocolName(protocol.value.name!)"
                                     [translocoParams]="{protocol: protocol.value.name}"></option>

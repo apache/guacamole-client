@@ -20,6 +20,7 @@
 import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
+import { SortService } from '../../../list/services/sort.service';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 /**
@@ -64,7 +65,8 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
      */
     selectedTimeZone!: Record<string, string>;
 
-    constructor(private destroyRef: DestroyRef) {
+    constructor(private destroyRef: DestroyRef,
+                private sortService: SortService) {
         super();
     }
 
@@ -157,7 +159,7 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
         for (const region in this.timeZones)
             regions.push(region);
 
-        return regions;
+        return this.sortService.orderByPredicate(regions, []);
 
     }
 

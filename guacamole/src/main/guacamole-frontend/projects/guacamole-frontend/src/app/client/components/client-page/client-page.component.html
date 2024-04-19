@@ -115,8 +115,7 @@
                            transloco="CLIENT.HELP_SHARE_LINK"
                            [translocoParams]="{LINKS : getShareLinkCount()}"></p>
                         <table>
-                            <!--  TODO: | orderBy: value.name-->
-                            <tr *ngFor="let link of (focusedClient?.shareLinks || {}) | keyvalue ">
+                            <tr *ngFor="let link of (focusedClient?.shareLinks || {}) | keyvalue | orderBy: 'value.name'">
                                 <th>{{ link.value.name }}</th>
                                 <td><a [routerLink]="link.value.href" target="_blank">{{ link.value.href }}</a></td>
                             </tr>

@@ -25,6 +25,7 @@ import { FormModule } from '../form/form.module';
 import { GroupListModule } from '../group-list/group-list.module';
 import { ListModule } from '../list/list.module';
 import { NavigationModule } from '../navigation/navigation.module';
+import { OrderByPipe } from '../util/order-by.pipe';
 import {
     ConnectionGroupPermissionComponent
 } from './components/connection-group-permission/connection-group-permission.component';
@@ -72,16 +73,17 @@ import {
         ConnectionGroupPermissionComponent,
         ManageSharingProfileComponent
     ],
-    imports     : [
-        CommonModule,
-        FormModule,
-        TranslocoModule,
-        FormsModule,
-        NavigationModule,
-        ListModule,
-        NgOptimizedImage,
-        GroupListModule
-    ],
+  imports: [
+    CommonModule,
+    FormModule,
+    TranslocoModule,
+    FormsModule,
+    NavigationModule,
+    ListModule,
+    NgOptimizedImage,
+    GroupListModule,
+    OrderByPipe
+  ],
     exports     : [
         ManageUserComponent,
         DataSourceTabsComponent,

@@ -25,8 +25,7 @@
     <select [id]="fieldId"
             [name]="field.name"
             [formControl]="selectedColorScheme">
-        <!--        TODO: | orderBy: value-->
-        <option *ngFor="let option of field.options"
+        <option *ngFor="let option of field.options | orderBy"
                 [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}
         </option>
         <option value="custom">{{ 'COLOR_SCHEME.FIELD_OPTION_CUSTOM' | transloco }}</option>

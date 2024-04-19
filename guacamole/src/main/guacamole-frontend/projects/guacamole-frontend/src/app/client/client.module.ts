@@ -29,6 +29,7 @@ import { GroupListModule } from '../group-list/group-list.module';
 import { NavigationModule } from '../navigation/navigation.module';
 import { NotificationModule } from '../notification/notification.module';
 import { TextInputModule } from '../text-input/text-input.module';
+import { OrderByPipe } from '../util/order-by.pipe';
 import { ClientPageComponent } from './components/client-page/client-page.component';
 import { ConnectionGroupComponent } from './components/connection-group/connection-group.component';
 import { ConnectionComponent } from './components/connection/connection.component';
@@ -72,7 +73,7 @@ import { GuacZoomCtrlDirective } from './directives/guac-zoom-ctrl.directive';
         GuacFileBrowserComponent,
         FileComponent
     ],
-    imports     : [
+    imports: [
         CommonModule,
         TranslocoModule,
         FormsModule,
@@ -86,7 +87,8 @@ import { GuacZoomCtrlDirective } from './directives/guac-zoom-ctrl.directive';
         ClipboardModule,
         FormModule,
         GroupListModule,
-        NotificationModule
+        NotificationModule,
+        OrderByPipe
     ],
     exports     : [
         GuacClientPanelComponent

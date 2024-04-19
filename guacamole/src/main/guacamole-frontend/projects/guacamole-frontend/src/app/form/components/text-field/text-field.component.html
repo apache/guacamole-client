@@ -27,8 +27,7 @@
            autocorrect="off"
            autocapitalize="off">
     <datalist *ngIf="dataListId" [id]="dataListId">
-        <!--        TODO: orderBy: option-->
-        <option *ngFor="let option of field.options" [value]="option">
+        <option *ngFor="let option of field.options | orderBy" [value]="option">
             {{ getFieldOption(field, namespace, option) | transloco }}
         </option>
     </datalist>

@@ -23,6 +23,7 @@ import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ElementModule } from 'guacamole-frontend-lib';
+import { OrderByPipe } from '../util/order-by.pipe';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';
 import { DateFieldComponent } from './components/date-field/date-field.component';
 import { EmailFieldComponent } from './components/email-field/email-field.component';
@@ -70,12 +71,13 @@ import { GuacLenientTimeDirective } from './directives/guac-lenient-time.directi
         TerminalColorSchemeFieldComponent,
         GuacInputColorComponent
     ],
-    imports     : [
+    imports: [
         CommonModule,
         HttpClientModule,
         ElementModule,
         ReactiveFormsModule,
-        TranslocoModule
+        TranslocoModule,
+        OrderByPipe
     ],
     exports     : [
         TimeZoneFieldComponent,
