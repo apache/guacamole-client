@@ -228,6 +228,31 @@ The process for doing this via the `sqlcmd` utilities included
 with SQLServer is documented in
 [the Guacamole manual](http://guacamole.apache.org/doc/gug/jdbc-auth.html#jdbc-auth-sqlserver).
 
+Enabling ssl
+================
+This explains how to enable ssl between guacamole and guacd using a self signed certificate.
+
+You need to create the new certificate on the guacd host, see https://github.com/apache/guacamole-server/blob/master/README 
+or https://github.com/apache/guacamole-server/blob/master/src/guacd-docker/README.md depending
+on the version you will use (standalone vs docker).
+
+Copy the SSL certificate server.p12 to /path/guacamole/certs
+
+```shell
+docker run --name some-guacamole                                  \
+  -e GUACOMOLE_SSL_KEYSTORE_FILE=/home/guacamole/certs/server.p12 \
+  -e GUACOMOLE_SSL_KEYSTORE_PASS=changeme                         \
+  -e GUACD_SSL=true                                               \
+  -e GUACD_PORT=4822                                              \
+  -e GUACD_HOSTNAME=hostname                                      \
+  -v /path/guacamole/certs:/home/guacamole/certs                   \
+  ...
+  -d -p 8080:8080 guacamole/guacamole
+```
+
+From the guacamole web interface, add a new connection and enable SSL/TLS whenever using a guacd proxy.
+
+
 Reporting issues
 ================
 
