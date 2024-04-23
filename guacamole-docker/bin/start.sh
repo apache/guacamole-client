@@ -941,6 +941,17 @@ associate_json() {
     ln -s /opt/guacamole/json/guacamole-auth-*.jar "$GUACAMOLE_EXT"
 }
 
+associate_nextcloud_jwt() {
+  # Update config file
+    set_property "nextcloud-jwt-public-key"                   "$NEXTCLOUD_JWT_PUBLIC_KEY"
+    set_optional_property "nextcloud-jwt-trusted-networks"    "$NEXTCLOUD_JWT_TRUSTED_NETWORKS"
+    set_optional_property "nextcloud-jwt-allowed-user"        "$NEXTCLOUD_JWT_ALLOWED_USER"
+
+    # Add required .jar files to GUACAMOLE_EXT
+      ln -s /opt/guacamole/nextcloud/guacamole-auth-*.jar "$GUACAMOLE_EXT"
+}
+
+
 ##  
 ## Adds properties to guacamole.properties which configure the recording
 ## storage extension.
@@ -1180,6 +1191,12 @@ fi
 if [ -n "$JSON_SECRET_KEY" ]; then
     associate_json
     INSTALLED_AUTH="$INSTALLED_AUTH json"
+fi
+
+# Use nextcloud-auth if specified.
+if [ -n "$NEXTCLOUD_JWT_PUBLIC_KEY" ]; then
+    associate_nextcloud_jwt
+    INSTALLED_AUTH="$INSTALLED_AUTH nextcloud"
 fi
 
 # Add in the history recording storage extension if configured
