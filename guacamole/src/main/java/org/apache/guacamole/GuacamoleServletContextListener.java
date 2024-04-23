@@ -240,13 +240,24 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
                 return current;
 
             // Create new injector if necessary
-            Injector injector = Guice.createInjector(Stage.PRODUCTION,
-                new EnvironmentModule(environment),
-                new LogModule(environment),
-                new ExtensionModule(environment),
-                new RESTServiceModule(sessionMap),
-                new TunnelModule()
-            );
+            Injector injector =
+
+                    // Ensure environment and logging are configured FIRST ...
+                    Guice.createInjector(Stage.PRODUCTION,
+                        new EnvironmentModule(environment),
+                        new LogModule(environment)
+                    )
+
+                    // ... before attempting configuration of any other modules
+                    // (logging within the constructors of other modules may
+                    // otherwise default to including messages from the "debug"
+                    // level, regardless of how the application log level is
+                    // actually configured)
+                    .createChildInjector(
+                        new ExtensionModule(environment),
+                        new RESTServiceModule(sessionMap),
+                        new TunnelModule()
+                    );
 
             return injector;
 

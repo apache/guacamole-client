@@ -111,3 +111,6 @@ deprecate_variable "PROXY_IP_HEADER"         "REMOTE_IP_VALVE_REMOTE_IP_HEADER"
 deprecate_variable "PROXY_PROTOCOL_HEADER"   "REMOTE_IP_VALVE_PROTOCOL_HEADER"
 # NOTE: PROXY_BY_HEADER never worked as there is no "remoteIpProxiesHeader" attribute for RemoteIpValve
 
+# The old "LOGBACK_LEVEL" environment variable has been replaced with
+# "LOG_LEVEL" for consistency with the guacd image
+deprecate_variable "LOGBACK_LEVEL" "LOG_LEVEL"
