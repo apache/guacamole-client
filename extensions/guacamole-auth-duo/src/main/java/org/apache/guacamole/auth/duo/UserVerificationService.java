@@ -151,7 +151,7 @@ public class UserVerificationService {
             // GUAC_PASSWORD tokens continue to work as expected despite the
             // redirect to/from the external Duo service)
             duoState = duoClient.generateState();
-            long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthTimeout() * 1000L);
+            long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthenticationTimeout() * 60000L);
             sessionManager.defer(new DuoAuthenticationSession(credentials, expirationTimestamp), duoState);
 
             // Obtain authentication URL from Duo client
