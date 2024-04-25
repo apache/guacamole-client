@@ -1,7 +1,7 @@
 okio (https://square.github.io/okio/)
 ---------------------------------------------
 
-    Version: 1.17.2
+    Version: 3.6.0
     From: 'Square Inc'
     License(s):
-        Apache 2.0 (bundled/retrofit-2.9.0/LICENSE.txt)
+        Apache 2.0 (bundled/okio-3.6.0/LICENSE.txt)
