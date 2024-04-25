@@ -63,6 +63,33 @@ public interface AuthenticationProvider {
     Object getResource() throws GuacamoleException;
 
     /**
+     * Given the set of credentials that a user has submitted during
+     * authentication but has not yet been provided to the
+     * {@link #authenticateUser(org.apache.guacamole.net.auth.Credentials)} or
+     * {@link #updateAuthenticatedUser(org.apache.guacamole.net.auth.AuthenticatedUser, org.apache.guacamole.net.auth.Credentials)}
+     * functions of installed AuthenticationProviders, returns the set of
+     * credentials that should be used instead. The returned credentials may
+     * be the original credentials, with or without modifications, or may be an
+     * entirely new {@link Credentials} object.
+     *
+     * @param credentials
+     *     The credentials provided by a user during authentication.
+     *
+     * @return
+     *     The set of credentials that should be provided to all
+     *     AuthenticationProviders, including this AuthenticationProvider. This
+     *     set of credentials may optionally be entirely new or may have been
+     *     modified.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while updating the provided credentials.
+     */
+    default Credentials updateCredentials(Credentials credentials)
+            throws GuacamoleException {
+        return credentials;
+    }
+
+    /**
      * Returns an AuthenticatedUser representing the user authenticated by the
      * given credentials, if any.
      *
