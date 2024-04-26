@@ -19,6 +19,20 @@
 
 package org.apache.guacamole.auth.json;
 
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
 import java.io.BufferedReader;
 import java.security.Principal;
 import java.util.Arrays;
@@ -28,11 +42,6 @@ import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.ServletInputStream;
-import javax.servlet.RequestDispatcher;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -90,6 +99,21 @@ public class RequestValidationServiceTest {
         return new HttpServletRequest() {
 
             @Override
+            public boolean authenticate(HttpServletResponse response) {
+                return false;
+            }
+            
+            @Override
+            public String changeSessionId() {
+                return null;
+            }
+            
+            @Override
+            public AsyncContext getAsyncContext() {
+                return null;
+            }
+            
+            @Override
             public Object getAttribute(String name) {
                 return null;
             }
@@ -113,6 +137,11 @@ public class RequestValidationServiceTest {
             public int getContentLength() {
                 return 0;
             }
+            
+            @Override
+            public long getContentLengthLong() {
+                return 0;
+            }
 
             @Override
             public String getContentType() {
@@ -132,6 +161,11 @@ public class RequestValidationServiceTest {
             @Override
             public long getDateHeader(String name) {
                 return 0;
+            }
+            
+            @Override
+            public DispatcherType getDispatcherType() {
+                return null;
             }
 
             @Override
@@ -208,6 +242,16 @@ public class RequestValidationServiceTest {
             public String[] getParameterValues(String name) {
                 return null;
             }
+            
+            @Override
+            public Part getPart(String part) {
+                return null;
+            }
+            
+            @Override
+            public Collection<Part> getParts() {
+                return Collections.emptySet();
+            }
 
             @Override
             public String getPathInfo() {
@@ -223,6 +267,11 @@ public class RequestValidationServiceTest {
             public String getProtocol() {
                 return null;
             }
+            
+            @Override
+            public String getProtocolRequestId() {
+                return null;
+            }
 
             @Override
             public String getQueryString() {
@@ -231,12 +280,6 @@ public class RequestValidationServiceTest {
 
             @Override
             public BufferedReader getReader() {
-                return null;
-            }
-
-            @Override
-            @Deprecated
-            public String getRealPath(String path) {
                 return null;
             }
 
@@ -271,6 +314,11 @@ public class RequestValidationServiceTest {
             }
 
             @Override
+            public String getRequestId() {
+                return null;
+            }
+            
+            @Override
             public String getRequestURI() {
                 return null;
             }
@@ -285,6 +333,16 @@ public class RequestValidationServiceTest {
                 return null;
             }
 
+            @Override
+            public ServletConnection getServletConnection() {
+                return null;
+            }
+            
+            @Override
+            public ServletContext getServletContext() {
+                return null;
+            }
+            
             @Override
             public String getServerName() {
                 return null;
@@ -316,13 +374,17 @@ public class RequestValidationServiceTest {
             }
 
             @Override
-            public boolean isRequestedSessionIdFromCookie() {
+            public boolean isAsyncStarted() {
                 return false;
             }
-
+            
             @Override
-            @Deprecated
-            public boolean isRequestedSessionIdFromUrl() {
+            public boolean isAsyncSupported() {
+                return false;
+            }
+            
+            @Override
+            public boolean isRequestedSessionIdFromCookie() {
                 return false;
             }
 
@@ -345,6 +407,16 @@ public class RequestValidationServiceTest {
             public boolean isUserInRole(String role) {
                 return false;
             }
+            
+            @Override
+            public void login(String username, String password) {
+                return;
+            }
+            
+            @Override
+            public void logout() {
+                return;
+            }
 
             @Override
             public void removeAttribute(String name) {
@@ -359,6 +431,21 @@ public class RequestValidationServiceTest {
             @Override
             public void setCharacterEncoding(String env) {
                 return;
+            }
+            
+            @Override
+            public AsyncContext startAsync() {
+                return null;
+            }
+            
+            @Override
+            public AsyncContext startAsync(ServletRequest servletRequest, ServletResponse servletResponse) {
+                return null;
+            }
+            
+            @Override
+            public <T extends HttpUpgradeHandler> T upgrade(Class<T> handlerClass) {
+                return null;
             }
 
         };

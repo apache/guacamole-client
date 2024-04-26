@@ -29,7 +29,6 @@ import com.keepersecurity.secretsManager.core.Login;
 import com.keepersecurity.secretsManager.core.Notation;
 import com.keepersecurity.secretsManager.core.SecretsManager;
 import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,9 +42,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import javax.annotation.Nullable;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.ksm.conf.KsmConfigurationService;
 import org.apache.guacamole.vault.secret.WindowsUsername;

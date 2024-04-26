@@ -21,13 +21,12 @@ package org.apache.guacamole.auth.header;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.auth.header.user.AuthenticatedUser;
-import java.security.Principal;
 
 /**
  * Service providing convenience functions for the HTTP Header

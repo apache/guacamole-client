@@ -20,10 +20,9 @@
 package org.apache.guacamole.auth.json;
 
 import com.google.inject.Inject;
+import jakarta.servlet.http.HttpServletRequest;
 import inet.ipaddr.IPAddressString;
-import java.util.ArrayList;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

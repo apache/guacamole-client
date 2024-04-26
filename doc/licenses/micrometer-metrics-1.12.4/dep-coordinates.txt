@@ -1,0 +1,2 @@
+io.micrometer:micrometer-observation:jar:1.12.4
+io.micrometer:micrometer-commons:jar:1.12.4

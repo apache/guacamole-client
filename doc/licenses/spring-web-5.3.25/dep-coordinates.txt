@@ -1,4 +1,0 @@
-org.springframework:spring-web:jar:5.3.25
-org.springframework:spring-beans:jar:5.3.25
-org.springframework:spring-core:jar:5.3.25
-org.springframework:spring-jcl:jar:5.3.25

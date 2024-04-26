@@ -22,10 +22,10 @@
 #
 
 # Use args for Tomcat image label to allow image builder to choose alternatives
-# such as `--build-arg TOMCAT_JRE=jre8-alpine`
+# such as `--build-arg TOMCAT_JRE=jre11-alpine`
 #
-ARG TOMCAT_VERSION=8.5
-ARG TOMCAT_JRE=jdk8
+ARG TOMCAT_VERSION=10
+ARG TOMCAT_JRE=jre11
 
 # Use official maven image for the build
 FROM maven:3-eclipse-temurin-8-focal AS builder

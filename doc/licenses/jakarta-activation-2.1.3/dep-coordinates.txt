@@ -1,0 +1,1 @@
+jakarta.activation:jakarta.activation-api:jar:2.1.3

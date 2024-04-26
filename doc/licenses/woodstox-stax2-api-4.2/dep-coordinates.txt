@@ -1,1 +1,0 @@
-org.codehaus.woodstox:stax2-api:jar:4.2
