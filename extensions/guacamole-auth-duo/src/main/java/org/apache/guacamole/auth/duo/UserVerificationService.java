@@ -31,17 +31,24 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.duo.conf.ConfigurationService;
 import org.apache.guacamole.form.RedirectField;
-import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service for verifying the identity of a user against Duo.
  */
 public class UserVerificationService {
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(UserVerificationService.class);
 
     /**
      * The name of the HTTP parameter that Duo will use to communicate the
@@ -143,71 +150,97 @@ public class UserVerificationService {
 
         // Redirect to Duo to obtain an authentication code if that redirect
         // has not yet occurred
-        if (duoCode == null || duoState == null) {
+        if (duoCode != null && duoState != null) {
 
-            // Store received credentials for later retrieval leveraging Duo's
-            // opaque session state identifier (we need to maintain these
-            // credentials so that things like the GUAC_USERNAME and
-            // GUAC_PASSWORD tokens continue to work as expected despite the
-            // redirect to/from the external Duo service)
-            duoState = duoClient.generateState();
-            long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthenticationTimeout() * 60000L);
-            sessionManager.defer(new DuoAuthenticationSession(credentials, expirationTimestamp), duoState);
-
-            // Obtain authentication URL from Duo client
-            String duoAuthUrlString;
+            // Validate that the user has successfully verified their identify with
+            // the Duo service
             try {
-                duoAuthUrlString = duoClient.createAuthUrl(username, duoState);
+
+                // Note unexpected behavior (Duo is expected to always return
+                // a token)
+                Token token = duoClient.exchangeAuthorizationCodeFor2FAResult(duoCode, username);
+                if (token == null) {
+                    logger.warn("Duo did not return an authentication result "
+                            + "at all for the authentication attempt by user "
+                            + "\"{}\". This is unexpected behavior and may be "
+                            + "a bug in the Duo service or the Duo SDK. "
+                            + "Guacamole will attempt to automatically work "
+                            + "around the issue by making a fresh Duo "
+                            + "authentication request.", username);
+                }
+
+                // Warn if Duo explicitly denies authentication
+                else if (token.getAuth_result() == null || !DUO_TOKEN_SUCCESS_VALUE.equals(token.getAuth_result().getStatus())) {
+                    logger.warn("Duo did not return an explicitly successful "
+                            + "authentication result for the authentication "
+                            + "attempt by user \"{}\". The user will now be "
+                            + "redirected back to the Duo service to reattempt"
+                            + "authentication.", username);
+                }
+
+                // Allow user to continue authenticating with Guacamole only if
+                // Duo has validated their identity
+                else
+                    return;
+
             }
             catch (DuoException e) {
-                throw new GuacamoleServerException("Duo client failed to "
-                        + "generate the authentication URL necessary to "
-                        + "redirect the authenticating user to the Duo "
-                        + "service.", e);
+                logger.debug("The Duo client failed internally while "
+                        + "attempting to validate the identity of user "
+                        + "\"{}\". This is commonly caused by stale query "
+                        + "parameters from an older Duo request remaining "
+                        + "present in the Guacamole URL. The user will now be "
+                        + "redirected back to the Duo service to reattempt "
+                        + "authentication.", e);
             }
-
-            // Parse and validate URL obtained from Duo client
-            URI duoAuthUrl;
-            try {
-                duoAuthUrl = new URI(duoAuthUrlString);
-            }
-            catch (URISyntaxException e) {
-                throw new GuacamoleServerException("Authentication URL "
-                        + "generated by the Duo client is not actually a "
-                        + "valid URL and cannot be used to redirect the "
-                        + "authenticating user to the Duo service.", e);
-            }
-
-            // Request that user be redirected to the Duo service to obtain
-            // a Duo authentication code
-            throw new TranslatableGuacamoleInsufficientCredentialsException(
-                "Verification using Duo is required before authentication "
-                + "can continue.", "LOGIN.INFO_DUO_AUTH_REQUIRED",
-                new CredentialsInfo(Collections.singletonList(
-                    new RedirectField(
-                            DUO_CODE_PARAMETER_NAME, duoAuthUrl,
-                            new TranslatableMessage("LOGIN.INFO_DUO_REDIRECT_PENDING")
-                    )
-                ))
-            );
 
         }
 
-        // Validate that the user has successfully verified their identify with
-        // the Duo service
+        // Store received credentials for later retrieval leveraging Duo's
+        // opaque session state identifier (we need to maintain these
+        // credentials so that things like the GUAC_USERNAME and
+        // GUAC_PASSWORD tokens continue to work as expected despite the
+        // redirect to/from the external Duo service)
+        duoState = duoClient.generateState();
+        long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthenticationTimeout() * 60000L);
+        sessionManager.defer(new DuoAuthenticationSession(credentials, expirationTimestamp), duoState);
+
+        // Obtain authentication URL from Duo client
+        String duoAuthUrlString;
         try {
-            Token token = duoClient.exchangeAuthorizationCodeFor2FAResult(duoCode, username);
-            if (token == null || token.getAuth_result() == null
-                    || !DUO_TOKEN_SUCCESS_VALUE.equals(token.getAuth_result().getStatus()))
-                throw new TranslatableGuacamoleClientException("Provided Duo "
-                        + "validation code is incorrect.",
-                        "LOGIN.INFO_DUO_VALIDATION_CODE_INCORRECT");
+            duoAuthUrlString = duoClient.createAuthUrl(username, duoState);
         }
         catch (DuoException e) {
-            throw new GuacamoleServerException("Duo client refused to verify "
-                    + "the identity of the authenticating user due to an "
-                    + "underlying error condition.", e);
+            throw new GuacamoleServerException("Duo client failed to "
+                    + "generate the authentication URL necessary to "
+                    + "redirect the authenticating user to the Duo "
+                    + "service.", e);
         }
+
+        // Parse and validate URL obtained from Duo client
+        URI duoAuthUrl;
+        try {
+            duoAuthUrl = new URI(duoAuthUrlString);
+        }
+        catch (URISyntaxException e) {
+            throw new GuacamoleServerException("Authentication URL "
+                    + "generated by the Duo client is not actually a "
+                    + "valid URL and cannot be used to redirect the "
+                    + "authenticating user to the Duo service.", e);
+        }
+
+        // Request that user be redirected to the Duo service to obtain
+        // a Duo authentication code
+        throw new TranslatableGuacamoleInsufficientCredentialsException(
+            "Verification using Duo is required before authentication "
+            + "can continue.", "LOGIN.INFO_DUO_AUTH_REQUIRED",
+            new CredentialsInfo(Collections.singletonList(
+                new RedirectField(
+                        DUO_CODE_PARAMETER_NAME, duoAuthUrl,
+                        new TranslatableMessage("LOGIN.INFO_DUO_REDIRECT_PENDING")
+                )
+            ))
+        );
 
     }
 
