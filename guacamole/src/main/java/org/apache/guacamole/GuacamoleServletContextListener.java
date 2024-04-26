@@ -95,13 +95,26 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
 
     /**
      * A property that determines whether environment variables are evaluated
-     * to override properties specified in guacamole.properties.
+     * to supply properties not specified in guacamole.properties.
      */
     private static final BooleanGuacamoleProperty ENABLE_ENVIRONMENT_PROPERTIES =
         new BooleanGuacamoleProperty() {
             @Override
             public String getName() {
                 return "enable-environment-properties";
+            }
+        };
+
+    /**
+     * A property that determines whether environment variables of the form
+     * "*_FILE" are evaluated to supply properties not specified in
+     * guacamole.properties nor in environment variables.
+     */
+    private static final BooleanGuacamoleProperty ENABLE_FILE_ENVIRONMENT_PROPERTIES =
+        new BooleanGuacamoleProperty() {
+            @Override
+            public String getName() {
+                return "enable-file-environment-properties";
             }
         };
 
@@ -172,6 +185,23 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
             logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_ENVIRONMENT_PROPERTIES.getName(), e);
         }
 
+        // For any values not defined in GUACAMOLE_HOME/guacamole.properties
+        // nor in the system environment, read from files pointed to by
+        // corresponding "*_FILE" variables in the system environment if
+        // "enable-file-environment-properties" is set to "true"
+        try {
+            if (environment.getProperty(ENABLE_FILE_ENVIRONMENT_PROPERTIES, false)) {
+                environment.addGuacamoleProperties(new SystemFileEnvironmentGuacamoleProperties());
+                logger.info("Additional configuration parameters may be read "
+                        + "from files pointed to by \"*_FILE\" environment "
+                        + "variables.");
+            }
+        }
+        catch (GuacamoleException e) {
+            logger.error("Unable to configure support for file environment properties: {}", e.getMessage());
+            logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_FILE_ENVIRONMENT_PROPERTIES.getName(), e);
+        }
+
         // Now that at least the main guacamole.properties source of
         // configuration information is available, initialize the session map
         sessionMap = new HashTokenSessionMap(environment);
@@ -210,13 +240,24 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
                 return current;
 
             // Create new injector if necessary
-            Injector injector = Guice.createInjector(Stage.PRODUCTION,
-                new EnvironmentModule(environment),
-                new LogModule(environment),
-                new ExtensionModule(environment),
-                new RESTServiceModule(sessionMap),
-                new TunnelModule()
-            );
+            Injector injector =
+
+                    // Ensure environment and logging are configured FIRST ...
+                    Guice.createInjector(Stage.PRODUCTION,
+                        new EnvironmentModule(environment),
+                        new LogModule(environment)
+                    )
+
+                    // ... before attempting configuration of any other modules
+                    // (logging within the constructors of other modules may
+                    // otherwise default to including messages from the "debug"
+                    // level, regardless of how the application log level is
+                    // actually configured)
+                    .createChildInjector(
+                        new ExtensionModule(environment),
+                        new RESTServiceModule(sessionMap),
+                        new TunnelModule()
+                    );
 
             return injector;
 
