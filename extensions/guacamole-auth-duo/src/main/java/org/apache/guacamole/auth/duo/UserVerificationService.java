@@ -26,6 +26,7 @@ import com.google.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -36,7 +37,6 @@ import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,8 +202,8 @@ public class UserVerificationService {
         // GUAC_PASSWORD tokens continue to work as expected despite the
         // redirect to/from the external Duo service)
         duoState = duoClient.generateState();
-        long expirationTimestamp = System.currentTimeMillis() + (confService.getAuthenticationTimeout() * 60000L);
-        sessionManager.defer(new DuoAuthenticationSession(credentials, expirationTimestamp), duoState);
+        long expiresAfter = TimeUnit.MINUTES.toMillis(confService.getAuthenticationTimeout());
+        sessionManager.defer(new DuoAuthenticationSession(credentials, expiresAfter), duoState);
 
         // Obtain authentication URL from Duo client
         String duoAuthUrlString;
