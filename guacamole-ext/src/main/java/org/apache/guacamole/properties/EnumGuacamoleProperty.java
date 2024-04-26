@@ -20,6 +20,7 @@
 package org.apache.guacamole.properties;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -45,8 +46,10 @@ public abstract class EnumGuacamoleProperty<T extends Enum<T>> implements Guacam
 
     /**
      * Defines the string value which should be accepted and parsed into the
-     * annotated enum constant.
+     * annotated enum constant. This annotation is repeatable, and each enum
+     * constant may be associated with any any number of string values.
      */
+    @Repeatable(PropertyValues.class)
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.FIELD)
     public static @interface PropertyValue {
@@ -60,6 +63,29 @@ public abstract class EnumGuacamoleProperty<T extends Enum<T>> implements Guacam
          *     when parsed.
          */
         String value();
+
+    }
+
+    /**
+     * Defines the string values which should be accepted and parsed into the
+     * annotated enum constant. Each enum constant may be associated with any
+     * any number of string values.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public static @interface PropertyValues {
+
+        /**
+         * Returns the {@link PropertyValue} annotations that represent the
+         * String values that should produce the annotated enum constant when
+         * parsed.
+         *
+         * @return
+         *     The {@link PropertyValue} annotations that represent the String
+         *     values that should produce the annotated enum constant when
+         *     parsed.
+         */
+        PropertyValue[] value();
 
     }
 
@@ -103,7 +129,17 @@ public abstract class EnumGuacamoleProperty<T extends Enum<T>> implements Guacam
                         + "match declared values.", e);
             }
 
-            // Map enum constant only if PropertyValue annotation is present
+            // Map enum constant only if one or more PropertyValue annotations
+            // are present
+            PropertyValues valuesAnnotation = field.getAnnotation(PropertyValues.class);
+            if (valuesAnnotation != null) {
+                for (PropertyValue valueAnnotation : valuesAnnotation.value())
+                    valueMapping.put(valueAnnotation.value(), value);
+            }
+
+            // The PropertyValue annotation may appear as a separate, single
+            // annotation, or as a multi-valued annotation via PropertyValues
+            // (see above)
             PropertyValue valueAnnotation = field.getAnnotation(PropertyValue.class);
             if (valueAnnotation != null)
                 valueMapping.put(valueAnnotation.value(), value);
