@@ -333,43 +333,6 @@ public class AuthenticationService {
     }
 
     /**
-     * Performs arbitrary and optional updates to the credentials supplied by
-     * the authenticating user as dictated by the {@link AuthenticationProvider#updateCredentials(org.apache.guacamole.net.auth.Credentials)}
-     * functions of any installed AuthenticationProvider. Each installed
-     * AuthenticationProvider is given the opportunity, in order, to make
-     * updates to the supplied credentials.
-     *
-     * @param credentials
-     *     The credentials to be updated.
-     *
-     * @return
-     *     The set of credentials that should be provided to all
-     *     AuthenticationProviders during authentication, now possibly updated
-     *     (or even replaced) by any number of installed
-     *     AuthenticationProviders.
-     *
-     * @throws GuacamoleAuthenticationProcessException 
-     *     If an error occurs while updating the supplied credentials.
-     */
-    private Credentials getUpdatedCredentials(Credentials credentials)
-            throws GuacamoleAuthenticationProcessException {
-
-        for (AuthenticationProvider authProvider : authProviders) {
-            try {
-                credentials = authProvider.updateCredentials(credentials);
-            }
-            catch (GuacamoleException | RuntimeException | Error e) {
-                throw new GuacamoleAuthenticationProcessException("User "
-                        + "authentication aborted during credential "
-                        + "update/revision.", authProvider, e);
-            }
-        }
-
-        return credentials;
-
-    }
-
-    /**
      * Authenticates a user using the given credentials and optional
      * authentication token, returning the authentication token associated with
      * the user's Guacamole session, which may be newly generated. If an
@@ -394,27 +357,38 @@ public class AuthenticationService {
     public String authenticate(Credentials credentials, String token)
             throws GuacamoleException {
 
-        // Fire pre-authentication event before ANY authn/authz occurs at all
-        listenerService.handleEvent((AuthenticationRequestReceivedEvent) () -> credentials);
-
-        // Pull existing session if token provided
-        GuacamoleSession existingSession;
-        if (token != null)
-            existingSession = tokenSessionMap.get(token);
-        else
-            existingSession = null;
-
-        AuthenticatedUser authenticatedUser;
         String authToken;
-
         try {
 
             // Allow extensions to make updated to credentials prior to
-            // actual authentication
-            Credentials updatedCredentials = getUpdatedCredentials(credentials);
+            // actual authentication (NOTE: We do this here instead of in a
+            // separate function to ensure that failure events accurately
+            // represent the credentials that failed when a chain of credential
+            // updates is involved)
+            for (AuthenticationProvider authProvider : authProviders) {
+                try {
+                    credentials = authProvider.updateCredentials(credentials);
+                }
+                catch (GuacamoleException | RuntimeException | Error e) {
+                    throw new GuacamoleAuthenticationProcessException("User "
+                            + "authentication aborted during credential "
+                            + "update/revision.", authProvider, e);
+                }
+            }
+
+            // Fire pre-authentication event before ANY authn/authz occurs at all
+            final Credentials updatedCredentials = credentials;
+            listenerService.handleEvent((AuthenticationRequestReceivedEvent) () -> updatedCredentials);
+
+            // Pull existing session if token provided
+            GuacamoleSession existingSession;
+            if (token != null)
+                existingSession = tokenSessionMap.get(token);
+            else
+                existingSession = null;
 
             // Get up-to-date AuthenticatedUser and associated UserContexts
-            authenticatedUser = getAuthenticatedUser(existingSession, updatedCredentials);
+            AuthenticatedUser authenticatedUser = getAuthenticatedUser(existingSession, updatedCredentials);
             List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, updatedCredentials);
 
             // Update existing session, if it exists
@@ -445,6 +419,11 @@ public class AuthenticationService {
         // Log and rethrow any authentication errors
         catch (GuacamoleAuthenticationProcessException e) {
 
+            // NOTE: The credentials referenced here are intentionally NOT the
+            // final updatedCredentials reference (though they may often be
+            // equivalent) to ensure that failure events accurately represent
+            // the credentials that failed if that failure occurs in the middle
+            // of a chain of credential updates via updateCredentials()
             listenerService.handleEvent(new AuthenticationFailureEvent(credentials,
                     e.getAuthenticationProvider(), e.getCause()));
 
