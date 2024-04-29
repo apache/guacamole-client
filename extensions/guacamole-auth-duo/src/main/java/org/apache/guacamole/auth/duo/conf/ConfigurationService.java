@@ -94,7 +94,7 @@ public class ConfigurationService {
     };
     
     /**
-     * The property that configures the timeout, in seconds, of in-progress
+     * The property that configures the timeout, in minutes, of in-progress
      * Duo authentication attempts. Authentication attempts that take longer
      * than this period of time will be invalidated.
      */
@@ -170,20 +170,23 @@ public class ConfigurationService {
     public URI getRedirectUri() throws GuacamoleException {
         return environment.getRequiredProperty(DUO_REDIRECT_URI);
     }
-    
+
+
     /**
-     * Return the number of seconds after which in-progress authentication attempts with
-     * Duo should be invalidated. The default is 30 seconds.
-     * 
+     * Returns the maximum amount of time to allow for an in-progress Duo
+     * authentication attempt to be completed, in minutes. A user that takes
+     * longer than this amount of time to complete authentication with Duo
+     * will need to try again.
+     *
      * @return
-     *     The number of seconds after which in-progress Duo MFA attempts should
-     *     be invalidated.
-     * 
-     * @throws GuacamoleException 
-     *     If guacamole.properties cannot be parsed.
+     *     The maximum amount of time to allow for an in-progress Duo
+     *     authentication attempt to be completed, in minutes.
+     *
+     * @throws GuacamoleException
+     *     If the authentication timeout cannot be parsed.
      */
-    public int getAuthTimeout() throws GuacamoleException {
-        return environment.getProperty(DUO_AUTH_TIMEOUT, 30);
+    public int getAuthenticationTimeout() throws GuacamoleException {
+        return environment.getProperty(DUO_AUTH_TIMEOUT, 5);
     }
 
 }

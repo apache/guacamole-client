@@ -21,11 +21,8 @@ package org.apache.guacamole.rest.auth;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -47,7 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.Singleton;
-import java.util.Iterator;
 
 /**
  * A service for performing authentication checks in REST endpoints.
@@ -102,11 +98,6 @@ public class AuthenticationService {
      * token used by the Guacamole REST API.
      */
     public static final String TOKEN_PARAMETER_NAME = "token";
-
-    /** 
-     * Map to store resumable authentication states with an expiration time.
-     */ 
-    private Map<String, ResumableAuthenticationState> resumableStateMap = new ConcurrentHashMap<>();
 
     /**
      * Attempts authentication against all AuthenticationProviders, in order,
@@ -322,20 +313,6 @@ public class AuthenticationService {
                 try {
                     userContext = authProvider.getUserContext(authenticatedUser);
                 }
-                catch (GuacamoleInsufficientCredentialsException e) {
-                    // Store state and expiration
-                    String state = e.getState();
-                    long expiration = e.getExpires();
-                    String queryIdentifier = e.getQueryIdentifier();
-                    String providerIdentifier = e.getProviderIdentifier();
-
-                    resumableStateMap.put(state, new ResumableAuthenticationState(providerIdentifier, 
-                            queryIdentifier, expiration, credentials));
-
-                    throw new GuacamoleAuthenticationProcessException("User "
-                            + "authentication aborted during initial "
-                            + "UserContext creation.", authProvider, e);
-                }
                 catch (GuacamoleException | RuntimeException | Error e) {
                     throw new GuacamoleAuthenticationProcessException("User "
                             + "authentication aborted during initial "
@@ -353,82 +330,6 @@ public class AuthenticationService {
 
         return userContexts;
 
-    }
-    
-    /**
-     * Resumes authentication using given credentials if a matching resumable 
-     * state is found.
-     *
-     * @param credentials 
-     *     The initial credentials containing the request object.
-     *
-     * @return 
-     *     Resumed credentials if a valid resumable state is found; otherwise, 
-     *     returns null.
-     */
-    private Credentials resumeAuthentication(Credentials credentials) {
-        
-        Credentials resumedCredentials = null;
-
-        // Retrieve signed State from the request
-        HttpServletRequest request = credentials.getRequest();
-        
-        // Retrieve the provider id from the query parameters
-        String resumableProviderId = request.getParameter(Credentials.RESUME_QUERY);
-        // Check if a provider id is set
-        if (resumableProviderId == null || resumableProviderId.isEmpty()) {
-            // Return if a provider id is not set
-            return null;
-        }
-
-        // Use an iterator to safely remove entries while iterating
-        Iterator<Map.Entry<String, ResumableAuthenticationState>> iterator = resumableStateMap.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, ResumableAuthenticationState> entry = iterator.next();
-            ResumableAuthenticationState resumableState = entry.getValue();
-
-            // Check if the provider ID from the request matches the one in the map entry
-            boolean providerMatches = resumableProviderId.equals(resumableState.getProviderIdentifier());
-            if (!providerMatches) {
-                // If the provider doesn't match, skip to the next entry
-                continue;
-            }
-
-            // Use the query identifier from the entry to retrieve the corresponding state parameter
-            String stateQueryParameter = resumableState.getQueryIdentifier();
-            String stateFromParameter = request.getParameter(stateQueryParameter);
-
-            // Check if a state parameter is set
-            if (stateFromParameter == null || stateFromParameter.isEmpty()) {
-                // Remove and continue if`state is not provided or is empty
-                iterator.remove(); 
-                continue;
-            }
-
-            // If the key in the entry (state) matches the state parameter provided in the request
-            if (entry.getKey().equals(stateFromParameter)) {
-
-                // Remove the current entry from the map
-                iterator.remove();                
-
-                // Check if the resumableState has expired
-                if (!resumableState.isExpired()) {
-
-                    // Set the actualCredentials to the credentials from the matched entry
-                    resumedCredentials = resumableState.getCredentials();
-
-                    if (resumedCredentials != null) {
-                        resumedCredentials.setRequest(request);
-                    }
-
-                }
-
-                // Exit the loop since we've found the matching state and it's unique
-                break;
-            }
-        }
-
-        return resumedCredentials;
     }
 
     /**
@@ -456,29 +357,39 @@ public class AuthenticationService {
     public String authenticate(Credentials credentials, String token)
             throws GuacamoleException {
 
-        // Fire pre-authentication event before ANY authn/authz occurs at all
-        listenerService.handleEvent((AuthenticationRequestReceivedEvent) () -> credentials);
-
-        // Pull existing session if token provided
-        GuacamoleSession existingSession;
-        if (token != null)
-            existingSession = tokenSessionMap.get(token);
-        else
-            existingSession = null;
-
-        AuthenticatedUser authenticatedUser;
         String authToken;
-
-        // Retrieve credentials if resuming authentication
-        Credentials actualCredentials = resumeAuthentication(credentials);
-        if (actualCredentials == null)
-            actualCredentials = credentials;
-
         try {
 
+            // Allow extensions to make updated to credentials prior to
+            // actual authentication (NOTE: We do this here instead of in a
+            // separate function to ensure that failure events accurately
+            // represent the credentials that failed when a chain of credential
+            // updates is involved)
+            for (AuthenticationProvider authProvider : authProviders) {
+                try {
+                    credentials = authProvider.updateCredentials(credentials);
+                }
+                catch (GuacamoleException | RuntimeException | Error e) {
+                    throw new GuacamoleAuthenticationProcessException("User "
+                            + "authentication aborted during credential "
+                            + "update/revision.", authProvider, e);
+                }
+            }
+
+            // Fire pre-authentication event before ANY authn/authz occurs at all
+            final Credentials updatedCredentials = credentials;
+            listenerService.handleEvent((AuthenticationRequestReceivedEvent) () -> updatedCredentials);
+
+            // Pull existing session if token provided
+            GuacamoleSession existingSession;
+            if (token != null)
+                existingSession = tokenSessionMap.get(token);
+            else
+                existingSession = null;
+
             // Get up-to-date AuthenticatedUser and associated UserContexts
-            authenticatedUser = getAuthenticatedUser(existingSession, actualCredentials);
-            List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, actualCredentials);
+            AuthenticatedUser authenticatedUser = getAuthenticatedUser(existingSession, updatedCredentials);
+            List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, updatedCredentials);
 
             // Update existing session, if it exists
             if (existingSession != null) {
@@ -508,7 +419,12 @@ public class AuthenticationService {
         // Log and rethrow any authentication errors
         catch (GuacamoleAuthenticationProcessException e) {
 
-            listenerService.handleEvent(new AuthenticationFailureEvent(actualCredentials,
+            // NOTE: The credentials referenced here are intentionally NOT the
+            // final updatedCredentials reference (though they may often be
+            // equivalent) to ensure that failure events accurately represent
+            // the credentials that failed if that failure occurs in the middle
+            // of a chain of credential updates via updateCredentials()
+            listenerService.handleEvent(new AuthenticationFailureEvent(credentials,
                     e.getAuthenticationProvider(), e.getCause()));
 
             // Rethrow exception

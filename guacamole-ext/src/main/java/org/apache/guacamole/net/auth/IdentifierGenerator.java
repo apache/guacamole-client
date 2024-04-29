@@ -37,6 +37,12 @@ public class IdentifierGenerator {
     private static final SecureRandom secureRandom = new SecureRandom();
 
     /**
+     * IdentifierGenerator is a utility class that is not intended to be
+     * separately instantiated.
+     */
+    private IdentifierGenerator() {}
+    
+    /**
      * Generates a unique and unpredictable identifier. Each identifier is at
      * least 256-bit and produced using a cryptographically-secure random
      * number generator. The identifier may contain characters that differ only
