@@ -1,1 +1,0 @@
-com.squareup.okhttp3:okhttp:jar:4.9.1

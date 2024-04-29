@@ -119,6 +119,18 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
     }
 
+    @Override
+    public Credentials updateCredentials(Credentials credentials) throws GuacamoleException {
+
+        // Do nothing if underlying auth provider could not be loaded
+        if (authProvider == null)
+            return credentials;
+
+        // Delegate to underlying auth provider
+        return authProvider.updateCredentials(credentials);
+
+    }
+
     /**
      * Returns whether this authentication provider should tolerate internal
      * failures during the authentication process, allowing other

@@ -45,6 +45,20 @@ public abstract class AbstractAuthenticationProvider implements AuthenticationPr
     /**
      * {@inheritDoc}
      *
+     * <p>This implementation simply returns the provided {@code credentials}
+     * without performing any updates. Implementations that wish to perform
+     * credential updates for in-progress authentication requests should
+     * override this function.
+     */
+    @Override
+    public Credentials updateCredentials(Credentials credentials)
+            throws GuacamoleException {
+        return credentials;
+    }
+
+    /**
+     * {@inheritDoc}
+     *
      * <p>This implementation performs no authentication whatsoever, ignoring
      * the provided {@code credentials} and simply returning {@code null}. Any
      * authentication attempt will thus fall through to other

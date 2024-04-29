@@ -35,16 +35,6 @@ import javax.servlet.http.HttpSession;
 public class Credentials implements Serializable {
 
     /**
-     * The RESUME_QUERY is a query parameter key used to determine which
-     * authentication provider's process should be resumed during multi-step
-     * authentication. The auth provider will set this parameter before 
-     * redirecting to an external service, and it is checked upon return to 
-     * Guacamole to ensure the correct authentication state is continued 
-     * without starting over.
-     */
-    public static final String RESUME_QUERY = "provider_id";
-
-    /**
      * Unique identifier associated with this specific version of Credentials.
      */
     private static final long serialVersionUID = 1L;

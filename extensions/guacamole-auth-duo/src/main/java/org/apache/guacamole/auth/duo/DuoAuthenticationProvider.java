@@ -21,9 +21,11 @@ package org.apache.guacamole.auth.duo;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
@@ -41,10 +43,16 @@ public class DuoAuthenticationProvider extends AbstractAuthenticationProvider {
     public static String PROVIDER_IDENTIFER = "duo";
 
     /**
-     * Injector which will manage the object graph of this authentication
-     * provider.
+     * Service for verifying the identity of users that Guacamole has otherwise
+     * already authenticated.
      */
-    private final Injector injector;
+    private final UserVerificationService verificationService;
+
+    /**
+     * Session manager for storing/retrieving the state of a user's
+     * authentication attempt while they are redirected to the Duo service.
+     */
+    private final DuoAuthenticationSessionManager sessionManager;
 
     /**
      * Creates a new DuoAuthenticationProvider that verifies users
@@ -57,9 +65,12 @@ public class DuoAuthenticationProvider extends AbstractAuthenticationProvider {
     public DuoAuthenticationProvider() throws GuacamoleException {
 
         // Set up Guice injector.
-        injector = Guice.createInjector(
+        Injector injector = Guice.createInjector(
             new DuoAuthenticationProviderModule(this)
         );
+
+        sessionManager = injector.getInstance(DuoAuthenticationSessionManager.class);
+        verificationService = injector.getInstance(UserVerificationService.class);
 
     }
 
@@ -69,11 +80,33 @@ public class DuoAuthenticationProvider extends AbstractAuthenticationProvider {
     }
 
     @Override
-    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
+    public Credentials updateCredentials(Credentials credentials)
             throws GuacamoleException {
 
-        UserVerificationService verificationService =
-                injector.getInstance(UserVerificationService.class);
+        // Ignore requests with no corresponding authentication session ID, as
+        // there are no credentials to reconstitute if the user has not yet
+        // attempted to authenticate
+        HttpServletRequest request = credentials.getRequest();
+        String duoState = request.getParameter(UserVerificationService.DUO_STATE_PARAMETER_NAME);
+        if (duoState == null)
+            return credentials;
+
+        // Ignore requests with invalid/expired authentication session IDs
+        DuoAuthenticationSession session = sessionManager.resume(duoState);
+        if (session == null)
+            return credentials;
+
+        // Reconstitute the originally-provided credentials from the users
+        // authentication attempt prior to being redirected to Duo
+        Credentials previousCredentials = session.getCredentials();
+        previousCredentials.setRequest(request);
+        return previousCredentials;
+
+    }
+
+    @Override
+    public UserContext getUserContext(AuthenticatedUser authenticatedUser)
+            throws GuacamoleException {
 
         // Verify user against Duo service
         verificationService.verifyAuthenticatedUser(authenticatedUser);
@@ -82,6 +115,11 @@ public class DuoAuthenticationProvider extends AbstractAuthenticationProvider {
         // continue
         return null;
 
+    }
+
+    @Override
+    public void shutdown() {
+        sessionManager.shutdown();
     }
 
 }
