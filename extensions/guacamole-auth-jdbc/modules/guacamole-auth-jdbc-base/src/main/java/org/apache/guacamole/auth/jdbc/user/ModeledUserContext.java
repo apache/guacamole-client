@@ -177,7 +177,7 @@ public class ModeledUserContext extends RestrictedObject
      * activity record will be recorded, including when this UserContext is
      * invalidated.
      */
-    public void recordUserLogin() {
+    public void recordUserLogin() throws GuacamoleException {
 
         // Do nothing if invoked multiple times
         if (userRecord != null)
@@ -190,7 +190,7 @@ public class ModeledUserContext extends RestrictedObject
         userRecord.setRemoteHost(getCurrentUser().getCredentials().getRemoteAddress());
 
         // Insert record representing login
-        userRecordMapper.insert(userRecord);
+        userRecordMapper.insert(userRecord, environment.getCaseSensitiveUsernames());
         
     }
 

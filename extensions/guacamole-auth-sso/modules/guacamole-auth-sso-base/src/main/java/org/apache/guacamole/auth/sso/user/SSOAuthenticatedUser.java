@@ -112,5 +112,13 @@ public class SSOAuthenticatedUser extends AbstractAuthenticatedUser {
     public Set<String> getEffectiveUserGroups() {
         return effectiveGroups;
     }
+    
+    @Override
+    public boolean isCaseSensitive() {
+        // Most SSO systems do not consider usernames to be case-sensitive
+        // so that is the default for SSO modules across the board, unless
+        // overriden by a specific implementation.
+        return false;
+    }
 
 }

@@ -328,5 +328,17 @@ public class SQLServerEnvironment extends JDBCEnvironment {
                 SQLServerGuacamoleProperties.SQLSERVER_TRUST_ALL_SERVER_CERTIFICATES,
                 false);
     }
+    
+    @Override
+    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        
+        // SQL Server uses case-insensitive string searches by default, so
+        // we do not enforce case-sensitivity unless otherwise configured.
+        return getProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_CASE_SENSITIVE_USERNAMES,
+                false
+        );
+        
+    }
 
 }

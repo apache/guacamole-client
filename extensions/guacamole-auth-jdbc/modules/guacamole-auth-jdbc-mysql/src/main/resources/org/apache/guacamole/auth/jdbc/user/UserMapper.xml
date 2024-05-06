@@ -130,7 +130,9 @@
         FROM guacamole_user
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
-        WHERE guacamole_entity.name IN
+        WHERE
+            <if test="caseSensitive">BINARY</if>
+            guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
@@ -145,7 +147,9 @@
         FROM guacamole_user_attribute
         JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
-        WHERE guacamole_entity.name IN
+        WHERE 
+            <if test="caseSensitive">BINARY</if>
+            guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
@@ -180,7 +184,9 @@
         FROM guacamole_user
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
-        WHERE guacamole_entity.name IN
+        WHERE 
+            <if test="caseSensitive">BINARY</if>
+            guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
@@ -201,7 +207,9 @@
         FROM guacamole_user_attribute
         JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
-        WHERE guacamole_entity.name IN
+        WHERE
+            <if test="caseSensitive">BINARY</if>
+            guacamole_entity.name IN
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 #{identifier,jdbcType=VARCHAR}
@@ -243,6 +251,7 @@
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
         WHERE
+            <if test="caseSensitive">BINARY</if>
             guacamole_entity.name = #{username,jdbcType=VARCHAR}
             AND guacamole_entity.type = 'USER'
         GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
@@ -255,6 +264,7 @@
         JOIN guacamole_user ON guacamole_user.user_id = guacamole_user_attribute.user_id
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         WHERE
+            <if test="caseSensitive">BINARY</if>
             guacamole_entity.name = #{username,jdbcType=VARCHAR}
             AND guacamole_entity.type = 'USER'
 

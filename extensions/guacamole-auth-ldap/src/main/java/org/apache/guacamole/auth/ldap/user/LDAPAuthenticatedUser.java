@@ -136,6 +136,12 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
     }
     
     @Override
+    public boolean isCaseSensitive() {
+        // LDAP authentication is almost universally case-insensitive
+        return false;
+    }
+    
+    @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return authProvider;
     }

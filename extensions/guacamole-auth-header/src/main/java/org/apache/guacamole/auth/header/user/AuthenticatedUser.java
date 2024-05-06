@@ -20,6 +20,8 @@
 package org.apache.guacamole.auth.header.user;
 
 import com.google.inject.Inject;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.header.ConfigurationService;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -37,6 +39,12 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
      */
     @Inject
     private AuthenticationProvider authProvider;
+    
+    /**
+     * Service for retrieving header configuration information.
+     */
+    @Inject
+    private ConfigurationService confService;
 
     /**
      * The credentials provided when this user was authenticated.
@@ -58,6 +66,16 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
         setIdentifier(username.toLowerCase());
     }
 
+    @Override
+    public boolean isCaseSensitive() {
+        try {
+            return confService.getCaseSensitiveUsernames();
+        }
+        catch (GuacamoleException e) {
+            return false;
+        }
+    }
+    
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return authProvider;
