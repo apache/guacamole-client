@@ -316,15 +316,18 @@ public class AuthenticationProviderService {
     }
 
     /**
-     * Returns the current LDAP domain token from the provided user credentials.
+     * Returns the Windows / Active Directory domain included in the username
+     * of the provided user credentials. If the username does not contain a
+     * domain, null is returned.
      *
      * @param credentials
      *     The credentials used for authentication.
      *
      * @return
-     *     Domain name by splitting login username or null if no domain is detected.
+     *     The domain name within the username of the provided credentials, or
+     *     null if no domain is present.
      */
-    private String getDomainToken(Credentials credentials) {
+    private String getUserDomain(Credentials credentials) {
         String username = credentials.getUsername();
         //Regex is used to extract the domain from a username
         //that is in either of these formats: DOMAIN\\username or username@domain.
@@ -399,7 +402,7 @@ public class AuthenticationProviderService {
 
         // Extract the domain (ie: Windows / Active Directory domain) from the
         // user's credentials
-        String domainName = getDomainToken(credentials);
+        String domainName = getUserDomain(credentials);
         if (domainName != null)
             tokens.put(LDAP_DOMAIN_TOKEN, domainName);
 
