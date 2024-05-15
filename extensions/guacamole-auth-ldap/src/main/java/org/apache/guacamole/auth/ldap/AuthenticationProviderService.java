@@ -68,6 +68,29 @@ public class AuthenticationProviderService {
     public static final String LDAP_TOKEN_PREFIX = "LDAP_";
 
     /**
+     * Regular expression that extracts the Windows / Active Directory domain
+     * from a username in either of the following formats: down-level logon
+     * ("DOMAIN\\username") or UPN ("username@domain"). If the username is in
+     * "DOMAIN\\username" format, the domain will be stored in the first
+     * capturing group. If the username is in UPN format, the domain will be
+     * stored in the second capturing group.
+     */
+    private static final Pattern LDAP_USERNAME_DOMAIN = Pattern.compile("^(.+)\\\\.*$|^.*@(.+)$");
+
+    /**
+     * The index of the capturing group in {@link #LDAP_USERNAME_DOMAIN} that
+     * captures the domain of a username in down-level logon format
+     * ("DOMAIN\\username").
+     */
+    private static final int LDAP_USERNAME_DOMAIN_DOWN_LEVEL_GROUP = 1;
+
+    /**
+     * The index of the capturing group in {@link #LDAP_USERNAME_DOMAIN} that
+     * captures the domain of a username in UPN format ("username@domain").
+     */
+    private static final int LDAP_USERNAME_DOMAIN_UPN_GROUP = 2;
+
+    /**
      * The name of parameter token that will contain the domain extracted from
      * the LDAP user's username, if applicable.
      */
@@ -328,15 +351,24 @@ public class AuthenticationProviderService {
      *     null if no domain is present.
      */
     private String getUserDomain(Credentials credentials) {
+
+        // Extract domain from username (not necessarily present)
         String username = credentials.getUsername();
-        //Regex is used to extract the domain from a username
-        //that is in either of these formats: DOMAIN\\username or username@domain.
-        Pattern pattern = Pattern.compile("^(.+)\\\\.*$|^.*@(.+)$");
-        Matcher matcher = pattern.matcher(username);
-        if (matcher.find()) {
-            return matcher.group(1) != null ? matcher.group(1) : matcher.group(2);
-        }
-        return null;
+        Matcher matcher = LDAP_USERNAME_DOMAIN.matcher(username);
+        if (!matcher.find())
+            return null;
+
+        String dlDomain = matcher.group(LDAP_USERNAME_DOMAIN_DOWN_LEVEL_GROUP);
+        String upnDomain = matcher.group(LDAP_USERNAME_DOMAIN_UPN_GROUP);
+
+        // The two domain formats are mutually exclusive. If any format is
+        // present, the other must be absent unless there is a bug in the
+        // way the domains are parsed
+        assert(dlDomain == null || upnDomain == null);
+
+        // Use whichever domain format is present
+        return dlDomain != null ? dlDomain : upnDomain;
+
     }
 
     /**
