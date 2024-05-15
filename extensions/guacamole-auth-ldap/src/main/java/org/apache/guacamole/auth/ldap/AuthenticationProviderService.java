@@ -65,12 +65,13 @@ public class AuthenticationProviderService {
     /**
      * The prefix that will be used when generating tokens.
      */
-    public static final String LDAP_ATTRIBUTE_TOKEN_PREFIX = "LDAP_";
+    public static final String LDAP_TOKEN_PREFIX = "LDAP_";
 
     /**
-     * The name of LDAP domain attribute.
+     * The name of parameter token that will contain the domain extracted from
+     * the LDAP user's username, if applicable.
      */
-    public static final String LDAP_DOMAIN_TOKEN = "DOMAIN";
+    public static final String LDAP_DOMAIN_TOKEN = LDAP_TOKEN_PREFIX + "DOMAIN";
 
     /**
      * Service for creating and managing connections to LDAP servers.
@@ -389,19 +390,18 @@ public class AuthenticationProviderService {
             // Convert each retrieved attribute into a corresponding token
             for (Attribute attr : attributes) {
                 tokens.put(TokenName.canonicalize(attr.getId(),
-                        LDAP_ATTRIBUTE_TOKEN_PREFIX), attr.getString());
+                        LDAP_TOKEN_PREFIX), attr.getString());
             }
         }
         catch (LdapException e) {
             throw new GuacamoleServerException("Could not query LDAP user attributes.", e);
         }
 
-        // Extracting the domain name from the user's credentials
+        // Extract the domain (ie: Windows / Active Directory domain) from the
+        // user's credentials
         String domainName = getDomainToken(credentials);
-        if (domainName != null) {
-            String tokenName = TokenName.canonicalize(LDAP_DOMAIN_TOKEN, LDAP_ATTRIBUTE_TOKEN_PREFIX);
-            tokens.put(tokenName, domainName);
-        }
+        if (domainName != null)
+            tokens.put(LDAP_DOMAIN_TOKEN, domainName);
 
         return tokens;
 
