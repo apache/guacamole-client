@@ -39,6 +39,8 @@ import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Connection implementation which establishes the underlying connection to
@@ -48,12 +50,16 @@ import org.apache.guacamole.token.TokenFilter;
  * is not provided.
  */
 public class SimpleConnection extends AbstractConnection {
-
+    Logger logger = LoggerFactory.getLogger(SimpleConnection.class);
     /**
      * Backing configuration, containing all sensitive information.
      */
     private GuacamoleConfiguration fullConfig;
-
+    
+    /**
+     * The proxy configuration describing how to connect to guacd.
+     */
+    private GuacamoleProxyConfiguration proxyConfig;
     /**
      * Whether parameter tokens in the underlying GuacamoleConfiguration should
      * be automatically applied upon connecting. If false, parameter tokens
@@ -160,6 +166,42 @@ public class SimpleConnection extends AbstractConnection {
     }
 
     /**
+     * Creates a new SimpleConnection having the given identifier,
+     * GuacamoleConfiguration, and GuacamoleProxyConfiguration. Parameter tokens
+     * will be interpreted if explicitly requested.
+     *
+     * @param name
+     *     The name to associate with this connection.
+     *
+     * @param identifier
+     *     The identifier to associate with this connection.
+     * 
+     * @param proxyConfig
+     *     The Guacamole proxy configuration describing how the connection to
+     *     guacd should be established, or null if the default settings will be
+     *     used.
+     *
+     * @param config
+     *     The configuration describing how to connect to this connection.
+     *
+     * @param interpretTokens
+     *     Whether parameter tokens in the underlying GuacamoleConfiguration
+     *     should be automatically applied upon connecting. If false, parameter
+     *     tokens will not be interpreted at all.
+     */
+    public SimpleConnection(String name, String identifier, GuacamoleProxyConfiguration proxyConfig,
+            GuacamoleConfiguration config, boolean interpretTokens) {
+        
+        super.setName(name);
+        super.setIdentifier(identifier);
+        super.setConfiguration(config);
+
+        this.fullConfig = config;
+        this.interpretTokens = interpretTokens;
+        this.proxyConfig = proxyConfig;
+    }
+    
+    /**
      * Returns the GuacamoleConfiguration describing how to connect to this
      * connection. Unlike {@link #getConfiguration()}, which is allowed to omit
      * or tokenize information, the GuacamoleConfiguration returned by this
@@ -201,13 +243,28 @@ public class SimpleConnection extends AbstractConnection {
     public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        // Retrieve proxy configuration from environment
-        Environment environment = LocalEnvironment.getInstance();
-        GuacamoleProxyConfiguration proxyConfig = environment.getDefaultGuacamoleProxyConfiguration();
-
-        // Get guacd connection parameters
-        String hostname = proxyConfig.getHostname();
-        int port = proxyConfig.getPort();
+        // check if we have a proxyConfig
+        if (this.proxyConfig == null) {
+            // are there missplaced attributes in connection parameters?
+            if (this.fullConfig.getParameter("proxy-host") == null) {
+                // Retrieve proxy configuration from environment if we don't have other proxy configurations
+                logger.debug("load proxy configuration from environment.");
+                this.proxyConfig = LocalEnvironment.getInstance().getDefaultGuacamoleProxyConfiguration();
+            }
+            else {
+                this.proxyConfig = new GuacamoleProxyConfiguration(
+                            this.fullConfig.getParameter("proxy-host"),
+                            Integer.parseInt(this.fullConfig.getParameter("proxy-port")),
+                            GuacamoleProxyConfiguration.EncryptionMethod.NONE
+                    );
+                logger.debug("missplaced proxy configuration found. use it anyway.");
+            }
+        }
+        else {
+            logger.debug("load user defined proxy configuration.");
+        }
+        String hostname = this.proxyConfig.getHostname();
+        int port = this.proxyConfig.getPort();
 
         // Apply tokens to config parameters
         GuacamoleConfiguration filteredConfig = new GuacamoleConfiguration(getFullConfiguration());
