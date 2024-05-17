@@ -255,7 +255,7 @@ public class SimpleConnection extends AbstractConnection {
                 this.proxyConfig = new GuacamoleProxyConfiguration(
                             this.fullConfig.getParameter("proxy-host"),
                             Integer.parseInt(this.fullConfig.getParameter("proxy-port")),
-                            GuacamoleProxyConfiguration.EncryptionMethod.NONE
+                            this.fullConfig.getParameter("proxy-encryption") == "SSL" ? GuacamoleProxyConfiguration.EncryptionMethod.SSL : GuacamoleProxyConfiguration.EncryptionMethod.NONE;
                     );
                 logger.debug("missplaced proxy configuration found. use it anyway.");
             }
