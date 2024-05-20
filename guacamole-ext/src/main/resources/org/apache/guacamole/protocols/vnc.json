@@ -39,6 +39,11 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "disable-server-input",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "swap-red-blue",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
