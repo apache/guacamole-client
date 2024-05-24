@@ -22,8 +22,6 @@ package org.apache.guacamole.auth.nextcloud;
 import com.google.inject.AbstractModule;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.nextcloud.connection.ConnectionService;
-import org.apache.guacamole.auth.nextcloud.user.UserDataService;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -76,9 +74,7 @@ public class NextcloudJwtAuthenticationProviderModule extends AbstractModule {
 
         // Bind NextcloudJwt-specific services
         bind(ConfigurationService.class);
-        bind(ConnectionService.class);
         bind(RequestValidationService.class);
-        bind(UserDataService.class);
 
     }
 
