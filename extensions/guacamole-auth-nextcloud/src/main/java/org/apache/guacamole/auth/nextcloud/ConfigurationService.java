@@ -67,6 +67,12 @@ public class ConfigurationService {
 
     };
 
+    /**
+     * Property for retrieving the list of users allowed to authenticate via JWT.
+     *
+     * This property defines a configuration setting that specifies the users permitted
+     * to use JWT for authentication.
+     */
     private static final StringListProperty NEXTCLOUD_JWT_ALLOWED_USER = new StringListProperty() {
 
         @Override
@@ -109,6 +115,15 @@ public class ConfigurationService {
         return environment.getProperty(NEXTCLOUD_JWT_TRUSTED_NETWORKS, Collections.<String>emptyList());
     }
 
+    /**
+     * Retrieves the collection of users allowed to authenticate via JWT.
+     *
+     * This method fetches the list of allowed users from the environment properties.
+     * If the property is not set, it returns an empty list.
+     *
+     * @return a collection of allowed user identifiers.
+     * @throws GuacamoleException if there is an issue retrieving the property.
+     */
     public Collection<String> getAllowedUser() throws GuacamoleException {
         return environment.getProperty(NEXTCLOUD_JWT_ALLOWED_USER, Collections.<String>emptyList());
     }
