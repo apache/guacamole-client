@@ -230,10 +230,10 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      * from the payload. It then checks if this user is in the list of allowed users.
      * </p>
      *
-     * @param
-     *     payload the Base64-encoded string containing the user's data.
-     * @return
-     *     {@code true} if the user is allowed; {@code false} otherwise.
+     * @param payload
+     *     The Base64-encoded string containing the user's data.
+     * @return {@code true}
+     *     If the user is allowed; {@code false} otherwise.
      */
     private boolean isUserAllowed(final String payload) {
         try {
