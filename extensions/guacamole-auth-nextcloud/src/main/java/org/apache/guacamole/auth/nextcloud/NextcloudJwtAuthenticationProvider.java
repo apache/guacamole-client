@@ -182,6 +182,16 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
         return false;
     }
 
+    /**
+     * Checks if a user is allowed based on the provided payload.
+     * <p>
+     * This method decodes a Base64-encoded payload, parses it as JSON, and retrieves the user ID (uid)
+     * from the payload. It then checks if this user is in the list of allowed users.
+     * </p>
+     *
+     * @param payload the Base64-encoded string containing the user's data.
+     * @return {@code true} if the user is allowed; {@code false} otherwise.
+     */
     private boolean isUserAllowed(final String payload) {
         try {
             byte[] decodedBytes = Base64.getDecoder().decode(payload);
