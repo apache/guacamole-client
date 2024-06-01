@@ -193,7 +193,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
             Date maxValidDate = new Date(currentDate.getTime() - (MINUTES_TOKEN_VALID * 60 * 1000));
             boolean isValidToken = decodedJWT.getExpiresAt().after(maxValidDate);
             if (!isValidToken) {
-                throw new GuacamoleException("User not allowed.");
+                throw new GuacamoleException("Token expired.");
             }
 
             return true;
