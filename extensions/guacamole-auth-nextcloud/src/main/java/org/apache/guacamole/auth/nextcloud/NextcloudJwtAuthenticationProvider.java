@@ -181,8 +181,6 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
             JWTVerifier verifier = JWT.require(Algorithm.ECDSA256(publicKey)).build();
             DecodedJWT decodedJWT = verifier.verify(token);
 
-            Date currentDate = new Date();
-            Date maxValidDate = new Date(currentDate.getTime() - (MINUTES_TOKEN_VALID * 60 * 1000));
             // Check if the user extracted from the token's payload is allowed to open Guacamole login page.
             boolean isUserAllowed = this.isUserAllowed(decodedJWT.getPayload());
             if (!isUserAllowed) {
@@ -191,6 +189,8 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
 
             // Validate the token's expiration by comparing the current date with the token's expiration date,
             // ensuring it falls within the acceptable validity duration defined by MINUTES_TOKEN_VALID.
+            Date currentDate = new Date();
+            Date maxValidDate = new Date(currentDate.getTime() - (MINUTES_TOKEN_VALID * 60 * 1000));
             boolean isValidToken = decodedJWT.getExpiresAt().after(maxValidDate);
             if (!isValidToken) {
                 throw new GuacamoleException("User not allowed.");
