@@ -54,6 +54,13 @@ import org.slf4j.LoggerFactory;
  */
 public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationProvider {
 
+    /**
+     * The duration in minutes for which a token remains valid.
+     *
+     * This short validity period increases security, as the time window for potential misuse,
+     * e.g. by stolen tokens, is limited. Nextcloud always generates a new valid token when the
+     * Guacamole login screen will be open through the Nextcloud plugin “External sites”.
+     */
     private static final int MINUTES_TOKEN_VALID = 1;
     /**
      * Injector which will manage the object graph of this authentication
