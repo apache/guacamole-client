@@ -20,11 +20,9 @@
 package org.apache.guacamole.auth.nextcloud;
 
 import com.google.inject.Inject;
-
 import java.util.Collection;
 import javax.servlet.http.HttpServletRequest;
 import inet.ipaddr.IPAddressString;
-
 import org.apache.guacamole.GuacamoleException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

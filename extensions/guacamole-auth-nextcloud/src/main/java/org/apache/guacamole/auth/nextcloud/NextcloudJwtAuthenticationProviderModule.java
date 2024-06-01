@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.nextcloud;
 
 import com.google.inject.AbstractModule;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;

@@ -20,10 +20,8 @@
 package org.apache.guacamole.auth.nextcloud;
 
 import com.google.inject.Inject;
-
 import java.util.Collection;
 import java.util.Collections;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.ByteArrayProperty;
