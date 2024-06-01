@@ -88,9 +88,15 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      */
     private final Injector injector;
 
+    /**
+     * The configuration service for this module.
+     */
     @Inject
     private ConfigurationService confService;
 
+    /**
+     * Logger for this class.
+     */
     private static final Logger logger = LoggerFactory.getLogger(NextcloudJwtAuthenticationProvider.class);
 
     /**
@@ -192,6 +198,16 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
         }
     }
 
+    /**
+     * Validates whether an IP address is allowed based on the configured trusted networks.
+     *
+     * @param ipAddress
+     *     The IP address to validate.
+     * @return {@code true}
+     *     If the IP address is allowed; {@code false} otherwise.
+     * @throws GuacamoleException
+     *     If an error occurs while accessing the configuration service.
+     */
     private boolean validIpAddress(final String ipAddress) throws GuacamoleException {
 
         if (confService.getTrustedNetworks().contains(ipAddress)) {
