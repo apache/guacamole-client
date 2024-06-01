@@ -100,7 +100,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
     private static final Logger logger = LoggerFactory.getLogger(NextcloudJwtAuthenticationProvider.class);
 
     /**
-     * Creates a new MextcloudJwtAuthenticationProvider that authenticates user.
+     * Creates a new NextcloudJwtAuthenticationProvider that authenticates user.
      *
      * @throws GuacamoleException
      *     If a required property is missing, or an error occurs while parsing
