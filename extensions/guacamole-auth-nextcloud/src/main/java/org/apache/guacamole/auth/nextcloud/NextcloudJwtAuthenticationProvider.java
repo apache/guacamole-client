@@ -130,12 +130,18 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      * This method decodes the public key from a base64 encoded string, verifies the JWT using
      * the ECDSA256 algorithm, and checks the token's validity period and user permissions.
      *
-     * @param token the JWT token to validate.
-     * @return {@code true} if the token is valid and the user is allowed, {@code false} otherwise.
-     * @throws GuacamoleException if the user is not allowed or the token is expired.
-     * @throws JWTVerificationException if the token verification fails.
-     * @throws NoSuchAlgorithmException if the algorithm for key generation is not available.
-     * @throws InvalidKeySpecException if the key specification is invalid.
+     * @param token
+     *     The JWT token to validate.
+     * @return {@code true}
+     *     If the token is valid and the user is allowed, {@code false} otherwise.
+     * @throws GuacamoleException
+     *     If the user is not allowed or the token is expired.
+     * @throws JWTVerificationException
+     *     If the token verification fails.
+     * @throws NoSuchAlgorithmException
+     *     If the algorithm for key generation is not available.
+     * @throws InvalidKeySpecException
+     *     If the key specification is invalid.
      */
     private boolean isValidJWT(final String token) throws GuacamoleException {
         try {

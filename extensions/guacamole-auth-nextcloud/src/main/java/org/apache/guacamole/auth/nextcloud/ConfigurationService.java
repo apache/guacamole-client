@@ -118,8 +118,10 @@ public class ConfigurationService {
      * This method fetches the list of allowed users from the environment properties.
      * If the property is not set, it returns an empty list.
      *
-     * @return a collection of allowed user identifiers.
-     * @throws GuacamoleException if there is an issue retrieving the property.
+     * @return
+     *     A collection of allowed user identifiers.
+     * @throws GuacamoleException
+     *     If there is an issue retrieving the property.
      */
     public Collection<String> getAllowedUser() throws GuacamoleException {
         return environment.getProperty(NEXTCLOUD_JWT_ALLOWED_USER, Collections.<String>emptyList());
