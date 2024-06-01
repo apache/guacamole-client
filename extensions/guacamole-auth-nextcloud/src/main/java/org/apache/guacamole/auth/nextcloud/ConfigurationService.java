@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
-import org.apache.guacamole.properties.ByteArrayProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.StringListProperty;
 
