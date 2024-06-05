@@ -157,6 +157,7 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
 
+        System.out.println("Context Initialized");
         environment = LocalEnvironment.getInstance();
 
         // Read configuration information from GUACAMOLE_HOME/guacamole.properties
