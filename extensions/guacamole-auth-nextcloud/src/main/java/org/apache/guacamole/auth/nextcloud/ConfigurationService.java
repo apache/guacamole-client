@@ -88,7 +88,7 @@ public class ConfigurationService {
     private static final StringGuacamoleProperty NEXTCLOUD_TOKEN_NAME = new StringGuacamoleProperty() {
         @Override
         public String getName() {
-            return "nextcloud-token-name";
+            return "nextcloud-jwt-token-name";
         }
 
     };
