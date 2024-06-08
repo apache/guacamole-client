@@ -186,15 +186,24 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
 
     /**
      * Validates whether an IP address is allowed based on the configured trusted networks.
+     * <p>
+     * This method checks if the given IP address is within the range of any configured trusted networks.
+     * If the list of trusted networks is empty, the method returns {@code true}, indicating that all IP addresses
+     * are allowed.
+     * </p>
      *
      * @param ipAddress
      *     The IP address to validate.
      * @return {@code true}
-     *     If the IP address is allowed; {@code false} otherwise.
+     *     If the IP address is allowed or if the list of trusted networks is empty; {@code false} otherwise.
      * @throws GuacamoleException
      *     If an error occurs while accessing the configuration service.
      */
     private boolean validIpAddress(final String ipAddress) throws GuacamoleException {
+        // allow all ip addresses if not restricted
+        if (confService.getTrustedNetworks().isEmpty()) {
+            return true;
+        }
 
         if (confService.getTrustedNetworks().contains(ipAddress)) {
             logger.info("{} in list of allowed IP addresses.", ipAddress);
