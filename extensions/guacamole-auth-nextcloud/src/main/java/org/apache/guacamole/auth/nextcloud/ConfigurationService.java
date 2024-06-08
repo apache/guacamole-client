@@ -80,6 +80,20 @@ public class ConfigurationService {
     };
 
     /**
+     * Property for retrieving the name of the token used for authentication.
+     *
+     * This property defines a configuration setting that specifies the name of the
+     * token to be used for authentication purposes.
+     */
+    private static final StringGuacamoleProperty NEXTCLOUD_TOKEN_NAME = new StringGuacamoleProperty() {
+        @Override
+        public String getName() {
+            return "nextcloud-token-name";
+        }
+
+    };
+
+    /**
      * Returns the symmetric key which will be used to encrypt and sign all
      * JSON data and should be used to decrypt and verify any received JSON
      * data. This is dictated by the "nextcloud-jwt-public-key" property specified
@@ -125,6 +139,21 @@ public class ConfigurationService {
      */
     public Collection<String> getAllowedUser() throws GuacamoleException {
         return environment.getProperty(NEXTCLOUD_JWT_ALLOWED_USER, Collections.<String>emptyList());
+    }
+
+    /**
+     * Retrieves the name of the token used for authentication.
+     *
+     * This method fetches the token name from the environment properties.
+     * If the property is not set, it returns the default value "nctoken".
+     *
+     * @return
+     *     The name of the token used for authentication.
+     * @throws GuacamoleException
+     *     If there is an issue retrieving the property.
+     */
+    public String getTokenName() throws GuacamoleException {
+        return environment.getProperty(NEXTCLOUD_TOKEN_NAME, "nctoken");
     }
 
 }
