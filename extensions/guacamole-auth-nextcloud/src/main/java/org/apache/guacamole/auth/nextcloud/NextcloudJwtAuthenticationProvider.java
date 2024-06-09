@@ -23,6 +23,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Guice;
@@ -192,6 +193,10 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
             logger.error("Token validation failed.", ex);
             throw new GuacamoleException(ex.getMessage());
         }
+        catch (final JsonProcessingException ex) {
+            logger.warn("JSON processing error occurred.", ex);
+            throw new GuacamoleException(ex.getMessage());
+        }
     }
 
     /**
@@ -239,27 +244,26 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      *
      * @return {@code true}
      *     If the user is allowed or if the list of allowed users is empty; {@code false} otherwise.
+     *
+     * @throws GuacamoleException
+     *     If there is an issue retrieving the property 'nextcloud-jwt-allowed-user'.
+     *
+     * @throws JsonProcessingException
+     *     If there is an error while processing the JSON data.
      */
-    private boolean isUserAllowed(final String payload) {
-        try {
-            // allow all users if not restricted
-            if (confService.getAllowedUser().isEmpty()) {
-                logger.info("No users defined. All users are allowed.");
-                return true;
-            }
-
-            byte[] decodedBytes = Base64.getDecoder().decode(payload);
-            String decodedPayload = new String(decodedBytes, StandardCharsets.UTF_8);
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode payloadJson = objectMapper.readTree(decodedPayload);
-            String uid = payloadJson.get("userdata").get("uid").asText();
-
-            return confService.getAllowedUser().contains(uid);
+    private boolean isUserAllowed(final String payload) throws GuacamoleException, JsonProcessingException {
+        // allow all users if not restricted
+        if (confService.getAllowedUser().isEmpty()) {
+            logger.info("No users defined. All users are allowed.");
+            return true;
         }
-        catch (final Exception e) {
-            logger.warn("User not allowed. Payload={}", payload);
-            return false;
-        }
+
+        byte[] decodedBytes = Base64.getDecoder().decode(payload);
+        String decodedPayload = new String(decodedBytes, StandardCharsets.UTF_8);
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode payloadJson = objectMapper.readTree(decodedPayload);
+        String uid = payloadJson.get("userdata").get("uid").asText();
+
+        return confService.getAllowedUser().contains(uid);
     }
-
 }
