@@ -75,7 +75,6 @@ public class RequestValidationService {
         try {
             trustedNetworks = confService.getTrustedNetworks();
         }
-
         // Deny all requests if restrictions cannot be parsed
         catch (GuacamoleException e) {
             logger.warn("Authentication request from \"{}\" is DENIED due to parse error: {}", request.getRemoteAddr(), e.getMessage());
