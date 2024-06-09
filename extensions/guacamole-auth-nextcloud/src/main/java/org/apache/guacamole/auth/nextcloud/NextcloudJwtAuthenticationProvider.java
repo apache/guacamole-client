@@ -123,7 +123,8 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
                 throw new GuacamoleException("Token expired.");
             }
             logger.info("Token valid.");
-        } catch (final GuacamoleException ex) {
+        }
+        catch (final GuacamoleException ex) {
             logger.error("Token validation failed.", ex);
             throw new GuacamoleException(ex.getMessage());
         }
@@ -178,7 +179,8 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
             }
 
             return true;
-        } catch (final JWTVerificationException | NoSuchAlgorithmException | InvalidKeySpecException ex) {
+        }
+        catch (final JWTVerificationException | NoSuchAlgorithmException | InvalidKeySpecException ex) {
             logger.error("Token validation failed.", ex);
             return false;
         }
@@ -240,7 +242,8 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
             String uid = payloadJson.get("userdata").get("uid").asText();
 
             return confService.getAllowedUser().contains(uid);
-        } catch (final Exception e) {
+        }
+        catch (final Exception e) {
             logger.warn("User not allowed. Payload={}", payload);
             return false;
         }
