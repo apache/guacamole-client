@@ -185,7 +185,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
 
             return true;
         }
-        catch (final JWTVerificationException | NoSuchAlgorithmException | InvalidKeySpecException ex) {
+        catch (final NoSuchAlgorithmException | InvalidKeySpecException ex) {
             logger.error("Token validation failed.", ex);
             return false;
         }
