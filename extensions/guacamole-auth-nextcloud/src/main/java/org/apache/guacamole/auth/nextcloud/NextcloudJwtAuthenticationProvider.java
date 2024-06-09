@@ -214,6 +214,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
     private boolean validIpAddress(final String ipAddress) throws GuacamoleException {
         // allow all ip addresses if not restricted
         if (confService.getTrustedNetworks().isEmpty()) {
+            logger.info("No IP addresses defined. All IP addresses are allowed.");
             return true;
         }
 
@@ -243,6 +244,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
         try {
             // allow all users if not restricted
             if (confService.getAllowedUser().isEmpty()) {
+                logger.info("No users defined. All users are allowed.");
                 return true;
             }
 
