@@ -117,17 +117,19 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
     @Override
     public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
 
+        // Retrieve the HTTP request and extract the token and ip address.
         HttpServletRequest request = credentials.getRequest();
-
         String token = request.getParameter(confService.getTokenName());
         String ipaddr = request.getRemoteAddr();
 
+        // If the request from ip address is allowed, jwt authentication is not required.
         boolean localAddr = this.validIpAddress(ipaddr);
         if (localAddr) {
             logger.info("Request from local address {}", ipaddr);
             return null;
         }
 
+        // Fails if the token is not present or has not been found.
         if (token == null) {
             throw new GuacamoleException("Missing token.");
         }
