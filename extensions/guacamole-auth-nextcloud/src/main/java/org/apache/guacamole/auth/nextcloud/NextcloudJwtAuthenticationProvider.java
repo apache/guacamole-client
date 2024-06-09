@@ -140,14 +140,19 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      *
      * @param token
      *     The JWT token to validate.
+     *
      * @return {@code true}
      *     If the token is valid and the user is allowed, {@code false} otherwise.
+     *
      * @throws GuacamoleException
      *     If the user is not allowed or the token is expired.
+     *
      * @throws JWTVerificationException
      *     If the token verification fails.
+     *
      * @throws NoSuchAlgorithmException
      *     If the algorithm for key generation is not available.
+     *
      * @throws InvalidKeySpecException
      *     If the key specification is invalid.
      */
@@ -196,8 +201,10 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      *
      * @param ipAddress
      *     The IP address to validate.
+     *
      * @return {@code true}
      *     If the IP address is allowed or if the list of trusted networks is empty; {@code false} otherwise.
+     *
      * @throws GuacamoleException
      *     If an error occurs while accessing the configuration service.
      */
@@ -225,6 +232,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      *
      * @param payload
      *     The Base64-encoded string containing the user's data.
+     *
      * @return {@code true}
      *     If the user is allowed or if the list of allowed users is empty; {@code false} otherwise.
      */

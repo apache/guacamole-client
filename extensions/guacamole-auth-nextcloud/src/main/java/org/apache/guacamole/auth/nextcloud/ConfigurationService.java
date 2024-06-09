@@ -134,6 +134,7 @@ public class ConfigurationService {
      *
      * @return
      *     A collection of allowed user identifiers.
+     *
      * @throws GuacamoleException
      *     If there is an issue retrieving the property.
      */
@@ -149,6 +150,7 @@ public class ConfigurationService {
      *
      * @return
      *     The name of the token used for authentication.
+     *
      * @throws GuacamoleException
      *     If there is an issue retrieving the property.
      */
