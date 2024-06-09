@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.nextcloud;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +38,7 @@ import java.util.Base64;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
@@ -99,6 +99,21 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
         return "nextcloud";
     }
 
+    /**
+     * Authenticates a user based on the provided credentials.
+     *
+     * @param
+     *     credentials The credentials containing the user's authentication data.
+     *
+     * @return
+     *     AuthenticatedUser The authenticated user, or null if the request is from a local address.
+     *
+     * @throws
+     *     GuacamoleException If there is an issue with the authentication process.
+     *
+     * @throws
+     *     GuacamoleSecurityException If the JWT is invalid.
+     */
     @Override
     public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
 
@@ -118,10 +133,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
         }
 
         try {
-            boolean valid = this.isValidJWT(token);
-            if (!valid) {
-                throw new GuacamoleException("Token expired.");
-            }
+            this.validateJwt(token);
             logger.info("Token valid.");
         }
         catch (final GuacamoleException ex) {
@@ -141,22 +153,13 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      * @param token
      *     The JWT token to validate.
      *
-     * @return {@code true}
-     *     If the token is valid and the user is allowed, {@code false} otherwise.
-     *
      * @throws GuacamoleException
-     *     If the user is not allowed or the token is expired.
+     *     If public key cannot be parsed or is missing.
      *
-     * @throws JWTVerificationException
-     *     If the token verification fails.
-     *
-     * @throws NoSuchAlgorithmException
-     *     If the algorithm for key generation is not available.
-     *
-     * @throws InvalidKeySpecException
-     *     If the key specification is invalid.
+     * @throws GuacamoleSecurityException
+     *     If the user is not authorized, the token has expired or the validation itself fails.
      */
-    private boolean isValidJWT(final String token) throws GuacamoleException {
+    private void validateJwt(final String token) throws GuacamoleException {
         try {
             // Decode the Base64 encoded public key from configuration and generate the ECPublicKey object.
             byte[] keyBytes = Base64.getDecoder().decode(confService.getPublicKey());
@@ -171,7 +174,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
             // Check if the user extracted from the token's payload is allowed to open Guacamole login page.
             boolean isUserAllowed = this.isUserAllowed(decodedJWT.getPayload());
             if (!isUserAllowed) {
-                throw new GuacamoleException("User not allowed.");
+                throw new GuacamoleSecurityException("User not allowed.");
             }
 
             // Validate the token's expiration by comparing the current date with the token's expiration date,
@@ -180,14 +183,12 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
             Date maxValidDate = new Date(currentDate.getTime() - (MINUTES_TOKEN_VALID * 60 * 1000));
             boolean isValidToken = decodedJWT.getExpiresAt().after(maxValidDate);
             if (!isValidToken) {
-                throw new GuacamoleException("Token expired.");
+                throw new GuacamoleSecurityException("Token expired.");
             }
-
-            return true;
         }
         catch (final NoSuchAlgorithmException | InvalidKeySpecException ex) {
             logger.error("Token validation failed.", ex);
-            return false;
+            throw new GuacamoleException(ex.getMessage());
         }
     }
 
