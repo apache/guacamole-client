@@ -83,7 +83,8 @@ public class ConfigurationService {
      * Property for retrieving the name of the token used for authentication.
      *
      * This property defines a configuration setting that specifies the name of the
-     * token to be used for authentication purposes.
+     * token to be used for authentication purposes. The key of the GET parameter is
+     * defined by this property, and the value of the GET parameter contains the token.
      */
     private static final StringGuacamoleProperty NEXTCLOUD_JWT_TOKEN_NAME = new StringGuacamoleProperty() {
         @Override
