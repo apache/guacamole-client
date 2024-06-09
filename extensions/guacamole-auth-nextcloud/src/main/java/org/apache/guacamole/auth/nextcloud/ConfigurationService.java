@@ -85,7 +85,7 @@ public class ConfigurationService {
      * This property defines a configuration setting that specifies the name of the
      * token to be used for authentication purposes.
      */
-    private static final StringGuacamoleProperty NEXTCLOUD_TOKEN_NAME = new StringGuacamoleProperty() {
+    private static final StringGuacamoleProperty NEXTCLOUD_JWT_TOKEN_NAME = new StringGuacamoleProperty() {
         @Override
         public String getName() {
             return "nextcloud-jwt-token-name";
@@ -155,7 +155,7 @@ public class ConfigurationService {
      *     If there is an issue retrieving the property.
      */
     public String getTokenName() throws GuacamoleException {
-        return environment.getProperty(NEXTCLOUD_TOKEN_NAME, "nctoken");
+        return environment.getProperty(NEXTCLOUD_JWT_TOKEN_NAME, "nctoken");
     }
 
 }
