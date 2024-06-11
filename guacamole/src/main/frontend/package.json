@@ -26,7 +26,7 @@
         "css-minimizer-webpack-plugin": "^1.3.0",
         "exports-loader": "^1.1.1",
         "find-package-json": "^1.2.0",
-        "google-closure-compiler": "20221004.0.0",
+        "google-closure-compiler": "20240317.0.0",
         "html-webpack-plugin": "^4.5.2",
         "mini-css-extract-plugin": "^1.6.2",
         "webpack": "^4.47.0",
