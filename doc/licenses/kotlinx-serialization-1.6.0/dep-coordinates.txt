@@ -1,2 +1,0 @@
-org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:jar:1.6.0
-org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:jar:1.6.0
