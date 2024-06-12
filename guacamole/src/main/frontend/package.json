@@ -12,7 +12,7 @@
         "angular-translate-interpolation-messageformat": "^2.19.1",
         "angular-translate-loader-static-files": "^2.19.1",
         "blob-polyfill": ">=7.0.20220408",
-        "csv": "^6.2.5",
+        "csv": "^6.3.9",
         "d3-path": "^3.1.0",
         "d3-shape": "^3.2.0",
         "datalist-polyfill": "^1.25.1",
@@ -21,11 +21,11 @@
         "jquery": "^3.7.1",
         "jstz": "^2.1.1",
         "lodash": "^4.17.21",
-        "yaml": "^2.2.2"
+        "yaml": "^2.4.5"
     },
     "devDependencies": {
-        "@babel/core": "^7.20.12",
-        "@babel/preset-env": "^7.20.2",
+        "@babel/core": "^7.24.7",
+        "@babel/preset-env": "^7.24.7",
         "babel-loader": "^8.3.0",
         "clean-webpack-plugin": "^4.0.0",
         "closure-webpack-plugin": "^2.6.1",

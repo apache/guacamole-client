@@ -142,7 +142,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bc-fips</artifactId>
-            <version>1.0.2.4</version>
+            <version>1.0.2.5</version>
         </dependency>
 
     </dependencies>
