@@ -18,7 +18,7 @@
 #
 
 ##
-## @fn 020-map-guacamole-extensions.sh
+## @fn 010-map-guacamole-extensions.sh
 ##
 ## Maps all installed Guacamole extensions (built in a previous step) to their
 ## corresponding environment variable prefixes, adding symbolic links so that
@@ -106,6 +106,7 @@ map_extensions <<'EOF'
     guacamole-auth-ldap.........................LDAP_
     guacamole-auth-quickconnect.................QUICKCONNECT_
     guacamole-auth-radius.......................RADIUS_
+    guacamole-auth-restrict.....................RESTRICT_
     guacamole-auth-sso/cas......................CAS_
     guacamole-auth-sso/openid...................OPENID_
     guacamole-auth-sso/saml.....................SAML_

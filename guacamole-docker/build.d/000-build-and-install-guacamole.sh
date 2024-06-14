@@ -18,7 +18,7 @@
 #
 
 ## 
-## @fn 010-build-and-install-guacamole.sh
+## @fn 000-build-and-install-guacamole.sh
 ##
 ## Builds the Guacamole web application and all main extensions, installing the
 ## resulting binaries to standard locations within the Docker image. After the
