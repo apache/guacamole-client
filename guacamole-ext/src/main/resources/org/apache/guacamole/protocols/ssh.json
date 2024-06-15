@@ -38,6 +38,10 @@
                 {
                     "name"  : "passphrase",
                     "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "public-key",
+                    "type"  : "MULTILINE"
                 }
             ]
         },
