@@ -135,14 +135,8 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
             throw new GuacamoleException("Missing token.");
         }
 
-        try {
-            this.validateJwt(token);
-            logger.info("Token valid.");
-        }
-        catch (final GuacamoleException ex) {
-            logger.error("Token validation failed.", ex);
-            throw new GuacamoleException(ex.getMessage());
-        }
+        this.validateJwt(token);
+
         return null;
 
     }
