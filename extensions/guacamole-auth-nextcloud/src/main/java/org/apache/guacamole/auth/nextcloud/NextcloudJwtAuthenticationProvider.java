@@ -151,10 +151,13 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      *     The JWT token to validate.
      *
      * @throws GuacamoleException
-     *     If public key cannot be parsed or is missing.
-     *
-     * @throws GuacamoleSecurityException
-     *     If the user is not authorized, the token has expired or the validation itself fails.
+     *     If any of the following conditions occur:
+     *     <ul>
+     *         <li>The public key cannot be parsed or is missing.</li>
+     *         <li>The user is not authorized.</li>
+     *         <li>The token has expired.</li>
+     *         <li>The validation of the token fails.</li>
+     *     </ul>
      */
     private void validateJwt(final String token) throws GuacamoleException {
         try {
@@ -185,11 +188,11 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
         }
         catch (final NoSuchAlgorithmException | InvalidKeySpecException ex) {
             logger.error("Token validation failed.", ex);
-            throw new GuacamoleException(ex.getMessage());
+            throw new GuacamoleSecurityException(ex.getMessage());
         }
         catch (final JsonProcessingException ex) {
             logger.warn("JSON processing error occurred.", ex);
-            throw new GuacamoleException(ex.getMessage());
+            throw new GuacamoleSecurityException(ex.getMessage());
         }
     }
 
