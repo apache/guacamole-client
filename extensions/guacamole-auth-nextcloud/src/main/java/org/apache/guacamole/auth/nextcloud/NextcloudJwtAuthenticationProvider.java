@@ -38,11 +38,13 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Base64;
 import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.auth.nextcloud.user.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.token.GuacamoleTokenUndefinedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,21 +126,40 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
         String ipaddr = request.getRemoteAddr();
 
         // If the request from ip address is allowed, jwt authentication is not required.
-        boolean localAddr = this.validIpAddress(ipaddr);
+        boolean localAddr = validIpAddress(ipaddr);
         if (localAddr) {
             logger.info("Request from local address {}", ipaddr);
             return null;
         }
 
-        // Fails if the token is not present or has not been found.
+        // Authentication fail if the token is not present or has not been found.
         if (token == null) {
-            throw new GuacamoleException("Missing token.");
+            logger.error("Missing token '{}'.", confService.getTokenName());
+            throw new GuacamoleTokenUndefinedException("Missing token.", confService.getTokenName());
         }
 
-        this.validateJwt(token);
+        try {
+            // Decode the Base64 encoded public key from configuration and generate the ECPublicKey object.
+            DecodedJWT decodedJWT = getDecodedJWT(token);
+            validateJwt(decodedJWT);
 
-        return null;
+            // Check if the user extracted from the token's payload is allowed to open Guacamole login page.
+            String uid = getUserId(decodedJWT.getPayload());
+            if (!isUserAllowed(uid)) {
+                logger.warn("User '{}' not allowed.", uid);
+                throw new GuacamoleSecurityException("User not allowed.");
+            }
 
+            return new AuthenticatedUser(uid, this, credentials);
+        }
+        catch (JsonProcessingException ex) {
+            logger.error("JSON processing error occurred.", ex);
+            throw new GuacamoleClientException(ex.getMessage());
+        }
+        catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            logger.error("An error has occurred during JWT decoding", ex);
+            throw new GuacamoleSecurityException(ex.getMessage());
+        }
     }
 
     /**
@@ -159,41 +180,30 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      *         <li>The validation of the token fails.</li>
      *     </ul>
      */
-    private void validateJwt(final String token) throws GuacamoleException {
-        try {
-            // Decode the Base64 encoded public key from configuration and generate the ECPublicKey object.
-            byte[] keyBytes = Base64.getDecoder().decode(confService.getPublicKey());
-            KeyFactory keyFactory = KeyFactory.getInstance("EC");
-            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
-            ECPublicKey publicKey = (ECPublicKey) keyFactory.generatePublic(keySpec);
-
-            // Create a JWT verifier instance with the provided public key, verify the token and decode the content.
-            JWTVerifier verifier = JWT.require(Algorithm.ECDSA256(publicKey)).build();
-            DecodedJWT decodedJWT = verifier.verify(token);
-
-            // Check if the user extracted from the token's payload is allowed to open Guacamole login page.
-            boolean isUserAllowed = this.isUserAllowed(decodedJWT.getPayload());
-            if (!isUserAllowed) {
-                throw new GuacamoleSecurityException("User not allowed.");
-            }
-
-            // Validate the token's expiration by comparing the current date with the token's expiration date,
-            // ensuring it falls within the acceptable validity duration defined by MINUTES_TOKEN_VALID.
-            Date currentDate = new Date();
-            Date maxValidDate = new Date(currentDate.getTime() - (MINUTES_TOKEN_VALID * 60 * 1000));
-            boolean isValidToken = decodedJWT.getExpiresAt().after(maxValidDate);
-            if (!isValidToken) {
-                throw new GuacamoleSecurityException("Token expired.");
-            }
+    private void validateJwt(DecodedJWT decodedJWT) throws GuacamoleException {
+        // Validate the token's expiration by comparing the current date with the token's expiration date,
+        // ensuring it falls within the acceptable validity duration defined by MINUTES_TOKEN_VALID.
+        Date currentDate = new Date();
+        Date maxValidDate = new Date(currentDate.getTime() - (MINUTES_TOKEN_VALID * 60 * 1000));
+        boolean isValidToken = decodedJWT.getExpiresAt().after(maxValidDate);
+        if (!isValidToken) {
+            throw new GuacamoleSecurityException("Token expired.");
         }
-        catch (final NoSuchAlgorithmException | InvalidKeySpecException ex) {
-            logger.error("Token validation failed.", ex);
-            throw new GuacamoleSecurityException(ex.getMessage());
-        }
-        catch (final JsonProcessingException ex) {
-            logger.warn("JSON processing error occurred.", ex);
-            throw new GuacamoleSecurityException(ex.getMessage());
-        }
+    }
+
+    private DecodedJWT getDecodedJWT(String token) throws GuacamoleException, NoSuchAlgorithmException,
+            InvalidKeySpecException {
+
+        byte[] keyBytes = Base64.getDecoder().decode(confService.getPublicKey());
+        KeyFactory keyFactory = KeyFactory.getInstance("EC");
+        X509EncodedKeySpec keySpec = new X509EncodedKeySpec(keyBytes);
+        ECPublicKey publicKey = (ECPublicKey) keyFactory.generatePublic(keySpec);
+
+        // Create a JWT verifier instance with the provided public key, verify the token and decode the content.
+        JWTVerifier verifier = JWT.require(Algorithm.ECDSA256(publicKey)).build();
+        DecodedJWT decodedJWT = verifier.verify(token);
+
+        return decodedJWT;
     }
 
     /**
@@ -213,7 +223,8 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      * @throws GuacamoleException
      *     If an error occurs while accessing the configuration service.
      */
-    private boolean validIpAddress(final String ipAddress) throws GuacamoleException {
+    private boolean validIpAddress(String ipAddress) throws GuacamoleException {
+
         // allow all ip addresses if not restricted
         if (confService.getTrustedNetworks().isEmpty()) {
             logger.info("No IP addresses defined. All IP addresses are allowed.");
@@ -224,6 +235,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
             logger.info("{} in list of allowed IP addresses.", ipAddress);
             return true;
         }
+
         logger.warn("{} not in list of allowed IP addresses.", ipAddress);
         return false;
     }
@@ -248,19 +260,23 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
      * @throws JsonProcessingException
      *     If there is an error while processing the JSON data.
      */
-    private boolean isUserAllowed(final String payload) throws GuacamoleException, JsonProcessingException {
+    private boolean isUserAllowed(String uid) throws GuacamoleException {
+
         // allow all users if not restricted
         if (confService.getAllowedUser().isEmpty()) {
             logger.info("No users defined. All users are allowed.");
             return true;
         }
 
+        return confService.getAllowedUser().contains(uid);
+    }
+
+    private String getUserId(String payload) throws JsonProcessingException {
         byte[] decodedBytes = Base64.getDecoder().decode(payload);
         String decodedPayload = new String(decodedBytes, StandardCharsets.UTF_8);
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode payloadJson = objectMapper.readTree(decodedPayload);
-        String uid = payloadJson.get("userdata").get("uid").asText();
 
-        return confService.getAllowedUser().contains(uid);
+        return payloadJson.get("userdata").get("uid").asText();
     }
 }
