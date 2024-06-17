@@ -194,6 +194,28 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
         }
     }
 
+    /**
+     * Decodes a JSON Web Token (JWT) using the public key configured in the service.
+     *
+     * <p>This method decodes a JWT by verifying it with an elliptic curve public key
+     * fetched from the configuration service. The public key is decoded from Base64
+     * and used to create a verifier instance which then verifies and decodes the JWT.
+     *
+     * @param token
+     *     The JWT token to decode.
+     *
+     * @return
+     *     The decoded JWT.
+     *
+     * @throws GuacamoleException
+     *     If there is an error in the configuration service.
+     *
+     * @throws NoSuchAlgorithmException
+     *     If the algorithm for the key factory is not available.
+     *
+     * @throws InvalidKeySpecException
+     *     If the provided key specification is invalid.
+     */
     private DecodedJWT getDecodedJWT(String token) throws GuacamoleException, NoSuchAlgorithmException,
             InvalidKeySpecException {
 
@@ -269,6 +291,21 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
         return confService.getAllowedUser().contains(uid);
     }
 
+    /**
+     * Decodes a Base64 encoded JSON payload and extracts the uid
+     *
+     * <p>This method takes a Base64 encoded string as input, decodes it to a JSON string,
+     * parses the JSON to extract the user ID from the "userdata" object.
+     *
+     * @param payload
+     *     The Base64 encoded JSON string containing user data.
+     *
+     * @return
+     *     The user ID extracted from the decoded JSON payload.
+     *
+     * @throws JsonProcessingException
+     *     If there is an error processing the JSON payload.
+     */
     private String getUserId(String payload) throws JsonProcessingException {
         byte[] decodedBytes = Base64.getDecoder().decode(payload);
         String decodedPayload = new String(decodedBytes, StandardCharsets.UTF_8);
