@@ -60,7 +60,7 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
     /**
      * The duration in minutes for which a token remains valid.
      *
-     * This short validity period increases security, as the time window for potential misuse,
+     * <p>This short validity period increases security, as the time window for potential misuse,
      * e.g. by stolen tokens, is limited. Nextcloud always generates a new valid token when the
      * Guacamole login screen will be open through the Nextcloud plugin “External sites”.
      */
@@ -103,19 +103,27 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
     }
 
     /**
-     * Authenticates a user based on the provided credentials.
+     * Authenticates a user based on the provided credentials using a JWT from a Nextcloud instance.
      *
-     * @param
-     *     credentials The credentials containing the user's authentication data.
+     * <p>This method performs the following steps to authenticate a user:
+     * <ul>
+     *     <li>Retrieves the HTTP request and extracts the token and IP address.</li>
+     *     <li>Checks if the request comes from a trusted IP address. If this is the case, JWT authentication will be
+     *     skipped.</li>
+     *     <li>Verifies that the token is present in the request.</li>
+     *     <li>Decodes and validates the JWT using the configured public key.</li>
+     *     <li>Extracts the UID (User ID) from the JWT payload and check if the user is allowed to access the
+     *     application.</li>
+     * </ul>
      *
-     * @return
-     *     AuthenticatedUser The authenticated user, or null if the request is from a local address.
+     * @param credentials
+     *     The credentials which are in the HTTP request.
      *
-     * @throws
-     *     GuacamoleException If there is an issue with the authentication process.
+     * @return an {@code AuthenticatedUser} object
+     *     If the user is successfully authenticated; {@code null} if the request is from a trusted IP address.
      *
-     * @throws
-     *     GuacamoleSecurityException If the JWT is invalid.
+     * @throws GuacamoleException
+     *     If authentication fails if the token is missing, expired or the user is not authorized.
      */
     @Override
     public AuthenticatedUser authenticateUser(Credentials credentials) throws GuacamoleException {
@@ -163,22 +171,17 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
     }
 
     /**
-     * Validates the provided JSON Web Token (JWT).
+     * Validates a JSON Web Token (JWT) for expiration.
      *
-     * This method decodes the public key from a base64 encoded string, verifies the JWT using
-     * the ECDSA256 algorithm, and checks the token's validity period and user permissions.
+     * <p>This method checks if the decoded JWT is still valid by comparing the current date
+     * with the token's expiration date. The token must expire within an acceptable validity
+     * duration defined by {@code MINUTES_TOKEN_VALID}.
      *
-     * @param token
-     *     The JWT token to validate.
+     * @param decodedJWT
+     *     The decoded JWT to validate.
      *
      * @throws GuacamoleException
-     *     If any of the following conditions occur:
-     *     <ul>
-     *         <li>The public key cannot be parsed or is missing.</li>
-     *         <li>The user is not authorized.</li>
-     *         <li>The token has expired.</li>
-     *         <li>The validation of the token fails.</li>
-     *     </ul>
+     *     If the token is expired.
      */
     private void validateJwt(DecodedJWT decodedJWT) throws GuacamoleException {
         // Validate the token's expiration by comparing the current date with the token's expiration date,
@@ -241,24 +244,19 @@ public class NextcloudJwtAuthenticationProvider extends AbstractAuthenticationPr
     }
 
     /**
-     * Checks if a user is allowed based on the provided payload.
-     * <p>
-     * This method decodes a Base64-encoded payload, parses it as JSON, and retrieves the user ID (uid)
-     * from the payload. It then checks if this user is in the list of allowed users. If the list of allowed
-     * users is empty, the method returns {@code true}, indicating that the user is not restricted.
-     * </p>
+     * Checks if a user is allowed based on the user ID.
      *
-     * @param payload
-     *     The Base64-encoded string containing the user's data.
+     * <p>This method verifies if the specified user ID is present in the list of allowed users.
+     * If the list of allowed users is empty, it permits all users.
+     *
+     * @param uid
+     *     The user ID to check for permission.
      *
      * @return {@code true}
-     *     If the user is allowed or if the list of allowed users is empty; {@code false} otherwise.
+     *     If the user is allowed, {@code false} otherwise.
      *
      * @throws GuacamoleException
      *     If there is an issue retrieving the property 'nextcloud-jwt-allowed-user'.
-     *
-     * @throws JsonProcessingException
-     *     If there is an error while processing the JSON data.
      */
     private boolean isUserAllowed(String uid) throws GuacamoleException {
 
