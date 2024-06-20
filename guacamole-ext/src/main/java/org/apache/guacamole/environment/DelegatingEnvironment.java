@@ -20,6 +20,7 @@
 package org.apache.guacamole.environment;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
@@ -73,10 +74,34 @@ public class DelegatingEnvironment implements Environment {
     public <Type> Type getProperty(GuacamoleProperty<Type> property, Type defaultValue) throws GuacamoleException {
         return environment.getProperty(property, defaultValue);
     }
+    
+    @Override
+    public <Type> Collection<Type> getPropertyCollection(GuacamoleProperty<Type> property)
+            throws GuacamoleException {
+        return environment.getPropertyCollection(property);
+    }
+    
+    @Override
+    public <Type> Collection<Type> getPropertyCollection(GuacamoleProperty<Type> property,
+            Type defaultValue) throws GuacamoleException {
+        return environment.getPropertyCollection(property, defaultValue);
+    }
+    
+    @Override
+    public <Type> Collection<Type> getPropertyCollection(GuacamoleProperty<Type> property,
+            Collection<Type> defaultValue) throws GuacamoleException {
+        return environment.getPropertyCollection(property, defaultValue);
+    }
 
     @Override
     public <Type> Type getRequiredProperty(GuacamoleProperty<Type> property) throws GuacamoleException {
         return environment.getRequiredProperty(property);
+    }
+    
+    @Override
+    public <Type> Collection<Type> getRequiredPropertyCollection(GuacamoleProperty<Type> property)
+            throws GuacamoleException {
+        return environment.getRequiredPropertyCollection(property);
     }
 
     @Override

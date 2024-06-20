@@ -19,7 +19,9 @@
 
 package org.apache.guacamole.properties;
 
+import java.util.Collection;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 
 /**
  * An abstract representation of a property in the guacamole.properties file,
@@ -49,5 +51,25 @@ public interface GuacamoleProperty<Type> {
      *                            provided value.
      */
     public Type parseValue(String value) throws GuacamoleException;
+    
+    /**
+     * Parses the given string value into a sorted Collection of values of the
+     * type associated with this GuacamoelProperty.
+     * 
+     * @param value
+     *     The string value to parse.
+     * 
+     * @return
+     *     A sorted Collection of the parsed values.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs while parsing the provided value.
+     */
+    default public Collection<Type> parseValueCollection(String value)
+            throws GuacamoleException {
+        
+        throw new GuacamoleServerException("Collection parsing not implemented for this property type.");
+        
+    }
 
 }
