@@ -1,0 +1,30 @@
+{
+
+    "guacamoleVersion" : "1.5.2",
+
+    "name"      : "Connection Template Extension",
+    "namespace" : "template-ext",
+
+    "authProviders" : [
+        "org.apache.guacamole.templates.TemplateAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ],
+
+    "js" : [
+        "templateExt.min.js"
+    ],
+
+    "css" : [
+        "templateExt.min.css"
+    ],
+
+    "resources" : {
+        "templates/templateChooser.html" : "text/html",
+        "templates/templateChooserConnection.html" : "text/html",
+        "templates/tempalteChooserConnectionGroup.html" : "text/html"
+    }
+
+}
