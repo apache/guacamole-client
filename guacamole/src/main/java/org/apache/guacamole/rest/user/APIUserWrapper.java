@@ -69,6 +69,16 @@ public class APIUserWrapper implements User {
     public void setPassword(String password) {
         apiUser.setPassword(password);
     }
+    
+    @Override
+    public boolean isDisabled() {
+        return apiUser.isDisabled();
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled) {
+        apiUser.setDisabled(disabled);
+    }
 
     @Override
     public Map<String, String> getAttributes() {

@@ -47,6 +47,9 @@ public class UserGroupObjectTranslator
     public void applyExternalChanges(UserGroup existingObject,
             APIUserGroup object) throws GuacamoleException {
 
+        // Update disabled status
+        existingObject.setDisabled(object.isDisabled());
+        
         // Update user attributes
         existingObject.setAttributes(object.getAttributes());
 

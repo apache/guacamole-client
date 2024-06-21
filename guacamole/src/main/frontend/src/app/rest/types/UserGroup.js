@@ -42,6 +42,13 @@ angular.module('rest').factory('UserGroup', [function defineUserGroup() {
          * @type String
          */
         this.identifier = template.identifier;
+        
+        /**
+         * True if this user group is disabled, otherwise false.
+         * 
+         * @type boolean
+         */
+        this.disabled = template.disabled;
 
         /**
          * Arbitrary name/value pairs which further describe this user group.
