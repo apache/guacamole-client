@@ -49,6 +49,9 @@ public class UserObjectTranslator
         // Do not update the user password if no password was provided
         if (object.getPassword() != null)
             existingObject.setPassword(object.getPassword());
+        
+        // Update disabled status
+        existingObject.setDisabled(object.isDisabled());
 
         // Update user attributes
         existingObject.setAttributes(object.getAttributes());

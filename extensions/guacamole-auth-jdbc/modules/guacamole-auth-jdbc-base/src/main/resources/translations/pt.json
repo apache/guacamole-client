@@ -90,7 +90,6 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "Login desativado:",
         "FIELD_HEADER_EXPIRED"             : "Senha expirada:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "Não permitir acesso após:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "Permitir acesso após:",
@@ -104,8 +103,6 @@
     },
 
     "USER_GROUP_ATTRIBUTES" : {
-
-        "FIELD_HEADER_DISABLED" : "Desativado:",
 
         "SECTION_HEADER_RESTRICTIONS" : "Restrições de Grupo"
 

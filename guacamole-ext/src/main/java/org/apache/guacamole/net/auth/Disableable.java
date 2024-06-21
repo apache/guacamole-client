@@ -17,26 +17,32 @@
  * under the License.
  */
 
-.settings.user-groups table.user-group-list {
-    width: 100%;
-}
+package org.apache.guacamole.net.auth;
 
-.settings.user-groups table.user-group-list th.user-group-name,
-.settings.user-groups table.user-group-list td.user-group-name {
-    width: 100%;
-}
-
-.settings.user-groups table.user-group-list tr.user-group td.user-group-name a[href] {
-    display: block;
-    padding: .5em 1em;
-}
-
-.settings.user-groups table.user-group-list tr.user-group.disabled,
-.settings.user-groups table.user-group-list tr.user-group.disabled td.user-group-name a[href] {
-    color: gray;
-    font-style: italic;
-}
-
-.settings.user-groups table.user-group-list tr.user-group td.user-group-name {
-    padding: 0;
+/**
+ * An interface that defines items that can be enabled or disabled.
+ */
+public interface Disableable {
+    
+    /**
+     * Returns true if this object is disabled, otherwise false.
+     * 
+     * @return 
+     *     True if this object is disabled, otherwise false.
+     */
+    default public boolean isDisabled() {
+        return false;
+    }
+    
+    /**
+     * Set the disabled status of this object to the boolean value provided,
+     * true if the object should be disabled, otherwise false.
+     * 
+     * @param disabled 
+     *     True if the object should be disabled, otherwise false.
+     */
+    default public void setDisabled(boolean disabled) {
+        // Default implementation takes no action.
+    }
+    
 }

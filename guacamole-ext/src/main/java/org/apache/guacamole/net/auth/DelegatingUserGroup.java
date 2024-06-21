@@ -65,6 +65,16 @@ public class DelegatingUserGroup implements UserGroup {
     public void setIdentifier(String identifier) {
         userGroup.setIdentifier(identifier);
     }
+    
+    @Override
+    public boolean isDisabled() {
+        return userGroup.isDisabled();
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled) {
+        userGroup.setDisabled(disabled);
+    }
 
     @Override
     public Map<String, String> getAttributes() {

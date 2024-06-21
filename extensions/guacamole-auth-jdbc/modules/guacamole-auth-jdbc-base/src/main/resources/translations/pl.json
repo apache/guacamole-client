@@ -89,7 +89,6 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "Logowanie zablokowane:",
         "FIELD_HEADER_EXPIRED"             : "Hasło wygasło:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "Nie zezwalaj na dostęp po:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "Zezwalaj na dostęp od:",
@@ -103,8 +102,6 @@
     },
 
     "USER_GROUP_ATTRIBUTES" : {
-
-        "FIELD_HEADER_DISABLED" : "Wyłączona:",
 
         "SECTION_HEADER_RESTRICTIONS" : "Ograniczenia Grupy"
 

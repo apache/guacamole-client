@@ -29,7 +29,7 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
  * Base implementation of UserGroup which provides default implementations of
  * most functions.
  */
-public class AbstractUserGroup extends AbstractIdentifiable implements UserGroup {
+public abstract class AbstractUserGroup extends AbstractIdentifiable implements UserGroup {
 
     /**
      * {@inheritDoc}
