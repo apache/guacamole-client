@@ -480,6 +480,15 @@
         "TEXT_CONFIRM_DELETE" : "Groups cannot be restored after they have been deleted. Are you sure you want to delete this group?"
 
     },
+    
+    "PERMISSIONS" : {
+        
+        "TOGGLE_PERMISSION_ADMINISTER" : "Administer",
+        "TOGGLE_PERMISSION_CONNECT"    : "Connect",
+        "TOGGLE_PERMISSION_DELETE"     : "Delete",
+        "TOGGLE_PERMISSION_UPDATE"     : "Update"
+        
+    },
 
     "PLAYER" : {
 

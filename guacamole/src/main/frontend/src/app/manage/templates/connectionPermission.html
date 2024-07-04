@@ -3,11 +3,51 @@
     <!-- Connection icon -->
     <div class="icon type" ng-class="item.protocol"></div>
 
-    <!-- Permission checkbox -->
-    <input type="checkbox" ng-model="context.getPermissionFlags().connectionPermissions.READ[item.identifier]"
-                           ng-change="context.connectionPermissionChanged(item.identifier)">
-
     <!-- Connection name -->
     <span class="name">{{item.name}}</span>
+    
+    <div class="permission-container">
+    
+        <!-- Connection Read (Connect) Permission -->
+        <input type="checkbox"
+               id="readConnection-{{item.identifier}}"
+               class="permission-toggle"
+               ng-model="context.getPermissionFlags().connectionPermissions.READ[item.identifier]"
+               ng-change="context.connectionPermissionChanged(item.identifier)">
+        <label for="readConnection-{{item.identifier}}" class="permission-toggle label">
+            <div>{{'PERMISSIONS.TOGGLE_PERMISSION_CONNECT' | translate}}</div>
+        </label>
 
+        <!-- Connection Update Permission -->
+        <input type="checkbox"
+               id="updateConnection-{{item.identifier}}"
+               class="permission-toggle"
+               ng-model="context.getPermissionFlags().connectionPermissions.UPDATE[item.identifier]"
+               ng-change="context.connectionPermissionChanged(item.identifier)">
+        <label for="updateConnection-{{item.identifier}}" class="permission-toggle label">
+            <div>{{'PERMISSIONS.TOGGLE_PERMISSION_UPDATE' | translate}}</div>
+        </label>
+
+        <!-- Connection Delete Permission -->
+        <input type="checkbox" 
+               id="deleteConnection-{{item.identifier}}"
+               class="permission-toggle"
+               ng-model="context.getPermissionFlags().connectionPermissions.DELETE[item.identifier]"
+               ng-change="context.connectionPermissionChanged(item.identifier)">
+        <label for="deleteConnection-{{item.identifier}}" class="permission-toggle label">
+            <div>{{'PERMISSIONS.TOGGLE_PERMISSION_DELETE' | translate}}</div>
+        </label>
+
+        <!-- Connection Administer Permission -->
+        <input type="checkbox"
+               id="adminConnection-{{item.identifier}}"
+               class="permission-toggle"
+               ng-model="context.getPermissionFlags().connectionPermissions.ADMINISTER[item.identifier]"
+               ng-change="context.connectionPermissionChanged(item.identifier)">
+        <label for="adminConnection-{{item.identifier}}" class="permission-toggle label">
+            <div>{{'PERMISSIONS.TOGGLE_PERMISSION_ADMINISTER' | translate}}</div>
+        </label>
+    
+    </div>
+    
 </div>
