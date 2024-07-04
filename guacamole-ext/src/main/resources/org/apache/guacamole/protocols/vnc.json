@@ -44,6 +44,11 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "disable-display-resize",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "swap-red-blue",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
