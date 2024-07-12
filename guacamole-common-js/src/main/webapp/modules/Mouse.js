@@ -258,9 +258,16 @@ Guacamole.Mouse = function Mouse(element) {
 
     }
 
-    element.addEventListener('DOMMouseScroll', mousewheel_handler, false);
-    element.addEventListener('mousewheel',     mousewheel_handler, false);
-    element.addEventListener('wheel',          mousewheel_handler, false);
+    if (window.WheelEvent) {
+        // All modern browsers support wheel events.
+        element.addEventListener('wheel', mousewheel_handler, false);
+    }
+    else {
+        // Legacy FireFox wheel events.
+        element.addEventListener('DOMMouseScroll', mousewheel_handler, false);
+        // Legacy Chrome/IE/other wheel events.
+        element.addEventListener('mousewheel', mousewheel_handler, false);
+    }
 
     /**
      * Whether the browser supports CSS3 cursor styling, including hotspot
