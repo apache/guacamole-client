@@ -183,7 +183,7 @@ public class UserService {
             throws GuacamoleException {
 
         // Pull username attributes from properties
-        List<String> usernameAttributes = config.getUsernameAttributes();
+        List<String> usernameAttributes = new ArrayList<>(config.getUsernameAttributes());
 
         // We need exactly one base DN to derive the user DN
         if (usernameAttributes.size() != 1) {
