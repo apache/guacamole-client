@@ -330,7 +330,7 @@ public class AuthenticationProviderService {
             throws GuacamoleException {
 
         // Get attributes from configuration information
-        List<String> attrList = config.getAttributes();
+        Collection<String> attrList = config.getAttributes();
 
         // If there are no attributes there is no reason to search LDAP
         if (attrList.isEmpty())
