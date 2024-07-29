@@ -19,8 +19,10 @@
 
 package org.apache.guacamole.auth.restrict;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.restrict.user.RestrictUserContext;
+import org.apache.guacamole.auth.restrict.user.RestrictedUserContext;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
@@ -32,7 +34,7 @@ import org.apache.guacamole.net.auth.UserContext;
  * administrators to further control access to Guacamole resources.
  */
 public class RestrictionAuthenticationProvider extends AbstractAuthenticationProvider {
-
+    
     @Override
     public String getIdentifier() {
         return "restrict";
@@ -43,12 +45,15 @@ public class RestrictionAuthenticationProvider extends AbstractAuthenticationPro
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
 
+        String remoteAddress = credentials.getRemoteAddress();
+        
+        
         // Verify identity of user
-        RestrictionVerificationService.verifyLoginRestrictions(context, authenticatedUser);
+        RestrictionVerificationService.verifyLoginRestrictions(context, remoteAddress);
 
         // User has been verified, and authentication should be allowed to
         // continue
-        return new RestrictUserContext(context, credentials.getRemoteAddress());
+        return new RestrictedUserContext(context, remoteAddress);
 
     }
 
@@ -56,7 +61,7 @@ public class RestrictionAuthenticationProvider extends AbstractAuthenticationPro
     public UserContext redecorate(UserContext decorated, UserContext context,
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
-        return new RestrictUserContext(context, credentials.getRemoteAddress());
+        return new RestrictedUserContext(context, credentials.getRemoteAddress());
     }
 
 }

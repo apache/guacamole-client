@@ -23,9 +23,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.restrict.connection.RestrictConnection;
-import org.apache.guacamole.auth.restrict.connectiongroup.RestrictConnectionGroup;
-import org.apache.guacamole.auth.restrict.usergroup.RestrictUserGroup;
+import org.apache.guacamole.auth.restrict.RestrictionVerificationService;
+import org.apache.guacamole.auth.restrict.connection.RestrictedConnection;
+import org.apache.guacamole.auth.restrict.connectiongroup.RestrictedConnectionGroup;
+import org.apache.guacamole.auth.restrict.usergroup.RestrictedUserGroup;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -35,20 +36,27 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.UserGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A UserContext implementation for additional login and connection restrictions
  * which wraps the UserContext of some other extension.
  */
-public class RestrictUserContext extends DelegatingUserContext {
+public class RestrictedUserContext extends DelegatingUserContext {
 
+    /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestrictedUserContext.class);
+    
     /**
      * The remote address from which this user logged in.
      */
     private final String remoteAddress;
     
     /**
-     * Creates a new RestrictUserContext which wraps the given UserContext,
+     * Creates a new RestrictedUserContext which wraps the given UserContext,
      * providing additional control for user logins and connections.
      *
      * @param userContext
@@ -57,7 +65,7 @@ public class RestrictUserContext extends DelegatingUserContext {
      * @param remoteAddress
      *     The address the user is logging in from, if known.
      */
-    public RestrictUserContext(UserContext userContext, String remoteAddress) {
+    public RestrictedUserContext(UserContext userContext, String remoteAddress) {
         super(userContext);
         this.remoteAddress = remoteAddress;
     }
@@ -67,14 +75,14 @@ public class RestrictUserContext extends DelegatingUserContext {
         return new DecoratingDirectory<Connection>(super.getConnectionDirectory()) {
 
             @Override
-            protected Connection decorate(Connection object) {
-                return new RestrictConnection(object, remoteAddress);
+            protected Connection decorate(Connection object) throws GuacamoleException {
+                return new RestrictedConnection(object, remoteAddress);
             }
 
             @Override
             protected Connection undecorate(Connection object) {
-                assert(object instanceof RestrictConnection);
-                return ((RestrictConnection) object).getUndecorated();
+                assert(object instanceof RestrictedConnection);
+                return ((RestrictedConnection) object).getUndecorated();
             }
 
         };
@@ -83,7 +91,7 @@ public class RestrictUserContext extends DelegatingUserContext {
     @Override
     public Collection<Form> getConnectionAttributes() {
         Collection<Form> connectionAttrs = new HashSet<>(super.getConnectionAttributes());
-        connectionAttrs.add(RestrictConnection.RESTRICT_CONNECTION_FORM);
+        connectionAttrs.add(RestrictedConnection.RESTRICT_CONNECTION_FORM);
         return Collections.unmodifiableCollection(connectionAttrs);
     }
     
@@ -92,14 +100,14 @@ public class RestrictUserContext extends DelegatingUserContext {
         return new DecoratingDirectory<ConnectionGroup>(super.getConnectionGroupDirectory()) {
 
             @Override
-            protected ConnectionGroup decorate(ConnectionGroup object) {
-                return new RestrictConnectionGroup(object, remoteAddress);
+            protected ConnectionGroup decorate(ConnectionGroup object) throws GuacamoleException {
+                return new RestrictedConnectionGroup(object, remoteAddress);
             }
 
             @Override
             protected ConnectionGroup undecorate(ConnectionGroup object) {
-                assert(object instanceof RestrictConnectionGroup);
-                return ((RestrictConnectionGroup) object).getUndecorated();
+                assert(object instanceof RestrictedConnectionGroup);
+                return ((RestrictedConnectionGroup) object).getUndecorated();
             }
 
         };
@@ -108,7 +116,7 @@ public class RestrictUserContext extends DelegatingUserContext {
     @Override
     public Collection<Form> getConnectionGroupAttributes() {
         Collection<Form> connectionGroupAttrs = new HashSet<>(super.getConnectionGroupAttributes());
-        connectionGroupAttrs.add(RestrictConnectionGroup.RESTRICT_CONNECTIONGROUP_FORM);
+        connectionGroupAttrs.add(RestrictedConnectionGroup.RESTRICT_CONNECTIONGROUP_FORM);
         return Collections.unmodifiableCollection(connectionGroupAttrs);
     }
     
@@ -118,13 +126,13 @@ public class RestrictUserContext extends DelegatingUserContext {
 
             @Override
             protected User decorate(User object) {
-                return new RestrictUser(object);
+                return new RestrictedUser(object, remoteAddress);
             }
 
             @Override
             protected User undecorate(User object) {
-                assert(object instanceof RestrictUser);
-                return ((RestrictUser) object).getUndecorated();
+                assert(object instanceof RestrictedUser);
+                return ((RestrictedUser) object).getUndecorated();
             }
 
         };
@@ -133,7 +141,7 @@ public class RestrictUserContext extends DelegatingUserContext {
     @Override
     public Collection<Form> getUserAttributes() {
         Collection<Form> userAttrs = new HashSet<>(super.getUserAttributes());
-        userAttrs.add(RestrictUser.RESTRICT_LOGIN_FORM);
+        userAttrs.add(RestrictedUser.RESTRICT_LOGIN_FORM);
         return Collections.unmodifiableCollection(userAttrs);
     }
     
@@ -143,13 +151,13 @@ public class RestrictUserContext extends DelegatingUserContext {
             
             @Override
             protected UserGroup decorate(UserGroup object) {
-                return new RestrictUserGroup(object);
+                return new RestrictedUserGroup(object);
             }
             
             @Override
             protected UserGroup undecorate(UserGroup object) {
-                assert(object instanceof RestrictUserGroup);
-                return ((RestrictUserGroup) object).getUndecorated();
+                assert(object instanceof RestrictedUserGroup);
+                return ((RestrictedUserGroup) object).getUndecorated();
             }
             
         };
@@ -158,8 +166,21 @@ public class RestrictUserContext extends DelegatingUserContext {
     @Override
     public Collection<Form> getUserGroupAttributes() {
         Collection<Form> userGroupAttrs = new HashSet<>(super.getUserGroupAttributes());
-        userGroupAttrs.add(RestrictUserGroup.RESTRICT_LOGIN_FORM);
+        userGroupAttrs.add(RestrictedUserGroup.RESTRICT_LOGIN_FORM);
         return Collections.unmodifiableCollection(userGroupAttrs);
+    }
+    
+    @Override
+    public boolean isValid() {
+        try {
+            // Verify whether or not time restrictions still apply.
+            RestrictionVerificationService.verifyTimeRestrictions(this);
+            return true;
+        }
+        catch (GuacamoleException e) {
+            LOGGER.debug("User account is now restricted and is no longer valid", e);
+            return false;
+        }
     }
 
 }
