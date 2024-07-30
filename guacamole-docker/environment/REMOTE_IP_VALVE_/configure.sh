@@ -29,7 +29,7 @@
 ## RemoteIpValve attributes that correspond to various "REMOTE_IP_VALVE_*"
 ## environment variables.
 ##
-declare -a VALVE_ATTRIBUTES=( --type attr -n className -v org.apache.catalina.valves.RemoteIpValve )
+declare -a VALVE_ATTRIBUTES=( --insert '/Server/Service/Engine/Host/Valve[not(@className)]' --type attr -n className -v org.apache.catalina.valves.RemoteIpValve )
 
 # Translate all properties supported by RemoteIpValve into corresponding
 # environment variables
@@ -45,7 +45,7 @@ for ATTRIBUTE in \
 
     VAR_NAME="REMOTE_IP_VALVE_$(echo "$ATTRIBUTE" | sed 's/\([a-z]\)\([A-Z]\)/\1_\2/g' | tr 'a-z' 'A-Z')"
     if [ -n "${!VAR_NAME}" ]; then
-        VALVE_ATTRIBUTES+=( --type attr -n "$ATTRIBUTE" -v "${!VAR_NAME}" )
+        VALVE_ATTRIBUTES+=( --insert '/Server/Service/Engine/Host/Valve[@className="org.apache.catalina.valves.RemoteIpValve"]' --type attr -n "$ATTRIBUTE" -v "${!VAR_NAME}" )
     else
         echo "Using default RemoteIpValve value for \"$ATTRIBUTE\" attribute."
     fi
@@ -55,7 +55,6 @@ done
 # Programmatically add requested RemoteIpValve entry
 xmlstarlet edit --inplace \
     --insert '/Server/Service/Engine/Host/*' --type elem -n Valve \
-    --insert '/Server/Service/Engine/Host/Valve[not(@className)]' \
     "${VALVE_ATTRIBUTES[@]}" \
     "$CATALINA_BASE/conf/server.xml"
 
