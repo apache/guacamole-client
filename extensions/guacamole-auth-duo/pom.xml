@@ -130,6 +130,14 @@
             <version>${kotlin.version}</version>
         </dependency>
 
+        <!-- Library for unified IPv4/6 parsing and validation -->
+        <dependency>
+            <groupId>com.github.seancfoley</groupId>
+            <artifactId>ipaddress</artifactId>
+            <version>5.5.0</version>
+            <scope>provided</scope>
+        </dependency>
+
     </dependencies>
 
 </project>

@@ -22,9 +22,12 @@ package org.apache.guacamole.auth.totp.user;
 import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import inet.ipaddr.IPAddress;
+import inet.ipaddr.IPAddressString;
 import java.security.InvalidKeyException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -44,6 +47,7 @@ import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.properties.IPAddressListProperty;
 import org.apache.guacamole.totp.TOTPGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -311,6 +315,45 @@ public class UserVerificationService {
     public void verifyIdentity(UserContext context,
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
+        // Pull the original HTTP request used to authenticate
+        Credentials credentials = authenticatedUser.getCredentials();
+        HttpServletRequest request = credentials.getRequest();
+        
+        // Get the current client address
+        IPAddress clientAddr = new IPAddressString(request.getRemoteAddr()).getAddress();
+
+        // Ignore anonymous users
+        if (authenticatedUser.getIdentifier().equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
+            return;
+        
+        // Pull address lists to check from configuration. Note that the enforce
+        // list will override the bypass list, which means that, if the client
+        // address happens to be in both lists, Duo MFA will be enforced.
+        List<IPAddress> bypassAddresses = confService.getBypassHosts();
+        List<IPAddress> enforceAddresses = confService.getEnforceHosts();
+        
+        // Check the bypass list for the client address, and set the enforce
+        // flag to the opposite.
+        boolean enforceHost = !(IPAddressListProperty.addressListContains(bypassAddresses, clientAddr));
+        
+        // Only continue processing if the list is not empty
+        if (!enforceAddresses.isEmpty()) {
+            
+            // If client address is not available or invalid, MFA will
+            // be enforced.
+            if (clientAddr == null || !clientAddr.isIPAddress())
+                enforceHost = true;
+            
+            // Check the enforce list and set the flag if the client address
+            // is found in the list.
+            else
+                enforceHost = IPAddressListProperty.addressListContains(enforceAddresses, clientAddr);
+        }
+            
+        // If the enforce flag is not true, bypass TOTP MFA.
+        if (!enforceHost)
+            return;
+        
         // Ignore anonymous users
         String username = authenticatedUser.getIdentifier();
         if (username.equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
@@ -324,10 +367,6 @@ public class UserVerificationService {
         UserTOTPKey key = getKey(context, username);
         if (key == null)
             return;
-
-        // Pull the original HTTP request used to authenticate
-        Credentials credentials = authenticatedUser.getCredentials();
-        HttpServletRequest request = credentials.getRequest();
 
         // Retrieve TOTP from request
         String code = request.getParameter(AuthenticationCodeField.PARAMETER_NAME);
