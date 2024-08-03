@@ -911,6 +911,7 @@
         "FIELD_HEADER_DISABLE_SERVER_INPUT" : "Disable server input when client is connected:",
         "FIELD_HEADER_ENABLE_AUDIO"     : "Enable audio:",
         "FIELD_HEADER_ENABLE_SFTP"      : "Enable SFTP:",
+        "FIELD_HEADER_ENCODINGS"        : "Display encodings:",
         "FIELD_HEADER_FORCE_LOSSLESS"   : "Force lossless compression:",
         "FIELD_HEADER_HOSTNAME"         : "Hostname:",
         "FIELD_HEADER_USERNAME"         : "Username:",
