@@ -18,7 +18,7 @@
 #
 
 ##
-## @fn 030-download-drivers.sh
+## @fn 020-download-drivers.sh
 ##
 ## Downloads all JDBC drivers required by the various supported databases. Each
 ## downloaded driver is stored beneath /opt/guacamole/drivers, with symbolic
