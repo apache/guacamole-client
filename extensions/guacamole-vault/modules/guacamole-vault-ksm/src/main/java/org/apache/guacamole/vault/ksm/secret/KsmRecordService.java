@@ -30,6 +30,7 @@ import com.keepersecurity.secretsManager.core.KeeperRecordField;
 import com.keepersecurity.secretsManager.core.KeyPair;
 import com.keepersecurity.secretsManager.core.KeyPairs;
 import com.keepersecurity.secretsManager.core.Login;
+import com.keepersecurity.secretsManager.core.PamHostnames;
 import com.keepersecurity.secretsManager.core.Password;
 import com.keepersecurity.secretsManager.core.SecretsManager;
 import com.keepersecurity.secretsManager.core.Text;
@@ -41,11 +42,19 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+
 /**
  * Service for automatically parsing out secrets and data from Keeper records.
  */
 @Singleton
 public class KsmRecordService {
+
+    /**
+     * Regular expression which matches the labels of custom fields containing
+     * domains.
+     */
+    private static final Pattern DOMAIN_LABEL_PATTERN =
+            Pattern.compile("domain", Pattern.CASE_INSENSITIVE);
 
     /**
      * Regular expression which matches the labels of custom fields containing
@@ -79,8 +88,15 @@ public class KsmRecordService {
      * Regular expression which matches the labels of custom fields containing
      * private keys.
      */
-    private static final Pattern PRIVATE_KEY_LABEL_PATTERN =
+    private static final Pattern PRIVATE_KEY_CUSTOM_LABEL_PATTERN =
             Pattern.compile("private\\s*key", Pattern.CASE_INSENSITIVE);
+
+    /**
+     * Regular expression which matches the labels of standard fields containing
+     * private keys.
+     */
+    private static final Pattern PRIVATE_KEY_STANDARD_LABEL_PATTERN =
+            Pattern.compile("private\\s*pem\\s*key", Pattern.CASE_INSENSITIVE);
 
     /**
      * Regular expression which matches the filenames of private keys attached
@@ -143,13 +159,13 @@ public class KsmRecordService {
      * empty or contains multiple values, null is returned. Note that null will
      * also be returned if the mapping transformation returns null for the
      * single value stored in the list.
-     * 
+     *
      * @param <T>
      *     The type of object stored in the list.
-     *     
+     *
      * @param <R>
      *     The type of object to return.
-     *     
+     *
      * @param values
      *     The list to retrieve a single value from.
      *
@@ -168,7 +184,7 @@ public class KsmRecordService {
             return null;
 
         return mapper.apply(value);
-        
+
     }
 
     /**
@@ -277,7 +293,7 @@ public class KsmRecordService {
      * multiple such fields, null is returned. Both standard and custom fields
      * are searched. As standard fields do not have labels, any given label
      * pattern is ignored for standard fields.
-     * 
+     *
      * @param <T>
      *     The type of field to return.
      *
@@ -345,7 +361,7 @@ public class KsmRecordService {
                 return null;
 
             foundFile = file;
-            
+
         }
 
         return foundFile;
@@ -368,7 +384,7 @@ public class KsmRecordService {
 
         if (file == null)
             return CompletableFuture.completedFuture(null);
-        
+
         return CompletableFuture.supplyAsync(() -> {
             return new String(SecretsManager.downloadFile(file), StandardCharsets.UTF_8);
         });
@@ -378,9 +394,11 @@ public class KsmRecordService {
     /**
      * Returns the single hostname (or address) associated with the given
      * record. If the record has no associated hostname, or multiple hostnames,
-     * null is returned. Hostnames are retrieved from "Hosts" fields, as well
-     * as "Text" and "Hidden" fields that have the label "hostname", "address",
-     * or "ip address" (case-insensitive, space optional).
+     * null is returned. Hostnames are retrieved from "Hosts" or "PamHostnames"
+     * fields, as well as "Text" and "Hidden" fields that have the label
+     * "hostname", "address", or "ip address" (case-insensitive, space optional).
+     * These field types are checked in the above order, and the first matching
+     * field is returned.
      *
      * @param record
      *     The record to retrieve the hostname from.
@@ -395,6 +413,11 @@ public class KsmRecordService {
         Hosts hostsField = getField(record, Hosts.class, null);
         if (hostsField != null)
             return getSingleStringValue(hostsField.getValue(), Host::getHostName);
+
+        // Next, try a PAM hostname
+        PamHostnames pamHostsField = getField(record, PamHostnames.class, null);
+        if (pamHostsField != null)
+            return getSingleStringValue(pamHostsField.getValue(), Host::getHostName);
 
         KeeperRecordData data = record.getData();
         List<KeeperRecordField> custom = data.getCustom();
@@ -452,6 +475,38 @@ public class KsmRecordService {
     }
 
     /**
+     * Returns the single domain associated with the given record. If the
+     * record has no associated domain, or multiple domains, null is
+     * returned. Domains are retrieved from "Text" and "Hidden" fields
+     * that have the label "domain" (case-insensitive).
+     *
+     * @param record
+     *     The record to retrieve the domain from.
+     *
+     * @return
+     *     The domain associated with the given record, or null if the record
+     *     has no associated domain or multiple domains.
+     */
+    public String getDomain(KeeperRecord record) {
+
+        KeeperRecordData data = record.getData();
+        List<KeeperRecordField> custom = data.getCustom();
+
+        // First check text "domain" custom field ...
+        Text textField = getField(custom, Text.class, DOMAIN_LABEL_PATTERN);
+        if (textField != null)
+            return getSingleStringValue(textField.getValue());
+
+        // ... or hidden "domain" custom field if that's not found
+        HiddenField hiddenField = getField(custom, HiddenField.class, DOMAIN_LABEL_PATTERN);
+        if (hiddenField != null)
+            return getSingleStringValue(hiddenField.getValue());
+
+        return null;
+
+    }
+
+    /**
      * Returns the password associated with the given record. Both standard and
      * custom fields are searched. Only "Password" and "Hidden" field types are
      * considered. Custom fields must additionally have the label "password"
@@ -483,9 +538,11 @@ public class KsmRecordService {
      * has no associated private key, or multiple private keys, null is
      * returned. Private keys are retrieved from "KeyPairs" fields.
      * Alternatively, private keys are retrieved from PEM-type attachments or
-     * custom fields with the label "private key" (case-insensitive, space
-     * optional) if they are "KeyPairs", "Password", or "Hidden" fields. If
-     * file downloads are required, they will be performed asynchronously.
+     * standard "Hidden" fields with the label "private pem key", or custom
+     * fields with the label "private key" if they are "KeyPairs", "Password",
+     * or "Hidden" fields. All label matching is case-insensitive, with spaces
+     * between words being optional. If file downloads are required, they will
+     * be performed asynchronously.
      *
      * @param record
      *     The record to retrieve the private key from.
@@ -498,7 +555,8 @@ public class KsmRecordService {
     public Future<String> getPrivateKey(KeeperRecord record) {
 
         // Attempt to find single matching keypair field
-        KeyPairs keyPairsField = getField(record, KeyPairs.class, PRIVATE_KEY_LABEL_PATTERN);
+        KeyPairs keyPairsField = getField(
+                record, KeyPairs.class, PRIVATE_KEY_CUSTOM_LABEL_PATTERN);
         if (keyPairsField != null) {
             String privateKey = getSingleStringValue(keyPairsField.getValue(), KeyPair::getPrivateKey);
             if (privateKey != null && !privateKey.isEmpty())
@@ -513,13 +571,21 @@ public class KsmRecordService {
         KeeperRecordData data = record.getData();
         List<KeeperRecordField> custom = data.getCustom();
 
-        // Use password "private key" custom field as fallback ...
-        Password passwordField = getField(custom, Password.class, PRIVATE_KEY_LABEL_PATTERN);
+        // Use a hidden "private pem key" standard field as fallback ...
+        HiddenField hiddenField = getField(
+                data.getFields(), HiddenField.class, PRIVATE_KEY_STANDARD_LABEL_PATTERN);
+        if (hiddenField != null)
+            return CompletableFuture.completedFuture(getSingleStringValue(hiddenField.getValue()));
+
+        // ... or password "private key" custom field ...
+        Password passwordField = getField(
+                custom, Password.class, PRIVATE_KEY_CUSTOM_LABEL_PATTERN);
         if (passwordField != null)
             return CompletableFuture.completedFuture(getSingleStringValue(passwordField.getValue()));
 
         // ... or hidden "private key" custom field
-        HiddenField hiddenField = getField(custom, HiddenField.class, PRIVATE_KEY_LABEL_PATTERN);
+        hiddenField = getField(
+                custom, HiddenField.class, PRIVATE_KEY_CUSTOM_LABEL_PATTERN);
         if (hiddenField != null)
             return CompletableFuture.completedFuture(getSingleStringValue(hiddenField.getValue()));
 
@@ -561,7 +627,7 @@ public class KsmRecordService {
         // a pair of custom hidden fields for the private key and passphrase:
         // the standard password field of the "Login" record refers to the
         // user's own password, if any, not the passphrase of their key)
-        
+
         // Use password "private key" custom field as fallback ...
         Password passwordField = getField(custom, Password.class, PASSPHRASE_LABEL_PATTERN);
         if (passwordField != null)
@@ -573,7 +639,7 @@ public class KsmRecordService {
             return getSingleStringValue(hiddenField.getValue());
 
         return null;
-        
+
     }
 
 }

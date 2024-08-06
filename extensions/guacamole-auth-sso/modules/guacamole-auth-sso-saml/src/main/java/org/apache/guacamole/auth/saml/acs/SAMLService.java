@@ -21,7 +21,8 @@ package org.apache.guacamole.auth.saml.acs;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.onelogin.saml2.authn.AuthnRequest;
+import com.onelogin.saml2.Auth;
+import com.onelogin.saml2.authn.AuthnRequestParams;
 import com.onelogin.saml2.authn.SamlResponse;
 import com.onelogin.saml2.exception.SettingsException;
 import com.onelogin.saml2.exception.ValidationError;
@@ -29,13 +30,13 @@ import com.onelogin.saml2.settings.Saml2Settings;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import javax.ws.rs.core.UriBuilder;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpressionException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
+import org.apache.guacamole.net.auth.IdentifierGenerator;
 import org.xml.sax.SAXException;
 
 /**
@@ -55,7 +56,7 @@ public class SAMLService {
      * Manager of active SAML authentication attempts.
      */
     @Inject
-    private AuthenticationSessionManager sessionManager;
+    private SAMLAuthenticationSessionManager sessionManager;
 
     /**
      * Creates a new SAML request, beginning the overall authentication flow
@@ -75,20 +76,31 @@ public class SAMLService {
     public URI createRequest() throws GuacamoleException {
 
         Saml2Settings samlSettings = confService.getSamlSettings();
-        AuthnRequest samlReq = new AuthnRequest(samlSettings);
-
-        // Create a new authentication session to represent this attempt while
-        // it is in progress
-        AuthenticationSession session = new AuthenticationSession(samlReq.getId(),
-                confService.getAuthenticationTimeout() * 60000L);
 
         // Produce redirect for continuing the authentication process with
         // the SAML IdP
         try {
-            return UriBuilder.fromUri(samlSettings.getIdpSingleSignOnServiceUrl().toURI())
-                    .queryParam("SAMLRequest", samlReq.getEncodedAuthnRequest())
-                    .queryParam("RelayState", sessionManager.defer(session))
-                    .build();
+            Auth auth = new Auth(samlSettings, null, null);
+
+            // Generate a unique ID to use for the relay state
+            String identifier = IdentifierGenerator.generateIdentifier();
+
+            // Create the request URL for the SAML IdP
+            String requestUrl = auth.login(
+                    identifier,
+                    new AuthnRequestParams(false, false, true),
+                    true);
+
+            // Create a new authentication session to represent this attempt while
+            // it is in progress, using the request ID that was just issued
+            SAMLAuthenticationSession session = new SAMLAuthenticationSession(
+                    auth.getLastRequestId(),
+                    confService.getAuthenticationTimeout() * 60000L);
+
+            // Save the session with the unique relay state ID
+            sessionManager.defer(session, identifier);
+
+            return new URI(requestUrl);
         }
         catch (IOException e) {
             throw new GuacamoleServerException("SAML authentication request "
@@ -99,12 +111,17 @@ public class SAMLService {
                     + "be generated due to an error in the URI syntax: "
                     + e.getMessage());
         }
+        catch (SettingsException e) {
+            throw new GuacamoleServerException("Error while attempting to sign "
+                    + "request using provided private key / certificate: "
+                    + e.getMessage(), e);
+        }
 
     }
 
     /**
      * Processes the given SAML response, as received by the SAML ACS endpoint
-     * at the given URL, producing an {@link AuthenticationSession} that now
+     * at the given URL, producing an {@link SAMLAuthenticationSession} that now
      * includes a valid assertion of the user's identity. If the SAML response
      * is invalid in any way, an exception is thrown.
      *
@@ -125,7 +142,7 @@ public class SAMLService {
      *     given URL.
      *
      * @return
-     *     The {@link AuthenticationSession} associated with the in-progress
+     *     The {@link SAMLAuthenticationSession} associated with the in-progress
      *     authentication attempt, now associated with the {@link AssertedIdentity}
      *     representing the identity of the user asserted by the SAML IdP.
      *
@@ -134,14 +151,14 @@ public class SAMLService {
      *     information required to validate or decrypt the response cannot be
      *     read.
      */
-    public AuthenticationSession processResponse(String url, String relayState,
+    public SAMLAuthenticationSession processResponse(String url, String relayState,
             String encodedResponse) throws GuacamoleException {
 
         if (relayState == null)
             throw new GuacamoleSecurityException("\"RelayState\" value "
                     + "is missing from SAML response.");
 
-        AuthenticationSession session = sessionManager.resume(relayState);
+        SAMLAuthenticationSession session = sessionManager.resume(relayState);
         if (session == null)
             throw new GuacamoleSecurityException("\"RelayState\" value "
                     + "included with SAML response is not valid.");

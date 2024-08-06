@@ -40,6 +40,7 @@
     <modules>
 
         <!-- Authentication extensions -->
+        <module>guacamole-auth-ban</module>
         <module>guacamole-auth-duo</module>
         <module>guacamole-auth-header</module>
         <module>guacamole-auth-jdbc</module>
@@ -52,6 +53,9 @@
         <!-- Additional features -->
         <module>guacamole-history-recording-storage</module>
         <module>guacamole-vault</module>
+
+        <!-- Utility extensions -->
+        <module>guacamole-display-statistics</module>
 
     </modules>
 

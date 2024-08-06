@@ -20,6 +20,8 @@
 package org.apache.guacamole.net.auth;
 
 import java.util.Collection;
+import java.util.Collections;
+
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.Form;
 
@@ -37,6 +39,27 @@ public interface UserContext {
      *         UserContext.
      */
     User self();
+
+    /**
+     * Returns true if the session for the User associated with this user
+     * context is valid, or false otherwise. If the session is not valid,
+     * the webapp can be expected to terminate the session within a short
+     * period of time.
+     *
+     * NOTE: The webapp currently checks once a minute, and terminates any
+     * session marked as invalid.
+     *
+     * @return
+     *     true if the session for the User associated with this user
+     *     context is valid, or false otherwise.
+     */
+    default boolean isValid() {
+
+        // A user context is always valid unless explicitly updated by an
+        // implementation
+        return true;
+
+    }
 
     /**
      * Returns an arbitrary REST resource representing this UserContext. The
@@ -210,6 +233,21 @@ public interface UserContext {
      *     A collection of all attributes applicable to users.
      */
     Collection<Form> getUserAttributes();
+
+    /**
+     * Retrieves a collection of user attributes, specific to the user preferences
+     * page in the UI. Unlike standard user attributes, these should be self-editable.
+     *
+     * @return
+     *     A collection of form of user attributes, specific to the user preferences
+     *     page in the UI.
+     */
+    default Collection<Form> getUserPreferenceAttributes() {
+
+        // By default, a user context does not expose any preference user attributes
+        return Collections.emptyList();
+
+    }
 
     /**
      * Retrieves a collection of all attributes applicable to user groups. This

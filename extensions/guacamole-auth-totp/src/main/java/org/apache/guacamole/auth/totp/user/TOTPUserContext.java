@@ -23,12 +23,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.totp.usergroup.TOTPUserGroup;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.UserGroup;
 
 /**
  * TOTP-specific UserContext implementation which wraps the UserContext of
@@ -66,10 +68,35 @@ public class TOTPUserContext extends DelegatingUserContext {
     }
     
     @Override
+    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
+        return new DecoratingDirectory<UserGroup>(super.getUserGroupDirectory()) {
+           
+            @Override
+            protected UserGroup decorate(UserGroup object) {
+                return new TOTPUserGroup(object);
+            }
+            
+            @Override
+            protected UserGroup undecorate(UserGroup object) {
+                assert(object instanceof TOTPUserGroup);
+                return ((TOTPUserGroup) object).getUndecorated();
+            }
+            
+        };
+    }
+    
+    @Override
     public Collection<Form> getUserAttributes() {
         Collection<Form> userAttrs = new HashSet<>(super.getUserAttributes());
-        userAttrs.add(TOTPUser.TOTP_CONFIG_FORM);
+        userAttrs.add(TOTPUser.TOTP_ENROLLMENT_STATUS);
         return Collections.unmodifiableCollection(userAttrs);
+    }
+    
+    @Override
+    public Collection<Form> getUserGroupAttributes() {
+        Collection<Form> userGroupAttrs = new HashSet<>(super.getUserGroupAttributes());
+        userGroupAttrs.add(TOTPUserGroup.TOTP_USER_GROUP_CONFIG);
+        return Collections.unmodifiableCollection(userGroupAttrs);
     }
 
 }

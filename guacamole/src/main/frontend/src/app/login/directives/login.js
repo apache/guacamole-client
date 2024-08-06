@@ -66,6 +66,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         var Field = $injector.get('Field');
 
         // Required services
+        var $location             = $injector.get('$location');
         var $rootScope            = $injector.get('$rootScope');
         var $route                = $injector.get('$route');
         var authenticationService = $injector.get('authenticationService');
@@ -173,55 +174,24 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         });
 
         /**
-         * Submits the currently-specified username and password to the
-         * authentication service, redirecting to the main view if successful.
+         * Submits the currently-specified fields to the authentication service,
+         * as well as any URL parameters set for the current page, preferring
+         * the values from the fields, and redirecting to the main view if
+         * successful.
          */
         $scope.login = function login() {
 
-            // Authentication is now in progress
-            $scope.submitted = true;
+            // Any values from URL paramters
+            const urlValues = $location.search();
 
-            // Start with cleared status
-            $scope.loginError = null;
+            // Values from the fields
+            const fieldValues = $scope.enteredValues;
 
-            // Attempt login once existing session is destroyed
-            authenticationService.authenticate($scope.enteredValues)
+            // All the values to be submitted in the auth attempt, preferring
+            // any values from fields over those in the URL
+            const authParams = {...urlValues, ...fieldValues};
 
-            // Retry route upon success (entered values will be cleared only
-            // after route change has succeeded as this can take time)
-            .then(function loginSuccessful() {
-                $route.reload();
-            })
-
-            // Reset upon failure
-            ['catch'](requestService.createErrorCallback(function loginFailed(error) {
-
-                // Initial submission is complete and has failed
-                $scope.submitted = false;
-
-                // Clear out passwords if the credentials were rejected for any reason
-                if (error.type !== Error.Type.INSUFFICIENT_CREDENTIALS) {
-
-                    // Flag generic error for invalid login
-                    if (error.type === Error.Type.INVALID_CREDENTIALS)
-                        $scope.loginError = {
-                            'key' : 'LOGIN.ERROR_INVALID_LOGIN'
-                        };
-
-                    // Display error if anything else goes wrong
-                    else
-                        $scope.loginError = error.translatableMessage;
-
-                    // Reset all remaining fields to default values, but
-                    // preserve any usernames
-                    angular.forEach($scope.remainingFields, function clearEnteredValueIfPassword(field) {
-                        if (field.type !== Field.Type.USERNAME && field.name in $scope.enteredValues)
-                            $scope.enteredValues[field.name] = DEFAULT_FIELD_VALUE;
-                    });
-                }
-
-            }));
-
+            authenticationService.authenticate(authParams)['catch'](requestService.IGNORE);
         };
 
         /**
@@ -243,6 +213,48 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
             return null;
 
         };
+
+        // Update UI to reflect in-progress auth status (clear any previous
+        // errors, flag as pending)
+        $rootScope.$on('guacLoginPending', function loginSuccessful() {
+            $scope.submitted = true;
+            $scope.loginError = null;
+        });
+
+        // Retry route upon success (entered values will be cleared only
+        // after route change has succeeded as this can take time)
+        $rootScope.$on('guacLogin', function loginSuccessful() {
+            $route.reload();
+        });
+
+        // Reset upon failure
+        $rootScope.$on('guacLoginFailed', function loginFailed(event, parameters, error) {
+
+            // Initial submission is complete and has failed
+            $scope.submitted = false;
+
+            // Clear out passwords if the credentials were rejected for any reason
+            if (error.type !== Error.Type.INSUFFICIENT_CREDENTIALS) {
+
+                // Flag generic error for invalid login
+                if (error.type === Error.Type.INVALID_CREDENTIALS)
+                    $scope.loginError = {
+                        'key' : 'LOGIN.ERROR_INVALID_LOGIN'
+                    };
+
+                // Display error if anything else goes wrong
+                else
+                    $scope.loginError = error.translatableMessage;
+
+                // Reset all remaining fields to default values, but
+                // preserve any usernames
+                angular.forEach($scope.remainingFields, function clearEnteredValueIfPassword(field) {
+                    if (field.type !== Field.Type.USERNAME && field.name in $scope.enteredValues)
+                        $scope.enteredValues[field.name] = DEFAULT_FIELD_VALUE;
+                });
+            }
+
+        });
 
         // Reset state after authentication and routing have succeeded
         $rootScope.$on('$routeChangeSuccess', function routeChanged() {

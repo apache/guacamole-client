@@ -49,11 +49,29 @@ angular.module('clipboard').directive('guacClipboard', ['$injector',
 
         /**
          * The DOM element which will contain the clipboard contents within the
-         * user interface provided by this directive.
+         * user interface provided by this directive. We populate the clipboard
+         * editor via this DOM element rather than updating a model so that we
+         * are prepared for future support of rich text contents.
          *
          * @type Element
          */
-        var element = $element[0];
+        var element = $element[0].querySelectorAll('.clipboard.active')[0];
+
+        /**
+         * When isActive is set to true then the Clipboard data will be
+         * displayed in the Clipboard Editor. When false, the Clipboard Editor
+         * will not be displayed with Clipboard data.
+         *
+         * @type Boolean
+         */
+        $scope.isActive = false;
+
+        /**
+         * Updates clipboard editor to be active.
+         */
+        $scope.setActive = function setActive() {
+            $scope.isActive = true;
+        };
 
         /**
          * Rereads the contents of the clipboard field, updating the

@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.rest.session;
 
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.UserContext;
 
 /**
@@ -31,6 +32,9 @@ public interface UserContextResourceFactory {
      * Creates a new UserContextResource which exposes the contents of the
      * given UserContext.
      *
+     * @param authenticatedUser
+     *     The user that is accessing the resource.
+     *
      * @param userContext
      *     The UserContext whose contents should be exposed.
      *
@@ -38,6 +42,7 @@ public interface UserContextResourceFactory {
      *     A new UserContextResource which exposes the contents of the given
      *     UserContext.
      */
-    UserContextResource create(UserContext userContext);
+    UserContextResource create(AuthenticatedUser authenticatedUser,
+            UserContext userContext);
 
 }

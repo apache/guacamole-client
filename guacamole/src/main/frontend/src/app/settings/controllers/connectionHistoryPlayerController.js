@@ -20,7 +20,7 @@
 /**
  * The controller for the session recording player page.
  */
-angular.module('manage').controller('connectionHistoryPlayerController', ['$scope', '$injector', 
+angular.module('settings').controller('connectionHistoryPlayerController', ['$scope', '$injector',
         function connectionHistoryPlayerController($scope, $injector) {
 
     // Required services

@@ -39,6 +39,16 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "disable-server-input",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-display-resize",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "swap-red-blue",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
@@ -57,6 +67,20 @@
                     "name"    : "force-lossless",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"    : "compress-level",
+                    "type"    : "ENUM",
+                    "options" : [ "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+                },
+                {
+                    "name"    : "quality-level",
+                    "type"    : "ENUM",
+                    "options" : [ "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+                },
+                {
+                    "name" : "encodings",
+                    "type" : "TEXT"
                 }
             ]
         },
@@ -124,6 +148,11 @@
                 },
                 {
                     "name"  : "create-recording-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-write-existing",
                     "type"  : "BOOLEAN",
                     "options" : [ "true" ]
                 }

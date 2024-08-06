@@ -20,6 +20,7 @@
 package org.apache.guacamole.net.event;
 
 import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
@@ -32,7 +33,8 @@ import org.apache.guacamole.net.auth.Credentials;
  * is effectively <em>vetoed</em> and will be subsequently processed as though the
  * authentication failed.
  */
-public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
+public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent,
+        AuthenticationProviderEvent {
 
     /**
      * The AuthenticatedUser identifying the user that successfully
@@ -41,16 +43,46 @@ public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
     private final AuthenticatedUser authenticatedUser;
 
     /**
+     * Whether the successful authentication attempt represented by this event
+     * is related to an established Guacamole session.
+     */
+    private final boolean existingSession;
+    
+    /**
      * Creates a new AuthenticationSuccessEvent which represents a successful
      * authentication attempt by the user identified by the given
-     * AuthenticatedUser object.
+     * AuthenticatedUser object. The authentication attempt is presumed to be
+     * a fresh authentication attempt unrelated to an established session (a
+     * login attempt).
      *
      * @param authenticatedUser
      *     The AuthenticatedUser identifying the user that successfully
      *     authenticated.
      */
     public AuthenticationSuccessEvent(AuthenticatedUser authenticatedUser) {
+        this(authenticatedUser, false);
+    }
+
+    /**
+     * Creates a new AuthenticationSuccessEvent which represents a successful
+     * authentication attempt by the user identified by the given
+     * AuthenticatedUser object. Whether the authentication attempt is
+     * related to an established session (a periodic re-authentication attempt
+     * that updates session status) or not (a fresh login attempt) is
+     * determined by the value of the provided flag.
+     *
+     * @param authenticatedUser
+     *     The AuthenticatedUser identifying the user that successfully
+     *     authenticated.
+     *
+     * @param existingSession
+     *     Whether this AuthenticationSuccessEvent represents an
+     *     re-authentication attempt that updates the status of an established
+     *     Guacamole session.
+     */
+    public AuthenticationSuccessEvent(AuthenticatedUser authenticatedUser, boolean existingSession) {
         this.authenticatedUser = authenticatedUser;
+        this.existingSession = existingSession;
     }
 
     @Override
@@ -60,7 +92,29 @@ public class AuthenticationSuccessEvent implements UserEvent, CredentialEvent {
 
     @Override
     public Credentials getCredentials() {
-        return authenticatedUser.getCredentials();
+        return getAuthenticatedUser().getCredentials();
+    }
+
+    @Override
+    public AuthenticationProvider getAuthenticationProvider() {
+        return getAuthenticatedUser().getAuthenticationProvider();
+    }
+
+    /**
+     * Returns whether the successful authentication attempt represented by
+     * this event is related to an established Guacamole session. During normal
+     * operation, the Guacamole web application will periodically
+     * re-authenticate with the server to verify its authentication token and
+     * update the session state, in which case the value returned by this
+     * function will be true. If the user was not already authenticated and has
+     * just initially logged in, false is returned.
+     *
+     * @return
+     *     true if this AuthenticationSuccessEvent is related to a Guacamole
+     *     session that was already established, false otherwise.
+     */
+    public boolean isExistingSession() {
+        return existingSession;
     }
 
 }

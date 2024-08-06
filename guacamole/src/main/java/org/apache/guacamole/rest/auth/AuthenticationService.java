@@ -21,45 +21,40 @@ package org.apache.guacamole.rest.auth;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.GuacamoleSession;
-import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.net.event.AuthenticationFailureEvent;
+import org.apache.guacamole.net.event.AuthenticationRequestReceivedEvent;
 import org.apache.guacamole.net.event.AuthenticationSuccessEvent;
 import org.apache.guacamole.rest.event.ListenerService;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Singleton;
+
 /**
  * A service for performing authentication checks in REST endpoints.
  */
+@Singleton
 public class AuthenticationService {
 
     /**
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(AuthenticationService.class);
-
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
 
     /**
      * All configured authentication providers which can be used to
@@ -105,57 +100,6 @@ public class AuthenticationService {
     public static final String TOKEN_PARAMETER_NAME = "token";
 
     /**
-     * Regular expression which matches any IPv4 address.
-     */
-    private static final String IPV4_ADDRESS_REGEX = "([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3})";
-
-    /**
-     * Regular expression which matches any IPv6 address.
-     */
-    private static final String IPV6_ADDRESS_REGEX = "([0-9a-fA-F]*(:[0-9a-fA-F]*){0,7})";
-
-    /**
-     * Regular expression which matches any IP address, regardless of version.
-     */
-    private static final String IP_ADDRESS_REGEX = "(" + IPV4_ADDRESS_REGEX + "|" + IPV6_ADDRESS_REGEX + ")";
-
-    /**
-     * Regular expression which matches any Port Number.
-     */
-    private static final String PORT_NUMBER_REGEX = "(:[0-9]{1,5})?";
-    
-    /**
-     * Pattern which matches valid values of the de-facto standard
-     * "X-Forwarded-For" header.
-     */
-    private static final Pattern X_FORWARDED_FOR = Pattern.compile("^" + IP_ADDRESS_REGEX + PORT_NUMBER_REGEX + "(, " + IP_ADDRESS_REGEX + PORT_NUMBER_REGEX + ")*$");
-
-    /**
-     * Returns a formatted string containing an IP address, or list of IP
-     * addresses, which represent the HTTP client and any involved proxies. As
-     * the headers used to determine proxies can easily be forged, this data is
-     * superficially validated to ensure that it at least looks like a list of
-     * IPs.
-     *
-     * @param request
-     *     The HTTP request to format.
-     *
-     * @return
-     *     A formatted string containing one or more IP addresses.
-     */
-    private String getLoggableAddress(HttpServletRequest request) {
-
-        // Log X-Forwarded-For, if present and valid
-        String header = request.getHeader("X-Forwarded-For");
-        if (header != null && X_FORWARDED_FOR.matcher(header).matches())
-            return "[" + header + ", " + request.getRemoteAddr() + "]";
-
-        // If header absent or invalid, just use source IP
-        return request.getRemoteAddr();
-
-    }
-
-    /**
      * Attempts authentication against all AuthenticationProviders, in order,
      * using the provided credentials. The first authentication failure takes
      * priority, but remaining AuthenticationProviders are attempted. If any
@@ -169,14 +113,15 @@ public class AuthenticationService {
      *     The AuthenticatedUser given by the highest-priority
      *     AuthenticationProvider for which the given credentials are valid.
      *
-     * @throws GuacamoleException
+     * @throws GuacamoleAuthenticationProcessException
      *     If the given credentials are not valid for any
      *     AuthenticationProvider, or if an error occurs while authenticating
      *     the user.
      */
     private AuthenticatedUser authenticateUser(Credentials credentials)
-        throws GuacamoleException {
+        throws GuacamoleAuthenticationProcessException {
 
+        AuthenticationProvider failedAuthProvider = null;
         GuacamoleCredentialsException authFailure = null;
 
         // Attempt authentication against each AuthenticationProvider
@@ -191,27 +136,29 @@ public class AuthenticationService {
 
             // Insufficient credentials should take precedence
             catch (GuacamoleInsufficientCredentialsException e) {
-                if (authFailure == null || authFailure instanceof GuacamoleInvalidCredentialsException)
+                if (authFailure == null || authFailure instanceof GuacamoleInvalidCredentialsException) {
+                    failedAuthProvider = authProvider;
                     authFailure = e;
+                }
             }
-            
+
             // Catch other credentials exceptions and assign the first one
             catch (GuacamoleCredentialsException e) {
-                if (authFailure == null)
+                if (authFailure == null) {
+                    failedAuthProvider = authProvider;
                     authFailure = e;
+                }
+            }
+
+            catch (GuacamoleException | RuntimeException | Error e) {
+                throw new GuacamoleAuthenticationProcessException("User "
+                        + "authentication was aborted.", authProvider, e);
             }
 
         }
 
-        // If a specific failure occured, rethrow that
-        if (authFailure != null)
-            throw authFailure;
-
-        // Otherwise, request standard username/password
-        throw new GuacamoleInvalidCredentialsException(
-            "Permission Denied.",
-            CredentialsInfo.USERNAME_PASSWORD
-        );
+        throw new GuacamoleAuthenticationProcessException("User authentication "
+                + "failed.", failedAuthProvider, authFailure);
 
     }
 
@@ -230,51 +177,29 @@ public class AuthenticationService {
      *     A AuthenticatedUser which may have been updated due to re-
      *     authentication.
      *
-     * @throws GuacamoleException
+     * @throws GuacamoleAuthenticationProcessException
      *     If an error prevents the user from being re-authenticated.
      */
     private AuthenticatedUser updateAuthenticatedUser(AuthenticatedUser authenticatedUser,
-            Credentials credentials) throws GuacamoleException {
+            Credentials credentials) throws GuacamoleAuthenticationProcessException {
 
         // Get original AuthenticationProvider
         AuthenticationProvider authProvider = authenticatedUser.getAuthenticationProvider();
 
-        // Re-authenticate the AuthenticatedUser against the original AuthenticationProvider only
-        authenticatedUser = authProvider.updateAuthenticatedUser(authenticatedUser, credentials);
-        if (authenticatedUser == null)
-            throw new GuacamoleSecurityException("User re-authentication failed.");
+        try {
 
-        return authenticatedUser;
+            // Re-authenticate the AuthenticatedUser against the original AuthenticationProvider only
+            authenticatedUser = authProvider.updateAuthenticatedUser(authenticatedUser, credentials);
+            if (authenticatedUser == null)
+                throw new GuacamoleSecurityException("User re-authentication failed.");
 
-    }
+            return authenticatedUser;
 
-    /**
-     * Notify all bound listeners that a successful authentication
-     * has occurred.
-     *
-     * @param authenticatedUser
-     *      The user that was successfully authenticated.
-     *
-     * @throws GuacamoleException
-     *      If thrown by a listener.
-     */
-    private void fireAuthenticationSuccessEvent(AuthenticatedUser authenticatedUser)
-            throws GuacamoleException {
-        listenerService.handleEvent(new AuthenticationSuccessEvent(authenticatedUser));
-    }
+        }
+        catch (GuacamoleException | RuntimeException | Error e) {
+            throw new GuacamoleAuthenticationProcessException("User re-authentication failed.", authProvider, e);
+        }
 
-    /**
-     * Notify all bound listeners that an authentication attempt has failed.
-     *
-     * @param credentials
-     *      The credentials that failed to authenticate.
-     *
-     * @throws GuacamoleException
-     *      If thrown by a listener.
-     */
-    private void fireAuthenticationFailedEvent(Credentials credentials)
-            throws GuacamoleException {
-        listenerService.handleEvent(new AuthenticationFailureEvent(credentials));
     }
 
     /**
@@ -292,61 +217,23 @@ public class AuthenticationService {
      *     The AuthenticatedUser associated with the given session and
      *     credentials.
      *
-     * @throws GuacamoleException
+     * @throws GuacamoleAuthenticationProcessException
      *     If an error occurs while authenticating or re-authenticating the
      *     user.
      */
     private AuthenticatedUser getAuthenticatedUser(GuacamoleSession existingSession,
-            Credentials credentials) throws GuacamoleException {
+            Credentials credentials) throws GuacamoleAuthenticationProcessException {
 
-        try {
-
-            // Re-authenticate user if session exists
-            if (existingSession != null) {
-                AuthenticatedUser updatedUser = updateAuthenticatedUser(
-                        existingSession.getAuthenticatedUser(), credentials);
-                fireAuthenticationSuccessEvent(updatedUser);
-                return updatedUser;
-            }
-
-            // Otherwise, attempt authentication as a new user
-            AuthenticatedUser authenticatedUser = AuthenticationService.this.authenticateUser(credentials);
-            fireAuthenticationSuccessEvent(authenticatedUser);
-
-            if (logger.isInfoEnabled())
-                logger.info("User \"{}\" successfully authenticated from {}.",
-                        authenticatedUser.getIdentifier(),
-                        getLoggableAddress(credentials.getRequest()));
-
-            return authenticatedUser;
-
+        // Re-authenticate user if session exists
+        if (existingSession != null) {
+            AuthenticatedUser updatedUser = updateAuthenticatedUser(
+                    existingSession.getAuthenticatedUser(), credentials);
+            return updatedUser;
         }
 
-        // Log and rethrow any authentication errors
-        catch (GuacamoleException e) {
-
-            fireAuthenticationFailedEvent(credentials);
-
-            // Get request and username for sake of logging
-            HttpServletRequest request = credentials.getRequest();
-            String username = credentials.getUsername();
-
-            // Log authentication failures with associated usernames
-            if (username != null) {
-                if (logger.isWarnEnabled())
-                    logger.warn("Authentication attempt from {} for user \"{}\" failed.",
-                            getLoggableAddress(request), username);
-            }
-
-            // Log anonymous authentication failures
-            else if (logger.isDebugEnabled())
-                logger.debug("Anonymous authentication attempt from {} failed.",
-                        getLoggableAddress(request));
-
-            // Rethrow exception
-            throw e;
-
-        }
+        // Otherwise, attempt authentication as a new user
+        AuthenticatedUser authenticatedUser = AuthenticationService.this.authenticateUser(credentials);
+        return authenticatedUser;
 
     }
 
@@ -371,15 +258,14 @@ public class AuthenticationService {
      *     A List of all UserContexts associated with the given
      *     AuthenticatedUser.
      *
-     * @throws GuacamoleException
+     * @throws GuacamoleAuthenticationProcessException
      *     If an error occurs while creating or updating any UserContext.
      */
     private List<DecoratedUserContext> getUserContexts(GuacamoleSession existingSession,
             AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
+            throws GuacamoleAuthenticationProcessException {
 
-        List<DecoratedUserContext> userContexts =
-                new ArrayList<DecoratedUserContext>(authProviders.size());
+        List<DecoratedUserContext> userContexts = new ArrayList<>(authProviders.size());
 
         // If UserContexts already exist, update them and add to the list
         if (existingSession != null) {
@@ -392,7 +278,15 @@ public class AuthenticationService {
 
                 // Update existing UserContext
                 AuthenticationProvider authProvider = oldUserContext.getAuthenticationProvider();
-                UserContext updatedUserContext = authProvider.updateUserContext(oldUserContext, authenticatedUser, credentials);
+                UserContext updatedUserContext;
+                try {
+                    updatedUserContext = authProvider.updateUserContext(oldUserContext, authenticatedUser, credentials);
+                }
+                catch (GuacamoleException | RuntimeException | Error e) {
+                    throw new GuacamoleAuthenticationProcessException("User "
+                            + "authentication aborted during UserContext update.",
+                            authProvider, e);
+                }
 
                 // Add to available data, if successful
                 if (updatedUserContext != null)
@@ -415,7 +309,15 @@ public class AuthenticationService {
             for (AuthenticationProvider authProvider : authProviders) {
 
                 // Generate new UserContext
-                UserContext userContext = authProvider.getUserContext(authenticatedUser);
+                UserContext userContext;
+                try {
+                    userContext = authProvider.getUserContext(authenticatedUser);
+                }
+                catch (GuacamoleException | RuntimeException | Error e) {
+                    throw new GuacamoleAuthenticationProcessException("User "
+                            + "authentication aborted during initial "
+                            + "UserContext creation.", authProvider, e);
+                }
 
                 // Add to available data, if successful
                 if (userContext != null)
@@ -453,32 +355,93 @@ public class AuthenticationService {
      *     If the authentication or re-authentication attempt fails.
      */
     public String authenticate(Credentials credentials, String token)
-        throws GuacamoleException {
+            throws GuacamoleException {
 
-        // Pull existing session if token provided
-        GuacamoleSession existingSession;
-        if (token != null)
-            existingSession = tokenSessionMap.get(token);
-        else
-            existingSession = null;
-
-        // Get up-to-date AuthenticatedUser and associated UserContexts
-        AuthenticatedUser authenticatedUser = getAuthenticatedUser(existingSession, credentials);
-        List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, credentials);
-
-        // Update existing session, if it exists
         String authToken;
-        if (existingSession != null) {
-            authToken = token;
-            existingSession.setAuthenticatedUser(authenticatedUser);
-            existingSession.setUserContexts(userContexts);
+        try {
+
+            // Allow extensions to make updated to credentials prior to
+            // actual authentication (NOTE: We do this here instead of in a
+            // separate function to ensure that failure events accurately
+            // represent the credentials that failed when a chain of credential
+            // updates is involved)
+            for (AuthenticationProvider authProvider : authProviders) {
+                try {
+                    credentials = authProvider.updateCredentials(credentials);
+                }
+                catch (GuacamoleException | RuntimeException | Error e) {
+                    throw new GuacamoleAuthenticationProcessException("User "
+                            + "authentication aborted during credential "
+                            + "update/revision.", authProvider, e);
+                }
+            }
+
+            // Fire pre-authentication event before ANY authn/authz occurs at all
+            final Credentials updatedCredentials = credentials;
+            listenerService.handleEvent((AuthenticationRequestReceivedEvent) () -> updatedCredentials);
+
+            // Pull existing session if token provided
+            GuacamoleSession existingSession;
+            if (token != null)
+                existingSession = tokenSessionMap.get(token);
+            else
+                existingSession = null;
+
+            // Get up-to-date AuthenticatedUser and associated UserContexts
+            AuthenticatedUser authenticatedUser = getAuthenticatedUser(existingSession, updatedCredentials);
+            List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, updatedCredentials);
+
+            // Update existing session, if it exists
+            if (existingSession != null) {
+                authToken = token;
+                existingSession.setAuthenticatedUser(authenticatedUser);
+                existingSession.setUserContexts(userContexts);
+            }
+
+            // If no existing session, generate a new token/session pair
+            else {
+                authToken = authTokenGenerator.getToken();
+                tokenSessionMap.put(authToken, new GuacamoleSession(listenerService, authenticatedUser, userContexts));
+            }
+
+            // Report authentication success
+            try {
+                listenerService.handleEvent(new AuthenticationSuccessEvent(authenticatedUser,
+                        existingSession != null));
+            }
+            catch (GuacamoleException e) {
+                throw new GuacamoleAuthenticationProcessException("User "
+                        + "authentication aborted by event listener.", null, e);
+            }
+
         }
 
-        // If no existing session, generate a new token/session pair
-        else {
-            authToken = authTokenGenerator.getToken();
-            tokenSessionMap.put(authToken, new GuacamoleSession(environment, authenticatedUser, userContexts));
-            logger.debug("Login was successful for user \"{}\".", authenticatedUser.getIdentifier());
+        // Log and rethrow any authentication errors
+        catch (GuacamoleAuthenticationProcessException e) {
+
+            // NOTE: The credentials referenced here are intentionally NOT the
+            // final updatedCredentials reference (though they may often be
+            // equivalent) to ensure that failure events accurately represent
+            // the credentials that failed if that failure occurs in the middle
+            // of a chain of credential updates via updateCredentials()
+            listenerService.handleEvent(new AuthenticationFailureEvent(credentials,
+                    e.getAuthenticationProvider(), e.getCause()));
+
+            // Rethrow exception
+            e.rethrowCause();
+
+            // This line SHOULD be unreachable unless a bug causes
+            // rethrowCause() to not actually rethrow the underlying failure
+            Throwable cause = e.getCause();
+            if (cause != null) {
+                logger.warn("An underlying internal error was not correctly rethrown by rethrowCause(): {}", cause.getMessage());
+                logger.debug("Internal error not rethrown by rethrowCause().", cause);
+            }
+            else
+                logger.warn("An underlying internal error was not correctly rethrown by rethrowCause().");
+
+            throw e.getCauseAsGuacamoleException();
+
         }
 
         return authToken;

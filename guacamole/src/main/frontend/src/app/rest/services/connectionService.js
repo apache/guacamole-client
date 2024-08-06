@@ -24,7 +24,6 @@ angular.module('rest').factory('connectionService', ['$injector',
         function connectionService($injector) {
 
     // Required services
-    var requestService        = $injector.get('requestService');
     var authenticationService = $injector.get('authenticationService');
     var cacheService          = $injector.get('cacheService');
     
@@ -152,6 +151,49 @@ angular.module('rest').factory('connectionService', ['$injector',
                 cacheService.users.removeAll();
             });
         }
+
+    };
+
+    /**
+     * Makes a request to the REST API to apply a supplied list of connection
+     * patches, returning a promise that can be used for processing the results 
+     * of the call. 
+     * 
+     * This operation is atomic - if any errors are encountered during the 
+     * connection patching process, the entire request will fail, and no 
+     * changes will be persisted.
+     *
+     * @param {String} dataSource
+     *     The identifier of the data source associated with the connections to
+     *     be patched.
+     *
+     * @param {DirectoryPatch.<Connection>[]} patches 
+     *     An array of patches to apply.
+     *
+     * @returns {Promise}
+     *     A promise for the HTTP call which will succeed if and only if the
+     *     patch operation is successful.
+     */
+    service.patchConnections = function patchConnections(dataSource, patches) {
+
+        // Make the PATCH request
+        return authenticationService.request({
+            method  : 'PATCH',
+            url     : 'api/session/data/' + encodeURIComponent(dataSource) + '/connections',
+            data    : patches
+        })
+
+        // Clear the cache
+        .then(function connectionsPatched(patchResponse){
+            cacheService.connections.removeAll();
+
+            // Clear users cache to force reload of permissions for any
+            // newly created or replaced connections
+            cacheService.users.removeAll();
+
+            return patchResponse;
+            
+        });
 
     };
     

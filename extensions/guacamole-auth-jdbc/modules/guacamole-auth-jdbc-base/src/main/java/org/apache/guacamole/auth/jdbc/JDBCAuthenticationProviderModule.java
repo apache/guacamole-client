@@ -45,6 +45,7 @@ import org.apache.guacamole.auth.jdbc.security.SaltService;
 import org.apache.guacamole.auth.jdbc.security.SecureRandomSaltService;
 import org.apache.guacamole.auth.jdbc.permission.SystemPermissionService;
 import org.apache.guacamole.auth.jdbc.user.UserService;
+import org.apache.ibatis.session.ExecutorType;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.apache.guacamole.auth.jdbc.permission.ConnectionGroupPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ConnectionGroupPermissionService;
@@ -126,6 +127,12 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         // Transaction factory
         bindTransactionFactoryType(JdbcTransactionFactory.class);
         
+        // Set the JDBC Auth provider to use batch execution if enabled
+        if (environment.shouldUseBatchExecutor())
+            bindConfigurationSetting(configuration -> {
+                configuration.setDefaultExecutorType(ExecutorType.BATCH);
+            });
+
         // Add MyBatis mappers
         addMapperClass(ConnectionMapper.class);
         addMapperClass(ConnectionGroupMapper.class);

@@ -28,7 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
-import org.apache.guacamole.auth.saml.acs.AuthenticationSessionManager;
+import org.apache.guacamole.auth.saml.acs.SAMLAuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
 import org.apache.guacamole.form.Field;
@@ -61,13 +61,34 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
      * Manager of active SAML authentication attempts.
      */
     @Inject
-    private AuthenticationSessionManager sessionManager;
+    private SAMLAuthenticationSessionManager sessionManager;
 
     /**
      * Service for processing SAML requests/responses.
      */
     @Inject
     private SAMLService saml;
+
+    /**
+     * Return the value of the session identifier associated with the given
+     * credentials, or null if no session identifier is found in the
+     * credentials.
+     *
+     * @param credentials
+     *     The credentials from which to extract the session identifier.
+     *
+     * @return
+     *     The session identifier associated with the given credentials, or
+     *     null if no identifier is found.
+     */
+    public static String getSessionIdentifier(Credentials credentials) {
+
+        // Return the session identifier from the request params, if set, or
+        // null otherwise
+        return credentials != null && credentials.getRequest() != null
+                ? credentials.getRequest().getParameter(AUTH_SESSION_QUERY_PARAM)
+                : null;
+    }
 
     @Override
     public SAMLAuthenticatedUser authenticateUser(Credentials credentials)
@@ -80,7 +101,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
             return null;
 
         // Use established SAML identity if already provided by the SAML IdP
-        AssertedIdentity identity = sessionManager.getIdentity(request.getParameter(AUTH_SESSION_QUERY_PARAM));
+        AssertedIdentity identity = sessionManager.getIdentity(
+                getSessionIdentifier(credentials));
+
         if (identity != null) {
 
             // Back-port the username to the credentials

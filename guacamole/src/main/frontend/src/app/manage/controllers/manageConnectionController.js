@@ -36,6 +36,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
     var $q                       = $injector.get('$q');
     var $routeParams             = $injector.get('$routeParams');
     var $translate               = $injector.get('$translate');
+    var $window                  = $injector.get('$window');
     var authenticationService    = $injector.get('authenticationService');
     var connectionService        = $injector.get('connectionService');
     var connectionGroupService   = $injector.get('connectionGroupService');
@@ -318,6 +319,7 @@ angular.module('manage').controller('manageConnectionController', ['$scope', '$i
      */
     $scope.cloneConnection = function cloneConnection() {
         $location.path('/manage/' + encodeURIComponent($scope.selectedDataSource) + '/connections').search('clone', identifier);
+        $window.scrollTo(0,0);
     };
             
     /**

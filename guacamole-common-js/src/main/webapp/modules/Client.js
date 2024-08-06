@@ -32,14 +32,7 @@ Guacamole.Client = function(tunnel) {
 
     var guac_client = this;
 
-    var STATE_IDLE          = 0;
-    var STATE_CONNECTING    = 1;
-    var STATE_WAITING       = 2;
-    var STATE_CONNECTED     = 3;
-    var STATE_DISCONNECTING = 4;
-    var STATE_DISCONNECTED  = 5;
-
-    var currentState = STATE_IDLE;
+    var currentState = Guacamole.Client.State.IDLE;
     
     var currentTimestamp = 0;
 
@@ -161,8 +154,8 @@ Guacamole.Client = function(tunnel) {
     }
 
     function isConnected() {
-        return currentState == STATE_CONNECTED
-            || currentState == STATE_WAITING;
+        return currentState == Guacamole.Client.State.CONNECTED
+            || currentState == Guacamole.Client.State.WAITING;
     }
 
     /**
@@ -927,6 +920,12 @@ Guacamole.Client = function(tunnel) {
      * @event
      * @param {!number} timestamp
      *     The timestamp associated with the sync instruction.
+     *
+     * @param {!number} frames
+     *     The number of frames that were considered or combined to produce the
+     *     frame associated with this sync instruction, or zero if this value
+     *     is not known or the remote desktop server provides no concept of
+     *     frames.
      */
     this.onsync = null;
 
@@ -1655,6 +1654,7 @@ Guacamole.Client = function(tunnel) {
         "sync": function(parameters) {
 
             var timestamp = parseInt(parameters[0]);
+            var frames = parameters[1] ? parseInt(parameters[1]) : 0;
 
             // Flush display, send sync when done
             display.flush(function displaySyncComplete() {
@@ -1672,15 +1672,15 @@ Guacamole.Client = function(tunnel) {
                     currentTimestamp = timestamp;
                 }
 
-            });
+            }, timestamp, frames);
 
             // If received first update, no longer waiting.
-            if (currentState === STATE_WAITING)
-                setState(STATE_CONNECTED);
+            if (currentState === Guacamole.Client.State.WAITING)
+                setState(Guacamole.Client.State.CONNECTED);
 
             // Call sync handler if defined
             if (guac_client.onsync)
-                guac_client.onsync(timestamp);
+                guac_client.onsync(timestamp, frames);
 
         },
 
@@ -1832,10 +1832,10 @@ Guacamole.Client = function(tunnel) {
     this.disconnect = function() {
 
         // Only attempt disconnection not disconnected.
-        if (currentState != STATE_DISCONNECTED
-                && currentState != STATE_DISCONNECTING) {
+        if (currentState != Guacamole.Client.State.DISCONNECTED
+                && currentState != Guacamole.Client.State.DISCONNECTING) {
 
-            setState(STATE_DISCONNECTING);
+            setState(Guacamole.Client.State.DISCONNECTING);
 
             // Stop sending keep-alive messages
             stopKeepAlive();
@@ -1843,7 +1843,7 @@ Guacamole.Client = function(tunnel) {
             // Send disconnect message and disconnect
             tunnel.sendMessage("disconnect");
             tunnel.disconnect();
-            setState(STATE_DISCONNECTED);
+            setState(Guacamole.Client.State.DISCONNECTED);
 
         }
 
@@ -1862,13 +1862,13 @@ Guacamole.Client = function(tunnel) {
      */
     this.connect = function(data) {
 
-        setState(STATE_CONNECTING);
+        setState(Guacamole.Client.State.CONNECTING);
 
         try {
             tunnel.connect(data);
         }
         catch (status) {
-            setState(STATE_IDLE);
+            setState(Guacamole.Client.State.IDLE);
             throw status;
         }
 
@@ -1876,9 +1876,61 @@ Guacamole.Client = function(tunnel) {
         // still here, even if not active
         scheduleKeepAlive();
 
-        setState(STATE_WAITING);
+        setState(Guacamole.Client.State.WAITING);
     };
 
+};
+
+/**
+ * All possible Guacamole Client states.
+ * 
+ * @type {!Object.<string, number>}
+ */
+Guacamole.Client.State = {
+    
+    /**
+     * The client is idle, with no active connection.
+     * 
+     * @type number
+     */
+    "IDLE" : 0,
+    
+    /**
+     * The client is in the process of establishing a connection.
+     * 
+     * @type {!number}
+     */
+    "CONNECTING" : 1,
+    
+    /**
+     * The client is waiting on further information or a remote server to
+     * establish the connection.
+     * 
+     * @type {!number}
+     */
+    "WAITING" : 2,
+    
+    /**
+     * The client is actively connected to a remote server.
+     * 
+     * @type {!number}
+     */
+    "CONNECTED" : 3,
+    
+    /**
+     * The client is in the process of disconnecting from the remote server.
+     * 
+     * @type {!number}
+     */
+    "DISCONNECTING" : 4,
+    
+    /**
+     * The client has completed the connection and is no longer connected.
+     * 
+     * @type {!number}
+     */
+    "DISCONNECTED" : 5
+    
 };
 
 /**

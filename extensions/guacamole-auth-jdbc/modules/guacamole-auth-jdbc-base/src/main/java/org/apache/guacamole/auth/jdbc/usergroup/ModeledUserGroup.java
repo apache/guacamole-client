@@ -43,35 +43,16 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
         implements UserGroup {
 
     /**
-     * The name of the attribute which controls whether a user group is
-     * disabled.
-     */
-    public static final String DISABLED_ATTRIBUTE_NAME = "disabled";
-
-    /**
-     * All attributes related to restricting user groups, within a logical
-     * form.
-     */
-    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
-        new BooleanField(DISABLED_ATTRIBUTE_NAME, "true")
-    ));
-
-    /**
      * All possible attributes of user groups organized as individual,
      * logical forms.
      */
-    public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
-        ACCOUNT_RESTRICTIONS
-    ));
-
+    public static final Collection<Form> ATTRIBUTES = Collections.emptyList();
+    
     /**
      * The names of all attributes which are explicitly supported by this
      * extension's UserGroup objects.
      */
-    public static final Set<String> ATTRIBUTE_NAMES =
-            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-                DISABLED_ATTRIBUTE_NAME
-            )));
+    public static final Set<String> ATTRIBUTE_NAMES = Collections.emptySet();
 
     /**
      * Provider for RelatedObjectSets containing the user groups of which this
@@ -121,6 +102,16 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
         super.init(currentUser, model);
         this.exposeRestrictedAttributes = exposeRestrictedAttributes;
     }
+    
+    @Override
+    public boolean isDisabled() {
+        return getModel().isDisabled();
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled) {
+        getModel().setDisabled(disabled);
+    }
 
     /**
      * Stores all restricted (privileged) attributes within the given Map,
@@ -133,9 +124,6 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
      */
     private void putRestrictedAttributes(Map<String, String> attributes) {
 
-        // Set disabled attribute
-        attributes.put(DISABLED_ATTRIBUTE_NAME, getModel().isDisabled() ? "true" : null);
-
     }
 
     /**
@@ -146,9 +134,6 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
      *     The Map to pull all restricted attributes from.
      */
     private void setRestrictedAttributes(Map<String, String> attributes) {
-
-        // Translate disabled attribute
-        getModel().setDisabled("true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
 
     }
 

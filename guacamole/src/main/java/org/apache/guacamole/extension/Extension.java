@@ -397,7 +397,7 @@ public class Extension {
             }
 
             // Create isolated classloader for this extension
-            classLoader = ExtensionClassLoader.getInstance(file, temporaryFiles, parent);
+            classLoader = new ExtensionClassLoader(file, temporaryFiles, parent);
 
         }
 

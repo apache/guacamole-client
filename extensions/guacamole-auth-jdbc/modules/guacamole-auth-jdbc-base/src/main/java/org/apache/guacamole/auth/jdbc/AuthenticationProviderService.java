@@ -110,4 +110,34 @@ public interface AuthenticationProviderService  {
             UserContext context, AuthenticatedUser authenticatedUser,
             Credentials credentials) throws GuacamoleException;
 
+    /**
+     * Decorates a UserContext instance for the given already-authenticated user.
+     * If no decoration is required, the original UserContext will be returned.
+     *
+     * @param authenticationProvider
+     *     The AuthenticationProvider on behalf of which the UserContext is
+     *     being decorated.
+     *
+     * @param context
+     *     The UserContext to decorate.
+     *
+     * @param authenticatedUser
+     *     The AuthenticatedUser associated with the UserContext being decorated.
+     *
+     * @param credentials
+     *     The credentials most recently submitted by the user. These
+     *     credentials are not guaranteed to be the same as the credentials
+     *     already associated with the AuthenticatedUser.
+     *
+     * @return
+     *     A decorated UserContext instance for the user identified by the given
+     *     credentials, or the original user context if no decoration is required.
+     *
+     * @throws GuacamoleException
+     *     If the an error occurs during decoration of the UserContext.
+     */
+    public UserContext decorateUserContext(AuthenticationProvider authenticationProvider,
+            UserContext context, AuthenticatedUser authenticatedUser,
+            Credentials credentials) throws GuacamoleException;
+
 }

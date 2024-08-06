@@ -28,17 +28,12 @@ angular.module('history').factory('guacHistory', ['$injector',
 
     // Required services
     var localStorageService = $injector.get('localStorageService');
+    var preferenceService   = $injector.get('preferenceService');
 
     var service = {};
 
     // The parameter name for getting the history from local storage
     var GUAC_HISTORY_STORAGE_KEY = "GUAC_HISTORY";
-                                    
-    /**
-     * The number of entries to allow before removing old entries based on the
-     * cutoff.
-     */
-    var IDEAL_LENGTH = 6;
 
     /**
      * The top few recent connections, sorted in order of most recent access.
@@ -46,6 +41,22 @@ angular.module('history').factory('guacHistory', ['$injector',
      * @type HistoryEntry[]
      */
     service.recentConnections = [];
+
+    /**
+     * Remove from the list of connection history the item having the given
+     * identfier.
+     * 
+     * @param {String} id
+     *     The identifier of the item to remove from the history list.
+     *     
+     * @returns {boolean}
+     *     True if the removal was successful, otherwise false.
+     */
+    service.removeEntry = function removeEntry(id) {
+    
+        return _.remove(service.recentConnections, entry => entry.id === id).length > 0;
+    
+    };
 
     /**
      * Updates the thumbnail and access time of the history entry for the
@@ -77,8 +88,8 @@ angular.module('history').factory('guacHistory', ['$injector',
         ));
 
         // Truncate history to ideal length
-        if (service.recentConnections.length > IDEAL_LENGTH)
-            service.recentConnections.length = IDEAL_LENGTH;
+        if (service.recentConnections.length > preferenceService.preferences.numberOfRecentConnections)
+            service.recentConnections.length = preferenceService.preferences.numberOfRecentConnections;
 
         // Save updated history
         localStorageService.setItem(GUAC_HISTORY_STORAGE_KEY, service.recentConnections);

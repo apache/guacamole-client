@@ -29,9 +29,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -73,56 +70,6 @@ public class ExtensionClassLoader extends URLClassLoader {
      * fails.
      */
     private final ClassLoader parent;
-
-    /**
-     * Returns an instance of ExtensionClassLoader configured to load classes
-     * from the given extension .jar. If a necessary class cannot be found
-     * within the .jar, the given parent ClassLoader is used. Calling this
-     * function multiple times will not affect previously-returned instances of
-     * ExtensionClassLoader.
-     *
-     * @param extension
-     *     The extension .jar file from which classes should be loaded.
-     *
-     * @param temporaryFiles
-     *     A modifiable List that should be populated with all temporary files
-     *     created for the given extension. These files should be deleted on
-     *     application shutdown in reverse order.
-     *
-     * @param parent
-     *     The ClassLoader to use if class resolution through the extension
-     *     .jar fails.
-     *
-     * @return
-     *     A ExtensionClassLoader instance which loads classes from the
-     *     given extension .jar file.
-     *
-     * @throws GuacamoleException
-     *     If the given file is not actually a file, or the contents of the
-     *     file cannot be read.
-     */
-    public static ExtensionClassLoader getInstance(final File extension,
-            final List<File> temporaryFiles, final ClassLoader parent)
-            throws GuacamoleException {
-
-        try {
-            // Attempt to create classloader which loads classes from the given
-            // .jar file
-            return AccessController.doPrivileged(new PrivilegedExceptionAction<ExtensionClassLoader>() {
-
-                @Override
-                public ExtensionClassLoader run() throws GuacamoleException {
-                    return new ExtensionClassLoader(extension, temporaryFiles, parent);
-                }
-
-            });
-        }
-
-        catch (PrivilegedActionException e) {
-            throw (GuacamoleException) e.getException();
-        }
-
-    }
 
     /**
      * Returns the URL that refers to the given file. If the given file refers
@@ -320,7 +267,7 @@ public class ExtensionClassLoader extends URLClassLoader {
      *     If the given file is not actually a file, or the contents of the
      *     file cannot be read.
      */
-    private ExtensionClassLoader(File extension, List<File> temporaryFiles,
+    public ExtensionClassLoader(File extension, List<File> temporaryFiles,
             ClassLoader parent) throws GuacamoleException {
         super(getExtensionURLs(extension, temporaryFiles), null);
         this.parent = parent;

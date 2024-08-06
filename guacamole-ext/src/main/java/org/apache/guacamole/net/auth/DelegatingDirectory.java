@@ -90,4 +90,10 @@ public class DelegatingDirectory<ObjectType extends Identifiable>
         directory.remove(identifier);
     }
 
+    @Override
+    public void tryAtomically(AtomicDirectoryOperation<ObjectType> operation)
+            throws GuacamoleException {
+        directory.tryAtomically(operation);
+    }
+
 }

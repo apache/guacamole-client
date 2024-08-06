@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.rest.tunnel;
 
+import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.tunnel.UserTunnel;
 
 /**
@@ -31,12 +32,15 @@ public interface TunnelResourceFactory {
      * Creates a new TunnelResource which exposes the contents of the
      * given tunnel.
      *
+     * @param authenticatedUser
+     *     The user that is accessing the resource.
+     *
      * @param tunnel
      *     The tunnel whose contents should be exposed.
      *
      * @return
      *     A new TunnelResource which exposes the contents of the given tunnel.
      */
-    TunnelResource create(UserTunnel tunnel);
+    TunnelResource create(AuthenticatedUser authenticatedUser, UserTunnel tunnel);
 
 }

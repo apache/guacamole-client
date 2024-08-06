@@ -24,6 +24,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.HEAD;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -116,7 +117,7 @@ public class SessionResource {
         UserContext userContext = session.getUserContext(authProviderIdentifier);
 
         // Return a resource exposing the retrieved UserContext
-        return userContextResourceFactory.create(userContext);
+        return userContextResourceFactory.create(session.getAuthenticatedUser(), userContext);
 
     }
 
@@ -182,6 +183,17 @@ public class SessionResource {
         if (!authenticationService.destroyGuacamoleSession(token))
             throw new GuacamoleResourceNotFoundException("No such token.");
 
+    }
+
+    /**
+     * Tests whether this session resource represented a valid session at the
+     * time it was created. This function always succeeds. It is possible for
+     * an HTTP request aimed at this operation to fail, but that failure occurs
+     * further up the chain when locating the session.
+     */
+    @HEAD
+    public void checkValidity() {
+        // Do nothing
     }
 
 }

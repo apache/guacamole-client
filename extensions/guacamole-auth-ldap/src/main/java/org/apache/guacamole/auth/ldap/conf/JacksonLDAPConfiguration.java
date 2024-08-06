@@ -116,6 +116,14 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
      */
     @JsonProperty("encryption-method")
     private String encryptionMethod;
+    
+    /**
+     * The raw YAML value of {@link LDAPGuacamoleProperties#LDAP_SSL_PROTOCOL}. If
+     * not set within the YAML, this will be null, and will default to the value
+     * specified by the LDAP API library.
+     */
+    @JsonProperty("ssl-protocol")
+    private String sslProtocol;
 
     /**
      * The raw YAML value of {@link LDAPGuacamoleProperties#LDAP_MAX_SEARCH_RESULTS}.
@@ -364,6 +372,12 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     public EncryptionMethod getEncryptionMethod() throws GuacamoleException {
         return withDefault(LDAPGuacamoleProperties.LDAP_ENCRYPTION_METHOD,
                 encryptionMethod, defaultConfig::getEncryptionMethod);
+    }
+    
+    @Override
+    public LDAPSSLProtocol getSslProtocol() throws GuacamoleException {
+        return withDefault(LDAPGuacamoleProperties.LDAP_SSL_PROTOCOL,
+                sslProtocol, defaultConfig::getSslProtocol);
     }
 
     @Override

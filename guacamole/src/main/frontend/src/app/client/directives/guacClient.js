@@ -54,6 +54,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
         const ManagedClient = $injector.get('ManagedClient');
             
         // Required services
+        const $rootScope = $injector.get('$rootScope');
         const $window = $injector.get('$window');
             
         /**
@@ -198,6 +199,28 @@ angular.module('client').directive('guacClient', [function guacClient() {
         };
 
         /**
+         * Return the name of the angular event associated with the provided
+         * mouse event.
+         *
+         * @param {Guacamole.Mouse.MouseEvent} event
+         *     The mouse event to determine an angular event name for.
+         *
+         * @returns
+         *     The name of the angular event associated with the provided
+         *     mouse event.
+         */
+        const getMouseEventName = event => {
+            switch (event.type) {
+                case 'mousedown':
+                    return 'guacClientMouseDown';
+                case 'mouseup':
+                    return 'guacClientMouseUp';
+                default:
+                    return 'guacClientMouseMove';
+            }
+        };
+
+        /**
          * Handles a mouse event originating from the user's actual mouse.
          * This differs from handleEmulatedMouseEvent() in that the
          * software mouse cursor must be shown only if the user's browser
@@ -219,6 +242,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
             // Send mouse state, show cursor if necessary
             display.showCursor(!localCursor);
             client.sendMouseState(event.state, true);
+
+            // Broadcast the mouse event
+            $rootScope.$broadcast(getMouseEventName(event), event, client);
 
         };
 
@@ -248,6 +274,31 @@ angular.module('client').directive('guacClient', [function guacClient() {
             scrollToMouse(event.state);
             client.sendMouseState(event.state, true);
 
+            // Broadcast the mouse event
+            $rootScope.$broadcast(getMouseEventName(event), event, client);
+
+        };
+
+        /**
+         * Return the name of the angular event associated with the provided
+         * touch event.
+         *
+         * @param {Guacamole.Touch.TouchEvent} event
+         *     The touch event to determine an angular event name for.
+         *
+         * @returns
+         *     The name of the angular event associated with the provided
+         *     touch event.
+         */
+        const getTouchEventName = event => {
+            switch (event.type) {
+                case 'touchstart':
+                    return 'guacClientTouchStart';
+                case 'touchend':
+                    return 'guacClientTouchEnd';
+                default:
+                    return 'guacClientTouchMove';
+            }
         };
 
         /**
@@ -268,6 +319,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
             // Send touch state, hiding local cursor
             display.showCursor(false);
             client.sendTouchState(event.state, true);
+
+            // Broadcast the touch event
+            $rootScope.$broadcast(getTouchEventName(event), event, client);
 
         };
 

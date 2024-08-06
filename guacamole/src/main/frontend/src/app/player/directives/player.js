@@ -79,6 +79,11 @@
  */
 angular.module('player').directive('guacPlayer', ['$injector', function guacPlayer($injector) {
 
+    // Required services
+    const keyEventDisplayService = $injector.get('keyEventDisplayService');
+    const playerHeatmapService = $injector.get('playerHeatmapService');
+    const playerTimeService = $injector.get('playerTimeService');
+
     /**
      * The number of milliseconds after the last detected mouse activity after
      * which the associated CSS class should be removed.
@@ -169,6 +174,80 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.seekPosition = null;
 
         /**
+         * Any batches of text typed during the recording.
+         *
+         * @type {keyEventDisplayService.TextBatch[]}
+         */
+        $scope.textBatches = [];
+
+        /**
+         * Whether or not the key log viewer should be displayed. False by
+         * default unless explicitly enabled by user interaction.
+         *
+         * @type {boolean}
+         */
+        $scope.showKeyLog = false;
+
+        /**
+         * The height, in pixels, of the SVG heatmap paths. Note that this is not
+         * necessarily the actual rendered height, just the initial size of the
+         * SVG path before any styling is applied.
+         *
+         * @type {!number}
+         */
+        $scope.HEATMAP_HEIGHT = 100;
+
+        /**
+         * The width, in pixels, of the SVG heatmap paths. Note that this is not
+         * necessarily the actual rendered width, just the initial size of the
+         * SVG path before any styling is applied.
+         *
+         * @type {!number}
+         */
+        $scope.HEATMAP_WIDTH = 1000;
+
+        /**
+         * The maximum number of key events per millisecond to display in the
+         * key event heatmap. Any key event rates exceeding this value will be
+         * capped at this rate to ensure that unsually large spikes don't make
+         * swamp the rest of the data.
+         *
+         * Note: This is 6 keys per second (events include both presses and
+         * releases) - equivalent to ~88 words per minute typed.
+         *
+         * @type {!number}
+         */
+        const KEY_EVENT_RATE_CAP = 12 / 1000;
+
+        /**
+         * The maximum number of frames per millisecond to display in the
+         * frame heatmap. Any frame rates exceeding this value will be
+         * capped at this rate to ensure that unsually large spikes don't make
+         * swamp the rest of the data.
+         *
+         * @type {!number}
+         */
+        const FRAME_RATE_CAP = 10 / 1000;
+
+        /**
+         * An SVG path describing a smoothed curve that visualizes the relative
+         * number of frames rendered throughout the recording - i.e. a heatmap
+         * of screen updates.
+         *
+         * @type {!string}
+         */
+        $scope.frameHeatmap = '';
+
+        /**
+         * An SVG path describing a smoothed curve that visualizes the relative
+         * number of key events recorded throughout the recording - i.e. a
+         * heatmap of key events.
+         *
+         * @type {!string}
+         */
+        $scope.keyHeatmap = '';
+
+        /**
          * Whether a seek request is currently in progress. A seek request is
          * in progress if the user is attempting to change the current playback
          * position (the user is manipulating the playback position slider).
@@ -195,56 +274,44 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         var mouseActivityTimer = null;
 
         /**
-         * Formats the given number as a decimal string, adding leading zeroes
-         * such that the string contains at least two digits. The given number
-         * MUST NOT be negative.
+         * The recording-relative timestamp of each frame of the recording that
+         * has been processed so far.
          *
-         * @param {!number} value
-         *     The number to format.
-         *
-         * @returns {!string}
-         *     The decimal string representation of the given value, padded
-         *     with leading zeroes up to a minimum length of two digits.
+         * @type {!number[]}
          */
-        const zeroPad = function zeroPad(value) {
-            return value > 9 ? value : '0' + value;
+        var frameTimestamps = [];
+
+        /**
+         * The recording-relative timestamp of each text event that has been
+         * processed so far.
+         *
+         * @type {!number[]}
+         */
+        var keyTimestamps = [];
+
+        /**
+         * Return true if any batches of key event logs are available for this
+         * recording, or false otherwise.
+         *
+         * @return
+         *     True if any batches of key event logs are avaiable for this
+         *     recording, or false otherwise.
+         */
+        $scope.hasTextBatches = function hasTextBatches () {
+            return $scope.textBatches.length >= 0;
         };
 
         /**
-         * Formats the given quantity of milliseconds as days, hours, minutes,
-         * and whole seconds, separated by colons (DD:HH:MM:SS). Hours are
-         * included only if the quantity is at least one hour, and days are
-         * included only if the quantity is at least one day. All included
-         * groups are zero-padded to two digits with the exception of the
-         * left-most group.
-         *
-         * @param {!number} value
-         *     The time to format, in milliseconds.
-         *
-         * @returns {!string}
-         *     The given quantity of milliseconds formatted as "DD:HH:MM:SS".
+         * Toggle the visibility of the text key log viewer.
          */
-        $scope.formatTime = function formatTime(value) {
-
-            // Round provided value down to whole seconds
-            value = Math.floor((value || 0) / 1000);
-
-            // Separate seconds into logical groups of seconds, minutes,
-            // hours, etc.
-            var groups = [ 1, 24, 60, 60 ];
-            for (var i = groups.length - 1; i >= 0; i--) {
-                var placeValue = groups[i];
-                groups[i] = zeroPad(value % placeValue);
-                value = Math.floor(value / placeValue);
-            }
-
-            // Format groups separated by colons, stripping leading zeroes and
-            // groups which are entirely zeroes, leaving at least minutes and
-            // seconds
-            var formatted = groups.join(':');
-            return /^[0:]*([0-9]{1,2}(?::[0-9]{2})+)$/.exec(formatted)[1];
-
+        $scope.toggleKeyLogView = function toggleKeyLogView() {
+            $scope.showKeyLog = !$scope.showKeyLog;
         };
+
+        /**
+         * @borrows playerTimeService.formatTime
+         */
+        $scope.formatTime = playerTimeService.formatTime;
 
         /**
          * Pauses playback and decouples the position slider from current
@@ -276,30 +343,52 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
             // If a recording is present and there is an active seek request,
             // restore the playback state at the time that request began and
             // begin seeking to the requested position
-            if ($scope.recording && pendingSeekRequest) {
-
-                $scope.seekPosition = null;
-                $scope.operationMessage = 'PLAYER.INFO_SEEK_IN_PROGRESS';
-                $scope.operationProgress = 0;
-
-                // Cancel seek when requested, updating playback position if
-                // that position changed
-                $scope.cancelOperation = function abortSeek() {
-                    $scope.recording.cancel();
-                    $scope.playbackPosition = $scope.seekPosition || $scope.playbackPosition;
-                };
-
-                resumeAfterSeekRequest && $scope.recording.play();
-                $scope.recording.seek($scope.playbackPosition, function seekComplete() {
-                    $scope.operationMessage = null;
-                    $scope.$evalAsync();
-                });
-
-            }
+            if ($scope.recording && pendingSeekRequest)
+                $scope.seekToPlaybackPosition();
 
             // Flag seek request as completed
             pendingSeekRequest = false;
 
+        };
+
+        /**
+         * Seek the recording to the specified position within the recording,
+         * in milliseconds.
+         *
+         * @param {Number} timestamp
+         *      The position to seek to within the current record,
+         *      in milliseconds.
+         */
+        $scope.seekToTimestamp = function seekToTimestamp(timestamp) {
+
+            // Set the timestamp and seek to it
+            $scope.playbackPosition = timestamp;
+            $scope.seekToPlaybackPosition();
+
+        };
+
+        /**
+         * Seek the recording to the current playback position value.
+         */
+        $scope.seekToPlaybackPosition = function seekToPlaybackPosition() {
+
+            $scope.seekPosition = null;
+            $scope.operationMessage = 'PLAYER.INFO_SEEK_IN_PROGRESS';
+            $scope.operationProgress = 0;
+
+            // Cancel seek when requested, updating playback position if
+            // that position changed
+            $scope.cancelOperation = function abortSeek() {
+                $scope.recording.cancel();
+                $scope.playbackPosition = $scope.seekPosition || $scope.playbackPosition;
+            };
+
+            resumeAfterSeekRequest && $scope.recording.play();
+            $scope.recording.seek($scope.playbackPosition, function seekComplete() {
+                $scope.seekPosition = null;
+                $scope.operationMessage = null;
+                $scope.$evalAsync();
+            });
         };
 
         /**
@@ -342,11 +431,25 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 // Begin downloading the recording
                 $scope.recording.connect();
 
-                // Notify listeners when the recording is completely loaded
+                // Notify listeners and set any heatmap paths
+                // when the recording is completely loaded
                 $scope.recording.onload = function recordingLoaded() {
                     $scope.operationMessage = null;
                     $scope.$emit('guacPlayerLoaded');
                     $scope.$evalAsync();
+
+                    const recordingDuration = $scope.recording.getDuration();
+
+                    // Generate heat maps for rendered frames and typed text
+                    $scope.frameHeatmap = (
+                        playerHeatmapService.generateHeatmapPath(
+                            frameTimestamps, recordingDuration, FRAME_RATE_CAP,
+                            $scope.HEATMAP_HEIGHT, $scope.HEATMAP_WIDTH));
+                    $scope.keyHeatmap = (
+                        playerHeatmapService.generateHeatmapPath(
+                            keyTimestamps, recordingDuration, KEY_EVENT_RATE_CAP,
+                            $scope.HEATMAP_HEIGHT, $scope.HEATMAP_WIDTH));
+
                 };
 
                 // Notify listeners if an error occurs
@@ -362,6 +465,9 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     $scope.operationProgress = src.size ? current / src.size : 0;
                     $scope.$emit('guacPlayerProgress', duration, current);
                     $scope.$evalAsync();
+
+                    // Store the timestamp of the just-received frame
+                    frameTimestamps.push(duration);
                 };
 
                 // Notify listeners when playback has started/resumed
@@ -374,6 +480,17 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 $scope.recording.onpause = function playbackPaused() {
                     $scope.$emit('guacPlayerPause');
                     $scope.$evalAsync();
+                };
+
+                // Extract key events from the recording
+                $scope.recording.onkeyevents = function keyEventsReceived(events) {
+
+                    // Convert to a display-optimized format
+                    $scope.textBatches = (
+                            keyEventDisplayService.parseEvents(events));
+
+                    keyTimestamps = events.map(event => event.timestamp);
+
                 };
 
                 // Notify listeners when current position within the recording

@@ -64,12 +64,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
     private static final Logger logger = LoggerFactory.getLogger(ModeledUser.class);
 
     /**
-     * The name of the attribute which controls whether a user account is
-     * disabled.
-     */
-    public static final String DISABLED_ATTRIBUTE_NAME = "disabled";
-
-    /**
      * The name of the attribute which controls whether a user's password is
      * expired and must be reset upon login.
      */
@@ -121,7 +115,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      * form.
      */
     public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
-        new BooleanField(DISABLED_ATTRIBUTE_NAME, "true"),
         new BooleanField(EXPIRED_ATTRIBUTE_NAME, "true"),
         new TimeField(ACCESS_WINDOW_START_ATTRIBUTE_NAME),
         new TimeField(ACCESS_WINDOW_END_ATTRIBUTE_NAME),
@@ -149,7 +142,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
                 User.Attribute.EMAIL_ADDRESS,
                 User.Attribute.ORGANIZATION,
                 User.Attribute.ORGANIZATIONAL_ROLE,
-                DISABLED_ATTRIBUTE_NAME,
                 EXPIRED_ATTRIBUTE_NAME,
                 ACCESS_WINDOW_START_ATTRIBUTE_NAME,
                 ACCESS_WINDOW_END_ATTRIBUTE_NAME,
@@ -281,6 +273,16 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         userModel.setPasswordDate(new Timestamp(System.currentTimeMillis()));
 
     }
+    
+    @Override
+    public boolean isDisabled() {
+        return getModel().isDisabled();
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled) {
+        getModel().setDisabled(disabled);
+    }
 
     /**
      * Returns the this user's current password record. If the user is new, this
@@ -308,9 +310,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      *     The Map to store all restricted attributes within.
      */
     private void putRestrictedAttributes(Map<String, String> attributes) {
-
-        // Set disabled attribute
-        attributes.put(DISABLED_ATTRIBUTE_NAME, getModel().isDisabled() ? "true" : null);
 
         // Set password expired attribute
         attributes.put(EXPIRED_ATTRIBUTE_NAME, getModel().isExpired() ? "true" : null);
@@ -423,10 +422,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      *     The Map to pull all restricted attributes from.
      */
     private void setRestrictedAttributes(Map<String, String> attributes) {
-
-        // Translate disabled attribute
-        if (attributes.containsKey(DISABLED_ATTRIBUTE_NAME))
-            getModel().setDisabled("true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
 
         // Translate password expired attribute
         if (attributes.containsKey(EXPIRED_ATTRIBUTE_NAME))
@@ -735,19 +730,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      */
     public boolean isAccountAccessible() {
         return isActive(getAccessWindowStart(), getAccessWindowEnd());
-    }
-
-    /**
-     * Returns whether this user account has been disabled. The credentials of
-     * disabled user accounts are treated as invalid, effectively disabling
-     * that user's access to data for which they would otherwise have
-     * permission.
-     *
-     * @return
-     *     true if this user account has been disabled, false otherwise.
-     */
-    public boolean isDisabled() {
-        return getModel().isDisabled();
     }
 
     /**

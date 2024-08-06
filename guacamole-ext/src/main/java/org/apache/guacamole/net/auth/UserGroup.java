@@ -26,7 +26,7 @@ import org.apache.guacamole.GuacamoleException;
  * any number of Guacamole users and other user groups, and defines the
  * permissions implicitly granted to its members.
  */
-public interface UserGroup extends Identifiable, Attributes, Permissions {
+public interface UserGroup extends Disableable, Identifiable, Attributes, Permissions {
 
     /**
      * Returns a set of all readable user groups of which this user group is a

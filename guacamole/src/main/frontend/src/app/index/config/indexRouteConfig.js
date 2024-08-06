@@ -126,6 +126,23 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { routeToUserHomePage: routeToUserHomePage }
         })
 
+        // Connection import page
+        .when('/import/:dataSource/connection', {
+            title         : 'APP.NAME',
+            bodyClassName : 'settings',
+            templateUrl   : 'app/import/templates/connectionImport.html',
+            controller    : 'importConnectionsController',
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
+        // Connection import file format help page
+        .when('/import/connection/file-format-help', {
+            title         : 'APP.NAME',
+            bodyClassName : 'settings',
+            templateUrl   : 'app/import/templates/connectionImportFileHelp.html',
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
         // Management screen
         .when('/settings/:dataSource?/:tab', {
             title         : 'APP.NAME',

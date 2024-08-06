@@ -20,8 +20,9 @@
 package org.apache.guacamole.auth.openid;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
-import org.apache.guacamole.auth.openid.token.NonceService;
+import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
 
 /**
@@ -32,7 +33,7 @@ public class OpenIDAuthenticationProviderModule extends AbstractModule {
     @Override
     protected void configure() {
         bind(ConfigurationService.class);
-        bind(NonceService.class);
+        bind(NonceService.class).in(Scopes.SINGLETON);
         bind(TokenValidationService.class);
     }
 

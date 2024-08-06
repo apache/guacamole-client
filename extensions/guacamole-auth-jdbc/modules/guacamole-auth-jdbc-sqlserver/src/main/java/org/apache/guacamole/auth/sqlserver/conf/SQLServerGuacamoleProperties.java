@@ -44,7 +44,7 @@ public class SQLServerGuacamoleProperties {
         public String getName() { return "sqlserver-hostname"; }
 
     };
-    
+
     /**
      * The instance name of the SQL Server where the Guacamole database is running.
      */
@@ -53,7 +53,7 @@ public class SQLServerGuacamoleProperties {
 
         @Override
         public String getName() { return "sqlserver-instance"; }
-                
+
     };
 
     /**
@@ -193,7 +193,7 @@ public class SQLServerGuacamoleProperties {
         public String getName() { return "sqlserver-driver"; }
 
     };
-    
+
     /**
      * Whether or not to automatically create accounts in the SQL Server
      * database for users who successfully authenticate through another
@@ -201,10 +201,36 @@ public class SQLServerGuacamoleProperties {
      */
     public static final BooleanGuacamoleProperty SQLSERVER_AUTO_CREATE_ACCOUNTS =
             new BooleanGuacamoleProperty() {
-        
+
         @Override
         public String getName() { return "sqlserver-auto-create-accounts"; }
-        
+
+    };
+
+    /**
+     * Whether or not to track connection history for connections that do not originate
+     * from within the SQL Server database. By default, external connection history will be
+     * tracked.
+     */
+    public static final BooleanGuacamoleProperty SQLSERVER_TRACK_EXTERNAL_CONNECTION_HISTORY =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-track-external-connection-history"; }
+
+    };
+
+    /**
+     * Whether or not user-specific access time windows should be enforced for active sessions,
+     * i.e. whether users with active sessions should be logged out immediately when an access
+     * window closes.
+     */
+    public static final BooleanGuacamoleProperty SQLSERVER_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-enforce-access-windows-for-active-sessions"; }
+
     };
     
     /**
@@ -216,6 +242,19 @@ public class SQLServerGuacamoleProperties {
 
         @Override
         public String getName() { return "sqlserver-batch-size"; }
+
+    };
+
+    /**
+     * Whether or not all server certificates should be trusted, including those
+     * signed by an unknown certificate authority, such as self-signed
+     * certificates.
+     */
+    public static final BooleanGuacamoleProperty SQLSERVER_TRUST_ALL_SERVER_CERTIFICATES =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "sqlserver-trust-all-server-certificates"; }
 
     };
 

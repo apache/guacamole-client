@@ -24,9 +24,6 @@ import java.io.FilenameFilter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.guacamole.GuacamoleException;
@@ -36,44 +33,6 @@ import org.apache.guacamole.GuacamoleException;
  * given directory.
  */
 public class DirectoryClassLoader extends URLClassLoader {
-
-    /**
-     * Returns an instance of DirectoryClassLoader configured to load .jar
-     * files from the given directory. Calling this function multiple times
-     * will not affect previously-returned instances of DirectoryClassLoader.
-     *
-     * @param dir
-     *     The directory from which .jar files should be read.
-     *
-     * @return
-     *     A DirectoryClassLoader instance which loads classes from the .jar
-     *     files in the given directory.
-     *
-     * @throws GuacamoleException
-     *     If the given file is not a directory, or the contents of the given
-     *     directory cannot be read.
-     */
-    public static DirectoryClassLoader getInstance(final File dir)
-            throws GuacamoleException {
-
-        try {
-            // Attempt to create singleton classloader which loads classes from
-            // all .jar's in the lib directory defined in guacamole.properties
-            return AccessController.doPrivileged(new PrivilegedExceptionAction<DirectoryClassLoader>() {
-
-                @Override
-                public DirectoryClassLoader run() throws GuacamoleException {
-                    return new DirectoryClassLoader(dir);
-                }
-
-            });
-        }
-
-        catch (PrivilegedActionException e) {
-            throw (GuacamoleException) e.getException();
-        }
-
-    }
 
     /**
      * Returns all .jar files within the given directory as an array of URLs.
@@ -142,7 +101,7 @@ public class DirectoryClassLoader extends URLClassLoader {
      *     directory cannot be read.
      */
 
-    private DirectoryClassLoader(File dir) throws GuacamoleException {
+    public DirectoryClassLoader(File dir) throws GuacamoleException {
         super(getJarURLs(dir), DirectoryClassLoader.class.getClassLoader());
     }
 

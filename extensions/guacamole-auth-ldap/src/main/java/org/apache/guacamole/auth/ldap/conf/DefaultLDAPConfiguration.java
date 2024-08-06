@@ -89,6 +89,11 @@ public class DefaultLDAPConfiguration implements LDAPConfiguration {
     public EncryptionMethod getEncryptionMethod() {
         return EncryptionMethod.NONE;
     }
+    
+    @Override
+    public LDAPSSLProtocol getSslProtocol() {
+        return LDAPSSLProtocol.TLSv1_3;
+    }
 
     @Override
     public int getMaxResults() {

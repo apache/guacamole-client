@@ -9,6 +9,10 @@
         "org.apache.guacamole.auth.saml.SAMLAuthenticationProvider"
     ],
 
+    "listeners" : [
+        "org.apache.guacamole.auth.saml.SAMLAuthenticationEventListener"
+    ],
+
     "css" : [
         "styles/sso-providers.css"
     ],
@@ -25,6 +29,7 @@
         "translations/fr.json",
         "translations/ja.json",
         "translations/ko.json",
+        "translations/pl.json",
         "translations/pt.json",
         "translations/ru.json",
         "translations/zh.json"

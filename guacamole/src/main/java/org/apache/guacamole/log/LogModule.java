@@ -25,7 +25,13 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import com.google.inject.AbstractModule;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +51,19 @@ public class LogModule extends AbstractModule {
     private final Environment environment;
 
     /**
+     * Property that specifies the highest level of verbosity that Guacamole
+     * should use for the messages in its logs.
+     */
+    private static final EnumGuacamoleProperty<LogLevel> LOG_LEVEL = new EnumGuacamoleProperty<LogLevel>(LogLevel.class) {
+
+        @Override
+        public String getName() {
+            return "log-level";
+        }
+
+    };
+
+    /**
      * Creates a new LogModule which uses the given environment to determine
      * the logging configuration.
      *
@@ -54,26 +73,57 @@ public class LogModule extends AbstractModule {
     public LogModule(Environment environment) {
         this.environment = environment;
     }
-    
+
+    /**
+     * Returns an InputStream that streams the contents of the "logback.xml"
+     * file that Logback should read to configure logging to Guacamole. If the
+     * user provided their own "logback.xml" within GUACAMOLE_HOME, this will
+     * be an InputStream that reads the contents of that file. The required
+     * "logback.xml" will otherwise be dynamically generated based on the value
+     * of the "log-level" property.
+     *
+     * @return
+     *     An InputStream that streams the contents of the "logback.xml" file
+     *     that Logback should read to configure logging to Guacamole.
+     */
+    private InputStream getLogbackConfiguration() {
+
+        // Check for custom logback.xml
+        File logbackFile = new File(environment.getGuacamoleHome(), "logback.xml");
+        if (logbackFile.exists()) {
+            try {
+                logger.info("Loading logback configuration from \"{}\".", logbackFile);
+                return new FileInputStream(logbackFile);
+            }
+            catch (FileNotFoundException e) {
+                logger.info("Logback configuration could not be read "
+                        + "from \"{}\": {}", logbackFile, e.getMessage());
+            }
+        }
+
+        // Default to generating an internal logback.xml based on a simple
+        // "log-level" property
+        LogLevel level;
+        try {
+            level = environment.getProperty(LOG_LEVEL, LogLevel.INFO);
+            logger.info("Logging will be at the \"{}\" level.", level.getCanonicalName());
+        }
+        catch (GuacamoleException e) {
+            level = LogLevel.INFO;
+            logger.error("Falling back to \"{}\" log level: {}", level.getCanonicalName(), e.getMessage());
+        }
+
+        return level.getLogbackConfiguration();
+
+    }
+
     @Override
     protected void configure() {
 
-        // Only load logback configuration if GUACAMOLE_HOME exists
-        File guacamoleHome = environment.getGuacamoleHome();
-        if (!guacamoleHome.isDirectory())
-            return;
+        try (InputStream logbackConfiguration = getLogbackConfiguration()) {
 
-        // Check for custom logback.xml
-        File logbackConfiguration = new File(guacamoleHome, "logback.xml");
-        if (!logbackConfiguration.exists())
-            return;
-
-        logger.info("Loading logback configuration from \"{}\".", logbackConfiguration);
-
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        context.reset();
-
-        try {
+            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+            context.reset();
 
             // Initialize logback
             JoranConfigurator configurator = new JoranConfigurator();
@@ -86,7 +136,11 @@ public class LogModule extends AbstractModule {
         }
         catch (JoranException e) {
             logger.error("Initialization of logback failed: {}", e.getMessage());
-            logger.debug("Unable to load logback configuration..", e);
+            logger.debug("Unable to load logback configuration.", e);
+        }
+        catch (IOException e) {
+            logger.warn("Logback configuration file could not be cleanly closed: {}", e.getMessage());
+            logger.debug("Failed to close logback configuration file.", e);
         }
 
     }

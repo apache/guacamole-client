@@ -104,8 +104,8 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     /**
      * Constructs a new SQLServerEnvironment, providing access to SQLServer-specific
      * configuration options.
-     * 
-     * @throws GuacamoleException 
+     *
+     * @throws GuacamoleException
      *     If an error occurs while setting up the underlying JDBCEnvironment
      *     or while parsing legacy SQLServer configuration options.
      */
@@ -178,11 +178,11 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     /**
      * Returns the hostname of the SQLServer server hosting the Guacamole
      * authentication tables. If unspecified, this will be "localhost".
-     * 
+     *
      * @return
      *     The URL of the SQLServer server.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while retrieving the property value.
      */
     public String getSQLServerHostname() throws GuacamoleException {
@@ -191,15 +191,15 @@ public class SQLServerEnvironment extends JDBCEnvironment {
             DEFAULT_HOSTNAME
         );
     }
-    
+
     /**
      * Returns the instance name of the SQL Server installation hosting the
      * Guacamole database, if any.  If unspecified it will be null.
-     * 
+     *
      * @return
      *     The instance name of the SQL Server install hosting the Guacamole
      *     database, or null if undefined.
-     * 
+     *
      * @throws GuacamoleException
      *     If an error occurs reading guacamole.properties.
      */
@@ -208,16 +208,16 @@ public class SQLServerEnvironment extends JDBCEnvironment {
             SQLServerGuacamoleProperties.SQLSERVER_INSTANCE
         );
     }
-    
+
     /**
      * Returns the port number of the SQLServer server hosting the Guacamole
      * authentication tables. If unspecified, this will be the default
      * SQLServer port of 5432.
-     * 
+     *
      * @return
      *     The port number of the SQLServer server.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while retrieving the property value.
      */
     public int getSQLServerPort() throws GuacamoleException {
@@ -226,15 +226,15 @@ public class SQLServerEnvironment extends JDBCEnvironment {
             DEFAULT_PORT
         );
     }
-    
+
     /**
      * Returns the name of the SQLServer database containing the Guacamole
      * authentication tables.
-     * 
+     *
      * @return
      *     The name of the SQLServer database.
      *
-     * @throws GuacamoleException 
+     * @throws GuacamoleException
      *     If an error occurs while retrieving the property value, or if the
      *     value was not set, as this property is required.
      */
@@ -246,7 +246,7 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     public String getUsername() throws GuacamoleException {
         return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_USERNAME);
     }
-    
+
     @Override
     public String getPassword() throws GuacamoleException {
         return getRequiredProperty(SQLServerGuacamoleProperties.SQLSERVER_PASSWORD);
@@ -273,10 +273,59 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     public boolean isRecursiveQuerySupported(SqlSession session) {
         return true; // All versions of SQL Server support recursive queries through CTEs
     }
-    
+
     @Override
     public boolean autoCreateAbsentAccounts() throws GuacamoleException {
         return getProperty(SQLServerGuacamoleProperties.SQLSERVER_AUTO_CREATE_ACCOUNTS,
+                false);
+    }
+
+    @Override
+    public boolean trackExternalConnectionHistory() throws GuacamoleException {
+
+        // Track external connection history unless explicitly disabled
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_TRACK_EXTERNAL_CONNECTION_HISTORY,
+                true);
+    }
+
+    @Override
+    public boolean enforceAccessWindowsForActiveSessions() throws GuacamoleException {
+
+        // Enforce access window restrictions for active sessions unless explicitly disabled
+        return getProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS,
+                true);
+    }
+
+    @Override
+    public boolean shouldUseBatchExecutor() {
+
+        // The SQL Server driver does not work when batch execution is enabled.
+        // Specifically, inserts fail with com.microsoft.sqlserver.jdbc.SQLServerException:
+        // The statement must be executed before any results can be obtained.
+        // See https://github.com/microsoft/mssql-jdbc/issues/358 for more.
+        logger.warn(
+                "JDBC batch executor is disabled for SQL Server Connections. "
+                + "Large batched updates may run slower."
+        );
+        return false;
+        
+    }
+
+    /**
+     * Returns true if all server certificates should be trusted, including
+     * those signed by an unknown certificate authority, such as self-signed
+     * certificates, or false otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while retrieving the property value, or if the
+     *     value was not set, as this property is required.
+     */
+    public boolean trustAllServerCertificates() throws GuacamoleException {
+
+        // Do not trust unknown certificates unless explicitly enabled
+        return getProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_TRUST_ALL_SERVER_CERTIFICATES,
                 false);
     }
 

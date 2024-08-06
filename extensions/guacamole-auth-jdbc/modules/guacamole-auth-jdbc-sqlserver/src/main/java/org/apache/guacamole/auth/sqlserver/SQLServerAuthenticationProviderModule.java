@@ -76,6 +76,10 @@ public class SQLServerAuthenticationProviderModule implements Module {
 
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
+
+        // Trust unknown server certificates if configured to do so
+        if (environment.trustAllServerCertificates())
+            driverProperties.setProperty("trustServerCertificate", "true");
         
         // Retrieve instance name and set it
         String instance = environment.getSQLServerInstance();

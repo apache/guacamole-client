@@ -50,6 +50,7 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
 
             // Required services
             var guacHistory       = $injector.get('guacHistory');
+            var preferenceService = $injector.get('preferenceService');
 
             /**
              * Array of all known and visible recently-used connections.
@@ -57,11 +58,36 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
              * @type RecentConnection[]
              */
             $scope.recentConnections = [];
+            
+            /**
+             * Remove the connection from the recent connection list having the
+             * given identifier.
+             * 
+             * @param {!RecentConnection} recentConnection
+             *     The recent connection to remove from the history list.
+             *     
+             * @returns {boolean}
+             *     True if the removal was successful, otherwise false.
+             */
+            $scope.removeRecentConnection = function removeRecentConnection(recentConnection) {
+                return ($scope.recentConnections.splice($scope.recentConnections.indexOf(recentConnection), 1) 
+                        && guacHistory.removeEntry(recentConnection.entry.id));
+            };
+            
+            /**
+             * Returns whether or not recent connections should be displayed.
+             * 
+             * @returns {!boolean}
+             *     true if recent connections should be displayed, otherwise false.
+             */
+            $scope.willShowRecentConnections = function willShowRecentConnections() {
+                return preferenceService.preferences.showRecentConnections;
+            };
 
             /**
              * Returns whether recent connections are available for display.
              *
-             * @returns {Boolean}
+             * @returns {!boolean}
              *     true if recent connections are present, false otherwise.
              */
             $scope.hasRecentConnections = function hasRecentConnections() {

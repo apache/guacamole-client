@@ -22,19 +22,33 @@ package org.apache.guacamole.vault.user;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.form.Form;
+import org.apache.guacamole.net.auth.ActiveConnection;
+import org.apache.guacamole.net.auth.Connectable;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
+import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.SharingProfile;
 import org.apache.guacamole.net.auth.TokenInjectingUserContext;
+import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.GuacamoleTokenUndefinedException;
 import org.apache.guacamole.token.TokenFilter;
+import org.apache.guacamole.vault.conf.VaultAttributeService;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.slf4j.Logger;
@@ -122,6 +136,20 @@ public class VaultUserContext extends TokenInjectingUserContext {
     private VaultSecretService secretService;
 
     /**
+     * Service for retrieving any custom attributes defined for the
+     * current vault implementation.
+     */
+    @Inject
+    private VaultAttributeService attributeService;
+
+    /**
+     * Service for modifying any underlying directories for the current
+     * vault implementation.
+     */
+    @Inject
+    private VaultDirectoryService directoryService;
+
+    /**
      * Creates a new VaultUserContext which automatically injects tokens
      * containing values of secrets retrieved from a vault. The given
      * UserContext is decorated such that connections and connection groups
@@ -182,6 +210,10 @@ public class VaultUserContext extends TokenInjectingUserContext {
      * corresponding values from the vault, using the given TokenFilter to
      * filter tokens within the secret names prior to retrieving those secrets.
      *
+     * @param connectable
+     *     The connection or connection group to which the connection is being
+     *     established.
+     *
      * @param tokenMapping
      *     The mapping dictating the name of the secret which maps to each
      *     parameter token, where the key is the name of the parameter token
@@ -211,7 +243,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
      *     If the value for any applicable secret cannot be retrieved from the
      *     vault due to an error.
      */
-    private Map<String, Future<String>> getTokens(Map<String, String> tokenMapping,
+    private Map<String, Future<String>> getTokens(
+            Connectable connectable, Map<String, String> tokenMapping,
             TokenFilter secretNameFilter, GuacamoleConfiguration config,
             TokenFilter configFilter) throws GuacamoleException {
 
@@ -236,14 +269,16 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
             // Initiate asynchronous retrieval of the token value
             String tokenName = entry.getKey();
-            Future<String> secret = secretService.getValue(secretName);
+            Future<String> secret = secretService.getValue(
+                    this, connectable, secretName);
             pendingTokens.put(tokenName, secret);
 
         }
 
         // Additionally include any dynamic, parameter-based tokens
-        pendingTokens.putAll(secretService.getTokens(config, configFilter));
-        
+        pendingTokens.putAll(secretService.getTokens(
+                this, connectable, config, configFilter));
+
         return pendingTokens;
 
     }
@@ -318,7 +353,8 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        tokens.putAll(resolve(getTokens(confService.getTokenMapping(), filter,
+        tokens.putAll(resolve(getTokens(
+                connectionGroup, confService.getTokenMapping(), filter,
                 null, new TokenFilter(tokens))));
 
     }
@@ -371,7 +407,6 @@ public class VaultUserContext extends TokenInjectingUserContext {
         TokenFilter filter = createFilter();
         filter.setToken(CONNECTION_NAME_TOKEN, connection.getName());
         filter.setToken(CONNECTION_IDENTIFIER_TOKEN, identifier);
-
         // Add hostname and username tokens if available (implementations are
         // not required to expose connection configuration details)
 
@@ -398,8 +433,95 @@ public class VaultUserContext extends TokenInjectingUserContext {
 
         // Substitute tokens producing secret names, retrieving and storing
         // those secrets as parameter tokens
-        tokens.putAll(resolve(getTokens(confService.getTokenMapping(), filter,
-                config, new TokenFilter(tokens))));
+        tokens.putAll(resolve(getTokens(connection, confService.getTokenMapping(),
+                filter, config, new TokenFilter(tokens))));
+
+    }
+
+    @Override
+    public Directory<User> getUserDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getUserDirectory(super.getUserDirectory());
+    }
+
+    @Override
+    public Directory<UserGroup> getUserGroupDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getUserGroupDirectory(super.getUserGroupDirectory());
+    }
+
+    @Override
+    public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getConnectionDirectory(super.getConnectionDirectory());
+    }
+
+    @Override
+    public Directory<ConnectionGroup> getConnectionGroupDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getConnectionGroupDirectory(super.getConnectionGroupDirectory());
+    }
+
+    @Override
+    public Directory<ActiveConnection> getActiveConnectionDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getActiveConnectionDirectory(super.getActiveConnectionDirectory());
+    }
+
+    @Override
+    public Directory<SharingProfile> getSharingProfileDirectory() throws GuacamoleException {
+
+        // Defer to the vault-specific directory service
+        return directoryService.getSharingProfileDirectory(super.getSharingProfileDirectory());
+
+    }
+
+    @Override
+    public Collection<Form> getUserAttributes() {
+
+        // Add any custom attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getUserAttributes().stream(),
+                attributeService.getUserAttributes().stream()
+        ).collect(Collectors.toList()));
+
+    }
+
+    @Override
+    public Collection<Form> getUserPreferenceAttributes() {
+
+        // Add any custom preference attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getUserPreferenceAttributes().stream(),
+                attributeService.getUserPreferenceAttributes().stream()
+        ).collect(Collectors.toList()));
+
+    }
+
+    @Override
+    public Collection<Form> getConnectionAttributes() {
+
+        // Add any custom attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getConnectionAttributes().stream(),
+                attributeService.getConnectionAttributes().stream()
+        ).collect(Collectors.toList()));
+
+    }
+
+    @Override
+    public Collection<Form> getConnectionGroupAttributes() {
+
+        // Add any custom attributes to any previously defined attributes
+        return Collections.unmodifiableCollection(Stream.concat(
+                super.getConnectionGroupAttributes().stream(),
+                attributeService.getConnectionGroupAttributes().stream()
+        ).collect(Collectors.toList()));
 
     }
 

@@ -45,6 +45,15 @@
                     "name"    : "ignore-cert",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"    : "cert-tofu",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "cert-fingerprints",
+                    "type"    : "TEXT"
                 }
             ]
         },
@@ -100,6 +109,7 @@
                         "failsafe",
                         "fr-be-azerty",
                         "fr-fr-azerty",
+                        "fr-ca-qwerty",
                         "fr-ch-qwertz",
                         "hu-hu-qwertz",                        
                         "it-it-qwerty",
@@ -107,6 +117,8 @@
                         "no-no-qwerty",
                         "pl-pl-qwerty",
                         "pt-br-qwerty",
+                        "pt-pt-qwerty",
+                        "ro-ro-qwerty",
                         "sv-se-qwerty",
                         "da-dk-qwerty",
                         "tr-tr-qwerty"
@@ -297,6 +309,11 @@
                     "name"    : "disable-glyph-caching",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-gfx",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
@@ -376,6 +393,11 @@
                 },
                 {
                     "name"  : "create-recording-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-write-existing",
                     "type"  : "BOOLEAN",
                     "options" : [ "true" ]
                 }

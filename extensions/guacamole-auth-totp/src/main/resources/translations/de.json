@@ -25,8 +25,28 @@
         "INFO_VERIFICATION_FAILED" : "Verifikation fehlgeschlagen. Bitte nochmals versuchen.",
 
         "HELP_ENROLL_BARCODE" : "Bitte scannen Sie den Barcode mittels einer Zweifaktor-Authentifizierungs-App auf Ihrem Smartphone oder einem anderen Gerät, um den Prozess fortzusetzen.",
-        "HELP_ENROLL_VERIFY"  : "Nach dem Scannen des Barcodes wird Ihnen ein {DIGITS}-stelliger Authentifizierungscode angezeigt. Bitte geben Sie diesen Code ein um die Aktivierung des Zweifaktor-Verfahrens abzuschliessen."
+        "HELP_ENROLL_VERIFY"  : "Nach dem Scannen des Barcodes wird Ihnen ein {DIGITS}-stelliger Authentifizierungscode angezeigt. Bitte geben Sie diesen Code ein um die Aktivierung des Zweifaktor-Verfahrens abzuschliessen.",
 
+        "SECTION_HEADER_DETAILS" : "Details:"
+
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED"      : "TOTP deaktivieren:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Geheimer Schlüssel erstellt:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Authentifizierungs-Gerät bestätigt:",
+        
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "TOTP Ausroll-Status"
+        
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED" : "TOTP deaktivieren:",
+        
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "TOTP Konfiguration"
+        
     }
 
 }

@@ -29,7 +29,7 @@ import org.apache.guacamole.GuacamoleUnsupportedException;
 /**
  * A user of the Guacamole web application.
  */
-public interface User extends Identifiable, Attributes, Permissions {
+public interface User extends Disableable, Identifiable, Attributes, Permissions {
 
     /**
      * All standard attribute names with semantics defined by the Guacamole web

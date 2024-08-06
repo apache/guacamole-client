@@ -109,4 +109,13 @@ public class SharedAuthenticationProviderService implements AuthenticationProvid
 
     }
 
+    @Override
+    public UserContext decorateUserContext(AuthenticationProvider authenticationProvider,
+            UserContext context, AuthenticatedUser authenticatedUser,
+            Credentials credentials) {
+
+        // There's no need to decorate the user context here
+        return context;
+    }
+
 }

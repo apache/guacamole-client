@@ -35,11 +35,14 @@ import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.extension.ExtensionModule;
 import org.apache.guacamole.log.LogModule;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.event.ApplicationShutdownEvent;
+import org.apache.guacamole.net.event.ApplicationStartedEvent;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.FileGuacamoleProperties;
 import org.apache.guacamole.rest.RESTServiceModule;
 import org.apache.guacamole.rest.auth.HashTokenSessionMap;
 import org.apache.guacamole.rest.auth.TokenSessionMap;
+import org.apache.guacamole.rest.event.ListenerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,13 +95,26 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
 
     /**
      * A property that determines whether environment variables are evaluated
-     * to override properties specified in guacamole.properties.
+     * to supply properties not specified in guacamole.properties.
      */
     private static final BooleanGuacamoleProperty ENABLE_ENVIRONMENT_PROPERTIES =
         new BooleanGuacamoleProperty() {
             @Override
             public String getName() {
                 return "enable-environment-properties";
+            }
+        };
+
+    /**
+     * A property that determines whether environment variables of the form
+     * "*_FILE" are evaluated to supply properties not specified in
+     * guacamole.properties nor in environment variables.
+     */
+    private static final BooleanGuacamoleProperty ENABLE_FILE_ENVIRONMENT_PROPERTIES =
+        new BooleanGuacamoleProperty() {
+            @Override
+            public String getName() {
+                return "enable-file-environment-properties";
             }
         };
 
@@ -125,7 +141,13 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
      */
     @Inject
     private List<File> temporaryFiles;
-    
+
+    /**
+     * Service for dispatching events to registered listeners.
+     */
+    @Inject
+    private ListenerService listenerService;
+
     /**
      * Internal reference to the Guice injector that was lazily created when
      * getInjector() was first invoked.
@@ -163,6 +185,23 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
             logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_ENVIRONMENT_PROPERTIES.getName(), e);
         }
 
+        // For any values not defined in GUACAMOLE_HOME/guacamole.properties
+        // nor in the system environment, read from files pointed to by
+        // corresponding "*_FILE" variables in the system environment if
+        // "enable-file-environment-properties" is set to "true"
+        try {
+            if (environment.getProperty(ENABLE_FILE_ENVIRONMENT_PROPERTIES, false)) {
+                environment.addGuacamoleProperties(new SystemFileEnvironmentGuacamoleProperties());
+                logger.info("Additional configuration parameters may be read "
+                        + "from files pointed to by \"*_FILE\" environment "
+                        + "variables.");
+            }
+        }
+        catch (GuacamoleException e) {
+            logger.error("Unable to configure support for file environment properties: {}", e.getMessage());
+            logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_FILE_ENVIRONMENT_PROPERTIES.getName(), e);
+        }
+
         // Now that at least the main guacamole.properties source of
         // configuration information is available, initialize the session map
         sessionMap = new HashTokenSessionMap(environment);
@@ -179,6 +218,17 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
         // Store reference to injector for use by Jersey and HK2 bridge
         servletContextEvent.getServletContext().setAttribute(GUICE_INJECTOR, injector);
 
+        // Inform any listeners that application startup has completed
+        try {
+            listenerService.handleEvent(new ApplicationStartedEvent() {
+                // The application startup event currently has no content
+            });
+        }
+        catch (GuacamoleException e) {
+            logger.error("An extension listening for application startup failed: {}", e.getMessage());
+            logger.debug("Extension failed internally while handling the application startup event.", e);
+        }
+
     }
 
     @Override
@@ -190,13 +240,24 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
                 return current;
 
             // Create new injector if necessary
-            Injector injector = Guice.createInjector(Stage.PRODUCTION,
-                new EnvironmentModule(environment),
-                new LogModule(environment),
-                new ExtensionModule(environment),
-                new RESTServiceModule(sessionMap),
-                new TunnelModule()
-            );
+            Injector injector =
+
+                    // Ensure environment and logging are configured FIRST ...
+                    Guice.createInjector(Stage.PRODUCTION,
+                        new EnvironmentModule(environment),
+                        new LogModule(environment)
+                    )
+
+                    // ... before attempting configuration of any other modules
+                    // (logging within the constructors of other modules may
+                    // otherwise default to including messages from the "debug"
+                    // level, regardless of how the application log level is
+                    // actually configured)
+                    .createChildInjector(
+                        new ExtensionModule(environment),
+                        new RESTServiceModule(sessionMap),
+                        new TunnelModule()
+                    );
 
             return injector;
 
@@ -228,18 +289,35 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
             // Clean up reference to Guice injector
             servletContextEvent.getServletContext().removeAttribute(GUICE_INJECTOR);
 
-            // Shutdown TokenSessionMap
+            // Shutdown TokenSessionMap, invalidating all sessions (logging all
+            // users out)
             if (sessionMap != null)
                 sessionMap.shutdown();
 
-            // Unload all extensions
+            // Unload authentication for all extensions
             if (authProviders != null) {
                 for (AuthenticationProvider authProvider : authProviders)
                     authProvider.shutdown();
             }
 
+            // Inform any listeners that application shutdown has completed
+            try {
+                listenerService.handleEvent(new ApplicationShutdownEvent() {
+                    // The application shutdown event currently has no content
+                });
+            }
+            catch (GuacamoleException e) {
+                logger.error("An extension listening for application shutdown failed: {}", e.getMessage());
+                logger.debug("Extension failed internally while handling the application shutdown event.", e);
+            }
+
         }
         finally {
+
+            // NOTE: This temporary file cleanup must happen AFTER firing the
+            // ApplicationShutdownEvent, or an extension that relies on a .jar
+            // file among those temporary files might fail internally when
+            // attempting to process the event.
 
             // Regardless of what may succeed/fail here, always attempt to
             // clean up ALL temporary files

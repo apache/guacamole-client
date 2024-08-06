@@ -25,13 +25,14 @@ import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
-import org.apache.guacamole.auth.openid.token.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.form.Field;
@@ -84,6 +85,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
         String username = null;
         Set<String> groups = null;
+        Map<String,String> tokens = Collections.emptyMap();
 
         // Validate OpenID token in request, if present, and derive username
         HttpServletRequest request = credentials.getRequest();
@@ -94,6 +96,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
                 if (claims != null) {
                     username = tokenService.processUsername(claims);
                     groups = tokenService.processGroups(claims);
+                    tokens = tokenService.processAttributes(claims);
                 }
             }
         }
@@ -104,7 +107,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
             // Create corresponding authenticated user
             SSOAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(username, credentials, groups, Collections.emptyMap());
+            authenticatedUser.init(username, credentials, groups, tokens);
             return authenticatedUser;
 
         }

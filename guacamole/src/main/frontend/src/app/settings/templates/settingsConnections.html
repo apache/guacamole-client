@@ -9,6 +9,10 @@
         <!-- Form action buttons -->
         <div class="action-buttons">
 
+            <a class="import-connections button"
+                ng-show="canAdminister()"
+                href="#/import/{{dataSource | escape}}/connection/">{{'SETTINGS_CONNECTIONS.ACTION_IMPORT' | translate}}</a>
+
             <a class="add-connection button"
                ng-show="canCreateConnections()"
                href="#/manage/{{dataSource | escape}}/connections/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | translate}}</a>

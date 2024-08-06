@@ -25,17 +25,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
+import org.apache.guacamole.auth.jdbc.base.JDBCDirectory;
 import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.Directory;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
  * Implementation of the Connection Directory which is driven by an underlying,
  * arbitrary database.
  */
-public class ConnectionDirectory extends RestrictedObject
-    implements Directory<Connection> {
+public class ConnectionDirectory extends JDBCDirectory<Connection> {
 
     /**
      * Service for managing connection objects.

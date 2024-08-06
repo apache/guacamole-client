@@ -170,6 +170,14 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-encryption-method"; }
 
     };
+    
+    public static final EnumGuacamoleProperty<LDAPSSLProtocol> LDAP_SSL_PROTOCOL =
+            new EnumGuacamoleProperty<LDAPSSLProtocol>(LDAPSSLProtocol.class) {
+    
+        @Override
+        public String getName() { return "ldap-ssl-protocol"; }
+                
+    };
 
     /**
      * The maximum number of results a LDAP query can return.

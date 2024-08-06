@@ -26,7 +26,7 @@ import org.apache.guacamole.GuacamoleException;
  * Represents a connection group, which can contain both other connection groups
  * as well as connections.
  */
-public interface ConnectionGroup extends Identifiable, Connectable, Attributes {
+public interface ConnectionGroup extends Identifiable, Connectable, Attributes, Nameable {
   
     /**
      * All legal types of connection group.
@@ -50,19 +50,6 @@ public interface ConnectionGroup extends Identifiable, Connectable, Attributes {
         BALANCING
 
     };
-
-    /**
-     * Returns the name assigned to this ConnectionGroup.
-     * @return The name assigned to this ConnectionGroup.
-     */
-    public String getName();
-
-    /**
-     * Sets the name assigned to this ConnectionGroup.
-     *
-     * @param name The name to assign.
-     */
-    public void setName(String name);
 
     /**
      * Returns the unique identifier of the parent ConnectionGroup for

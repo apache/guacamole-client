@@ -23,17 +23,31 @@
 angular.module('index').controller('indexController', ['$scope', '$injector',
         function indexController($scope, $injector) {
 
+    /**
+     * The number of milliseconds that should elapse between client-side
+     * session checks. This DOES NOT impact whether a session expires at all;
+     * such checks will always be server-side. This only affects how quickly
+     * the client-side view can recognize that a user's session has expired
+     * absent any action taken by the user.
+     *
+     * @type {!number}
+     */
+    const SESSION_VALIDITY_RECHECK_INTERVAL = 15000;
+
     // Required types
-    const Error = $injector.get('Error');
+    const Error              = $injector.get('Error');
+    const ManagedClientState = $injector.get('ManagedClientState');
 
     // Required services
-    const $document         = $injector.get('$document');
-    const $location         = $injector.get('$location');
-    const $route            = $injector.get('$route');
-    const $window           = $injector.get('$window');
-    const clipboardService  = $injector.get('clipboardService');
-    const guacNotification  = $injector.get('guacNotification');
-    const guacClientManager = $injector.get('guacClientManager');
+    const $document              = $injector.get('$document');
+    const $interval              = $injector.get('$interval');
+    const $location              = $injector.get('$location');
+    const $route                 = $injector.get('$route');
+    const $window                = $injector.get('$window');
+    const authenticationService  = $injector.get('authenticationService');
+    const clipboardService       = $injector.get('clipboardService');
+    const guacNotification       = $injector.get('guacNotification');
+    const guacClientManager      = $injector.get('guacClientManager');
 
     /**
      * The error that prevents the current page from rendering at all. If no
@@ -209,6 +223,48 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $window.onblur = function () {
         keyboard.reset();
     };
+
+    /**
+     * Returns whether the current user has at least one active connection
+     * running within the current tab.
+     *
+     * @returns {!boolean}
+     *     true if the current user has at least one active connection running
+     *     in the current browser tab, false otherwise.
+     */
+    var hasActiveTunnel = function hasActiveTunnel() {
+
+        var clients = guacClientManager.getManagedClients();
+        for (var id in clients) {
+
+            switch (clients[id].clientState.connectionState) {
+                case ManagedClientState.ConnectionState.CONNECTING:
+                case ManagedClientState.ConnectionState.WAITING:
+                case ManagedClientState.ConnectionState.CONNECTED:
+                    return true;
+            }
+
+        }
+
+        return false;
+
+    };
+
+    // If we're logged in and not connected to anything, periodically check
+    // whether the current session is still valid. If the session has expired,
+    // refresh the auth state to reshow the login screen (rather than wait for
+    // the user to take some action and discover that they are not logged in
+    // after all). There is no need to do this if a connection is active as
+    // that connection activity will already automatically check session
+    // validity.
+    $interval(function cleanUpViewIfSessionInvalid() {
+        if (!!authenticationService.getCurrentToken() && !hasActiveTunnel()) {
+            authenticationService.getValidity().then(function validityDetermined(valid) {
+                if (!valid)
+                    $scope.reAuthenticate();
+            });
+        }
+    }, SESSION_VALIDITY_RECHECK_INTERVAL);
 
     // Release all keys upon form submission (there may not be corresponding
     // keyup events for key presses involved in submitting a form)

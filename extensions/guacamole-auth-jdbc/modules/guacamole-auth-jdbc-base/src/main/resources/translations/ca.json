@@ -89,7 +89,6 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "Inici de sessió desactivat:",
         "FIELD_HEADER_EXPIRED"             : "Contrasenya caducada:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "No permetre l'accés després:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "Permet l'accés després:",
@@ -103,8 +102,6 @@
     },
 
     "USER_GROUP_ATTRIBUTES" : {
-
-        "FIELD_HEADER_DISABLED" : "Desactivat:",
 
         "SECTION_HEADER_RESTRICTIONS" : "Restriccions de grup"
 

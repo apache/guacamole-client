@@ -36,6 +36,11 @@ public class APIUserGroup {
      * The identifier of this user group.
      */
     private String identifier;
+    
+    /**
+     * Boolean value indicating if this UserGroup is disabled.
+     */
+    private boolean disabled;
 
     /**
      * Map of all associated attributes by attribute identifier.
@@ -55,6 +60,7 @@ public class APIUserGroup {
      */
     public APIUserGroup(UserGroup group) {
         this.identifier = group.getIdentifier();
+        this.disabled = group.isDisabled();
         this.attributes = group.getAttributes();
     }
 
@@ -78,6 +84,27 @@ public class APIUserGroup {
      */
     public void setIdentifier(String identifier) {
         this.identifier = identifier;
+    }
+    
+    /**
+     * Return true if this user group is disabled, otherwise false.
+     * 
+     * @return 
+     *     True if this user group is disabled, otherwise false.
+     */
+    public boolean isDisabled() {
+        return disabled;
+    }
+    
+    /**
+     * Sets whether or not this user group is disabled to the parameter
+     * provided.
+     * 
+     * @param disabled 
+     *     True if the user group should be disabled, otherwise false.
+     */
+    public void setDisabled(boolean disabled) {
+        this.disabled = disabled;
     }
 
     /**

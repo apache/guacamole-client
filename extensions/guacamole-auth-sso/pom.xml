@@ -49,6 +49,7 @@
         <module>modules/guacamole-auth-sso-cas</module>
         <module>modules/guacamole-auth-sso-openid</module>
         <module>modules/guacamole-auth-sso-saml</module>
+        <module>modules/guacamole-auth-sso-ssl</module>
 
     </modules>
 

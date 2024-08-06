@@ -7,8 +7,8 @@
     </div>
     
     <!-- Password update -->
-    <h2 class="header" ng-show="canChangePassword">{{'SETTINGS_PREFERENCES.SECTION_HEADER_UPDATE_PASSWORD' | translate}}</h2>
-    <div class="settings section update-password" ng-show="canChangePassword">
+    <h2 class="header" ng-show="canUpdateSelf">{{'SETTINGS_PREFERENCES.SECTION_HEADER_UPDATE_PASSWORD' | translate}}</h2>
+    <div class="settings section update-password" ng-show="canUpdateSelf">
         <p>{{'SETTINGS_PREFERENCES.HELP_UPDATE_PASSWORD' | translate}}</p>
 
         <!-- Password editor -->
@@ -87,6 +87,33 @@
             </div>
 
         </div>
+    </div>
+    
+    <!-- Recent connections -->
+    <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_RECENT_CONNECTIONS' | translate}}</h2>
+    <div class="settings section recent">
+        <p>{{'SETTINGS_PREFERENCES.HELP_RECENT_CONNECTIONS' | translate}}</p>
+        <div class='form'>
+            <table class='fields'>
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_SHOW_RECENT_CONNECTIONS' | translate}}</th>
+                    <td><input ng-model="preferences.showRecentConnections" type="checkbox"/></td>
+                </tr>
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_NUMBER_RECENT_CONNECTIONS' | translate}}</th>
+                    <td><input ng-model="preferences.numberOfRecentConnections" type="number" min="1" max="20"/></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- User attributes section -->
+    <div class="attributes" ng-show="canUpdateSelf && attributes.length">
+        <guac-form namespace="'USER_ATTRIBUTES'" content="attributes"
+                   model="user.attributes"></guac-form>
+
+        <!-- User attributes save button -->
+        <button ng-show="attributes.length" ng-click="saveUser()" class="save">{{'SETTINGS_PREFERENCES.ACTION_SAVE' | translate}}</button>
     </div>
 
 </div>

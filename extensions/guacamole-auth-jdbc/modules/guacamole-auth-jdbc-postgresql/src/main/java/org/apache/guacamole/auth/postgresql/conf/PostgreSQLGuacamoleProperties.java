@@ -111,7 +111,7 @@ public class PostgreSQLGuacamoleProperties {
      * The number of seconds to wait for socket read operations.
      * If reading from the server takes longer than this value, the
      * connection will be closed. This can be used to handle network problems
-     * such as a dropped connection to the database. Similar to 
+     * such as a dropped connection to the database. Similar to
      * postgresql-default-statement-timeout, it will have the effect of
      * aborting queries that take too long.
      * A value of 0 (the default) means the timeout is disabled.
@@ -202,7 +202,7 @@ public class PostgreSQLGuacamoleProperties {
         public String getName() { return "postgresql-default-max-group-connections-per-user"; }
 
     };
-    
+
     /**
      * The SSL mode that should be used by the JDBC driver when making
      * connections to the remote server.  By default SSL will be attempted but
@@ -210,60 +210,60 @@ public class PostgreSQLGuacamoleProperties {
      */
     public static final EnumGuacamoleProperty<PostgreSQLSSLMode> POSTGRESQL_SSL_MODE =
             new EnumGuacamoleProperty<PostgreSQLSSLMode>(PostgreSQLSSLMode.class) {
-        
+
         @Override
         public String getName() { return "postgresql-ssl-mode"; }
-        
+
     };
-    
+
     /**
      * The client SSL certificate file used by the JDBC driver to make the
      * SSL connection.
      */
     public static final FileGuacamoleProperty POSTGRESQL_SSL_CERT_FILE =
             new FileGuacamoleProperty() {
-             
+
         @Override
         public String getName() { return "postgresql-ssl-cert-file"; }
-                
+
     };
-    
+
     /**
      * The client SSL private key file used by the JDBC driver to make the
      * SSL connection.
      */
     public static final FileGuacamoleProperty POSTGRESQL_SSL_KEY_FILE =
             new FileGuacamoleProperty() {
-    
+
         @Override
         public String getName() { return "postgresql-ssl-key-file"; }
-        
+
     };
-    
+
     /**
      * The client SSL root certificate file used by the JDBC driver to validate
      * certificates when making the SSL connection.
      */
     public static final FileGuacamoleProperty POSTGRESQL_SSL_ROOT_CERT_FILE =
             new FileGuacamoleProperty() {
-        
+
         @Override
         public String getName() { return "postgresql-ssl-root-cert-file"; }
-        
+
     };
-    
+
     /**
      * The password of the SSL private key used by the JDBC driver to make
      * the SSL connection to the PostgreSQL server.
      */
     public static final StringGuacamoleProperty POSTGRESQL_SSL_KEY_PASSWORD =
             new StringGuacamoleProperty() {
-        
+
         @Override
         public String getName() { return "postgresql-ssl-key-password"; }
-        
+
     };
-    
+
     /**
      * Whether or not to automatically create accounts in the PostgreSQL
      * database for users who successfully authenticate through another
@@ -271,10 +271,36 @@ public class PostgreSQLGuacamoleProperties {
      */
     public static final BooleanGuacamoleProperty POSTGRESQL_AUTO_CREATE_ACCOUNTS =
             new BooleanGuacamoleProperty() {
-                
+
         @Override
         public String getName() { return "postgresql-auto-create-accounts"; }
-                
+
+    };
+
+    /**
+     * Whether or not to track connection history for connections that do not originate
+     * from within the Postgres database. By default, external connection history will be
+     * tracked.
+     */
+    public static final BooleanGuacamoleProperty POSTGRESQL_TRACK_EXTERNAL_CONNECTION_HISTORY =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-track-external-connection-history"; }
+
+    };
+
+    /**
+     * Whether or not user-specific access time windows should be enforced for active sessions,
+     * i.e. whether users with active sessions should be logged out immediately when an access
+     * window closes.
+     */
+    public static final BooleanGuacamoleProperty POSTGRESQL_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-enforce-access-windows-for-active-sessions"; }
+
     };
     
     /**

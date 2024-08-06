@@ -18,9 +18,9 @@
  */
 
 /**
- * A directive which allows multiple files to be uploaded. Clicking on the
- * associated element will result in a file selector dialog, which then calls
- * the provided callback function with any chosen files.
+ * A directive which allows files to be uploaded. Clicking on the associated
+ * element will result in a file selector dialog, which then calls the provided
+ * callback function with any chosen files.
  */
 angular.module('element').directive('guacUpload', ['$document', function guacUpload($document) {
 
@@ -36,32 +36,43 @@ angular.module('element').directive('guacUpload', ['$document', function guacUpl
              *
              * @type Function 
              */
-            var guacUpload = $scope.$eval($attrs.guacUpload);
+            const guacUpload = $scope.$eval($attrs.guacUpload);
 
             /**
-             * The element which will register the drag gesture.
+             * Whether upload of multiple files should be allowed. If false, the
+             * file dialog will only allow a single file to be chosen at once,
+             * otherwise any number of files may be chosen. Defaults to true if
+             * not set.
+             *
+             * @type Boolean
+             */
+            const guacMultiple = 'guacMultiple' in $attrs
+                ? $scope.$eval($attrs.guacMultiple) : true;
+
+            /**
+             * The element which will register the click.
              *
              * @type Element
              */
-            var element = $element[0];
+            const element = $element[0];
 
             /**
              * Internal form, containing a single file input element.
              *
              * @type HTMLFormElement
              */
-            var form = $document[0].createElement('form');
+            const form = $document[0].createElement('form');
 
             /**
              * Internal file input element.
              *
              * @type HTMLInputElement
              */
-            var input = $document[0].createElement('input');
+            const input = $document[0].createElement('input');
 
             // Init input element
             input.type = 'file';
-            input.multiple = true;
+            input.multiple = guacMultiple;
 
             // Add input element to internal form
             form.appendChild(input);
