@@ -19,8 +19,12 @@
 
 package org.apache.guacamole.properties;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import static org.apache.guacamole.properties.GuacamoleProperty.DELIMITER_PATTERN;
 
 /**
  * A GuacamoleProperty whose value is an long.
@@ -41,6 +45,27 @@ public abstract class LongGuacamoleProperty implements GuacamoleProperty<Long> {
             throw new GuacamoleServerException("Property \"" + getName() + "\" must be an long.", e);
         }
 
+    }
+    
+    @Override
+    public List<Long> parseValueCollection(String value) throws GuacamoleException {
+        
+        if (value == null)
+            return null;
+        
+        // Split string into a list of individual values
+        List<String> stringValues = Arrays.asList(DELIMITER_PATTERN.split(value));
+        if (stringValues.isEmpty())
+            return null;
+        
+        // Translate values to Longs, validating along the way.
+        List<Long> longValues = new ArrayList<>();
+        for (String stringLong : stringValues) {
+            longValues.add(parseValue(stringLong));
+        }
+
+        return longValues;
+        
     }
 
 }

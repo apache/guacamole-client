@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.properties;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -31,11 +34,20 @@ import org.apache.guacamole.GuacamoleException;
 public interface GuacamoleProperty<Type> {
 
     /**
+     * A pattern which matches against the delimiters between values. This is
+     * currently simply a semicolon and any following whitespace. Parts of the
+     * input string which match this pattern will not be included in the parsed
+     * result.
+     */
+    static final Pattern DELIMITER_PATTERN = Pattern.compile(";\\s*");
+    
+    /**
      * Returns the name of the property in guacamole.properties that this
      * GuacamoleProperty will parse.
      *
-     * @return The name of the property in guacamole.properties that this
-     *         GuacamoleProperty will parse.
+     * @return
+     *     The name of the property in guacamole.properties that this
+     *     GuacamoleProperty will parse.
      */
     public String getName();
 
@@ -43,11 +55,37 @@ public interface GuacamoleProperty<Type> {
      * Parses the given string value into the type associated with this
      * GuacamoleProperty.
      *
-     * @param value The string value to parse.
-     * @return The parsed value.
-     * @throws GuacamoleException If an error occurs while parsing the
-     *                            provided value.
+     * @param value
+     *     The string value to parse.
+     * 
+     * @return
+     *     The parsed value.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the provided value.
      */
     public Type parseValue(String value) throws GuacamoleException;
+    
+    /**
+     * Parses the given string value into a Collection of values of the type
+     * associated with this GuacamoleProperty. The default implementation
+     * simply returns a list containing a single item as parsed by the
+     * parseValue method.
+     * 
+     * @param value
+     *     The string value to parse.
+     * 
+     * @return
+     *     A sorted Collection of the parsed values.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs while parsing the provided value.
+     */
+    default public Collection<Type> parseValueCollection(String value)
+            throws GuacamoleException {
+        
+        return Collections.singletonList(parseValue(value));
+        
+    }
 
 }

@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -60,13 +61,13 @@ public class QCParser {
      * by this parser. If not defined, all parameters will be allowed unless
      * explicitly denied.
      */
-    private final List<String> allowedParams;
+    private final Collection<String> allowedParams;
     
     /**
      * The list of parameters that are explicitly denied from being placed into
      * a configuration by this parser.
      */
-    private final List<String> deniedParams;
+    private final Collection<String> deniedParams;
     
     /**
      * Create a new instance of the QCParser class, with the provided allowed
@@ -81,7 +82,7 @@ public class QCParser {
      *     A list of parameters, if any, that should be explicitly denied from
      *     being placed into a connection configuration.
      */
-    public QCParser(List<String> allowedParams, List<String> deniedParams) {
+    public QCParser(Collection<String> allowedParams, Collection<String> deniedParams) {
         this.allowedParams = allowedParams;
         this.deniedParams = deniedParams;
     }
