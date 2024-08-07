@@ -77,6 +77,7 @@ CREATE RULE [guacamole_system_permission_list] AS @list IN (
     'CREATE_SHARING_PROFILE',
     'CREATE_USER',
     'CREATE_USER_GROUP',
+    'AUDIT',
     'ADMINISTER'
 );
 GO

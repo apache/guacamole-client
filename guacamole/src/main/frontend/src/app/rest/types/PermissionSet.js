@@ -136,6 +136,11 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
          * Permission to administer the entire system.
          */
         ADMINISTER : "ADMINISTER",
+        
+        /**
+         * Permission to view connection and user records for the entire system.
+         */
+        AUDIT : "AUDIT",
 
         /**
          * Permission to create new users.
