@@ -62,12 +62,14 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     ];
     
     /**
-     * Returns true if recent connections should be displayed on the Guacamole
-     * home page, otherwise false.
+     * Returns whether the "Recent Connections" section should be displayed on
+     * the home screen.
      * 
      * @returns {!boolean}
+     *     true if recent connections should be displayed on the home screen,
+     *     false otherwise.
      */
-    $scope.willShowRecentConnections = function willShowRecentConnections() {
+    $scope.isRecentConnectionsVisible = function isRecentConnectionsVisible() {
         return preferenceService.preferences.showRecentConnections;
     };
 

@@ -77,9 +77,12 @@ a.home-connection, .empty.balancer a.home-connection-group {
     display: none;
 }
 
-.header-app-name {
-    font-size: 0.85em;
-    box-shadow: none;
+.recent-connections .connection .remove-recent {
+    visibility: hidden;
+}
+
+.recent-connections .connection:hover .remove-recent {
+    visibility: visible;
 }
 
 .recent-connections .connection .remove-recent::after {
@@ -90,11 +93,10 @@ a.home-connection, .empty.balancer a.home-connection-group {
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center center;
-    background-image: url('images/x.svg');
+    background-image: url('images/x-black.svg');
 }
 
 .recent-connections .connection .remove-recent {
-    background-color: red;
     height: 1em;
     width: 1em;
     position: absolute;
