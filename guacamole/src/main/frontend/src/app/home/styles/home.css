@@ -82,6 +82,14 @@ a.home-connection, .empty.balancer a.home-connection-group {
     box-shadow: none;
 }
 
+.recent-connections .connection .remove-recent {
+    visibility: hidden;
+}
+
+.recent-connections .connection:hover .remove-recent {
+    visibility: visible;
+}
+
 .recent-connections .connection .remove-recent::after {
     content: '';
     display: block;
