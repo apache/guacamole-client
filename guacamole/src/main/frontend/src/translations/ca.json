@@ -59,6 +59,7 @@
 
         "ACTION_DISCONNECT"                : "Desconnecta",
         "ACTION_RECONNECT"                 : "Torneu a connectar",
+        "ACTION_SHOW_CLIPBOARD"            : "Feu clic per veure les dades del porta-retalls.",
         "ACTION_UPLOAD_FILES"              : "Carregueu fitxers",
 
         "DIALOG_HEADER_CONNECTING"       : "Connectant",
@@ -143,7 +144,6 @@
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Heu estat desconnectats.",
         "TEXT_CLIENT_STATUS_UNSTABLE"     : "La connexió de xarxa al servidor Guacamole sembla inestable.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Connectat a Guacamole. Esperant resposta ...",
-        "TEXT_CLIPBOARD_AWAITING_FOCUS"   : "Feu clic per veure les dades del porta-retalls...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
         "TEXT_RECONNECT_COUNTDOWN"        : "Re-conectant en {REMAINING} {REMAINING, plural, one{segon} other{segons}}...",
         "TEXT_USER_JOINED"                : "{USERNAME} s'ha afegit a la connexió.",
