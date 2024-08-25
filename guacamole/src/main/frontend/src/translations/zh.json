@@ -72,6 +72,7 @@
         "ACTION_RECONNECT"                 : "重新连接",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
         "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SHOW_CLIPBOARD"            : "点击以查看剪贴板内容。",
         "ACTION_UPLOAD_FILES"              : "上传文件",
 
         "DIALOG_HEADER_CONNECTING"       : "正在连接",
@@ -164,7 +165,6 @@
         "TEXT_USER_LEFT"                  : "用户 {USERNAME} 断开了连接。",
         "TEXT_RECONNECT_COUNTDOWN"        : "在 {REMAINING} 秒后重连...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
-        "TEXT_CLIPBOARD_AWAITING_FOCUS"   : "点击以查看剪贴板内容...",
 
         "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
 
