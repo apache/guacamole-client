@@ -64,6 +64,7 @@
         "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
         "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "@:APP.ACTION_CLEAR",
+        "ACTION_SHOW_CLIPBOARD"            : "Cliquez pour afficher le contenu du presse-papiers.",
         "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
         "ACTION_DISCONNECT"                : "Déconnecter",
         "ACTION_FULLSCREEN"                : "Plein écran",
@@ -165,7 +166,6 @@
         "TEXT_USER_LEFT"                  : "{USERNAME} a quitté la connexion.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Reconnexion dans {REMAINING} {REMAINING, plural, one{seconde} other{secondes}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
-        "TEXT_CLIPBOARD_AWAITING_FOCUS"   : "Cliquez pour afficher le contenu du presse-papiers...",
 
         "URL_OSK_LAYOUT" : "layouts/fr-fr-azerty.json"
 
