@@ -78,9 +78,8 @@ h2 {
     margin-bottom: 0;
 }
 
-.header ~ * .header,
-.header ~ .header {
-    margin-top: 0;
+.header:not(.ng-hide) ~ * .header,
+.header:not(.ng-hide) ~ .header {
     border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
 
@@ -105,4 +104,8 @@ h2 {
     border: none;
     border-left: 1px solid rgba(0, 0, 0, 0.125);
     background-color: transparent;
+}
+
+.header:not(.ng-hide) ~ .header .user-menu {
+    display: none;
 }

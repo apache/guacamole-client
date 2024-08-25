@@ -77,11 +77,6 @@ a.home-connection, .empty.balancer a.home-connection-group {
     display: none;
 }
 
-.header-app-name {
-    font-size: 0.85em;
-    box-shadow: none;
-}
-
 .recent-connections .connection .remove-recent {
     visibility: hidden;
 }
