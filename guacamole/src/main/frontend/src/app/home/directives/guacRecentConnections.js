@@ -75,16 +75,6 @@ angular.module('home').directive('guacRecentConnections', [function guacRecentCo
             };
             
             /**
-             * Returns whether or not recent connections should be displayed.
-             * 
-             * @returns {!boolean}
-             *     true if recent connections should be displayed, otherwise false.
-             */
-            $scope.willShowRecentConnections = function willShowRecentConnections() {
-                return preferenceService.preferences.showRecentConnections;
-            };
-
-            /**
              * Returns whether recent connections are available for display.
              *
              * @returns {!boolean}

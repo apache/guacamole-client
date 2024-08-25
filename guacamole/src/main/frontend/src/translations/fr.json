@@ -64,6 +64,7 @@
         "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
         "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "@:APP.ACTION_CLEAR",
+        "ACTION_SHOW_CLIPBOARD"            : "Cliquez pour afficher le contenu du presse-papiers.",
         "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
         "ACTION_DISCONNECT"                : "Déconnecter",
         "ACTION_FULLSCREEN"                : "Plein écran",
@@ -165,7 +166,6 @@
         "TEXT_USER_LEFT"                  : "{USERNAME} a quitté la connexion.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Reconnexion dans {REMAINING} {REMAINING, plural, one{seconde} other{secondes}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
-        "TEXT_CLIPBOARD_AWAITING_FOCUS"   : "Cliquez pour afficher le contenu du presse-papiers...",
 
         "URL_OSK_LAYOUT" : "layouts/fr-fr-azerty.json"
 
@@ -1045,6 +1045,7 @@
         "FIELD_HEADER_TIMEZONE"                  : "Fuseau horaire:",
         "FIELD_HEADER_USERNAME"                  : "Identifiant:",
 
+        "HELP_APPEARANCE"           : "Vous pouvez ici activer ou désactiver les connexions récentes sur la page d'accueil de Guacamole, et ajuster le nombre de connexions récentes qui seront affichées.",
         "HELP_DEFAULT_INPUT_METHOD" : "La méthode de saisie par défaut détermine comment les événements clavier sont reçus par Guacamole. Modifier ce paramètre peut être nécessaire lors de l'utilisation d'un appareil mobile. Ce paramètre peut être remplacé pour chaque connexion dans le menu de Guacamole.",
         "HELP_DEFAULT_MOUSE_MODE"   : "Le mode d'émulation de la souris par défaut détermine le comportement de la souris distante dans de nouvelles connexions par rapport aux touches. Ce paramètre peut être remplacé pour chaque connexion dans le menu Guacamole.",
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
@@ -1053,7 +1054,6 @@
         "HELP_LOCALE"               : "Les options ci-dessous sont liées à la localisation de l'utilisateur et auront un impact sur l'affichage de différentes parties de l'interface.",
         "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
         "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
-        "HELP_RECENT_CONNECTIONS"   : "Vous pouvez ici activer ou désactiver les connexions récentes sur la page d'accueil de Guacamole, et ajuster le nombre de connexions récentes qui seront affichées.",
         "HELP_UPDATE_PASSWORD"      : "Si vous souhaitez changer votre mot de passe, saisissez votre mot de passe actuel ainsi que le nouveau mot de passe souhaité ci-dessous, puis cliquez sur \"Mettre à jour Mot de passe\". Le changement prendra effet immédiatement.",
 
         "INFO_PASSWORD_CHANGED" : "Mot de passe modifié.",
@@ -1065,7 +1065,6 @@
 
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Méthode de saisie par défaut",
         "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Mode d'émulation de la souris par défaut",
-        "SECTION_HEADER_RECENT_CONNECTIONS"   : "Préférences des connexions récentes",
         "SECTION_HEADER_UPDATE_PASSWORD"      : "Modifier Mot de passe"
 
     },
