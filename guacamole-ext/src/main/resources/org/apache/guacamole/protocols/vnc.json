@@ -176,6 +176,10 @@
                     "type"  : "NUMERIC"
                 },
                 {
+                    "name"  : "sftp-timeout",
+                    "type"  : "NUMERIC"
+                },
+                {
                     "name"  : "sftp-host-key",
                     "type"  : "TEXT"
                 },
