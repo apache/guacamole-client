@@ -647,6 +647,7 @@
         "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Disable file upload:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Username:",
         "FIELD_HEADER_STATIC_CHANNELS" : "Static channel names:",
+        "FIELD_HEADER_TIMEOUT"         : "Connection timeout",
         "FIELD_HEADER_TIMEZONE"        : "Time zone:",
         "FIELD_HEADER_USERNAME"        : "Username:",
         "FIELD_HEADER_WIDTH"           : "Width:",
