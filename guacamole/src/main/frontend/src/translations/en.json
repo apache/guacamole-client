@@ -843,6 +843,7 @@
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_SCROLLBACK"     : "Maximum scrollback size:",
         "FIELD_HEADER_TERMINAL_TYPE"   : "Terminal type:",
+        "FIELD_HEADER_TIMEOUT"         : "Connection timeout:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
         "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
