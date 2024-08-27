@@ -12,6 +12,10 @@
                 {
                     "name"  : "port",
                     "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "timeout",
+                    "type"  : "NUMERIC"
                 }
             ]
         },
@@ -418,6 +422,10 @@
                 },
                 {
                     "name"  : "sftp-port",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "sftp-timeout",
                     "type"  : "NUMERIC"
                 },
                 {
