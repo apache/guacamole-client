@@ -200,6 +200,10 @@
                     "type"  : "PASSWORD"
                 },
                 {
+                    "name"  : "sftp-public-key",
+                    "type"  : "MULTILINE"
+                },
+                {
                     "name"  : "sftp-root-directory",
                     "type"  : "TEXT"
                 },
