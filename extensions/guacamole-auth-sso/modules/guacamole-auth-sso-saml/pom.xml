@@ -96,7 +96,7 @@
 
                 <!--
                     Replace slightly older commons-lang3 (3.12.0) with latest
-                    compatible version (3.14.0) so that we don't need two copies
+                    compatible version (3.16.0) so that we don't need two copies
                     of the same license information.
                 -->
                 <exclusion>
@@ -122,20 +122,20 @@
         <dependency>
             <groupId>com.fasterxml.woodstox</groupId>
             <artifactId>woodstox-core</artifactId>
-            <version>5.4.0</version>
+            <version>6.6.0</version>
         </dependency>
 
         <!-- Apache XML Security for Java (see exclusions for java-saml) -->
         <dependency>
             <groupId>org.apache.santuario</groupId>
             <artifactId>xmlsec</artifactId>
-            <version>2.2.6</version>
+            <version>4.0.2</version>
             <exclusions>
 
                 <!--
                     Replace slightly older commons-codec (1.15) with newer
                     and identical version to that used by Apache Directory API
-                    for LDAP (1.17.0) so that we don't need two copies of the
+                    for LDAP (1.17.1) so that we don't need two copies of the
                     same license information.
                 -->
                 <exclusion>
@@ -150,14 +150,14 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.14.0</version>
+            <version>3.16.0</version>
         </dependency>
 
         <!-- Apache Commons Codec (see exclusions for java-saml and xmlsec) -->
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.17.0</version>
+            <version>1.17.1</version>
         </dependency>
 
     </dependencies>
