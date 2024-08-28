@@ -1,1 +1,0 @@
-org.apache.commons:commons-text:jar:1.11.0
