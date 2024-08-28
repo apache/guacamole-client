@@ -11,17 +11,17 @@
         "angular-translate": "^2.19.1",
         "angular-translate-interpolation-messageformat": "^2.19.1",
         "angular-translate-loader-static-files": "^2.19.1",
-        "blob-polyfill": ">=7.0.20220408",
+        "blob-polyfill": "^9.0.20240710",
         "csv": "^6.3.9",
         "d3-path": "^3.1.0",
         "d3-shape": "^3.2.0",
         "datalist-polyfill": "^1.25.1",
         "file-saver": "^2.0.5",
-        "fuzzysort": "^2.0.4",
+        "fuzzysort": "^3.0.2",
         "jquery": "^3.7.1",
         "jstz": "^2.1.1",
         "lodash": "^4.17.21",
-        "yaml": "^2.4.5"
+        "yaml": "^2.5.0"
     },
     "devDependencies": {
         "@babel/core": "^7.24.7",
