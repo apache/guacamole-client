@@ -24,3 +24,4 @@
 ALTER TYPE guacamole_system_permission_type
     ADD VALUE 'AUDIT'
     BEFORE 'ADMINISTER';
+

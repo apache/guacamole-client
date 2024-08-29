@@ -40,3 +40,4 @@ EXEC sp_bindrule
     'guacamole_system_permission_list',
     'guacamole_system_permission';
 GO
+

@@ -612,3 +612,4 @@ CREATE TABLE guacamole_user_password_history (
     REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

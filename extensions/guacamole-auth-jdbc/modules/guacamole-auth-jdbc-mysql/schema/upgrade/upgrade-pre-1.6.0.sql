@@ -29,3 +29,4 @@ ALTER TABLE `guacamole_system_permission`
                              'CREATE_USER_GROUP',
                              'AUDIT',
                              'ADMINISTER') NOT NULL;
+
