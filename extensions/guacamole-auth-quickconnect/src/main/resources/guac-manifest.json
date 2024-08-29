@@ -1,5 +1,5 @@
 {
-    "guacamoleVersion" : "1.5.5",
+    "guacamoleVersion" : "1.6.0",
 
     "name"             : "Adhoc Guacamole Connections",
     "namespace"        : "quickconnect",
