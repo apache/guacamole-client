@@ -87,7 +87,7 @@ public class ConnectionService {
     public static final String LDAP_ATTRIBUTE_PROXY_PORT = "guacConfigProxyPort";
     
     /**
-     * The name of the LDAP attribute that stores guacd proxy hostname.
+     * The name of the LDAP attribute that stores guacd proxy encryption method.
      */
     public static final String LDAP_ATTRIBUTE_PROXY_ENCRYPTION = "guacConfigProxyEncryption";
 
