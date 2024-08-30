@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.ldap;
 
+import java.util.Collection;
 import java.util.List;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
@@ -124,7 +125,7 @@ public class ConnectedLDAPConfiguration implements LDAPConfiguration, AutoClosea
     }
 
     @Override
-    public List<String> getUsernameAttributes() throws GuacamoleException {
+    public Collection<String> getUsernameAttributes() throws GuacamoleException {
         return config.getUsernameAttributes();
     }
 
@@ -139,7 +140,7 @@ public class ConnectedLDAPConfiguration implements LDAPConfiguration, AutoClosea
     }
 
     @Override
-    public List<String> getGroupNameAttributes() throws GuacamoleException {
+    public Collection<String> getGroupNameAttributes() throws GuacamoleException {
         return config.getGroupNameAttributes();
     }
 
@@ -209,7 +210,7 @@ public class ConnectedLDAPConfiguration implements LDAPConfiguration, AutoClosea
     }
 
     @Override
-    public List<String> getAttributes() throws GuacamoleException {
+    public Collection<String> getAttributes() throws GuacamoleException {
         return config.getAttributes();
     }
 

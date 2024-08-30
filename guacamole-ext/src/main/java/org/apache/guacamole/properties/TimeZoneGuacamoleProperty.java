@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.properties;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
@@ -54,6 +57,27 @@ public abstract class TimeZoneGuacamoleProperty
                 + "\" does not specify a valid time zone.");
 
         return tz;
+        
+    }
+    
+    @Override
+    public List<TimeZone> parseValueCollection(String value) throws GuacamoleException {
+        
+        if (value == null)
+            return null;
+        
+        // Split string into a list of individual values
+        List<String> stringValues = Arrays.asList(DELIMITER_PATTERN.split(value));
+        if (stringValues.isEmpty())
+            return null;
+        
+        // Translate values to Integers, validating along the way.
+        List<TimeZone> tzValues = new ArrayList<>();
+        for (String stringTz : stringValues) {
+            tzValues.add(parseValue(stringTz));
+        }
+
+        return tzValues;
         
     }
     

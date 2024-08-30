@@ -21,6 +21,8 @@ package org.apache.guacamole.environment;
 
 import org.apache.guacamole.properties.GuacamoleProperties;
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
@@ -102,13 +104,18 @@ public interface Environment {
      * Given a GuacamoleProperty, parses and returns the value set for that
      * property in guacamole.properties, if any.
      *
-     * @param <Type> The type that the given property is parsed into.
-     * @param property The property to read from guacamole.properties.
-     * @return The parsed value of the property as read from
-     *         guacamole.properties.
-     * @throws GuacamoleException If an error occurs while parsing the value
-     *                            for the given property in
-     *                            guacamole.properties.
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @return
+     *     The parsed value of the property as read from guacamole.properties.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
      */
     public <Type> Type getProperty(GuacamoleProperty<Type> property)
             throws GuacamoleException;
@@ -118,20 +125,161 @@ public interface Environment {
      * property in guacamole.properties, if any. If no value is found, the
      * provided default value is returned.
      *
-     * @param <Type> The type that the given property is parsed into.
-     * @param property The property to read from guacamole.properties.
-     * @param defaultValue The value to return if no value was given in
-     *                     guacamole.properties.
-     * @return The parsed value of the property as read from
-     *         guacamole.properties, or the provided default value if no value
-     *         was found.
-     * @throws GuacamoleException If an error occurs while parsing the value
-     *                            for the given property in
-     *                            guacamole.properties.
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @param defaultValue
+     *     The value to return if no value was given in guacamole.properties.
+     * 
+     * @return
+     *     The parsed value of the property as read from guacamole.properties,
+     *     or the provided default value if no value was found.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
      */
     public <Type> Type getProperty(GuacamoleProperty<Type> property,
             Type defaultValue) throws GuacamoleException;
 
+    /**
+     * Given a GuacamoleProperty, parses and returns a sorted Collection of the
+     * value set for that property in guacamole.properties, if any. The
+     * implementation of parsing and returning a collection of multiple
+     * values is up to the individual property implementations, and not all
+     * implementations will support reading and returning multiple values.
+     *
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @return
+     *     A sorted collection of the the parsed values of the property as read
+     *     from guacamole.properties.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
+     */
+    public default <Type> Collection<Type> getPropertyCollection(
+            GuacamoleProperty<Type> property) throws GuacamoleException {
+        
+        /* Pull the given property as a string. */
+        StringGuacamoleProperty stringProperty = new StringGuacamoleProperty() {
+            
+            @Override
+            public String getName() { return property.getName(); }
+            
+        };
+        
+        /* Parse the string to a Collection of the desired type. */
+        return property.parseValueCollection(getProperty(stringProperty));
+        
+    }
+    
+    /**
+     * Given a GuacamoleProperty, parses and returns the value set for that
+     * property in guacamole.properties, if any. If no value is found, a
+     * Collection is returned with the provided default value. The
+     * implementation of parsing and returning a collection of multiple
+     * values is up to the individual property implementations, and not all
+     * implementations will support reading and returning multiple values.
+     *
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @param defaultValue
+     *     The single value to return in the Collection if no value was given
+     *     in guacamole.properties.
+     * 
+     * @return
+     *     A sorted collection of the the parsed values of the property as read
+     *     from guacamole.properties, or a Collection with the single default
+     *     value provided.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
+     */
+    public default <Type> Collection<Type> getPropertyCollection(
+            GuacamoleProperty<Type> property, Type defaultValue)
+            throws GuacamoleException {
+        
+        /* Pull the given property as a string. */
+        StringGuacamoleProperty stringProperty = new StringGuacamoleProperty() {
+            
+            @Override
+            public String getName() { return property.getName(); }
+            
+        };
+        
+        /* Check the value and return the default if null. */
+        String stringValue = getProperty(stringProperty);
+        if (stringValue == null)
+            return Collections.singletonList(defaultValue);
+        
+        /* Parse the string and return the collection. */
+        return property.parseValueCollection(stringValue);
+        
+    }
+    
+    /**
+     * Given a GuacamoleProperty, parses and returns the value set for that
+     * property in guacamole.properties, if any. If no value is found, the
+     * provided Collection of default values is returned. The
+     * implementation of parsing and returning a collection of multiple
+     * values is up to the individual property implementations, and not all
+     * implementations will support reading and returning multiple values.
+     *
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @param defaultValue
+     *     The Collection of values to return in the Collection if no value was
+     *     given in guacamole.properties.
+     * 
+     * @return
+     *     A sorted collection of the the parsed values of the property as read
+     *     from guacamole.properties, or a Collection with the single default
+     *     value provided.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
+     */
+    public default <Type> Collection<Type> getPropertyCollection(
+            GuacamoleProperty<Type> property, Collection<Type> defaultValue)
+            throws GuacamoleException {
+        
+        /* Pull the given property as a string. */
+        StringGuacamoleProperty stringProperty = new StringGuacamoleProperty() {
+            
+            @Override
+            public String getName() { return property.getName(); }
+            
+        };
+        
+        /* Check the value and return the default if null. */
+        String stringValue = getProperty(stringProperty);
+        if (stringValue == null)
+            return defaultValue;
+        
+        /* Parse the string and return the collection. */
+        return property.parseValueCollection(stringValue);
+        
+    }
+    
     /**
      * Given a GuacamoleProperty, parses and returns the value set for that
      * property in guacamole.properties. An exception is thrown if the value
@@ -148,6 +296,43 @@ public interface Environment {
      */
     public <Type> Type getRequiredProperty(GuacamoleProperty<Type> property)
             throws GuacamoleException;
+    
+    /**
+     * Given a GuacamoleProperty, parses and returns a sorted Collection of
+     * values for that property in guacamole.properties. An exception is thrown
+     * if the value is not provided. The implementation of parsing and returning
+     * a collection of multiple values is up to the individual property
+     * implementations, and not all implementations will support reading and
+     * returning multiple values.
+     * 
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @return
+     *     A sorted Collection of the property as read from guacamole.properties.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties, or if the property is not specified.
+     */
+    public default <Type> Collection<Type> getRequiredPropertyCollection(
+            GuacamoleProperty<Type> property) throws GuacamoleException {
+        
+        /* Pull the given property as a string. */
+        StringGuacamoleProperty stringProperty = new StringGuacamoleProperty() {
+            
+            @Override
+            public String getName() { return property.getName(); }
+            
+        };
+        
+        /* Parse the string to a Collection of the desired type. */
+        return property.parseValueCollection(getRequiredProperty(stringProperty));
+        
+    }
 
     /**
      * Returns the connection information which should be used, by default, to

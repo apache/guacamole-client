@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.ldap.conf;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import static com.fasterxml.jackson.annotation.JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -331,7 +332,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     }
 
     @Override
-    public List<String> getUsernameAttributes() throws GuacamoleException {
+    public Collection<String> getUsernameAttributes() throws GuacamoleException {
         return withDefault(usernameAttributes, defaultConfig::getUsernameAttributes);
     }
 
@@ -348,7 +349,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     }
 
     @Override
-    public List<String> getGroupNameAttributes() throws GuacamoleException {
+    public Collection<String> getGroupNameAttributes() throws GuacamoleException {
         return withDefault(groupNameAttributes, defaultConfig::getGroupNameAttributes);
     }
 
@@ -424,7 +425,7 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     }
 
     @Override
-    public List<String> getAttributes() throws GuacamoleException {
+    public Collection<String> getAttributes() throws GuacamoleException {
         return withDefault(userAttributes, defaultConfig::getAttributes);
     }
     
