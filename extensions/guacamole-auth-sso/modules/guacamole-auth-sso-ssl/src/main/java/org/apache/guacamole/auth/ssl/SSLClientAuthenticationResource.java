@@ -26,6 +26,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -214,7 +215,7 @@ public class SSLClientAuthenticationResource extends SSOResource {
 
         // Verify that the username is specified with one of the allowed
         // attributes
-        List<String> usernameAttributes = confService.getSubjectUsernameAttributes();
+        Collection<String> usernameAttributes = confService.getSubjectUsernameAttributes();
         if (usernameAttributes != null && !usernameAttributes.stream().anyMatch(nameRdn.getType()::equalsIgnoreCase))
             throw new GuacamoleClientException("Subject DN \"" + dn + "\" "
                     + "does not contain an acceptable username attribute.");

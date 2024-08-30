@@ -20,10 +20,14 @@
 package org.apache.guacamole.auth.duo.conf;
 
 import com.google.inject.Inject;
+import inet.ipaddr.IPAddress;
 import java.net.URI;
+import java.util.Collections;
+import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
+import org.apache.guacamole.properties.IPAddressListProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 
@@ -103,6 +107,40 @@ public class ConfigurationService {
                 
         @Override
         public String getName() { return "duo-auth-timeout"; }
+                
+    };
+    
+    /**
+     * The optional property that contains a comma-separated list of IP addresses
+     * or CIDRs for which the MFA requirement should be bypassed. If the Duo
+     * extension is installed, any/all users authenticating from clients that
+     * match this list will be able to successfully log in without fulfilling
+     * the MFA requirement. If this option is omitted or is empty, and the
+     * Duo module is installed, all users from all hosts will have Duo MFA
+     * enforced.
+     */
+    private static final IPAddressListProperty DUO_BYPASS_HOSTS =
+            new IPAddressListProperty() {
+    
+        @Override
+        public String getName() { return "duo-bypass-hosts"; }
+                
+    };
+        
+    /**
+     * The optional property that contains a comma-separated list of IP addresses
+     * or CIDRs for which the MFA requirement should be explicitly enforced. If
+     * the Duo module is enabled and this property is specified, users that log
+     * in from hosts that match the items in this list will have Duo MFA required,
+     * and all users from hosts that do not match this list will be able to log
+     * in without the MFA requirement. If this option is missing or empty and
+     * the Duo module is installed, MFA will be enforced for all users.
+     */
+    private static final IPAddressListProperty DUO_ENFORCE_HOSTS =
+            new IPAddressListProperty() {
+    
+        @Override
+        public String getName() { return "duo-enforce-hosts"; }
                 
     };
 
@@ -188,5 +226,43 @@ public class ConfigurationService {
     public int getAuthenticationTimeout() throws GuacamoleException {
         return environment.getProperty(DUO_AUTH_TIMEOUT, 5);
     }
+    
+    /**
+     * Returns the list of IP addresses and subnets defined in guacamole.properties
+     * for which Duo MFA should _not_ be enforced. Users logging in from hosts
+     * contained in this list will be logged in without the MFA requirement.
+     * 
+     * @return
+     *     A list of IP addresses and subnets for which Duo MFA should not be
+     *     enforced.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed, or if an invalid IP address
+     *     or subnet is specified.
+     */
+    public List<IPAddress> getBypassHosts() throws GuacamoleException {
+        return environment.getProperty(DUO_BYPASS_HOSTS, Collections.emptyList());
+    }
+    
+    /**
+     * Returns the list of IP addresses and subnets defined in guacamole.properties
+     * for which Duo MFA should explicitly be enforced, while logins from all
+     * other hosts should not enforce MFA. Users logging in from hosts
+     * contained in this list will be required to complete the Duo MFA authentication,
+     * while users from all other hosts will be logged in without the MFA requirement.
+     * 
+     * @return
+     *     A list of IP addresses and subnets for which Duo MFA should be
+     *     explicitly enforced.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed, or if an invalid IP address
+     *     or subnet is specified.
+     */
+    public List<IPAddress> getEnforceHosts() throws GuacamoleException {
+        return environment.getProperty(DUO_ENFORCE_HOSTS, Collections.emptyList());
+    }
+    
+    
 
 }

@@ -18,14 +18,28 @@
 #
 
 attributetype ( 1.3.6.1.4.1.38971.1.1.1 NAME 'guacConfigProtocol'
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
 
 attributetype ( 1.3.6.1.4.1.38971.1.1.2 NAME 'guacConfigParameter'
-	SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.38971.1.1.3 NAME 'guacConfigProxyHostname'
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
+
+attributetype ( 1.3.6.1.4.1.38971.1.1.4 NAME 'guacConfigProxyPort'
+    SINGLE-VALUE
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.27 )
+
+attributetype ( 1.3.6.1.4.1.38971.1.1.5 NAME 'guacConfigProxyEncryption'
+    SINGLE-VALUE
+    SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 )
 
 objectClass ( 1.3.6.1.4.1.38971.1.2.1 NAME 'guacConfigGroup'
     DESC 'Guacamole configuration group'
     SUP groupOfNames
     MUST guacConfigProtocol
-    MAY guacConfigParameter )
+    MAY ( guacConfigParameter $
+          guacConfigProxyHostname $
+          guacConfigProxyPort $
+          guacConfigProxyEncryption ) )
 
