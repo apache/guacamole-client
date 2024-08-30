@@ -83,9 +83,14 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     private final Logger logger = LoggerFactory.getLogger(AbstractGuacamoleTunnelService.class);
 
     /**
+     * The prefix that will be used to generate JDBC tokens.
+     */
+    private final String JDBC_TOKEN_PREFIX = "JDBC_";
+
+    /**
      * The token that contains the date the connection was started.
      */
-    private final String JDBC_DATE_TOKEN = "GUAC_JDBC_STARTDATE";
+    private final String JDBC_DATE_TOKEN = JDBC_TOKEN_PREFIX + "STARTDATE";
     
     /**
      * The format of the date in the date token.
@@ -95,7 +100,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     /**
      * The token that contains the start time of the connection.
      */
-    private final String JDBC_TIME_TOKEN = "GUAC_JDBC_STARTTIME";
+    private final String JDBC_TIME_TOKEN = JDBC_TOKEN_PREFIX + "STARTTIME";
     
     /**
      * The format of the time in the time token.
@@ -105,17 +110,17 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     /**
      * The token that contains the connection name.
      */
-    private final String JDBC_CONNECTION_NAME_TOKEN = "GUAC_JDBC_CONNECTION_NAME";
+    private final String JDBC_CONNECTION_NAME_TOKEN = JDBC_TOKEN_PREFIX + "CONNECTION_NAME";
     
     /**
      * The token that contains the connection identifier.
      */
-    private final String JDBC_CONNECTION_ID_TOKEN = "GUAC_JDBC_CONNECTION_ID";
+    private final String JDBC_CONNECTION_ID_TOKEN = JDBC_TOKEN_PREFIX + "CONNECTION_ID";
     
     /**
      * The token that contains the hostname configured in the connection parameters.
      */
-    private final String JDBC_CONNECTION_HOSTNAME_TOKEN = "GUAC_JDBC_HOSTNAME";
+    private final String JDBC_CONNECTION_HOSTNAME_TOKEN = JDBC_TOKEN_PREFIX + "HOSTNAME";
     
     /**
      * The name of the parameter containing the hostname in the configuration.
@@ -125,7 +130,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     /**
      * The token containing the protocol configured in the connection.
      */
-    private final String JDBC_CONNECTION_PROTOCOL_TOKEN = "GUAC_JDBC_PROTOCOL";
+    private final String JDBC_CONNECTION_PROTOCOL_TOKEN = JDBC_TOKEN_PREFIX + "PROTOCOL";
     
     /**
      * Mapper for accessing connections.
