@@ -61,3 +61,4 @@ JOIN [guacamole_entity]            ON [permissions].[username] = [guacamole_enti
 JOIN [guacamole_entity] [affected] ON [permissions].[affected_username] = [affected].[name] AND [guacamole_entity].[type] = 'USER'
 JOIN [guacamole_user]              ON [guacamole_user].[entity_id] = [affected].[entity_id];
 GO
+

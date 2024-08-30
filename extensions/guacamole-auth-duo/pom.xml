@@ -26,14 +26,14 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-duo</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.5</version>
+    <version>1.6.0</version>
     <name>guacamole-auth-duo</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>extensions</artifactId>
-        <version>1.5.5</version>
+        <version>1.6.0</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -49,7 +49,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>1.5.5</version>
+            <version>1.6.0</version>
             <scope>provided</scope>
         </dependency>
         
@@ -128,6 +128,14 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk8</artifactId>
             <version>${kotlin.version}</version>
+        </dependency>
+
+        <!-- Library for unified IPv4/6 parsing and validation -->
+        <dependency>
+            <groupId>com.github.seancfoley</groupId>
+            <artifactId>ipaddress</artifactId>
+            <version>5.5.0</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>

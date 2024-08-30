@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.5.5",
+    "guacamoleVersion" : "1.6.0",
 
     "name"      : "HTTP Header Authentication Extension",
     "namespace" : "header",

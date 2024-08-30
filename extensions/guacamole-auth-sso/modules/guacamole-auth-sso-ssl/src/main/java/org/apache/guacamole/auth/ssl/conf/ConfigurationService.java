@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.ssl.conf;
 import com.google.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.Collection;
 import javax.naming.ldap.LdapName;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
@@ -30,7 +30,6 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
-import org.apache.guacamole.properties.StringListProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 
 /**
@@ -146,8 +145,8 @@ public class ConfigurationService {
      * one of these attributes, the certificate will be rejected. By default,
      * any attribute is accepted.
      */
-    private static final StringListProperty SSL_SUBJECT_USERNAME_ATTRIBUTE =
-            new StringListProperty () {
+    private static final StringGuacamoleProperty SSL_SUBJECT_USERNAME_ATTRIBUTE =
+            new StringGuacamoleProperty () {
 
         @Override
         public String getName() { return "ssl-subject-username-attribute"; }
@@ -433,8 +432,8 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If the configured set of username attributes cannot be read.
      */
-    public List<String> getSubjectUsernameAttributes() throws GuacamoleException {
-        return environment.getProperty(SSL_SUBJECT_USERNAME_ATTRIBUTE);
+    public Collection<String> getSubjectUsernameAttributes() throws GuacamoleException {
+        return environment.getPropertyCollection(SSL_SUBJECT_USERNAME_ATTRIBUTE);
     }
 
 }

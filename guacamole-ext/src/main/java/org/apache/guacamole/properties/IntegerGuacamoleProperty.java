@@ -19,6 +19,9 @@
 
 package org.apache.guacamole.properties;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
@@ -41,6 +44,27 @@ public abstract class IntegerGuacamoleProperty implements GuacamoleProperty<Inte
             throw new GuacamoleServerException("Property \"" + getName() + "\" must be an integer.", e);
         }
 
+    }
+    
+    @Override
+    public List<Integer> parseValueCollection(String value) throws GuacamoleException {
+        
+        if (value == null)
+            return null;
+        
+        // Split string into a list of individual values
+        List<String> stringValues = Arrays.asList(DELIMITER_PATTERN.split(value));
+        if (stringValues.isEmpty())
+            return null;
+        
+        // Translate values to Integers, validating along the way.
+        List<Integer> intValues = new ArrayList<>();
+        for (String stringInt : stringValues) {
+            intValues.add(parseValue(stringInt));
+        }
+
+        return intValues;
+        
     }
 
 }

@@ -21,13 +21,13 @@ package org.apache.guacamole.auth.openid.conf;
 
 import com.google.inject.Inject;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
-import org.apache.guacamole.properties.StringListProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 
 /**
@@ -138,8 +138,8 @@ public class ConfigurationService {
      * The claims within any valid JWT that should be mapped to
      * the authenticated user's tokens, as configured with guacamole.properties.
      */
-    private static final StringListProperty OPENID_ATTRIBUTES_CLAIM_TYPE =
-            new StringListProperty() {
+    private static final StringGuacamoleProperty OPENID_ATTRIBUTES_CLAIM_TYPE =
+            new StringGuacamoleProperty() {
                 @Override
                 public String getName() { return "openid-attributes-claim-type"; }
             };
@@ -356,8 +356,8 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public List<String> getAttributesClaimType() throws GuacamoleException {
-        return environment.getProperty(OPENID_ATTRIBUTES_CLAIM_TYPE, DEFAULT_ATTRIBUTES_CLAIM_TYPE);
+    public Collection<String> getAttributesClaimType() throws GuacamoleException {
+        return environment.getPropertyCollection(OPENID_ATTRIBUTES_CLAIM_TYPE, DEFAULT_ATTRIBUTES_CLAIM_TYPE);
     }
 
     /**

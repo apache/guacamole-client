@@ -84,8 +84,8 @@ public class LDAPGuacamoleProperties {
      * one attribute, and the concatenation of that attribute and the value of
      * LDAP_USER_BASE_DN must equal the user's full DN.
      */
-    public static final StringListProperty LDAP_USERNAME_ATTRIBUTE =
-            new StringListProperty() {
+    public static final StringGuacamoleProperty LDAP_USERNAME_ATTRIBUTE =
+            new StringGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-username-attribute"; }
@@ -97,8 +97,8 @@ public class LDAPGuacamoleProperties {
      * attributes must be present within each Guacamole user group's record in
      * the LDAP directory for that group to be visible.
      */
-    public static final StringListProperty LDAP_GROUP_NAME_ATTRIBUTE =
-            new StringListProperty() {
+    public static final StringGuacamoleProperty LDAP_GROUP_NAME_ATTRIBUTE =
+            new StringGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-group-name-attribute"; }
@@ -277,8 +277,8 @@ public class LDAPGuacamoleProperties {
      * Custom attribute or attributes to query from Guacamole user's record in
      * the LDAP directory.
      */
-    public static final StringListProperty LDAP_USER_ATTRIBUTES =
-            new StringListProperty() {
+    public static final StringGuacamoleProperty LDAP_USER_ATTRIBUTES =
+            new StringGuacamoleProperty() {
 
         @Override
         public String getName() { return "ldap-user-attributes"; }
