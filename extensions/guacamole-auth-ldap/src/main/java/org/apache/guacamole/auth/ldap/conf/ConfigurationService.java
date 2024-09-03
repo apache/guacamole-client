@@ -149,4 +149,20 @@ public class ConfigurationService {
 
     }
 
+     /**
+     * Returns the UPN domain name used to authenticate via LDAP,
+     * or null by default.
+     * 
+     * @return
+     *     The UPN domain name of the LDAP accounts when authenticating per-user.
+     * 
+     * @throws GuacamoleException
+     *     If guacamole.properties connect be parsed.
+     */
+    public String getUPNDomain() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_UPN_DOMAIN,
+            null
+        );
+    }
 }
