@@ -28,9 +28,6 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
     // Required types
     const TimeRestrictionEntry = $injector.get('TimeRestrictionEntry');
     
-    // Required services
-    const $log = $injector.get('$log');
-    
     /**
      * Options which dictate the behavior of the input field model, as defined
      * by https://docs.angularjs.org/api/ng/directive/ngModelOptions
@@ -177,6 +174,27 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
     };
     
     /**
+     * Since new Time fields in HTML get a default year of 1970, we need to
+     * merge the hours and minutes from the time field into the current Date,
+     * primarily so that Daylight Savings Time offsets are correct.
+     * 
+     * @param {Date} justTime
+     *     The Date object produced by an HTML field that contains the hours
+     *     and minutes we need.
+     *     
+     * @returns {Date}
+     *     The Date object that merges the current calendar date with the
+     *     hours and minutes from the HTML field.
+     */
+    const timeToCurrentDate = function timeToCurrentDate(justTime) {
+        let dateAndTime = new Date();
+        dateAndTime.setHours(justTime.getHours());
+        dateAndTime.setMinutes(justTime.getMinutes());
+        
+        return dateAndTime;
+    };
+    
+    /**
      * Parse the restrictions in the field into a string that can be stored
      * in an underlying module.
      * 
@@ -214,21 +232,11 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
             // When these fields first gets a value, the default year is 1970
             // In order to avoid issues with Daylight Savings Time, we have to
             // work around this.
-            if (restrictions[i].startTime instanceof Date && restrictions[i].startTime.getFullYear() === 1970) {
-                let startHour = restrictions[i].startTime.getHours();
-                let startMin = restrictions[i].startTime.getMinutes();
-                restrictions[i].startTime = new Date();
-                restrictions[i].startTime.setHours(startHour);
-                restrictions[i].startTime.setMinutes(startMin);
-            }
+            if (restrictions[i].startTime instanceof Date && restrictions[i].startTime.getFullYear() === 1970)
+                restrictions[i].startTime = timeToCurrentDate(restrictions[i].startTime);
             
-            if (restrictions[i].endTime instanceof Date && restrictions[i].endTime.getFullYear() === 1970) {
-                let endHour = restrictions[i].endTime.getHours();
-                let endMin = restrictions[i].endTime.getMinutes();
-                restrictions[i].endTime = new Date();
-                restrictions[i].endTime.setHours(endHour);
-                restrictions[i].endTime.setMinutes(endMin);
-            }
+            if (restrictions[i].endTime instanceof Date && restrictions[i].endTime.getFullYear() === 1970)
+                restrictions[i].endTime = timeToCurrentDate(restrictions[i].endTime);
             
             // Process the start day, factoring in wrapping for local time to
             // UTC adjustments.
