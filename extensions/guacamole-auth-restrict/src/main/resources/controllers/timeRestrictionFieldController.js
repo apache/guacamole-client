@@ -58,7 +58,6 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
      * twice - once for the 0-index and once for the 7 index.
      */
     $scope.weekDays = [
-        { id : '0', day : 'Sunday' },
         { id : '1', day : 'Monday' },
         { id : '2', day : 'Tuesday' },
         { id : '3', day : 'Wednesday' },
@@ -132,8 +131,16 @@ angular.module('guacRestrict').controller('timeRestrictionFieldController', ['$s
             if (restrictionRegex.test(restrArray[i])) {
                 var currArray = restrArray[i].match(restrictionRegex);
                 let entry = new TimeRestrictionEntry();
-                entry.startTime = new Date(Date.UTC(templateDate.getFullYear(), templateDate.getMonth(), templateDate.getDate(), parseInt(currArray[2].slice(0,2)), parseInt(currArray[2].slice(2))));
-                entry.endTime = new Date(Date.UTC(templateDate.getFullYear(), templateDate.getMonth(), templateDate.getDate(), parseInt(currArray[3].slice(0,2)), parseInt(currArray[3].slice(2))));
+                entry.startTime = new Date(Date.UTC(templateDate.getFullYear(),
+                                                    templateDate.getMonth(),
+                                                    templateDate.getDate(),
+                                                    parseInt(currArray[2].slice(0,2)),
+                                                    parseInt(currArray[2].slice(2))));
+                entry.endTime = new Date(Date.UTC(templateDate.getFullYear(),
+                                                  templateDate.getMonth(),
+                                                  templateDate.getDate(),
+                                                  parseInt(currArray[3].slice(0,2)),
+                                                  parseInt(currArray[3].slice(2))));
                 var origDay = currArray[1];
                 
                 if (currArray[1] === '*')

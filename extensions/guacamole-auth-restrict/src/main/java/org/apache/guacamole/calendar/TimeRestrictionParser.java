@@ -49,7 +49,7 @@ public class TimeRestrictionParser {
      * </ul>
      */
     private static final Pattern RESTRICTION_REGEX = 
-            Pattern.compile("(?:^|;)+([1-7*])(?::((?:[01][0-9]|2[0-3])[0-5][0-9])\\-((?:[01][0-9]|2[0-3])[0-5][0-9]))+");
+            Pattern.compile("(?:^|;)+([0-7*])(?::((?:[01][0-9]|2[0-3])[0-5][0-9])\\-((?:[01][0-9]|2[0-3])[0-5][0-9]))+");
     
     /**
      * The RegEx group that contains the start day-of-week of the restriction.
@@ -136,7 +136,14 @@ public class TimeRestrictionParser {
                     
                 // A specific day of the week.
                 default:
-                    restrictions.add(new DailyRestriction(DayOfWeek.of(Integer.parseInt(dayString)), startTime, endTime));
+                    int dayInt = Integer.parseInt(dayString);
+                    
+                    // While JavaScript sees Sunday as "0" and "7", DayOfWeek
+                    // does not, so we'll convert it to "7" in order to process it.
+                    if (dayInt == 0)
+                        dayInt = 7;
+                    
+                    restrictions.add(new DailyRestriction(DayOfWeek.of(dayInt), startTime, endTime));
                     
             }
             
