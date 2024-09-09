@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.restrict.connectiongroup;
 
-import com.google.inject.Inject;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -46,12 +45,6 @@ public class RestrictedConnectionGroup extends DelegatingConnectionGroup impleme
      * The remote address of the client from which the current user logged in.
      */
     private final String remoteAddress;
-    
-    /**
-     * The verification service.
-     */
-    @Inject
-    private RestrictionVerificationService verificationService;
     
     /**
      * The name of the attribute that contains a list of weekdays and times (UTC)
@@ -185,7 +178,7 @@ public class RestrictedConnectionGroup extends DelegatingConnectionGroup impleme
             Map<String, String> tokens) throws GuacamoleException {
         
         // Verify restrictions for this connection group.
-        verificationService.verifyConnectionRestrictions(this, remoteAddress);
+        RestrictionVerificationService.verifyConnectionRestrictions(this, remoteAddress);
         
         // Connect
         return super.connect(info, tokens);

@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.restrict.connection;
 
-import com.google.inject.Inject;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -41,17 +40,11 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
  * ability to control access to the connection.
  */
 public class RestrictedConnection extends DelegatingConnection implements Restrictable {
-    
+
     /**
      * The remote address of the client from which the user logged in.
      */
     private final String remoteAddress;
-    
-    /**
-     * The restriction verification service.
-     */
-    @Inject
-    private RestrictionVerificationService verificationService;
     
     /**
      * The name of the attribute that contains a list of weekdays and times (UTC)
@@ -181,9 +174,9 @@ public class RestrictedConnection extends DelegatingConnection implements Restri
     @Override
     public GuacamoleTunnel connect(GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException {
-        
+   
         // Verify the restrictions for this connection.
-        verificationService.verifyConnectionRestrictions(this, remoteAddress);
+        RestrictionVerificationService.verifyConnectionRestrictions(this, remoteAddress);
         
         // Connect
         return super.connect(info, tokens);

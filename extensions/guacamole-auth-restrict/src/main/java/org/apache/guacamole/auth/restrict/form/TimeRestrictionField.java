@@ -20,8 +20,6 @@
 package org.apache.guacamole.auth.restrict.form;
 
 import org.apache.guacamole.form.Field;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A field that parses a string containing time restrictions into its individual
