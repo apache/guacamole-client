@@ -19,8 +19,6 @@
 
 package org.apache.guacamole.auth.restrict;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.restrict.user.RestrictedUserContext;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
@@ -47,21 +45,15 @@ public class RestrictionAuthenticationProvider extends AbstractAuthenticationPro
 
         String remoteAddress = credentials.getRemoteAddress();
         
-        
         // Verify identity of user
-        RestrictionVerificationService.verifyLoginRestrictions(context, remoteAddress);
+        RestrictionVerificationService.verifyLoginRestrictions(context,
+                authenticatedUser.getEffectiveUserGroups(), remoteAddress);
 
         // User has been verified, and authentication should be allowed to
         // continue
-        return new RestrictedUserContext(context, remoteAddress);
+        return new RestrictedUserContext(context, remoteAddress,
+                authenticatedUser.getEffectiveUserGroups());
 
-    }
-
-    @Override
-    public UserContext redecorate(UserContext decorated, UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
-            throws GuacamoleException {
-        return new RestrictedUserContext(context, credentials.getRemoteAddress());
     }
 
 }

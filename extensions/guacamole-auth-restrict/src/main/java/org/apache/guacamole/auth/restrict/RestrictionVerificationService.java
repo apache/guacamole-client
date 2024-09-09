@@ -26,6 +26,7 @@ import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.restrict.connection.RestrictedConnection;
 import org.apache.guacamole.auth.restrict.user.RestrictedUser;
@@ -214,6 +215,10 @@ public class RestrictionVerificationService {
      * @param context
      *     The UserContext associated with the user who is being verified.
      * 
+     * @param effectiveUserGroups
+     *     The set of identifiers of groups of which the user who is being
+     *     verified is a member.
+     * 
      * @param remoteAddress
      *     The remote address of the client from which the current user is
      *     logged in.
@@ -223,7 +228,9 @@ public class RestrictionVerificationService {
      *     logging in from the current client, or if an error occurs attempting
      *     to retrieve permissions.
      */
-    public static void verifyHostRestrictions(UserContext context, String remoteAddress) throws GuacamoleException {
+    public static void verifyHostRestrictions(UserContext context,
+            Set<String> effectiveUserGroups, String remoteAddress)
+            throws GuacamoleException {
         
         // Get the current user
         User currentUser = context.self();
@@ -250,7 +257,8 @@ public class RestrictionVerificationService {
                     + currentUser.getIdentifier() 
                     +"\" is not allowed to log in from \"" 
                     + remoteAddress + "\"",
-                    "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST");
+                    "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST"
+                );
             
             // User-level explicit allow means the user is allowed.
             case EXPLICIT_ALLOW:
@@ -262,7 +270,7 @@ public class RestrictionVerificationService {
         Collection<UserGroup> userGroups = context
                 .getPrivileged()
                 .getUserGroupDirectory()
-                .getAll(currentUser.getUserGroups().getObjects());
+                .getAll(effectiveUserGroups);
         
         // Loop user's effective groups and verify restrictions
         for (UserGroup userGroup : userGroups) {
@@ -283,7 +291,8 @@ public class RestrictionVerificationService {
                         + remoteAddress
                         + "\" due to restrictions on group \"" 
                         + userGroup.getIdentifier() + "\".",
-                        "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST");
+                        "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST"
+                );
             
             // Compare the two, returning the highest-priority restriction so far.
             hostRestrictionResult = RestrictionType.getHigherPriority(hostRestrictionResult, grpRestrictionResult);
@@ -294,14 +303,10 @@ public class RestrictionVerificationService {
         switch (hostRestrictionResult) {
             // Explicit allow was the highest result, so we log it and return, allowing the user to be logged in.
             case EXPLICIT_ALLOW:
-                LOGGER.debug("User \"{}\" is explicitly allowed from host \"{}\".",
-                        currentUser.getIdentifier(), remoteAddress);
                 return;
                 
             // Implicit allow was the highest result, so we log it and return, allowing the user to be logged in.
             case IMPLICIT_ALLOW:
-                LOGGER.debug("User \"{}\" is implicitly allowed from host \"{}\".",
-                        currentUser.getIdentifier(), remoteAddress);
                 return;
         }
         
@@ -309,7 +314,8 @@ public class RestrictionVerificationService {
         throw new TranslatableInvalidHostLoginException("User \""
                 + currentUser.getIdentifier()
                 + "\" is implicitly denied at this time.",
-                "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST");
+                "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST"
+        );
         
     }
     
@@ -329,7 +335,8 @@ public class RestrictionVerificationService {
      *     If the connection should not be allowed from the remote host from
      *     which the user is logged in.
      */
-    public void verifyHostRestrictions(Restrictable restrictable, String remoteAddress) throws GuacamoleException {
+    public static void verifyHostRestrictions(Restrictable restrictable,
+            String remoteAddress) throws GuacamoleException {
         
         // Verify time-based restrictions specific to this connection.
         String allowedHostsString = restrictable.getAttributes().get(RestrictedConnection.RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME);
@@ -355,12 +362,17 @@ public class RestrictionVerificationService {
      *     The UserContext of the user whose access to Guacamole is being
      *     checked.
      * 
+     * @param effectiveUserGroups
+     *     The set of identifiers of groups of which the user who is being
+     *     verified is a member.
+     * 
      * @throws GuacamoleException 
      *     If any of the time constraints configured for the user result in the
      *     user not being allowed to be logged in to Guacamole, or if errors
      *     occur trying to retrieve permissions or attributes.
      */
-    public static void verifyTimeRestrictions(UserContext context) throws GuacamoleException {
+    public static void verifyTimeRestrictions(UserContext context,
+            Set<String> effectiveUserGroups) throws GuacamoleException {
         
         // Retrieve the current User object associated with the UserContext
         User currentUser = context.self();
@@ -387,7 +399,8 @@ public class RestrictionVerificationService {
                 throw new TranslatableInvalidTimeLoginException("User \""
                         + currentUser.getIdentifier()
                         + "\" is not allowed to log in at this time.",
-                        "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_NOW");
+                        "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_NOW"
+                );
             
             // User-level explicit allow means the user is allowed.
             case EXPLICIT_ALLOW:
@@ -399,11 +412,11 @@ public class RestrictionVerificationService {
         Collection<UserGroup> userGroups = context
                 .getPrivileged()
                 .getUserGroupDirectory()
-                .getAll(currentUser.getUserGroups().getObjects());
+                .getAll(effectiveUserGroups);
         
         // Loop user's effective groups and verify restrictions
         for (UserGroup userGroup : userGroups) {
-
+            
             // Get group's attributes
             Map<String, String> grpAttributes = userGroup.getAttributes();
             
@@ -418,7 +431,8 @@ public class RestrictionVerificationService {
                         + currentUser.getIdentifier() 
                         +"\" is not allowed to log in at this time due to restrictions on group \"" 
                         + userGroup + "\".",
-                        "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_NOW");
+                        "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_NOW"
+                );
             
             // Compare the two, returning the highest-priority restriction so far.
             timeRestrictionResult = RestrictionType.getHigherPriority(timeRestrictionResult, grpRestrictionResult);
@@ -428,17 +442,19 @@ public class RestrictionVerificationService {
         switch (timeRestrictionResult) {
             // Explicit allow was the highest result, so we log it and return, allowing the user to be logged in.
             case EXPLICIT_ALLOW:
-                LOGGER.debug("User \"{}\" is explicitly allowed at this time.", currentUser.getIdentifier());
                 return;
                 
             // Implicit allow was the highest result, so we log it and return, allowing the user to be logged in.
             case IMPLICIT_ALLOW:
-                LOGGER.debug("User \"{}\" is implicitly allowed at this time.", currentUser.getIdentifier());
                 return;
         }
         
         // If we reach, here, we've reached an implict deny, so we throw an exception.
-        throw new TranslatableInvalidTimeLoginException("User \"{}\" is implicitly denied at this time.", currentUser.getIdentifier());
+        throw new TranslatableInvalidTimeLoginException("User \""
+                + currentUser.getIdentifier()
+                + "\" is implicitly denied at this time.",
+                "RESTRICT.ERROR_USER_LOGIN_NOT_ALLOWED_NOW"
+        );
         
     }
     
@@ -476,6 +492,10 @@ public class RestrictionVerificationService {
      * @param context
      *     The context of the user who is attempting to log in.
      * 
+     * @param effectiveUserGroups
+     *     The identifiers of the UserGroups of which the user who is logging
+     *     in is a member.
+     * 
      * @param remoteAddress
      *     The remote address of the client from which the current user is
      *     logged in.
@@ -483,10 +503,12 @@ public class RestrictionVerificationService {
      * @throws GuacamoleException 
      *     If any of the restrictions should prevent the user from logging in.
      */
-    public static void verifyLoginRestrictions(UserContext context, String remoteAddress) throws GuacamoleException {
+    public static void verifyLoginRestrictions(UserContext context,
+            Set<String> effectiveUserGroups, String remoteAddress)
+            throws GuacamoleException {
         
-        verifyTimeRestrictions(context);
-        verifyHostRestrictions(context, remoteAddress);
+        verifyTimeRestrictions(context, effectiveUserGroups);
+        verifyHostRestrictions(context, effectiveUserGroups, remoteAddress);
         
     }
     
@@ -507,13 +529,10 @@ public class RestrictionVerificationService {
      *     If any of the restrictions should prevent the connection from being
      *     used by the user at the current time.
      */
-    public void verifyConnectionRestrictions(Restrictable restrictable, String remoteAddress)
-            throws GuacamoleException {
-        
+    public static void verifyConnectionRestrictions(Restrictable restrictable,
+            String remoteAddress) throws GuacamoleException {
         verifyTimeRestrictions(restrictable);
         verifyHostRestrictions(restrictable, remoteAddress);
-        
-        
     }
 
 }

@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.restrict.user;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.restrict.RestrictionVerificationService;
 import org.apache.guacamole.auth.restrict.connection.RestrictedConnection;
@@ -56,6 +57,11 @@ public class RestrictedUserContext extends DelegatingUserContext {
     private final String remoteAddress;
     
     /**
+     * The identifiers effective groups of the user associated with this context.
+     */
+    private final Set<String> effectiveUserGroups;
+    
+    /**
      * Creates a new RestrictedUserContext which wraps the given UserContext,
      * providing additional control for user logins and connections.
      *
@@ -64,10 +70,15 @@ public class RestrictedUserContext extends DelegatingUserContext {
      * 
      * @param remoteAddress
      *     The address the user is logging in from, if known.
+     * 
+     * @param effectiveUserGroups
+     *     The identifiers of the groups this user is associated with.
      */
-    public RestrictedUserContext(UserContext userContext, String remoteAddress) {
+    public RestrictedUserContext(UserContext userContext, String remoteAddress,
+            Set<String> effectiveUserGroups) {
         super(userContext);
         this.remoteAddress = remoteAddress;
+        this.effectiveUserGroups = effectiveUserGroups;
     }
     
     @Override
@@ -174,7 +185,7 @@ public class RestrictedUserContext extends DelegatingUserContext {
     public boolean isValid() {
         try {
             // Verify whether or not time restrictions still apply.
-            RestrictionVerificationService.verifyTimeRestrictions(this);
+            RestrictionVerificationService.verifyTimeRestrictions(this, effectiveUserGroups);
             return true;
         }
         catch (GuacamoleException e) {
