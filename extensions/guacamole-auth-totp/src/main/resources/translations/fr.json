@@ -29,6 +29,24 @@
 
         "SECTION_HEADER_DETAILS" : "Détails:"
 
+    },
+
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED"      : "Désactiver TOTP:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Clé secrète générée:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Appareil d'authentification confirmé:",
+        
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "Statut d'inscription TOTP"
+        
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED" : "Désactiver TOTP:",
+        
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "Configuration TOTP"
+        
     }
 
 }

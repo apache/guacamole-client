@@ -105,6 +105,10 @@
 
         "SECTION_HEADER_RESTRICTIONS" : "Restrictions de groupe"
 
+    },
+
+    "CONNECTION_PARAMETERS": {
+        "DATABASE_PARAMETER_VALUE_TOO_LONG": "La valeur fournie pour le paramètre de connexion {PARAMETER_NAME} dépasse la longueur maximale autorisée de {MAX_SIZE} {MAX_SIZE, plural, one{caractère} other{caractères}}."
     }
 
 }
