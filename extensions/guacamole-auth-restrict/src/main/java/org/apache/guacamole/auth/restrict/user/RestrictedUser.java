@@ -44,6 +44,12 @@ public class RestrictedUser extends DelegatingUser implements Restrictable {
     private final String remoteAddress;
     
     /**
+     * true if the user logged in to Guacamole has administrative privileges
+     * for this user object, otherwise false.
+     */
+    private final boolean hasAdmin;
+    
+    /**
      * The name of the attribute that contains a list of weekdays and times (UTC)
      * that a user is allowed to log in. The presence of this attribute will
      * restrict the user to logins only during the times that are contained
@@ -116,9 +122,10 @@ public class RestrictedUser extends DelegatingUser implements Restrictable {
      *     The remote address of the client from which the current user is logged
      *     in.
      */
-    public RestrictedUser(User user, String remoteAddress) {
+    public RestrictedUser(User user, String remoteAddress, boolean hasAdmin) {
         super(user);
         this.remoteAddress = remoteAddress;
+        this.hasAdmin = hasAdmin;
     }
 
     /**
@@ -133,7 +140,7 @@ public class RestrictedUser extends DelegatingUser implements Restrictable {
 
     @Override
     public Map<String, String> getAttributes() {
-
+        
         // Create independent, mutable copy of attributes
         Map<String, String> attributes = new HashMap<>(super.getAttributes());
         
@@ -154,10 +161,18 @@ public class RestrictedUser extends DelegatingUser implements Restrictable {
 
         // Create independent, mutable copy of attributes
         attributes = new HashMap<>(attributes);
-
+        
         // Loop through extension-specific attributes, only sending ones
         // that are non-null and non-empty to the underlying storage mechanism.
         for (String attribute : RESTRICT_USER_ATTRIBUTES) {
+            
+            /* If the user lacks admin access, don't set restriction attributes. */
+            if (!hasAdmin) {
+                attributes.remove(attribute);
+                continue;
+            }
+            
+            /* Replace empty values with null values. */
             String value = attributes.get(attribute);
             if (value != null && value.isEmpty())
                 attributes.put(attribute, null);

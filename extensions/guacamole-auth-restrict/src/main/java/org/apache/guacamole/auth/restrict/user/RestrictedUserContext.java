@@ -34,9 +34,12 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
+import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.UserGroup;
+import org.apache.guacamole.net.auth.permission.ObjectPermission;
+import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,7 +63,7 @@ public class RestrictedUserContext extends DelegatingUserContext {
      * The identifiers effective groups of the user associated with this context.
      */
     private final Set<String> effectiveUserGroups;
-    
+
     /**
      * Creates a new RestrictedUserContext which wraps the given UserContext,
      * providing additional control for user logins and connections.
@@ -133,11 +136,25 @@ public class RestrictedUserContext extends DelegatingUserContext {
     
     @Override
     public Directory<User> getUserDirectory() throws GuacamoleException {
+        
+        // Pull permissions of the current logged-in user.
+        Permissions currentPermissions = self().getEffectivePermissions();
+        boolean isAdmin = currentPermissions.getSystemPermissions().hasPermission(
+                                        SystemPermission.Type.ADMINISTER
+                        );
+        Collection<String> adminIdentifiers = 
+                currentPermissions.getUserPermissions().getAccessibleObjects(
+                        Collections.singletonList(ObjectPermission.Type.ADMINISTER), super.getUserDirectory().getIdentifiers());
+        
         return new DecoratingDirectory<User>(super.getUserDirectory()) {
 
             @Override
-            protected User decorate(User object) {
-                return new RestrictedUser(object, remoteAddress);
+            protected User decorate(User object) throws GuacamoleException {
+                
+                // Check and see if the logged in user has admin privileges -
+                // either system-level or for that particular object.
+                boolean hasAdmin = isAdmin || adminIdentifiers.contains(object.getIdentifier());
+                return new RestrictedUser(object, remoteAddress, hasAdmin);
             }
 
             @Override
