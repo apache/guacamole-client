@@ -20,18 +20,28 @@
 package org.apache.guacamole.auth.cas;
 
 import com.google.inject.AbstractModule;
+import org.apache.guacamole.auth.cas.conf.CASEnvironment;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.auth.cas.ticket.TicketValidationService;
+import org.apache.guacamole.environment.Environment;
 
 /**
  * Guice module which configures CAS-specific injections.
  */
 public class CASAuthenticationProviderModule extends AbstractModule {
 
+    /**
+     * The configuration environment for this server and extension.
+     */
+    private final Environment environment = new CASEnvironment();
+    
     @Override
     protected void configure() {
         bind(ConfigurationService.class);
         bind(TicketValidationService.class);
+        
+        bind(Environment.class).toInstance(environment);
+        
     }
 
 }

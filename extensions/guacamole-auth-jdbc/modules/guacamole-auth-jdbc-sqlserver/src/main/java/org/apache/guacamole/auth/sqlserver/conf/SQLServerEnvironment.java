@@ -328,5 +328,28 @@ public class SQLServerEnvironment extends JDBCEnvironment {
                 SQLServerGuacamoleProperties.SQLSERVER_TRUST_ALL_SERVER_CERTIFICATES,
                 false);
     }
+    
+    @Override
+    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        
+        // Get the configured or default value of the property.
+        boolean caseSensitiveUsernames = getProperty(
+                SQLServerGuacamoleProperties.SQLSERVER_CASE_SENSITIVE_USERNAMES,
+                super.getCaseSensitiveUsernames()
+        );
+        
+        // If property has been set to true, warn the admin.
+        if (caseSensitiveUsernames)
+            logger.warn("You have configured this extension for case-sensitive "
+                        + "username comparisons, however, the default collations "
+                        + "for SQL Server databases do not support case-sensitive "
+                        + "string comparisons. Further database configuration may "
+                        + "be required in order for case-sensitive username "
+                        + "comparisons to function correctly.");
+        
+        // Return as configured
+        return caseSensitiveUsernames;
+        
+    }
 
 }

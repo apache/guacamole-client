@@ -28,6 +28,7 @@ import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
@@ -185,6 +186,18 @@ public class ConfigurationService {
         @Override
         public String getName() { return "ssl-max-domain-validity"; }
 
+    };
+    
+    /**
+     * A property used to configure whether or not usernames within the SSL SSO
+     * module should be treated as case-sensitive.
+     */
+    public static final BooleanGuacamoleProperty SSL_CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+    
+        @Override
+        public String getName() { return "ssl-case-sensitive-usernames"; }
+                
     };
 
     /**

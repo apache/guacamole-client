@@ -439,7 +439,30 @@ public class MySQLEnvironment extends JDBCEnvironment {
         // Enforce access window restrictions for active sessions unless explicitly disabled
         return getProperty(
                 MySQLGuacamoleProperties.MYSQL_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS,
-                true);
+                true
+        );
+    }
+    
+    @Override
+    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        
+        // Get the configured value for the property.
+        boolean caseSensitiveUsernames = getProperty(
+                MySQLGuacamoleProperties.MYSQL_CASE_SENSITIVE_USERNAMES,
+                super.getCaseSensitiveUsernames()
+        );
+        
+        // If property has been set to true, warn the admin.
+        if (caseSensitiveUsernames)
+            logger.warn("You have enabled case-sensitive usernames; however, "
+                    + "MySQL's default collations do not support case-sensitive "
+                    + "string comparisons. If you really want case-sensitive "
+                    + "usernames you will need to configure your database "
+                    + "appropriately.");
+        
+        // Return the configured setting.
+        return caseSensitiveUsernames;
+        
     }
 
 }

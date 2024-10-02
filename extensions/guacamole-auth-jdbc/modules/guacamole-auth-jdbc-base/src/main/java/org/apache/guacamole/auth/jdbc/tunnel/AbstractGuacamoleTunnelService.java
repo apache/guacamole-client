@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
@@ -167,6 +168,12 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      */
     @Inject
     private SharedConnectionMap connectionMap;
+    
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * All active connections through the tunnel having a given UUID.
@@ -470,7 +477,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         // Record new active connection
         Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
         try {
-            connectionRecordMapper.insert(activeConnection.getModel()); // This MUST happen before getUUID() is invoked, to ensure the ID driving the UUID exists
+            // This MUST happen before getUUID() is invoked, to ensure the ID driving the UUID exists
+            connectionRecordMapper.insert(activeConnection.getModel(),
+                    environment.getCaseSensitiveUsernames()); 
             activeTunnels.put(activeConnection.getUUID().toString(), activeConnection);
         }
 
