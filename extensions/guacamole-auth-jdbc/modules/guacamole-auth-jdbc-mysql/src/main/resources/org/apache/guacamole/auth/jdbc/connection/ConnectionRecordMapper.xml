@@ -61,7 +61,14 @@
             (SELECT user_id FROM guacamole_user
              JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
              WHERE
-                   guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
+                <choose>
+                    <when test="caseSensitive">
+                        guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(guacamole_entity.name) = LOWER(#{record.username,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
                AND guacamole_entity.type = 'USER'),
             #{record.username,jdbcType=VARCHAR},
             #{record.startDate,jdbcType=TIMESTAMP},
@@ -112,7 +119,15 @@
                     guacamole_connection_history.user_id IN (
                         SELECT user_id
                         FROM guacamole_user
-                        WHERE POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
+                        WHERE
+                        <choose>
+                            <when test="caseSensitive">
+                                POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
+                            </when>
+                            <otherwise>
+                                POSITION(LOWER(#{term.term,jdbcType=VARCHAR}) IN LOWER(username)) > 0
+                            </otherwise>
+                        </choose>
                     )
 
                     OR guacamole_connection_history.connection_id IN (
@@ -200,7 +215,14 @@
                         FROM guacamole_user
                         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
                         WHERE
-                                POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
+                            <choose>
+                                <when test="caseSensitive">
+                                    POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
+                                </when>
+                                <otherwise>
+                                    POSITION(LOWER(#{term.term,jdbcType=VARCHAR}) IN LOWER(guacamole_entity.name)) > 0
+                                </otherwise>
+                            </choose>
                             AND guacamole_entity.type = 'USER'
                     )
 

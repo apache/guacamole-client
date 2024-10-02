@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.header;
 
-import org.apache.guacamole.properties.IntegerGuacamoleProperty;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 
@@ -36,13 +36,25 @@ public class HTTPHeaderGuacamoleProperties {
     private HTTPHeaderGuacamoleProperties() {}
 
     /**
-     * The header used for HTTP header authentication.
+     * A property used to configure the header used for HTTP header authentication.
      */
     public static final StringGuacamoleProperty HTTP_AUTH_HEADER = new StringGuacamoleProperty() {
 
         @Override
         public String getName() { return "http-auth-header"; }
 
+    };
+    
+    /**
+     * A property used to configure whether or not usernames within the header
+     * module should be treated as case-sensitive.
+     */
+    public static final BooleanGuacamoleProperty HTTP_AUTH_CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "http-auth-case-sensitive-usernames"; }
+        
     };
 
 }

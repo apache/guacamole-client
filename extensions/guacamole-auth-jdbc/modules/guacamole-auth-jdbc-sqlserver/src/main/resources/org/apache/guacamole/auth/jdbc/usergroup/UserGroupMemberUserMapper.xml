@@ -58,11 +58,27 @@
         WHERE
             user_group_id = #{parent.objectID,jdbcType=INTEGER}
             AND [guacamole_entity].type = 'USER'
-            AND [guacamole_entity].name IN
-                <foreach collection="children" item="identifier"
-                         open="(" separator="," close=")">
-                    #{identifier,jdbcType=VARCHAR}
-                </foreach>
+            AND
+            <choose>
+                <when test="caseSensitive">
+                    [guacamole_entity].name
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name)
+                </otherwise>
+            </choose>
+            IN
+            <foreach collection="children" item="identifier"
+                     open="(" separator="," close=")">
+                <choose>
+                    <when test="caseSensitive">
+                        #{identifier,jdbcType=VARCHAR}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </otherwise>
+                </choose>
+            </foreach>
     </delete>
 
     <!-- Insert member users by name -->
@@ -76,11 +92,26 @@
             [guacamole_entity].entity_id
         FROM [guacamole_entity]
         WHERE
-            [guacamole_entity].name IN
-                <foreach collection="children" item="identifier"
-                         open="(" separator="," close=")">
-                    #{identifier}
-                </foreach>
+            <choose>
+                <when test="caseSensitive">
+                    [guacamole_entity].name
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name)
+                </otherwise>
+            </choose>
+            IN
+            <foreach collection="children" item="identifier"
+                     open="(" separator="," close=")">
+                <choose>
+                    <when test="caseSensitive">
+                        #{identifier}
+                    </when>
+                    <otherwise>
+                        LOWER(#{identifier})
+                    </otherwise>
+                </choose>
+            </foreach>
             AND [guacamole_entity].type = 'USER'
             AND [guacamole_entity].entity_id NOT IN (
                 SELECT [guacamole_user_group_member].member_entity_id

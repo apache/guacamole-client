@@ -36,6 +36,7 @@ import java.util.TimeZone;
 import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.jdbc.security.SaltService;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.DateField;
@@ -180,6 +181,13 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      */
     @Inject
     private Provider<UserRecordSet> userRecordSetProvider;
+    
+    /**
+     * The environment associated with this instance of the JDBC authentication
+     * module.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Whether attributes which control access restrictions should be exposed
@@ -779,6 +787,19 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      */
     public boolean isSkeleton() {
         return (getModel().getEntityID() == null);
+    }
+    
+    @Override
+    public boolean isCaseSensitive() {
+        try {
+            return environment.getCaseSensitiveUsernames();
+        }
+        catch (GuacamoleException e) {
+            logger.error("Failed to retrieve the configuration for case-sensitive usernames: {}."
+                    + " Usernames comparisons will be case-sensitive.", e.getMessage());
+            logger.debug("Exception caught when attempting to read the configuration.", e);
+            return true;
+        }
     }
 
 }

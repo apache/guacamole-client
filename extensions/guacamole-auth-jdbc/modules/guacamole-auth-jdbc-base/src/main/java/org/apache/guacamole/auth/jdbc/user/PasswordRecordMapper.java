@@ -38,6 +38,10 @@ public interface PasswordRecordMapper extends ModeledDirectoryObjectMapper<UserM
      *
      * @param maxHistorySize
      *     The maximum number of records to maintain for each user.
+     * 
+     * @param caseSensitive
+     *     true if the username being queried should be evaluated in a
+     *     case-sensitive manner, otherwise false.
      *
      * @return
      *     A collection of all password records associated with the user having
@@ -45,7 +49,8 @@ public interface PasswordRecordMapper extends ModeledDirectoryObjectMapper<UserM
      *     exists.
      */
     List<PasswordRecordModel> select(@Param("username") String username,
-            @Param("maxHistorySize") int maxHistorySize);
+            @Param("maxHistorySize") int maxHistorySize,
+            @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Inserts the given password record. Old records exceeding the maximum
