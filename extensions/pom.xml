@@ -47,6 +47,7 @@
         <module>guacamole-auth-json</module>
         <module>guacamole-auth-ldap</module>
         <module>guacamole-auth-quickconnect</module>
+        <module>guacamole-auth-restrict</module>
         <module>guacamole-auth-sso</module>
         <module>guacamole-auth-totp</module>
 
