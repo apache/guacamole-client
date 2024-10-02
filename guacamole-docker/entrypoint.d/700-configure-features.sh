@@ -19,7 +19,7 @@
 #
 
 ##
-## @fn 800-configure-features.sh
+## @fn 700-configure-features.sh
 ##
 ## Automatically checks all environment variables currently set and performs
 ## configuration tasks related to those variabels, including installing any

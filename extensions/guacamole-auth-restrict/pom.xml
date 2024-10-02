@@ -24,10 +24,10 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-auth-totp</artifactId>
+    <artifactId>guacamole-auth-restrict</artifactId>
     <packaging>jar</packaging>
     <version>1.6.0</version>
-    <name>guacamole-auth-totp</name>
+    <name>guacamole-auth-restrict</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
@@ -57,7 +57,7 @@
                     <sourceDir>${basedir}/src/main/resources</sourceDir>
                     <include>**/*.html</include>
                     <target>${basedir}/src/main/resources/generated/templates-main/templates.js</target>
-                    <prefix>app/ext/totp</prefix>
+                    <prefix>app/ext/restrict</prefix>
                 </configuration>
             </plugin>
 
@@ -76,7 +76,7 @@
 
                             <cssSourceDir>/</cssSourceDir>
                             <cssTargetDir>/</cssTargetDir>
-                            <cssFinalFile>totp.css</cssFinalFile>
+                            <cssFinalFile>restrict.css</cssFinalFile>
 
                             <cssSourceFiles>
                                 <cssSourceFile>license.txt</cssSourceFile>
@@ -88,7 +88,7 @@
 
                             <jsSourceDir>/</jsSourceDir>
                             <jsTargetDir>/</jsTargetDir>
-                            <jsFinalFile>totp.js</jsFinalFile>
+                            <jsFinalFile>restrict.js</jsFinalFile>
 
                             <jsSourceFiles>
                                 <jsSourceFile>license.txt</jsSourceFile>
@@ -158,23 +158,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- ZXing - Barcode library -->
-        <dependency>
-            <groupId>com.google.zxing</groupId>
-            <artifactId>javase</artifactId>
-            <version>3.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.zxing</groupId>
-            <artifactId>core</artifactId>
-            <version>3.5.3</version>
-        </dependency>
-
         <!-- Guacamole depends on an implementation of JAX-WS -->
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.1.1</version>
+            <version>2.0</version>
             <scope>provided</scope>
         </dependency>
         
