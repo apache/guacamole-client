@@ -113,5 +113,10 @@ public class DelegatingEnvironment implements Environment {
     public void addGuacamoleProperties(GuacamoleProperties properties) throws GuacamoleException {
         environment.addGuacamoleProperties(properties);
     }
+    
+    @Override
+    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        return environment.getCaseSensitiveUsernames();
+    }
 
 }

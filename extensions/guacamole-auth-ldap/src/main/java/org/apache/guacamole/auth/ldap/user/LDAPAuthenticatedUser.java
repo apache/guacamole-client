@@ -24,10 +24,13 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.ConnectedLDAPConfiguration;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An LDAP-specific implementation of AuthenticatedUser, associating a
@@ -35,6 +38,11 @@ import org.apache.guacamole.net.auth.Credentials;
  */
 public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
 
+    /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(LDAPAuthenticatedUser.class);
+    
     /**
      * Reference to the authentication provider associated with this
      * authenticated user.
@@ -133,6 +141,23 @@ public class LDAPAuthenticatedUser extends AbstractAuthenticatedUser {
      */
     public ConnectedLDAPConfiguration getLDAPConfiguration() {
         return config;
+    }
+    
+    @Override
+    public boolean isCaseSensitive() {
+        try {
+            return config.getCaseSensitiveUsernames();
+        }
+        catch (GuacamoleException e) {
+            // LDAP authentication is almost universally case-insensitive,
+            // however, we're maintaining case-sensitivity within Guacamole
+            // at the moment in order to avoid surprising anyone with this change.
+            // Case-sensitivity can be disabled as a configuration option.
+            LOGGER.error("Error retrieving configuration for username case-sensitivity: {}. "
+                    + "Username comparisons will be done case-sensitively.", e.getMessage());
+            LOGGER.debug("Caught exception when retrieving case-sensitivity configuration.", e);
+            return true;
+        }
     }
     
     @Override
