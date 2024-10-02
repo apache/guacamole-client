@@ -53,5 +53,26 @@ public class ConfigurationService {
             "REMOTE_USER"
         );
     }
+    
+    /**
+     * Returns true if the usernames provided to the header authentication
+     * module should be treated as case-sensitive, or false if usernames
+     * should be treated as case-insensitive. This will default to the global
+     * Guacamole configuration for case-sensitivity, which defaults to true, but
+     * can be overridden for this extension, if desired.
+     * 
+     * @return
+     *     true if usernames should be treated as case-sensitive, otherwise
+     *     false.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        return environment.getProperty(
+            HTTPHeaderGuacamoleProperties.HTTP_AUTH_CASE_SENSITIVE_USERNAMES,
+            environment.getCaseSensitiveUsernames()
+        );
+    }
 
 }

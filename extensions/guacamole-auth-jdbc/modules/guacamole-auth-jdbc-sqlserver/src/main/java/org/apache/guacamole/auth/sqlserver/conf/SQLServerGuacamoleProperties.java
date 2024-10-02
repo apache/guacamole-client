@@ -257,5 +257,20 @@ public class SQLServerGuacamoleProperties {
         public String getName() { return "sqlserver-trust-all-server-certificates"; }
 
     };
+    
+    /**
+     * A property used to configure whether or not usernames within the SQL
+     * Server JDBC module should be treated as case-sensitive. While Guacamole
+     * will treat usernames as case-sensitive by default, SQL Server's default
+     * database collations do not do case-sensitive string comparisons, so in
+     * many cases this will effectively result in case-insensitive usernames.
+     */
+    public static final BooleanGuacamoleProperty SQLSERVER_CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+                
+        @Override
+        public String getName() { return "sqlserver-case-sensitive-usernames" ; }
+                
+    };
 
 }

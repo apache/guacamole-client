@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
@@ -217,7 +218,19 @@ public class ConfigurationService {
 
         @Override
         public String getName() { return "openid-redirect-uri"; }
-
+        
+    };
+    
+    /**
+     * A property used to configure whether or not usernames within the OpenID
+     * SSO module should be treated as case-sensitive.
+     */
+    public static final BooleanGuacamoleProperty OPENID_CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+    
+        @Override
+        public String getName() { return "openid-case-sensitive-usernames"; }
+                
     };
 
     /**

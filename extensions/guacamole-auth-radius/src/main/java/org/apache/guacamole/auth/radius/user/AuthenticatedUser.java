@@ -23,6 +23,8 @@ import com.google.inject.Inject;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An RADIUS-specific implementation of AuthenticatedUser, associating a
@@ -31,11 +33,22 @@ import org.apache.guacamole.net.auth.Credentials;
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
 
     /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticatedUser.class);
+    
+    /**
      * Reference to the authentication provider associated with this
      * authenticated user.
      */
     @Inject
     private AuthenticationProvider authProvider;
+    
+    /**
+     * A reference to the configuration service associated with this module.
+     */
+    @Inject
+    private ConfigurationService confService;
 
     /**
      * The credentials provided when this user was authenticated.
@@ -61,6 +74,19 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
     @Override
     public Credentials getCredentials() {
         return credentials;
+    }
+    
+    @Override
+    public boolean isCaseSensitive() {
+        try {
+            return confService.getCaseSensitiveUsernames();
+        }
+        catch (GuacamoleException e) {
+            LOGGER.error("Error retrieving configuration for username case sensiivity. "
+                + "Usernames will be processed as case-sensitive.");
+            LOGGER.debug("Exception caught while retrieving RADIUS configuration.", e);
+            return true;
+        }
     }
 
 }

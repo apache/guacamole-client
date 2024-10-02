@@ -69,6 +69,18 @@ public interface Environment {
         public String getName() { return "guacd-ssl"; }
 
     };
+    
+    /**
+     * A property that configures whether or not Guacamole will take case
+     * into account when comparing and processing usernames.
+     */
+    public static final BooleanGuacamoleProperty CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+        
+        @Override
+        public String getName() { return "case-sensitive-usernames"; }
+        
+    };
 
     /**
      * Returns the Guacamole home directory as determined when this Environment
@@ -366,6 +378,24 @@ public interface Environment {
         throw new GuacamoleUnsupportedException(String.format("%s does not "
                 + "support dynamic definition of Guacamole properties.",
                 getClass()));
+    }
+    
+    /**
+     * Returns true if Guacamole should consider case when comparing and
+     * processing usernames (case-sensitive), or false if case should not be
+     * considered (case-insensitive). Because the past behavior of Guacamole,
+     * prior to the introduction of this option, was case-sensitive, the default
+     * value is true.
+     * 
+     * @return
+     *     true if Guacamole should consider usernames case-sensitive, otherwise
+     *     false.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    public default boolean getCaseSensitiveUsernames() throws GuacamoleException {
+        return getProperty(CASE_SENSITIVE_USERNAMES, true);
     }
 
 }

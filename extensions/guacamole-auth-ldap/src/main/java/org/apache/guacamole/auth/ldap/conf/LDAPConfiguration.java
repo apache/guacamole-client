@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.ldap.conf;
 
 import java.util.Collection;
-import java.util.List;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
 import org.apache.directory.api.ldap.model.name.Dn;
@@ -334,5 +333,21 @@ public interface LDAPConfiguration {
      *     retrieved.
      */
     MemberAttributeType getMemberAttributeType() throws GuacamoleException;
+    
+    /**
+     * Returns true if the usernames provided to the LDAP authentication
+     * module should be treated as case-sensitive, or false if usernames
+     * should be treated as case-insensitive. The default is true, usernames
+     * will be case-sensitive in keeping with the past behavior of Guacamole
+     * prior to the addition of this option.
+     * 
+     * @return
+     *     true if usernames should be treated as case-sensitive, otherwise
+     *     false.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed.
+     */
+    boolean getCaseSensitiveUsernames() throws GuacamoleException;
 
 }
