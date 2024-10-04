@@ -135,9 +135,6 @@ public class RestrictionVerificationService {
     public static RestrictionType allowedByHostRestrictions(String allowedHostsString,
             String deniedHostsString, String remoteAddress) {
         
-        // Convert the string to a HostName
-        HostName remoteHostName = new HostName(remoteAddress);
-        
         // If attributes do not exist or are empty then the action is allowed.
         if ((allowedHostsString == null || allowedHostsString.isEmpty()) 
                 && (deniedHostsString == null || deniedHostsString.isEmpty()))
@@ -152,19 +149,27 @@ public class RestrictionVerificationService {
             return RestrictionType.IMPLICIT_DENY;
         }
         
+        // Convert the string to a HostName
+        HostName remoteHostName = new HostName(remoteAddress);
+        
         // Split denied hosts attribute and process each entry, checking them
-        // against the current remote address, and returning false if a match is
-        // found.
+        // against the current remote address, and returning a deny restriction
+        // if a match is found, or if an error occurs in processing a host in
+        // the list.
         List<HostName> deniedHosts = HostRestrictionParser.parseHostList(deniedHostsString);
         for (HostName hostName : deniedHosts) {
-            try {
-                if (hostName.isAddress() && hostName.toAddress().contains(remoteHostName.asAddress()))
-                    return RestrictionType.EXPLICIT_DENY;
 
-                else
+            try {
+                if (hostName.isAddress()
+                        && hostName.toAddress().contains(remoteHostName.asAddress())) {
+                    return RestrictionType.EXPLICIT_DENY;
+                }
+
+                else {
                     for (IPAddress currAddr : hostName.toAllAddresses())
                         if (currAddr.matches(remoteHostName.asAddressString()))
                             return RestrictionType.EXPLICIT_DENY;
+                }
             }
             catch (UnknownHostException | HostNameException e) {
                 LOGGER.warn("Unknown or invalid host in denied hosts list: \"{}\"", hostName);
