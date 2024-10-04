@@ -18,7 +18,7 @@
 #
 
 ##
-## @fn 000-migrate-legacy-variables.sh
+## @fn 010-migrate-legacy-variables.sh
 ##
 ## Checks for usage of any environment variables that were formerly supported
 ## but are now deprecated, warning when any deprecated variables are

@@ -112,7 +112,6 @@ public abstract class SSOAuthenticationProvider extends AbstractAuthenticationPr
             protected void configure() {
 
                 bind(AuthenticationProvider.class).toInstance(SSOAuthenticationProvider.this);
-                bind(Environment.class).toInstance(LocalEnvironment.getInstance());
                 bind(SSOAuthenticationProviderService.class).to(authService);
 
                 // Bind custom SSOResource implementation if different from
