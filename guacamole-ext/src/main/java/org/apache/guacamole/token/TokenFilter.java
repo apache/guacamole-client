@@ -225,6 +225,13 @@ public class TokenFilter {
                 // strict mode is enabled
                 if (tokenValue == null) {
 
+                    // Token marked as optional, so just skip it and update
+                    // last match.
+                    if (modifier != null && modifier.equals("OPTIONAL")) {
+                        endOfLastMatch = tokenMatcher.end();
+                        continue;
+                    }
+
                     // Fail outright if strict mode is enabled
                     if (strict)
                         throw new GuacamoleTokenUndefinedException("Token "
@@ -232,8 +239,7 @@ public class TokenFilter {
 
                     // If strict mode is NOT enabled, simply interpret as
                     // a literal
-                    String notToken = tokenMatcher.group(TOKEN_GROUP);
-                    output.append(notToken);
+                    output.append(tokenMatcher.group(TOKEN_GROUP));
 
                 }
 
