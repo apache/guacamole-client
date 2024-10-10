@@ -80,6 +80,6 @@ public interface UserGroupMemberUserMapper extends ObjectRelationMapper<UserGrou
      */
     int delete(@Param("parent") UserGroupModel parent,
             @Param("children") Collection<String> children,
-            @Param("caseSesitive") boolean caseSensitive);
+            @Param("caseSensitive") boolean caseSensitive);
     
 }
