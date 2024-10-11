@@ -76,11 +76,16 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      *
      * @param identifiers
      *     The identifiers of the objects to return.
+     * 
+     * @param caseSensitive
+     *     true if the query should evaluate identifiers in a case-sensitive
+     *     manner, otherwise false.
      *
      * @return 
      *     A Collection of all objects having the given identifiers.
      */
-    Collection<ModelType> select(@Param("identifiers") Collection<String> identifiers);
+    Collection<ModelType> select(@Param("identifiers") Collection<String> identifiers,
+                                 @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Selects all objects which have the given identifiers and are explicitly
@@ -99,13 +104,18 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      * @param effectiveGroups
      *     The identifiers of any known effective groups that should be taken
      *     into account, such as those defined externally to the database.
+     * 
+     * @param caseSensitive
+     *     true if the query should evaluate identifiers in a case-sensitive
+     *     manner, otherwise false.
      *
      * @return 
      *     A Collection of all objects having the given identifiers.
      */
     Collection<ModelType> selectReadable(@Param("user") UserModel user,
             @Param("identifiers") Collection<String> identifiers,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Inserts the given object into the database. If the object already
@@ -125,11 +135,16 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      *
      * @param identifier
      *     The identifier of the object to delete.
+     * 
+     * @param caseSensitive
+     *     true if the query should evaluate the identifier in a
+     *     case-sensitive manner, otherwise false.
      *
      * @return
      *     The number of rows deleted.
      */
-    int delete(@Param("identifier") String identifier);
+    int delete(@Param("identifier") String identifier,
+               @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Updates the given existing object in the database. If the object does 
