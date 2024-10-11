@@ -217,6 +217,11 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         return model;
         
     }
+    
+    @Override
+    protected boolean getCaseSensitiveIdentifiers() throws GuacamoleException {
+        return environment.getCaseSensitiveUsernames();
+    }
 
     @Override
     protected boolean hasCreatePermission(ModeledAuthenticatedUser user)

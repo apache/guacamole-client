@@ -115,7 +115,25 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      */
     protected abstract InternalType getObjectInstance(ModeledAuthenticatedUser currentUser,
             ModelType model) throws GuacamoleException;
-
+    
+    /**
+     * Returns whether or not identifiers for objects provided by this service
+     * are handled in a case-sensitive manner or not.
+     * 
+     * @return
+     *     "true" if identifiers handled by this object service should be
+     *     treated as case-sensitive, otherwise false.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving relevant configuration information.
+     */
+    protected boolean getCaseSensitiveIdentifiers() throws GuacamoleException {
+        
+        // By default identifiers are not case-sensitive.
+        return false;
+        
+    }
+    
     /**
      * Returns an instance of a model object which is based on the given
      * object.
@@ -407,6 +425,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         int batchSize = environment.getBatchSize();
 
         boolean userIsPrivileged = user.isPrivileged();
+        
+        boolean caseSensitive = getCaseSensitiveIdentifiers();
 
         // Process the filteredIdentifiers in batches using Lists.partition() and flatMap
         Collection<ModelType> allObjects = Lists.partition(filteredIdentifiers, batchSize).stream()
@@ -415,12 +435,12 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
                     // Bypass permission checks if the user is privileged
                     if (userIsPrivileged)
-                        objects = getObjectMapper().select(chunk);
+                        objects = getObjectMapper().select(chunk, caseSensitive);
 
                     // Otherwise only return explicitly readable identifiers
                     else
                         objects = getObjectMapper().selectReadable(user.getUser().getModel(),
-                                chunk, user.getEffectiveUserGroups());
+                                chunk, user.getEffectiveUserGroups(), caseSensitive);
 
                     return objects.stream();
                 })
@@ -510,7 +530,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         beforeDelete(user, identifier);
         
         // Delete object
-        getObjectMapper().delete(identifier);
+        getObjectMapper().delete(identifier, getCaseSensitiveIdentifiers());
 
     }
 
