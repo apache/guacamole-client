@@ -338,15 +338,6 @@ public class SQLServerEnvironment extends JDBCEnvironment {
                 super.getCaseSensitiveUsernames()
         );
         
-        // If property has been set to true, warn the admin.
-        if (caseSensitiveUsernames)
-            logger.warn("You have configured this extension for case-sensitive "
-                        + "username comparisons, however, the default collations "
-                        + "for SQL Server databases do not support case-sensitive "
-                        + "string comparisons. Further database configuration may "
-                        + "be required in order for case-sensitive username "
-                        + "comparisons to function correctly.");
-        
         // Return as configured
         return caseSensitiveUsernames;
         

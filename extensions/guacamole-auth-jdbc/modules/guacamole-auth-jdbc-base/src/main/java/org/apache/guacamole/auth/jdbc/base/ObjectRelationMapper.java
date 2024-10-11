@@ -48,12 +48,18 @@ public interface ObjectRelationMapper<ParentModelType extends ObjectModel> {
      * @param children
      *     The identifiers of the objects on the child side of the one-to-many
      *     relationship represented by the RelatedObjectSet.
+     * 
+     * @param caseSensitive
+     *     true if child identifiers should be treated as case-sensitive when
+     *     performing lookups on them, or false if the queries should be done
+     *     case-insensitively.
      *
      * @return
      *     The number of rows inserted.
      */
     int insert(@Param("parent") ParentModelType parent,
-            @Param("children") Collection<String> children);
+               @Param("children") Collection<String> children,
+               @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Deletes rows as necessary to modify the one-to-many relationship
@@ -69,12 +75,18 @@ public interface ObjectRelationMapper<ParentModelType extends ObjectModel> {
      * @param children
      *     The identifiers of the objects on the child side of the one-to-many
      *     relationship represented by the RelatedObjectSet.
+     * 
+     * @param caseSensitive
+     *     true if child identifiers should be treated as case-sensitive when
+     *     performing lookups on them, or false if the queries should be done
+     *     case-insensitively.
      *
      * @return
      *     The number of rows deleted.
      */
     int delete(@Param("parent") ParentModelType parent,
-            @Param("children") Collection<String> children);
+               @Param("children") Collection<String> children,
+               @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Retrieves the identifiers of all objects on the child side of the

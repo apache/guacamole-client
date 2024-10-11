@@ -155,6 +155,6 @@ public interface UserPermissionMapper extends ObjectPermissionMapper {
             @Param("permissions") Collection<ObjectPermission.Type> permissions,
             @Param("identifiers") Collection<String> identifiers,
             @Param("effectiveGroups") Collection<String> effectiveGroups,
-            @Param("caseSenstive") boolean caseSensitive);
+            @Param("caseSensitive") boolean caseSensitive);
     
 }
