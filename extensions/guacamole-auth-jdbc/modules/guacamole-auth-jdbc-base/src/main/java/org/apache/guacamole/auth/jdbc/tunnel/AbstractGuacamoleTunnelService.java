@@ -638,7 +638,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             identifiers = getPreferredConnections(user, identifiers);
 
         // Retrieve all children
-        Collection<ConnectionModel> models = connectionMapper.select(identifiers);
+        Collection<ConnectionModel> models = connectionMapper.select(identifiers, false);
         List<ModeledConnection> connections = new ArrayList<ModeledConnection>(models.size());
 
         // Convert each retrieved model to a modeled connection
@@ -679,7 +679,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         // Produce collection of readable connection identifiers
         Collection<ConnectionModel> connections =
                 connectionMapper.selectReadable(user.getUser().getModel(),
-                        identifiers, user.getEffectiveUserGroups());
+                        identifiers, user.getEffectiveUserGroups(), false);
 
         // Ensure set contains only identifiers of readable connections
         identifiers.clear();

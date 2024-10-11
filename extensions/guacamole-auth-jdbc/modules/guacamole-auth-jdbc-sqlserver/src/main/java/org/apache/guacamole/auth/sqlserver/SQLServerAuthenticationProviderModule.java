@@ -28,12 +28,19 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.sqlserver.conf.SQLServerDriver;
 import org.apache.guacamole.auth.sqlserver.conf.SQLServerEnvironment;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Guice module which configures SQLServer-specific injections.
  */
 public class SQLServerAuthenticationProviderModule implements Module {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(SQLServerAuthenticationProviderModule.class);
+    
     /**
      * MyBatis-specific configuration properties.
      */
@@ -88,6 +95,15 @@ public class SQLServerAuthenticationProviderModule implements Module {
 
         // Capture which driver to use for the connection.
         this.sqlServerDriver = environment.getSQLServerDriver();
+        
+        // Check for case-sensitivity and warn admin.
+        if (environment.getCaseSensitiveUsernames())
+            LOGGER.warn("The SQL Server module is currently configured to support "
+                    + "case-sensitive username comparisons, however, the default "
+                    + "collations for SQL Server databases do not support "
+                    + "case-sensitive string comparisons. If you want usernames "
+                    + "within Guacamole to be treated as case-sensitive, further "
+                    + "database configuration may be required.");
 
     }
 

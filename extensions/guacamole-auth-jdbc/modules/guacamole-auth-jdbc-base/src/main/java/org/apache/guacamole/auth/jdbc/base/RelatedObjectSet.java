@@ -76,6 +76,24 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
     }
 
     /**
+     * Return "true" if identifiers within a related object set should be treated
+     * as case-sensitive, otherwise false.
+     * 
+     * @return
+     *     "true" if identifiers should be treated as case-sensitive, otherwise
+     *     "false".
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving configuration information on
+     *     case-sensitivity.
+     */
+    protected boolean getCaseSensitiveIdentifiers() throws GuacamoleException {
+        
+        // Identifiers are not case-sensitive by default.
+        return false;
+    }
+    
+    /**
      * Returns the mapper which provides low-level access to the database
      * models which drive the relation represented by this RelatedObjectSet.
      *
@@ -184,7 +202,7 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
 
         // Create relations only if permission is granted
         if (canAlterRelation(identifiers))
-            getObjectRelationMapper().insert(parent.getModel(), identifiers);
+            getObjectRelationMapper().insert(parent.getModel(), identifiers, getCaseSensitiveIdentifiers());
 
         // User lacks permission to add user groups
         else
@@ -201,7 +219,7 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
 
         // Delete relations only if permission is granted
         if (canAlterRelation(identifiers))
-            getObjectRelationMapper().delete(parent.getModel(), identifiers);
+            getObjectRelationMapper().delete(parent.getModel(), identifiers, getCaseSensitiveIdentifiers());
 
         // User lacks permission to remove user groups
         else

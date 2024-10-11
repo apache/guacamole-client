@@ -446,22 +446,11 @@ public class MySQLEnvironment extends JDBCEnvironment {
     @Override
     public boolean getCaseSensitiveUsernames() throws GuacamoleException {
         
-        // Get the configured value for the property.
-        boolean caseSensitiveUsernames = getProperty(
+        // Return the configured value for the property, or the global value.
+        return getProperty(
                 MySQLGuacamoleProperties.MYSQL_CASE_SENSITIVE_USERNAMES,
                 super.getCaseSensitiveUsernames()
         );
-        
-        // If property has been set to true, warn the admin.
-        if (caseSensitiveUsernames)
-            logger.warn("You have enabled case-sensitive usernames; however, "
-                    + "MySQL's default collations do not support case-sensitive "
-                    + "string comparisons. If you really want case-sensitive "
-                    + "usernames you will need to configure your database "
-                    + "appropriately.");
-        
-        // Return the configured setting.
-        return caseSensitiveUsernames;
         
     }
 
