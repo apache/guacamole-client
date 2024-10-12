@@ -192,7 +192,10 @@ public abstract class ModeledPermissionService<PermissionSetType extends Permiss
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetEntity))
-            return getPermissionInstances(getPermissionMapper().select(targetEntity.getModel(), effectiveGroups));
+            return getPermissionInstances(getPermissionMapper().select(
+                    targetEntity.getModel(),
+                    effectiveGroups,
+                    getCaseSensitiveIdentifiers()));
 
         // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");

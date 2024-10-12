@@ -43,12 +43,17 @@ public interface PermissionMapper<PermissionType> {
      *     when determining the permissions effectively granted to the user. If
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
+     * 
+     * @param caseSensitive
+     *     "true" if identifiers should be treated as case-sensitive, otherwise
+     *     "false".
      *
      * @return
      *     All permissions associated with the given entity.
      */
     Collection<PermissionType> select(@Param("entity") EntityModel entity,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Inserts the given permissions into the database. If any permissions
@@ -56,11 +61,16 @@ public interface PermissionMapper<PermissionType> {
      *
      * @param permissions 
      *     The permissions to insert.
+     * 
+     * @param caseSensitive
+     *     "true" if identifiers should be treated as case-sensitive, otherwise
+     *     "false".
      *
      * @return
      *     The number of rows inserted.
      */
-    int insert(@Param("permissions") Collection<PermissionType> permissions);
+    int insert(@Param("permissions") Collection<PermissionType> permissions,
+               @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Deletes the given permissions from the database. If any permissions do
@@ -68,10 +78,15 @@ public interface PermissionMapper<PermissionType> {
      *
      * @param permissions
      *     The permissions to delete.
+     * 
+     * @param caseSensitive
+     *     "true" if identifiers should be treated as case-sensitive, otherwise
+     *     "false".
      *
      * @return
      *     The number of rows deleted.
      */
-    int delete(@Param("permissions") Collection<PermissionType> permissions);
+    int delete(@Param("permissions") Collection<PermissionType> permissions,
+               @Param("caseSensitive") boolean caseSensitive);
 
 }

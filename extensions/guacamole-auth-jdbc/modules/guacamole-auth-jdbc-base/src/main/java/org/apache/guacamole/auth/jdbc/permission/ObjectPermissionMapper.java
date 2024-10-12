@@ -48,6 +48,10 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      *     when determining the permissions effectively granted to the user. If
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
+     * 
+     * @param caseSensitive
+     *     "true" if identifiers should be treated as case-sensitive, otherwise
+     *     "false".
      *
      * @return
      *     The requested permission, or null if no such permission is granted
@@ -56,7 +60,8 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
     ObjectPermissionModel selectOne(@Param("entity") EntityModel entity,
             @Param("type") ObjectPermission.Type type,
             @Param("identifier") String identifier,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitive") boolean caseSensitive);
 
     /**
      * Retrieves the subset of the given identifiers for which the given entity
@@ -79,6 +84,10 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      *     when determining the permissions effectively granted to the user. If
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
+     * 
+     * @param caseSensitive
+     *     "true" if identifiers should be treated as case-sensitive, otherwise
+     *     "false".
      *
      * @return
      *     A collection containing the subset of identifiers for which at least
@@ -87,6 +96,7 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
     Collection<String> selectAccessibleIdentifiers(@Param("entity") EntityModel entity,
             @Param("permissions") Collection<ObjectPermission.Type> permissions,
             @Param("identifiers") Collection<String> identifiers,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitive") boolean caseSensitive);
 
 }

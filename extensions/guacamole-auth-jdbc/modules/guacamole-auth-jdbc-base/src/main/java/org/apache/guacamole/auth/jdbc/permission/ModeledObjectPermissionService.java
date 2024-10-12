@@ -133,10 +133,12 @@ public abstract class ModeledObjectPermissionService
         // Create permissions only if user has permission to do so
         if (canAlterPermissions(user, targetEntity, permissions)) {
 
+            boolean caseSensitive = getCaseSensitiveIdentifiers();
+            
             batchPermissionUpdates(permissions, permissionSubset -> {
                 Collection<ObjectPermissionModel> models = getModelInstances(
                         targetEntity, permissionSubset);
-                getPermissionMapper().insert(models);
+                getPermissionMapper().insert(models, caseSensitive);
             });
 
             return;
@@ -156,10 +158,12 @@ public abstract class ModeledObjectPermissionService
         // Delete permissions only if user has permission to do so
         if (canAlterPermissions(user, targetEntity, permissions)) {
 
+            boolean caseSensitive = getCaseSensitiveIdentifiers();
+            
             batchPermissionUpdates(permissions, permissionSubset -> {
                 Collection<ObjectPermissionModel> models = getModelInstances(
                         targetEntity, permissionSubset);
-                getPermissionMapper().delete(models);
+                getPermissionMapper().delete(models, caseSensitive);
             });
 
             return;
@@ -179,7 +183,7 @@ public abstract class ModeledObjectPermissionService
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetEntity))
             return getPermissionMapper().selectOne(targetEntity.getModel(),
-                    type, identifier, effectiveGroups) != null;
+                    type, identifier, effectiveGroups, getCaseSensitiveIdentifiers()) != null;
 
         // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");
@@ -205,7 +209,7 @@ public abstract class ModeledObjectPermissionService
         if (canReadPermissions(user, targetEntity))
             return getPermissionMapper().selectAccessibleIdentifiers(
                     targetEntity.getModel(), permissions, identifiers,
-                    effectiveGroups);
+                    effectiveGroups, getCaseSensitiveIdentifiers());
 
         // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");
