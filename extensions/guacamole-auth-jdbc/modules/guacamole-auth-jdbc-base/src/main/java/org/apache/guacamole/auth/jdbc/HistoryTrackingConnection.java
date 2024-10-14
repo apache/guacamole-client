@@ -56,12 +56,6 @@ public class HistoryTrackingConnection extends DelegatingConnection {
      * established connections.
      */
     private final ConnectionRecordMapper connectionRecordMapper;
-    
-    /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private JDBCEnvironment environment;
 
     /**
      * Creates a new HistoryConnection that wraps the given connection,
@@ -106,7 +100,7 @@ public class HistoryTrackingConnection extends DelegatingConnection {
 
         // Insert the connection history record to mark the start of this connection
         connectionRecordMapper.insert(connectionRecordModel,
-                environment.getCaseSensitiveUsernames());
+                currentUser.isCaseSensitive());
 
         // Include history record UUID as token
         ModeledConnectionRecord modeledRecord = new ModeledConnectionRecord(connectionRecordModel);

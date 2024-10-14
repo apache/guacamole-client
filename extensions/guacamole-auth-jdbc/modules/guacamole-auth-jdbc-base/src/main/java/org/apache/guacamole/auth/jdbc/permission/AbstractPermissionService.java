@@ -42,7 +42,7 @@ import org.apache.guacamole.net.auth.permission.PermissionSet;
 public abstract class AbstractPermissionService<PermissionSetType extends PermissionSet<PermissionType>,
         PermissionType extends Permission>
     implements PermissionService<PermissionSetType, PermissionType> {
-
+    
     /**
      * Returns the ObjectPermissionSet related to the type of the given entity.
      * If the given entity represents a user, then the ObjectPermissionSet
