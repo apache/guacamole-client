@@ -73,11 +73,12 @@ public abstract class AbstractIdentifiable implements Identifiable {
         if (otherIdentifier == null)
             return identifier == null;
 
-        // If this identifier is case-sensitive, evaluate with case-sensitivity.
-        if (isCaseSensitive())
+        // If either this identifier or the one we're comparing to  is
+        // case-sensitive, evaluate with case-sensitivity.
+        if (isCaseSensitive() || ((AbstractIdentifiable) other).isCaseSensitive())
             return otherIdentifier.equals(identifier);
         
-        // The identifier should not be evaluated in a case-sensitive manner.
+        // Both identifiers can be evaluated in a case-insensitive manner.
         return otherIdentifier.equalsIgnoreCase(identifier);
 
     }

@@ -24,6 +24,7 @@ import com.google.inject.Provider;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 
@@ -45,6 +46,17 @@ public class UserPermissionService extends ModeledObjectPermissionService {
      */
     @Inject
     private Provider<UserPermissionSet> userPermissionSetProvider;
+    
+    /**
+     * The server environment for retrieving configuration data.
+     */
+    @Inject
+    private JDBCEnvironment environment;
+    
+    @Override
+    public boolean getCaseSensitiveIdentifiers() throws GuacamoleException {
+        return environment.getCaseSensitiveUsernames();
+    }
     
     @Override
     protected ObjectPermissionMapper getPermissionMapper() {

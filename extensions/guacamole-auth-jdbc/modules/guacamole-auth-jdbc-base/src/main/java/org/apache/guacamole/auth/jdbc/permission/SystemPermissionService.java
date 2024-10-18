@@ -98,10 +98,13 @@ public class SystemPermissionService
         // system permissions
         if (user.isPrivileged()) {
 
+            // Pull identifier case sensitivity
+            boolean caseSensitive = getCaseSensitiveIdentifiers();
+            
             batchPermissionUpdates(permissions, permissionSubset -> {
                 Collection<SystemPermissionModel> models = getModelInstances(
                         targetEntity, permissionSubset);
-                systemPermissionMapper.insert(models);
+                systemPermissionMapper.insert(models, caseSensitive);
             });
 
             return;
@@ -125,10 +128,13 @@ public class SystemPermissionService
             if (user.getUser().getIdentifier().equals(targetEntity.getIdentifier()))
                 throw new GuacamoleUnsupportedException("Removing your own administrative permissions is not allowed.");
 
+            // Pull case sensitivity
+            boolean caseSensitive = getCaseSensitiveIdentifiers();
+            
             batchPermissionUpdates(permissions, permissionSubset -> {
                 Collection<SystemPermissionModel> models = getModelInstances(
                         targetEntity, permissionSubset);
-                systemPermissionMapper.delete(models);
+                systemPermissionMapper.delete(models, caseSensitive);
             });
 
             return;

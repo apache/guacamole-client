@@ -44,6 +44,24 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
         PermissionType extends Permission> {
 
     /**
+     * Return "true" if identifiers should be treated as case-sensitive,
+     * otherwise "false".
+     * 
+     * @return
+     *     "true" if identifiers should be treated as case-sensitive, otherwise
+     *     "false".
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving configuration information related to
+     *     case-sensitivity.
+     */
+    default boolean getCaseSensitiveIdentifiers() throws GuacamoleException {
+        
+        // By default identifiers are case-insensitive.
+        return false;
+    }
+    
+    /**
      * Returns a permission set that can be used to retrieve and manipulate the
      * permissions of the given entity.
      *
