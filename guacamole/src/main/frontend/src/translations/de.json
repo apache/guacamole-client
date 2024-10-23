@@ -657,6 +657,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "Englisch (GB) (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "Englisch (US) (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Spanisch (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_DVORAK" : "Spanisch (Dvorak)",
         "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Latein-Amerikanisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
         "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Französisch (Belgien) (Azerty)",

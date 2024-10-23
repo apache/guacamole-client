@@ -584,6 +584,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "Anglès del Regne Unit (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "Anglès dels Estats Units (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Espanyol (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_DVORAK" : "Espanyol (Dvorak)",
         "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Latino Americano (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
         "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Francès de Bèlgica (Azerty)",
