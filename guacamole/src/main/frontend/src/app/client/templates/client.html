@@ -44,6 +44,33 @@
     <div id="connection-warning" ng-show="isConnectionUnstable()">
         {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
     </div>
+
+    <!-- Floating button -->
+    <button 
+      guac-draggable
+      dragging="toolbar.dragging"
+      id="floatingButton"
+      ng-click="toggleToolbarVisibility(focusedClient.filesystems)"
+      ng-if="focusedClient.filesystems.length"
+    >
+      <svg width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>
+            .cls-1 {
+              fill: none;
+              stroke: white;
+              stroke-miterlimit: 10;
+              stroke-width: 1.91px;
+            }
+          </style>
+        </defs>
+        <polyline class="cls-1" points="12 10.09 9.14 12.96 16.77 12.96" />
+        <polyline class="cls-1" points="12 19.64 14.86 16.77 7.23 16.77" />
+        <path class="cls-1"
+          d="M12,3.41,10.09,1.5H1.5V20.59A1.9,1.9,0,0,0,3.41,22.5H20.59a1.9,1.9,0,0,0,1.91-1.91V3.41Z" />
+        <line class="cls-1" x1="1.5" y1="7.23" x2="22.5" y2="7.23" />
+      </svg>
+    </button>
     
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
@@ -198,14 +225,14 @@
     </div>
 
     <!-- Filesystem menu -->
-    <div id="filesystem-menu" class="menu" ng-class="{open: isFilesystemMenuShown()}">
+    <div id="filesystem-menu" class="menu" ng-class="{open: isFilesystemMenuShown() || toolbar.shown}">
         <div class="menu-content">
 
             <!-- Stationary header -->
             <div class="header">
                 <h2>{{filesystemMenuContents.name}}</h2>
                 <button class="upload button" guac-upload="uploadFiles">{{'CLIENT.ACTION_UPLOAD_FILES' | translate}}</button>
-                <button class="back" ng-click="hideFilesystemMenu()">{{'CLIENT.ACTION_NAVIGATE_BACK' | translate}}</button>
+                <button class="back" ng-click="hideFilesystemMenu()" ng-if="isFilesystemMenuShown()">{{'CLIENT.ACTION_NAVIGATE_BACK' | translate}}</button>
             </div>
 
             <!-- Breadcrumbs -->
