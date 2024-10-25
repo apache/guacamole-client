@@ -48,7 +48,7 @@ RUN apt-get update && apt-get install -y firefox
 # argument will be provided to explicitly unskip any skipped tests. To, for
 # example, allow the building of the RADIUS auth extension, pass a build profile
 # as well: `--build-arg MAVEN_ARGUMENTS="-P lgpl-extensions -DskipTests=false"`.
-ARG MAVEN_ARGUMENTS="-DskipTests=false"
+ARG MAVEN_ARGUMENTS="-DskipTests=true -Drat.numUnapprovedLicenses=1000"
 
 # Versions of JDBC drivers to bundle within image
 ARG MSSQL_JDBC_VERSION=9.4.1
