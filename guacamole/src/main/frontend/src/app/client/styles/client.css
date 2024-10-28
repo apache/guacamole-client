@@ -178,3 +178,7 @@ body.client {
   background-color: #0056b3;
   border-color: #004085;
 }
+
+.menu-fullscreen-button {
+  min-width: unset;
+}

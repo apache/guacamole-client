@@ -62,6 +62,7 @@
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
         "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
         "ACTION_UPLOAD_FILES"              : "파일 업로드",
+        "ACTION_MORE"                      : "More",
 
         "DIALOG_HEADER_CONNECTING"       : "연결 중",
         "DIALOG_HEADER_CONNECTION_ERROR" : "연결 오류",
