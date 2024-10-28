@@ -504,10 +504,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     });
 
     // Show the menu when the guacClientShowMenu event is received
-    $scope.$on('guacShowMenu', () => {
-      $scope.menu.shown = true;
-      $scope.toolbar.shown = false;
-    });
+    $scope.$on('guacShowMenu', $scope.showMenu);
 
     // Hide the menu when the guacClientHideMenu event is received
     $scope.$on('guacHideMenu', () => $scope.menu.shown = false);
@@ -753,6 +750,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         }
     };
 
+    $scope.toggleFullscreenMode = guacFullscreen.toggleFullscreenMode;
+
     // Set client-specific menu actions
     $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION,FULLSCREEN_MENU_ACTION ];
 
@@ -790,6 +789,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
           $scope.menu.filesystemMenuShown = false;
         }
       }
+    };
+
+    $scope.showMenu = function showMenu() {
+      $scope.menu.shown = true;
+      $scope.toolbar.shown = false;
     };
 
     /**

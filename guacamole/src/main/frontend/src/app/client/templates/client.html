@@ -105,7 +105,8 @@
                         </ul>
                     </guac-menu>
                 </div>
-                <guac-user-menu local-actions="clientMenuActions"></guac-user-menu>
+                <!-- <guac-user-menu local-actions="clientMenuActions"></guac-user-menu> -->
+                <button class="menu-fullscreen-button" ng-click="toggleFullscreenMode()">{{'CLIENT.ACTION_FULLSCREEN' | translate}}</button>
             </div>
 
             <!-- Scrollable body -->
@@ -233,6 +234,7 @@
                 <h2>{{filesystemMenuContents.name}}</h2>
                 <button class="upload button" guac-upload="uploadFiles">{{'CLIENT.ACTION_UPLOAD_FILES' | translate}}</button>
                 <button class="back" ng-click="hideFilesystemMenu()" ng-if="isFilesystemMenuShown()">{{'CLIENT.ACTION_NAVIGATE_BACK' | translate}}</button>
+                <button ng-click="showMenu()" ng-if="toolbar.shown">{{'CLIENT.ACTION_MORE' | translate}}</button>
             </div>
 
             <!-- Breadcrumbs -->

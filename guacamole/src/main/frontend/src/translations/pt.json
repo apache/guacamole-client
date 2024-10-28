@@ -62,6 +62,7 @@
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
         "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
         "ACTION_UPLOAD_FILES"              : "Enviar Arquivos",
+        "ACTION_MORE"                      : "More",
 
         "DIALOG_HEADER_CONNECTING"       : "Conectando",
         "DIALOG_HEADER_CONNECTION_ERROR" : "Erro na conexão",
