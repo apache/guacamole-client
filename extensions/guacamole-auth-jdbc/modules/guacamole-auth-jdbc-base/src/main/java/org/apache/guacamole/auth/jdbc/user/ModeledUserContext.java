@@ -194,7 +194,7 @@ public class ModeledUserContext extends RestrictedObject
         userRecord.setRemoteHost(getCurrentUser().getCredentials().getRemoteAddress());
 
         // Insert record representing login
-        userRecordMapper.insert(userRecord, environment.getCaseSensitiveUsernames());
+        userRecordMapper.insert(userRecord, getCurrentUser().isCaseSensitive());
         
     }
 

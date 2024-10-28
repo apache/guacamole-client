@@ -156,13 +156,13 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      */
     @Inject
     private PasswordPolicyService passwordPolicyService;
-    
+
     /**
      * The server environment for retrieving configuration.
      */
     @Inject
     private JDBCEnvironment environment;
-
+    
     @Override
     protected ModeledDirectoryObjectMapper<UserModel> getObjectMapper() {
         return userMapper;
@@ -254,7 +254,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         
         // Do not create duplicate users
         Collection<UserModel> existing = userMapper.select(Collections.singleton(
-                    model.getIdentifier()), environment.getCaseSensitiveUsernames());
+                    model.getIdentifier()), user.isCaseSensitive());
         if (!existing.isEmpty())
             throw new GuacamoleClientException("User \"" + model.getIdentifier() + "\" already exists.");
 
@@ -291,7 +291,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         
         // Check whether such a user is already present
         UserModel existing = userMapper.selectOne(model.getIdentifier(),
-                environment.getCaseSensitiveUsernames());
+                user.isCaseSensitive());
         if (existing != null) {
 
             // Do not rename to existing user
@@ -359,7 +359,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         beforeDelete(user, identifier);
         
         // Delete object
-        userMapper.delete(identifier, environment.getCaseSensitiveUsernames());
+        userMapper.delete(identifier, user.isCaseSensitive());
 
     }
 
@@ -401,7 +401,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Retrieve corresponding user model, if such a user exists
         UserModel userModel = userMapper.selectOne(username,
-                environment.getCaseSensitiveUsernames());
+                getCaseSensitiveIdentifiers());
         if (userModel == null)
             return null;
 
@@ -443,7 +443,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Retrieve corresponding user model, if such a user exists
         UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier(),
-                environment.getCaseSensitiveUsernames());
+                authenticatedUser.isCaseSensitive());
         if (userModel == null)
             return null;
 
@@ -642,7 +642,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         if (user.isPrivileged() || user.getUser().getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.AUDIT))
             searchResults = userRecordMapper.search(username, recordIdentifier,
                     requiredContents, sortPredicates, limit,
-                    environment.getCaseSensitiveUsernames());
+                    user.isCaseSensitive());
 
         // Otherwise only return explicitly readable history records
         else
@@ -650,7 +650,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
                     user.getUser().getModel(), recordIdentifier,
                     requiredContents, sortPredicates, limit,
                     user.getEffectiveUserGroups(),
-                    environment.getCaseSensitiveUsernames());
+                    user.isCaseSensitive());
 
         return getObjectInstances(searchResults);
 

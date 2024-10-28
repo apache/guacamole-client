@@ -479,7 +479,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         try {
             // This MUST happen before getUUID() is invoked, to ensure the ID driving the UUID exists
             connectionRecordMapper.insert(activeConnection.getModel(),
-                    environment.getCaseSensitiveUsernames()); 
+                    activeConnection.getUser().isCaseSensitive());
             activeTunnels.put(activeConnection.getUUID().toString(), activeConnection);
         }
 

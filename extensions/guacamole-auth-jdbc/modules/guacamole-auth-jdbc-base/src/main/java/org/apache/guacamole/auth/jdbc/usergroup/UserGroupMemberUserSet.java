@@ -37,16 +37,10 @@ public class UserGroupMemberUserSet extends RelatedObjectSet<ModeledUserGroup, U
      */
     @Inject
     private UserGroupMemberUserMapper userGroupMemberUserMapper;
-    
-    /**
-     * The server environment for retrieving configuration information.
-     */
-    @Inject
-    private JDBCEnvironment environment;
 
     @Override
     protected boolean getCaseSensitiveIdentifiers() throws GuacamoleException {
-        return environment.getCaseSensitiveUsernames();
+        return getCurrentUser().isCaseSensitive();
     }
     
     @Override
