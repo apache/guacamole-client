@@ -635,6 +635,7 @@
         "FIELD_HEADER_REMOTE_APP_ARGS" : "Paramètres\u202F:",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "Répertoire de travail\u202F:",
         "FIELD_HEADER_REMOTE_APP"      : "Programme\u202F:",
+        "FIELD_HEADER_SECONDARY_MONITORS" : "Nombre maximum de moniteurs secondaires (nécessite display-update)\u202F:",
         "FIELD_HEADER_SECURITY"        : "Mode de Sécurité\u202F:",
         "FIELD_HEADER_SERVER_LAYOUT"   : "Agencement clavier\u202F:",
         "FIELD_HEADER_SFTP_DIRECTORY"   : "Répertoire d'upload par défaut\u202F:",
