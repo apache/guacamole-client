@@ -446,11 +446,5 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
         return withDefault(LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE,
                 memberAttributeType, defaultConfig::getMemberAttributeType);
     }
-    
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_CASE_SENSITIVE_USERNAMES,
-                caseSensitiveUsernames, defaultConfig::getCaseSensitiveUsernames);
-    }
 
 }

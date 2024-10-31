@@ -22,8 +22,6 @@ package org.apache.guacamole.auth.postgresql.conf;
 import java.io.File;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicy;
 import org.apache.ibatis.session.SqlSession;
 
@@ -32,11 +30,6 @@ import org.apache.ibatis.session.SqlSession;
  * properties specifically for PostgreSQL.
  */
 public class PostgreSQLEnvironment extends JDBCEnvironment {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(PostgreSQLEnvironment.class);
 
     /**
      * The default host to connect to, if POSTGRESQL_HOSTNAME is not specified.
@@ -397,21 +390,6 @@ public class PostgreSQLEnvironment extends JDBCEnvironment {
         return getProperty(
                 PostgreSQLGuacamoleProperties.POSTGRESQL_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS,
                 true);
-    }
-    
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        
-        // By default, PostgreSQL does perform case-sensitive string comparisons.
-        // Even though usernames are generally not case-sensitive across
-        // most authenticaiton systems, we've elected to maintain case-
-        // sensitivity in this module in order to avoid surprising anyone who
-        // may be relying upon it.
-        return getProperty(
-                PostgreSQLGuacamoleProperties.POSTGRESQL_CASE_SENSITIVE_USERNAMES,
-                super.getCaseSensitiveUsernames()
-        );
-        
     }
 
 }
