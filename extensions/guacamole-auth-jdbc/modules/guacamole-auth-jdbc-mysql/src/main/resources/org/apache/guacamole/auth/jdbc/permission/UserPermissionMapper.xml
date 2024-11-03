@@ -139,7 +139,7 @@
                     </foreach>
                 </when>
                 <otherwise>
-                    AND (guacamole_user_permission.entity_id, permission, LOWER(affected_entity.name)) IN
+                    (guacamole_user_permission.entity_id, permission, LOWER(affected_entity.name)) IN
                     <foreach collection="permissions" item="permission"
                              open="(" separator="," close=")">
                         (#{permission.entityID,jdbcType=INTEGER},
