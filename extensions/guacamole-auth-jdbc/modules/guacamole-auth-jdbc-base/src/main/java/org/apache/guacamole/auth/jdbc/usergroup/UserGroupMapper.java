@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.usergroup;
 
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -33,10 +34,15 @@ public interface UserGroupMapper extends ModeledDirectoryObjectMapper<UserGroupM
      *
      * @param name
      *     The name of the group to return.
+     * 
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return
      *     The group having the given name, or null if no such group exists.
      */
-    UserGroupModel selectOne(@Param("name") String name);
+    UserGroupModel selectOne(@Param("name") String name,
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
 }

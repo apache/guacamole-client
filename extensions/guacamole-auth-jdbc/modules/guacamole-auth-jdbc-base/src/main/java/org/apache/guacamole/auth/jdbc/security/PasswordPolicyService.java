@@ -145,7 +145,7 @@ public class PasswordPolicyService {
 
         // Check password against all recorded hashes
         List<PasswordRecordModel> history = passwordRecordMapper.select(username,
-                historySize, environment.getCaseSensitiveUsernames());
+                historySize, environment.getCaseSensitivity());
         for (PasswordRecordModel record : history) {
 
             byte[] hash = encryptionService.createPasswordHash(password, record.getPasswordSalt());

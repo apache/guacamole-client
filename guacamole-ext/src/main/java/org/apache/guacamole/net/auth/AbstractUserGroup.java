@@ -22,8 +22,12 @@ package org.apache.guacamole.net.auth;
 import java.util.Collections;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation of UserGroup which provides default implementations of
@@ -31,6 +35,17 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
  */
 public abstract class AbstractUserGroup extends AbstractIdentifiable implements UserGroup {
 
+    /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractUserGroup.class);
+    
+    /**
+     * The server environment in which this Guacamole Client instance is
+     * running.
+     */
+    private final Environment environment = LocalEnvironment.getInstance();
+    
     /**
      * {@inheritDoc}
      *
@@ -178,6 +193,21 @@ public abstract class AbstractUserGroup extends AbstractIdentifiable implements 
     @Override
     public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
         return RelatedObjectSet.EMPTY_SET;
+    }
+    
+    @Override
+    public boolean isCaseSensitive() {
+        try {
+            return environment.getCaseSensitivity().caseSensitiveGroupNames();
+        }
+        catch (GuacamoleException e) {
+            LOGGER.warn("Unable to retrieve server configuration, group names "
+                      + "will default to case-sensitive.");
+            LOGGER.debug("Received an exception attempting to retrieve the "
+                       + "property for group name case sensitivity, group names"
+                       + "will be treated as case-sensitive.", e);
+            return true;
+        }
     }
 
 }

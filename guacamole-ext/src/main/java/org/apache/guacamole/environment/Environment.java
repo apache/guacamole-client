@@ -28,6 +28,8 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.CaseSensitivity;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
@@ -71,15 +73,16 @@ public interface Environment {
     };
     
     /**
-     * A property that configures whether or not Guacamole will take case
-     * into account when comparing and processing usernames.
+     * A property that configures how Guacamole handles case sensitivity - it
+     * can be enabled for both usernames and group names, just usernames, just
+     * group names, or disabled for both.
      */
-    public static final BooleanGuacamoleProperty CASE_SENSITIVE_USERNAMES =
-            new BooleanGuacamoleProperty() {
-        
+    public static final EnumGuacamoleProperty<CaseSensitivity> CASE_SENSITIVITY =
+            new EnumGuacamoleProperty<CaseSensitivity>(CaseSensitivity.class) {
+    
         @Override
-        public String getName() { return "case-sensitive-usernames"; }
-        
+        public String getName() { return "case-sensitivity"; }
+                
     };
 
     /**
@@ -381,21 +384,19 @@ public interface Environment {
     }
     
     /**
-     * Returns true if Guacamole should consider case when comparing and
-     * processing usernames (case-sensitive), or false if case should not be
-     * considered (case-insensitive). Because the past behavior of Guacamole,
-     * prior to the introduction of this option, was case-sensitive, the default
-     * value is true.
+     * Returns the case sensitivity configuration for Guacamole as defined
+     * in guacamole.properties, or the default of enabling case sensitivity
+     * for both usernames and group names.
      * 
      * @return
-     *     true if Guacamole should consider usernames case-sensitive, otherwise
-     *     false.
+     *     The case sensitivity setting as configured in guacamole.properties,
+     *     or the default of enabling case sensitivity.
      * 
      * @throws GuacamoleException 
-     *     If guacamole.properties cannot be parsed.
+     *     If guacamole.properties cannot be read or parsed.
      */
-    public default boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        return getProperty(CASE_SENSITIVE_USERNAMES, true);
+    public default CaseSensitivity getCaseSensitivity() throws GuacamoleException {
+        return getProperty(CASE_SENSITIVITY, CaseSensitivity.ENABLED);
     }
 
 }

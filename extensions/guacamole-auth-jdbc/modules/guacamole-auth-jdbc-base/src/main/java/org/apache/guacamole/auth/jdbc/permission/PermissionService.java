@@ -21,12 +21,13 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.net.auth.permission.Permission;
 import org.apache.guacamole.net.auth.permission.PermissionSet;
+import org.apache.guacamole.properties.CaseSensitivity;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -44,21 +45,21 @@ public interface PermissionService<PermissionSetType extends PermissionSet<Permi
         PermissionType extends Permission> {
 
     /**
-     * Return "true" if identifiers should be treated as case-sensitive,
-     * otherwise "false".
+     * Return the current case sensitivity setting, allowing the system to
+     * determine if usernames and/or group names should be treated as case-
+     * sensitive.
      * 
      * @return
-     *     "true" if identifiers should be treated as case-sensitive, otherwise
-     *     "false".
+     *     The current case sensitivity configuration.
      * 
      * @throws GuacamoleException 
      *     If an error occurs retrieving configuration information related to
-     *     case-sensitivity.
+     *     case sensitivity.
      */
-    default boolean getCaseSensitiveIdentifiers() throws GuacamoleException {
+    default CaseSensitivity getCaseSensitivity() throws GuacamoleException {
         
-        // By default identifiers are case-insensitive.
-        return false;
+        // By default identifiers are case-sensitive.
+        return CaseSensitivity.ENABLED;
     }
     
     /**

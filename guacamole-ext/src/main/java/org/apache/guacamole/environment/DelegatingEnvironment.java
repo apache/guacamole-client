@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.guacamole.properties.GuacamoleProperties;
 import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.protocols.ProtocolInfo;
@@ -115,8 +116,8 @@ public class DelegatingEnvironment implements Environment {
     }
     
     @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        return environment.getCaseSensitiveUsernames();
+    public CaseSensitivity getCaseSensitivity() throws GuacamoleException {
+        return environment.getCaseSensitivity();
     }
 
 }

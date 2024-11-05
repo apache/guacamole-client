@@ -67,6 +67,7 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMode
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.protocol.FailoverGuacamoleSocket;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -479,7 +480,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         try {
             // This MUST happen before getUUID() is invoked, to ensure the ID driving the UUID exists
             connectionRecordMapper.insert(activeConnection.getModel(),
-                    activeConnection.getUser().isCaseSensitive());
+                    environment.getCaseSensitivity());
             activeTunnels.put(activeConnection.getUUID().toString(), activeConnection);
         }
 
@@ -637,8 +638,21 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         if (connectionGroup.isSessionAffinityEnabled())
             identifiers = getPreferredConnections(user, identifiers);
 
+        CaseSensitivity caseSensitivity = CaseSensitivity.ENABLED;
+        try {
+            caseSensitivity = environment.getCaseSensitivity();
+        }
+        catch (GuacamoleException e) {
+            logger.warn("Error trying to retrieve case sensitivity configuration: {}."
+                      + "Both usernames and group names will be treated as case-"
+                      + "sensitive.", e.getMessage());
+            logger.debug("An exception was received while trying to retrieve the "
+                       + "case sensitivity configuration.", e);
+        }
+        
         // Retrieve all children
-        Collection<ConnectionModel> models = connectionMapper.select(identifiers, false);
+        Collection<ConnectionModel> models = connectionMapper.select(identifiers,
+                caseSensitivity);
         List<ModeledConnection> connections = new ArrayList<ModeledConnection>(models.size());
 
         // Convert each retrieved model to a modeled connection
@@ -679,7 +693,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         // Produce collection of readable connection identifiers
         Collection<ConnectionModel> connections =
                 connectionMapper.selectReadable(user.getUser().getModel(),
-                        identifiers, user.getEffectiveUserGroups(), false);
+                        identifiers, user.getEffectiveUserGroups(),
+                        environment.getCaseSensitivity());
 
         // Ensure set contains only identifiers of readable connections
         identifiers.clear();

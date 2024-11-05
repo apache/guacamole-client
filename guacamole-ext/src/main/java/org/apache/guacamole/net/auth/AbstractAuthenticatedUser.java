@@ -55,14 +55,14 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
     @Override
     public boolean isCaseSensitive() {
         try {
-            return environment.getCaseSensitiveUsernames();
+            return environment.getCaseSensitivity().caseSensitiveUsernames();
         }
         catch (GuacamoleException e) {
-            LOGGER.warn("Exception attempting to read the Guacamole configuration, "
-                      + "usernames will be treated as case-sensitive.", e.getMessage());
-            LOGGER.debug("Received GuacamoleException attempting to retrieve the "
-                       + "case-sensitivity setting for usernames. Defaulting to"
-                       + "case-sensitive usernames.", e);
+            LOGGER.error("Failed to retrieve the configuration for case sensitivity: {}. "
+                       + "Username comparisons will be case-sensitive.",
+                       e.getMessage());
+            LOGGER.debug("An exception was caught when attempting to retrieve the "
+                       + "case sensitivity configuration.", e);
             return true;
         }
     }

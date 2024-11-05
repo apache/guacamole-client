@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -44,16 +45,15 @@ public interface PermissionMapper<PermissionType> {
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
      * 
-     * @param caseSensitive
-     *     "true" if identifiers should be treated as case-sensitive, otherwise
-     *     "false".
+     * @param caseSensitivity
+     *     The case sensitivity configuration for usernames and group names.
      *
      * @return
      *     All permissions associated with the given entity.
      */
     Collection<PermissionType> select(@Param("entity") EntityModel entity,
             @Param("effectiveGroups") Collection<String> effectiveGroups,
-            @Param("caseSensitive") boolean caseSensitive);
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Inserts the given permissions into the database. If any permissions
@@ -62,15 +62,14 @@ public interface PermissionMapper<PermissionType> {
      * @param permissions 
      *     The permissions to insert.
      * 
-     * @param caseSensitive
-     *     "true" if identifiers should be treated as case-sensitive, otherwise
-     *     "false".
+     * @param caseSensitivity
+     *     The case sensitivity configuration for usernames and group names.
      *
      * @return
      *     The number of rows inserted.
      */
     int insert(@Param("permissions") Collection<PermissionType> permissions,
-               @Param("caseSensitive") boolean caseSensitive);
+               @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Deletes the given permissions from the database. If any permissions do
@@ -79,14 +78,13 @@ public interface PermissionMapper<PermissionType> {
      * @param permissions
      *     The permissions to delete.
      * 
-     * @param caseSensitive
-     *     "true" if identifiers should be treated as case-sensitive, otherwise
-     *     "false".
+     * @param caseSensitivity
+     *     The case sensitivity configuration for usernames and group names.
      *
      * @return
      *     The number of rows deleted.
      */
     int delete(@Param("permissions") Collection<PermissionType> permissions,
-               @Param("caseSensitive") boolean caseSensitive);
+               @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
 }

@@ -792,12 +792,14 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
     @Override
     public boolean isCaseSensitive() {
         try {
-            return environment.getCaseSensitiveUsernames();
+            return environment.getCaseSensitivity().caseSensitiveUsernames();
         }
         catch (GuacamoleException e) {
-            logger.error("Failed to retrieve the configuration for case-sensitive usernames: {}."
-                    + " Usernames comparisons will be case-sensitive.", e.getMessage());
-            logger.debug("Exception caught when attempting to read the configuration.", e);
+            logger.error("Failed to retrieve the configuration for case sensitivity: {}. "
+                       + "Username comparisons will be case-sensitive.",
+                       e.getMessage());
+            logger.debug("An exception was caught when attempting to retrieve the "
+                       + "case sensitivity configuration.", e);
             return true;
         }
     }
