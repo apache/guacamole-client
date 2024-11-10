@@ -83,9 +83,10 @@
         FROM guacamole_connection_group_permission
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="${entityID}"/>
-                <property name="groups"   value="${groups}"/>
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="${entityID}"/>
+                <property name="groups"          value="${groups}"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
             AND permission = 'READ'
     </sql>
@@ -93,8 +94,9 @@
     <!-- Select identifiers of all readable connection groups -->
     <select id="selectReadableIdentifiers" resultType="string">
         <include refid="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupMapper.getReadableIDs">
-            <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-            <property name="groups"   value="effectiveGroups"/>
+            <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+            <property name="groups"          value="effectiveGroups"/>
+            <property name="caseSensitivity" value="${caseSensitivity}"/>
         </include>
     </select>
 
@@ -116,8 +118,9 @@
             <if test="parentIdentifier == null">parent_id IS NULL</if>
             AND connection_group_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
     </select>
@@ -190,8 +193,9 @@
             </foreach>
             AND guacamole_connection_group.connection_group_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             );
 
@@ -204,8 +208,9 @@
             </foreach>
             AND guacamole_connection_group.connection_group_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             );
 
@@ -218,8 +223,9 @@
             </foreach>
             AND guacamole_connection.connection_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.connection.ConnectionMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             );
 
@@ -235,8 +241,9 @@
             </foreach>
             AND guacamole_connection_group_attribute.connection_group_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             );
 

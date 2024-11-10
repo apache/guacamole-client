@@ -51,11 +51,24 @@
                     JOIN guacamole_user_group ON guacamole_user_group.entity_id = guacamole_entity.entity_id
                     WHERE
                         type = 'USER_GROUP'
-                        AND name IN
-                            <foreach collection="${groups}" item="effectiveGroup"
-                                     open="(" separator="," close=")">
-                                #{effectiveGroup,jdbcType=VARCHAR}
-                            </foreach>
+                        AND
+                        <choose>
+                            <when test="caseSensitivity.caseSensitiveGroupNames()">
+                                name IN
+                                <foreach collection="${groups}" item="effectiveGroup"
+                                         open="(" separator="," close=")">
+                                    #{effectiveGroup,jdbcType=VARCHAR}
+                                </foreach>
+                            </when>
+                            <otherwise>
+                                LOWER(name) IN
+                                <foreach collection="${groups}" item="effectiveGroup"
+                                         open="(" separator="," close=")">
+                                    LOWER(#{effectiveGroup,jdbcType=VARCHAR})
+                                </foreach>
+                            </otherwise>
+                        </choose>
+                            
                         AND disabled = false
                 )
             </if>
@@ -83,20 +96,44 @@
                 JOIN guacamole_entity member_entity ON guacamole_user_group_member.member_entity_id = member_entity.entity_id
                 WHERE
                     guacamole_user_group.disabled = false
-                    AND member_entity.type = 'USER_GROUP' AND member_entity.name IN
-                        <foreach collection="effectiveGroups" item="effectiveGroup"
-                                 open="(" separator="," close=")">
-                            #{effectiveGroup,jdbcType=VARCHAR}
-                        </foreach>
+                    AND member_entity.type = 'USER_GROUP' AND
+                    <choose>
+                        <when test="caseSensitivity.caseSensitiveGroupNames()">
+                            member_entity.name IN
+                            <foreach collection="effectiveGroups" item="effectiveGroup"
+                                     open="(" separator="," close=")">
+                                #{effectiveGroup,jdbcType=VARCHAR}
+                            </foreach>
+                        </when>
+                        <otherwise>
+                            LOWER(member_entity.name) IN
+                            <foreach collection="effectiveGroups" item="effectiveGroup"
+                                     open="(" separator="," close=")">
+                                LOWER(#{effectiveGroup,jdbcType=VARCHAR})
+                            </foreach>
+                        </otherwise>
+                </choose>                
                 UNION SELECT
                     guacamole_entity.name
                 FROM guacamole_user_group
                 JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
-                WHERE type = 'USER_GROUP' AND name IN
-                    <foreach collection="effectiveGroups" item="effectiveGroup"
-                             open="(" separator="," close=")">
-                        #{effectiveGroup,jdbcType=VARCHAR}
-                    </foreach>
+                WHERE type = 'USER_GROUP' AND
+                <choose>
+                    <when test="caseSensitivity.caseSensitiveGroupNames()">
+                        name IN
+                        <foreach collection="effectiveGroups" item="effectiveGroup"
+                                 open="(" separator="," close=")">
+                            #{effectiveGroup,jdbcType=VARCHAR}
+                        </foreach>
+                    </when>
+                    <otherwise>
+                        LOWER(name) IN
+                        <foreach collection="effectiveGroups" item="effectiveGroup"
+                                 open="(" separator="," close=")">
+                            LOWER(#{effectiveGroup,jdbcType=VARCHAR})
+                        </foreach>
+                    </otherwise>
+                </choose>
             </if>
         </if>
 
@@ -117,11 +154,23 @@
                         JOIN guacamole_user_group ON guacamole_user_group.entity_id = guacamole_entity.entity_id
                         WHERE
                             type = 'USER_GROUP'
-                            AND name IN
-                                <foreach collection="effectiveGroups" item="effectiveGroup"
-                                         open="(" separator="," close=")">
-                                    #{effectiveGroup,jdbcType=VARCHAR}
-                                </foreach>
+                            AND
+                            <choose>
+                                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                                    name IN
+                                    <foreach collection="effectiveGroups" item="effectiveGroup"
+                                             open="(" separator="," close=")">
+                                        #{effectiveGroup,jdbcType=VARCHAR}
+                                    </foreach>
+                                </when>
+                                <otherwise>
+                                    LOWER(name) IN
+                                    <foreach collection="effectiveGroups" item="effectiveGroup"
+                                             open="(" separator="," close=")">
+                                        LOWER(#{effectiveGroup,jdbcType=VARCHAR})
+                                    </foreach>
+                                </otherwise>
+                            </choose>
                             AND guacamole_user_group.disabled = false
                 </if>
                 UNION

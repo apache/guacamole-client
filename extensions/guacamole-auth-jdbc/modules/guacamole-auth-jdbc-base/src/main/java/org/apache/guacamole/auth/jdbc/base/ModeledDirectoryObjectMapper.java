@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.base;
 import java.util.Collection;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -60,12 +61,17 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      * @param effectiveGroups
      *     The identifiers of any known effective groups that should be taken
      *     into account, such as those defined externally to the database.
+     * 
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return
      *     A Set containing all identifiers of all readable objects.
      */
     Set<String> selectReadableIdentifiers(@Param("user") UserModel user,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
     
     /**
      * Selects all objects which have the given identifiers. If an identifier
@@ -77,15 +83,15 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      * @param identifiers
      *     The identifiers of the objects to return.
      * 
-     * @param caseSensitive
-     *     true if the query should evaluate identifiers in a case-sensitive
-     *     manner, otherwise false.
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return 
      *     A Collection of all objects having the given identifiers.
      */
     Collection<ModelType> select(@Param("identifiers") Collection<String> identifiers,
-                                 @Param("caseSensitive") boolean caseSensitive);
+                                 @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Selects all objects which have the given identifiers and are explicitly
@@ -105,9 +111,9 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      *     The identifiers of any known effective groups that should be taken
      *     into account, such as those defined externally to the database.
      * 
-     * @param caseSensitive
-     *     true if the query should evaluate identifiers in a case-sensitive
-     *     manner, otherwise false.
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return 
      *     A Collection of all objects having the given identifiers.
@@ -115,7 +121,7 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
     Collection<ModelType> selectReadable(@Param("user") UserModel user,
             @Param("identifiers") Collection<String> identifiers,
             @Param("effectiveGroups") Collection<String> effectiveGroups,
-            @Param("caseSensitive") boolean caseSensitive);
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Inserts the given object into the database. If the object already
@@ -136,15 +142,15 @@ public interface ModeledDirectoryObjectMapper<ModelType> {
      * @param identifier
      *     The identifier of the object to delete.
      * 
-     * @param caseSensitive
-     *     true if the query should evaluate the identifier in a
-     *     case-sensitive manner, otherwise false.
+     * @param caseSensitivity
+     *     The case sensitivity configuration that contains information on
+     *     whether usernames and/or group names will be treated as case-sensitive.
      *
      * @return
      *     The number of rows deleted.
      */
     int delete(@Param("identifier") String identifier,
-               @Param("caseSensitive") boolean caseSensitive);
+               @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Updates the given existing object in the database. If the object does 

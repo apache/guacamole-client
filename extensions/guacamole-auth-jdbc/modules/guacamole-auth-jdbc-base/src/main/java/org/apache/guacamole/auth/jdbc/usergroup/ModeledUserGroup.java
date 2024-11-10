@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.form.BooleanField;
@@ -35,6 +36,8 @@ import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.UserGroup;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the UserGroup object which is backed by a database model.
@@ -42,6 +45,11 @@ import org.apache.guacamole.net.auth.UserGroup;
 public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
         implements UserGroup {
 
+    /**
+     * The Logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(ModeledUserGroup.class);
+    
     /**
      * All possible attributes of user groups organized as individual,
      * logical forms.
@@ -74,6 +82,13 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
      */
     @Inject
     private Provider<UserGroupMemberUserGroupSet> memberUserGroupSetProvider;
+    
+    /**
+     * The environment associated with this instance of the JDBC authentication
+     * module.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Whether attributes which control access restrictions should be exposed
@@ -186,6 +201,21 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
         UserGroupMemberUserGroupSet memberUserGroupSet = memberUserGroupSetProvider.get();
         memberUserGroupSet.init(getCurrentUser(), this);
         return memberUserGroupSet;
+    }
+    
+    @Override
+    public boolean isCaseSensitive() {
+        try {
+            return environment.getCaseSensitivity().caseSensitiveGroupNames();
+        }
+        catch (GuacamoleException e) {
+            LOGGER.error("Error while retrieving case sensitivity configuration: {}. "
+                       + "Group names comparisons will be case-sensitive.",
+                      e.getMessage());
+            LOGGER.debug("An exception was caught when attempting to retrieve the "
+                       + "case sensitivity configuration.", e);
+            return true;
+        }
     }
 
 }

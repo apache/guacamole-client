@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.base;
 import java.util.Collection;
 import java.util.List;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -39,15 +40,15 @@ public interface ActivityRecordMapper<ModelType> {
      * @param record
      *     The activity record to insert.
      * 
-     * @param caseSensitive
-     *     Whether or not string comparisons should be done in a case-sensitive
-     *     manner.
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return
      *     The number of rows inserted.
      */
     int insert(@Param("record") ModelType record,
-               @Param("caseSensitive") boolean caseSensitive);
+               @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Updates the given activity record in the database, assigning an end
@@ -91,9 +92,9 @@ public interface ActivityRecordMapper<ModelType> {
      * @param limit
      *     The maximum number of records that should be returned.
      * 
-     * @param caseSensitive
-     *     Whether or not string comparisons should be done in a case-sensitive
-     *     manner.
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return
      *     The results of the search performed with the given parameters.
@@ -103,7 +104,7 @@ public interface ActivityRecordMapper<ModelType> {
             @Param("terms") Collection<ActivityRecordSearchTerm> terms,
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit,
-            @Param("caseSensitive") boolean caseSensitive);
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Searches for up to <code>limit</code> activity records that contain
@@ -143,9 +144,9 @@ public interface ActivityRecordMapper<ModelType> {
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
      * 
-     * @param caseSensitive
-     *     Whether or not string comparisons should be done in a case-sensitive
-     *     manner.
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return
      *     The results of the search performed with the given parameters.
@@ -157,6 +158,6 @@ public interface ActivityRecordMapper<ModelType> {
             @Param("sortPredicates") List<ActivityRecordSortPredicate> sortPredicates,
             @Param("limit") int limit,
             @Param("effectiveGroups") Collection<String> effectiveGroups,
-            @Param("caseSensitive") boolean caseSensitive);
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
 }

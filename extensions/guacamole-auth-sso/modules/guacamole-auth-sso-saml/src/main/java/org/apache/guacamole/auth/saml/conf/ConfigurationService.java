@@ -189,18 +189,6 @@ public class ConfigurationService {
         public String getName() { return "saml-private-key-path"; }
 
     };
-    
-    /**
-     * A property used to configure whether or not usernames within the SAML SSO
-     * module should be treated as case-sensitive.
-     */
-    public static final BooleanGuacamoleProperty SAML_CASE_SENSITIVE_USERNAMES =
-            new BooleanGuacamoleProperty() {
-    
-        @Override
-        public String getName() { return "saml-case-sensitive-usernames"; }
-                
-    };
 
     /**
      * The Guacamole server environment.

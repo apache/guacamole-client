@@ -23,13 +23,9 @@ import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An AuthenticatedUser whose identity has been supplied by an arbitrary SSO
@@ -38,11 +34,6 @@ import org.slf4j.LoggerFactory;
  * by that user.
  */
 public class SSOAuthenticatedUser extends AbstractAuthenticatedUser {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(SSOAuthenticatedUser.class);
     
     /**
      * Reference to the authentication provider associated with this
@@ -50,12 +41,6 @@ public class SSOAuthenticatedUser extends AbstractAuthenticatedUser {
      */
     @Inject
     private AuthenticationProvider authProvider;
-    
-    /**
-     * The environment in which this instance of Guacamole is running.
-     */
-    @Inject
-    private Environment environment;
 
     /**
      * The credentials provided when this user was authenticated.
@@ -126,23 +111,6 @@ public class SSOAuthenticatedUser extends AbstractAuthenticatedUser {
     @Override
     public Set<String> getEffectiveUserGroups() {
         return effectiveGroups;
-    }
-    
-    @Override
-    public boolean isCaseSensitive() {
-        try {
-            return environment.getCaseSensitiveUsernames();
-        }
-        catch (GuacamoleException e) {
-            // Most SSO systems do not consider usernames to be case-sensitive;
-            // however, in order to avoid any surprises created by the introduction
-            // of case-sensitivity, we've opted to continue to evaluate these
-            // usernames in a case-sensitive manner by default.
-            LOGGER.error("Error occurred when trying to retrieve case-sensitivity configuration: {}. "
-                    + "Usernames comparisons will be done in a case-sensitive manner.", e.getMessage());
-            LOGGER.debug("Exception caught when trying to access the case-sensitivity property.", e);
-            return true;
-        }
     }
 
 }

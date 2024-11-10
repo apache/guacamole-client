@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.base;
 import java.util.Collection;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -49,17 +50,16 @@ public interface ObjectRelationMapper<ParentModelType extends ObjectModel> {
      *     The identifiers of the objects on the child side of the one-to-many
      *     relationship represented by the RelatedObjectSet.
      * 
-     * @param caseSensitive
-     *     true if child identifiers should be treated as case-sensitive when
-     *     performing lookups on them, or false if the queries should be done
-     *     case-insensitively.
+     * @param caseSensitivity
+     *     The case sensitivity configuration, used to determine whether
+     *     usernames and/or group names will be treated as case-sensitive.
      *
      * @return
      *     The number of rows inserted.
      */
     int insert(@Param("parent") ParentModelType parent,
                @Param("children") Collection<String> children,
-               @Param("caseSensitive") boolean caseSensitive);
+               @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Deletes rows as necessary to modify the one-to-many relationship
@@ -76,17 +76,16 @@ public interface ObjectRelationMapper<ParentModelType extends ObjectModel> {
      *     The identifiers of the objects on the child side of the one-to-many
      *     relationship represented by the RelatedObjectSet.
      * 
-     * @param caseSensitive
-     *     true if child identifiers should be treated as case-sensitive when
-     *     performing lookups on them, or false if the queries should be done
-     *     case-insensitively.
+     * @param caseSensitivity
+     *     The case sensitivity configuration, used to determine whether
+     *     usernames and/or group names will be treated as case-sensitive.
      *
      * @return
      *     The number of rows deleted.
      */
     int delete(@Param("parent") ParentModelType parent,
                @Param("children") Collection<String> children,
-               @Param("caseSensitive") boolean caseSensitive);
+               @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Retrieves the identifiers of all objects on the child side of the
@@ -122,6 +121,10 @@ public interface ObjectRelationMapper<ParentModelType extends ObjectModel> {
      * @param effectiveGroups
      *     The identifiers of any known effective groups that should be taken
      *     into account, such as those defined externally to the database.
+     * 
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @param parent
      *     The model of the object on the parent side of the one-to-many
@@ -133,6 +136,7 @@ public interface ObjectRelationMapper<ParentModelType extends ObjectModel> {
      */
     Set<String> selectReadableChildIdentifiers(@Param("user") UserModel user,
             @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity,
             @Param("parent") ParentModelType parent);
 
 }

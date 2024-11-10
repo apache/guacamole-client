@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.ldap.conf;
 
-import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
@@ -28,7 +27,6 @@ import org.apache.directory.api.ldap.model.message.AliasDerefMode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.environment.Environment;
 
 /**
  * LDAPConfiguration implementation that returns the default values for all
@@ -36,12 +34,6 @@ import org.apache.guacamole.environment.Environment;
  * required (such as {@link #getUserBaseDN()}), an exception is thrown.
  */
 public class DefaultLDAPConfiguration implements LDAPConfiguration {
-
-    /**
-     * The environment in which Guacamole is running.
-     */
-    @Inject
-    private Environment environment;
     
     @Override
     public String appliesTo(String username) {
@@ -157,11 +149,6 @@ public class DefaultLDAPConfiguration implements LDAPConfiguration {
     public MemberAttributeType getMemberAttributeType()
             throws GuacamoleException {
         return MemberAttributeType.DN;
-    }
-    
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        return environment.getCaseSensitiveUsernames();
     }
 
 }

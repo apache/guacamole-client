@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.cas.conf;
 
 import org.apache.guacamole.auth.cas.group.GroupFormat;
-import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
@@ -117,18 +116,6 @@ public class CASGuacamoleProperties {
         @Override
         public String getName() { return "cas-group-ldap-attribute"; }
 
-    };
-    
-    /**
-     * A property used to configure whether or not usernames within the CAS SSO
-     * module should be treated as case-sensitive.
-     */
-    public static final BooleanGuacamoleProperty CAS_CASE_SENSITIVE_USERNAMES =
-            new BooleanGuacamoleProperty() {
-    
-        @Override
-        public String getName() { return "cas-case-sensitive-usernames"; }
-                
     };
 
 }
