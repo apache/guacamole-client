@@ -187,18 +187,6 @@ public class ConfigurationService {
         public String getName() { return "ssl-max-domain-validity"; }
 
     };
-    
-    /**
-     * A property used to configure whether or not usernames within the SSL SSO
-     * module should be treated as case-sensitive.
-     */
-    public static final BooleanGuacamoleProperty SSL_CASE_SENSITIVE_USERNAMES =
-            new BooleanGuacamoleProperty() {
-    
-        @Override
-        public String getName() { return "ssl-case-sensitive-usernames"; }
-                
-    };
 
     /**
      * The Guacamole server environment.

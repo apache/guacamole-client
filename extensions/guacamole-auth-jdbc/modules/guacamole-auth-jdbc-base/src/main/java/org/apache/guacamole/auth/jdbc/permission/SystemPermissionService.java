@@ -23,13 +23,14 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
+import org.apache.guacamole.properties.CaseSensitivity;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -98,10 +99,13 @@ public class SystemPermissionService
         // system permissions
         if (user.isPrivileged()) {
 
+            // Pull identifier case sensitivity
+            CaseSensitivity caseSensitivity = getCaseSensitivity();
+            
             batchPermissionUpdates(permissions, permissionSubset -> {
                 Collection<SystemPermissionModel> models = getModelInstances(
                         targetEntity, permissionSubset);
-                systemPermissionMapper.insert(models);
+                systemPermissionMapper.insert(models, caseSensitivity);
             });
 
             return;
@@ -125,10 +129,13 @@ public class SystemPermissionService
             if (user.getUser().getIdentifier().equals(targetEntity.getIdentifier()))
                 throw new GuacamoleUnsupportedException("Removing your own administrative permissions is not allowed.");
 
+            // Pull case sensitivity
+            CaseSensitivity caseSensitivity = getCaseSensitivity();
+            
             batchPermissionUpdates(permissions, permissionSubset -> {
                 Collection<SystemPermissionModel> models = getModelInstances(
                         targetEntity, permissionSubset);
-                systemPermissionMapper.delete(models);
+                systemPermissionMapper.delete(models, caseSensitivity);
             });
 
             return;
@@ -173,7 +180,7 @@ public class SystemPermissionService
 
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetEntity))
-            return getPermissionMapper().selectOne(targetEntity.getModel(), type, effectiveGroups) != null;
+            return getPermissionMapper().selectOne(targetEntity.getModel(), type, effectiveGroups, getCaseSensitivity()) != null;
 
         // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");

@@ -203,13 +203,6 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
      */
     @JsonProperty("member-attribute-type")
     private String memberAttributeType;
-    
-    /**
-     * The raw YAML value of {@link LDAPGuacamoleProperties#LDAP_USERNAMES_CASE_SENSITIVE}.
-     * If not set within the YAML, this will currently default to true.
-     */
-    @JsonProperty("case-sensitive-usernames")
-    private String caseSensitiveUsernames;
 
     /**
      * The default configuration options for all parameters.
@@ -445,12 +438,6 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     public MemberAttributeType getMemberAttributeType() throws GuacamoleException {
         return withDefault(LDAPGuacamoleProperties.LDAP_MEMBER_ATTRIBUTE_TYPE,
                 memberAttributeType, defaultConfig::getMemberAttributeType);
-    }
-    
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        return withDefault(LDAPGuacamoleProperties.LDAP_CASE_SENSITIVE_USERNAMES,
-                caseSensitiveUsernames, defaultConfig::getCaseSensitiveUsernames);
     }
 
 }

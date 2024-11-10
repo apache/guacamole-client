@@ -303,18 +303,4 @@ public class MySQLGuacamoleProperties {
 
     };
     
-    /**
-     * A property used to configure whether or not usernames within the MySQL
-     * JDBC module should be treated as case-sensitive. Be aware that MySQL's
-     * default database collations do not do case-sensitive comparisons, so in
-     * many cases they will effectively be case-insensitive.
-     */
-    public static final BooleanGuacamoleProperty MYSQL_CASE_SENSITIVE_USERNAMES =
-            new BooleanGuacamoleProperty() {
-    
-        @Override
-        public String getName() { return "mysql-case-sensitive-usernames"; }
-                
-    };
-    
 }

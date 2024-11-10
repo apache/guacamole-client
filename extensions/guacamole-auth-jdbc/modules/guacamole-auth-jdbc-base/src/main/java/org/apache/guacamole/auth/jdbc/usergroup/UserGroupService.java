@@ -21,10 +21,11 @@ package org.apache.guacamole.auth.jdbc.usergroup;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
-import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
+import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
+import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.auth.jdbc.base.EntityMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.UserGroupPermissionMapper;
@@ -46,6 +47,12 @@ public class UserGroupService extends ModeledDirectoryObjectService<ModeledUserG
      */
     @Inject
     private EntityMapper entityMapper;
+    
+    /**
+     * The Guacamole server configuration environment.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Mapper for accessing user groups.
@@ -64,7 +71,7 @@ public class UserGroupService extends ModeledDirectoryObjectService<ModeledUserG
      */
     @Inject
     private Provider<ModeledUserGroup> userGroupProvider;
-
+    
     @Override
     protected ModeledDirectoryObjectMapper<UserGroupModel> getObjectMapper() {
         return userGroupMapper;
@@ -145,7 +152,8 @@ public class UserGroupService extends ModeledDirectoryObjectService<ModeledUserG
             throw new GuacamoleClientException("The group name must not be blank.");
         
         // Do not create duplicate user groups
-        UserGroupModel existing = userGroupMapper.selectOne(model.getIdentifier());
+        UserGroupModel existing = userGroupMapper.selectOne(model.getIdentifier(),
+                environment.getCaseSensitivity());
         if (existing != null)
             throw new GuacamoleClientException("Group \"" + model.getIdentifier() + "\" already exists.");
 
@@ -166,7 +174,8 @@ public class UserGroupService extends ModeledDirectoryObjectService<ModeledUserG
         
         // Do not allow groups to be renamed if the name collides with that of
         // another, existing group
-        UserGroupModel existing = userGroupMapper.selectOne(model.getIdentifier());
+        UserGroupModel existing = userGroupMapper.selectOne(model.getIdentifier(),
+                environment.getCaseSensitivity());
         if (existing != null && !existing.getObjectID().equals(model.getObjectID()))
             throw new GuacamoleClientException("Group \"" + model.getIdentifier() + "\" already exists.");
 

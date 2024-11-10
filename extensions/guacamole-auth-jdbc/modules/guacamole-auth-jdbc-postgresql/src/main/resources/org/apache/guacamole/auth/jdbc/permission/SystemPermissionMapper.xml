@@ -39,9 +39,10 @@
         FROM guacamole_system_permission
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
 
     </select>
@@ -55,9 +56,10 @@
         FROM guacamole_system_permission
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_system_permission_type
 

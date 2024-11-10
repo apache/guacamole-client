@@ -46,8 +46,8 @@ public interface Identifiable {
     
     /**
      * Whether or not this identifier should be evaluated in a case-sensitive
-     * manner or not. By default this returns true and the identifier will
-     * be evaluated in a case-sensitive manner.
+     * manner. By default this returns true and the identifier will be
+     * evaluated in a case-sensitive manner.
      * 
      * @return 
      *     True if the comparisons of this identifier should be case-sensitive,
