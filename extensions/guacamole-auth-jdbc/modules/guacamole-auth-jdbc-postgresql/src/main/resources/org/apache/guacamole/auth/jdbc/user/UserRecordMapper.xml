@@ -50,7 +50,7 @@
              JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
              WHERE
                 <choose>
-                    <when test="caseSensitive">
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
                         guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
                     </when>
                     <otherwise>
@@ -89,7 +89,7 @@
             
             <if test="identifier != null">
                 <choose>
-                    <when test="caseSensitive">
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
                         guacamole_user_history.username = #{identifier,jdbcType=VARCHAR}
                     </when>
                     <otherwise>
@@ -107,7 +107,7 @@
                         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
                         WHERE
                             <choose>
-                                <when test="caseSensitive">
+                                <when test="caseSensitivity.caseSensitiveUsernames()">
                                     POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
                                 </when>
                                 <otherwise>
@@ -161,15 +161,16 @@
             <!-- Restrict to readable users -->
             guacamole_connection_history.user_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
 
             <if test="identifier != null">
                 AND
                 <choose>
-                    <when test="caseSensitive">
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
                         guacamole_entity.name = #{identifier,jdbcType=VARCHAR}
                     </when>
                     <otherwise>
@@ -187,7 +188,7 @@
                         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
                         WHERE
                             <choose>
-                                <when test="caseSensitive">
+                                <when test="caseSensitivity.caseSensitiveUsernames()">
                                     POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
                                 </when>
                                 <otherwise>

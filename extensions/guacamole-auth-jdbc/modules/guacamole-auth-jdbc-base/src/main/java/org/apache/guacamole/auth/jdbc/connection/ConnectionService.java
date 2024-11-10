@@ -361,7 +361,8 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
         else
             return connectionMapper.selectReadableIdentifiersWithin(
                     user.getUser().getModel(), identifier,
-                    user.getEffectiveUserGroups());
+                    user.getEffectiveUserGroups(),
+                    getCaseSensitivity());
 
     }
 
@@ -494,7 +495,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
         if (user.isPrivileged() || user.getUser().getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.AUDIT))
             searchResults = connectionRecordMapper.search(identifier,
                     recordIdentifier, requiredContents, sortPredicates, limit,
-                    environment.getCaseSensitiveUsernames());
+                    getCaseSensitivity());
 
         // Otherwise only return explicitly readable history records
         else
@@ -502,7 +503,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
                     user.getUser().getModel(), recordIdentifier,
                     requiredContents, sortPredicates, limit,
                     user.getEffectiveUserGroups(),
-                    environment.getCaseSensitiveUsernames());
+                    getCaseSensitivity());
 
         return getObjectInstances(searchResults);
 

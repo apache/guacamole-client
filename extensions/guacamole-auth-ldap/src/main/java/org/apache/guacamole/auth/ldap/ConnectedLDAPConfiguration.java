@@ -223,10 +223,5 @@ public class ConnectedLDAPConfiguration implements LDAPConfiguration, AutoClosea
     public MemberAttributeType getMemberAttributeType() throws GuacamoleException {
         return config.getMemberAttributeType();
     }
-    
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        return config.getCaseSensitiveUsernames();
-    }
 
 }

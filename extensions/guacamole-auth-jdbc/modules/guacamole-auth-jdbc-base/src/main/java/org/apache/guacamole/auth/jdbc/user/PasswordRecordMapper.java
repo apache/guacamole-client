@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.user;
 
 import java.util.List;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -39,9 +40,9 @@ public interface PasswordRecordMapper extends ModeledDirectoryObjectMapper<UserM
      * @param maxHistorySize
      *     The maximum number of records to maintain for each user.
      * 
-     * @param caseSensitive
-     *     true if the username being queried should be evaluated in a
-     *     case-sensitive manner, otherwise false.
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return
      *     A collection of all password records associated with the user having
@@ -50,7 +51,7 @@ public interface PasswordRecordMapper extends ModeledDirectoryObjectMapper<UserM
      */
     List<PasswordRecordModel> select(@Param("username") String username,
             @Param("maxHistorySize") int maxHistorySize,
-            @Param("caseSensitive") boolean caseSensitive);
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Inserts the given password record. Old records exceeding the maximum

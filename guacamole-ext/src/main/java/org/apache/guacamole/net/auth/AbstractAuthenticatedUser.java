@@ -21,6 +21,11 @@ package org.apache.guacamole.net.auth;
 
 import java.util.Collections;
 import java.util.Set;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.environment.LocalEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Basic implementation of an AuthenticatedUser which uses the username to
@@ -29,6 +34,17 @@ import java.util.Set;
 public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
         implements AuthenticatedUser {
 
+    /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAuthenticatedUser.class);
+    
+    /**
+     * The server environment in which this Guacamole Client instance is
+     * running.
+     */
+    private final Environment environment = LocalEnvironment.getInstance();
+    
     // Prior functionality now resides within AbstractIdentifiable
 
     @Override
@@ -36,6 +52,21 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
         return Collections.<String>emptySet();
     }
 
+    @Override
+    public boolean isCaseSensitive() {
+        try {
+            return environment.getCaseSensitivity().caseSensitiveUsernames();
+        }
+        catch (GuacamoleException e) {
+            LOGGER.error("Failed to retrieve the configuration for case sensitivity: {}. "
+                       + "Username comparisons will be case-sensitive.",
+                       e.getMessage());
+            LOGGER.debug("An exception was caught when attempting to retrieve the "
+                       + "case sensitivity configuration.", e);
+            return true;
+        }
+    }
+    
     @Override
     public void invalidate() {
         // Nothing to invalidate

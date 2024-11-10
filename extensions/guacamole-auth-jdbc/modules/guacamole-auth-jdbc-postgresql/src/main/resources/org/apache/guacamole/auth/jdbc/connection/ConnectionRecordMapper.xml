@@ -62,7 +62,7 @@
              JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
              WHERE
                 <choose>
-                    <when test="caseSensitive">
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
                         guacamole_entity.name = #{record.username,jdbcType=VARCHAR}
                     </when>
                     <otherwise>
@@ -119,7 +119,7 @@
                         FROM guacamole_user
                     WHERE
                         <choose>
-                            <when test="caseSensitive">
+                            <when test="caseSensitivity.caseSensitiveUsernames()">
                                 POSITION(#{term.term,jdbcType=VARCHAR} IN username) > 0
                             </when>
                             <otherwise>
@@ -188,16 +188,18 @@
             <!-- Restrict to readable connections -->
             AND guacamole_connection_history.connection_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.connection.ConnectionMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
 
             <!-- Restrict to readable users -->
             AND guacamole_connection_history.user_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
 
@@ -214,7 +216,7 @@
                         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
                         WHERE
                             <choose>
-                                <when test="caseSensitive">
+                                <when test="caseSensitivity.caseSensitiveUsernames()">
                                     POSITION(#{term.term,jdbcType=VARCHAR} IN guacamole_entity.name) > 0
                                 </when>
                                 <otherwise>

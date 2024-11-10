@@ -63,7 +63,7 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
      */
     public void init(Credentials credentials) {
         this.credentials = credentials;
-        setIdentifier(credentials.getUsername().toLowerCase());
+        setIdentifier(credentials.getUsername());
     }
 
     @Override
@@ -74,19 +74,6 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
     @Override
     public Credentials getCredentials() {
         return credentials;
-    }
-    
-    @Override
-    public boolean isCaseSensitive() {
-        try {
-            return confService.getCaseSensitiveUsernames();
-        }
-        catch (GuacamoleException e) {
-            LOGGER.error("Error retrieving configuration for username case sensiivity. "
-                + "Usernames will be processed as case-sensitive.");
-            LOGGER.debug("Exception caught while retrieving RADIUS configuration.", e);
-            return true;
-        }
     }
 
 }

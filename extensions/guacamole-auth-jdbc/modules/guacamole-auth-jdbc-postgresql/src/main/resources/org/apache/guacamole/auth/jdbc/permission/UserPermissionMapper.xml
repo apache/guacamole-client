@@ -43,9 +43,10 @@
         JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="guacamole_user_permission.entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
+                <property name="column"          value="guacamole_user_permission.entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
             AND affected_entity.type = 'USER'::guacamole_entity_type
 
@@ -63,22 +64,22 @@
         JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="guacamole_user_permission.entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
+                <property name="column"          value="guacamole_user_permission.entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
             AND permission = #{type,jdbcType=VARCHAR}::guacamole_object_permission_type
+            AND affected_entity.type = 'USER'::guacamole_entity_type
             AND
             <choose>
-                <when test="caseSensitive">
+                <when test="caseSensitivity.caseSensitiveUsernames()">
                     affected_entity.name = #{identifier,jdbcType=VARCHAR}
                 </when>
                 <otherwise>
                     LOWER(affected_entity.name) = LOWER(#{identifier,jdbcType=VARCHAR})
                 </otherwise>
             </choose>
-            
-            AND affected_entity.type = 'USER'::guacamole_entity_type
 
     </select>
 
@@ -91,13 +92,15 @@
         JOIN guacamole_entity affected_entity ON affected_user.entity_id = affected_entity.entity_id
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="guacamole_user_permission.entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
+                <property name="column"          value="guacamole_user_permission.entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
+            AND affected_entity.type = 'USER'::guacamole_entity_type
             AND 
                 <choose>
-                    <when test="caseSensitive">
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
                         affected_entity.name IN
                         <foreach collection="identifiers" item="identifier"
                          open="(" separator="," close=")">
@@ -117,8 +120,7 @@
                          open="(" separator="," close=")">
                     #{permission,jdbcType=VARCHAR}::guacamole_object_permission_type
                 </foreach>
-            AND affected_entity.type = 'USER'::guacamole_entity_type
-
+            
     </select>
 
     <!-- Delete all given permissions -->
@@ -129,9 +131,11 @@
         WHERE
             guacamole_user_permission.affected_user_id = affected_user.user_id
             AND affected_user.entity_id = affected_entity.entity_id
+            AND affected_entity.type = 'USER'::guacamole_entity_type
+            AND
             <choose>
-                <when test="caseSensitive">
-                    AND (guacamole_user_permission.entity_id, permission, affected_entity.name) IN
+                <when test="caseSensitivity.caseSensitiveUsernames()">
+                    (guacamole_user_permission.entity_id, permission, affected_entity.name) IN
                     <foreach collection="permissions" item="permission"
                             open="(" separator="," close=")">
                         (#{permission.entityID,jdbcType=INTEGER},
@@ -140,7 +144,7 @@
                     </foreach>
                 </when>
                 <otherwise>
-                    AND (guacamole_user_permission.entity_id, permission, LOWER(affected_entity.name)) IN
+                    (guacamole_user_permission.entity_id, permission, LOWER(affected_entity.name)) IN
                     <foreach collection="permissions" item="permission"
                              open="(" separator="," close=")">
                         (#{permission.entityID,jdbcType=INTEGER},
@@ -149,7 +153,6 @@
                     </foreach>
                 </otherwise>
             </choose>
-            AND affected_entity.type = 'USER'::guacamole_entity_type
 
     </delete>
 
@@ -174,15 +177,16 @@
             </foreach>
         AS permissions
         JOIN guacamole_entity affected_entity ON
+            affected_entity.type = 'USER'::guacamole_entity_type
+            AND
             <choose>
-                <when test="caseSensitive">
+                <when test="caseSensitivity.caseSensitiveUsernames()">
                     affected_entity.name = permissions.affected_name
                 </when>
                 <otherwise>
                     LOWER(affected_entity.name) = LOWER(permissions.affected_name)
                 </otherwise>
             </choose>
-            AND affected_entity.type = 'USER'::guacamole_entity_type
         JOIN guacamole_user affected_user ON affected_user.entity_id = affected_entity.entity_id
         WHERE (permissions.entity_id, permissions.permission, affected_user.user_id) NOT IN (
             SELECT

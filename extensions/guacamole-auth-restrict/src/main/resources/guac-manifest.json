@@ -22,8 +22,9 @@
     ],
 
     "resources" : {
-        "templates/hostRestrictionField.html" : "text/html",
-        "templates/timeRestrictionField.html" : "text/html"
+        "templates/dateTimeRestrictionField.html" : "text/html",
+        "templates/hostRestrictionField.html"     : "text/html",
+        "templates/timeRestrictionField.html"     : "text/html"
     }
 
 }

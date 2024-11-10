@@ -23,6 +23,7 @@ import java.util.Collection;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.auth.jdbc.user.UserModel;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -67,13 +68,18 @@ public interface ConnectionMapper extends ModeledDirectoryObjectMapper<Connectio
      *     when determining the permissions effectively granted to the user. If
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
+     * 
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return
      *     A Set containing all identifiers of all readable objects.
      */
     Set<String> selectReadableIdentifiersWithin(@Param("user") UserModel user,
             @Param("parentIdentifier") String parentIdentifier,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Selects the connection within the given parent group and having the

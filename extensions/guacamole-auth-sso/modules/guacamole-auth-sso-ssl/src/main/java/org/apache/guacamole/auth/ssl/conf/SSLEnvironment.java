@@ -37,17 +37,4 @@ public class SSLEnvironment extends DelegatingEnvironment {
         super(LocalEnvironment.getInstance());
     }
     
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        
-        // While most SSO systems do not consider usernames case-sensitive,
-        // this defaults to the global Guacamole configuration, which defaults
-        // to true, in order to avoid surprising or breaking environments that
-        // may rely on this behavior. This can be overridden for the entire
-        // Guacamole instance or for this extension.
-        return getProperty(ConfigurationService.SSL_CASE_SENSITIVE_USERNAMES,
-                super.getCaseSensitiveUsernames());
-        
-    }
-    
 }

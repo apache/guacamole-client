@@ -27,6 +27,7 @@ import java.util.Properties;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.sqlserver.conf.SQLServerDriver;
 import org.apache.guacamole.auth.sqlserver.conf.SQLServerEnvironment;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,8 +97,8 @@ public class SQLServerAuthenticationProviderModule implements Module {
         // Capture which driver to use for the connection.
         this.sqlServerDriver = environment.getSQLServerDriver();
         
-        // Check for case-sensitivity and warn admin.
-        if (environment.getCaseSensitiveUsernames())
+        // Check for case sensitivity and warn admin.
+        if (environment.getCaseSensitivity() != CaseSensitivity.DISABLED)
             LOGGER.warn("The SQL Server module is currently configured to support "
                     + "case-sensitive username comparisons, however, the default "
                     + "collations for SQL Server databases do not support "

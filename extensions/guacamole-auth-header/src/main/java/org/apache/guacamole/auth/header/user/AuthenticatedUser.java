@@ -20,13 +20,9 @@
 package org.apache.guacamole.auth.header.user;
 
 import com.google.inject.Inject;
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.header.ConfigurationService;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * An HTTP header implementation of AuthenticatedUser, associating a
@@ -34,11 +30,6 @@ import org.slf4j.LoggerFactory;
  * provider.
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticatedUser.class);
     
     /**
      * Reference to the authentication provider associated with this
@@ -46,12 +37,6 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
      */
     @Inject
     private AuthenticationProvider authProvider;
-    
-    /**
-     * Service for retrieving header configuration information.
-     */
-    @Inject
-    private ConfigurationService confService;
 
     /**
      * The credentials provided when this user was authenticated.
@@ -71,19 +56,6 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
     public void init(String username, Credentials credentials) {
         this.credentials = credentials;
         setIdentifier(username.toLowerCase());
-    }
-
-    @Override
-    public boolean isCaseSensitive() {
-        try {
-            return confService.getCaseSensitiveUsernames();
-        }
-        catch (GuacamoleException e) {
-            LOGGER.error("Error when trying to retrieve header configuration: {}."
-                    + " Usernames comparison will be case-sensitive.", e);
-            LOGGER.debug("Exception caught when retrieving header configuration.", e);
-            return true;
-        }
     }
     
     @Override

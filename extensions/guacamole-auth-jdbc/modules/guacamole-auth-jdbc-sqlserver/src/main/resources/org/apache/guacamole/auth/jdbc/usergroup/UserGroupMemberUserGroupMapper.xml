@@ -42,8 +42,9 @@
         WHERE
             [guacamole_user_group].user_group_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
             AND [guacamole_user_group_member].user_group_id = #{parent.objectID,jdbcType=INTEGER}
@@ -58,11 +59,24 @@
         WHERE
             user_group_id = #{parent.objectID,jdbcType=INTEGER}
             AND [guacamole_entity].type = 'USER_GROUP'
-            AND [guacamole_entity].name IN
-                <foreach collection="children" item="identifier"
-                         open="(" separator="," close=")">
-                    #{identifier,jdbcType=VARCHAR}
-                </foreach>
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    [guacamole_entity].name IN
+                    <foreach collection="children" item="identifier"
+                             open="(" separator="," close=")">
+                        #{identifier,jdbcType=VARCHAR}
+                    </foreach>
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name) IN
+                    <foreach collection="children" item="identifier"
+                             open="(" separator="," close=")">
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </foreach>
+                </otherwise>
+            </choose>
+            
     </delete>
 
     <!-- Insert member groups by name -->
@@ -75,13 +89,25 @@
             #{parent.objectID,jdbcType=INTEGER},
             [guacamole_entity].entity_id
         FROM [guacamole_entity]
-        WHERE
-            [guacamole_entity].name IN
-                <foreach collection="children" item="identifier"
-                         open="(" separator="," close=")">
-                    #{identifier}
-                </foreach>
-            AND [guacamole_entity].type = 'USER_GROUP'
+        WHERE [guacamole_entity].type = 'USER_GROUP'
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    [guacamole_entity].name IN
+                    <foreach collection="children" item="identifier"
+                             open="(" separator="," close=")">
+                        #{identifier}
+                    </foreach>
+                </when>
+                <otherwise>
+                    LOWER([guacamole_entity].name) IN
+                    <foreach collection="children" item="identifier"
+                             open="(" separator="," close=")">
+                        LOWER(#{identifier})
+                    </foreach>
+                </otherwise>
+            </choose>
+            
             AND [guacamole_entity].entity_id NOT IN (
                 SELECT [guacamole_user_group_member].member_entity_id
                 FROM [guacamole_user_group_member]

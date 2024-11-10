@@ -233,19 +233,5 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
             DEFAULT.getMemberAttributeType()
         );
     }
-    
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        
-        // Most LDAP directories do not factor in case when comparing usernames,
-        // however, in order to avoid surprising anyone who may rely on this
-        // behavior in Guacamole, this is currently defaulted the overall
-        // Guacamole configuration (default of true), but can be over-ridden
-        // for the LDAP extension specifically, if desired.
-        return environment.getProperty(
-                LDAPGuacamoleProperties.LDAP_CASE_SENSITIVE_USERNAMES,
-                environment.getCaseSensitiveUsernames()
-        );
-    }
 
 }

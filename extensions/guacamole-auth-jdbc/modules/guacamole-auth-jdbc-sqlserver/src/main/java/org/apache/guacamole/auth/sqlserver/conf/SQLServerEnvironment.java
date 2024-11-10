@@ -328,19 +328,5 @@ public class SQLServerEnvironment extends JDBCEnvironment {
                 SQLServerGuacamoleProperties.SQLSERVER_TRUST_ALL_SERVER_CERTIFICATES,
                 false);
     }
-    
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        
-        // Get the configured or default value of the property.
-        boolean caseSensitiveUsernames = getProperty(
-                SQLServerGuacamoleProperties.SQLSERVER_CASE_SENSITIVE_USERNAMES,
-                super.getCaseSensitiveUsernames()
-        );
-        
-        // Return as configured
-        return caseSensitiveUsernames;
-        
-    }
 
 }
