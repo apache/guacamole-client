@@ -442,17 +442,6 @@ public class MySQLEnvironment extends JDBCEnvironment {
                 true
         );
     }
-    
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        
-        // Return the configured value for the property, or the global value.
-        return getProperty(
-                MySQLGuacamoleProperties.MYSQL_CASE_SENSITIVE_USERNAMES,
-                super.getCaseSensitiveUsernames()
-        );
-        
-    }
 
     /**
      * Returns the absolute path to the public key for the server being connected to,

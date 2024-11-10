@@ -306,17 +306,5 @@ public class LDAPGuacamoleProperties {
         public String getName() { return "ldap-member-attribute-type"; }
 
     };
-    
-    /**
-     * A property used to configure whether or not usernames within the LDAP
-     * module should be treated as case-sensitive.
-     */
-    public static final BooleanGuacamoleProperty LDAP_CASE_SENSITIVE_USERNAMES =
-            new BooleanGuacamoleProperty() {
-    
-        @Override
-        public String getName() { return "ldap-case-sensitive-usernames"; }
-                
-    };
 
 }

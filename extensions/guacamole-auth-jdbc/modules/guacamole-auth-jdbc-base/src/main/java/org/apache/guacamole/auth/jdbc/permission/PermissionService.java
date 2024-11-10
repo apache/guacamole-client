@@ -21,12 +21,13 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.net.auth.permission.Permission;
 import org.apache.guacamole.net.auth.permission.PermissionSet;
+import org.apache.guacamole.properties.CaseSensitivity;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -43,6 +44,24 @@ import org.apache.guacamole.net.auth.permission.PermissionSet;
 public interface PermissionService<PermissionSetType extends PermissionSet<PermissionType>,
         PermissionType extends Permission> {
 
+    /**
+     * Return the current case sensitivity setting, allowing the system to
+     * determine if usernames and/or group names should be treated as case-
+     * sensitive.
+     * 
+     * @return
+     *     The current case sensitivity configuration.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving configuration information related to
+     *     case sensitivity.
+     */
+    default CaseSensitivity getCaseSensitivity() throws GuacamoleException {
+        
+        // By default identifiers are case-sensitive.
+        return CaseSensitivity.ENABLED;
+    }
+    
     /**
      * Returns a permission set that can be used to retrieve and manipulate the
      * permissions of the given entity.

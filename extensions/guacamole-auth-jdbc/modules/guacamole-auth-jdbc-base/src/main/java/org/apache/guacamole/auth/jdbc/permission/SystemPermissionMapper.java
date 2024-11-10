@@ -21,8 +21,9 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
-import org.apache.ibatis.annotations.Param;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
+import org.apache.guacamole.properties.CaseSensitivity;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for system-level permissions.
@@ -44,6 +45,10 @@ public interface SystemPermissionMapper extends PermissionMapper<SystemPermissio
      *     when determining the permissions effectively granted to the user. If
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
+     * 
+     * @param caseSensitivity
+     *     The case sensitivity configuration, used to determine whether usernames
+     *     and/or group names will be treated as case-sensitive.
      *
      * @return
      *     The requested permission, or null if no such permission is granted
@@ -51,6 +56,7 @@ public interface SystemPermissionMapper extends PermissionMapper<SystemPermissio
      */
     SystemPermissionModel selectOne(@Param("entity") EntityModel entity,
             @Param("type") SystemPermission.Type type,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
 }

@@ -68,9 +68,10 @@
         FROM guacamole_user_group_permission
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="${entityID}"/>
-                <property name="groups"   value="${groups}"/>
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="${entityID}"/>
+                <property name="groups"          value="${groups}"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
             AND permission = 'READ'
     </sql>
@@ -80,14 +81,14 @@
         SELECT guacamole_entity.name
         FROM guacamole_user_group
         JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
-        WHERE
-            guacamole_user_group.user_group_id IN (
+        WHERE guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+            AND guacamole_user_group.user_group_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
-            AND guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
     </select>
 
     <!-- Select multiple groups by name -->
@@ -101,12 +102,25 @@
             disabled
         FROM guacamole_user_group
         JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
-        WHERE guacamole_entity.name IN
-            <foreach collection="identifiers" item="identifier"
-                     open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
-            </foreach>
-            AND guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type;
+        WHERE guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+            AND 
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    guacamole_entity.name IN
+                    <foreach collection="identifiers" item="identifier"
+                             open="(" separator="," close=")">
+                        #{identifier,jdbcType=VARCHAR}
+                    </foreach>
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name) IN
+                    <foreach collection="identifiers" item="identifier"
+                             open="(" separator="," close=")">
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </foreach>
+                </otherwise>
+            </choose>
+            ;
 
         SELECT
             guacamole_user_group_attribute.user_group_id,
@@ -115,12 +129,25 @@
         FROM guacamole_user_group_attribute
         JOIN guacamole_user_group ON guacamole_user_group.user_group_id = guacamole_user_group_attribute.user_group_id
         JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
-        WHERE guacamole_entity.name IN
-            <foreach collection="identifiers" item="identifier"
-                     open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
-            </foreach>
-            AND guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type;
+        WHERE guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    guacamole_entity.name IN
+                    <foreach collection="identifiers" item="identifier"
+                             open="(" separator="," close=")">
+                        #{identifier,jdbcType=VARCHAR}
+                    </foreach>
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name) IN
+                    <foreach collection="identifiers" item="identifier"
+                             open="(" separator="," close=")">
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </foreach>
+                </otherwise>
+            </choose>
+            ;
 
     </select>
 
@@ -135,16 +162,29 @@
             disabled
         FROM guacamole_user_group
         JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
-        WHERE guacamole_entity.name IN
-            <foreach collection="identifiers" item="identifier"
-                     open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
-            </foreach>
-            AND guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+        WHERE guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    guacamole_entity.name IN
+                    <foreach collection="identifiers" item="identifier"
+                             open="(" separator="," close=")">
+                        #{identifier,jdbcType=VARCHAR}
+                    </foreach>
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name) IN
+                    <foreach collection="identifiers" item="identifier"
+                             open="(" separator="," close=")">
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </foreach>
+                </otherwise>
+            </choose>
             AND guacamole_user_group.user_group_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             );
 
@@ -155,16 +195,29 @@
         FROM guacamole_user_group_attribute
         JOIN guacamole_user_group ON guacamole_user_group.user_group_id = guacamole_user_group_attribute.user_group_id
         JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
-        WHERE guacamole_entity.name IN
-            <foreach collection="identifiers" item="identifier"
-                     open="(" separator="," close=")">
-                #{identifier,jdbcType=VARCHAR}
-            </foreach>
-            AND guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+        WHERE guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    guacamole_entity.name IN
+                    <foreach collection="identifiers" item="identifier"
+                             open="(" separator="," close=")">
+                        #{identifier,jdbcType=VARCHAR}
+                    </foreach>
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name) IN
+                    <foreach collection="identifiers" item="identifier"
+                             open="(" separator="," close=")">
+                        LOWER(#{identifier,jdbcType=VARCHAR})
+                    </foreach>
+                </otherwise>
+            </choose>
             AND  guacamole_user_group.user_group_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             );
 
@@ -181,9 +234,17 @@
             disabled
         FROM guacamole_user_group
         JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
-        WHERE
-            guacamole_entity.name = #{name,jdbcType=VARCHAR}
-            AND guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type;
+        WHERE guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    guacamole_entity.name = #{name,jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name) = LOWER(#{name,jdbcType=VARCHAR})
+                </otherwise>
+            </choose>
+            ;
 
         SELECT
             guacamole_user_group_attribute.user_group_id,
@@ -192,18 +253,34 @@
         FROM guacamole_user_group_attribute
         JOIN guacamole_user_group ON guacamole_user_group.user_group_id = guacamole_user_group_attribute.user_group_id
         JOIN guacamole_entity ON guacamole_user_group.entity_id = guacamole_entity.entity_id
-        WHERE
-            guacamole_entity.name = #{name,jdbcType=VARCHAR}
-            AND guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+        WHERE guacamole_entity.type = 'USER_GROUP'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    guacamole_entity.name = #{name,jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    LOWER(guacamole_entity.name) = LOWER(#{name,jdbcType=VARCHAR})
+                </otherwise>
+            </choose>
+            ; 
 
     </select>
 
     <!-- Delete single group by name -->
     <delete id="delete">
         DELETE FROM guacamole_entity
-        WHERE
-            name = #{identifier,jdbcType=VARCHAR}
-            AND type = 'USER_GROUP'::guacamole_entity_type
+        WHERE type = 'USER_GROUP'::guacamole_entity_type
+            AND
+            <choose>
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
+                    name = #{identifier,jdbcType=VARCHAR}
+                </when>
+                <otherwise>
+                    LOWER(name) = LOWER(#{identifier,jdbcType=VARCHAR})
+                </otherwise>
+            </choose>
+            
     </delete>
 
     <!-- Insert single group -->

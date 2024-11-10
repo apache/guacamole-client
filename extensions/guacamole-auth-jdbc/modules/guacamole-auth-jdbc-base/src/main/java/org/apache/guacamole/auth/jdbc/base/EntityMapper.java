@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.base;
 
 import java.util.Collection;
 import java.util.Set;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -67,6 +68,10 @@ public interface EntityMapper {
      *     depth and may need to be executed multiple times. If it is known
      *     that the database engine in question will always support (or always
      *     not support) recursive queries, this parameter may be ignored.
+     * 
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return
      *     The set of identifiers of all groups that the given entity is a
@@ -75,6 +80,7 @@ public interface EntityMapper {
      */
     Set<String> selectEffectiveGroupIdentifiers(@Param("entity") EntityModel entity,
             @Param("effectiveGroups") Collection<String> effectiveGroups,
-            @Param("recursive") boolean recursive);
+            @Param("recursive") boolean recursive,
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
 }

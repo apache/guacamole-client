@@ -21,8 +21,9 @@ package org.apache.guacamole.auth.jdbc.permission;
 
 import java.util.Collection;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
-import org.apache.ibatis.annotations.Param;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
+import org.apache.guacamole.properties.CaseSensitivity;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for object-related permissions.
@@ -48,6 +49,10 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      *     when determining the permissions effectively granted to the user. If
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
+     * 
+     * @param caseSensitivity
+     *     The configuration of case sensitivity, used to determine whether
+     *     usernames and/or group names will be treated as case-sensitive.
      *
      * @return
      *     The requested permission, or null if no such permission is granted
@@ -56,7 +61,8 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
     ObjectPermissionModel selectOne(@Param("entity") EntityModel entity,
             @Param("type") ObjectPermission.Type type,
             @Param("identifier") String identifier,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
     /**
      * Retrieves the subset of the given identifiers for which the given entity
@@ -79,6 +85,10 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
      *     when determining the permissions effectively granted to the user. If
      *     no groups are given, only permissions directly granted to the user
      *     will be used.
+     * 
+     * @param caseSensitivity
+     *     The configuration of case sensitivity, used to determine whether
+     *     usernames and/or group names will be treated as case-sensitive.
      *
      * @return
      *     A collection containing the subset of identifiers for which at least
@@ -87,6 +97,7 @@ public interface ObjectPermissionMapper extends PermissionMapper<ObjectPermissio
     Collection<String> selectAccessibleIdentifiers(@Param("entity") EntityModel entity,
             @Param("permissions") Collection<ObjectPermission.Type> permissions,
             @Param("identifiers") Collection<String> identifiers,
-            @Param("effectiveGroups") Collection<String> effectiveGroups);
+            @Param("effectiveGroups") Collection<String> effectiveGroups,
+            @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
 }

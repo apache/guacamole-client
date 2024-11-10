@@ -29,6 +29,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.mysql.conf.MySQLDriver;
 import org.apache.guacamole.auth.mysql.conf.MySQLEnvironment;
 import org.apache.guacamole.auth.mysql.conf.MySQLSSLMode;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -145,14 +146,15 @@ public class MySQLAuthenticationProviderModule implements Module {
         if (serverTz != null)
             driverProperties.setProperty("serverTimezone", serverTz.getID());
         
-        // Check for case-sensitivity and warn admin
-        if (environment.getCaseSensitiveUsernames())
+        // Check for case sensitivity and warn admin
+        if (environment.getCaseSensitivity() != CaseSensitivity.DISABLED)
             LOGGER.warn("The MySQL module is currently configured to support "
-                    + "case-sensitive username comparisons, however, the default "
-                    + "collations for MySQL databases do not support "
-                    + "case-sensitive string comparisons. If you want usernames "
-                    + "within Guacamole to be treated as case-sensitive, further "
-                    + "database configuration may be required.");
+                    + "case-sensitive username and/or group name comparisons, "
+                    + "however, the default collations for MySQL databases do "
+                    + "not support case-sensitive string comparisons. If you "
+                    + "want identifiers within Guacamole to be treated as "
+                    + "case-sensitive, further database configuration may be "
+                    + "required.");
 
     }
 

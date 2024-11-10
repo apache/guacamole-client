@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.saml.conf;
 
-import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.DelegatingEnvironment;
 import org.apache.guacamole.environment.LocalEnvironment;
 
@@ -35,19 +34,6 @@ public class SAMLEnvironment extends DelegatingEnvironment {
      */
     public SAMLEnvironment() {
         super(LocalEnvironment.getInstance());
-    }
-    
-    @Override
-    public boolean getCaseSensitiveUsernames() throws GuacamoleException {
-        
-        // While most SSO systems do not consider usernames case-sensitive,
-        // this defaults to the global Guacamole configuration, which defaults
-        // to true, in order to avoid surprising or breaking environments that
-        // may rely on this behavior. This can be overridden for the entire
-        // Guacamole instance or for this extension.
-        return getProperty(ConfigurationService.SAML_CASE_SENSITIVE_USERNAMES,
-                super.getCaseSensitiveUsernames());
-        
     }
     
 }

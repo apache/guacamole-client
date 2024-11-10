@@ -82,9 +82,10 @@
         FROM guacamole_user_permission
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="${entityID}"/>
-                <property name="groups"   value="${groups}"/>
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="${entityID}"/>
+                <property name="groups"          value="${groups}"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
             AND permission = 'READ'
     </sql>
@@ -97,8 +98,9 @@
         WHERE
             guacamole_user.user_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
             AND guacamole_entity.type = 'USER'
@@ -132,7 +134,7 @@
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
         WHERE
             <choose>
-                <when test="caseSensitive">
+                <when test="caseSensitivity.caseSensitiveUsernames()">
                     guacamole_entity.name
                 </when>
                 <otherwise>
@@ -143,7 +145,7 @@
             <foreach collection="identifiers" item="identifier"
                     open="(" separator="," close=")">
                 <choose>
-                    <when test="caseSensitive">
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
                         #{identifier,jdbcType=VARCHAR}
                     </when>
                     <otherwise>
@@ -163,7 +165,7 @@
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         WHERE
             <choose>
-                <when test="caseSensitive">
+                <when test="caseSensitivity.caseSensitiveUsernames()">
                     guacamole_entity.name
                 </when>
                 <otherwise>
@@ -174,7 +176,7 @@
             <foreach collection="identifiers" item="identifier"
                     open="(" separator="," close=")">
                 <choose>
-                    <when test="caseSensitive">
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
                         #{identifier,jdbcType=VARCHAR}
                     </when>
                     <otherwise>
@@ -214,7 +216,7 @@
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
         WHERE 
             <choose>
-                <when test="caseSensitive">
+                <when test="caseSensitivity.caseSensitiveUsernames()">
                     guacamole_entity.name
                 </when>
                 <otherwise>
@@ -225,7 +227,7 @@
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 <choose>
-                    <when test="caseSensitive">
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
                         #{identifier,jdbcType=VARCHAR}
                     </when>
                     <otherwise>
@@ -236,8 +238,9 @@
             AND guacamole_entity.type = 'USER'
             AND guacamole_user.user_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             )
         GROUP BY guacamole_user.user_id, guacamole_entity.entity_id;
@@ -251,7 +254,7 @@
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         WHERE
             <choose>
-                <when test="caseSensitive">
+                <when test="caseSensitivity.caseSensitiveUsernames()">
                     guacamole_entity.name
                 </when>
                 <otherwise>
@@ -262,7 +265,7 @@
             <foreach collection="identifiers" item="identifier"
                      open="(" separator="," close=")">
                 <choose>
-                    <when test="caseSensitive">
+                    <when test="caseSensitivity.caseSensitiveUsernames()">
                         #{identifier,jdbcType=VARCHAR}
                     </when>
                     <otherwise>
@@ -273,8 +276,9 @@
             AND guacamole_entity.type = 'USER'
             AND guacamole_user.user_id IN (
                 <include refid="org.apache.guacamole.auth.jdbc.user.UserMapper.getReadableIDs">
-                    <property name="entityID" value="#{user.entityID,jdbcType=INTEGER}"/>
-                    <property name="groups"   value="effectiveGroups"/>
+                    <property name="entityID"        value="#{user.entityID,jdbcType=INTEGER}"/>
+                    <property name="groups"          value="effectiveGroups"/>
+                    <property name="caseSensitivity" value="${caseSensitivity}"/>
                 </include>
             );
 
@@ -308,7 +312,7 @@
         LEFT JOIN guacamole_user_history ON guacamole_user_history.user_id = guacamole_user.user_id
         WHERE
             <choose>
-                <when test="caseSensitive">
+                <when test="caseSensitivity.caseSensitiveUsernames()">
                     guacamole_entity.name = #{username,jdbcType=VARCHAR}
                 </when>
                 <otherwise>
@@ -327,7 +331,7 @@
         JOIN guacamole_entity ON guacamole_user.entity_id = guacamole_entity.entity_id
         WHERE
             <choose>
-                <when test="caseSensitive">
+                <when test="caseSensitivity.caseSensitiveUsernames()">
                     guacamole_entity.name = #{username,jdbcType=VARCHAR}
                 </when>
                 <otherwise>
@@ -343,7 +347,7 @@
         DELETE FROM guacamole_entity
         WHERE
             <choose>
-                <when test="caseSensitive">
+                <when test="caseSensitivity.caseSensitiveUsernames()">
                     name = #{identifier,jdbcType=VARCHAR}
                 </when>
                 <otherwise>
