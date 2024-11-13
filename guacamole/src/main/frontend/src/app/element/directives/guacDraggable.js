@@ -6,6 +6,7 @@ angular.module('element').directive('guacDraggable', ['$document', '$window', fu
       },
       link: function($scope, $element) {
           let shiftX = 0, shiftY = 0;
+          let isDragging = false;
 
           const positionElement = function(yPosition, xPosition) {
             // position, making sure it's visible on the screen
@@ -34,7 +35,10 @@ angular.module('element').directive('guacDraggable', ['$document', '$window', fu
             $element.css('cursor', 'grabbing');
             shiftX = e.clientX - $element[0].getBoundingClientRect().left;
             shiftY = e.clientY - $element[0].getBoundingClientRect().top;
-            $document.on('mousemove', onMouseMove);
+            $document.on('pointermove', onMouseMove);
+            isDragging = true;
+            $element[0].setPointerCapture(e.pointerId);
+            requestAnimationFrame(updatePosition);
           }
 
           const onMouseMove = function(e) {
@@ -44,10 +48,19 @@ angular.module('element').directive('guacDraggable', ['$document', '$window', fu
             });
           }
 
+          const updatePosition = function(e) {
+            if (isDragging) {
+              positionElement(e.pageY - shiftY, e.pageX - shiftX);
+              requestAnimationFrame(updatePosition);
+            }
+          }
+
           const onMouseUp = function(e) {
-            $document.off('mousemove', onMouseMove);
+            $document.off('pointermove', onMouseMove);
             $element.css('cursor', 'grab');
+            $element[0].releasePointerCapture(e.pointerId); 
             setTimeout(function() {
+              isDragging = false;
               $scope.$apply(function() {
                 $scope.dragging = false;
               });
@@ -59,8 +72,8 @@ angular.module('element').directive('guacDraggable', ['$document', '$window', fu
             }));
           }
 
-          $element.on('mousedown', onMouseDown);
-          $document.on('mouseup', onMouseUp);
+          $element.on('pointerdown', onMouseDown);
+          $document.on('pointerup', onMouseUp);
           angular.element($window).on('resize', (e) => {
             positionToStoredState()
           });
@@ -68,10 +81,10 @@ angular.module('element').directive('guacDraggable', ['$document', '$window', fu
         
 
           $element.on('$destroy', function() {
-              $document.off('mousemove', onMouseMove);
-              $document.off('mouseup', onMouseUp);
+              $document.off('pointermove', onMouseMove);
+              $document.off('pointerup', onMouseUp);
               angular.element($window).off('resize', positionToStoredState);
-              $element.off('mousedown', onMouseDown);
+              $element.off('pointerdown', onMouseDown);
           });
       }
   };
