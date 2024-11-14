@@ -206,3 +206,7 @@ body.client {
 .tooltip-button.dragging:hover::after {
   visibility: hidden;
 }
+
+.upload.button {
+  width: 145px;
+}
