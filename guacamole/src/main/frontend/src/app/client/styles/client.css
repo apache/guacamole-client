@@ -182,3 +182,27 @@ body.client {
 .menu-fullscreen-button {
   min-width: unset;
 }
+
+.tooltip-button::after {
+  content: "File Transfer Menu";
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 7px 10px 5px 10px;
+  border-radius: 4px;
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  line-height: 16px;
+}
+
+.tooltip-button:hover::after {
+  visibility: visible;
+}
+
+.tooltip-button.dragging:hover::after {
+  visibility: hidden;
+}

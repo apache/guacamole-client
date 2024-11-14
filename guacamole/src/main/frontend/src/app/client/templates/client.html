@@ -52,6 +52,7 @@
       id="floatingButton"
       ng-click="toggleToolbarVisibility(focusedClient.filesystems)"
       ng-if="focusedClient.filesystems.length"
+      class="tooltip-button"
     >
       <svg width="800px" height="800px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -234,6 +235,7 @@
                 <h2>{{filesystemMenuContents.name}}</h2>
                 <button class="upload button" guac-upload="uploadFiles">{{'CLIENT.ACTION_UPLOAD_FILES' | translate}}</button>
                 <button class="back" ng-click="hideFilesystemMenu()" ng-if="isFilesystemMenuShown()">{{'CLIENT.ACTION_NAVIGATE_BACK' | translate}}</button>
+                <button class="menu-fullscreen-button" ng-click="toggleFullscreenMode()" ng-if="toolbar.shown">{{'CLIENT.ACTION_FULLSCREEN' | translate}}</button>
                 <button ng-click="showMenu()" ng-if="toolbar.shown">{{'CLIENT.ACTION_MORE' | translate}}</button>
             </div>
 
