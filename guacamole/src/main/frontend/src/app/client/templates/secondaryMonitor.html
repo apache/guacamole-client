@@ -1,0 +1,41 @@
+
+<guac-viewport>
+
+    <!-- Client view -->
+    <div class="client-view">
+        <div class="client-view-content">
+
+            <!-- Central portion of view -->
+            <div class="client-body">
+
+                <button id="consent-fullscreen-button" 
+                        ng-if="showFullscreenConsent" 
+                        ng-click="enableFullscreenMode()">
+                    {{'CLIENT.ACTION_FULLSCREEN_CONSENT' | translate}}
+                </button>
+
+                <div class="client-main main"
+                     ng-class="{ 'drop-pending': dropPending }"
+                     guac-resize="scaleDisplay"
+                     guac-touch-drag="clientDrag"
+                     guac-touch-pinch="clientPinch">
+           
+                    <!-- Display -->
+                    <div class="displayOuter">
+                
+                        <div class="displayMiddle">
+
+                            <div class="display software-cursor"></div>
+
+                        </div>
+                
+                    </div>
+            
+                </div>
+           
+            </div>
+
+        </div>
+    </div>
+
+</guac-viewport>
