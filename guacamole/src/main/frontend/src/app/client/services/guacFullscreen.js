@@ -25,6 +25,9 @@
 angular.module('client').factory('guacFullscreen', ['$injector', 
         function guacFullscreen($injector) {
 
+    // Required services
+    const guacManageMonitor  = $injector.get('guacManageMonitor');
+
     var service = {};
 
     // check is browser in true fullscreen mode
