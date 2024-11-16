@@ -215,6 +215,15 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 
+        // Secondary monitor view
+        .when('/secondaryMonitor/:id', {
+            bodyClassName : 'secondaryMonitor',
+            templateUrl   : 'app/client/templates/secondaryMonitor.html',
+            controller    : 'secondaryMonitorController',
+            reloadOnUrl   : false,
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
         // Redirect to home screen if page not found
         .otherwise({
             resolve : { routeToUserHomePage: routeToUserHomePage }
