@@ -648,7 +648,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             reader.onend = function textComplete() {
                 ManagedArgument.getInstance(managedClient, name, value).then(function argumentIsMutable(argument) {
                     managedClient.arguments[name] = argument;
-                }, function ignoreImmutableArguments() {});
+                }, function immutableArguments() {
+                    managedClient.arguments[name] = value;
+                });
             };
 
         };
@@ -726,6 +728,23 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                     managedClient.requiredParameters[name] = '';
                 });
             });
+        };
+        
+        // Update display on other monitors
+        client.ondisplayupdate = async function displayUpdate(opcode, parameters) {
+
+            // Skip if no other monitor
+            if (guacManageMonitor.getMonitorCount() <= 1)
+                return;
+
+            const handler = {
+                'opcode': opcode,
+                'parameters': parameters,
+            };
+
+            // Send handler
+            guacManageMonitor.pushBroadcastMessage('handler', handler);
+
         };
 
         // Manage the client display
