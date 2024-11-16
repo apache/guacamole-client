@@ -40,6 +40,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     const dataSourceService      = $injector.get('dataSourceService');
     const guacClientManager      = $injector.get('guacClientManager');
     const guacFullscreen         = $injector.get('guacFullscreen');
+    const guacManageMonitor      = $injector.get('guacManageMonitor');
     const iconService            = $injector.get('iconService');
     const preferenceService      = $injector.get('preferenceService');
     const requestService         = $injector.get('requestService');

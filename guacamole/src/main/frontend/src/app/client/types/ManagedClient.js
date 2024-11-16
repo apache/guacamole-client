@@ -52,6 +52,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     const guacAudio               = $injector.get('guacAudio');
     const guacHistory             = $injector.get('guacHistory');
     const guacImage               = $injector.get('guacImage');
+    const guacManageMonitor       = $injector.get('guacManageMonitor');
     const guacVideo               = $injector.get('guacVideo');
 
     /**

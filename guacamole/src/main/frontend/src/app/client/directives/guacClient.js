@@ -51,11 +51,12 @@ angular.module('client').directive('guacClient', [function guacClient() {
         function guacClientController($scope, $injector, $element) {
 
         // Required types
-        const ManagedClient = $injector.get('ManagedClient');
+        const ManagedClient     = $injector.get('ManagedClient');
             
         // Required services
-        const $rootScope = $injector.get('$rootScope');
-        const $window = $injector.get('$window');
+        const $rootScope        = $injector.get('$rootScope');
+        const $window           = $injector.get('$window');
+        const guacManageMonitor = $injector.get('guacManageMonitor');
             
         /**
          * Whether the local, hardware mouse cursor is in use.
