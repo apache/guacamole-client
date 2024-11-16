@@ -499,6 +499,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.menu.connectionParameters = newFocusedClient ?
             ManagedClient.getArgumentModel(newFocusedClient) : {};
 
+        // Set new focused client on guacManageMonitor
+        guacManageMonitor.setClient(newFocusedClient.client);
+
     });
 
     // Automatically update connection parameters that have been modified
