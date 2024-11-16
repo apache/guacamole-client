@@ -460,17 +460,27 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 ManagedClient.connect($scope.client, main.offsetWidth, main.offsetHeight);
 
                 const pixelDensity = $window.devicePixelRatio || 1;
-                const width  = main.offsetWidth  * pixelDensity;
-                const height = main.offsetHeight * pixelDensity;
+                const width    = main.offsetWidth  * pixelDensity;
+                const height   = main.offsetHeight * pixelDensity;
+                const monitors = guacManageMonitor.getMonitorCount();
 
-                if (display.getWidth() !== width || display.getHeight() !== height)
-                    client.sendSize(width, height);
+                // Monitor count changed
+                if (display.getMonitors() !== monitors) {
+                    client.sendSize(width, height, monitors);
+                }
+
+                // Window resized
+                else if (display.getWidth() !== width || display.getHeight() !== height)
+                    client.sendSize(width, height, monitors);
 
             }
 
             $scope.$evalAsync(updateDisplayScale);
 
         };
+
+        // Launch resize on monitor count change
+        $window.addEventListener('monitor-count', $scope.mainElementResized);
 
         // Scroll client display if absolute mouse is in use (the same drag
         // gesture is needed for moving the mouse pointer with relative mouse)
