@@ -725,6 +725,67 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION,FULLSCREEN_MENU_ACTION ];
 
     /**
+     * Show the section to add an additional monitor only on supported protocols
+     * and when the functionality is enabled.
+     *
+     * @returns {boolean}
+     *     true when user can use multi monitor, false otherwise.
+     */
+    $scope.showAddMonitor = function showAddMonitor() {
+
+        // Multi monitor only supported with rdp protocol
+        if ($scope.focusedClient?.protocol !== 'rdp')
+            return false;
+
+        // The maximum number of secondary monitors that can be added.
+        const secondaryMonitorsAllowed = parseInt(
+                $scope.focusedClient.arguments['secondary-monitors'] ?? 0);
+        
+        guacManageMonitor.setMaxSecondaryMonitors(secondaryMonitorsAllowed);
+
+        // Secondary monitors disabled
+        if (secondaryMonitorsAllowed < 1 || !guacManageMonitor.supported())
+            return false;
+
+        // Disable button when the limit is reached (still visible)
+        $scope.disableAddMonitor = guacManageMonitor.monitorLimitReached();
+
+        return true;
+        
+    };
+
+    /**
+     * Action that adds an additional monitor on the RDP connection. Will open
+     * a new window to display the new monitor.
+     * Check that the client is in connected state and that the monitor limit
+     * is not reached before triggering the open.
+     */
+    $scope.addMonitor = function addMonitor() {
+
+        // Prevent opening an additional monitor when the client is not connected
+        if ($scope.focusedClient.clientState.connectionState !== 'CONNECTED')
+            return;
+
+        // Prevent opening of too many monitors
+        if (guacManageMonitor.monitorLimitReached())
+            return;
+
+        // Add or remove additional monitor
+        guacManageMonitor.addMonitor();
+
+        // Close menu
+        $scope.menu.shown = false;
+
+    };
+
+    // Init guacManageMonitor
+    guacManageMonitor.init();
+    guacManageMonitor.menuShown = function menuShown() {
+        $scope.menu.shown = !$scope.menu.shown;
+        $scope.$apply();
+    }
+
+    /**
      * @borrows Protocol.getNamespace
      */
     $scope.getProtocolNamespace = Protocol.getNamespace;
@@ -874,6 +935,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // always unset fullscreen mode to not confuse user 
         guacFullscreen.setFullscreenMode(false);
+
+        // Close additional monitors
+        guacManageMonitor.closeAllMonitors();
     });
 
 }]);
