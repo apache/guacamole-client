@@ -517,6 +517,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Monitor count changed
                 if (display.getMonitors() !== monitors) {
+                    display.updateMonitors(monitors);
                     client.sendSize(width, height, monitors);
                 }
 
