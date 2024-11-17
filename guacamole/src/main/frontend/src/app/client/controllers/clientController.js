@@ -482,12 +482,14 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Re-update available connection parameters, if there is a focused
         // client (parameter information may not have been available at the
         // time focus changed)
-        if (menuShown)
+        if (menuShown) {
             $scope.menu.connectionParameters = $scope.focusedClient ?
                 ManagedClient.getArgumentModel($scope.focusedClient) : {};
-
+            
+            $scope.menu.filesystemMenuShown = false;
+            $scope.toolbar.shown = false;
         // Send any argument value data once menu is hidden
-        else if (menuShownPreviousState)
+        } else if (menuShownPreviousState)
             $scope.applyParameterChanges($scope.focusedClient);
 
         /* Broadcast changes to the menu display state */
@@ -495,12 +497,31 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     });
 
+    $scope.$watch('toolbar.shown', function toolbarVisibilityChanged(toolbarShown) {
+      if (toolbarShown) {
+        $scope.menu.shown = false;
+        $scope.menu.filesystemMenuShown = false;
+      }
+      // Refresh filesystem, if defined
+      var filesystem = $scope.filesystemMenuContents;
+      if (filesystem)
+          ManagedFilesystem.refresh(filesystem, filesystem.currentDirectory);
+    });
+
+    $scope.$watch('menu.filesystemMenuShown', function filesystemMenuVisibilityChanged(filesystemMenuShown) {
+      if (filesystemMenuShown) {
+        $scope.menu.shown = false;
+        $scope.toolbar.shown = false;
+      }
+      // Refresh filesystem, if defined
+      var filesystem = $scope.filesystemMenuContents;
+      if (filesystem)
+          ManagedFilesystem.refresh(filesystem, filesystem.currentDirectory);
+    });
+
     // Toggle the menu when the guacClientToggleMenu event is received
     $scope.$on('guacToggleMenu', () => {
       $scope.menu.shown = !$scope.menu.shown
-      if ($scope.menu.shown) {
-        $scope.toolbar.shown = false;
-      }
     });
 
     // Show the menu when the guacClientShowMenu event is received
@@ -619,9 +640,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             // Toggle the menu
             $scope.$apply(function() {
                 $scope.menu.shown = !$scope.menu.shown;
-                if ($scope.menu.shown) {
-                  $scope.toolbar.shown = false;
-                }
             });
 
         }
@@ -769,13 +787,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.filesystemMenuContents = null;
 
-    /**
-     * Hides the filesystem menu.
-     */
-    $scope.hideFilesystemMenu = function hideFilesystemMenu() {
-        $scope.menu.filesystemMenuShown = false;
-    };
-
     $scope.toggleToolbarVisibility = function toggleToolbarVisibility(filesystems) {
       if (!(filesystems && filesystems[0])) {
         scope.toolbar.shown = false;
@@ -785,15 +796,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.toolbar.shown = !$scope.toolbar.shown
         if ($scope.toolbar.shown) {
           $scope.filesystemMenuContents = filesystems[0];
-          $scope.menu.shown = false;
-          $scope.menu.filesystemMenuShown = false;
         }
       }
     };
 
     $scope.showMenu = function showMenu() {
       $scope.menu.shown = true;
-      $scope.toolbar.shown = false;
     };
 
     /**
@@ -806,7 +814,6 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.showFilesystemMenu = function showFilesystemMenu(filesystem) {
         $scope.filesystemMenuContents = filesystem;
         $scope.menu.filesystemMenuShown = true;
-        $scope.toolbar.shown = false;
     };
 
     /**
@@ -816,26 +823,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     true if the filesystem menu is shown, false otherwise.
      */
     $scope.isFilesystemMenuShown = function isFilesystemMenuShown() {
-        return !!$scope.filesystemMenuContents && $scope.menu.shown && $scope.menu.filesystemMenuShown;
+        return !!$scope.filesystemMenuContents && $scope.menu.filesystemMenuShown;
     };
-
-    // Automatically refresh display when filesystem menu is shown
-    $scope.$watch('menu.filesystemMenuShown', function refreshFilesystem() {
-        // Refresh filesystem, if defined
-        var filesystem = $scope.filesystemMenuContents;
-        if (filesystem)
-            ManagedFilesystem.refresh(filesystem, filesystem.currentDirectory);
-
-    });
-
-    // Automatically refresh display when toolbar filesystem is shown
-    $scope.$watch('toolbar.shown', function refreshFilesystem() {
-      // Refresh filesystem, if defined
-      var filesystem = $scope.filesystemMenuContents;
-      if (filesystem)
-          ManagedFilesystem.refresh(filesystem, filesystem.currentDirectory);
-
-    });
 
     /**
      * Returns the full path to the given file as an ordered array of parent
@@ -884,7 +873,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     The files to upload.
      */
     $scope.uploadFiles = function uploadFiles(files) {
-
+      
         // Upload each file
         for (var i = 0; i < files.length; i++)
           ManagedClient.uploadFile($scope.filesystemMenuContents.client, files[i], $scope.filesystemMenuContents);

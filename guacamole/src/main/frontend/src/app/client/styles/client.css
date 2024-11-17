@@ -24,6 +24,16 @@ body.client {
     overflow: hidden;
 }
 
+#client-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+#menu-container {
+  display: flex;
+}
+
 #preload {
     visibility: hidden;
     position: absolute;
@@ -35,11 +45,6 @@ body.client {
 }
 
 .client-view {
-
-    position: absolute;
-    top: 0;
-    left: 0;
-
     width: 100%;
     height: 100%;
 
@@ -181,4 +186,32 @@ body.client {
 
 .menu-fullscreen-button {
   min-width: unset;
+}
+
+.tooltip-button::after {
+  content: "File Transfer Menu";
+  visibility: hidden;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  padding: 7px 10px 5px 10px;
+  border-radius: 4px;
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  line-height: 16px;
+}
+
+.tooltip-button:hover::after {
+  visibility: visible;
+}
+
+.tooltip-button.dragging:hover::after {
+  visibility: hidden;
+}
+
+.upload.button {
+  width: 145px;
 }

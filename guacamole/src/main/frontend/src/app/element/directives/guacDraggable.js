@@ -42,6 +42,10 @@ angular.module('element').directive('guacDraggable', ['$document', '$window', fu
           }
 
           const onMouseMove = function(e) {
+            if (!$element.hasClass('dragging')) {
+              $element.addClass('dragging');
+            }
+
             positionElement(e.pageY - shiftY, e.pageX - shiftX);
             $scope.$apply(function() {
               $scope.dragging = true;
@@ -58,6 +62,7 @@ angular.module('element').directive('guacDraggable', ['$document', '$window', fu
           const onMouseUp = function(e) {
             $document.off('pointermove', onMouseMove);
             $element.css('cursor', 'grab');
+            $element.removeClass('dragging');
             $element[0].releasePointerCapture(e.pointerId); 
             setTimeout(function() {
               isDragging = false;

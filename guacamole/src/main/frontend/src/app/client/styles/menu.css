@@ -19,11 +19,10 @@
 
 .menu {
     overflow: hidden;
-    position: absolute;
     top: 0;
     height: 100%;
     max-width: 100%;
-    width: 480px;
+    width: 0;
     background: #EEE;
     box-shadow: inset -1px 0 2px white, 1px 0 2px black;
     z-index: 100;
@@ -32,6 +31,10 @@
     -ms-transition: left 0.125s, opacity 0.125s;
     -o-transition: left 0.125s, opacity 0.125s;
     transition: left 0.125s, opacity 0.125s;
+}
+
+.menu.open {
+  width: 480px;
 }
 
 .menu-content {
@@ -134,13 +137,4 @@
     padding-top: 1em;
 }
 
-.menu,
-.menu.closed {
-    left: -480px;
-    opacity: 0;
-}
 
-.menu.open {
-    left: 0px;
-    opacity: 1;
-}
