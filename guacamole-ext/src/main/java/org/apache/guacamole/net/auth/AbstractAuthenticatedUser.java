@@ -21,11 +21,8 @@ package org.apache.guacamole.net.auth;
 
 import java.util.Collections;
 import java.util.Set;
-import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Basic implementation of an AuthenticatedUser which uses the username to
@@ -35,16 +32,42 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
         implements AuthenticatedUser {
 
     /**
-     * The logger for this class.
+     * Creates a new AbstractAuthenticatedUser that considers usernames to be
+     * case-sensitive or case-insensitive based on the provided case sensitivity
+     * flag.
+     *
+     * @param caseSensitive
+     *     true if usernames should be considered case-sensitive, false
+     *     otherwise.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAuthenticatedUser.class);
-    
+    public AbstractAuthenticatedUser(boolean caseSensitive) {
+        super(caseSensitive);
+    }
+
     /**
-     * The server environment in which this Guacamole Client instance is
-     * running.
+     * Creates a new AbstractAuthenticatedUser that considers usernames to be
+     * case-sensitive or case-insensitive based on the case sensitivity setting
+     * of the provided {@link Environment}, as returned by
+     * {@link Environment#getCaseSensitivity()}.
+     *
+     * @param environment
+     *     The Environment that should determine whether this
+     *     AbstractAuthenticatedUser considers usernames to be case-sensitive.
      */
-    private final Environment environment = LocalEnvironment.getInstance();
-    
+    public AbstractAuthenticatedUser(Environment environment) {
+        this(environment.getCaseSensitivity().caseSensitiveUsernames());
+    }
+
+    /**
+     * Creates a new AbstractAuthenticatedUser that considers usernames to be
+     * case-sensitive or case-insensitive based on the case sensitivity setting
+     * of an instance of {@link LocalEnvironment}, as returned by
+     * {@link LocalEnvironment#getCaseSensitivity()}.
+     */
+    public AbstractAuthenticatedUser() {
+        this(LocalEnvironment.getInstance());
+    }
+
     // Prior functionality now resides within AbstractIdentifiable
 
     @Override
@@ -52,21 +75,6 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
         return Collections.<String>emptySet();
     }
 
-    @Override
-    public boolean isCaseSensitive() {
-        try {
-            return environment.getCaseSensitivity().caseSensitiveUsernames();
-        }
-        catch (GuacamoleException e) {
-            LOGGER.error("Failed to retrieve the configuration for case sensitivity: {}. "
-                       + "Username comparisons will be case-sensitive.",
-                       e.getMessage());
-            LOGGER.debug("An exception was caught when attempting to retrieve the "
-                       + "case sensitivity configuration.", e);
-            return true;
-        }
-    }
-    
     @Override
     public void invalidate() {
         // Nothing to invalidate
