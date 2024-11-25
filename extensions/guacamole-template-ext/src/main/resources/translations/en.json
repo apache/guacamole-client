@@ -1,0 +1,15 @@
+{
+
+    "DATA_SOURCE_TEMPLATE_EXT" : {
+        "NAME" : "Connection Template Extension"
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_TEMPLATE_CONNECTION_ID" : "Template Connection: ",
+        
+        "SECTION_HEADER_TEMPLATED_CONNECTION_FORM" : "Connection Template"
+        
+    }
+
+}
