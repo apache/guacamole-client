@@ -531,6 +531,7 @@
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
         "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
         "FIELD_HEADER_USE_SSL"         : "Use SSL/TLS",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Clipboard data size limit:",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
@@ -558,12 +559,17 @@
         "FIELD_OPTION_FONT_SIZE_96"    : "96",
         "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
 
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"     : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"    : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760"   : "10MB",
+
         "NAME" : "Kubernetes",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
         "SECTION_HEADER_BEHAVIOR"       : "Terminal behavior",
         "SECTION_HEADER_CONTAINER"      : "Container",
         "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
         "SECTION_HEADER_NETWORK"        : "Network"
@@ -582,6 +588,7 @@
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_DISABLE_AUDIO"    : "Disable audio:",
         "FIELD_HEADER_DISABLE_AUTH"     : "Disable authentication:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Clipboard data size limit:",
         "FIELD_HEADER_DISABLE_COPY"     : "Disable copying from remote desktop:",
         "FIELD_HEADER_DISABLE_DOWNLOAD" : "Disable file download:",
         "FIELD_HEADER_DISABLE_PASTE"    : "Disable pasting from client:",
@@ -707,6 +714,10 @@
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turkish-Q (Qwerty)",
 
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"     : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"    : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760"   : "10MB",
+
         "NAME" : "RDP",
 
         "SECTION_HEADER_AUTHENTICATION"     : "Authentication",
@@ -733,6 +744,7 @@
         "FIELD_HEADER_COMMAND"      : "Execute command:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Clipboard data size limit:",
         "FIELD_HEADER_DISABLE_COPY"  : "Disable copying from terminal:",
         "FIELD_HEADER_DISABLE_PASTE" : "Disable pasting from client:",
         "FIELD_HEADER_FONT_NAME"     : "Font name:",
@@ -805,6 +817,10 @@
         "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
         "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
 
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"     : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"    : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760"   : "10MB",
+
         "NAME" : "SSH",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
@@ -826,6 +842,7 @@
         "FIELD_HEADER_COLOR_SCHEME"   : "Color scheme:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Clipboard data size limit:",
         "FIELD_HEADER_DISABLE_COPY"   : "Disable copying from terminal:",
         "FIELD_HEADER_DISABLE_PASTE"  : "Disable pasting from client:",
         "FIELD_HEADER_FONT_NAME"      : "Font name:",
@@ -891,6 +908,10 @@
         "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
         "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
 
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"     : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"    : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760"   : "10MB",
+
         "NAME" : "Telnet",
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
@@ -914,6 +935,7 @@
         "FIELD_HEADER_CURSOR"           : "Cursor:",
         "FIELD_HEADER_DEST_HOST"        : "Destination host:",
         "FIELD_HEADER_DEST_PORT"        : "Destination port:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE"  : "Clipboard data size limit:",
         "FIELD_HEADER_DISABLE_COPY"           : "Disable copying from remote desktop:",
         "FIELD_HEADER_DISABLE_DISPLAY_RESIZE" : "Disable resize of remote display:",
         "FIELD_HEADER_DISABLE_PASTE"          : "Disable pasting from client:",
@@ -994,6 +1016,10 @@
         "FIELD_OPTION_QUALITY_LEVEL_8"     : "8",
         "FIELD_OPTION_QUALITY_LEVEL_9"     : "9",
         "FIELD_OPTION_QUALITY_LEVEL_EMPTY" : "",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"     : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"    : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760"   : "10MB",
 
         "NAME" : "VNC",
 
