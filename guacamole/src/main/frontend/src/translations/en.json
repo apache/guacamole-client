@@ -507,6 +507,7 @@
         "FIELD_HEADER_CA_CERT"         : "Certificate authority certificate:",
         "FIELD_HEADER_CLIENT_CERT"     : "Client certificate:",
         "FIELD_HEADER_CLIENT_KEY"      : "Client key:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Clipboard data size limit:",
         "FIELD_HEADER_COLOR_SCHEME"    : "Color scheme:",
         "FIELD_HEADER_CONTAINER"       : "Container name:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Automatically create recording path:",
@@ -536,6 +537,11 @@
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
         "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
 
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
         "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Gray on black",
@@ -562,6 +568,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
         "SECTION_HEADER_BEHAVIOR"       : "Terminal behavior",
+        "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
         "SECTION_HEADER_CONTAINER"      : "Container",
         "SECTION_HEADER_DISPLAY"        : "Display",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
@@ -575,6 +582,7 @@
         "FIELD_HEADER_CERT_TOFU"             : "Trust host certificate on first use:",
         "FIELD_HEADER_CERT_FINGERPRINTS"     : "Fingerprints of trusted host certificates:",
         "FIELD_HEADER_CLIENT_NAME"           : "Client name:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Clipboard data size limit:",
         "FIELD_HEADER_COLOR_DEPTH"           : "Color depth:",
         "FIELD_HEADER_CONSOLE"               : "Administrator console:",
         "FIELD_HEADER_CONSOLE_AUDIO"         : "Support audio in console:",
@@ -661,6 +669,12 @@
         "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port for WoL packet: ",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
 
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
+
         "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
         "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "Preserve as-is",
         "FIELD_OPTION_NORMALIZE_CLIPBOARD_UNIX"     : "Linux/Mac/Unix (LF)",
@@ -729,6 +743,7 @@
     "PROTOCOL_SSH" : {
 
         "FIELD_HEADER_BACKSPACE"    : "Backspace key sends:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Clipboard data size limit:",
         "FIELD_HEADER_COLOR_SCHEME" : "Color scheme:",
         "FIELD_HEADER_COMMAND"      : "Execute command:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
@@ -774,6 +789,11 @@
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
         "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -823,6 +843,7 @@
     "PROTOCOL_TELNET" : {
 
         "FIELD_HEADER_BACKSPACE"      : "Backspace key sends:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Clipboard data size limit:",
         "FIELD_HEADER_COLOR_SCHEME"   : "Color scheme:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automatically create recording path:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatically create typescript path:",
@@ -860,6 +881,11 @@
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
         "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Black on white",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -907,6 +933,7 @@
     "PROTOCOL_VNC" : {
 
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Audio server name:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE"  : "Clipboard data size limit:",
         "FIELD_HEADER_CLIPBOARD_ENCODING" : "Encoding:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Color depth:",
         "FIELD_HEADER_COMPRESS_LEVEL"   : "Compression level:",
@@ -954,6 +981,12 @@
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
         "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port for WoL packet:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
 
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Low color (16-bit)",
