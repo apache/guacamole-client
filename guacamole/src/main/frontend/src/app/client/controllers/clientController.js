@@ -788,7 +788,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             return;
 
         // Init guacManageMonitor
-        guacManageMonitor.init($scope.menu);
+        guacManageMonitor.init();
+        guacManageMonitor.menuShown = function menuShown() {
+            $scope.menu.shown = !$scope.menu.shown;
+            $scope.$apply();
+        }
 
         // Add or remove additional monitor
         guacManageMonitor.addMonitor();

@@ -27,37 +27,78 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
     const $window        = $injector.get('$window');
     const guacFullscreen = $injector.get('guacFullscreen');
 
-    const service = {};
-
-    // Additionals monitors windows
+    /**
+     * Additionals monitors windows opened.
+     * 
+     * @type Object.<Number, Window>
+     */
     const monitors = {};
 
-    // Guacamole Client
-    let client = null;
-
-    // Broadcast channel
-    let broadcast = null;
-
-    // Store the last monitor id
-    let lastMonitorId = 0;
-
-    // Reference for the ctrl/alt/shift menu
-    let guacMenu;
+    /**
+     * The type of this monitor (default = primary).
+     * 
+     * @type String
+     */
+    let monitorType = "primary";
 
     /**
-     * Init the broadcast channel used for bidirectionnal communications between
-     * primary and secondary monitor windows and get the gacamole menu reference.
+     * The display of the current Guacamole client instance.
      * 
-     * @param {!Object} menu
-     *     Reference for the guacamole menu.
+     * @type Guacamole.Display
      */
-    service.init = function init(menu) {
+    let client = null;
 
-        guacMenu = menu;
+    /**
+     * The current Guacamole client instance.
+     * 
+     * @type Guacamole.Client 
+     */
+    let display = null;
+
+    /**
+     * The broadcast channel used for communications between all windows.
+     * 
+     * @type BroadcastChannel
+     */
+    let broadcast = null;
+
+    /**
+     * Store the last additional monitor id.
+     * 
+     * @type Number
+     */
+    let lastMonitorId = 0;
+
+    const service = {};
+
+    /**
+     * Attributes of the monitor
+     * 
+     * @type Object.<Number>
+     */
+    service.monitorAttributes = {};
+
+    /**
+     * Init the monitor type and broadcast channel used for bidirectionnal
+     * communications between primary and secondary monitor windows.
+     * 
+     * @param {String} type
+     *     The type of the monitor. "primary" if not given.
+     */
+    service.init = function init(type) {
+
+        // Change the monitor type
+        if (type) monitorType = type;
+
+        if (monitorType == "primary") {
+            guacFullscreen.onfullscreen = function onfullscreen(state) {
+                service.pushBroadcastMessage('fullscreen', state);
+            }        
+        }
 
         // Create broadcast channel on first launch.
         if (broadcast)
-            return;
+            return;        
 
         broadcast = new BroadcastChannel('guac_monitors');
 
@@ -68,8 +109,17 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
          * @param {Event} e
          *     Received message event from guac_monitors channel.
          */
-        broadcast.onmessage = function broadcastMessage(message) {
+        broadcast.onmessage = messageHandlers[monitorType];
     
+    };
+
+    /**
+     * Handlers for instructions received on broadcast channel.
+     */
+    const messageHandlers = {
+
+        "primary": function primary(message) {
+
             // Send monitors infos and trigger the screen resize event
             if (message.data.resize)
                 sendMonitorsInfos();
@@ -91,12 +141,116 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
                 service.closeMonitor(message.data.monitorClose);
 
             // CTRL+ALT+SHIFT pressed on secondary window
-            if (message.data.guacMenu)
-                guacMenu.shown = !guacMenu.shown;
+            if (message.data.guacMenu && service.menuShown)
+                service.menuShown();
+            
+        },
 
+        "secondary": function secondaryMonitor(message) {
+            
+            // Run the client handler to draw display
+            if (message.data.handler)
+                client.runHandler(message.data.handler.opcode,
+                                  message.data.handler.parameters);
+
+            if (message.data.monitorsInfos) {
+
+                const monitorsInfos = message.data.monitorsInfos;
+                const monitorId = service.monitorAttributes.monitorId;
+
+                // Store new monitor count and position
+                service.monitorAttributes.count = monitorsInfos.count;
+                service.monitorAttributes.position = monitorsInfos.map[monitorId];
+
+                // Set the monitor count in display
+                display.updateMonitors(service.monitorAttributes.count);
+
+            }
+
+            // Resize display and window with parameters sent by guacd in the size handler
+            if (message.data.handler?.opcode === 'size' && !guacFullscreen.isInFullscreenMode()) {
+
+                const parameters = message.data.handler.parameters;
+                const default_layer = 0;
+                const layer = parseInt(parameters[0]);
+
+                // Ignore other layers (ex: mouse) that can have other size
+                if (layer !== default_layer)
+                    return;
+
+                // Set the new display size
+                service.monitorAttributes.width  = parseInt(parameters[1]) / service.monitorAttributes.count;
+                service.monitorAttributes.height = parseInt(parameters[2]);
+
+                // Translate all draw actions on X to draw the current display
+                // instead of the first
+                client.offsetX = service.monitorAttributes.width * service.monitorAttributes.position;
+
+                // Get unusable window height and width (ex: titlebar)
+                const windowUnusableHeight = $window.outerHeight - $window.innerHeight;
+                const windowUnusableWidth = $window.outerWidth - $window.innerWidth;
+
+                // Remove scrollbars
+                document.querySelector('.client-main').style.overflow = 'hidden';
+
+                // Resize window to the display size
+                $window.resizeTo(
+                    service.monitorAttributes.width + windowUnusableWidth,
+                    service.monitorAttributes.height + windowUnusableHeight
+                );
+
+                // Adjust scaling to new size
+                service.mainElementResized();
+
+            }
+
+            // Full screen mode instructions
+            if (message.data.fullscreen !== undefined) {
+
+                // setFullscreenMode require explicit user action
+                if (message.data.fullscreen) {
+                    if (service.openConsentButton) service.openConsentButton();
+                }
+
+                // Close fullscreen mode instantly
+                else
+                    guacFullscreen.setFullscreenMode(false);
+
+            }
         }
-    
+
+    }
+
+    /**
+     * Add button to request user consent before enabling fullscreen mode to
+     * comply with the setFullscreenMode requirements that require explicit
+     * user action. The button is removed after a few seconds if the user does
+     * not click on it.
+     */
+    service.openConsentButton = null;
+
+    /**
+     * Adjust the display scaling according to the window size.
+     */
+    service.mainElementResized = function mainElementResized() {
+
+        // Calculate required scaling factor
+        const scaleX = $window.innerWidth / service.monitorAttributes.width;
+        const scaleY = $window.innerHeight / service.monitorAttributes.height;
+
+        // Use the lowest scaling to avoid acreen overflow
+        if (scaleX <= scaleY)
+            service.monitorAttributes.currentScaling = scaleX;
+        else
+            service.monitorAttributes.currentScaling = scaleY;
+        
+        display.scale(service.monitorAttributes.currentScaling);
     };
+
+    /**
+     * Open or close Guacamole menu (ctrl+alt+shift).
+     */
+    service.menuShown = null;
 
     /**
      * Set the current Guacamole Client
@@ -106,10 +260,12 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      */
     service.setClient = function setClient(guac_client) {
 
-        client = guac_client;
+        client  = guac_client;
+        display = client.getDisplay();
 
         // Close all secondary monitors on client disconnect
-        client.ondisconnect = service.closeAllMonitors;
+        if (monitorType === "primary")
+            client.ondisconnect = service.closeAllMonitors;
 
     }
 
@@ -126,16 +282,17 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      */
     service.pushBroadcastMessage = function pushBroadcastMessage(type, content) {
 
-        if (service.getMonitorCount() > 1) {
+        // Send only if there are other monitors to receive this message
+        if (monitorType === "primary" && service.getMonitorCount() <= 1)
+            return;
 
-            // Format message content
-            const message = {
-                [type]: content
-            };
+        // Format message content
+        const message = {
+            [type]: content
+        };
 
-            // Send message on the broadcast channel
-            broadcast.postMessage(message);
-        }
+        // Send message on the broadcast channel
+        broadcast.postMessage(message);
 
     };
 
