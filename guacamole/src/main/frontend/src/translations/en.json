@@ -568,9 +568,9 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentication",
         "SECTION_HEADER_BEHAVIOR"       : "Terminal behavior",
+        "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
         "SECTION_HEADER_CONTAINER"      : "Container",
         "SECTION_HEADER_DISPLAY"        : "Display",
-        "SECTION_HEADER_CLIPBOARD"      : "Clipboard",
         "SECTION_HEADER_RECORDING"      : "Screen Recording",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Text Session Recording)",
         "SECTION_HEADER_NETWORK"        : "Network"
