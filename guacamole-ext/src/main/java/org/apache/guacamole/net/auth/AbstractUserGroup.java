@@ -26,8 +26,6 @@ import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Base implementation of UserGroup which provides default implementations of
@@ -36,16 +34,42 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractUserGroup extends AbstractIdentifiable implements UserGroup {
 
     /**
-     * The logger for this class.
+     * Creates a new AbstractUserGroup that considers group names to be
+     * case-sensitive or case-insensitive based on the provided case
+     * sensitivity flag.
+     *
+     * @param caseSensitive
+     *     true if group names should be considered case-sensitive, false
+     *     otherwise.
      */
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractUserGroup.class);
-    
+    public AbstractUserGroup(boolean caseSensitive) {
+        super(caseSensitive);
+    }
+
     /**
-     * The server environment in which this Guacamole Client instance is
-     * running.
+     * Creates a new AbstractUserGroup that considers group names to be
+     * case-sensitive or case-insensitive based on the case sensitivity setting
+     * of the provided {@link Environment}, as returned by
+     * {@link Environment#getCaseSensitivity()}.
+     *
+     * @param environment
+     *     The Environment that should determine whether this AbstractUserGroup
+     *     considers group names to be case-sensitive.
      */
-    private final Environment environment = LocalEnvironment.getInstance();
-    
+    public AbstractUserGroup(Environment environment) {
+        this(environment.getCaseSensitivity().caseSensitiveGroupNames());
+    }
+
+    /**
+     * Creates a new AbstractUserGroup that considers group names to be
+     * case-sensitive or case-insensitive based on the case sensitivity setting
+     * of an instance of {@link LocalEnvironment}, as returned by
+     * {@link LocalEnvironment#getCaseSensitivity()}.
+     */
+    public AbstractUserGroup() {
+        this(LocalEnvironment.getInstance());
+    }
+
     /**
      * {@inheritDoc}
      *
@@ -193,21 +217,6 @@ public abstract class AbstractUserGroup extends AbstractIdentifiable implements 
     @Override
     public RelatedObjectSet getMemberUserGroups() throws GuacamoleException {
         return RelatedObjectSet.EMPTY_SET;
-    }
-    
-    @Override
-    public boolean isCaseSensitive() {
-        try {
-            return environment.getCaseSensitivity().caseSensitiveGroupNames();
-        }
-        catch (GuacamoleException e) {
-            LOGGER.warn("Unable to retrieve server configuration, group names "
-                      + "will default to case-sensitive.");
-            LOGGER.debug("Received an exception attempting to retrieve the "
-                       + "property for group name case sensitivity, group names"
-                       + "will be treated as case-sensitive.", e);
-            return true;
-        }
     }
 
 }

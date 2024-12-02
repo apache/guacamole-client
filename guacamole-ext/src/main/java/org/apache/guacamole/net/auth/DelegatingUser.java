@@ -84,11 +84,6 @@ public class DelegatingUser implements User {
     }
     
     @Override
-    public boolean isCaseSensitive() {
-        return user.isCaseSensitive();
-    }
-    
-    @Override
     public void setDisabled(boolean disabled) {
         user.setDisabled(disabled);
     }

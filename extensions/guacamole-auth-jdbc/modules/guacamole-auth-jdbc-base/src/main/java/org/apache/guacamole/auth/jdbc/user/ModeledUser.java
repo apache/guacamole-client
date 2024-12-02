@@ -36,7 +36,6 @@ import java.util.TimeZone;
 import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.jdbc.security.SaltService;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.DateField;
@@ -51,6 +50,7 @@ import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -152,12 +152,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
             )));
 
     /**
-     * Service for managing users.
-     */
-    @Inject
-    private UserService userService;
-
-    /**
      * Service for hashing passwords.
      */
     @Inject
@@ -181,19 +175,17 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      */
     @Inject
     private Provider<UserRecordSet> userRecordSetProvider;
-    
-    /**
-     * The environment associated with this instance of the JDBC authentication
-     * module.
-     */
-    @Inject
-    private JDBCEnvironment environment;
 
     /**
      * Whether attributes which control access restrictions should be exposed
      * via getAttributes() or allowed to be set via setAttributes().
      */
     private boolean exposeRestrictedAttributes = false;
+
+    /**
+     * Whether usernames should be considered case-sensitive.
+     */
+    private boolean caseSensitive = true;
 
     /**
      * Initializes this ModeledUser, associating it with the current
@@ -212,9 +204,10 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      *     setAttributes().
      */
     public void init(ModeledAuthenticatedUser currentUser, UserModel model,
-            boolean exposeRestrictedAttributes) {
+            boolean exposeRestrictedAttributes, boolean caseSensitive) {
         super.init(currentUser, model);
         this.exposeRestrictedAttributes = exposeRestrictedAttributes;
+        this.caseSensitive = caseSensitive;
     }
 
     /**
@@ -247,6 +240,16 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         if (model.getPasswordHash() != null)
             this.passwordRecord = new PasswordRecordModel(model);
 
+    }
+
+    @Override
+    public String getIdentifier() {
+        return CaseSensitivity.canonicalize(super.getIdentifier(), caseSensitive);
+    }
+
+    @Override
+    public void setIdentifier(String identifier) {
+        super.setIdentifier(CaseSensitivity.canonicalize(identifier, caseSensitive));
     }
 
     @Override
@@ -789,19 +792,4 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         return (getModel().getEntityID() == null);
     }
     
-    @Override
-    public boolean isCaseSensitive() {
-        try {
-            return environment.getCaseSensitivity().caseSensitiveUsernames();
-        }
-        catch (GuacamoleException e) {
-            logger.error("Failed to retrieve the configuration for case sensitivity: {}. "
-                       + "Username comparisons will be case-sensitive.",
-                       e.getMessage());
-            logger.debug("An exception was caught when attempting to retrieve the "
-                       + "case sensitivity configuration.", e);
-            return true;
-        }
-    }
-
 }
