@@ -195,9 +195,4 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
         return getUser().isPrivileged();
     }
     
-    @Override
-    public boolean isCaseSensitive() {
-        return user.isCaseSensitive();
-    }
-
 }

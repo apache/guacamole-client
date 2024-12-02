@@ -638,21 +638,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         if (connectionGroup.isSessionAffinityEnabled())
             identifiers = getPreferredConnections(user, identifiers);
 
-        CaseSensitivity caseSensitivity = CaseSensitivity.ENABLED;
-        try {
-            caseSensitivity = environment.getCaseSensitivity();
-        }
-        catch (GuacamoleException e) {
-            logger.warn("Error trying to retrieve case sensitivity configuration: {}."
-                      + "Both usernames and group names will be treated as case-"
-                      + "sensitive.", e.getMessage());
-            logger.debug("An exception was received while trying to retrieve the "
-                       + "case sensitivity configuration.", e);
-        }
-        
         // Retrieve all children
-        Collection<ConnectionModel> models = connectionMapper.select(identifiers,
-                caseSensitivity);
+        Collection<ConnectionModel> models = connectionMapper.select(identifiers, environment.getCaseSensitivity());
         List<ModeledConnection> connections = new ArrayList<ModeledConnection>(models.size());
 
         // Convert each retrieved model to a modeled connection

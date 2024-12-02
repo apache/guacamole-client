@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.properties;
 
+import java.util.Locale;
 import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
 
 /**
@@ -60,7 +61,19 @@ public enum CaseSensitivity {
      * Whether or not case sensitivity should be enabled for group names.
      */
     private final boolean groupNames;
-    
+
+    /**
+     * Creates a new CaseSensitivity value that represents a setting controlling
+     * whether usernames and group names are case-sensitive.
+     *
+     * @param usernames
+     *     true if usernames should be considered case-sensitive, false if
+     *     usernames should be considered case-insensitive.
+     *
+     * @param groupNames
+     *     true if group names should be considered case-sensitive, false if
+     *     group names should be considered case-insensitive.
+     */
     CaseSensitivity(boolean usernames, boolean groupNames) {
         this.usernames = usernames;
         this.groupNames = groupNames;
@@ -88,5 +101,68 @@ public enum CaseSensitivity {
     public boolean caseSensitiveGroupNames() {
         return groupNames;
     }
-    
+
+    /**
+     * Converts the given identifier into a canonical form which ensures simple
+     * verbatim string comparisons are consistent with the case sensitivity
+     * setting. If case-sensitive, identifiers are simply returned without
+     * modification. If case-insensitive, identifiers are converted to
+     * lowercase with respect to the {@link Locale#ROOT} locale.
+     *
+     * @param identifier
+     *     The identifier to convert into a canonical form.
+     *
+     * @param caseSensitive
+     *     Whether the given identifier is case-sensitive.
+     *
+     * @return
+     *     The given identifier, transformed as necessary to ensure that
+     *     verbatim string comparisons are consistent with the case sensitivity
+     *     setting.
+     */
+    public static String canonicalize(String identifier, boolean caseSensitive) {
+
+        if (identifier == null)
+            return null;
+
+        return caseSensitive ? identifier : identifier.toLowerCase(Locale.ROOT);
+
+    }
+
+    /**
+     * Canonicalizes the given username according to whether usernames are
+     * case-sensitive under this case sensitivity setting. This function is
+     * equivalent to manually invoking {@link #canonicalize(java.lang.String, boolean)}
+     * with the value of {@link #caseSensitiveUsernames()}.
+     *
+     * @param username
+     *     The username to canonicalize.
+     *
+     * @return
+     *     The given username, transformed as necessary to ensure that
+     *     verbatim string comparisons are consistent with the case sensitivity
+     *     setting for usernames.
+     */
+    public String canonicalizeUsername(String username) {
+        return canonicalize(username, usernames);
+    }
+
+    /**
+     * Canonicalizes the given group name according to whether group names are
+     * case-sensitive under this case sensitivity setting. This function is
+     * equivalent to manually invoking {@link #canonicalize(java.lang.String, boolean)}
+     * with the value of {@link #caseSensitiveGroupNames()}.
+     *
+     * @param groupName
+     *     The group name to canonicalize.
+     *
+     * @return
+     *     The given group name, transformed as necessary to ensure that
+     *     verbatim string comparisons are consistent with the case sensitivity
+     *     setting for group names.
+     */
+    public String canonicalizeGroupName(String groupName) {
+        return canonicalize(groupName, groupNames);
+    }
+
 }

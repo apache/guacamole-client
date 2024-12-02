@@ -197,7 +197,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Produce ModeledUser exposing only those attributes for which the
         // current user has permission
         ModeledUser user = userProvider.get();
-        user.init(currentUser, model, exposeRestrictedAttributes);
+        user.init(currentUser, model, exposeRestrictedAttributes,
+                environment.getCaseSensitivity().caseSensitiveUsernames());
         return user;
 
     }
