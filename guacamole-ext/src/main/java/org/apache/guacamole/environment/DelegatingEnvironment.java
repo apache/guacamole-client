@@ -116,7 +116,7 @@ public class DelegatingEnvironment implements Environment {
     }
     
     @Override
-    public CaseSensitivity getCaseSensitivity() throws GuacamoleException {
+    public CaseSensitivity getCaseSensitivity() {
         return environment.getCaseSensitivity();
     }
 

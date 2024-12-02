@@ -24,6 +24,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Supplier;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
@@ -34,6 +35,8 @@ import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.protocols.ProtocolInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The environment of an arbitrary Guacamole instance, describing available
@@ -82,7 +85,7 @@ public interface Environment {
     
         @Override
         public String getName() { return "case-sensitivity"; }
-                
+
     };
 
     /**
@@ -183,18 +186,7 @@ public interface Environment {
      */
     public default <Type> Collection<Type> getPropertyCollection(
             GuacamoleProperty<Type> property) throws GuacamoleException {
-        
-        /* Pull the given property as a string. */
-        StringGuacamoleProperty stringProperty = new StringGuacamoleProperty() {
-            
-            @Override
-            public String getName() { return property.getName(); }
-            
-        };
-        
-        /* Parse the string to a Collection of the desired type. */
-        return property.parseValueCollection(getProperty(stringProperty));
-        
+        return new DefaultEnvironment(this).getPropertyCollection(property);
     }
     
     /**
@@ -227,23 +219,7 @@ public interface Environment {
     public default <Type> Collection<Type> getPropertyCollection(
             GuacamoleProperty<Type> property, Type defaultValue)
             throws GuacamoleException {
-        
-        /* Pull the given property as a string. */
-        StringGuacamoleProperty stringProperty = new StringGuacamoleProperty() {
-            
-            @Override
-            public String getName() { return property.getName(); }
-            
-        };
-        
-        /* Check the value and return the default if null. */
-        String stringValue = getProperty(stringProperty);
-        if (stringValue == null)
-            return Collections.singletonList(defaultValue);
-        
-        /* Parse the string and return the collection. */
-        return property.parseValueCollection(stringValue);
-        
+        return new DefaultEnvironment(this).getPropertyCollection(property, defaultValue);
     }
     
     /**
@@ -276,23 +252,7 @@ public interface Environment {
     public default <Type> Collection<Type> getPropertyCollection(
             GuacamoleProperty<Type> property, Collection<Type> defaultValue)
             throws GuacamoleException {
-        
-        /* Pull the given property as a string. */
-        StringGuacamoleProperty stringProperty = new StringGuacamoleProperty() {
-            
-            @Override
-            public String getName() { return property.getName(); }
-            
-        };
-        
-        /* Check the value and return the default if null. */
-        String stringValue = getProperty(stringProperty);
-        if (stringValue == null)
-            return defaultValue;
-        
-        /* Parse the string and return the collection. */
-        return property.parseValueCollection(stringValue);
-        
+        return new DefaultEnvironment(this).getPropertyCollection(property, defaultValue);
     }
     
     /**
@@ -335,18 +295,7 @@ public interface Environment {
      */
     public default <Type> Collection<Type> getRequiredPropertyCollection(
             GuacamoleProperty<Type> property) throws GuacamoleException {
-        
-        /* Pull the given property as a string. */
-        StringGuacamoleProperty stringProperty = new StringGuacamoleProperty() {
-            
-            @Override
-            public String getName() { return property.getName(); }
-            
-        };
-        
-        /* Parse the string to a Collection of the desired type. */
-        return property.parseValueCollection(getRequiredProperty(stringProperty));
-        
+        return new DefaultEnvironment(this).getRequiredPropertyCollection(property);
     }
 
     /**
@@ -378,11 +327,9 @@ public interface Environment {
      */
     public default void addGuacamoleProperties(GuacamoleProperties properties)
             throws GuacamoleException {
-        throw new GuacamoleUnsupportedException(String.format("%s does not "
-                + "support dynamic definition of Guacamole properties.",
-                getClass()));
+        new DefaultEnvironment(this).addGuacamoleProperties(properties);
     }
-    
+
     /**
      * Returns the case sensitivity configuration for Guacamole as defined
      * in guacamole.properties, or the default of enabling case sensitivity
@@ -391,12 +338,9 @@ public interface Environment {
      * @return
      *     The case sensitivity setting as configured in guacamole.properties,
      *     or the default of enabling case sensitivity.
-     * 
-     * @throws GuacamoleException 
-     *     If guacamole.properties cannot be read or parsed.
      */
-    public default CaseSensitivity getCaseSensitivity() throws GuacamoleException {
-        return getProperty(CASE_SENSITIVITY, CaseSensitivity.ENABLED);
+    public default CaseSensitivity getCaseSensitivity() {
+        return new DefaultEnvironment(this).getCaseSensitivity();
     }
 
 }
