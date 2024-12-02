@@ -194,7 +194,7 @@
                 {
                     "name"    : "clipboard-buffer-size",
                     "type"    : "ENUM",
-                    "options" : [ "262144", "1048576", "10485760" ]
+                    "options" : [ "", "262144", "1048576", "10485760", "52428800" ]
                 },
                 {
                     "name"    : "disable-copy",
