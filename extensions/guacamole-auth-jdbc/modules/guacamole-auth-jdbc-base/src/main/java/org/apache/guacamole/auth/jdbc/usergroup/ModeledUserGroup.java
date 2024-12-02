@@ -21,23 +21,17 @@ package org.apache.guacamole.auth.jdbc.usergroup;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.form.BooleanField;
-import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.UserGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.guacamole.properties.CaseSensitivity;
 
 /**
  * An implementation of the UserGroup object which is backed by a database model.
@@ -45,11 +39,6 @@ import org.slf4j.LoggerFactory;
 public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
         implements UserGroup {
 
-    /**
-     * The Logger for this class.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModeledUserGroup.class);
-    
     /**
      * All possible attributes of user groups organized as individual,
      * logical forms.
@@ -84,17 +73,15 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
     private Provider<UserGroupMemberUserGroupSet> memberUserGroupSetProvider;
     
     /**
-     * The environment associated with this instance of the JDBC authentication
-     * module.
-     */
-    @Inject
-    private JDBCEnvironment environment;
-
-    /**
      * Whether attributes which control access restrictions should be exposed
      * via getAttributes() or allowed to be set via setAttributes().
      */
     private boolean exposeRestrictedAttributes = false;
+
+    /**
+     * Whether group names should be considered case-sensitive.
+     */
+    private boolean caseSensitive = true;
 
     /**
      * Initializes this ModeledUserGroup, associating it with the current
@@ -111,13 +98,28 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
      *     Whether attributes which control access restrictions should be
      *     exposed via getAttributes() or allowed to be set via
      *     setAttributes().
+     *
+     * @param caseSensitive
+     *     true if group names should be considered case-sensitive, false
+     *     otherwise.
      */
     public void init(ModeledAuthenticatedUser currentUser, UserGroupModel model,
-            boolean exposeRestrictedAttributes) {
+            boolean exposeRestrictedAttributes, boolean caseSensitive) {
         super.init(currentUser, model);
         this.exposeRestrictedAttributes = exposeRestrictedAttributes;
+        this.caseSensitive = caseSensitive;
     }
-    
+
+    @Override
+    public String getIdentifier() {
+        return CaseSensitivity.canonicalize(super.getIdentifier(), caseSensitive);
+    }
+
+    @Override
+    public void setIdentifier(String identifier) {
+        super.setIdentifier(CaseSensitivity.canonicalize(identifier, caseSensitive));
+    }
+
     @Override
     public boolean isDisabled() {
         return getModel().isDisabled();
@@ -203,19 +205,4 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
         return memberUserGroupSet;
     }
     
-    @Override
-    public boolean isCaseSensitive() {
-        try {
-            return environment.getCaseSensitivity().caseSensitiveGroupNames();
-        }
-        catch (GuacamoleException e) {
-            LOGGER.error("Error while retrieving case sensitivity configuration: {}. "
-                       + "Group names comparisons will be case-sensitive.",
-                      e.getMessage());
-            LOGGER.debug("An exception was caught when attempting to retrieve the "
-                       + "case sensitivity configuration.", e);
-            return true;
-        }
-    }
-
 }

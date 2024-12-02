@@ -101,7 +101,8 @@ public class UserGroupService extends ModeledDirectoryObjectService<ModeledUserG
         // Produce ModeledUserGroup exposing only those attributes for which the
         // current user has permission
         ModeledUserGroup group = userGroupProvider.get();
-        group.init(currentUser, model, exposeRestrictedAttributes);
+        group.init(currentUser, model, exposeRestrictedAttributes,
+                environment.getCaseSensitivity().caseSensitiveGroupNames());
         return group;
 
     }
