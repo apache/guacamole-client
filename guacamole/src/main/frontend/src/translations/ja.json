@@ -357,6 +357,8 @@
         "FIELD_HEADER_CONTAINER"       : "コンテナ名:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "ログの保存ディレクトリを自動的に作成する:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "タイプスクリプトの保存ディレクトリを自動的に作成する:",
+        "FIELD_HEADER_DISABLE_COPY"    : "端末からのコピーを無効化:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "クライアントからの貼り付けを無効化:",
         "FIELD_HEADER_FONT_NAME"       : "フォント名:",
         "FIELD_HEADER_FONT_SIZE"       : "フォントサイズ:",
         "FIELD_HEADER_HOSTNAME"        : "ホスト名:",
@@ -395,6 +397,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "認証",
         "SECTION_HEADER_BEHAVIOR"       : "ターミナルのふるまい",
+        "SECTION_HEADER_CLIPBOARD"      : "クリップボード",
         "SECTION_HEADER_CONTAINER"      : "コンテナ",
         "SECTION_HEADER_DISPLAY"        : "ディスプレイ",
         "SECTION_HEADER_RECORDING"      : "スクリーンレコーディング",

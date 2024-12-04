@@ -502,6 +502,8 @@
         "FIELD_HEADER_CONTAINER"       : "Container Name:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Aufname-Pfad automatisch erstellen:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Typescript-Pfad automatisch erstellen:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Kopieren deaktivieren:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Einfügen deaktivieren:",
         "FIELD_HEADER_EXEC_COMMAND"    : "Befehl ausführen (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Schriftname:",
         "FIELD_HEADER_FONT_SIZE"       : "Schriftgröße:",
@@ -533,6 +535,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentifizierung",
         "SECTION_HEADER_BEHAVIOR"       : "Konsolenverhalten",
+        "SECTION_HEADER_CLIPBOARD"      : "Zwischenablage",
         "SECTION_HEADER_CONTAINER"      : "Container",
         "SECTION_HEADER_DISPLAY"        : "Bildschirm",
         "SECTION_HEADER_RECORDING"      : "Monitor-Aufnahme",

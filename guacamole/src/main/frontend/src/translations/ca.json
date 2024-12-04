@@ -421,6 +421,8 @@
         "FIELD_HEADER_CONTAINER"       : "Nom del contenidor:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Crea automàticament la ruta de gravació:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Crea automàticament la ruta de typescript:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Desactiva la còpia des del terminal:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Desactiva l'enganxament del client:",
         "FIELD_HEADER_EXEC_COMMAND"    : "Comanda (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Nom del tipus de lletra:",
         "FIELD_HEADER_FONT_SIZE"       : "Mida de la lletra:",
@@ -467,6 +469,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Autenticació",
         "SECTION_HEADER_BEHAVIOR"       : "Comportament del terminal",
+        "SECTION_HEADER_CLIPBOARD"      : "Porta-retalls",
         "SECTION_HEADER_CONTAINER"      : "Contenidor",
         "SECTION_HEADER_DISPLAY"        : "Pantalla",
         "SECTION_HEADER_RECORDING"      : "Gravació de la pantalla",
