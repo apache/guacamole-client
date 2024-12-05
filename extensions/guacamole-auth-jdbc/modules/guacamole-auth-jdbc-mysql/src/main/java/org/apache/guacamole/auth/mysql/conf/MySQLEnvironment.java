@@ -443,4 +443,35 @@ public class MySQLEnvironment extends JDBCEnvironment {
         );
     }
 
+    /**
+     * Returns the absolute path to the public key for the server being connected to,
+     * if any, or null if the configuration property is unset.
+     *
+     * @return
+     *     The absolute path to the public key for the server being connected to.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs retrieving the configuration value.
+     */
+    public String getMYSQLServerRSAPublicKeyFile() throws GuacamoleException {
+        return getProperty(MySQLGuacamoleProperties.MYSQL_SERVER_RSA_PUBLIC_KEY_FILE);
+    }
+
+    /**
+     * Returns true if the database server public key should be automatically
+     * retrieved from the MySQL server, or false otherwise.
+     *
+     * @return
+     *     Whether the database server public key should be automatically
+     *     retrieved from the MySQL server.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs retrieving the configuration value.
+     */
+    public boolean getMYSQLAllowPublicKeyRetrieval() throws GuacamoleException {
+        return getProperty(
+                MySQLGuacamoleProperties.MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL,
+                false);
+    }
+
 }
