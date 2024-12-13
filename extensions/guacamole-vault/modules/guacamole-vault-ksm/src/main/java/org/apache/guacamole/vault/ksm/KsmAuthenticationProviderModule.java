@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.vault.ksm;
 
+import java.security.Security;
+
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.VaultAuthenticationProviderModule;
 import org.apache.guacamole.vault.ksm.conf.KsmAttributeService;
@@ -35,6 +37,8 @@ import org.apache.guacamole.vault.ksm.secret.KsmClientFactory;
 import org.apache.guacamole.vault.ksm.secret.KsmRecordService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
+
+import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 
@@ -53,7 +57,14 @@ public class KsmAuthenticationProviderModule
      * @throws GuacamoleException
      *     If configuration details in guacamole.properties cannot be parsed.
      */
-    public KsmAuthenticationProviderModule() throws GuacamoleException {}
+    public KsmAuthenticationProviderModule() throws GuacamoleException {
+        // KSM recommends using BouncyCastleFipsProvider to avoid potential
+        // issues (for example with FIPS enabled RHEL).
+        // https://docs.keeper.io/en/secrets-manager/secrets-manager/developer-sdk-library/java-sdk
+        // The addProvider method checks for duplications internally,
+        // so it is safe to add the same provider multiple times.
+        Security.addProvider(new BouncyCastleFipsProvider());
+    }
 
     @Override
     protected void configureVault() {
