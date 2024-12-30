@@ -175,8 +175,10 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     The client to apply parameter changes to.
      */
     $scope.applyParameterChanges = function applyParameterChanges(client) {
+        //console.log(`applyParameterChanges called`)
         angular.forEach($scope.menu.connectionParameters, function sendArgv(value, name) {
             if (client)
+                //console.log(`!!! setArgument ${name} ${value}`);
                 ManagedClient.setArgument(client, name, value);
         });
     };
@@ -485,6 +487,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         if (menuShown) {
             $scope.menu.connectionParameters = $scope.focusedClient ?
                 ManagedClient.getArgumentModel($scope.focusedClient) : {};
+
+            //console.log(`menu.shown ${JSON.stringify($scope.menu.connectionParameters)}`)
             
             $scope.menu.filesystemMenuShown = false;
             $scope.toolbar.shown = false;
@@ -545,6 +549,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.menu.connectionParameters = newFocusedClient ?
             ManagedClient.getArgumentModel(newFocusedClient) : {};
 
+        //console.log(`guacClientFocused ${JSON.stringify($scope.menu.connectionParameters)}`)
+
     });
 
     // Automatically update connection parameters that have been modified
@@ -554,6 +560,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Ignore any updated arguments not for the current focused client
         if ($scope.focusedClient && $scope.focusedClient === focusedClient)
             $scope.menu.connectionParameters = ManagedClient.getArgumentModel(focusedClient);
+
+       //console.log(`guacClientArgumentsUpdated ${JSON.stringify($scope.menu.connectionParameters)}`)
 
     });
 
@@ -802,6 +810,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     $scope.showMenu = function showMenu() {
       $scope.menu.shown = true;
+      
+    //   var parameters1 = ManagedClient.getConnectionParameters($scope.focusedClient)
+    //   .then(function connectionParametersRetrieved(parameters) {
+    //       debugger;
+    //       console.log(`showButton ${JSON.stringify(parameters)}`)
+
+    //       return parameters
+    //   })
+
+    //     console.log(parameters1);
     };
 
     /**
@@ -815,6 +833,22 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         $scope.filesystemMenuContents = filesystem;
         $scope.menu.filesystemMenuShown = true;
     };
+
+    $scope.showButton = function showButton() {
+        //debugger;
+        var parameters1 = ManagedClient.getConnectionParameters($scope.focusedClient)
+            .then(function connectionParametersRetrieved(parameters) {
+                //debugger;
+                console.log(`showButton ${JSON.stringify(parameters)}`)
+
+                return parameters
+            })
+
+        return parameters1;
+    }
+
+    window.scope = $scope;
+    window.showButton = $scope.showButton;
 
     /**
      * Returns whether the filesystem menu should be visible.
@@ -873,6 +907,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      *     The files to upload.
      */
     $scope.uploadFiles = function uploadFiles(files) {
+
+        var parameters1 = ManagedClient.getConnectionParameters($scope.filesystemMenuContents.client)
+        .then(function connectionParametersRetrieved(parameters) {
+            debugger;
+            console.log(`uploadFiles ${JSON.stringify(parameters)}`)
+  
+            return parameters
+        })
+  
+          console.log(parameters1);
       
         // Upload each file
         for (var i = 0; i < files.length; i++)
