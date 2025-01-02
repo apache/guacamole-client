@@ -77,9 +77,28 @@
                     <artifactId>commons-codec</artifactId>
                 </exclusion>
 
+                <!--
+                    Replace older BouncyCastle (1.70) with newer, compatible
+                    version (1.79), which has since been renamed from
+                    "bcpkix-jdk15on" to "bcpkix-jdk15to18".
+                -->
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcpkix-jdk15on</artifactId>
+                </exclusion>
+
             </exclusions>
         </dependency>
-        
+
+        <!-- BouncyCastle for Java 5 and above (formerly "bcpkix-jdk15on", a
+        transitive dependency of cas-client-core that we are overriding to
+        force an update) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15to18</artifactId>
+            <version>1.79</version>
+        </dependency>
+
         <!-- Guava - Utility Library -->
         <dependency>
             <groupId>com.google.guava</groupId>
