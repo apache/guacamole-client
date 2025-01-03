@@ -1,3 +1,0 @@
-org.bouncycastle:bcpkix-jdk15on:jar:1.70
-org.bouncycastle:bcprov-jdk15on:jar:1.70
-org.bouncycastle:bcutil-jdk15on:jar:1.70
