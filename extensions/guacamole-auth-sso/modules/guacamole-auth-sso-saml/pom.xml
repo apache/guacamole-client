@@ -96,7 +96,7 @@
 
                 <!--
                     Replace slightly older commons-lang3 (3.12.0) with latest
-                    compatible version (3.16.0) so that we don't need two copies
+                    compatible version (3.17.0) so that we don't need two copies
                     of the same license information.
                 -->
                 <exclusion>
@@ -122,14 +122,14 @@
         <dependency>
             <groupId>com.fasterxml.woodstox</groupId>
             <artifactId>woodstox-core</artifactId>
-            <version>6.6.0</version>
+            <version>5.4.0</version>
         </dependency>
 
         <!-- Apache XML Security for Java (see exclusions for java-saml) -->
         <dependency>
             <groupId>org.apache.santuario</groupId>
             <artifactId>xmlsec</artifactId>
-            <version>4.0.2</version>
+            <version>2.2.6</version>
             <exclusions>
 
                 <!--
@@ -150,7 +150,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.16.0</version>
+            <version>3.17.0</version>
         </dependency>
 
         <!-- Apache Commons Codec (see exclusions for java-saml and xmlsec) -->
