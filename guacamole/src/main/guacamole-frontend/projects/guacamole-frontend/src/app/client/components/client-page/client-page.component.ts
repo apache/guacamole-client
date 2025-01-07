@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,12 +17,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import {
-    AfterViewChecked,
     Component,
     computed,
     DestroyRef,
+    DoCheck,
     Input,
     OnChanges,
     OnDestroy,
@@ -36,14 +36,16 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { GuacEventService, ScrollState } from 'guacamole-frontend-lib';
+
+import { GuacEventService } from 'guacamole-frontend-lib';
 import _filter from 'lodash/filter';
 import findIndex from 'lodash/findIndex';
 import findKey from 'lodash/findKey';
 import intersection from 'lodash/intersection';
 import isEmpty from 'lodash/isEmpty';
 import pull from 'lodash/pull';
-import { pairwise, startWith, tap } from 'rxjs';
+import { catchError, pairwise, startWith } from 'rxjs';
+import { ScrollState } from '../../../../../../guacamole-frontend-lib/src/lib/element/types/ScrollState';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { ClipboardService } from '../../../clipboard/services/clipboard.service';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
@@ -78,11 +80,11 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
  * The Component for the page used to connect to a connection or balancing group.
  */
 @Component({
-    selector     : 'guac-client-page',
-    templateUrl  : './client-page.component.html',
+    selector: 'guac-client-page',
+    templateUrl: './client-page.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked, OnDestroy {
+export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     /**
      * TODO
@@ -148,10 +150,10 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
      * Menu-specific properties.
      */
     protected menu: ClientMenu = {
-        shown               : signal(false),
-        inputMethod         : signal(this.preferenceService.preferences.inputMethod),
+        shown: signal(false),
+        inputMethod: signal(this.preferenceService.preferences.inputMethod),
         emulateAbsoluteMouse: signal(this.preferenceService.preferences.emulateAbsoluteMouse),
-        scrollState         : signal(new ScrollState()),
+        scrollState: signal(new ScrollState()),
         connectionParameters: {}
     };
 
@@ -217,6 +219,18 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
      */
     private substituteKeysPressed: Record<number, number> = {};
 
+    /**
+     * TODO
+     * @private
+     */
+    private lastThumbnailCanvas?: HTMLCanvasElement;
+
+    /**
+     * TODO
+     * @private
+     */
+    private lastTunnelUuid?: string | null;
+
 
     /**
      * Inject required services.
@@ -247,6 +261,30 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
             null, // Start without a search string
             this.filteredConnectionProperties,
             this.filteredConnectionGroupProperties);
+
+        // Update client state/behavior as visibility of the Guacamole menu changes
+        toObservable(this.menu.shown)
+            .pipe(
+                takeUntilDestroyed(this.destroyRef),
+                startWith(this.menu.shown()),
+                pairwise(),
+            ).subscribe(([menuShownPreviousState, menuShown]) => {
+
+            // Re-update available connection parameters, if there is a focused
+            // client (parameter information may not have been available at the
+            // time focus changed)
+            if (menuShown)
+                this.menu.connectionParameters = this.focusedClient ?
+                    this.managedClientService.getArgumentModel(this.focusedClient) : {};
+
+            // Send any argument value data once menu is hidden
+            else if (menuShownPreviousState)
+                this.applyParameterChanges(this.focusedClient);
+
+            /* Broadcast changes to the menu display state */
+            this.guacEventService.broadcast('guacMenuShown', { menuShown })
+
+        });
 
         // Automatically refresh display when filesystem menu is shown
         toObservable(this.menu.shown).pipe(takeUntilDestroyed()).subscribe(() => {
@@ -323,6 +361,18 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
                 // Prevent all keydown events while menu is open
                 else if (this.menu.shown())
                     event.preventDefault();
+
+            });
+
+        // Automatically update connection parameters that have been modified
+        // for the current focused client
+        this.guacEventService.on('guacClientArgumentsUpdated')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({ focusedClient }) => {
+
+                // Ignore any updated arguments not for the current focused client
+                if (this.focusedClient && this.focusedClient === focusedClient)
+                    this.menu.connectionParameters = this.managedClientService.getArgumentModel(focusedClient);
 
             });
 
@@ -454,7 +504,7 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
      * Guacamole menu.
      */
     connectionListContext: ConnectionListContext = {
-        attachedClients      : {},
+        attachedClients: {},
         updateAttachedClients: id => {
             this.addRemoveClient(id, !this.connectionListContext.attachedClients[id]);
         }
@@ -630,51 +680,62 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
     showTextInput: Signal<boolean> = computed(() => this.menu.inputMethod() === 'text');
 
     /**
-     * Update client state/behavior as visibility of the Guacamole menu changes
+     * Custom change detection logic for the component.
      */
-    private readonly menuVisibilityChanged = toObservable(this.menu.shown)
-        .pipe(
-            takeUntilDestroyed(this.destroyRef),
-            startWith(this.menu.shown()),
-            pairwise(),
-            tap(([menuShownPreviousState, menuShown]) => {
+    ngDoCheck(): void {
 
-                // Re-update available connection parameters, if there is a focused
-                // client (parameter information may not have been available at the
-                // time focus changed)
-                if (menuShown)
-                    this.menu.connectionParameters = this.focusedClient ?
-                        this.managedClientService.getArgumentModel(this.focusedClient) : {};
+        const newThumbnailCanvas = this.focusedClient?.thumbnail?.canvas;
 
-                // Send any argument value data once menu is hidden
-                else if (menuShownPreviousState)
-                    this.applyParameterChanges(this.focusedClient);
+        // Update page icon when thumbnail changes
+        if (this.lastThumbnailCanvas !== newThumbnailCanvas) {
 
-            })
-        ).subscribe();
+            this.iconService.setIcons(newThumbnailCanvas);
+            this.lastThumbnailCanvas=newThumbnailCanvas;
 
+        }
 
-    // TODO: Update page icon when thumbnail changes
-    // $scope.$watch('focusedClient.thumbnail.canvas', function thumbnailChanged(canvas) {
-    //     iconService.setIcons(canvas);
-    // });
+        const newTunnelUuid = this.focusedClient?.tunnel.uuid;
 
-    // TODO: Pull sharing profiles once the tunnel UUID is known
-    // $scope.$watch('focusedClient.tunnel.uuid', function retrieveSharingProfiles(uuid) {
-    //
-    //     // Only pull sharing profiles if tunnel UUID is actually available
-    //     if (!uuid) {
-    //         $scope.sharingProfiles = {};
-    //         return;
-    //     }
-    //
-    //     // Pull sharing profiles for the current connection
-    //     tunnelService.getSharingProfiles(uuid)
-    //         .then(function sharingProfilesRetrieved(sharingProfiles) {
-    //             $scope.sharingProfiles = sharingProfiles;
-    //         }, requestService.WARN);
-    //
-    // });
+        // Pull sharing profiles once the tunnel UUID is known
+        if (this.lastTunnelUuid !== newTunnelUuid) {
+
+            // Only pull sharing profiles if tunnel UUID is actually available
+            if (!newTunnelUuid) {
+
+                this.sharingProfiles = {};
+
+            } else {
+
+                // Pull sharing profiles for the current connection
+                this.tunnelService.getSharingProfiles(newTunnelUuid)
+                    .pipe(
+                        takeUntilDestroyed(this.destroyRef),
+                        catchError(this.requestService.WARN)
+                    )
+                    .subscribe(sharingProfiles => {
+                        this.sharingProfiles = sharingProfiles;
+                    });
+
+            }
+
+            this.lastTunnelUuid = newTunnelUuid;
+
+        }
+
+        // Update page title when client title changes
+        if (this.clientGroup) {
+
+            const newTitle = ManagedClientGroup.getTitle(this.clientGroup);
+
+            if (this.title.getTitle() !== newTitle) {
+
+                this.title.setTitle(newTitle!);
+
+            }
+
+        }
+
+    }
 
     /**
      * Produces a sharing link for the current connection using the given
@@ -720,21 +781,6 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
 
         return linkCount;
 
-    }
-
-    /**
-     * Update page title when client title changes.
-     */
-    ngAfterViewChecked(): void {
-        if (!this.clientGroup)
-            return;
-
-        const title = ManagedClientGroup.getTitle(this.clientGroup);
-
-        if (!title || title === this.title.getTitle())
-            return;
-
-        this.title.setTitle(title);
     }
 
     /**
@@ -790,9 +836,9 @@ export class ClientPageComponent implements OnInit, OnChanges, AfterViewChecked,
      * any.
      */
     private DISCONNECT_MENU_ACTION: NotificationAction = {
-        name     : 'CLIENT.ACTION_DISCONNECT',
+        name: 'CLIENT.ACTION_DISCONNECT',
         className: 'danger disconnect',
-        callback : () => this.disconnect()
+        callback: () => this.disconnect()
     };
 
     // Set client-specific menu actions

@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -22,7 +24,7 @@ import { Inject, Injectable } from '@angular/core';
 import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
 import remove from 'lodash/remove';
-import { SessionStorageFactory } from '../../storage/session-storage-factory.service';
+import { SessionStorageEntry, SessionStorageFactory } from '../../storage/session-storage-factory.service';
 import { ManagedClient } from '../types/ManagedClient';
 import { ManagedClientGroup } from '../types/ManagedClientGroup';
 import { ManagedClientService } from './managed-client.service';
@@ -39,7 +41,7 @@ export class GuacClientManagerService {
      * Getter/setter which retrieves or sets the map of all active managed
      * clients. Each key is the ID of the connection used by that client.
      */
-    private readonly storedManagedClients: Function = this.sessionStorageFactory.create({}, () => {
+    private readonly storedManagedClients: SessionStorageEntry<Record<string, ManagedClient>> = this.sessionStorageFactory.create({}, () => {
 
         // Disconnect all clients when storage is destroyed
         this.clear();
@@ -50,7 +52,7 @@ export class GuacClientManagerService {
      * Getter/setter which retrieves or sets the array of all active managed
      * client groups.
      */
-    private readonly storedManagedClientGroups: Function = this.sessionStorageFactory.create([], () => {
+    private readonly storedManagedClientGroups: SessionStorageEntry<ManagedClientGroup[]> = this.sessionStorageFactory.create([] as ManagedClientGroup[], () => {
 
         // Disconnect all clients when storage is destroyed
         this.clear();
@@ -78,7 +80,7 @@ export class GuacClientManagerService {
      * Returns a map of all active managed clients. Each key is the ID of the
      * connection used by that client.
      *
-     * @returns {Object.<String, ManagedClient>}
+     * @returns
      *     A map of all active managed clients.
      */
     getManagedClients(): Record<string, ManagedClient> {

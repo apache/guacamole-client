@@ -22,9 +22,8 @@
         <div class="client-zoom-state">
             <!-- TODO: "Expression has changed after it was checked: client.clientProperties.scale()" when a new client is added to the view -->
             <input type="number" guacZoomCtrl
-                   [ngModel]="client.clientProperties.scale()"
-                   [ngModelOptions]="{updateOn: 'blur' }"
-                   (ngModelChange)="client.clientProperties.scale.set($event)">%
+                   [(ngModel)]="client.clientProperties.scale"
+                   [ngModelOptions]="{updateOn: 'blur' }">%
         </div>
         <div (click)="zoomIn()" class="client-zoom-in"><img src="images/settings/zoom-in.svg" alt="+"></div>
     </div>

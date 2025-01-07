@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -105,7 +107,6 @@ export class UserCredentials {
      */
     static getLink(userCredentials: UserCredentials): string {
 
-        const window = inject(DOCUMENT).defaultView as Window;
         const linkOrigin = window.location.origin;
 
         // Build base link

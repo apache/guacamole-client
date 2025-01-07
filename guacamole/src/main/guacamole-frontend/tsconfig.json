@@ -3,9 +3,13 @@
     "exclude": [
         " ./cypress.config.ts",
         "node_modules",
-        "cypress",
+        "cypress"
     ],
     "compilerOptions": {
+        "typeRoots": [
+            "node_modules/@types",
+            "typings"
+        ],
         "baseUrl": "./",
         "outDir": "./dist/out-tsc",
         "forceConsistentCasingInFileNames": true,
@@ -16,6 +20,7 @@
         "noFallthroughCasesInSwitch": true,
         "sourceMap": true,
         "allowSyntheticDefaultImports": true,
+        "allowUmdGlobalAccess": true,
         "paths": {
           "guacamole-frontend-ext-lib": [
             "dist/guacamole-frontend-ext-lib"

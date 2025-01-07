@@ -22,7 +22,7 @@ import { CommonModule } from '@angular/common';
 import {
     FormField,
     FormFieldComponentData
-} from "../../../../../guacamole/src/main/guacamole-frontend/dist/guacamole-frontend-ext-lib";
+} from "guacamole-frontend-ext-lib";
 import { FormControl, ReactiveFormsModule } from "@angular/forms";
 
 export const PLANET_CHOOSER_FIELD_TYPE = 'planet-chooser';

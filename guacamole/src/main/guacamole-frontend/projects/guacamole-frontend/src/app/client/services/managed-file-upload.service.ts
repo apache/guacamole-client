@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -107,7 +109,7 @@ export class ManagedFileUploadService {
             }
 
             // Begin upload
-            this.tunnelService.uploadToStream(tunnel.uuid, stream, file, length => {
+            this.tunnelService.uploadToStream(tunnel.uuid!, stream, file, length => {
                 managedFileUpload.progress = length;
             })
 
@@ -139,7 +141,7 @@ export class ManagedFileUploadService {
                         else
                             ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
                                 ManagedFileTransferState.StreamState.ERROR,
-                                Guacamole.Status.Code.INTERNAL_ERROR);
+                                Guacamole.Status.Code.SERVER_ERROR); // TODO: Guacamole.Status.Code.INTERNAL_ERROR does not exist
 
                         // Close the stream
                         stream.sendEnd();

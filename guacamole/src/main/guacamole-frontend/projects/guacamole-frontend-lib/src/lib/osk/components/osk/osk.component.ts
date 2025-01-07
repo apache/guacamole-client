@@ -22,7 +22,6 @@ import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, View
 import { GuacEventService } from '../../../events/services/guac-event.service';
 import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
 
-
 /**
  * A component which displays the Guacamole on-screen keyboard.
  */

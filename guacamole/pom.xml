@@ -184,7 +184,6 @@
                             <excludes>
                                 <exclude>translations/*.json</exclude>
                                 <exclude>index.html</exclude>
-                                <!--TODO: <exclude>verifyCachedVersion.js</exclude>-->
                             </excludes>
                         </resource>
 
@@ -195,7 +194,6 @@
                             <includes>
                                 <include>translations/*.json</include>
                                 <include>index.html</include>
-                                <!-- TODO: <include>verifyCachedVersion.js</include>-->
                             </includes>
                         </resource>
 
@@ -206,6 +204,13 @@
                         </resource>
 
                     </webResources>
+
+                    <delimiters>
+                        <!-- Maven default delimiter -->
+                        <delimiter>${*}</delimiter>
+                        <!-- Alternative delimiter for the index.html of the Angular application -->
+                        <delimiter>#{*}</delimiter>
+                    </delimiters>
 
                     <!-- Add files from guacamole-common-js -->
                     <overlays>

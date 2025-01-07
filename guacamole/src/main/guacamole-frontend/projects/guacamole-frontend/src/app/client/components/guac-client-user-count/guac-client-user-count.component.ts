@@ -1,3 +1,21 @@
+import {
+    AfterViewInit,
+    Component,
+    DoCheck,
+    ElementRef,
+    Input,
+    Renderer2,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import { TranslocoService } from '@ngneat/transloco';
+
+import { take } from 'rxjs';
+import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
+import { ManagedClient } from '../../types/ManagedClient';
+
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,25 +35,6 @@
  * under the License.
  */
 
-import {
-    AfterViewInit,
-    Component,
-    DoCheck,
-    ElementRef,
-    Input,
-    KeyValueDiffer,
-    KeyValueDiffers,
-    OnChanges,
-    Renderer2,
-    SimpleChanges,
-    ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
-import { take } from 'rxjs';
-import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
-import { ManagedClient } from '../../types/ManagedClient';
-
 /**
  * A component that displays a status indicator showing the number of users
  * joined to a connection. The specific usernames of those users are visible in
@@ -43,11 +42,11 @@ import { ManagedClient } from '../../types/ManagedClient';
  * join/leave the connection.
  */
 @Component({
-    selector     : 'guac-client-user-count',
-    templateUrl  : './guac-client-user-count.component.html',
+    selector: 'guac-client-user-count',
+    templateUrl: './guac-client-user-count.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, DoCheck {
+export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {
 
     /**
      * The client whose current users should be displayed.
@@ -82,26 +81,22 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
     userCounts: Record<string, number> = {};
 
     /**
-     * The ManagedClient attached to this directive at the time the
-     * notification update scope watch was last invoked. This is necessary
-     * as $scope.$watchGroup() does not allow for the callback to know
-     * whether the scope was previously uninitialized (it's "oldValues"
-     * parameter receives a copy of the new values if there are no old
-     * values).
+     * The ManagedClient attached to this directive at the last change
+     * detection run.
      */
     private oldClient: ManagedClient | null = null;
 
     /**
-     * TODO: remove
+     * The user count of the ManagedClient attached to this directive
+     * at the last change detection run.
      */
-    private clientDiffer?: KeyValueDiffer<string, any>;
+    private oldUserCount: number | null = null;
 
     /**
      * Inject required services.
      */
     constructor(private translocoService: TranslocoService,
-                private renderer: Renderer2,
-                private differs: KeyValueDiffers) {
+                private renderer: Renderer2) {
     }
 
     ngAfterViewInit(): void {
@@ -205,67 +200,66 @@ export class GuacClientUserCountComponent implements AfterViewInit, OnChanges, D
         return this.isAnonymous(username) ? 'CLIENT.INFO_ANONYMOUS_USER_COUNT' : 'CLIENT.INFO_USER_COUNT';
     }
 
-    ngOnChanges({ client }: SimpleChanges): void {
-        if (client) {
-            this.clientDiffer = this.differs.find(client.currentValue).create();
+    /**
+     * Custom change detection logic for the component.
+     */
+    ngDoCheck(): void {
+
+
+        if (this.client !== this.oldClient || this.client.userCount !== this.oldUserCount) {
+
+            this.usersChanged();
+
         }
+
     }
 
-    ngDoCheck(): void {
-        if (!this.clientDiffer) return;
+    /**
+     * Update visible notifications as users join/leave.
+     */
+    private usersChanged(): void {
 
-        // TODO: Temporary workaround for $scope.$watchGroup()
-        const changes = this.clientDiffer.diff(this.client);
+        // Resynchronize directive with state of any attached client when
+        // the client changes, to ensure notifications are only shown for
+        // future changes in users present
+        if (this.oldClient !== this.client) {
 
-        // TODO:  $scope.$watchGroup([ 'client', 'client.userCount' ], function usersChanged() {
+            this.userCounts = {};
+            this.oldClient = this.client;
 
-        // Update visible notifications as users join/leave
-        if (changes) {
-
-            // Resynchronize directive with state of any attached client when
-            // the client changes, to ensure notifications are only shown for
-            // future changes in users present
-            if (this.oldClient !== this.client) {
-
-                this.userCounts = {};
-                this.oldClient = this.client;
-
-                for (const username in this.client.users) {
-                    const connections = this.client.users[username];
-                    const count = Object.keys(connections).length;
-                    this.userCounts[username] = count;
-                }
-
-                return;
-
-            }
-
-            // Display join/leave notifications for users who are currently
-            // connected but whose connection counts have changed
             for (const username in this.client.users) {
                 const connections = this.client.users[username];
-
                 const count = Object.keys(connections).length;
-                const known = this.userCounts[username] || 0;
-
-                if (count > known)
-                    this.notifyUserJoined(username);
-                else if (count < known)
-                    this.notifyUserLeft(username);
-
                 this.userCounts[username] = count;
-
             }
 
-            // Display leave notifications for users who are no longer connected
-            for (const username in this.userCounts) {
-                const count = this.userCounts[username];
-                if (!this.client.users[username]) {
-                    this.notifyUserLeft(username);
-                    delete this.userCounts[username];
-                }
-            }
+            return;
 
+        }
+
+        // Display join/leave notifications for users who are currently
+        // connected but whose connection counts have changed
+        for (const username in this.client.users) {
+            const connections = this.client.users[username];
+
+            const count = Object.keys(connections).length;
+            const known = this.userCounts[username] || 0;
+
+            if (count > known)
+                this.notifyUserJoined(username);
+            else if (count < known)
+                this.notifyUserLeft(username);
+
+            this.userCounts[username] = count;
+
+        }
+
+        // Display leave notifications for users who are no longer connected
+        for (const username in this.userCounts) {
+            if (!this.client.users[username]) {
+                this.notifyUserLeft(username);
+                delete this.userCounts[username];
+            }
         }
 
     }

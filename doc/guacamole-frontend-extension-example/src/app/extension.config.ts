@@ -20,7 +20,7 @@
 import {
     BootsrapExtensionFunction,
     FieldTypeService
-} from "../../../../guacamole/src/main/guacamole-frontend/dist/guacamole-frontend-ext-lib";
+} from "guacamole-frontend-ext-lib";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
 import { Routes } from "@angular/router";
 

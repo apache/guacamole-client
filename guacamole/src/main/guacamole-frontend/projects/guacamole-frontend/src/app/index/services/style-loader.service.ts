@@ -1,3 +1,6 @@
+import { DOCUMENT } from '@angular/common';
+import { Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,9 +20,6 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
-
 const STYLE_ELEMENT_ID = 'loaded-style-';
 
 /**
@@ -37,11 +37,18 @@ export class StyleLoaderService {
     private renderer: Renderer2;
 
     /**
+     * The build identifier of the Guacamole build that produced
+     * the index.html.
+     */
+    private buildMeta: string;
+
+    /**
      * Inject required Services.
      */
     constructor(@Inject(DOCUMENT) private document: Document,
                 private rendererFactory: RendererFactory2) {
         this.renderer = this.rendererFactory.createRenderer(null, null);
+        this.buildMeta = this.renderer.selectRootElement('meta[name=build]')?.content;
     }
 
     /**

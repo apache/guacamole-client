@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -355,7 +357,7 @@ export class TunnelService {
                 else
                     reject(new Error({
                         type      : Error.Type.STREAM_ERROR,
-                        statusCode: Guacamole.Status.Code.INTERNAL_ERROR,
+                        statusCode: Guacamole.Status.Code.SERVER_ERROR, // TODO: Guacamole.Status.Code.INTERNAL_ERROR does not exist
                         message   : 'HTTP ' + xhr.status
                     }));
 

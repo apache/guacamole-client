@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -122,7 +124,7 @@ export class IconService {
      *     The canvas element containing the icon. If this value is null or
      *     undefined, this function has no effect.
      */
-    setIcons(canvas: HTMLCanvasElement): void {
+    setIcons(canvas: HTMLCanvasElement | null | undefined): void {
 
         // Do nothing if no canvas provided
         if (!canvas)

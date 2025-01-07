@@ -17,7 +17,7 @@
   under the License.
   -->
 <form class="notification" [ngClass]="notification.className"
-      (ngSubmit)="notification.formSubmitCallback!()">
+      (ngSubmit)="notification.formSubmitCallback?.()">
 
     <!-- Notification title -->
     <div [hidden]="!notification.title" class="title-bar">

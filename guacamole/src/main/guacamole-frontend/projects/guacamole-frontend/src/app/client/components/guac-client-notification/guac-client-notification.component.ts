@@ -1,3 +1,25 @@
+import { Component, DestroyRef, DoCheck, Input, KeyValueDiffers, OnInit, ViewEncapsulation } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, Router } from '@angular/router';
+
+import { GuacEvent, GuacEventService } from 'guacamole-frontend-lib';
+import { finalize } from 'rxjs';
+import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
+import { UserPageService } from '../../../manage/services/user-page.service';
+import { Notification } from '../../../notification/types/Notification';
+import { NotificationAction } from '../../../notification/types/NotificationAction';
+import { NotificationCountdown } from '../../../notification/types/NotificationCountdown';
+import { RequestService } from '../../../rest/service/request.service';
+import { Form } from '../../../rest/types/Form';
+import { Protocol } from '../../../rest/types/Protocol';
+import { GuacClientManagerService } from '../../services/guac-client-manager.service';
+import { GuacTranslateService } from '../../services/guac-translate.service';
+import { ManagedClientService } from '../../services/managed-client.service';
+import { ManagedClient } from '../../types/ManagedClient';
+import { ManagedClientState } from '../../types/ManagedClientState';
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,36 +38,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import {
-    Component,
-    DestroyRef,
-    DoCheck,
-    Input,
-    KeyValueDiffer,
-    KeyValueDiffers,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
-    ViewEncapsulation
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { ActivatedRoute, Router } from '@angular/router';
-import { GuacEvent, GuacEventService } from 'guacamole-frontend-lib';
-import { finalize } from 'rxjs';
-import { AuthenticationService } from '../../../auth/service/authentication.service';
-import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
-import { UserPageService } from '../../../manage/services/user-page.service';
-import { Notification } from '../../../notification/types/Notification';
-import { NotificationAction } from '../../../notification/types/NotificationAction';
-import { NotificationCountdown } from '../../../notification/types/NotificationCountdown';
-import { RequestService } from '../../../rest/service/request.service';
-import { Protocol } from '../../../rest/types/Protocol';
-import { GuacClientManagerService } from '../../services/guac-client-manager.service';
-import { GuacTranslateService } from '../../services/guac-translate.service';
-import { ManagedClientService } from '../../services/managed-client.service';
-import { ManagedClient } from '../../types/ManagedClient';
-import { ManagedClientState } from '../../types/ManagedClientState';
 
 /**
  * All error codes for which automatic reconnection is appropriate when a
@@ -74,6 +66,11 @@ const TUNNEL_AUTO_RECONNECT = {
     0x0308: true
 };
 
+/**
+ * Connection status of specific Guacamole client.
+ */
+type ClientState = [string, Record<string, string> | null, string | null, Form[]];
+
 
 /**
  * A Component for displaying a non-global notification describing the status
@@ -81,22 +78,16 @@ const TUNNEL_AUTO_RECONNECT = {
  * necessary to continue the connection.
  */
 @Component({
-    selector     : 'guac-client-notification',
-    templateUrl  : './guac-client-notification.component.html',
+    selector: 'guac-client-notification',
+    templateUrl: './guac-client-notification.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class GuacClientNotificationComponent implements OnInit, OnChanges, DoCheck {
+export class GuacClientNotificationComponent implements OnInit, DoCheck {
 
     /**
      * The client whose status should be displayed.
      */
     @Input({ required: true }) client!: ManagedClient;
-
-    /**
-     * TODO: Document
-     * @private
-     */
-    private clientDiffer?: KeyValueDiffer<string, any>;
 
     /**
      * A Notification object describing the client status to display as a
@@ -109,9 +100,9 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
      * Action which logs out from Guacamole entirely.
      */
     private readonly LOGOUT_ACTION: NotificationAction = {
-        name     : 'CLIENT.ACTION_LOGOUT',
+        name: 'CLIENT.ACTION_LOGOUT',
         className: 'logout button',
-        callback : () => this.logout()
+        callback: () => this.logout()
     };
 
     /**
@@ -124,9 +115,9 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
      * Action which replaces the current client with a newly-connected client.
      */
     private readonly RECONNECT_ACTION: NotificationAction = {
-        name     : 'CLIENT.ACTION_RECONNECT',
+        name: 'CLIENT.ACTION_RECONNECT',
         className: 'reconnect button',
-        callback : () => {
+        callback: () => {
             this.client = this.guacClientManager.replaceManagedClient(this.client.id);
             this.status = false;
         }
@@ -137,10 +128,15 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
      * automatic, timed reconnect.
      */
     private readonly RECONNECT_COUNTDOWN: NotificationCountdown = {
-        text     : 'CLIENT.TEXT_RECONNECT_COUNTDOWN',
-        callback : this.RECONNECT_ACTION.callback,
+        text: 'CLIENT.TEXT_RECONNECT_COUNTDOWN',
+        callback: this.RECONNECT_ACTION.callback,
         remaining: 15
     };
+
+    /**
+     * The client state to react to changes.
+     */
+    private lastClientState: ClientState = ['', null, null, []];
 
     /**
      * Inject required services.
@@ -154,7 +150,6 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private router: Router,
                 private route: ActivatedRoute,
-                private differs: KeyValueDiffers,
                 private destroyRef: DestroyRef) {
     }
 
@@ -163,14 +158,14 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
         // Assign home page action once user's home page has been determined
         this.userPageService.getHomePage()
             .subscribe({
-                next    : homePage => {
+                next: homePage => {
 
                     // Define home action only if different from current location
                     if (this.route.snapshot.root.url.join('/') || '/' === homePage.url) {
                         this.NAVIGATE_HOME_ACTION = {
-                            name     : 'CLIENT.ACTION_NAVIGATE_HOME',
+                            name: 'CLIENT.ACTION_NAVIGATE_HOME',
                             className: 'home button',
-                            callback : () => {
+                            callback: () => {
                                 this.router.navigate([homePage.url]);
                             }
                         };
@@ -190,10 +185,60 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
     }
 
     /**
+     * Custom change detection logic for the component.
+     */
+    ngDoCheck(): void {
+
+        const currentClientState: ClientState = [
+            this.client.clientState.connectionState,
+            this.client.requiredParameters,
+            this.client.protocol,
+            this.client.forms
+        ];
+
+        // Compare the current state with the last known state
+        if (!this.compareClientState(this.lastClientState, currentClientState)) {
+
+            this.lastClientState = [...currentClientState];
+            this.clientStateChanged(currentClientState);
+
+        }
+
+    }
+
+    /**
+     * Compares two client states to determine if they are identical.
+     *
+     * @param prevValues - The previous client state.
+     * @param currValues - The current client state.
+     * @returns true if the states are identical, false otherwise.
+     */
+    private compareClientState(prevValues: ClientState, currValues: ClientState): boolean {
+        if (prevValues.length !== currValues.length) return false;
+        return prevValues.every((value, index) => value === currValues[index]);
+    }
+
+    /**
+     * Show status dialog when connection status changes
+     */
+    private clientStateChanged(newValues: ClientState): void {
+        const connectionState = newValues[0];
+        const requiredParameters = newValues[1];
+
+        // Prompt for parameters only if parameters can actually be submitted
+        if (requiredParameters && this.canSubmitParameters(connectionState))
+            this.notifyParametersRequired(requiredParameters);
+
+        // Otherwise, just show general connection state
+        else
+            this.notifyConnectionState(connectionState);
+    }
+
+    /**
      * Displays a notification at the end of a Guacamole connection, whether
      * that connection is ending normally or due to an error. As the end of
      * a Guacamole connection may be due to changes in authentication status,
-     * this will also implicitly peform a re-authentication attempt to check
+     * this will also implicitly perform a re-authentication attempt to check
      * for such changes, possibly resulting in auth-related events like
      * guacInvalidCredentials.
      *
@@ -247,8 +292,8 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
             || connectionState === ManagedClientState.ConnectionState.WAITING) {
             this.status = {
                 className: 'connecting',
-                title    : 'CLIENT.DIALOG_HEADER_CONNECTING',
-                text     : {
+                title: 'CLIENT.DIALOG_HEADER_CONNECTING',
+                text: {
                     key: 'CLIENT.TEXT_CLIENT_STATUS_' + connectionState.toUpperCase()
                 }
             };
@@ -271,12 +316,12 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
                 // Show error status
                 translationResult => this.notifyConnectionClosed({
                     className: 'error',
-                    title    : 'CLIENT.DIALOG_HEADER_CONNECTION_ERROR',
-                    text     : {
+                    title: 'CLIENT.DIALOG_HEADER_CONNECTION_ERROR',
+                    text: {
                         key: translationResult.id
                     },
                     countdown: countdown,
-                    actions  : actions
+                    actions: actions
                 })
             );
 
@@ -299,12 +344,12 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
                 // Show error status
                 translationResult => this.notifyConnectionClosed({
                     className: 'error',
-                    title    : 'CLIENT.DIALOG_HEADER_CONNECTION_ERROR',
-                    text     : {
+                    title: 'CLIENT.DIALOG_HEADER_CONNECTION_ERROR',
+                    text: {
                         key: translationResult.id
                     },
                     countdown: countdown,
-                    actions  : actions
+                    actions: actions
                 })
             );
 
@@ -313,8 +358,8 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
         // Disconnected
         else if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED) {
             this.notifyConnectionClosed({
-                title  : 'CLIENT.DIALOG_HEADER_DISCONNECTED',
-                text   : {
+                title: 'CLIENT.DIALOG_HEADER_DISCONNECTED',
+                text: {
                     key: 'CLIENT.TEXT_CLIENT_STATUS_' + connectionState.toUpperCase()
                 },
                 actions: actions
@@ -345,9 +390,9 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
          * that the connection continue.
          */
         const SUBMIT_PARAMETERS = {
-            name     : 'CLIENT.ACTION_CONTINUE',
+            name: 'CLIENT.ACTION_CONTINUE',
             className: 'button',
-            callback : () => {
+            callback: () => {
                 if (this.client) {
                     const params = this.client.requiredParameters;
                     this.client.requiredParameters = null;
@@ -361,9 +406,9 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
          * disconnects from the current connection.
          */
         const CANCEL_PARAMETER_SUBMISSION = {
-            name     : 'CLIENT.ACTION_CANCEL',
+            name: 'CLIENT.ACTION_CANCEL',
             className: 'button',
-            callback : () => {
+            callback: () => {
                 this.client.requiredParameters = null;
                 this.client.client.disconnect();
             }
@@ -376,12 +421,12 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
 
         // Prompt for parameters
         this.status = {
-            className         : 'parameters-required',
-            formNamespace     : Protocol.getNamespace(this.client.protocol),
-            forms             : this.client.forms,
-            formModel         : requiredParameters,
+            className: 'parameters-required',
+            formNamespace: Protocol.getNamespace(this.client.protocol),
+            forms: this.client.forms,
+            formModel: requiredParameters,
             formSubmitCallback: SUBMIT_PARAMETERS.callback,
-            actions           : [SUBMIT_PARAMETERS, CANCEL_PARAMETER_SUBMISSION]
+            actions: [SUBMIT_PARAMETERS, CANCEL_PARAMETER_SUBMISSION]
         };
 
     }
@@ -414,40 +459,6 @@ export class GuacClientNotificationComponent implements OnInit, OnChanges, DoChe
         if (this.status && this.client.clientProperties.focused)
             e.preventDefault();
     }
-
-    ngOnChanges({ client }: SimpleChanges): void {
-        if (client) {
-            this.clientDiffer = this.differs.find(client.currentValue).create();
-        }
-    }
-
-    ngDoCheck(): void {
-        if (!this.clientDiffer) return;
-
-        // TODO: Temporary workaround for $scope.$watchGroup
-        const changes = this.clientDiffer.diff(this.client);
-
-        // TODO: Show status dialog when connection status changes
-        // $scope.$watchGroup([
-        //     'client.clientState.connectionState',
-        //     'client.requiredParameters',
-        //     'client.protocol',
-        //     'client.forms'
-        // ], function clientStateChanged(newValues) {
-        if (changes) {
-            const connectionState: string = this.client.clientState.connectionState;
-            const requiredParameters: Record<string, string> | null = this.client.requiredParameters;
-
-            // Prompt for parameters only if parameters can actually be submitted
-            if (requiredParameters && this.canSubmitParameters(connectionState))
-                this.notifyParametersRequired(requiredParameters);
-
-            // Otherwise, just show general connection state
-            else
-                this.notifyConnectionState(connectionState);
-        }
-    }
-
 
     /**
      * Logs out the current user, redirecting them to back to the root

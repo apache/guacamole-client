@@ -1,3 +1,7 @@
+import { signal, WritableSignal } from '@angular/core';
+
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,17 +21,13 @@
  * under the License.
  */
 
-import { signal, WritableSignal } from '@angular/core';
 
-declare namespace ManagedDisplay {
-    type Dimensions = typeof ManagedDisplay.Dimensions.prototype;
-    type Cursor = typeof ManagedDisplay.Cursor.prototype;
-    type Template = {
-        display?: Guacamole.Display;
-        size?: ManagedDisplay.Dimensions;
-        cursor?: ManagedDisplay.Cursor;
-    }
+export type ManagedDisplayTemplate = {
+    display?: Guacamole.Display;
+    size?: ManagedDisplayDimensions;
+    cursor?: ManagedDisplayCursor;
 }
+
 
 /**
  * Provides the ManagedDisplay class used by the guacClientManager service.
@@ -44,87 +44,22 @@ export class ManagedDisplay {
     /**
      * The current size of the Guacamole display.
      */
-    size: WritableSignal<ManagedDisplay.Dimensions>;
+    size: ManagedDisplayDimensions;
 
     /**
      * The current mouse cursor, if any.
      */
-    cursor: WritableSignal<ManagedDisplay.Cursor | undefined>;
+    cursor: ManagedDisplayCursor | undefined;
 
     /**
      * @param [template={}]
      *     The object whose properties should be copied within the new
      *     ManagedDisplay.
      */
-    constructor(template: ManagedDisplay.Template = {}) {
+    constructor(template: ManagedDisplayTemplate = {}) {
         this.display = signal(template.display);
-        this.size = signal(new ManagedDisplay.Dimensions(template.size));
-        this.cursor = signal(template.cursor);
-    }
-
-    /**
-     * Object which represents the size of the Guacamole display.
-     */
-    static Dimensions = class Dimensions {
-
-        /**
-         * The current width of the Guacamole display, in pixels.
-         */
-        width: number;
-
-        /**
-         * The current width of the Guacamole display, in pixels.
-         */
-        height: number;
-
-        /**
-         * Creates a new ManagedDisplay.Dimensions object. This constructor initializes
-         * the properties of the new Dimensions with the corresponding properties
-         * of the given template.
-         *
-         * @param [template={}]
-         *     The object whose properties should be copied within the new
-         *     ManagedDisplay.Dimensions.
-         */
-        constructor(template: Partial<Dimensions> = {}) {
-            this.width = template.width || 0;
-            this.height = template.height || 0;
-        }
-    }
-
-    /**
-     * Object which represents a mouse cursor used by the Guacamole display.
-     */
-    static Cursor = class Cursor {
-
-        /**
-         * The actual mouse cursor image.
-         */
-        canvas?: HTMLCanvasElement;
-
-        /**
-         * The X coordinate of the cursor hotspot.
-         */
-        x?: number;
-
-        /**
-         * The Y coordinate of the cursor hotspot.
-         */
-        y?: number;
-
-        /**
-         * Creates a new ManagedDisplay.Cursor. This constructor initializes the properties of the
-         * new Cursor with the corresponding properties of the given template.
-         *
-         * @param [template={}]
-         *     The object whose properties should be copied within the new
-         *     ManagedDisplay.Cursor.
-         */
-        constructor(template: Partial<Cursor> = {}) {
-            this.canvas = template.canvas;
-            this.x = template.x;
-            this.y = template.y;
-        }
+        this.size = new ManagedDisplayDimensions(template.size);
+        this.cursor = template.cursor;
     }
 
     /**
@@ -148,25 +83,90 @@ export class ManagedDisplay {
         // Store changes to display size
         display.onresize = function setClientSize() {
 
-            managedDisplay.size.set(new ManagedDisplay.Dimensions({
-                width : display.getWidth(),
+            managedDisplay.size = new ManagedDisplayDimensions({
+                width: display.getWidth(),
                 height: display.getHeight()
-            }));
+            });
 
         };
 
         // Store changes to display cursor
         display.oncursor = function setClientCursor(canvas, x, y) {
 
-            managedDisplay.cursor.set(new ManagedDisplay.Cursor({
+            managedDisplay.cursor = new ManagedDisplayCursor({
                 canvas: canvas,
-                x     : x,
-                y     : y
-            }));
+                x: x,
+                y: y
+            });
 
         };
 
         return managedDisplay;
     }
 
+}
+
+/**
+ * Object which represents the size of the Guacamole display.
+ */
+export class ManagedDisplayDimensions {
+
+    /**
+     * The current width of the Guacamole display, in pixels.
+     */
+    width: number;
+
+    /**
+     * The current width of the Guacamole display, in pixels.
+     */
+    height: number;
+
+    /**
+     * Creates a new ManagedDisplayDimensions object. This constructor initializes
+     * the properties of the new Dimensions with the corresponding properties
+     * of the given template.
+     *
+     * @param [template={}]
+     *     The object whose properties should be copied within the new
+     *     ManagedDisplayDimensions.
+     */
+    constructor(template: Partial<ManagedDisplayDimensions> = {}) {
+        this.width = template.width || 0;
+        this.height = template.height || 0;
+    }
+}
+
+/**
+ * Object which represents a mouse cursor used by the Guacamole display.
+ */
+export class ManagedDisplayCursor {
+
+    /**
+     * The actual mouse cursor image.
+     */
+    canvas?: HTMLCanvasElement;
+
+    /**
+     * The X coordinate of the cursor hotspot.
+     */
+    x?: number;
+
+    /**
+     * The Y coordinate of the cursor hotspot.
+     */
+    y?: number;
+
+    /**
+     * Creates a new ManagedDisplayCursor. This constructor initializes the properties of the
+     * new Cursor with the corresponding properties of the given template.
+     *
+     * @param [template={}]
+     *     The object whose properties should be copied within the new
+     *     ManagedDisplayCursor.
+     */
+    constructor(template: Partial<ManagedDisplayCursor> = {}) {
+        this.canvas = template.canvas;
+        this.x = template.x;
+        this.y = template.y;
+    }
 }

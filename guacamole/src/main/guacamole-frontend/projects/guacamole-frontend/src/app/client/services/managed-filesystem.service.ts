@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -105,6 +107,7 @@ export class ManagedFilesystemService {
 
                     // Add file entry
                     file.files.mutate(files => files[filename] = new ManagedFilesystem.File({
+                        // @ts-ignore
                         mimetype  : mimetypes[name],
                         streamName: name,
                         type      : type,
@@ -182,7 +185,7 @@ export class ManagedFilesystemService {
             const filename = path.match(/(.*[\\/])?(.*)/)![2];
 
             // Start download
-            this.tunnelService.downloadStream(managedFilesystem.client.tunnel.uuid, stream, mimetype, filename);
+            this.tunnelService.downloadStream(managedFilesystem.client.tunnel.uuid!, stream, mimetype, filename);
 
         });
 

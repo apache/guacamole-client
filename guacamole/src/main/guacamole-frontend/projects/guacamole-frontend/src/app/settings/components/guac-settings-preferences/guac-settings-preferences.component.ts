@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -286,7 +288,6 @@ export class GuacSettingsPreferencesComponent implements OnInit {
     isLoaded(): boolean {
 
         return this.canUpdateSelf !== null;
-        // TODO: was '&& this.languages !== null;' but 'languages' doesn't exist
 
     }
 

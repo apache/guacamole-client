@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,7 +22,7 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
 import findIndex from 'lodash/findIndex';
 import { SortService } from '../../../list/services/sort.service';
-import { SessionStorageFactory } from '../../../storage/session-storage-factory.service';
+import { SessionStorageEntry, SessionStorageFactory } from '../../../storage/session-storage-factory.service';
 import { GuacClientManagerService } from '../../services/guac-client-manager.service';
 import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 import { ManagedClientState } from '../../types/ManagedClientState';
@@ -50,7 +52,7 @@ export class GuacClientPanelComponent implements AfterViewInit {
      * same tab. When hidden, the panel will be collapsed against the right
      * side of the container. By default, the panel is visible.
      */
-    panelHidden: Function = this.sessionStorageFactory.create(false);
+    panelHidden: SessionStorageEntry<boolean> = this.sessionStorageFactory.create(false);
 
     /**
      * Reference to the DOM element containing the scrollable portion of the client

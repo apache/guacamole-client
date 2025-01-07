@@ -23,7 +23,7 @@ import { AboutExtensionButtonComponent } from "./about-extension-button.componen
 import { FormControl } from "@angular/forms";
 import {
     FormField
-} from "../../../../../guacamole/src/main/guacamole-frontend/dist/guacamole-frontend-ext-lib/lib/form/FormField";
+} from "guacamole-frontend-ext-lib/lib/form/FormField";
 import { RouterLink } from "@angular/router";
 import { PlanetChooserFieldComponent } from "./planet-chooser-field.component";
 
@@ -37,7 +37,7 @@ import { PlanetChooserFieldComponent } from "./planet-chooser-field.component";
     template: `
         <p>
             guacamole-frontend-extension-example works!
-        </p>
+        </p> 
         <h2>Planet Chooser Field</h2>
         <p>
             <app-planet-chooser-field

@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -16,12 +17,14 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { Component, DoCheck, Input, ViewEncapsulation } from '@angular/core';
 
-import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { GuacClickCallback, GuacEventService } from 'guacamole-frontend-lib';
 import filter from 'lodash/filter';
+import isEqual from 'lodash/isEqual';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { ManagedClientService } from '../../services/managed-client.service';
+import { ManagedArgument } from '../../types/ManagedArgument';
 import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 
@@ -31,11 +34,11 @@ import { ManagedClientGroup } from '../../types/ManagedClientGroup';
  * automatically determined by the number of clients present.
  */
 @Component({
-    selector     : 'guac-tiled-clients',
-    templateUrl  : './guac-tiled-clients.component.html',
+    selector: 'guac-tiled-clients',
+    templateUrl: './guac-tiled-clients.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class GuacTiledClientsComponent implements OnChanges {
+export class GuacTiledClientsComponent implements DoCheck {
 
     /**
      * The function to invoke when the "close" button in the header of a
@@ -57,10 +60,16 @@ export class GuacTiledClientsComponent implements OnChanges {
     @Input({ required: true }) emulateAbsoluteMouse!: boolean;
 
     /**
-     * The currently-focused ManagedClient or null if there are no focused
-     * clients or if multiple clients are focused.
+     * TODO
+     * @private
      */
-    private focusedClient: ManagedClient | null = null;
+    private lastFocusedClient?: ManagedClient | null;
+
+    /**
+     * TODO
+     * @private
+     */
+    private lastFocusedClientArguments?: Record<string, ManagedArgument>;
 
     /**
      * Inject required services.
@@ -90,16 +99,31 @@ export class GuacTiledClientsComponent implements OnChanges {
 
     }
 
-    ngOnChanges({ clientGroup }: SimpleChanges): void {
+    /**
+     * Custom change detection logic for the component.
+     */
+    ngDoCheck(): void {
 
-        if (clientGroup) {
-            const newFocusedClient = this.getFocusedClient();
+        const newFocusedClient: ManagedClient | null = this.getFocusedClient();
+        const newArguments: Record<string, ManagedArgument> | undefined = this.getFocusedClient()?.arguments;
+
+        if (this.lastFocusedClient !== newFocusedClient) {
 
             // Notify whenever identify of currently-focused client changes
-            if (this.focusedClient !== newFocusedClient)
-                this.guacEventService.broadcast('guacClientFocused', { newFocusedClient })
+            this.guacEventService.broadcast('guacClientFocused', { newFocusedClient });
 
-            this.focusedClient = newFocusedClient;
+            // Remember the new focused Client
+            this.lastFocusedClient = newFocusedClient
+
+        }
+
+        if (!isEqual(this.lastFocusedClientArguments, newArguments)) {
+
+            // Notify whenever arguments of currently-focused client changes
+            this.guacEventService.broadcast('guacClientArgumentsUpdated', { focusedClient: newFocusedClient });
+
+            // Remember the new arguments
+            this.lastFocusedClientArguments = newArguments;
         }
 
     }

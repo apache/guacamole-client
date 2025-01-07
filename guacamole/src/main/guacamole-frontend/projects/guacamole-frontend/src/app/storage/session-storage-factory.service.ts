@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,6 +26,12 @@ import isEqual from 'lodash/isEqual';
 import { AuthenticationService } from '../auth/service/authentication.service';
 import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArguments';
 import { isDefined } from '../util/is-defined';
+
+/**
+ * A getter/setter which returns or sets the current value of the new
+ * session-local storage.
+ */
+export type SessionStorageEntry<T> = (newValue?: T) => T;
 
 @Injectable({
     providedIn: 'root'
@@ -55,7 +63,7 @@ export class SessionStorageFactory {
      *     session-local storage. Newly-set values will only persist of the
      *     user is actually logged in.
      */
-    create(template: Function | any, destructor?: Function): Function {
+    create<T>(template: (() => T) | T, destructor?: (value: T | undefined) => void): SessionStorageEntry<T> {
 
         /**
          * Whether new values may be stored and retrieved.
@@ -65,11 +73,11 @@ export class SessionStorageFactory {
         /**
          * Getter which returns the default value for this storage.
          */
-        let getter: Function;
+        let getter: () => T;
 
         // If getter provided, use that
         if (typeof template === 'function')
-            getter = template;
+            getter = template as () => T;
 
             // Otherwise, create and maintain a deep copy (automatically cached to
         // avoid "infdig" errors)
@@ -91,7 +99,7 @@ export class SessionStorageFactory {
         /**
          * The current value of this storage, or undefined if not yet set.
          */
-        let value: any = undefined;
+        let value: T | undefined = undefined;
 
         // Reset value and allow storage when the user is logged in
         this.guacEventService.on('guacLogin')
@@ -115,7 +123,7 @@ export class SessionStorageFactory {
             });
 
         // Return getter/setter for value
-        return function sessionLocalGetterSetter(newValue: any) {
+        return function sessionLocalGetterSetter(newValue?: T) {
 
             // Only actually store/retrieve values if enabled
             if (enabled) {
@@ -129,12 +137,12 @@ export class SessionStorageFactory {
                     value = getter();
 
                 // Return current value
-                return value;
+                return value as T;
 
             }
 
             // Otherwise, just pretend to store/retrieve
-            return isDefined(newValue) ? newValue : getter();
+            return (isDefined(newValue) ? newValue : getter()) as T;
 
         };
 

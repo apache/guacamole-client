@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -41,7 +43,7 @@ import { ManagedFileUpload } from '../../types/ManagedFileUpload';
     templateUrl  : './guac-file-transfer.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class GuacFileTransferComponent implements DoCheck, OnChanges {
+export class GuacFileTransferComponent implements DoCheck {
 
     /**
      * The file transfer to display.
@@ -54,14 +56,15 @@ export class GuacFileTransferComponent implements DoCheck, OnChanges {
     translatedErrorMessage?: string = '';
 
     /**
-     * TODO: remove
+     * TODO
+     * @private
      */
-    private transferDiffer?: KeyValueDiffer<string, any>;
+    private lastTransferStatusCode?: number;
 
     /**
      * Inject required services.
      */
-    constructor(private guacTranslate: GuacTranslateService, private differs: KeyValueDiffers) {
+    constructor(private guacTranslate: GuacTranslateService) {
     }
 
     /**
@@ -213,29 +216,25 @@ export class GuacFileTransferComponent implements DoCheck, OnChanges {
         return this.transfer.transferState.streamState === ManagedFileTransferState.StreamState.ERROR;
     }
 
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes['transfer']) {
-            // Update the object that should be used to check for changes
-            this.transferDiffer = this.differs.find(this.transfer).create();
-        }
-    }
-
+    /**
+     * Handle changes to the transfer status code.
+     */
     ngDoCheck(): void {
 
-        // TODO: $scope.$watch('transfer.transferState.statusCode',...
-        // Temporary workaround for $scope.$watch
-        if (!this.transferDiffer || !this.transfer) return;
-        const changes = this.transferDiffer.diff(this.transferDiffer);
+        const currentTransferStatusCode = this.transfer.transferState.statusCode;
 
-        if (changes) {
+        if (this.lastTransferStatusCode !== currentTransferStatusCode) {
 
             // Determine translation name of error
-            const errorName: string = 'CLIENT.ERROR_UPLOAD_' + this.transfer.transferState.statusCode.toString(16).toUpperCase();
+            const errorName = 'CLIENT.ERROR_UPLOAD_' + currentTransferStatusCode.toString(16).toUpperCase();
 
             // Use translation string, or the default if no translation is found for this error code
             this.guacTranslate.translateWithFallback(errorName, 'CLIENT.ERROR_UPLOAD_DEFAULT').subscribe(
                 translationResult => this.translatedErrorMessage = translationResult.message
             );
+
+            // Remember the new status code
+            this.lastTransferStatusCode = currentTransferStatusCode;
 
         }
 

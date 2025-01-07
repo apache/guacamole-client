@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -48,6 +50,8 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
 
     // Client events
     guacClientFocused: { newFocusedClient: ManagedClient | null; };
+    guacMenuShown: { menuShown: boolean };
+    guacClientArgumentsUpdated: { focusedClient: ManagedClient | null; };
 
     // Clipboard events
     guacClipboard: { data: ClipboardData };

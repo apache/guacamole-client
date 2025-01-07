@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -77,15 +79,6 @@ export class GuacThumbnailComponent implements AfterViewInit, OnChanges {
      * Inject required services.
      */
     constructor(private renderer: Renderer2) {
-
-        // Update scale when display is resized
-        effect(() => {
-            // Used to trigger this effect when the display size changes
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const newSize = this.client?.managedDisplay?.size()
-            this.updateDisplayScale();
-        });
-
     }
 
     /**

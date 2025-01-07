@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -103,7 +105,7 @@ export class Notification {
         this.text = template.text;
         this.formNamespace = template.formNamespace;
         this.forms = template.forms;
-        this.formModel = template.formModel; // TODO: was " = template.model";
+        this.formModel = template.formModel;
         this.formSubmitCallback = template.formSubmitCallback;
         this.actions = template.actions || [];
         this.progress = template.progress;

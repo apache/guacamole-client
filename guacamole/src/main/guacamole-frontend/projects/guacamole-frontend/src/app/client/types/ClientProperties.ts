@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -24,6 +26,7 @@ import { signal, WritableSignal } from '@angular/core';
  * Object used for interacting with a guacClient directive.
  */
 export class ClientProperties {
+
     /**
      * Whether the display should be scaled automatically to fit within the
      * available space.
@@ -38,7 +41,7 @@ export class ClientProperties {
      *
      * @default 1
      */
-    scale: WritableSignal<number>;
+    scale: number;
 
     /**
      * The minimum scale value.
@@ -84,7 +87,7 @@ export class ClientProperties {
      */
     constructor(template: Partial<ClientProperties> = {}) {
         this.autoFit = template.autoFit || true;
-        this.scale = template.scale || signal(1);
+        this.scale = template.scale || 1;
         this.minScale = template.minScale || 1;
         this.maxScale = template.maxScale || 3;
         this.focused = template.focused || false;

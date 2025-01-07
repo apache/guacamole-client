@@ -24,7 +24,7 @@
         "@ngneat/transloco": "^4.2.2",
         "@ngneat/transloco-messageformat": "^4.1.0",
         "@simonwep/pickr": "^1.8.2",
-        "@types/guacamole-common-js": "^1.5.2",
+        "@types/guacamole-common-js": "^1.5.3",
         "angular-expressions": "^1.1.9",
         "csv": "^6.2.5",
         "file-saver": "^2.0.5",

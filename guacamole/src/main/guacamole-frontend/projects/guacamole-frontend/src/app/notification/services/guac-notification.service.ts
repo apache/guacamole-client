@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,7 +23,7 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { filter, Observable, throwError } from 'rxjs';
 import { RequestService } from '../../rest/service/request.service';
-import { SessionStorageFactory } from '../../storage/session-storage-factory.service';
+import { SessionStorageEntry, SessionStorageFactory } from '../../storage/session-storage-factory.service';
 import { Notification } from '../types/Notification';
 import { NotificationAction } from '../types/NotificationAction';
 
@@ -37,7 +39,8 @@ export class GuacNotificationService {
      * Getter/setter which retrieves or sets the current status notification,
      * which may simply be false if no status is currently shown.
      */
-    private storedStatus: Function = this.sessionStorageFactory.create(false);
+    private storedStatus: SessionStorageEntry<Notification | boolean | Object>
+        = this.sessionStorageFactory.create<Notification | boolean | Object>(false);
 
     /**
      * Inject required services.
@@ -68,7 +71,7 @@ export class GuacNotificationService {
      * Retrieves the current status notification, which may simply be false if
      * no status is currently shown.
      */
-    getStatus(): Notification | boolean {
+    getStatus(): Notification | boolean | Object {
         return this.storedStatus();
     }
 

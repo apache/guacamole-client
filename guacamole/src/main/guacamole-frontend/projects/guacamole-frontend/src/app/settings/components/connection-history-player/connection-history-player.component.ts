@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -59,7 +61,7 @@ export class ConnectionHistoryPlayerComponent {
      * recording.
      */
     readonly tunnel: Guacamole.Tunnel = new Guacamole.StaticHTTPTunnel(this.recordingURL, false, {
-        'Guacamole-Token': this.authenticationService.getCurrentToken()
+        'Guacamole-Token': this.authenticationService.getCurrentToken()!
     });
 
     /**

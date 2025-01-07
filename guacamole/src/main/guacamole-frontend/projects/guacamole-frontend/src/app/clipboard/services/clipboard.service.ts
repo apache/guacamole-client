@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -287,14 +289,13 @@ export class ClipboardService {
      *     The plain text contents of the given element, including newlines and
      *     spacing but otherwise without any formatting.
      */
-    getTextContent(element: Element): string {
+    getTextContent(element: ChildNode): string {
 
         const blocks = [];
         let currentBlock = '';
 
         // For each child of the given element
-        // TODO: was 'element.firstChild'
-        let current = element.firstElementChild;
+        let current = element.firstChild;
         while (current) {
 
             // Simply append the content of any text nodes
@@ -307,7 +308,7 @@ export class ClipboardService {
 
             // Render <img> as alt text, if available
             else if (current.nodeName === 'IMG')
-                currentBlock += current.getAttribute('alt') || '';
+                currentBlock += (current as HTMLImageElement).getAttribute('alt') || '';
 
                 // For all other nodes, handling depends on whether they are
             // block-level elements
@@ -315,7 +316,7 @@ export class ClipboardService {
 
                 // If we are entering a new block context, start a new block if
                 // the current block is non-empty
-                if (currentBlock.length && this.window.getComputedStyle(current).display === 'block') {
+                if (currentBlock.length && this.window.getComputedStyle(current as Element).display === 'block') {
 
                     // Trim trailing newline (would otherwise inflate the line count by 1)
                     if (currentBlock.substring(currentBlock.length - 1) === '\n')
@@ -332,8 +333,7 @@ export class ClipboardService {
 
             }
 
-            // TODO: was 'current.nextSibling'
-            current = current.nextElementSibling;
+            current = current.nextSibling;
 
         }
 
@@ -389,10 +389,9 @@ export class ClipboardService {
     getImageContent(element: Element): string | null {
 
         // Return the source of the single child element, if it is an image
-        // TODO: was 'element.firstChild'
-        const firstChild = element.firstElementChild;
+        const firstChild = element.firstChild;
         if (firstChild && firstChild.nodeName === 'IMG' && !firstChild.nextSibling)
-            return firstChild.getAttribute('src');
+            return (firstChild as HTMLImageElement).getAttribute('src');
 
         // Otherwise, the content of this element is not simply an image
         return null;

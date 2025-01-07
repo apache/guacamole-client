@@ -1,3 +1,25 @@
+import { DOCUMENT } from '@angular/common';
+import {
+    Component,
+    DestroyRef,
+    DoCheck,
+    ElementRef,
+    Inject,
+    Injector,
+    Input,
+    OnChanges,
+    OnInit,
+    SimpleChanges,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { GuacEventService } from 'guacamole-frontend-lib';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
+import { ManagedClientService } from '../../services/managed-client.service';
+import { ManagedClient } from '../../types/ManagedClient';
+import { ManagedDisplayCursor, ManagedDisplayDimensions } from '../../types/ManagedDisplay';
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,37 +39,15 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import {
-    Component,
-    DestroyRef,
-    effect,
-    EffectRef,
-    ElementRef,
-    Inject,
-    Injector,
-    Input,
-    OnChanges,
-    OnInit,
-    SimpleChanges,
-    ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { GuacEventService } from 'guacamole-frontend-lib';
-import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
-import { ManagedClientService } from '../../services/managed-client.service';
-import { ManagedClient } from '../../types/ManagedClient';
-
 /**
  * A component for the guacamole client.
  */
 @Component({
-    selector     : 'guac-client',
-    templateUrl  : './guac-client.component.html',
+    selector: 'guac-client',
+    templateUrl: './guac-client.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class GuacClientComponent implements OnInit, OnChanges {
+export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
 
     /**
      * The client to display within this guacClient directive.
@@ -133,13 +133,55 @@ export class GuacClientComponent implements OnInit, OnChanges {
     private window: Window;
 
     /**
+     * The last known horizontal scroll position of the client view.
+     */
+    private lastScrollLeft?: number;
+
+
+    /**
+     * The last known vertical scroll position of the client view.
+     */
+    private lastScrollTop?: number;
+
+    /**
+     * The last known cursor.
+     */
+    private lastCursor?: ManagedDisplayCursor;
+
+    /**
+     * The last known display size.
+     */
+    private lastDisplaySize: ManagedDisplayDimensions | undefined;
+
+    /**
+     * The last known value of multi-touch support.
+     */
+    private lastMultiTouchSupport?: number;
+
+    /**
+     * The last known value of whether absolute mouse emulation is
+     * preferred.
+     */
+    private lastEmulateAbsoluteMouse?: boolean;
+
+    /**
+     * The last known scale.
+     */
+    private lastScale?: number;
+
+    /**
+     * The last known auto-fit setting.
+     */
+    private lastAutoFit?: boolean;
+
+
+    /**
      * Inject required services.
      */
     constructor(private managedClientService: ManagedClientService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private destroyRef: DestroyRef,
-                @Inject(DOCUMENT) private document: Document,
-                private injector: Injector) {
+                @Inject(DOCUMENT) private document: Document) {
         this.window = this.document.defaultView as Window;
     }
 
@@ -158,7 +200,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Forward all mouse events
         this.mouse.onEach(['mousedown', 'mousemove', 'mouseup'],
-            (event: Guacamole.Event) => this.handleMouseEvent(event as Guacamole.Mouse.MouseEvent));
+            (event: Guacamole.Event) => this.handleMouseEvent(event as Guacamole.Mouse.Event));
 
         // Hide software cursor when mouse leaves display
         this.mouse.on('mouseout', () => {
@@ -254,10 +296,10 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Clamp zoom level, maintain auto-fit
         if (this.display.getScale() < this.managedClient.clientProperties.minScale || this.managedClient.clientProperties.autoFit)
-            this.managedClient.clientProperties.scale.set(this.managedClient.clientProperties.minScale);
+            this.managedClient.clientProperties.scale = this.managedClient.clientProperties.minScale;
 
         else if (this.display.getScale() > this.managedClient.clientProperties.maxScale)
-            this.managedClient.clientProperties.scale.set(this.managedClient.clientProperties.maxScale);
+            this.managedClient.clientProperties.scale = this.managedClient.clientProperties.maxScale;
 
     }
 
@@ -310,7 +352,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
      * @param event
      *     The mouse event to handle.
      */
-    private handleMouseEvent(event: Guacamole.Mouse.MouseEvent): void {
+    private handleMouseEvent(event: Guacamole.Mouse.Event): void {
 
         // Do not attempt to handle mouse state changes if the client
         // or display are not yet available
@@ -335,22 +377,24 @@ export class GuacClientComponent implements OnInit, OnChanges {
      * @param event
      *     The mouse event to handle.
      */
-    private handleEmulatedMouseEvent(event: Guacamole.Mouse.MouseEvent): void {
+    private handleEmulatedMouseEvent: Guacamole.Event.TargetListener = (event: Guacamole.Event) => {
 
         // Do not attempt to handle mouse state changes if the client
         // or display are not yet available
         if (!this.guacamoleClient || !this.display)
             return;
 
-        event.stopPropagation();
-        event.preventDefault();
+        const mouseEvent = event as Guacamole.Mouse.Event;
+
+        mouseEvent.stopPropagation();
+        mouseEvent.preventDefault();
 
         // Ensure software cursor is shown
         this.display.showCursor(true);
 
         // Send mouse state, ensure cursor is visible
-        this.scrollToMouse(event.state);
-        this.guacamoleClient.sendMouseState(event.state, true);
+        this.scrollToMouse(mouseEvent.state);
+        this.guacamoleClient.sendMouseState(mouseEvent.state, true);
 
     }
 
@@ -360,18 +404,19 @@ export class GuacClientComponent implements OnInit, OnChanges {
      * @param event
      *     The touch event.
      */
-    private handleTouchEvent(event: Guacamole.Touch.Event): void {
+    private handleTouchEvent: Guacamole.Event.TargetListener = (event: Guacamole.Event) => {
 
         // Do not attempt to handle touch state changes if the client
         // or display are not yet available
         if (!this.guacamoleClient || !this.display)
             return;
 
-        event.preventDefault();
+        const touchEvent = event as Guacamole.Touch.Event;
+        touchEvent.preventDefault();
 
         // Send touch state, hiding local cursor
         this.display.showCursor(false);
-        this.guacamoleClient.sendTouchState(event.state, true);
+        this.guacamoleClient.sendTouchState(touchEvent.state, true);
 
     }
 
@@ -398,7 +443,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Attach possibly new display
         this.display = this.guacamoleClient.getDisplay();
-        this.display.scale(this.managedClient.clientProperties.scale());
+        this.display.scale(this.managedClient.clientProperties.scale);
 
         // Add display element
         this.displayElement = this.display.getElement();
@@ -417,138 +462,190 @@ export class GuacClientComponent implements OnInit, OnChanges {
         this.mainElementResized();
     }
 
-    /**
-     * An effect which update the scale when display is resized.
-     */
-    private setDisplaySize: EffectRef | null = null;
-
-    /**
-     * An effect which keeps local cursor up-to-date.
-     */
-    private setCursor: EffectRef | null = null;
-
-    /**
-     * An effect which adjusts the scale if modified externally.
-     */
-    private changeScale: EffectRef | null = null;
-
     ngOnChanges(changes: SimpleChanges): void {
 
         // Attach any given managed client
         if (changes['managedClient']) {
+
             const managedClient = changes['managedClient'].currentValue as ManagedClient;
             this.attachManagedClient(managedClient);
 
+        }
 
-            // Update scale when display is resized
-            if (this.setDisplaySize !== null)
-                this.setDisplaySize.destroy();
+    }
 
-            this.setDisplaySize = effect(() => {
+    /**
+     * Custom change detection logic for the component.
+     */
+    ngDoCheck(): void {
 
-                // Used to trigger this effect when the display size changes
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-                const displaySize = this.managedClient.managedDisplay?.size();
-                this.updateDisplayScale();
+        // Update actual view scrollLeft when scroll properties change
+        const scrollLeft = this.managedClient.clientProperties.scrollLeft;
 
-            }, { injector: this.injector, allowSignalWrites: true });
+        if (this.lastScrollLeft !== scrollLeft) {
 
-
-            // Keep local cursor up-to-date
-            if (this.setCursor !== null)
-                this.setCursor.destroy();
-
-            this.setCursor = effect(() => {
-
-                const cursor = this.managedClient.managedDisplay?.cursor();
-
-                if (cursor && cursor.canvas && cursor.x && cursor.y)
-                    this.localCursor = this.mouse.setCursor(cursor.canvas, cursor.x, cursor.y);
-
-            }, { injector: this.injector });
-
-
-            // Adjust scale if modified externally
-            if (this.changeScale !== null)
-                this.changeScale.destroy();
-
-            this.changeScale = effect(() => {
-
-                let scale = this.managedClient.clientProperties.scale();
-
-                // Fix scale within limits
-                scale = Math.max(scale, this.managedClient.clientProperties.minScale);
-                scale = Math.min(scale, this.managedClient.clientProperties.maxScale);
-
-                // If at minimum zoom level, hide scroll bars
-                if (scale === this.managedClient.clientProperties.minScale)
-                    this.main.style.overflow = 'hidden';
-
-                // If not at minimum zoom level, show scroll bars
-                else
-                    this.main.style.overflow = 'auto';
-
-                // Apply scale if client attached
-                if (this.display)
-                    this.display.scale(scale);
-
-                if (scale !== this.managedClient.clientProperties.scale())
-                    this.managedClient.clientProperties.scale.set(scale);
-
-            }, { injector: this.injector, allowSignalWrites: true });
+            this.scrollLeftChanged(scrollLeft);
+            this.lastScrollLeft = scrollLeft;
 
         }
 
-        /* TODO: Reimplement
-                * // Update actual view scrollLeft when scroll properties change
-                * $scope.$watch('client.clientProperties.scrollLeft', function scrollLeftChanged(scrollLeft) {
-                *     main.scrollLeft = scrollLeft;
-                *     $scope.client.clientProperties.scrollLeft = main.scrollLeft;
-                * });
-                *
-                * // Update actual view scrollTop when scroll properties change
-                * $scope.$watch('client.clientProperties.scrollTop', function scrollTopChanged(scrollTop) {
-                *     main.scrollTop = scrollTop;
-                *     $scope.client.clientProperties.scrollTop = main.scrollTop;
-                * });
-                *
-                *
-                * // Update touch event handling depending on remote multi-touch
-                * // support and mouse emulation mode
-                * $scope.$watchGroup([
-                *     'client.multiTouchSupport',
-                *     'emulateAbsoluteMouse'
-                * ], function touchBehaviorChanged() {
-                *
-                *     // Clear existing event handling
-                *     touch.offEach(['touchstart', 'touchmove', 'touchend'], handleTouchEvent);
-                *     touchScreen.offEach(['mousedown', 'mousemove', 'mouseup'], handleEmulatedMouseEvent);
-                *     touchPad.offEach(['mousedown', 'mousemove', 'mouseup'], handleEmulatedMouseEvent);
-                *
-                *     // Directly forward local touch events
-                *     if ($scope.client.multiTouchSupport)
-                *         touch.onEach(['touchstart', 'touchmove', 'touchend'], handleTouchEvent);
-                *
-                *         // Switch to touchscreen if mouse emulation is required and
-                *     // absolute mouse emulation is preferred
-                *     else if ($scope.emulateAbsoluteMouse)
-                *         touchScreen.onEach(['mousedown', 'mousemove', 'mouseup'], handleEmulatedMouseEvent);
-                *
-                *         // Use touchpad for mouse emulation if absolute mouse emulation
-                *     // is not preferred
-                *     else
-                *         touchPad.onEach(['mousedown', 'mousemove', 'mouseup'], handleEmulatedMouseEvent);
-                *
-                * });
-                *
-                *
-                *
-                * // If autofit is set, the scale should be set to the minimum scale, filling the screen
-                * $scope.$watch('client.clientProperties.autoFit', function changeAutoFit(autoFit) {
-                *     if(autoFit)
-                *         $scope.client.clientProperties.scale = $scope.client.clientProperties.minScale;
-                * });
-            */
+
+        // Update actual view scrollTop when scroll properties change
+        const scrollTop = this.managedClient.clientProperties.scrollTop;
+
+        if (this.lastScrollTop !== scrollTop) {
+
+            this.scrollTopChanged(scrollTop);
+            this.lastScrollTop = scrollTop;
+
+        }
+
+        // Update scale when display is resized
+        const displaySize = this.managedClient.managedDisplay?.size;
+
+        if (this.lastDisplaySize !== displaySize) {
+
+            Promise.resolve().then(() => this.updateDisplayScale());
+            this.lastDisplaySize = displaySize;
+
+        }
+
+        // Keep local cursor up-to-date
+        const cursor = this.managedClient.managedDisplay?.cursor;
+
+        if (this.lastCursor !== cursor) {
+
+            this.setCursor(cursor);
+            this.lastCursor = cursor;
+
+        }
+
+        // Update touch event handling depending on remote multi-touch
+        // support and mouse emulation mode
+        const multiTouchSupport = this.managedClient.multiTouchSupport;
+        const emulateAbsoluteMouse = this.emulateAbsoluteMouse;
+
+        if (this.lastMultiTouchSupport !== multiTouchSupport || this.lastEmulateAbsoluteMouse !== emulateAbsoluteMouse) {
+
+            this.touchBehaviorChanged();
+            this.lastMultiTouchSupport = multiTouchSupport;
+            this.lastEmulateAbsoluteMouse = emulateAbsoluteMouse;
+
+        }
+
+
+        // Adjust scale if modified externally
+        const scale = this.managedClient.clientProperties.scale;
+
+        if (this.lastScale !== scale) {
+
+            this.changeScale(scale);
+            this.lastScale = scale;
+
+        }
+
+
+        // If autofit is set, the scale should be set to the minimum scale, filling the screen
+        const autoFit = this.managedClient.clientProperties.autoFit;
+
+        if(this.lastAutoFit !== autoFit) {
+
+            this.changeAutoFit(autoFit);
+            this.lastAutoFit = autoFit;
+
+        }
+
+    }
+
+    /**
+     * Update actual view scrollLeft when scroll properties change.
+     *
+     * @param scrollLeft New scrollLeft value
+     */
+    private scrollLeftChanged(scrollLeft: number): void {
+        this.main.scrollLeft = scrollLeft;
+        this.managedClient.clientProperties.scrollLeft = this.main.scrollLeft;
+    }
+
+    /**
+     * Update actual view scrollTop when scroll properties change.
+     *
+     * @param scrollTop New scrollTop value
+     */
+    private scrollTopChanged(scrollTop: number): void {
+        this.main.scrollTop = scrollTop;
+        this.managedClient.clientProperties.scrollTop = this.main.scrollTop;
+    }
+
+    /**
+     * Keep the local cursor up-to-date.
+     * @param cursor The cursor to set.
+     */
+    private setCursor(cursor: ManagedDisplayCursor | undefined): void {
+        if (cursor)
+            this.localCursor = this.mouse.setCursor(cursor.canvas!, cursor.x!, cursor.y!);
+    }
+
+    /**
+     * Update touch event handling depending on remote multi-touch
+     * support and mouse emulation mode.
+     */
+    private touchBehaviorChanged() {
+
+        // Clear existing event handling
+        this.touch.offEach(['touchstart', 'touchmove', 'touchend'], this.handleTouchEvent);
+        this.touchScreen.offEach(['mousedown', 'mousemove', 'mouseup'], this.handleEmulatedMouseEvent);
+        this.touchPad.offEach(['mousedown', 'mousemove', 'mouseup'], this.handleEmulatedMouseEvent);
+
+        // Directly forward local touch events
+        if (this.managedClient.multiTouchSupport)
+            this.touch.onEach(['touchstart', 'touchmove', 'touchend'], this.handleTouchEvent);
+
+            // Switch to touchscreen if mouse emulation is required and
+        // absolute mouse emulation is preferred
+        else if (this.emulateAbsoluteMouse)
+            this.touchScreen.onEach(['mousedown', 'mousemove', 'mouseup'], this.handleEmulatedMouseEvent);
+
+            // Use touchpad for mouse emulation if absolute mouse emulation
+        // is not preferred
+        else
+            this.touchPad.onEach(['mousedown', 'mousemove', 'mouseup'], this.handleEmulatedMouseEvent);
+    }
+
+    /**
+     * Adjust scale if modified externally.
+     * @param scale The new scale value.
+     */
+    private changeScale(scale: number): void {
+
+        // Fix scale within limits
+        scale = Math.max(scale, this.managedClient.clientProperties.minScale);
+        scale = Math.min(scale, this.managedClient.clientProperties.maxScale);
+
+        // If at minimum zoom level, hide scroll bars
+        if (scale === this.managedClient.clientProperties.minScale)
+            this.main.style.overflow = 'hidden';
+
+        // If not at minimum zoom level, show scroll bars
+        else
+            this.main.style.overflow = 'auto';
+
+        // Apply scale if client attached
+        if (this.display)
+            this.display.scale(scale);
+
+        if (scale !== this.managedClient.clientProperties.scale)
+            this.managedClient.clientProperties.scale = scale;
+
+    }
+
+    /**
+     * Update the scale of the attached Guacamole.Client if auto-fit
+     * is enabled.
+     */
+    private changeAutoFit(autoFit: boolean): void {
+        if(autoFit)
+            this.managedClient.clientProperties.scale = this.managedClient.clientProperties.minScale;
     }
 
     /**
@@ -638,7 +735,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Set initial scale if gesture has just started
         if (!this.initialScale) {
-            this.initialScale = this.managedClient.clientProperties.scale();
+            this.initialScale = this.managedClient.clientProperties.scale;
             this.initialCenterX = (centerX + this.managedClient.clientProperties.scrollLeft) / this.initialScale;
             this.initialCenterY = (centerY + this.managedClient.clientProperties.scrollTop) / this.initialScale;
         }
@@ -652,7 +749,7 @@ export class GuacClientComponent implements OnInit, OnChanges {
 
         // Update scale based on pinch distance
         this.managedClient.clientProperties.autoFit = false;
-        this.managedClient.clientProperties.scale.set(currentScale);
+        this.managedClient.clientProperties.scale = currentScale;
 
         // Scroll display to keep original pinch location centered within current pinch
         this.managedClient.clientProperties.scrollLeft = this.initialCenterX * currentScale - centerX;

@@ -1,3 +1,5 @@
+
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,7 +22,7 @@
 import { DOCUMENT } from '@angular/common';
 import {
     Component,
-    DestroyRef,
+    DestroyRef, DoCheck,
     Inject,
     Input,
     OnChanges,
@@ -41,7 +43,7 @@ import { Notification } from '../../types/Notification';
     templateUrl  : './guac-notification.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class GuacNotificationComponent implements OnChanges, OnDestroy {
+export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy {
 
     /**
      * The notification to display.
@@ -79,13 +81,20 @@ export class GuacNotificationComponent implements OnChanges, OnDestroy {
         this.window = this.document.defaultView as Window;
     }
 
+    /**
+     * Custom change detection logic for the component.
+     */
+    ngDoCheck(): void {
+
+        // Update progress bar if end known
+        if(this.notification?.progress?.ratio) {
+            this.progressPercent = this.notification.progress.ratio * 100;
+        }
+
+    }
+
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['notification']) {
-            // Update progress bar if end known
-            // TODO: Handle changes of notification.progress.ratio
-            // if (this.notification.progress?.ratio)
-            //     this.progressPercent = this.notification.progress.ratio * 100;
-
             const forms = this.formService.asFormArray(this.notification.forms);
             this.notificationFormGroup = this.formService.getFormGroup(forms);
             this.notificationFormGroup.patchValue(this.notification.formModel || {});
