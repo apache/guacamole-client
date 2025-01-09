@@ -43,7 +43,7 @@
         "INFO_ACTIVE_USER_COUNT" : "Сейчас в системе {USERS} {USERS, plural, one{пользователь} few{пользователя} many{пользователей} other{пользователя}}.",
 
         "TEXT_ANONYMOUS_USER"   : "Аноним",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} few{секуны} many{секунд} other{секуны}}} minute{{VALUE, plural, one{минута} few{минуты} many{минут} other{минуты}}} hour{{VALUE, plural, one{час} few{часа} many{часов} other{часа}}} day{{VALUE, plural, one{день} few{дня} many{дней} other{дня}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} few{секунды} many{секунд} other{секунды}}} minute{{VALUE, plural, one{минута} few{минуты} many{минут} other{минуты}}} hour{{VALUE, plural, one{час} few{часа} many{часов} other{часа}}} day{{VALUE, plural, one{день} few{дня} many{дней} other{дня}}} other{}}"
 
     },
 
