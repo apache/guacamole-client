@@ -19,9 +19,17 @@
  * under the License.
  */
 
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+    AfterViewInit,
+    Component,
+    DestroyRef,
+    ElementRef,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import { Subject } from 'rxjs';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { ClipboardService } from '../../services/clipboard.service';
 import { ClipboardData } from '../../types/ClipboardData';
@@ -31,7 +39,7 @@ import { ClipboardData } from '../../types/ClipboardData';
     templateUrl  : './clipboard.component.html',
     encapsulation: ViewEncapsulation.None
 })
-export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
+export class ClipboardComponent implements OnInit, AfterViewInit {
 
     /**
      * The DOM element which will contain the clipboard contents within the
@@ -41,10 +49,9 @@ export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
      */
     @ViewChild('activeClipboardTextarea') element!: ElementRef<HTMLTextAreaElement>;
 
-    destroyed = new Subject<void>();
-
     constructor(private readonly clipboardService: ClipboardService,
-                private guacEventService: GuacEventService<GuacFrontendEventArguments>) {
+                private guacEventService: GuacEventService<GuacFrontendEventArguments>,
+                private destroyRef: DestroyRef) {
     }
 
     /**
@@ -94,6 +101,7 @@ export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit(): void {
         // Update remote clipboard if local clipboard changes
         this.guacEventService.on('guacClipboard')
+            .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(({ data }) => {
                 this.updateClipboardEditor(data);
             });
@@ -107,8 +115,4 @@ export class ClipboardComponent implements OnInit, AfterViewInit, OnDestroy {
         });
     }
 
-    ngOnDestroy(): void {
-        this.destroyed.next();
-        this.destroyed.complete();
-    }
 }
