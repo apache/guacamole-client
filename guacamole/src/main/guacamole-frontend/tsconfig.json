@@ -1,9 +1,7 @@
 {
     "compileOnSave": false,
     "exclude": [
-        " ./cypress.config.ts",
-        "node_modules",
-        "cypress"
+        "node_modules"
     ],
     "compilerOptions": {
         "typeRoots": [
