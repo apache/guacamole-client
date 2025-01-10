@@ -75,8 +75,7 @@ export class StyleLoaderService {
         // Set type of the link item and path to the css file
         this.renderer.setProperty(styleElement, 'rel', 'stylesheet');
         this.renderer.setProperty(styleElement, 'id', elementId);
-        // TODO: ?b=${guacamole.build.identifier}
-        this.renderer.setProperty(styleElement, 'href', styleName);
+        this.renderer.setProperty(styleElement, 'href', `${styleName}?b=${this.buildMeta}`);
 
     }
 
