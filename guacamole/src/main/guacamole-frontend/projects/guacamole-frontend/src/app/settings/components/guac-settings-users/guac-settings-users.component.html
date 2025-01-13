@@ -61,7 +61,7 @@
         </tr>
         </thead>
         <tbody [ngClass]="{'loading': !isLoaded()}">
-        <tr *ngFor="let manageableUser of dataSourceView?.data | async; trackBy: trackByUsername" class="user">
+        <tr *ngFor="let manageableUser of dataSourceView?.data | async; trackBy: trackByUsername" class="user" [ngClass]="{disabled: manageableUser.user.disabled}">
             <td class="username">
                 <a routerLink="/manage/{{manageableUser.dataSource }}/users/{{manageableUser.user.username }}">
                     <div class="icon user"></div>

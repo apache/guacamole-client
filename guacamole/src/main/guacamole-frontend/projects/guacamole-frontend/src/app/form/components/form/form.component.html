@@ -30,9 +30,10 @@
 
                 <guac-form-field [namespace]="namespace"
                                  *ngIf="isVisible(field)"
-                                 [disabled]="disabled"
+                                 [disabled]="isDisabled(field)"
                                  [focused]="isFocused(field)"
                                  [field]="field"
+                                 [client]="client"
                                  [control]="getControl(field)"
                 ></guac-form-field>
             </ng-container>

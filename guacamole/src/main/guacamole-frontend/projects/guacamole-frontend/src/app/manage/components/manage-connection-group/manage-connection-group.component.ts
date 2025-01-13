@@ -295,7 +295,7 @@ export class ManageConnectionGroupComponent implements OnInit {
         this.router.navigate(
             ['manage', encodeURIComponent(this.selectedDataSource), 'connectionGroups'],
             { queryParams: { clone: this.identifier } }
-        );
+        ).then(() => window.scrollTo(0, 0));
     }
 
     /**

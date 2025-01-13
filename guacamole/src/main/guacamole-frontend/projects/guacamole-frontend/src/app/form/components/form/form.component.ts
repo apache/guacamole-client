@@ -21,10 +21,12 @@
 
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ManagedClient } from '../../../client/types/ManagedClient';
 import { canonicalize } from '../../../locale/service/translation.service';
 import { Field } from '../../../rest/types/Field';
 import { Form } from '../../../rest/types/Form';
 import { FormService } from '../../service/form.service';
+import get from 'lodash/get';
 
 /**
  * A component that allows editing of a collection of fields.
@@ -75,6 +77,16 @@ export class FormComponent implements OnChanges {
      * The name of the field to be focused, if any.
      */
     @Input() focusedField: string | undefined;
+
+    /**
+     * The client associated with this form, if any.
+     *
+     * NOTE: If the provided client has any managed arguments in the
+     * pending state, any fields with the same name rendered by this
+     * form will be disabled. The fields will be re-enabled when guacd
+     * sends an updated argument with a the same name.
+     */
+    @Input() client: ManagedClient | undefined;
 
     /**
      * The array of all forms to display.
@@ -176,6 +188,27 @@ export class FormComponent implements OnChanges {
         // within the form group
         return field && !!this.modelFormGroup && !!this.modelFormGroup.get(field.name);
 
+    }
+
+    /**
+     * Returns whether the given field should be disabled (read-only)
+     * when presented to the current user.
+     *
+     * @param field
+     *     The field to check.
+     *
+     * @returns
+     *     true if the given field should be disabled, false otherwise.
+     */
+    isDisabled(field: Field): boolean {
+
+        /*
+         * The field is disabled if either the form as a whole is disabled,
+         * or if a client is provided to the directive, and the field is
+         * marked as pending.
+         */
+        return !!(this.disabled ||
+            get(this.client, ['arguments', field.name, 'pending']));
     }
 
     /**

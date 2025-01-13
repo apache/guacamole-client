@@ -64,4 +64,9 @@ export interface FormFieldComponentData {
      * guacFormField component, if there is such an input element.
      */
     fieldId?: string;
+
+    /**
+     * The managed client associated with this form field, if any.
+     */
+    client?: any;
 }

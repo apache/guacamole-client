@@ -30,6 +30,7 @@ import { ConnectionGroupService } from '../../../rest/service/connection-group.s
 import { DataSourceService } from '../../../rest/service/data-source-service.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
+import { PreferenceService } from '../../../settings/services/preference.service';
 import { NonNullableProperties } from '../../../util/utility-types';
 
 /**
@@ -80,6 +81,7 @@ export class HomeComponent implements OnInit {
                 private connectionGroupService: ConnectionGroupService,
                 private dataSourceService: DataSourceService,
                 private requestService: RequestService,
+                private preferenceService: PreferenceService,
                 private filterService: FilterService) {
     }
 
@@ -104,6 +106,18 @@ export class HomeComponent implements OnInit {
             }, this.requestService.PROMISE_DIE);
     }
 
+
+    /**
+     * Returns whether the "Recent Connections" section should be displayed on
+     * the home screen.
+     *
+     * @returns
+     *     true if recent connections should be displayed on the home screen,
+     *     false otherwise.
+     */
+    isRecentConnectionsVisible(): boolean {
+        return this.preferenceService.preferences.showRecentConnections;
+    }
 
     /**
      * Returns whether critical data has completed being loaded.

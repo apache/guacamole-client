@@ -30,4 +30,9 @@ export interface GuacEventArguments {
     guacSyntheticKeydown: { keysym: number; };
     guacSyntheticKeyup: { keysym: number; };
 
+    // Menu events
+    guacToggleMenu: Record<string, never>;
+    guacShowMenu: Record<string, never>;
+    guacHideMenu: Record<string, never>;
+
 }

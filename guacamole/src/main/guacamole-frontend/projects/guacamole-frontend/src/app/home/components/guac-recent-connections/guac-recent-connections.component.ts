@@ -66,6 +66,21 @@ export class GuacRecentConnectionsComponent implements OnChanges {
     }
 
     /**
+     * Remove the connection from the recent connection list having the
+     * given identifier.
+     *
+     * @param recentConnection
+     *     The recent connection to remove from the history list.
+     *
+     * @returns
+     *     True if the removal was successful, otherwise false.
+     */
+    removeRecentConnection(recentConnection: RecentConnection): boolean {
+        return (this.recentConnections.splice(this.recentConnections.indexOf(recentConnection), 1)
+            && this.guacHistoryService.removeEntry(recentConnection.entry.id));
+    }
+
+    /**
      * Returns whether recent connections are available for display.
      *
      * @returns

@@ -16,11 +16,18 @@
   specific language governing permissions and limitations
   under the License.
   -->
-<div>
-    <textarea [hidden]="!isActive"
-              class="clipboard active"
-              #activeClipboardTextarea
+<div class="clipboard-editor">
+    <textarea #activeClipboardTextarea
+              [disabled]="!contentsShown"
+              class="clipboard"
+              [ngClass]="{
+                    'clipboard-contents-hidden' : !contentsShown
+              }"
               (input)="updateClipboardData()"
               (change)="updateClipboardData()"></textarea>
-    <textarea [hidden]="isActive" class="clipboard inactive" (focus)="setActive()"></textarea>
+    <div class="clipboard-contents-hidden-hint"
+         (click)="showContents()"
+         *ngIf="!contentsShown">
+        <p class="clipboard-contents-hidden-hint-text">{{ 'CLIENT.ACTION_SHOW_CLIPBOARD' | transloco }}</p>
+    </div>
 </div>

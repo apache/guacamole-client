@@ -101,6 +101,10 @@ export class SystemPermissionEditorComponent implements OnInit {
             value: PermissionSet.SystemPermissionType.ADMINISTER
         },
         {
+            label: "MANAGE_USER.FIELD_HEADER_AUDIT_SYSTEM",
+            value: PermissionSet.SystemPermissionType.AUDIT
+        },
+        {
             label: 'MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS',
             value: PermissionSet.SystemPermissionType.CREATE_USER
         },

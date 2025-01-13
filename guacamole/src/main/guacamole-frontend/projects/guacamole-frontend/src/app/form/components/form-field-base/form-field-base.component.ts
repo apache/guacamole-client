@@ -22,6 +22,7 @@
 import { Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { FormFieldComponentData } from 'guacamole-frontend-ext-lib';
+import { ManagedClient } from '../../../client/types/ManagedClient';
 import { canonicalize } from '../../../locale/service/translation.service';
 import { Field } from '../../../rest/types/Field';
 
@@ -99,6 +100,11 @@ export abstract class FormFieldBaseComponent implements FormFieldComponentData {
      * Whether this field should be focused.
      */
     @Input() focused = false;
+
+    /**
+     * The client associated with this form field, if any.
+     */
+    @Input() client?: ManagedClient;
 
     /**
      * An ID value which is reasonably likely to be unique relative to

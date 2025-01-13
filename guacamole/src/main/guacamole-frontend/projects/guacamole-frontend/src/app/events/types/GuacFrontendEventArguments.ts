@@ -1,5 +1,3 @@
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -45,6 +43,16 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
     guacBeforeKeydown: { keysym: number; keyboard: Guacamole.Keyboard; };
     guacBeforeKeyup: { keysym: number; keyboard: Guacamole.Keyboard; };
 
+    // Mouse events
+    guacClientMouseDown: { event: Guacamole.Event, client: ManagedClient };
+    guacClientMouseUp: { event: Guacamole.Event, client: ManagedClient };
+    guacClientMouseMove: { event: Guacamole.Event, client: ManagedClient };
+
+    // Touch events
+    guacClientTouchStart: { event: Guacamole.Event, client: ManagedClient };
+    guacClientTouchEnd: { event: Guacamole.Event, client: ManagedClient };
+    guacClientTouchMove: { event: Guacamole.Event, client: ManagedClient };
+
     // File browser events
     guacUploadComplete: { filename: string; };
 
@@ -52,6 +60,7 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
     guacClientFocused: { newFocusedClient: ManagedClient | null; };
     guacMenuShown: { menuShown: boolean };
     guacClientArgumentsUpdated: { focusedClient: ManagedClient | null; };
+    guacClientProtocolUpdated: { focusedClient: ManagedClient | null; };
 
     // Clipboard events
     guacClipboard: { data: ClipboardData };
@@ -65,3 +74,7 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
     guacPlayerPause: {};
     guacPlayerSeek: { position: number; };
 }
+
+export type MouseEventName = 'guacClientMouseDown' | 'guacClientMouseUp' | 'guacClientMouseMove';
+
+export type TouchEventName = 'guacClientTouchStart' | 'guacClientTouchEnd' | 'guacClientTouchMove';

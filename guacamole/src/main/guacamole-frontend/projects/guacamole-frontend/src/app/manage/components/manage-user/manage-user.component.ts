@@ -495,7 +495,7 @@ export class ManageUserComponent implements OnInit {
         this.router.navigate(
             ['manage', encodeURIComponent(this.dataSource), 'users'],
             { queryParams: { clone: this.username } }
-        );
+        ).then(() => window.scrollTo(0, 0));
     }
 
     /**

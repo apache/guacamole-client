@@ -59,6 +59,10 @@
                         <th>{{ 'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | transloco }}</th>
                         <td><input [(ngModel)]="passwordMatch" type="password"></td>
                     </tr>
+                    <tr>
+                        <th>{{'MANAGE_USER.FIELD_HEADER_USER_DISABLED' | transloco}}</th>
+                        <td><input [(ngModel)]="user.disabled" type="checkbox"></td>
+                    </tr>
                 </table>
             </div>
 

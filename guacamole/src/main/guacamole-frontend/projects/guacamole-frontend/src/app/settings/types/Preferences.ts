@@ -42,6 +42,16 @@ export interface Preferences {
     language: string;
 
     /**
+     * The number of recent connections to display.
+     */
+    numberOfRecentConnections: number;
+
+    /**
+     * Whether or not to show the "Recent Connections" section.
+     */
+    showRecentConnections: boolean;
+
+    /**
      * The timezone set by the user, in IANA zone key format (Olson time
      * zone database).
      */

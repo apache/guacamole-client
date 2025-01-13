@@ -20,17 +20,13 @@
  */
 
 import { Injectable } from '@angular/core';
+import { PreferenceService } from '../settings/services/preference.service';
 import { LocalStorageService } from '../storage/local-storage.service';
 import { HistoryEntry } from './HistoryEntry';
+import remove from 'lodash/remove';
 
 // The parameter name for getting the history from local storage
 const GUAC_HISTORY_STORAGE_KEY = 'GUAC_HISTORY';
-
-/**
- * The number of entries to allow before removing old entries based on the
- * cutoff.
- */
-const IDEAL_LENGTH = 6;
 
 /**
  * A service for reading and manipulating the Guacamole connection history.
@@ -45,11 +41,31 @@ export class GuacHistoryService {
      */
     recentConnections: HistoryEntry[] = [];
 
-    constructor(private readonly localStorageService: LocalStorageService) {
+    /**
+     * Inject required services.
+     */
+    constructor(private readonly localStorageService: LocalStorageService,
+                private readonly preferenceService: PreferenceService) {
         // Init stored connection history from localStorage
         const storedHistory = localStorageService.getItem(GUAC_HISTORY_STORAGE_KEY) || [];
         if (storedHistory instanceof Array)
             this.recentConnections = storedHistory;
+    }
+
+    /**
+     * Remove from the list of connection history the item having the given
+     * identfier.
+     *
+     * @param id
+     *     The identifier of the item to remove from the history list.
+     *
+     * @returns
+     *     True if the removal was successful, otherwise false.
+     */
+    removeEntry(id: string): boolean {
+
+        return remove(this.recentConnections, entry => entry.id === id).length > 0;
+
     }
 
     /**
@@ -77,13 +93,12 @@ export class GuacHistoryService {
         // Store new entry in history
         this.recentConnections.unshift(new HistoryEntry(
             id,
-            thumbnail,
-            // TODO: new Date().getTime() as additional parameter?
+            thumbnail
         ));
 
         // Truncate history to ideal length
-        if (this.recentConnections.length > IDEAL_LENGTH)
-            this.recentConnections.length = IDEAL_LENGTH;
+        if (this.recentConnections.length > this.preferenceService.preferences.numberOfRecentConnections)
+            this.recentConnections.length = this.preferenceService.preferences.numberOfRecentConnections;
 
         // Save updated history
         this.localStorageService.setItem(GUAC_HISTORY_STORAGE_KEY, this.recentConnections);

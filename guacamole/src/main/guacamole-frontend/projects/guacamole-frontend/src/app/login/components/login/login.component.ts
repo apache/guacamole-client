@@ -31,7 +31,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { Error } from '../../../rest/types/Error';
-import { NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
 @Component({
     selector     : 'guac-login',
@@ -103,11 +103,11 @@ export class LoginComponent implements OnInit, OnChanges {
     /**
      * Inject required services.
      */
-    constructor(private http: HttpClient,
-                private authenticationService: AuthenticationService,
+    constructor(private authenticationService: AuthenticationService,
                 private requestService: RequestService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private router: Router,
+                private route: ActivatedRoute,
                 private destroyRef: DestroyRef) {
     }
 
@@ -165,11 +165,24 @@ export class LoginComponent implements OnInit, OnChanges {
     }
 
     /**
-     * Submits the currently-specified username and password to the
-     * authentication service, redirecting to the main view if successful.
+     * Submits the currently-specified fields to the authentication service,
+     * as well as any URL parameters set for the current page, preferring
+     * the values from the fields, and redirecting to the main view if
+     * successful.
      */
     login(): void {
-        this.authenticationService.authenticate(this.enteredValues.value)
+
+        // Any values from URL paramters
+        const urlValues = this.route.snapshot.queryParams;
+
+        // Values from the fields
+        const fieldValues = this.enteredValues.value;
+
+        // All the values to be submitted in the auth attempt, preferring
+        // any values from fields over those in the URL
+        const authParams = {...urlValues, ...fieldValues};
+
+        this.authenticationService.authenticate(authParams)
             .pipe(
                 takeUntilDestroyed(this.destroyRef),
                 catchError(this.requestService.IGNORE)

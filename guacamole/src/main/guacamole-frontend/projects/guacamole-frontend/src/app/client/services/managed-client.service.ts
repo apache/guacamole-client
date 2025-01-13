@@ -19,7 +19,7 @@ import { SharingProfile } from '../../rest/types/SharingProfile';
 import { PreferenceService } from '../../settings/services/preference.service';
 import { NOOP } from '../../util/noop';
 import { ManagedArgument } from '../types/ManagedArgument';
-import { ManagedClient } from '../types/ManagedClient';
+import { DeferredPipeStream, ManagedClient, PipeStreamHandler } from '../types/ManagedClient';
 import { ManagedClientState } from '../types/ManagedClientState';
 import { ManagedClientThumbnail } from '../types/ManagedClientThumbnail';
 import { ManagedDisplay } from '../types/ManagedDisplay';
@@ -375,6 +375,25 @@ export class ManagedClientService {
 
         };
 
+        // A default onpipe implementation that will automatically defer any
+        // received pipe streams, automatically invoking any registered handlers
+        // that may already be set for the received name
+        client.onpipe = (stream, mimetype, name) => {
+
+            // Defer the pipe stream
+            managedClient.deferredPipeStreams[name] = new DeferredPipeStream(
+                { stream, mimetype, name });
+
+            // Invoke the handler now, if set
+            const handler = managedClient.deferredPipeStreamHandlers[name];
+            if (handler) {
+
+                // Handle the stream, and clear from the deferred streams
+                handler(stream, mimetype, name);
+                delete managedClient.deferredPipeStreams[name];
+            }
+        };
+
         // Test for argument mutability whenever an argument value is
         // received
         client.onargv = (stream: Guacamole.InputStream, mimetype: string, name: string) => {
@@ -661,8 +680,7 @@ export class ManagedClientService {
      */
     setArgument(managedClient: ManagedClient, name: string, value: string): void {
         const managedArgument = managedClient.arguments[name];
-        if (managedArgument && ManagedArgument.setValue(managedArgument, value))
-            delete managedClient.arguments[name];
+        managedArgument && ManagedArgument.setValue(managedArgument, value);
     }
 
     /**
@@ -825,6 +843,69 @@ export class ManagedClientService {
 
         }
 
+    }
+
+    /**
+     * Register a handler that will be automatically invoked for any deferred
+     * pipe stream with the provided name, either when a pipe stream with a
+     * name matching a registered handler is received, or immediately when this
+     * function is called, if such a pipe stream has already been received.
+     *
+     * NOTE: Pipe streams are automatically deferred by the default onpipe
+     * implementation. To preserve this behavior when using a custom onpipe
+     * callback, make sure to defer to the default implementation as needed.
+     *
+     * @param managedClient
+     *     The client for which the deferred pipe stream handler should be set.
+     *
+     * @param name
+     *     The name of the pipe stream that should be handeled by the provided
+     *     handler. If another handler is already registered for this name, it
+     *     will be replaced by the handler provided to this function.
+     *
+     * @param handler
+     *     The handler that should handle any deferred pipe stream with the
+     *     provided name. This function must take the same arguments as the
+     *     standard onpipe handler - namely, the stream itself, the mimetype,
+     *     and the name.
+     */
+    registerDeferredPipeHandler(managedClient: ManagedClient, name: string, handler: PipeStreamHandler): void {
+        managedClient.deferredPipeStreamHandlers[name] = handler;
+
+        // Invoke the handler now, if the pipestream has already been received
+        if (managedClient.deferredPipeStreams[name]) {
+
+            // Invoke the handler with the deferred pipe stream
+            const deferredStream = managedClient.deferredPipeStreams[name];
+            handler(deferredStream.stream,
+                deferredStream.mimetype,
+                deferredStream.name);
+
+            // Clean up the now-consumed pipe stream
+            delete managedClient.deferredPipeStreams[name];
+        }
+    }
+
+    /**
+     * Detach the provided deferred pipe stream handler, if it is currently
+     * registered for the provided pipe stream name.
+     *
+     * @param managedClient
+     *     The client for which the deferred pipe stream handler should be
+     *     detached.
+     *
+     * @param name
+     *     The name of the associated pipe stream for the handler that should
+     *     be detached.
+     *
+     * @param handler
+     *     The handler that should be detached.
+     */
+    detachDeferredPipeHandler(managedClient: ManagedClient, name: string, handler: PipeStreamHandler): void {
+
+        // Remove the handler if found
+        if (managedClient.deferredPipeStreamHandlers[name] === handler)
+            delete managedClient.deferredPipeStreamHandlers[name];
     }
 
 }

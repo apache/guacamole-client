@@ -15,7 +15,11 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
+import {
+    GuacFrontendEventArguments,
+    MouseEventName,
+    TouchEventName
+} from '../../../events/types/GuacFrontendEventArguments';
 import { ManagedClientService } from '../../services/managed-client.service';
 import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedDisplayCursor, ManagedDisplayDimensions } from '../../types/ManagedDisplay';
@@ -344,6 +348,28 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
     }
 
     /**
+     * Return the name of the event associated with the provided
+     * mouse event.
+     *
+     * @param event
+     *     The mouse event to determine an event name for.
+     *
+     * @returns
+     *     The name of the event associated with the provided
+     *     mouse event.
+     */
+    private getMouseEventName(event: Guacamole.Event): MouseEventName {
+        switch (event.type) {
+            case 'mousedown':
+                return 'guacClientMouseDown';
+            case 'mouseup':
+                return 'guacClientMouseUp';
+            default:
+                return 'guacClientMouseMove';
+        }
+    }
+
+    /**
      * Handles a mouse event originating from the user's actual mouse.
      * This differs from handleEmulatedMouseEvent() in that the
      * software mouse cursor must be shown only if the user's browser
@@ -365,6 +391,9 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         // Send mouse state, show cursor if necessary
         this.display.showCursor(!this.localCursor);
         this.guacamoleClient.sendMouseState(event.state, true);
+
+        // Broadcast the mouse event
+        this.guacEventService.broadcast(this.getMouseEventName(event), { event, client: this.managedClient });
 
     }
 
@@ -396,6 +425,31 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         this.scrollToMouse(mouseEvent.state);
         this.guacamoleClient.sendMouseState(mouseEvent.state, true);
 
+        // Broadcast the mouse event
+        this.guacEventService.broadcast(this.getMouseEventName(event), { event, client: this.managedClient });
+
+    }
+
+    /**
+     * Return the name of the event associated with the provided
+     * touch event.
+     *
+     * @param event
+     *     The touch event to determine an event name for.
+     *
+     * @returns
+     *     The name of the event associated with the provided
+     *     touch event.
+     */
+    private getTouchEventName(event: Guacamole.Event): TouchEventName {
+        switch (event.type) {
+            case 'touchstart':
+                return 'guacClientTouchStart';
+            case 'touchend':
+                return 'guacClientTouchEnd';
+            default:
+                return 'guacClientTouchMove';
+        }
     }
 
     /**
@@ -417,6 +471,9 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         // Send touch state, hiding local cursor
         this.display.showCursor(false);
         this.guacamoleClient.sendTouchState(touchEvent.state, true);
+
+        // Broadcast the touch event
+        this.guacEventService.broadcast(this.getTouchEventName(event), { event, client: this.managedClient });
 
     }
 

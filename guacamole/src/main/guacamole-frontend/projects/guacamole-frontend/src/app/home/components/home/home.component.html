@@ -22,17 +22,20 @@
     <div class="connection-list-ui">
 
         <!-- The recent connections for this user -->
-        <div class="header">
+        <div class="header" *ngIf="isRecentConnectionsVisible()">
             <h2 id="section-header-recent-connections">{{ 'HOME.SECTION_HEADER_RECENT_CONNECTIONS' | transloco }}</h2>
             <guac-user-menu></guac-user-menu>
         </div>
-        <guac-recent-connections [rootGroups]="rootConnectionGroups || {}"></guac-recent-connections>
+        <guac-recent-connections
+            [rootGroups]="rootConnectionGroups || {}"
+            *ngIf="isRecentConnectionsVisible()"></guac-recent-connections>
 
         <!-- All connections for this user -->
         <div class="header">
             <h2 id="section-header-all-connections">{{ 'HOME.SECTION_HEADER_ALL_CONNECTIONS' | transloco }}</h2>
             <guac-group-list-filter [placeholder]="'HOME.FIELD_PLACEHOLDER_FILTER' | transloco">
             </guac-group-list-filter>
+            <guac-user-menu></guac-user-menu>
         </div>
         <div class="all-connections">
             <guac-group-list

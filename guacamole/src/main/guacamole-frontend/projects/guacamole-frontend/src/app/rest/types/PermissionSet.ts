@@ -779,6 +779,11 @@ export namespace PermissionSet {
         ADMINISTER = 'ADMINISTER',
 
         /**
+         * Permission to view connection and user records for the entire system.
+         */
+        AUDIT = 'AUDIT',
+
+        /**
          * Permission to create new users.
          */
         CREATE_USER = 'CREATE_USER',

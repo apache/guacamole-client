@@ -424,7 +424,7 @@ export class ManageConnectionComponent implements OnInit {
         this.router.navigate(
             ['manage', encodeURIComponent(this.selectedDataSource), 'connections'],
             { queryParams: { clone: this.identifier } }
-        );
+        ).then(() => window.scrollTo(0, 0));
     }
 
     /**

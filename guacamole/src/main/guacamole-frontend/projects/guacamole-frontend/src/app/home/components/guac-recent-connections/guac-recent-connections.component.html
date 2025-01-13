@@ -27,7 +27,7 @@
 
             <!-- Connection thumbnail -->
             <div class="thumbnail">
-                <img alt="{{recentConnection.name}}" [src]="recentConnection.entry.thumbnail">
+                <img alt="{{recentConnection.name}}" [src]="recentConnection.entry.thumbnail"/>
             </div>
 
             <!-- Connection name -->
@@ -36,6 +36,8 @@
             </div>
 
         </a>
+        <!-- Remove thumbnail -->
+        <div class="remove-recent" (click)="removeRecentConnection(recentConnection)"></div>
     </div>
 
 </div>

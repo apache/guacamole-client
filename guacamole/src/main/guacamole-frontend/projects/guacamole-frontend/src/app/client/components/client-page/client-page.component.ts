@@ -67,6 +67,7 @@ import { Protocol } from '../../../rest/types/Protocol';
 import { SharingProfile } from '../../../rest/types/SharingProfile';
 import { PreferenceService } from '../../../settings/services/preference.service';
 import { GuacClientManagerService } from '../../services/guac-client-manager.service';
+import { GuacFullscreenService } from '../../services/guac-fullscreen.service';
 import { ManagedClientService } from '../../services/managed-client.service';
 import { ManagedFilesystemService } from '../../services/managed-filesystem.service';
 import { ClientMenu } from '../../types/ClientMenu';
@@ -240,6 +241,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
                 private clipboardService: ClipboardService,
                 private dataSourceService: DataSourceService,
                 private guacClientManager: GuacClientManagerService,
+                private guacFullscreen: GuacFullscreenService,
                 private iconService: IconService,
                 private preferenceService: PreferenceService,
                 private requestService: RequestService,
@@ -422,6 +424,21 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
                 }
 
             });
+
+        // Toggle the menu when the guacClientToggleMenu event is received
+        this.guacEventService.on('guacToggleMenu')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.menu.shown.update(shown => !shown));
+
+        // Show the menu when the guacClientShowMenu event is received
+        this.guacEventService.on('guacShowMenu')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.menu.shown.set(true));
+
+        // Hide the menu when the guacClientHideMenu event is received
+        this.guacEventService.on('guacHideMenu')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.menu.shown.set(false));
 
     } // ngOnInit() end
 
@@ -841,8 +858,22 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
         callback: () => this.disconnect()
     };
 
+    /**
+     * Action that toggles fullscreen mode within the
+     * currently-connected client and then closes the menu.
+     */
+    private FULLSCREEN_MENU_ACTION: NotificationAction = {
+        name      : 'CLIENT.ACTION_FULLSCREEN',
+        className : 'fullscreen action',
+        callback  : () => {
+
+            this.guacFullscreen.toggleFullscreenMode();
+            this.menu.shown.set(false);
+        }
+    };
+
     // Set client-specific menu actions
-    clientMenuActions: NotificationAction[] = [this.DISCONNECT_MENU_ACTION];
+    clientMenuActions: NotificationAction[] = [this.DISCONNECT_MENU_ACTION, this.FULLSCREEN_MENU_ACTION];
 
     /**
      * @borrows Protocol.getNamespace
@@ -983,6 +1014,9 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
      */
     ngOnDestroy(): void {
         this.setAttachedGroup(null);
+
+        // always unset fullscreen mode to not confuse user
+        this.guacFullscreen.setFullscreenMode(false);
     }
 
 }

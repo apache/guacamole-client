@@ -45,6 +45,14 @@ export class ManagedArgument {
     stream: Guacamole.OutputStream;
 
     /**
+     * True if this argument has been modified in the webapp, but yet to
+     * be confirmed by guacd, or false in any other case. A pending
+     * argument cannot be modified again, and must be recreated before
+     * editing is enabled again.
+     */
+    pending: boolean;
+
+    /**
      * Creates a new ManagedArgument. This constructor initializes the properties of the
      * new ManagedArgument with the corresponding properties of the given template.
      *
@@ -52,10 +60,11 @@ export class ManagedArgument {
      *     The object whose properties should be copied within the new
      *     ManagedArgument.
      */
-    constructor(template: ManagedArgument) {
+    constructor(template: Omit<ManagedArgument, 'pending'>) {
         this.name = template.name;
         this.value = template.value;
         this.stream = template.stream;
+        this.pending = false;
     }
 
     /**
@@ -109,9 +118,9 @@ export class ManagedArgument {
      * Sets the given editable argument (connection parameter) to the given
      * value, updating the behavior of the associated connection in real-time.
      * If successful, the ManagedArgument provided cannot be used for future
-     * calls to setValue() and must be replaced with a new instance. This
-     * function only has an effect if the new parameter value is different from
-     * the current value.
+     * calls to setValue() and will be read-only until replaced with a new
+     * instance. This function only has an effect if the new parameter value
+     * is different from the current value.
      *
      * @param managedArgument
      *     The ManagedArgument instance associated with the connection
@@ -119,30 +128,22 @@ export class ManagedArgument {
      *
      * @param value
      *     The new value to assign to the connection parameter.
-     *
-     * @returns
-     *     true if the connection parameter was sent and the provided
-     *     ManagedArgument instance may no longer be used for future setValue()
-     *     calls, false if the connection parameter was NOT sent as it has not
-     *     changed.
      */
-    static setValue(managedArgument: ManagedArgument, value: string): boolean {
+    static setValue(managedArgument: ManagedArgument, value: string): void {
 
-        // Stream new value only if value has changed
-        if (value !== managedArgument.value) {
+
+        // Stream new value only if value has changed and a change is not
+        // already pending
+        if (!managedArgument.pending && value !== managedArgument.value) {
 
             const writer = new Guacamole.StringWriter(managedArgument.stream);
             writer.sendText(value);
             writer.sendEnd();
 
             // ManagedArgument instance is no longer usable
-            return true;
+            managedArgument.pending = true;
 
         }
-
-        // No parameter value change was attempted and the ManagedArgument
-        // instance may be reused
-        return false;
 
     }
 }

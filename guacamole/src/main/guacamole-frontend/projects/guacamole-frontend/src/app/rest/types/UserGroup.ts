@@ -1,5 +1,3 @@
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -31,6 +29,11 @@ export class UserGroup {
     identifier?: string;
 
     /**
+     * True if this user group is disabled, otherwise false.
+     */
+    disabled?: boolean;
+
+    /**
      * Arbitrary name/value pairs which further describe this user group.
      * The semantics and validity of these attributes are dictated by the
      * extension which defines them.
@@ -48,6 +51,7 @@ export class UserGroup {
      */
     constructor(template: Partial<UserGroup> = {}) {
         this.identifier = template.identifier;
+        this.disabled = template.disabled;
         this.attributes = template.attributes || {};
     }
 }

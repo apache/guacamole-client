@@ -19,8 +19,7 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { getBrowserLang } from '@ngneat/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
@@ -83,18 +82,19 @@ export class PreferenceService {
 
     };
 
-    private window: Window;
-
+    /**
+     * Inject required services.
+     */
     constructor(private localStorageService: LocalStorageService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
-                @Inject(DOCUMENT) private document: Document,
                 private router: Router) {
-        this.window = this.document.defaultView as Window;
 
         this.preferences = {
             emulateAbsoluteMouse: true,
             inputMethod         : this.inputMethods.NONE,
             language            : this.getDefaultLanguageKey(),
+            numberOfRecentConnections: 6,
+            showRecentConnections: true,
             timezone            : this.getDetectedTimezone()
         };
 
@@ -104,7 +104,7 @@ export class PreferenceService {
             this.preferences = { ...this.preferences, ...storedPreferences };
 
         // Persist settings when window is unloaded
-        this.window.addEventListener('unload', this.save);
+        window.addEventListener('unload', this.save);
 
 
         // Persist settings upon navigation

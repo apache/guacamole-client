@@ -1,5 +1,3 @@
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,6 +18,14 @@
  */
 
 import { User } from '../../rest/types/User';
+import { Optional } from '../../util/utility-types';
+
+/**
+ * Template type for creating new ManageableUser instances.
+ * The property "disabled" is optional, and the function "isDisabled" is
+ * omitted.
+ */
+export type ManageableUserTemplate = Optional<Omit<ManageableUser, 'isDisabled'>, 'disabled'>;
 
 /**
  * A pairing of an {@link User} with the identifier of its corresponding
@@ -39,6 +45,11 @@ export class ManageableUser {
     user: User;
 
     /**
+     * True if the underlying user account is disabled, otherwise false.
+     */
+    disabled: boolean;
+
+    /**
      * Creates a new ManageableUser. This constructor initializes the properties of the
      * new ManageableUser with the corresponding properties of the given template.
      *
@@ -46,8 +57,21 @@ export class ManageableUser {
      *    The object whose properties should be copied within the new
      *    ManageableUser.
      */
-    constructor(template: ManageableUser) {
+    constructor(template: ManageableUserTemplate) {
         this.dataSource = template.dataSource;
         this.user = template.user;
+        this.disabled = !!template.disabled;
     }
+
+    /**
+     * Return true if the underlying user account is disabled, otherwise
+     * return false.
+     *
+     * @returns
+     *     True if the underlying user account is disabled, otherwise false.
+     */
+    isDisabled(): boolean {
+        return this.disabled;
+    }
+
 }

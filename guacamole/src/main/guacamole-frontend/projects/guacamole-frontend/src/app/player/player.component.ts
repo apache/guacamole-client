@@ -1,5 +1,3 @@
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,16 +18,39 @@
  */
 
 import {
-    ChangeDetectorRef,
     Component,
+    HostListener,
     Input,
     OnChanges,
     OnDestroy,
+    signal,
     SimpleChanges,
     ViewEncapsulation
 } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArguments';
+import { KeyEventDisplayService, TextBatch } from './services/key-event-display.service';
+import { PlayerHeatmapService } from './services/player-heatmap.service';
+import { PlayerTimeService } from './services/player-time.service';
+import debounce from 'lodash/debounce';
+
+/**
+ * The number of milliseconds after the last detected mouse activity after
+ * which the associated CSS class should be removed.
+ */
+const MOUSE_CLEANUP_DELAY = 4000;
+
+/**
+ * The number of milliseconds after the last detected mouse activity before
+ * the cleanup timer to remove the associated CSS class should be scheduled.
+ */
+const MOUSE_DEBOUNCE_DELAY = 250;
+
+/**
+ * The number of milliseconds, after the debounce delay, before the mouse
+ * activity cleanup timer should run.
+ */
+const MOUSE_CLEANUP_TIMER_DELAY = MOUSE_CLEANUP_DELAY - MOUSE_DEBOUNCE_DELAY;
 
 /**
  * Component which plays back session recordings. This directive emits the
@@ -63,9 +84,12 @@ import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArg
  *         of milliseconds since the start of the recording.
  */
 @Component({
-    selector     : 'guac-player',
-    templateUrl  : './player.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-player',
+    templateUrl: './player.component.html',
+    encapsulation: ViewEncapsulation.None,
+    host: {
+        '[class.recent-mouse-movement]': 'recentMouseMovement()'
+    }
 })
 export class PlayerComponent implements OnChanges, OnDestroy {
 
@@ -111,18 +135,99 @@ export class PlayerComponent implements OnChanges, OnDestroy {
     seekPosition: number | null = null;
 
     /**
+     * Any batches of text typed during the recording.
+     */
+    textBatches: TextBatch[] = [];
+
+    /**
+     * Whether or not the key log viewer should be displayed. False by
+     * default unless explicitly enabled by user interaction.
+     */
+    showKeyLog = false;
+
+    /**
+     * The height, in pixels, of the SVG heatmap paths. Note that this is not
+     * necessarily the actual rendered height, just the initial size of the
+     * SVG path before any styling is applied.
+     */
+    HEATMAP_HEIGHT = 100;
+
+    /**
+     * The width, in pixels, of the SVG heatmap paths. Note that this is not
+     * necessarily the actual rendered width, just the initial size of the
+     * SVG path before any styling is applied.
+     */
+    HEATMAP_WIDTH = 1000;
+
+    /**
+     * The maximum number of key events per millisecond to display in the
+     * key event heatmap. Any key event rates exceeding this value will be
+     * capped at this rate to ensure that unsually large spikes don't make
+     * swamp the rest of the data.
+     *
+     * Note: This is 6 keys per second (events include both presses and
+     * releases) - equivalent to ~88 words per minute typed.
+     */
+    private readonly KEY_EVENT_RATE_CAP = 12 / 1000;
+
+    /**
+     * The maximum number of frames per millisecond to display in the
+     * frame heatmap. Any frame rates exceeding this value will be
+     * capped at this rate to ensure that unsually large spikes don't make
+     * swamp the rest of the data.
+     */
+    private readonly FRAME_RATE_CAP = 10 / 1000;
+
+    /**
+     * An SVG path describing a smoothed curve that visualizes the relative
+     * number of frames rendered throughout the recording - i.e. a heatmap
+     * of screen updates.
+     */
+    frameHeatmap = '';
+
+    /**
+     * An SVG path describing a smoothed curve that visualizes the relative
+     * number of key events recorded throughout the recording - i.e. a
+     * heatmap of key events.
+     */
+    keyHeatmap = '';
+
+    /**
      * Whether a seek request is currently in progress. A seek request is
      * in progress if the user is attempting to change the current playback
      * position (the user is manipulating the playback position slider).
      */
-    pendingSeekRequest = false;
+    private pendingSeekRequest = false;
 
     /**
      * Whether playback should be resumed (play() should be invoked on the
      * recording) once the current seek request is complete. This value
      * only has meaning if a seek request is pending.
      */
-    resumeAfterSeekRequest = false;
+    private resumeAfterSeekRequest = false;
+
+    /**
+     * A scheduled timer to clean up the mouse activity CSS class, or null
+     * if no timer is scheduled.
+     */
+    private mouseActivityTimer: number | null = null;
+
+    /**
+     * The recording-relative timestamp of each frame of the recording that
+     * has been processed so far.
+     */
+    private frameTimestamps: number[] = [];
+
+    /**
+     * The recording-relative timestamp of each text event that has been
+     * processed so far.
+     */
+    private keyTimestamps: number[] = [];
+
+    /**
+     * Whether the mouse has moved recently.
+     */
+    recentMouseMovement = signal(false);
 
     /**
      * The operation that should be performed when the cancel button is
@@ -135,60 +240,34 @@ export class PlayerComponent implements OnChanges, OnDestroy {
      * Inject required services.
      */
     constructor(private guacEventService: GuacEventService<GuacFrontendEventArguments>,
-                private cdr: ChangeDetectorRef) {
+                private keyEventDisplayService: KeyEventDisplayService,
+                private playerHeatmapService: PlayerHeatmapService,
+                private playerTimeService: PlayerTimeService) {
     }
 
     /**
-     * Formats the given number as a decimal string, adding leading zeroes
-     * such that the string contains at least two digits. The given number
-     * MUST NOT be negative.
+     * Return true if any batches of key event logs are available for this
+     * recording, or false otherwise.
      *
-     * @param value
-     *     The number to format.
-     *
-     * @returns
-     *     The decimal string representation of the given value, padded
-     *     with leading zeroes up to a minimum length of two digits.
+     * @return
+     *     True if any batches of key event logs are avaiable for this
+     *     recording, or false otherwise.
      */
-    zeroPad(value: number): string {
-        return value > 9 ? value.toString() : '0' + value;
+    hasTextBatches(): boolean {
+        return this.textBatches.length >= 0;
     }
 
     /**
-     * Formats the given quantity of milliseconds as days, hours, minutes,
-     * and whole seconds, separated by colons (DD:HH:MM:SS). Hours are
-     * included only if the quantity is at least one hour, and days are
-     * included only if the quantity is at least one day. All included
-     * groups are zero-padded to two digits with the exception of the
-     * left-most group.
-     *
-     * @param value
-     *     The time to format, in milliseconds.
-     *
-     * @returns
-     *     The given quantity of milliseconds formatted as "DD:HH:MM:SS".
+     * Toggle the visibility of the text key log viewer.
      */
-    formatTime(value: number): string {
-
-        // Round provided value down to whole seconds
-        value = Math.floor((value || 0) / 1000);
-
-        // Separate seconds into logical groups of seconds, minutes,
-        // hours, etc.
-        const groups: (number | string)[] = [1, 24, 60, 60];
-        for (let i = groups.length - 1; i >= 0; i--) {
-            const placeValue = groups[i];
-            groups[i] = this.zeroPad(value % (placeValue as number));
-            value = Math.floor(value / (placeValue as number));
-        }
-
-        // Format groups separated by colons, stripping leading zeroes and
-        // groups which are entirely zeroes, leaving at least minutes and
-        // seconds
-        const formatted = groups.join(':');
-        return /^[0:]*([0-9]{1,2}(?::[0-9]{2})+)$/.exec(formatted)![1];
-
+    toggleKeyLogView(): void {
+        this.showKeyLog = !this.showKeyLog;
     }
+
+    /**
+     * @borrows PlayerTimeService.formatTime
+     */
+    formatTime = this.playerTimeService.formatTime;
 
     /**
      * Pauses playback and decouples the position slider from current
@@ -220,29 +299,51 @@ export class PlayerComponent implements OnChanges, OnDestroy {
         // If a recording is present and there is an active seek request,
         // restore the playback state at the time that request began and
         // begin seeking to the requested position
-        if (this.recording && this.pendingSeekRequest) {
-
-            this.seekPosition = null;
-            this.operationMessage = 'PLAYER.INFO_SEEK_IN_PROGRESS';
-            this.operationProgress = 0;
-
-            // Cancel seek when requested, updating playback position if
-            // that position changed
-            this.cancelOperation = () => {
-                this.recording?.cancel();
-                this.playbackPosition = this.seekPosition || this.playbackPosition;
-            };
-
-            this.resumeAfterSeekRequest && this.recording.play();
-            this.recording.seek(this.playbackPosition, () => {
-                this.operationMessage = null;
-            });
-
-        }
+        if (this.recording && this.pendingSeekRequest)
+            this.seekToPlaybackPosition();
 
         // Flag seek request as completed
         this.pendingSeekRequest = false;
 
+    }
+
+    /**
+     * Seek the recording to the specified position within the recording,
+     * in milliseconds.
+     *
+     * @param timestamp
+     *      The position to seek to within the current record,
+     *      in milliseconds.
+     */
+    seekToTimestamp(timestamp: number): void {
+
+        // Set the timestamp and seek to it
+        this.playbackPosition = timestamp;
+        this.seekToPlaybackPosition();
+
+    }
+
+    /**
+     * Seek the recording to the current playback position value.
+     */
+    seekToPlaybackPosition() {
+
+        this.seekPosition = null;
+        this.operationMessage = 'PLAYER.INFO_SEEK_IN_PROGRESS';
+        this.operationProgress = 0;
+
+        // Cancel seek when requested, updating playback position if
+        // that position changed
+        this.cancelOperation = () => {
+            this.recording!.cancel();
+            this.playbackPosition = this.seekPosition || this.playbackPosition;
+        };
+
+        this.resumeAfterSeekRequest && this.recording!.play();
+        this.recording!.seek(this.playbackPosition, () => {
+            this.seekPosition = null;
+            this.operationMessage = null;
+        });
     }
 
     /**
@@ -285,10 +386,23 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                 // Begin downloading the recording
                 this.recording.connect();
 
-                // Notify listeners when the recording is completely loaded
+                // Notify listeners and set any heatmap paths
+                // when the recording is completely loaded
                 this.recording.onload = () => {
                     this.operationMessage = null;
                     this.guacEventService.broadcast('guacPlayerLoaded');
+
+                    const recordingDuration = this.recording!.getDuration();
+
+                    // Generate heat maps for rendered frames and typed text
+                    this.frameHeatmap = (
+                        this.playerHeatmapService.generateHeatmapPath(
+                            this.frameTimestamps, recordingDuration, this.FRAME_RATE_CAP,
+                            this.HEATMAP_HEIGHT, this.HEATMAP_WIDTH));
+                    this.keyHeatmap = (
+                        this.playerHeatmapService.generateHeatmapPath(
+                            this.keyTimestamps, recordingDuration, this.KEY_EVENT_RATE_CAP,
+                            this.HEATMAP_HEIGHT, this.HEATMAP_WIDTH));
                 };
 
                 // Notify listeners if an error occurs
@@ -302,6 +416,9 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                 this.recording.onprogress = (duration, current) => {
                     this.operationProgress = (this.src as unknown as any)?.size ? current / (this.src as unknown as any).size : 0;
                     this.guacEventService.broadcast('guacPlayerProgress', { duration, current });
+
+                    // Store the timestamp of the just-received frame
+                    this.frameTimestamps.push(duration);
                 };
 
                 // Notify listeners when playback has started/resumed
@@ -312,6 +429,19 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                 // Notify listeners when playback has paused
                 this.recording.onpause = () => {
                     this.guacEventService.broadcast('guacPlayerPause');
+                };
+
+                // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
+                // Extract key events from the recording
+                this.recording.onkeyevents = (events) => {
+
+                    // Convert to a display-optimized format
+                    this.textBatches = (
+                        this.keyEventDisplayService.parseEvents(events));
+
+                    // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
+                    this.keyTimestamps = events.map(event => event.timestamp);
+
                 };
 
                 // Notify listeners when current position within the recording
@@ -345,9 +475,50 @@ export class PlayerComponent implements OnChanges, OnDestroy {
         }
     }
 
+    /**
+     * Clean up resources when player is destroyed
+     */
     ngOnDestroy() {
         this.recording?.pause();
         this.recording?.abort();
+        this.mouseActivityTimer !== null && window.clearTimeout(this.mouseActivityTimer);
+    }
+
+    /**
+     * Clean up the mouse movement class after no mouse activity has been
+     * detected for the appropriate time period.
+     */
+    private readonly scheduleCleanupTimeout = debounce(() =>
+            this.mouseActivityTimer = window.setTimeout(() => {
+                this.mouseActivityTimer = null;
+                this.recentMouseMovement.set(false);
+            }, MOUSE_CLEANUP_TIMER_DELAY),
+
+        /*
+         * Only schedule the cleanup task after the mouse hasn't moved
+         * for a reasonable amount of time to ensure that the number of
+         * created cleanup timers remains reasonable.
+         */
+        MOUSE_DEBOUNCE_DELAY);
+
+    /*
+     * When the mouse moves inside the player, add a CSS class signifying
+     * recent mouse movement, to be automatically cleaned up after a period
+     * of time with no detected mouse movement.
+     */
+    @HostListener('mousemove')
+    onMouseMove() {
+
+        // Clean up any existing cleanup timer
+        if (this.mouseActivityTimer !== null) {
+            window.clearTimeout(this.mouseActivityTimer);
+            this.mouseActivityTimer = null;
+        }
+
+        // Add the marker CSS class, and schedule its removal
+        this.recentMouseMovement.set(true);
+        this.scheduleCleanupTimeout();
+
     }
 
 }

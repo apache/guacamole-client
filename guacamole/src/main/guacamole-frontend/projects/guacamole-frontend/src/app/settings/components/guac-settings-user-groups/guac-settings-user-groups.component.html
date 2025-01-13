@@ -45,7 +45,7 @@
         </tr>
         </thead>
         <tbody [ngClass]="{'loading': !isLoaded()}">
-        <tr *ngFor="let manageableUserGroup of dataSourceView?.data | async" class="user-group">
+        <tr *ngFor="let manageableUserGroup of dataSourceView?.data | async" class="user-group" [ngClass]="{disabled: manageableUserGroup.userGroup.disabled}">
             <td class="user-group-name">
                 <a routerLink="/manage/{{manageableUserGroup.dataSource | escape}}/userGroups/{{manageableUserGroup.userGroup.identifier! | escape}}">
                     <div class="icon user-group"></div>

@@ -31,6 +31,49 @@ import { ManagedFilesystem } from './ManagedFilesystem';
 import { Optional } from '../../util/utility-types';
 
 /**
+ * Type definition for the onpipe handler accepted by the Guacamole.Client
+ */
+export type PipeStreamHandler = NonNullable<typeof Guacamole.Client.prototype.onpipe>;
+
+/**
+ * A deferred pipe stream, that has yet to be consumed, as well as all
+ * axuilary information needed to pull data from the stream.
+ */
+export class DeferredPipeStream {
+
+    /**
+     * The stream that will receive data from the server.
+     */
+    stream: Guacamole.InputStream;
+
+    /**
+     * The mimetype of the data which will be received.
+     */
+    mimetype: string;
+
+    /**
+     * The name of the pipe.
+     */
+    name: string;
+
+    /**
+     * Creates a new DeferredPipeStream.
+     *
+     * @param template
+     *     The object whose properties should be copied within the new
+     *     DeferredPipeStream.
+     */
+    constructor(template: DeferredPipeStream) {
+
+        this.stream = template.stream;
+        this.mimetype = template.mimetype;
+        this.name = template.name;
+
+    }
+
+}
+
+/**
  * Type definition for the template parameter accepted by the ManagedClient constructor.
  * Properties that have a default value are optional.
  */
@@ -51,6 +94,8 @@ export type ManagedClientTemplate = Optional<ManagedClient,
     | 'clientState'
     | 'clientProperties'
     | 'arguments'
+    | 'deferredPipeStreams'
+    | 'deferredPipeStreamHandlers'
 >;
 
 /**
@@ -188,6 +233,18 @@ export class ManagedClient {
     arguments: Record<string, ManagedArgument>;
 
     /**
+     * Any received pipe streams that have not been consumed by an onpipe
+     * handler or registered pipe handler, indexed by pipe stream name.
+     */
+    deferredPipeStreams: Record<string, DeferredPipeStream> = {};
+
+    /**
+     * Handlers for deferred pipe streams, indexed by the name of the pipe
+     * stream that the handler should handle.
+     */
+    deferredPipeStreamHandlers: Record<string, PipeStreamHandler> = {};
+
+    /**
      * The mimetype of audio data to be sent along the Guacamole connection if
      * audio input is supported.
      */
@@ -221,6 +278,8 @@ export class ManagedClient {
         this.clientState = template.clientState || new ManagedClientState();
         this.clientProperties = template.clientProperties || new ClientProperties();
         this.arguments = template.arguments || {};
+        this.deferredPipeStreams = template.deferredPipeStreams || {};
+        this.deferredPipeStreamHandlers = template.deferredPipeStreamHandlers || {};
     }
 
 

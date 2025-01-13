@@ -37,6 +37,7 @@
                                 "output": "translations"
                             },
                             "projects/guacamole-frontend/src/moduleFederation/mf.manifest.json",
+                            "projects/guacamole-frontend/src/manifest.json",
                             {
                                 "glob": "**/*.json",
                                 "input": "dist/guacamole-frontend-lib/assets/layouts",

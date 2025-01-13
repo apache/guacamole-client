@@ -71,6 +71,7 @@
         "ACTION_RECONNECT"                 : "Znovu připojit",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE:@",
         "ACTION_SHARE"                     : "@:APP.ACTION_SHARE:@",
+        "ACTION_SHOW_CLIPBOARD"            : "Kliknutím zobrazíte obsah schránky.",
         "ACTION_UPLOAD_FILES"              : "Nahrát soubory",
 
         "DIALOG_HEADER_CONNECTING"       : "Připojování",
@@ -163,7 +164,6 @@
         "TEXT_USER_LEFT"                  : "{USERNAME} opustil spojení.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Znovu připojuji  {REMAINING} {REMAINING, plural, one{sekundu} other{sekund}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
-        "TEXT_CLIPBOARD_AWAITING_FOCUS"   : "Kliknutím zobrazíte obsah schránky...",
 
         "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
 
@@ -659,6 +659,7 @@
         "FIELD_OPTION_SECURITY_TLS"       : "Šifrování TLS",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Dánština (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Švícarská Němčina (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Němčina (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
@@ -680,7 +681,6 @@
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portugalština (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Rumunština (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Švédština (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Dánština (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turečtina (Qwerty)",
 
         "NAME" : "RDP",

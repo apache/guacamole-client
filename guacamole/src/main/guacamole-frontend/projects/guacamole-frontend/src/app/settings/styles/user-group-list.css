@@ -26,11 +26,17 @@
     width: 100%;
 }
 
-.settings.user-groups table.user-group-list tr.user td.user-group-name a[href] {
+.settings.user-groups table.user-group-list tr.user-group td.user-group-name a[href] {
     display: block;
     padding: .5em 1em;
 }
 
-.settings.user-groups table.user-group-list tr.user td.user-group-name {
+.settings.user-groups table.user-group-list tr.user-group.disabled,
+.settings.user-groups table.user-group-list tr.user-group.disabled td.user-group-name a[href] {
+    color: gray;
+    font-style: italic;
+}
+
+.settings.user-groups table.user-group-list tr.user-group td.user-group-name {
     padding: 0;
 }

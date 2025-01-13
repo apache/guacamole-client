@@ -46,6 +46,11 @@ export class User {
     lastActive?: number;
 
     /**
+     * True if this user account is disabled, otherwise false.
+     */
+    disabled?: boolean;
+
+    /**
      * Arbitrary name/value pairs which further describe this user. The
      * semantics and validity of these attributes are dictated by the
      * extension which defines them.
@@ -65,6 +70,7 @@ export class User {
         this.username = template.username || '';
         this.password = template.password || '';
         this.lastActive = template.lastActive;
+        this.disabled = template.disabled;
         this.attributes = template.attributes || {};
     }
 

@@ -94,7 +94,7 @@
                         </div>
                     </guac-menu>
                 </h2>
-                <div class="share-menu" [hidden]="!canShareConnection()">
+                <div class="share-menu" *ngIf="canShareConnection()">
                     <guac-menu [menuTitle]="'CLIENT.ACTION_SHARE' | transloco">
                         <ul *ngFor="let sharingProfile of sharingProfiles | keyvalue">
                             <li><a (click)="share(sharingProfile.value)">{{ sharingProfile.value.name }}</a></li>
@@ -149,6 +149,7 @@
                     <guac-form [namespace]="getProtocolNamespace(focusedClient.protocol)"
                                [content]="focusedClient.forms"
                                [modelFormGroup]="connectionParameters"
+                               [client]="focusedClient"
                                [modelOnly]="true"></guac-form>
                 </div>
 

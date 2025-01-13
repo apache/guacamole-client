@@ -25,6 +25,24 @@
                    namespace="SETTINGS_PREFERENCES"></guac-form>
     </div>
 
+    <!-- Appearance -->
+    <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_APPEARANCE' | transloco}}</h2>
+    <div class="settings section appearance">
+        <p>{{'SETTINGS_PREFERENCES.HELP_APPEARANCE' | transloco}}</p>
+        <div class="form">
+            <table class="fields">
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_SHOW_RECENT_CONNECTIONS' | transloco}}</th>
+                    <td><input [(ngModel)]="preferenceService.preferences.showRecentConnections" type="checkbox"/></td>
+                </tr>
+                <tr>
+                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_NUMBER_RECENT_CONNECTIONS' | transloco}}</th>
+                    <td><input [(ngModel)]="preferenceService.preferences.numberOfRecentConnections" type="number" min="1" max="20"/></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
     <!-- Password update -->
     <h2 class="header"
         [hidden]="!canUpdateSelf">{{ 'SETTINGS_PREFERENCES.SECTION_HEADER_UPDATE_PASSWORD' | transloco }}</h2>

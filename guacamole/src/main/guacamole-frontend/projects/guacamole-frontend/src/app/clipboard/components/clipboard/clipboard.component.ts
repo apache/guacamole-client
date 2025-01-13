@@ -55,17 +55,20 @@ export class ClipboardComponent implements OnInit, AfterViewInit {
     }
 
     /**
-     * When isActive is set to true then the Clipboard data will be
-     * displayed in the Clipboard Editor. When false, the Clipboard Editor
-     * will not be displayed with Clipboard data.
+     * Whether clipboard contents should be displayed in the clipboard
+     * editor. If false, clipboard contents will not be displayed until
+     * the user manually reveals them.
      */
-    isActive = false;
+    contentsShown = false;
 
     /**
      * Updates clipboard editor to be active.
      */
-    setActive() {
-        this.isActive = true;
+    showContents(): void {
+        this.contentsShown = true;
+        window.setTimeout(() => {
+            this.element.nativeElement.focus();
+        }, 0);
     }
 
     /**

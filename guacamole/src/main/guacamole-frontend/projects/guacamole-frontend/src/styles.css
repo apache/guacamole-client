@@ -93,6 +93,7 @@
 @import "app/player/styles/playerDisplay.css";
 @import "app/player/styles/progressIndicator.css";
 @import "app/player/styles/seek.css";
+@import "app/player/styles/textView.css";
 
 @import "app/settings/styles/buttons.css";
 @import "app/settings/styles/connection-list.css";

@@ -48,23 +48,50 @@
     background: url('^images/checker.svg');
 }
 
-.clipboard-service-target {
-    position: fixed;
-    left: -1em;
-    right: -1em;
-    width: 1em;
-    height: 1em;
-    white-space: pre;
-    overflow: hidden;
+.clipboard-editor {
+    position: relative;
 }
 
-#clipboard-settings .clipboard.active {
+.clipboard-editor .clipboard {
     overflow: auto;
     font-size: 1em;
 }
 
-#clipboard-settings .clipboard.inactive {
+.clipboard-editor .clipboard.clipboard-contents-hidden {
+    color: transparent;
+    overflow: hidden;
+}
+
+.clipboard-editor .clipboard-contents-hidden-hint {
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+
+}
+
+.clipboard-editor .clipboard-contents-hidden-hint .clipboard-contents-hidden-hint-text {
+
+    flex: 1;
+
+    background: rgba(0, 0, 0, 0.125);
+    color: #888;
+
+    padding: 0.5em;
     overflow: hidden;
     font-size: 0.9em;
-    opacity: 0.5;
+    text-align: center;
+    font-style: italic;
+
+}
+
+.clipboard-editor .clipboard-contents-hidden-hint:hover .clipboard-contents-hidden-hint-text {
+    text-decoration: underline;
 }

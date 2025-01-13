@@ -72,6 +72,12 @@ export class GuacTiledClientsComponent implements DoCheck {
     private lastFocusedClientArguments?: Record<string, ManagedArgument>;
 
     /**
+     * TODO
+     * @private
+     */
+    private lastProtocol: string | undefined | null;
+
+    /**
      * Inject required services.
      */
     constructor(private guacEventService: GuacEventService<GuacFrontendEventArguments>,
@@ -104,12 +110,11 @@ export class GuacTiledClientsComponent implements DoCheck {
      */
     ngDoCheck(): void {
 
+        // Notify whenever identify of currently-focused client changes
         const newFocusedClient: ManagedClient | null = this.getFocusedClient();
-        const newArguments: Record<string, ManagedArgument> | undefined = this.getFocusedClient()?.arguments;
 
         if (this.lastFocusedClient !== newFocusedClient) {
 
-            // Notify whenever identify of currently-focused client changes
             this.guacEventService.broadcast('guacClientFocused', { newFocusedClient });
 
             // Remember the new focused Client
@@ -117,13 +122,26 @@ export class GuacTiledClientsComponent implements DoCheck {
 
         }
 
+        // Notify whenever arguments of currently-focused client changes
+        const newArguments: Record<string, ManagedArgument> | undefined = this.getFocusedClient()?.arguments;
+
         if (!isEqual(this.lastFocusedClientArguments, newArguments)) {
 
-            // Notify whenever arguments of currently-focused client changes
             this.guacEventService.broadcast('guacClientArgumentsUpdated', { focusedClient: newFocusedClient });
 
             // Remember the new arguments
             this.lastFocusedClientArguments = newArguments;
+        }
+
+        // Notify whenever protocol of currently-focused client changes
+        const newProtocol: string | undefined | null = this.getFocusedClient()?.protocol;
+
+        if (this.lastProtocol !== newProtocol) {
+
+            this.guacEventService.broadcast('guacClientProtocolUpdated', { focusedClient: newFocusedClient });
+
+            // Remember the new protocol
+            this.lastProtocol = newProtocol;
         }
 
     }
