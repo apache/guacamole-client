@@ -1,21 +1,3 @@
-import {
-    AfterViewInit,
-    Component,
-    DoCheck,
-    ElementRef,
-    Input,
-    Renderer2,
-    ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
-
-import { take } from 'rxjs';
-import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
-import { ManagedClient } from '../../types/ManagedClient';
-
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -34,6 +16,26 @@ import { ManagedClient } from '../../types/ManagedClient';
  * specific language governing permissions and limitations
  * under the License.
  */
+
+import {
+    AfterViewInit,
+    Component,
+    DoCheck,
+    ElementRef,
+    Input,
+    Renderer2,
+    ViewChild,
+    ViewEncapsulation
+} from '@angular/core';
+import { TranslocoService } from '@ngneat/transloco';
+
+import { take } from 'rxjs';
+import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
+import { ManagedClient } from '../../types/ManagedClient';
+
+
+
+
 
 /**
  * A component that displays a status indicator showing the number of users
