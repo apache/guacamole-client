@@ -1,5 +1,3 @@
-
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,8 +17,7 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { AuthenticationService } from '../../auth/service/authentication.service';
 import { ClientIdentifier } from '../types/ClientIdentifier';
 
@@ -86,17 +83,12 @@ const base64urlDecode = (value: string): string => {
 })
 export class ClientIdentifierService {
 
-    private window: Window;
-
     /**
      * Inject required services.
      */
-    constructor(@Inject(DOCUMENT) private document: Document,
-                private authenticationService: AuthenticationService
+    constructor(private authenticationService: AuthenticationService
     ) {
-        this.window = this.document.defaultView as Window;
     }
-
 
     /**
      * Converts the given ClientIdentifier or ClientIdentifier-like object to

@@ -60,20 +60,14 @@ export class GuacClientManagerService {
     });
 
     /**
-     * Reference to the global window object.
-     */
-    readonly window: Window;
-
-    /**
      * Inject required services.
      */
-    constructor(@Inject(DOCUMENT) private document: Document,
-                private sessionStorageFactory: SessionStorageFactory,
+    constructor(private sessionStorageFactory: SessionStorageFactory,
                 private managedClientService: ManagedClientService) {
-        this.window = this.document.defaultView as Window;
 
         // Disconnect all clients when window is unloaded
-        this.window.addEventListener('unload', () => this.clear());
+        window.addEventListener('unload', () => this.clear());
+
     }
 
     /**

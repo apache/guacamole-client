@@ -51,15 +51,9 @@ export class TunnelService {
     private readonly CHUNK_SIZE: number = 1024 * 1024 * 4;
 
     /**
-     * Reference to the window object.
-     */
-    private window: Window;
-
-    /**
      * Inject required services.
      */
-    constructor(private http: HttpClient, private authenticationService: AuthenticationService, @Inject(DOCUMENT) private document: Document) {
-        this.window = this.document.defaultView as Window;
+    constructor(private http: HttpClient, private authenticationService: AuthenticationService) {
     }
 
     /**
@@ -187,11 +181,11 @@ export class TunnelService {
      */
     downloadStream(tunnel: string, stream: Guacamole.InputStream, mimetype: string, filename: string): void {
 
-        const streamOrigin = this.window.location.origin;
+        const streamOrigin = window.location.origin;
 
         // Build download URL
         const url = streamOrigin
-            + this.window.location.pathname
+            + window.location.pathname
             + 'api/session/tunnels/' + encodeURIComponent(tunnel)
             + '/streams/' + encodeURIComponent(stream.index)
             + '/' + encodeURIComponent(this.sanitizeFilename(filename))
@@ -223,7 +217,7 @@ export class TunnelService {
         // Automatically remove iframe from DOM a few seconds after the stream
         // ends, in the browser does NOT fire the "load" event for downloads
         stream.onend = () => {
-            this.window.setTimeout(() => {
+            window.setTimeout(() => {
                 if (iframe.parentElement) {
                     document.body.removeChild(iframe);
                 }
@@ -276,11 +270,11 @@ export class TunnelService {
             }
         );
 
-        const streamOrigin = this.window.location.origin;
+        const streamOrigin = window.location.origin;
 
         // Build upload URL
         const url = streamOrigin
-            + this.window.location.pathname
+            + window.location.pathname
             + 'api/session/tunnels/' + encodeURIComponent(tunnel)
             + '/streams/' + encodeURIComponent(stream.index)
             + '/' + encodeURIComponent(this.sanitizeFilename(file.name))

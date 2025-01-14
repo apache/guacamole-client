@@ -17,9 +17,7 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
 import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
-
 
 /**
  * A component which provides a fullscreen environment for its content.
@@ -30,8 +28,6 @@ import { AfterViewInit, Component, ElementRef, Inject, OnDestroy, ViewChild, Vie
     encapsulation: ViewEncapsulation.None
 })
 export class ViewportComponent implements AfterViewInit, OnDestroy {
-
-    private readonly window: Window;
 
     /**
      * The wrapped fullscreen container element.
@@ -58,24 +54,23 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
     lastViewportHeight?: number = undefined;
     private pollArea?: number;
 
-    constructor(@Inject(DOCUMENT) private document: Document,) {
-        this.window = this.document.defaultView as Window;
-    }
 
     ngAfterViewInit(): void {
         this.element = this.elementRef.nativeElement;
 
         // Fit container within visible region when window scrolls
-        this.window.addEventListener('scroll', this.fitVisibleArea);
+        window.addEventListener('scroll', this.fitVisibleArea);
 
         // Poll every 10ms, in case scroll event does not fire
-        this.pollArea = this.window.setInterval(() => this.fitVisibleArea(), 10);
+        this.pollArea = window.setInterval(() => this.fitVisibleArea(), 10);
     }
 
+    /**
+     * Clean up on destruction
+     */
     ngOnDestroy(): void {
-        // Clean up on destruction
-        this.window.removeEventListener('scroll', this.fitVisibleArea);
-        this.window.clearInterval(this.pollArea);
+        window.removeEventListener('scroll', this.fitVisibleArea);
+        window.clearInterval(this.pollArea);
     }
 
     /**
@@ -88,8 +83,8 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
         // Calculate viewport dimensions (this is NOT necessarily the
         // same as 100vw and 100vh, 100%, etc., particularly when the
         // on-screen keyboard of a mobile device pops open)
-        const viewportWidth = this.window.innerWidth;
-        const viewportHeight = this.window.innerHeight;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
 
         // Adjust element width to fit exactly within visible area
         if (viewportWidth !== this.lastViewportWidth) {
@@ -106,9 +101,9 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
         // Scroll this.element such that its upper-left corner is exactly
         // within the viewport upper-left corner, if not already there
         if (this.element.scrollLeft || this.element.scrollTop) {
-            this.window.scrollTo(
-                this.window.scrollX + this.element.scrollLeft,
-                this.window.scrollY + this.element.scrollTop
+            window.scrollTo(
+                window.scrollX + this.element.scrollLeft,
+                window.scrollY + this.element.scrollTop
             );
         }
 

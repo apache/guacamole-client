@@ -109,11 +109,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
     readonly ApplicationState = ApplicationState;
 
     /**
-     * Reference to the window object.
-     */
-    private readonly window: Window;
-
-    /**
      * Inject required services.
      */
     constructor(private authenticationService: AuthenticationService,
@@ -129,7 +124,6 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 @Inject(DOCUMENT) private document: Document,
                 private renderer: Renderer2,
                 private destroyRef: DestroyRef) {
-        this.window = this.document.defaultView as Window;
     }
 
     ngOnInit(): void {
@@ -190,7 +184,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         };
 
         // Release all keys when window loses focus
-        this.window.onblur = () => {
+        window.onblur = () => {
             keyboard.reset();
         };
 
@@ -201,7 +195,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         // after all). There is no need to do this if a connection is active as
         // that connection activity will already automatically check session
         // validity.
-        this.window.setInterval(() => {
+        window.setInterval(() => {
             if (!!this.authenticationService.getCurrentToken() && !this.hasActiveTunnel()) {
                 this.authenticationService.getValidity().subscribe((valid) => {
                     if (!valid)
@@ -217,13 +211,13 @@ export class AppComponent implements OnInit, AfterViewChecked {
         });
 
         // Attempt to read the clipboard if it may have changed
-        this.window.addEventListener('load', this.clipboardService.resyncClipboard, true);
-        this.window.addEventListener('copy', this.clipboardService.resyncClipboard);
-        this.window.addEventListener('cut', this.clipboardService.resyncClipboard);
-        this.window.addEventListener('focus', (e: FocusEvent) => {
+        window.addEventListener('load', this.clipboardService.resyncClipboard, true);
+        window.addEventListener('copy', this.clipboardService.resyncClipboard);
+        window.addEventListener('cut', this.clipboardService.resyncClipboard);
+        window.addEventListener('focus', (e: FocusEvent) => {
 
             // Only recheck clipboard if it's the window itself that gained focus
-            if (e.target === this.window)
+            if (e.target === window)
                 this.clipboardService.resyncClipboard();
 
         }, true);

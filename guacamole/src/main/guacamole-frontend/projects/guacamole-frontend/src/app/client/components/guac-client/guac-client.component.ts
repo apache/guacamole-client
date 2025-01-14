@@ -132,11 +132,6 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
     private touch!: Guacamole.Touch;
 
     /**
-     * Reference to the window object.
-     */
-    private window: Window;
-
-    /**
      * The last known horizontal scroll position of the client view.
      */
     private lastScrollLeft?: number;
@@ -186,7 +181,6 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private destroyRef: DestroyRef,
                 @Inject(DOCUMENT) private document: Document) {
-        this.window = this.document.defaultView as Window;
     }
 
     ngOnInit(): void {
@@ -722,7 +716,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
             // Connect, if not already connected
             this.managedClientService.connect(this.managedClient, this.main.offsetWidth, this.main.offsetHeight);
 
-            const pixelDensity = this.window.devicePixelRatio || 1;
+            const pixelDensity = window.devicePixelRatio || 1;
             const width = this.main.offsetWidth * pixelDensity;
             const height = this.main.offsetHeight * pixelDensity;
 

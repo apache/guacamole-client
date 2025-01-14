@@ -62,11 +62,6 @@ export class ManagedClientService {
      */
     readonly THUMBNAIL_UPDATE_FREQUENCY: number = 5000;
 
-    /**
-     * Reference to the window object.
-     */
-    readonly window: Window;
-
     constructor(
         @Inject(DOCUMENT) private document: Document,
         private authenticationService: AuthenticationService,
@@ -85,7 +80,6 @@ export class ManagedClientService {
         private guacImage: GuacImageService,
         private clientIdentifierService: ClientIdentifierService
     ) {
-        this.window = this.document.defaultView as Window;
     }
 
     /**
@@ -110,10 +104,10 @@ export class ManagedClientService {
      */
     private getConnectString(identifier: ClientIdentifier, width: number, height: number): Promise<string> {
 
-        return new Promise<string>((resolve, reject) => {
+        return new Promise<string>((resolve) => {
 
             // Calculate optimal width/height for display
-            const pixel_density = this.window.devicePixelRatio || 1;
+            const pixel_density = window.devicePixelRatio || 1;
             const optimal_dpi = pixel_density * 96;
             const optimal_width = width * pixel_density;
             const optimal_height = height * pixel_density;
@@ -204,7 +198,7 @@ export class ManagedClientService {
         let tunnel: Guacamole.Tunnel;
 
         // If WebSocket available, try to use it.
-        if ('WebSocket' in this.window)
+        if ('WebSocket' in window)
             tunnel = new Guacamole.ChainedTunnel(
                 new Guacamole.WebSocketTunnel('websocket-tunnel'),
                 new Guacamole.HTTPTunnel('tunnel')

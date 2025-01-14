@@ -56,11 +56,6 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
     progressPercent: number | null = null;
 
     /**
-     * Current window.
-     */
-    private window: Window;
-
-    /**
      * The time remaining in the countdown, if any.
      */
     timeRemaining: number | null = null;
@@ -75,10 +70,8 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
      */
     notificationFormGroup: FormGroup = new FormGroup({});
 
-    constructor(@Inject(DOCUMENT) private document: Document,
-                private formService: FormService,
+    constructor(private formService: FormService,
                 private destroyRef: DestroyRef) {
-        this.window = this.document.defaultView as Window;
     }
 
     /**
@@ -108,14 +101,14 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
 
             // Clean up any existing interval
             if (this.interval)
-                this.window.clearInterval(this.interval);
+                window.clearInterval(this.interval);
 
             // Update and handle countdown, if provided
             if (countdown) {
 
                 this.timeRemaining = countdown.remaining;
 
-                this.interval = this.window.setInterval(() => {
+                this.interval = window.setInterval(() => {
 
                     // Update time remaining
                     this.timeRemaining!--;
@@ -137,7 +130,7 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
      */
     ngOnDestroy(): void {
         if (this.interval)
-            this.window.clearInterval(this.interval);
+            window.clearInterval(this.interval);
     }
 
 
