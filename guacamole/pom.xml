@@ -60,6 +60,32 @@
     <build>
         <plugins>
 
+            <!-- Add files from guacamole-common-js -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-guacamole-js</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.guacamole</groupId>
+                                    <artifactId>guacamole-common-js</artifactId>
+                                    <type>zip</type>
+                                    <outputDirectory>src/main/guacamole-frontend/projects/guacamole-frontend-lib/src/assets</outputDirectory>
+                                    <includes>**/all.min.js</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Build Angular lib and application with NPM -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
@@ -68,6 +94,12 @@
                 <configuration>
                     <installDirectory>${project.build.directory}</installDirectory>
                     <workingDirectory>src/main/guacamole-frontend</workingDirectory>
+
+                    <!--
+                    Skip tests unless requested otherwise with -DskipTests=false.
+                    Skipped by default because these tests require firefox to be installed.
+                    -->
+                    <skipTests>true</skipTests>
                 </configuration>
                 <executions>
                     <!-- Install Node-->
@@ -235,15 +267,6 @@
                         <!-- Alternative delimiter for the index.html of the Angular application -->
                         <delimiter>#{*}</delimiter>
                     </delimiters>
-
-                    <!-- Add files from guacamole-common-js -->
-                    <overlays>
-                        <overlay>
-                            <groupId>org.apache.guacamole</groupId>
-                            <artifactId>guacamole-common-js</artifactId>
-                            <type>zip</type>
-                        </overlay>
-                    </overlays>
 
                 </configuration>
                 <executions>

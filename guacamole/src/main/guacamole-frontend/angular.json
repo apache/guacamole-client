@@ -50,7 +50,7 @@
                             "dist/guacamole-frontend-lib/assets/styles/osk/styles/osk.css"
                         ],
                         "scripts": [
-                            "dist/guacamole-frontend-lib/assets/guacamole-common-js.min.js"
+                            "dist/guacamole-frontend-lib/assets/guacamole-common-js/all.min.js"
                         ],
                         "extraWebpackConfig": "projects/guacamole-frontend/webpack.config.js",
                         "commonChunk": false
@@ -123,7 +123,7 @@
                             "projects/guacamole-frontend/src/styles.css"
                         ],
                         "scripts": [
-                            "projects/guacamole-frontend-lib/src/assets/guacamole-common-js.min.js"
+                            "dist/guacamole-frontend-lib/assets/guacamole-common-js/all.min.js"
                         ],
                         "karmaConfig": "projects/guacamole-frontend/karma.conf.js"
                     }
@@ -169,7 +169,7 @@
                             "zone.js/testing"
                         ],
                         "scripts": [
-                            "projects/guacamole-frontend-lib/src/assets/guacamole-common-js.min.js"
+                            "projects/guacamole-frontend-lib/src/assets/guacamole-common-js/all.min.js"
                         ],
                         "karmaConfig": "projects/guacamole-frontend-lib/karma.conf.js"
                     }
