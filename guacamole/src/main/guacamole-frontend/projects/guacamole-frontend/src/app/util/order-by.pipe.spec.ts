@@ -39,7 +39,7 @@ describe('OrderByPipe', () => {
     });
 
     it('orders by property', () => {
-        const result = pipe.transform([{ name: 'b' }, { name: 'a' }], ['name']);
+        const result = pipe.transform([{ name: 'b' }, { name: 'a' }], 'name');
         expect(result).toEqual([{ name: 'a' }, { name: 'b' }]);
     });
 });

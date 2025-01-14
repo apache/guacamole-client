@@ -17,7 +17,8 @@
  * under the License.
  */
 
-// Karma configuration file for development.
+// Karma configuration file for CI.
+// Run the tests once in headless Firefox and exit.
 module.exports = function (config) {
     config.set({
         basePath: '',
@@ -51,7 +52,22 @@ module.exports = function (config) {
             ]
         },
         reporters: ['progress', 'kjhtml'],
-        browsers: ['Firefox'],
-        restartOnFileChange: true
+
+        // Run the tests once and exit
+        singleRun: true,
+
+        // Disable automatic test running on changed files
+        autoWatch: false,
+
+        // Use a headless firefox browser to run the tests
+        browsers: ['FirefoxHeadless'],
+        customLaunchers: {
+            'FirefoxHeadless': {
+                base: 'Firefox',
+                flags: [
+                    '--headless'
+                ]
+            }
+        }
     });
 };

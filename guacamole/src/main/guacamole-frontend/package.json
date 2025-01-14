@@ -7,6 +7,8 @@
         "build": "ng build",
         "build:app": "ng build guacamole-frontend --base-href /guacamole/",
         "test": "ng test",
+        "test-guacamole-frontend-lib:ci": "ng test --karma-config projects/guacamole-frontend-lib/karma.conf.ci.js guacamole-frontend-lib",
+        "test-guacamole-frontend:ci": "ng test --karma-config projects/guacamole-frontend/karma.conf.ci.js guacamole-frontend",
         "lint": "ng lint",
         "run:all": "node node_modules/@angular-architects/module-federation/src/server/mf-dev-server.js"
     },

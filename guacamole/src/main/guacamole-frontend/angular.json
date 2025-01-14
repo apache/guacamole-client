@@ -167,7 +167,11 @@
                         "polyfills": [
                             "zone.js",
                             "zone.js/testing"
-                        ]
+                        ],
+                        "scripts": [
+                            "projects/guacamole-frontend-lib/src/assets/guacamole-common-js.min.js"
+                        ],
+                        "karmaConfig": "projects/guacamole-frontend-lib/karma.conf.js"
                     }
                 },
                 "lint": {

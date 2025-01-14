@@ -104,6 +104,18 @@
                         </configuration>
                     </execution>
 
+                    <!-- guacamole-frontend-lib: run tests-->
+                    <execution>
+                        <id>npm-test-lib</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run test-guacamole-frontend-lib:ci</arguments>
+                        </configuration>
+                    </execution>
+
                     <!-- guacamole-frontend-ext-lib: npm run build-->
                     <execution>
                         <id>npm-build-ext-lib</id>
@@ -125,6 +137,18 @@
                         </goals>
                         <configuration>
                             <arguments>run build:app</arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- guacamole-frontend: run tests-->
+                    <execution>
+                        <id>npm-test-app</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run test-guacamole-frontend:ci</arguments>
                         </configuration>
                     </execution>
 
