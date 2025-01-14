@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { ManagedClient } from './ManagedClient';
 import filter from 'lodash/filter';
 import findIndex from 'lodash/findIndex';
 import isArray from 'lodash/isArray';
 import isString from 'lodash/isString';
 import map from 'lodash/map';
+import { ManagedClient } from './ManagedClient';
 
 export namespace ManagedClientGroup {
 

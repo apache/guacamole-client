@@ -71,7 +71,7 @@ export namespace DirectoryPatch {
         /**
          * Adds the specified object to the relation.
          */
-        ADD = 'add',
+        ADD     = 'add',
 
         /**
          * Replaces (updates) the specified object from the relation.
@@ -81,7 +81,7 @@ export namespace DirectoryPatch {
         /**
          * Removes the specified object from the relation.
          */
-        REMOVE = 'remove'
+        REMOVE  = 'remove'
 
     }
 

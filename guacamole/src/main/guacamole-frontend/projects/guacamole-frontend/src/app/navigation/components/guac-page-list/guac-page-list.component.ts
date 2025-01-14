@@ -228,7 +228,7 @@ export class GuacPageListComponent implements OnInit, OnChanges {
             this.levels = [];
 
             // Add all page definitions
-            pages.forEach((page) => this.addPage(page))
+            pages.forEach((page) => this.addPage(page));
 
             // Filter to only relevant levels
             this.levels = this.levels.filter(function isRelevant(level) {

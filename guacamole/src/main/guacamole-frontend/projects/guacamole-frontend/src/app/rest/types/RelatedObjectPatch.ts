@@ -68,7 +68,7 @@ export namespace RelatedObjectPatch {
         /**
          * Adds the specified object to the relation.
          */
-        ADD = 'add',
+        ADD    = 'add',
 
         /**
          * Removes the specified object from the relation.

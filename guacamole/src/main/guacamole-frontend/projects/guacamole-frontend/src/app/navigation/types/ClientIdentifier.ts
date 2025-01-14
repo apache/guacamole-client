@@ -69,12 +69,12 @@ export namespace ClientIdentifier {
         /**
          * The type string for a Guacamole connection.
          */
-        CONNECTION = 'c',
+        CONNECTION        = 'c',
 
         /**
          * The type string for a Guacamole connection group.
          */
-        CONNECTION_GROUP = 'g',
+        CONNECTION_GROUP  = 'g',
 
         /**
          * The type string for an active Guacamole connection.

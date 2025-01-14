@@ -791,6 +791,6 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
             'Yap'         : 'Pacific/Yap'
         }
 
-    }
+    };
 
 }

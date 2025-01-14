@@ -18,15 +18,15 @@
  */
 
 import { Form } from '../../rest/types/Form';
+import { Optional } from '../../util/utility-types';
 import { ClientProperties } from './ClientProperties';
+import { ManagedArgument } from './ManagedArgument';
 import { ManagedClientState } from './ManagedClientState';
 import { ManagedClientThumbnail } from './ManagedClientThumbnail';
 import { ManagedDisplay } from './ManagedDisplay';
+import { ManagedFilesystem } from './ManagedFilesystem';
 import { ManagedFileUpload } from './ManagedFileUpload';
 import { ManagedShareLink } from './ManagedShareLink';
-import { ManagedArgument } from './ManagedArgument';
-import { ManagedFilesystem } from './ManagedFilesystem';
-import { Optional } from '../../util/utility-types';
 
 /**
  * Type definition for the onpipe handler accepted by the Guacamole.Client

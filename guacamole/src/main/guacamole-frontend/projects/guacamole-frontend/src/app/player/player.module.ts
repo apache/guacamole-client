@@ -50,9 +50,9 @@ import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ElementModule } from 'guacamole-frontend-lib';
 import { PlayerDisplayComponent } from './player-display/player-display.component';
+import { PlayerTextViewComponent } from './player-text-view/player-text-view.component';
 import { PlayerComponent } from './player.component';
 import { ProgressIndicatorComponent } from './progress-indicator/progress-indicator.component';
-import { PlayerTextViewComponent } from './player-text-view/player-text-view.component';
 
 @NgModule({
     declarations: [

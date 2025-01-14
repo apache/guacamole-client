@@ -181,7 +181,7 @@ export class ConnectionHistoryEntry {
              */
             const round = (value: number): number => {
                 return Math.round(value * 10) / 10;
-            }
+            };
 
             // Days
             if (seconds >= 86400) {

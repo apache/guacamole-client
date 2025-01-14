@@ -31,29 +31,29 @@ export enum ApplicationState {
      * The application has fully loaded but is awaiting credentials from
      * the user before proceeding.
      */
-    AWAITING_CREDENTIALS = 'awaitingCredentials',
+    AWAITING_CREDENTIALS     = 'awaitingCredentials',
 
     /**
      * A fatal error has occurred that will prevent the client side of the
      * application from functioning properly.
      */
-    FATAL_ERROR = 'fatalError',
+    FATAL_ERROR              = 'fatalError',
 
     /**
      * The application has just started within the user's browser and has
      * not yet settled into any specific state.
      */
-    LOADING = 'loading',
+    LOADING                  = 'loading',
 
     /**
      * The user has manually logged out.
      */
-    LOGGED_OUT = 'loggedOut',
+    LOGGED_OUT               = 'loggedOut',
 
     /**
      * The application has fully loaded and the user has logged in
      */
-    READY = 'ready'
+    READY                    = 'ready'
 
 
 }

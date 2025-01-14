@@ -66,7 +66,7 @@ export namespace ConnectionImportConfig {
          * Any Connection that has the same name and parent group as an existing
          * connection will cause the entire import to be rejected with an error.
          */
-        REJECT = 'REJECT',
+        REJECT  = 'REJECT',
 
         /**
          * Replace/update any existing connections.
@@ -93,7 +93,7 @@ export namespace ConnectionImportConfig {
          * users or groups specified in the import file will be granted to the
          * replaced connection after import.
          */
-        REPLACE = 'REPLACE'
+        REPLACE  = 'REPLACE'
 
     }
 

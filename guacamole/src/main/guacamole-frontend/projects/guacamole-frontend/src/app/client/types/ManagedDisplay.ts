@@ -20,10 +20,6 @@
 import { signal, WritableSignal } from '@angular/core';
 
 
-
-
-
-
 export type ManagedDisplayTemplate = {
     display?: Guacamole.Display;
     size?: ManagedDisplayDimensions;
@@ -86,7 +82,7 @@ export class ManagedDisplay {
         display.onresize = function setClientSize() {
 
             managedDisplay.size = new ManagedDisplayDimensions({
-                width: display.getWidth(),
+                width : display.getWidth(),
                 height: display.getHeight()
             });
 
@@ -97,8 +93,8 @@ export class ManagedDisplay {
 
             managedDisplay.cursor = new ManagedDisplayCursor({
                 canvas: canvas,
-                x: x,
-                y: y
+                x     : x,
+                y     : y
             });
 
         };

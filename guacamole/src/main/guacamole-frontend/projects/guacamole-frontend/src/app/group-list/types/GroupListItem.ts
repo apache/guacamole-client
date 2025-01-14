@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { SharingProfile } from '../../rest/types/SharingProfile';
-import { ConnectionGroup } from '../../rest/types/ConnectionGroup';
-import { Connection } from '../../rest/types/Connection';
-import { ClientIdentifier } from '../../navigation/types/ClientIdentifier';
-import { Optional } from '../../util/utility-types';
 import { ClientIdentifierService } from '../../navigation/service/client-identifier.service';
+import { ClientIdentifier } from '../../navigation/types/ClientIdentifier';
+import { Connection } from '../../rest/types/Connection';
+import { ConnectionGroup } from '../../rest/types/ConnectionGroup';
+import { SharingProfile } from '../../rest/types/SharingProfile';
+import { Optional } from '../../util/utility-types';
 
 /**
  * Provides the GroupListItem class definition.
@@ -310,7 +310,7 @@ export class GroupListItem {
      */
     static fromConnectionGroup(dataSource: string,
                                connectionGroup: ConnectionGroup,
-                               includeConnections = true,
+                               includeConnections     = true,
                                includeSharingProfiles = true,
                                countActiveConnections?: (dataSource: string, connection: Connection) => number,
                                countActiveConnectionGroups?: (dataSource: string, connectionGroup: ConnectionGroup) => number): GroupListItem {
@@ -419,7 +419,7 @@ export namespace GroupListItem {
          * The standard type string of a GroupListItem which represents a
          * connection.
          */
-        CONNECTION = 'connection',
+        CONNECTION       = 'connection',
 
         /**
          * The standard type string of a GroupListItem which represents a
@@ -431,6 +431,6 @@ export namespace GroupListItem {
          * The standard type string of a GroupListItem which represents a
          * sharing profile.
          */
-        SHARING_PROFILE = 'sharing-profile'
+        SHARING_PROFILE  = 'sharing-profile'
     }
 }

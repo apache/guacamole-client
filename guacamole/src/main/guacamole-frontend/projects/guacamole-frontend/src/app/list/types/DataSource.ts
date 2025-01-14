@@ -137,7 +137,7 @@ export class DataSource<T> {
             return data;
 
         this.filterPattern.compile(searchString);
-        return this.filterService.filterByPredicate(data, this.filterPattern.predicate as any)
+        return this.filterService.filterByPredicate(data, this.filterPattern.predicate as any);
     }
 
     /**

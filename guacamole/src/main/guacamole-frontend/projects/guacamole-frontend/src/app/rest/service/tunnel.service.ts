@@ -17,9 +17,8 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthenticationService } from '../../auth/service/authentication.service';
 import { Error } from '../types/Error';
@@ -349,7 +348,8 @@ export class TunnelService {
                 else
                     reject(new Error({
                         type      : Error.Type.STREAM_ERROR,
-                        statusCode: Guacamole.Status.Code.SERVER_ERROR, // TODO: Guacamole.Status.Code.INTERNAL_ERROR does not exist
+                        statusCode: Guacamole.Status.Code.SERVER_ERROR, // TODO: Guacamole.Status.Code.INTERNAL_ERROR
+                                                                        // does not exist
                         message   : 'HTTP ' + xhr.status
                     }));
 

@@ -21,7 +21,6 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable, Renderer2, RendererFactory2 } from '@angular/core';
 
 
-
 const STYLE_ELEMENT_ID = 'loaded-style-';
 
 /**
@@ -62,7 +61,7 @@ export class StyleLoaderService {
      */
     loadStyle(styleName: string): void {
 
-        const elementId = STYLE_ELEMENT_ID + styleName
+        const elementId = STYLE_ELEMENT_ID + styleName;
 
         // If the element already exists there is nothing to do
         if (this.document.getElementById(elementId))

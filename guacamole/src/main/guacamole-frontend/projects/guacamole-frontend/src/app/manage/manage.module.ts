@@ -73,17 +73,17 @@ import {
         ConnectionGroupPermissionComponent,
         ManageSharingProfileComponent
     ],
-  imports: [
-    CommonModule,
-    FormModule,
-    TranslocoModule,
-    FormsModule,
-    NavigationModule,
-    ListModule,
-    NgOptimizedImage,
-    GroupListModule,
-    OrderByPipe
-  ],
+    imports     : [
+        CommonModule,
+        FormModule,
+        TranslocoModule,
+        FormsModule,
+        NavigationModule,
+        ListModule,
+        NgOptimizedImage,
+        GroupListModule,
+        OrderByPipe
+    ],
     exports     : [
         ManageUserComponent,
         DataSourceTabsComponent,

@@ -100,7 +100,7 @@ export class HomeComponent implements OnInit {
         )
             .then(rootConnectionGroups => {
                 this.rootConnectionGroups = rootConnectionGroups;
-                this.rootConnectionGroupsDataSource?.updateSource(this.rootConnectionGroups)
+                this.rootConnectionGroupsDataSource?.updateSource(this.rootConnectionGroups);
             }, this.requestService.PROMISE_DIE);
     }
 

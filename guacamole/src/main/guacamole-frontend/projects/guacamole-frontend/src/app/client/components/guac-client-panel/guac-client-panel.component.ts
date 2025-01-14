@@ -139,7 +139,8 @@ export class GuacClientPanelComponent implements AfterViewInit {
             // Test whether the client has encountered an error
             switch (client.clientState.connectionState) {
                 // TODO: case ManagedClientState.ConnectionState.CONNECTION_ERROR:
-                // I cant find a reference to the above state. Should this be something else or should the state be added?
+                // I cant find a reference to the above state. Should this be something else or should the state be
+                // added?
                 case ManagedClientState.ConnectionState.TUNNEL_ERROR:
                 case ManagedClientState.ConnectionState.DISCONNECTED:
                     return true;

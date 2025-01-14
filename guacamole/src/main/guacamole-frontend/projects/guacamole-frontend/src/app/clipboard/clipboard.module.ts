@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import { TranslocoModule } from '@ngneat/transloco';
 import { ClipboardComponent } from './components/clipboard/clipboard.component';
 
@@ -30,7 +30,7 @@ import { ClipboardComponent } from './components/clipboard/clipboard.component';
     declarations: [
         ClipboardComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         TranslocoModule
     ],

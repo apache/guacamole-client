@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import find from 'lodash/find';
 import findIndex from 'lodash/findIndex';
 import remove from 'lodash/remove';

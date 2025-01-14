@@ -63,7 +63,7 @@ export class GuacNotificationService {
         callback: () => {
             this.showStatus(false);
         }
-    }
+    };
 
     /**
      * Retrieves the current status notification, which may simply be false if

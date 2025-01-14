@@ -749,17 +749,17 @@ export namespace PermissionSet {
         /**
          * Permission to read from the specified object.
          */
-        READ = 'READ',
+        READ       = 'READ',
 
         /**
          * Permission to update the specified object.
          */
-        UPDATE = 'UPDATE',
+        UPDATE     = 'UPDATE',
 
         /**
          * Permission to delete the specified object.
          */
-        DELETE = 'DELETE',
+        DELETE     = 'DELETE',
 
         /**
          * Permission to administer the specified object
@@ -774,27 +774,27 @@ export namespace PermissionSet {
         /**
          * Permission to administer the entire system.
          */
-        ADMINISTER = 'ADMINISTER',
+        ADMINISTER              = 'ADMINISTER',
 
         /**
          * Permission to view connection and user records for the entire system.
          */
-        AUDIT = 'AUDIT',
+        AUDIT                   = 'AUDIT',
 
         /**
          * Permission to create new users.
          */
-        CREATE_USER = 'CREATE_USER',
+        CREATE_USER             = 'CREATE_USER',
 
         /**
          * Permission to create new user groups.
          */
-        CREATE_USER_GROUP = 'CREATE_USER_GROUP',
+        CREATE_USER_GROUP       = 'CREATE_USER_GROUP',
 
         /**
          * Permission to create new connections.
          */
-        CREATE_CONNECTION = 'CREATE_CONNECTION',
+        CREATE_CONNECTION       = 'CREATE_CONNECTION',
 
         /**
          * Permission to create new connection groups.
@@ -804,6 +804,6 @@ export namespace PermissionSet {
         /**
          * Permission to create new sharing profiles.
          */
-        CREATE_SHARING_PROFILE = 'CREATE_SHARING_PROFILE'
+        CREATE_SHARING_PROFILE  = 'CREATE_SHARING_PROFILE'
     }
 }

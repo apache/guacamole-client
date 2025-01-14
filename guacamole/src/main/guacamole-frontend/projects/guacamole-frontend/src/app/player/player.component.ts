@@ -55,11 +55,11 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
+import debounce from 'lodash/debounce';
 import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArguments';
 import { KeyEventDisplayService, TextBatch } from './services/key-event-display.service';
 import { PlayerHeatmapService } from './services/player-heatmap.service';
 import { PlayerTimeService } from './services/player-time.service';
-import debounce from 'lodash/debounce';
 
 /**
  * The number of milliseconds after the last detected mouse activity after
@@ -111,10 +111,10 @@ const MOUSE_CLEANUP_TIMER_DELAY = MOUSE_CLEANUP_DELAY - MOUSE_DEBOUNCE_DELAY;
  *         of milliseconds since the start of the recording.
  */
 @Component({
-    selector: 'guac-player',
-    templateUrl: './player.component.html',
+    selector     : 'guac-player',
+    templateUrl  : './player.component.html',
     encapsulation: ViewEncapsulation.None,
-    host: {
+    host         : {
         '[class.recent-mouse-movement]': 'recentMouseMovement()'
     }
 })

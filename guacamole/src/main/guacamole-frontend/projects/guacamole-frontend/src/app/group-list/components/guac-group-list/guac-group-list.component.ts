@@ -27,18 +27,18 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
-import { GroupListItem } from '../../types/GroupListItem';
+import { of } from 'rxjs';
+import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
+import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
+import { SortService } from '../../../list/services/sort.service';
+import { DataSource } from '../../../list/types/DataSource';
+import { SortOrder } from '../../../list/types/SortOrder';
 import { ActiveConnectionService } from '../../../rest/service/active-connection.service';
 import { DataSourceService } from '../../../rest/service/data-source-service.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { Connection } from '../../../rest/types/Connection';
-import { SortService } from '../../../list/services/sort.service';
-import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
-import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
-import { DataSource } from '../../../list/types/DataSource';
-import { SortOrder } from '../../../list/types/SortOrder';
-import { of } from 'rxjs';
+import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
+import { GroupListItem } from '../../types/GroupListItem';
 
 /**
  * A component which displays the contents of a connection group within an

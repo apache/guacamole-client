@@ -155,7 +155,7 @@ describe('DataSourceBuilderService', () => {
                     { pageIndex: 1, pageSize: 3, previousPageIndex: 0 },
                     { pageIndex: 2, pageSize: 3, previousPageIndex: 1 },
                     { pageIndex: 3, pageSize: 3, previousPageIndex: 2 },
-                ]
+                ];
 
 
                 const dataSource: DataSource<Person> = service.getBuilder<Person>()

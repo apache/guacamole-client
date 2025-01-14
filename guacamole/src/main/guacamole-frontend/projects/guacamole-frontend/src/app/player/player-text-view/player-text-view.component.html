@@ -38,9 +38,9 @@
             <div class="timestamp">{{ formatTime(batch.events[0].timestamp) }}</div>
             <div class="text">
                 <span
-                        *ngFor="let event of batch.events"
-                        class="key-event"
-                        [ngClass]="{ 'not-typed' : !event.typed, 'future': event.timestamp >= currentPosition }"
+                    *ngFor="let event of batch.events"
+                    class="key-event"
+                    [ngClass]="{ 'not-typed' : !event.typed, 'future': event.timestamp >= currentPosition }"
                 >{{ event.text }}</span>
             </div>
         </div>

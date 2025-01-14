@@ -83,33 +83,33 @@ export namespace Field {
          * The type string associated with parameters that may contain a single
          * line of arbitrary text.
          */
-        TEXT = 'TEXT',
+        TEXT                  = 'TEXT',
 
         /**
          * The type string associated with parameters that may contain an email
          * address.
          */
-        EMAIL = 'EMAIL',
+        EMAIL                 = 'EMAIL',
 
         /**
          * The type string associated with parameters that may contain an
          * arbitrary string, where that string represents the username of the
          * user authenticating with the remote desktop service.
          */
-        USERNAME = 'USERNAME',
+        USERNAME              = 'USERNAME',
 
         /**
          * The type string associated with parameters that may contain an
          * arbitrary string, where that string represents the password of the
          * user authenticating with the remote desktop service.
          */
-        PASSWORD = 'PASSWORD',
+        PASSWORD              = 'PASSWORD',
 
         /**
          * The type string associated with parameters that may contain only
          * numeric values.
          */
-        NUMERIC = 'NUMERIC',
+        NUMERIC               = 'NUMERIC',
 
         /**
          * The type string associated with parameters that may contain only a
@@ -118,19 +118,19 @@ export namespace Field {
          * one possible value (option), which will be the value if that field
          * is true.
          */
-        BOOLEAN = 'BOOLEAN',
+        BOOLEAN               = 'BOOLEAN',
 
         /**
          * The type string associated with parameters that may contain a
          * strictly-defined set of possible values.
          */
-        ENUM = 'ENUM',
+        ENUM                  = 'ENUM',
 
         /**
          * The type string associated with parameters that may contain any
          * number of lines of arbitrary text.
          */
-        MULTILINE = 'MULTILINE',
+        MULTILINE             = 'MULTILINE',
 
         /**
          * Field type which allows selection of languages. The languages
@@ -138,33 +138,33 @@ export namespace Field {
          * application. Legal values are valid language IDs, as dictated by
          * the filenames of Guacamole's available translations.
          */
-        LANGUAGE = 'LANGUAGE',
+        LANGUAGE              = 'LANGUAGE',
 
         /**
          * The type string associated with parameters that may contain timezone
          * IDs. Valid timezone IDs are dictated by Java=
          * http=//docs.oracle.com/javase/7/docs/api/java/util/TimeZone.html#getAvailableIDs%28%29
          */
-        TIMEZONE = 'TIMEZONE',
+        TIMEZONE              = 'TIMEZONE',
 
         /**
          * The type string associated with parameters that may contain dates.
          * The format of the date is standardized as YYYY-MM-DD, zero-padded.
          */
-        DATE = 'DATE',
+        DATE                  = 'DATE',
 
         /**
          * The type string associated with parameters that may contain times.
          * The format of the time is stnadardized as HH:MM:DD, zero-padded,
          * 24-hour.
          */
-        TIME = 'TIME',
+        TIME                  = 'TIME',
 
         /**
          * An HTTP query parameter which is expected to be embedded in the URL
          * given to a user.
          */
-        QUERY_PARAMETER = 'QUERY_PARAMETER',
+        QUERY_PARAMETER       = 'QUERY_PARAMETER',
 
         /**
          * The type string associated with parameters that may contain color
@@ -177,7 +177,7 @@ export namespace Field {
          * Field type that supports redirecting the client browser to another
          * URL.
          */
-        REDIRECT = 'REDIRECT'
+        REDIRECT              = 'REDIRECT'
     }
 
 }

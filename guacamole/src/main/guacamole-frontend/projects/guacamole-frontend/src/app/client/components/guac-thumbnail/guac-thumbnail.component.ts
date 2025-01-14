@@ -20,7 +20,6 @@
 import {
     AfterViewInit,
     Component,
-    effect,
     ElementRef,
     Input,
     OnChanges,
@@ -128,7 +127,7 @@ export class GuacThumbnailComponent implements AfterViewInit, OnChanges {
             return;
 
         // Remove any existing display
-        this.renderer.setProperty(this.displayContainer.nativeElement, 'innerHTML', '')
+        this.renderer.setProperty(this.displayContainer.nativeElement, 'innerHTML', '');
 
         // Only proceed if a client is given
         if (!managedClient)

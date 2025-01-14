@@ -139,7 +139,8 @@ export class ManagedFileUploadService {
                         else
                             ManagedFileTransferState.setStreamState(managedFileUpload.transferState,
                                 ManagedFileTransferState.StreamState.ERROR,
-                                Guacamole.Status.Code.SERVER_ERROR); // TODO: Guacamole.Status.Code.INTERNAL_ERROR does not exist
+                                Guacamole.Status.Code.SERVER_ERROR); // TODO: Guacamole.Status.Code.INTERNAL_ERROR does
+                                                                     // not exist
 
                         // Close the stream
                         stream.sendEnd();

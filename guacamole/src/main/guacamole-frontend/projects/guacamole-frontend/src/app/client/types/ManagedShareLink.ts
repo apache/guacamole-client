@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { UserCredentials } from '../../rest/types/UserCredentials';
 import { SharingProfile } from '../../rest/types/SharingProfile';
+import { UserCredentials } from '../../rest/types/UserCredentials';
 
 /**
  * Represents a link which can be used to gain access to an

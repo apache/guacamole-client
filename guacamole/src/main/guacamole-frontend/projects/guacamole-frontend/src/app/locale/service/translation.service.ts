@@ -42,7 +42,7 @@ export const DEFAULT_LANGUAGE = 'en';
  */
 export const canonicalize = (identifier: string): string => {
     return identifier.replace(/[^a-zA-Z0-9]+/g, '_').toUpperCase();
-}
+};
 
 /**
  * Service for providing a configuration object for Transloco.

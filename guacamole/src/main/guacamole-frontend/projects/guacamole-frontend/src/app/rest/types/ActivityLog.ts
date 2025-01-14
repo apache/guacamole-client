@@ -73,6 +73,6 @@ export class ActivityLog {
          * The timing file related to a typescript.
          */
         TYPESCRIPT_TIMING: 'TYPESCRIPT_TIMING'
-    }
+    };
 
 }

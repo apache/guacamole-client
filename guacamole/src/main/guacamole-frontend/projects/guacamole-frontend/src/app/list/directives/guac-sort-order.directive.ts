@@ -78,7 +78,7 @@ export class GuacSortOrderDirective implements OnInit, OnChanges {
     /**
      * The element associated with this directive.
      */
-    private readonly element: Element
+    private readonly element: Element;
 
     /**
      * Inject required services and references.

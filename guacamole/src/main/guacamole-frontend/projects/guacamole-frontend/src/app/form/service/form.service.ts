@@ -302,7 +302,7 @@ export class FormService {
         const nativeElement = componentRef.location.nativeElement;
 
         // Insert the created component after the target element
-        this.renderer.appendChild(fieldContainer, nativeElement)
+        this.renderer.appendChild(fieldContainer, nativeElement);
 
         return componentRef;
     }

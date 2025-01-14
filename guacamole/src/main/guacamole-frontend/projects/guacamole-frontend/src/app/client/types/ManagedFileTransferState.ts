@@ -99,13 +99,13 @@ export namespace ManagedFileTransferState {
         /**
          * The stream has not yet been opened.
          */
-        IDLE = 'IDLE',
+        IDLE   = 'IDLE',
 
         /**
          * The stream has been successfully established. Data can be sent or
          * received.
          */
-        OPEN = 'OPEN',
+        OPEN   = 'OPEN',
 
         /**
          * The stream has terminated successfully. No errors are indicated.
@@ -116,7 +116,7 @@ export namespace ManagedFileTransferState {
          * The stream has terminated due to an error. The associated error code
          * is stored in statusCode.
          */
-        ERROR = 'ERROR'
+        ERROR  = 'ERROR'
 
     }
 }

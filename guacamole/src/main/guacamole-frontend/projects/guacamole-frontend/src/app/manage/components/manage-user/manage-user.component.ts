@@ -57,7 +57,7 @@ export class ManageUserComponent implements OnInit {
      * The username of the user being edited. If a new user is
      * being created, this will not be defined.
      */
-    @Input('id') username?: string
+    @Input('id') username?: string;
 
     /**
      * The identifiers of all data sources currently available to the
@@ -255,7 +255,7 @@ export class ManageUserComponent implements OnInit {
      */
     private createUserAttributesFormGroup() {
         if (!this.attributes)
-            return
+            return;
 
         // Get a form group which allows editing of the user's attributes
         this.userAttributes = this.formService.getFormGroup(this.attributes);

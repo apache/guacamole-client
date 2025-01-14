@@ -17,12 +17,12 @@
  * under the License.
  */
 
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { LoginComponent } from './components/login/login.component';
-import { FormModule } from '../form/form.module';
+import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslocoModule } from '@ngneat/transloco';
+import { FormModule } from '../form/form.module';
+import { LoginComponent } from './components/login/login.component';
 
 /**
  * The module for the login functionality.

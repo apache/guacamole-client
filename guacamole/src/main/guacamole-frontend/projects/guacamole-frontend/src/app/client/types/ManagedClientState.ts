@@ -106,7 +106,7 @@ export class ManagedClientState {
          * the tunnel. The associated error code is stored in statusCode.
          */
         TUNNEL_ERROR: 'TUNNEL_ERROR'
-    }
+    };
 
     /**
      * Sets the current client state and, if given, the associated status code.

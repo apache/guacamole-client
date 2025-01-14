@@ -103,12 +103,12 @@ export namespace Error {
          * The requested operation could not be performed because the request
          * itself was malformed.
          */
-        BAD_REQUEST = 'BAD_REQUEST',
+        BAD_REQUEST              = 'BAD_REQUEST',
 
         /**
          * The credentials provided were invalid.
          */
-        INVALID_CREDENTIALS = 'INVALID_CREDENTIALS',
+        INVALID_CREDENTIALS      = 'INVALID_CREDENTIALS',
 
         /**
          * The credentials provided were not necessarily invalid, but were not
@@ -119,23 +119,23 @@ export namespace Error {
         /**
          * An internal server error has occurred.
          */
-        INTERNAL_ERROR = 'INTERNAL_ERROR',
+        INTERNAL_ERROR           = 'INTERNAL_ERROR',
 
         /**
          * An object related to the request does not exist.
          */
-        NOT_FOUND = 'NOT_FOUND',
+        NOT_FOUND                = 'NOT_FOUND',
 
         /**
          * Permission was denied to perform the requested operation.
          */
-        PERMISSION_DENIED = 'PERMISSION_DENIED',
+        PERMISSION_DENIED        = 'PERMISSION_DENIED',
 
         /**
          * An error occurred within an intercepted stream, terminating that
          * stream. The Guacamole protocol status code of that error will be
          * stored within statusCode.
          */
-        STREAM_ERROR = 'STREAM_ERROR'
+        STREAM_ERROR             = 'STREAM_ERROR'
     }
 }

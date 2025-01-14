@@ -61,7 +61,7 @@ export class RequestService {
 
             // Log all other errors
             this.log.error(error);
-            return throwError(() => error)
+            return throwError(() => error);
         };
     }
 

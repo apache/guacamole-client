@@ -17,9 +17,9 @@
  * under the License.
  */
 
-import { ManagedClient } from './ManagedClient';
-import { Optional } from '../../util/utility-types';
 import { signal, WritableSignal } from '@angular/core';
+import { Optional } from '../../util/utility-types';
+import { ManagedClient } from './ManagedClient';
 
 /**
  * Provides the ManagedFilesystem class used by ManagedClient to represent
@@ -150,7 +150,7 @@ export namespace ManagedFilesystem.File {
          * other non-directory types of files, like symbolic links, this type
          * string may be used for any non-directory file.
          */
-        NORMAL = 'NORMAL',
+        NORMAL    = 'NORMAL',
 
         /**
          * A directory.

@@ -18,10 +18,10 @@
  */
 
 import { Injectable } from '@angular/core';
+import remove from 'lodash/remove';
 import { PreferenceService } from '../settings/services/preference.service';
 import { LocalStorageService } from '../storage/local-storage.service';
 import { HistoryEntry } from './HistoryEntry';
-import remove from 'lodash/remove';
 
 // The parameter name for getting the history from local storage
 const GUAC_HISTORY_STORAGE_KEY = 'GUAC_HISTORY';

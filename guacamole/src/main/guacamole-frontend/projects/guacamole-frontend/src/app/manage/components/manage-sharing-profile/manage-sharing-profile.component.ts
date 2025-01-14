@@ -78,7 +78,7 @@ export class ManageSharingProfileComponent implements OnInit {
     /**
      * The connection associated with the sharing profile being modified.
      */
-    primaryConnection: Connection | null = null
+    primaryConnection: Connection | null = null;
 
     /**
      * The parameter name/value pairs associated with the sharing profile being
@@ -145,7 +145,7 @@ export class ManageSharingProfileComponent implements OnInit {
 
                 // Create form group for editing sharing profile attributes
                 this.sharingProfileAttributesFormGroup = this.formService.getFormGroup(attributes);
-                this.sharingProfileAttributesFormGroup.patchValue(this.sharingProfile?.attributes || {})
+                this.sharingProfileAttributesFormGroup.patchValue(this.sharingProfile?.attributes || {});
                 this.sharingProfileAttributesFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
                     this.sharingProfile!.attributes = value;
                 });

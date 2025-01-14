@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { ScrollState } from 'guacamole-frontend-lib';
 import { WritableSignal } from '@angular/core';
+import { ScrollState } from 'guacamole-frontend-lib';
 
 /**
  * Properties of the client menu.

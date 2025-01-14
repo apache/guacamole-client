@@ -176,7 +176,7 @@ export class GuacSettingsPreferencesComponent implements OnInit {
                 },
                 error: this.requestService.createErrorCallback(error => {
                     this.canUpdateSelf = false;
-                    return EMPTY
+                    return EMPTY;
                 })
             });
 

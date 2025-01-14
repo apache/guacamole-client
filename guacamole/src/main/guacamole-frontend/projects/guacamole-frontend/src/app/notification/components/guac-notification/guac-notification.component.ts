@@ -17,11 +17,10 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
 import {
     Component,
-    DestroyRef, DoCheck,
-    Inject,
+    DestroyRef,
+    DoCheck,
     Input,
     OnChanges,
     OnDestroy,
@@ -78,7 +77,7 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
     ngDoCheck(): void {
 
         // Update progress bar if end known
-        if(this.notification?.progress?.ratio) {
+        if (this.notification?.progress?.ratio) {
             this.progressPercent = this.notification.progress.ratio * 100;
         }
 
@@ -93,7 +92,7 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
                 .pipe(takeUntilDestroyed(this.destroyRef))
                 .subscribe((value) => {
                     this.notification.formModel = value;
-                })
+                });
 
             const countdown = this.notification.countdown;
 

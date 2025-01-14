@@ -46,7 +46,7 @@ const base64urlEncode = (value: string): string => {
         })[str] as string
     );
 
-}
+};
 
 /**
  * Decodes the given base64url or base64 string. The input string may
@@ -76,7 +76,7 @@ const base64urlDecode = (value: string): string => {
             '_': '/'
         })[str] as string
     ));
-}
+};
 
 @Injectable({
     providedIn: 'root'

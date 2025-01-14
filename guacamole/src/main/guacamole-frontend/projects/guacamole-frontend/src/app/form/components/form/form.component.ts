@@ -19,12 +19,12 @@
 
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
+import get from 'lodash/get';
 import { ManagedClient } from '../../../client/types/ManagedClient';
 import { canonicalize } from '../../../locale/service/translation.service';
 import { Field } from '../../../rest/types/Field';
 import { Form } from '../../../rest/types/Form';
 import { FormService } from '../../service/form.service';
-import get from 'lodash/get';
 
 /**
  * A component that allows editing of a collection of fields.
@@ -63,7 +63,7 @@ export class FormComponent implements OnChanges {
      * fields/forms which match properties defined within the given
      * model object. By default, all fields will be shown.
      */
-    @Input() modelOnly = false
+    @Input() modelOnly = false;
 
     /**
      * Whether the contents of the form should be rendered as disabled.

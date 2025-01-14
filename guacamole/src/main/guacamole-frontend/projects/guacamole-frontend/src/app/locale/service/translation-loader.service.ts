@@ -133,7 +133,7 @@ export class TranslationLoaderService implements TranslocoLoader {
                         // Retry with remaining languages if translation file could not be
                         // retrieved
                         error: tryNextTranslation
-                    })
+                    });
 
                 },
 

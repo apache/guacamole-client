@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { ManagedFileTransferState } from './ManagedFileTransferState';
 import { Optional } from '../../util/utility-types';
+import { ManagedFileTransferState } from './ManagedFileTransferState';
 
 /**
  * Object which serves as a surrogate interface, encapsulating a Guacamole

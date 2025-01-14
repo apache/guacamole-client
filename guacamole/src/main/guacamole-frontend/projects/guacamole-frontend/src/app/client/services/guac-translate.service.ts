@@ -19,10 +19,10 @@
 
 import { Injectable } from '@angular/core';
 import { TranslocoService } from '@ngneat/transloco';
-import { Observable, of, switchMap, take } from 'rxjs';
-import { TranslationResult } from '../types/TranslationResult';
 import { HashMap } from '@ngneat/transloco/lib/types';
+import { Observable, of, switchMap, take } from 'rxjs';
 import { translationValueIfMissing } from '../../locale/locale.module';
+import { TranslationResult } from '../types/TranslationResult';
 
 /**
  * A wrapper around the angular-translate $translate service that offers a
@@ -90,7 +90,7 @@ export class GuacTranslateService {
                                     message: defaultTranslationId
                                 }));
                             })
-                        )
+                        );
                 })
             );
 

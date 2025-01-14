@@ -53,5 +53,5 @@ export interface Preferences {
      * The timezone set by the user, in IANA zone key format (Olson time
      * zone database).
      */
-    timezone: string
+    timezone: string;
 }

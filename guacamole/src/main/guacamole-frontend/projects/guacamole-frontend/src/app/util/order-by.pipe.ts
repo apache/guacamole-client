@@ -24,7 +24,7 @@ import { SortService } from '../list/services/sort.service';
  * Pipe that sorts a collection by the given predicates.
  */
 @Pipe({
-    name: 'orderBy',
+    name      : 'orderBy',
     standalone: true
 })
 export class OrderByPipe implements PipeTransform {

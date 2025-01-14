@@ -73,7 +73,7 @@ import { GuacZoomCtrlDirective } from './directives/guac-zoom-ctrl.directive';
         GuacFileBrowserComponent,
         FileComponent
     ],
-    imports: [
+    imports     : [
         CommonModule,
         TranslocoModule,
         FormsModule,

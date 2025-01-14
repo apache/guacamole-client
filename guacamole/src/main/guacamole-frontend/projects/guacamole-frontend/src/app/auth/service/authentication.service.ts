@@ -205,7 +205,7 @@ export class AuthenticationService {
                         {
                             headers: new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' }),
                         }
-                    )
+                    );
                 }
             ),
 
@@ -515,7 +515,7 @@ export class AuthenticationService {
         // Return data sources, if available
         const authData = this.getAuthenticationResult();
         if (authData)
-            return authData.availableDataSources || []
+            return authData.availableDataSources || [];
 
         // No auth data present
         return [];

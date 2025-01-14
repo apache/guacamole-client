@@ -87,7 +87,7 @@ export class ConnectionCSVService {
                     (attributeMap: Record<string, boolean>, form) => {
                         form.fields.forEach(
                             field => attributeMap[field.name] = true);
-                        return attributeMap
+                        return attributeMap;
                     }, {}),
 
                 // Translate the protocol definitions into a map of protocol
@@ -380,11 +380,11 @@ export class ConnectionCSVService {
                 });
 
                 const {
-                    nameGetter, protocolGetter,
-                    parentIdentifierGetter, groupGetter,
-                    usersGetter, userGroupsGetter,
-                    parameterOrAttributeGetters
-                } = transformConfig;
+                          nameGetter, protocolGetter,
+                          parentIdentifierGetter, groupGetter,
+                          usersGetter, userGroupsGetter,
+                          parameterOrAttributeGetters
+                      } = transformConfig;
 
                 // Fail if the name wasn't provided. Note that this is a file-level
                 // error, not specific to any connection.

@@ -48,8 +48,6 @@ import { ManagedFileUploadService } from './managed-file-upload.service';
 import { ManagedFilesystemService } from './managed-filesystem.service';
 
 
-
-
 /**
  * A service for working with ManagedClient objects.
  */
@@ -116,14 +114,14 @@ export class ManagedClientService {
 
             // Build base connect string
             let connectString =
-                'token=' + encodeURIComponent(this.authenticationService.getCurrentToken()!)
-                + '&GUAC_DATA_SOURCE=' + encodeURIComponent(identifier.dataSource)
-                + '&GUAC_ID=' + encodeURIComponent(identifier.id!)
-                + '&GUAC_TYPE=' + encodeURIComponent(identifier.type)
-                + '&GUAC_WIDTH=' + Math.floor(optimal_width)
-                + '&GUAC_HEIGHT=' + Math.floor(optimal_height)
-                + '&GUAC_DPI=' + Math.floor(optimal_dpi)
-                + '&GUAC_TIMEZONE=' + encodeURIComponent(this.preferenceService.preferences.timezone);
+                    'token=' + encodeURIComponent(this.authenticationService.getCurrentToken()!)
+                    + '&GUAC_DATA_SOURCE=' + encodeURIComponent(identifier.dataSource)
+                    + '&GUAC_ID=' + encodeURIComponent(identifier.id!)
+                    + '&GUAC_TYPE=' + encodeURIComponent(identifier.type)
+                    + '&GUAC_WIDTH=' + Math.floor(optimal_width)
+                    + '&GUAC_HEIGHT=' + Math.floor(optimal_height)
+                    + '&GUAC_DPI=' + Math.floor(optimal_dpi)
+                    + '&GUAC_TIMEZONE=' + encodeURIComponent(this.preferenceService.preferences.timezone);
 
             // Add audio mimetypes to connect string
             this.guacAudio.supported.forEach(function (mimetype) {
@@ -215,7 +213,7 @@ export class ManagedClientService {
 
         // Associate new managed client with new client and tunnel
         const managedClient: ManagedClient = new ManagedClient({
-            id: id,
+            id    : id,
             client: client,
             tunnel: tunnel
         });
@@ -231,7 +229,7 @@ export class ManagedClientService {
         // known
         tunnel.onuuid = (uuid: string) => {
             this.tunnelService.getProtocol(uuid).subscribe({
-                next: protocol => {
+                next    : protocol => {
                     managedClient.protocol = protocol.name !== undefined ? protocol.name : null;
                     managedClient.forms = protocol.connectionForms;
                 }, error: this.requestService.WARN
@@ -438,8 +436,8 @@ export class ManagedClientService {
                 reader.onend = () => {
                     this.clipboardService.setClipboard(new ClipboardData({
                         source: managedClient.id,
-                        type: mimetype,
-                        data: data
+                        type  : mimetype,
+                        data  : data
                     })).catch(NOOP);
                 };
 
@@ -451,8 +449,8 @@ export class ManagedClientService {
                 reader.onend = () => {
                     this.clipboardService.setClipboard(new ClipboardData({
                         source: managedClient.id,
-                        type: mimetype,
-                        data: (reader as Guacamole.BlobReader).getBlob()
+                        type  : mimetype,
+                        data  : (reader as Guacamole.BlobReader).getBlob()
                     })).catch(NOOP);
                 };
             }
@@ -500,7 +498,7 @@ export class ManagedClientService {
         if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION) {
             this.connectionService.getConnection(clientIdentifier.dataSource, clientIdentifier.id!)
                 .subscribe({
-                    next: connection => {
+                    next    : connection => {
                         managedClient.name = managedClient.title = connection.name;
                     }, error: this.requestService.WARN
                 });
@@ -510,7 +508,7 @@ export class ManagedClientService {
         else if (clientIdentifier.type === ClientIdentifier.Types.CONNECTION_GROUP) {
             this.connectionGroupService.getConnectionGroup(clientIdentifier.dataSource, clientIdentifier.id)
                 .subscribe({
-                    next: group => {
+                    next    : group => {
                         managedClient.name = managedClient.title = group.name;
                     }, error: this.requestService.WARN
                 });
@@ -521,14 +519,14 @@ export class ManagedClientService {
         else if (clientIdentifier.type === ClientIdentifier.Types.ACTIVE_CONNECTION) {
             this.activeConnectionService.getActiveConnection(clientIdentifier.dataSource, clientIdentifier.id!)
                 .subscribe({
-                    next: activeConnection => {
+                    next    : activeConnection => {
 
                         // Attempt to retrieve connection details only if the
                         // underlying connection is known
                         if (activeConnection.connectionIdentifier) {
                             this.connectionService.getConnection(clientIdentifier.dataSource, activeConnection.connectionIdentifier)
                                 .subscribe({
-                                    next: connection => {
+                                    next    : connection => {
                                         managedClient.name = managedClient.title = connection.name;
                                     }, error: this.requestService.WARN
                                 });
@@ -753,7 +751,7 @@ export class ManagedClientService {
             // Add a new share link once the credentials are ready
             .subscribe(sharingCredentials => {
                 client.shareLinks[sharingProfile.identifier!] =
-                    ManagedShareLink.getInstance(sharingProfile, sharingCredentials)
+                    ManagedShareLink.getInstance(sharingProfile, sharingCredentials);
             });
 
     }
@@ -831,7 +829,7 @@ export class ManagedClientService {
             // Store updated thumbnail within client
             managedClient.thumbnail = new ManagedClientThumbnail({
                 timestamp: new Date().getTime(),
-                canvas: thumbnail
+                canvas   : thumbnail
             });
 
             // Update historical thumbnail

@@ -24,7 +24,6 @@ import {
     DoCheck,
     ElementRef,
     Inject,
-    Injector,
     Input,
     OnChanges,
     OnInit,
@@ -44,13 +43,12 @@ import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedDisplayCursor, ManagedDisplayDimensions } from '../../types/ManagedDisplay';
 
 
-
 /**
  * A component for the guacamole client.
  */
 @Component({
-    selector: 'guac-client',
-    templateUrl: './guac-client.component.html',
+    selector     : 'guac-client',
+    templateUrl  : './guac-client.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
@@ -424,7 +422,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         // Broadcast the mouse event
         this.guacEventService.broadcast(this.getMouseEventName(event), { event, client: this.managedClient });
 
-    }
+    };
 
     /**
      * Return the name of the event associated with the provided
@@ -471,7 +469,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         // Broadcast the touch event
         this.guacEventService.broadcast(this.getTouchEventName(event), { event, client: this.managedClient });
 
-    }
+    };
 
     /**
      * Attach any given managed client.
@@ -601,7 +599,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         // If autofit is set, the scale should be set to the minimum scale, filling the screen
         const autoFit = this.managedClient.clientProperties.autoFit;
 
-        if(this.lastAutoFit !== autoFit) {
+        if (this.lastAutoFit !== autoFit) {
 
             this.changeAutoFit(autoFit);
             this.lastAutoFit = autoFit;
@@ -697,7 +695,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
      * is enabled.
      */
     private changeAutoFit(autoFit: boolean): void {
-        if(autoFit)
+        if (autoFit)
             this.managedClient.clientProperties.scale = this.managedClient.clientProperties.minScale;
     }
 

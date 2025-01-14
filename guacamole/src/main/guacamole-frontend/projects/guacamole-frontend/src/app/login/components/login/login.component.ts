@@ -18,18 +18,17 @@
  */
 
 import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
-import { TranslatableMessage } from '../../../rest/types/TranslatableMessage';
-import { Field } from '../../../rest/types/Field';
-import { AuthenticationService } from '../../../auth/service/authentication.service';
-import { HttpClient } from '@angular/common/http';
-import { RequestService } from '../../../rest/service/request.service';
-import { catchError, filter } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { GuacEventService } from 'guacamole-frontend-lib';
-import { Error } from '../../../rest/types/Error';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { GuacEventService } from 'guacamole-frontend-lib';
+import { catchError, filter } from 'rxjs';
+import { AuthenticationService } from '../../../auth/service/authentication.service';
+import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
+import { RequestService } from '../../../rest/service/request.service';
+import { Error } from '../../../rest/types/Error';
+import { Field } from '../../../rest/types/Field';
+import { TranslatableMessage } from '../../../rest/types/TranslatableMessage';
 
 @Component({
     selector     : 'guac-login',
@@ -47,7 +46,7 @@ export class LoginComponent implements OnInit, OnChanges {
      * The login form or set of fields. This will be displayed to the user
      * to capture their credentials.
      */
-    @Input({ required: true }) form: Field[] | null = null
+    @Input({ required: true }) form: Field[] | null = null;
 
     /**
      * A form group of all field name/value pairs that have already been provided.
@@ -178,14 +177,14 @@ export class LoginComponent implements OnInit, OnChanges {
 
         // All the values to be submitted in the auth attempt, preferring
         // any values from fields over those in the URL
-        const authParams = {...urlValues, ...fieldValues};
+        const authParams = { ...urlValues, ...fieldValues };
 
         this.authenticationService.authenticate(authParams)
             .pipe(
                 takeUntilDestroyed(this.destroyRef),
                 catchError(this.requestService.IGNORE)
             )
-            .subscribe()
+            .subscribe();
     }
 
     /**

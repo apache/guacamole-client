@@ -128,7 +128,7 @@ export namespace ImportConnection {
          * The connection should be created fresh. This mode is valid IFF there
          * is no existing connection with the same name and parent group.
          */
-        CREATE = 'CREATE',
+        CREATE  = 'CREATE',
 
         /**
          * This connection will replace the existing connection with the same

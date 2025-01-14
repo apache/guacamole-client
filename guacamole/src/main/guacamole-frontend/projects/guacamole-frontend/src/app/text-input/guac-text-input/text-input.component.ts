@@ -136,10 +136,10 @@ export class TextInputComponent implements AfterViewInit {
         this.target.onfocus = () => {
             this.hasFocus = true;
             this.resetTextInputTarget(TEXT_INPUT_PADDING);
-        }
+        };
         this.target.onblur = () => {
             this.hasFocus = false;
-        }
+        };
 
         this.target.addEventListener('input', (e: Event) => {
             // Ignore input events during text composition

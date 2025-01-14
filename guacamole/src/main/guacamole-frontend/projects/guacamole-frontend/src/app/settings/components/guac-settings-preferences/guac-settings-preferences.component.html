@@ -27,18 +27,19 @@
     </div>
 
     <!-- Appearance -->
-    <h2 class="header">{{'SETTINGS_PREFERENCES.SECTION_HEADER_APPEARANCE' | transloco}}</h2>
+    <h2 class="header">{{ 'SETTINGS_PREFERENCES.SECTION_HEADER_APPEARANCE' | transloco }}</h2>
     <div class="settings section appearance">
-        <p>{{'SETTINGS_PREFERENCES.HELP_APPEARANCE' | transloco}}</p>
+        <p>{{ 'SETTINGS_PREFERENCES.HELP_APPEARANCE' | transloco }}</p>
         <div class="form">
             <table class="fields">
                 <tr>
-                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_SHOW_RECENT_CONNECTIONS' | transloco}}</th>
+                    <th>{{ 'SETTINGS_PREFERENCES.FIELD_HEADER_SHOW_RECENT_CONNECTIONS' | transloco }}</th>
                     <td><input [(ngModel)]="preferenceService.preferences.showRecentConnections" type="checkbox"/></td>
                 </tr>
                 <tr>
-                    <th>{{'SETTINGS_PREFERENCES.FIELD_HEADER_NUMBER_RECENT_CONNECTIONS' | transloco}}</th>
-                    <td><input [(ngModel)]="preferenceService.preferences.numberOfRecentConnections" type="number" min="1" max="20"/></td>
+                    <th>{{ 'SETTINGS_PREFERENCES.FIELD_HEADER_NUMBER_RECENT_CONNECTIONS' | transloco }}</th>
+                    <td><input [(ngModel)]="preferenceService.preferences.numberOfRecentConnections" type="number"
+                               min="1" max="20"/></td>
                 </tr>
             </table>
         </div>

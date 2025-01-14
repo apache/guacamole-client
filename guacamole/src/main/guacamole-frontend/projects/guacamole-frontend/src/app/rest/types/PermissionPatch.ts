@@ -73,7 +73,7 @@ export namespace PermissionPatch {
         /**
          * Adds (grants) the specified permission.
          */
-        ADD = 'add',
+        ADD    = 'add',
 
         /**
          * Removes (revokes) the specified permission.

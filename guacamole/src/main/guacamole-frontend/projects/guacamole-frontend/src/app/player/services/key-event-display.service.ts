@@ -93,7 +93,7 @@ const SHORTCUT_KEYS: Record<number, boolean> = {
     0xFFEC: true, // Right Super
     0xFFED: true, // Left Hyper
     0xFFEE: true  // Right Super
-}
+};
 
 /**
  * Format and return a key name for display.
@@ -282,7 +282,7 @@ export class KeyEventDisplayService {
                     // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
                     currentBatch.simpleValue += text;
                 }
-            }
+            };
 
             // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
             // Track modifier state
@@ -324,7 +324,7 @@ export class KeyEventDisplayService {
                     }
 
                     // Finally, append the printable key to close the shortcut
-                    shortcutText += ('+' + name + '>')
+                    shortcutText += ('+' + name + '>');
 
                     // Add the shortcut to the current batch
                     pushEvent(shortcutText, false);

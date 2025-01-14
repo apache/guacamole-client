@@ -108,7 +108,7 @@ export class GuacSettingsConnectionsComponent implements OnInit {
             {}, // Start without data
             this.filter.searchStringChange,
             this.filteredConnectionProperties,
-            this.filteredConnectionGroupProperties)
+            this.filteredConnectionGroupProperties);
 
         // Retrieve current permissions
         this.permissionService.getEffectivePermissions(this.dataSource, this.currentUsername!)

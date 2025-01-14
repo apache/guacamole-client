@@ -375,23 +375,23 @@ export class ManageUserGroupComponent implements OnInit {
 
         // Use empty permission set if group cannot be found
         const permissions =
-            this.permissionService.getPermissions(this.dataSource, this.identifier!, true)
-                .pipe(catchError(this.requestService.defaultValue(new PermissionSet())));
+                  this.permissionService.getPermissions(this.dataSource, this.identifier!, true)
+                      .pipe(catchError(this.requestService.defaultValue(new PermissionSet())));
 
         // Assume no parent groups if group cannot be found
         const parentGroups =
-            this.membershipService.getUserGroups(this.dataSource, this.identifier!, true)
-                .pipe(catchError(this.requestService.defaultValue([])));
+                  this.membershipService.getUserGroups(this.dataSource, this.identifier!, true)
+                      .pipe(catchError(this.requestService.defaultValue([])));
 
         // Assume no member groups if group cannot be found
         const memberGroups =
-            this.membershipService.getMemberUserGroups(this.dataSource, this.identifier!)
-                .pipe(catchError(this.requestService.defaultValue([])));
+                  this.membershipService.getMemberUserGroups(this.dataSource, this.identifier!)
+                      .pipe(catchError(this.requestService.defaultValue([])));
 
         // Assume no member users if group cannot be found
         const memberUsers =
-            this.membershipService.getMemberUsers(this.dataSource, this.identifier!)
-                .pipe(catchError(this.requestService.defaultValue([])));
+                  this.membershipService.getMemberUsers(this.dataSource, this.identifier!)
+                      .pipe(catchError(this.requestService.defaultValue([])));
 
         return forkJoin([userGroups, permissions, parentGroups, memberGroups, memberUsers])
             .pipe(
@@ -545,7 +545,7 @@ export class ManageUserGroupComponent implements OnInit {
                         this.membershipService.patchMemberUserGroups(this.dataSource, this.userGroup!.identifier!, this.memberGroupsAdded, this.memberGroupsRemoved),
                         this.membershipService.patchMemberUsers(this.dataSource, this.userGroup!.identifier!, this.memberUsersAdded, this.memberUsersRemoved)
                     ])
-                        .pipe(map(() => void (0)))
+                        .pipe(map(() => void (0)));
                 })
             );
 

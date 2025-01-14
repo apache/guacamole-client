@@ -88,12 +88,12 @@ export class PreferenceService {
                 private router: Router) {
 
         this.preferences = {
-            emulateAbsoluteMouse: true,
-            inputMethod         : this.inputMethods.NONE,
-            language            : this.getDefaultLanguageKey(),
+            emulateAbsoluteMouse     : true,
+            inputMethod              : this.inputMethods.NONE,
+            language                 : this.getDefaultLanguageKey(),
             numberOfRecentConnections: 6,
-            showRecentConnections: true,
-            timezone            : this.getDetectedTimezone()
+            showRecentConnections    : true,
+            timezone                 : this.getDetectedTimezone()
         };
 
         // Get stored preferences from localStorage

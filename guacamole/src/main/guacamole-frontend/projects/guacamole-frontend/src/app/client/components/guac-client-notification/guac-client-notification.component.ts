@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DestroyRef, DoCheck, Input, KeyValueDiffers, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, DoCheck, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -37,8 +37,6 @@ import { GuacTranslateService } from '../../services/guac-translate.service';
 import { ManagedClientService } from '../../services/managed-client.service';
 import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedClientState } from '../../types/ManagedClientState';
-
-
 
 
 /**
@@ -80,8 +78,8 @@ type ClientState = [string, Record<string, string> | null, string | null, Form[]
  * necessary to continue the connection.
  */
 @Component({
-    selector: 'guac-client-notification',
-    templateUrl: './guac-client-notification.component.html',
+    selector     : 'guac-client-notification',
+    templateUrl  : './guac-client-notification.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacClientNotificationComponent implements OnInit, DoCheck {
@@ -102,9 +100,9 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
      * Action which logs out from Guacamole entirely.
      */
     private readonly LOGOUT_ACTION: NotificationAction = {
-        name: 'CLIENT.ACTION_LOGOUT',
+        name     : 'CLIENT.ACTION_LOGOUT',
         className: 'logout button',
-        callback: () => this.logout()
+        callback : () => this.logout()
     };
 
     /**
@@ -117,9 +115,9 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
      * Action which replaces the current client with a newly-connected client.
      */
     private readonly RECONNECT_ACTION: NotificationAction = {
-        name: 'CLIENT.ACTION_RECONNECT',
+        name     : 'CLIENT.ACTION_RECONNECT',
         className: 'reconnect button',
-        callback: () => {
+        callback : () => {
             this.client = this.guacClientManager.replaceManagedClient(this.client.id);
             this.status = false;
         }
@@ -130,8 +128,8 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
      * automatic, timed reconnect.
      */
     private readonly RECONNECT_COUNTDOWN: NotificationCountdown = {
-        text: 'CLIENT.TEXT_RECONNECT_COUNTDOWN',
-        callback: this.RECONNECT_ACTION.callback,
+        text     : 'CLIENT.TEXT_RECONNECT_COUNTDOWN',
+        callback : this.RECONNECT_ACTION.callback,
         remaining: 15
     };
 
@@ -160,14 +158,14 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
         // Assign home page action once user's home page has been determined
         this.userPageService.getHomePage()
             .subscribe({
-                next: homePage => {
+                next    : homePage => {
 
                     // Define home action only if different from current location
                     if (this.route.snapshot.root.url.join('/') || '/' === homePage.url) {
                         this.NAVIGATE_HOME_ACTION = {
-                            name: 'CLIENT.ACTION_NAVIGATE_HOME',
+                            name     : 'CLIENT.ACTION_NAVIGATE_HOME',
                             className: 'home button',
-                            callback: () => {
+                            callback : () => {
                                 this.router.navigate([homePage.url]);
                             }
                         };
@@ -260,7 +258,7 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
             )
             .subscribe({
                 error: this.requestService.IGNORE
-            })
+            });
     }
 
     /**
@@ -294,8 +292,8 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
             || connectionState === ManagedClientState.ConnectionState.WAITING) {
             this.status = {
                 className: 'connecting',
-                title: 'CLIENT.DIALOG_HEADER_CONNECTING',
-                text: {
+                title    : 'CLIENT.DIALOG_HEADER_CONNECTING',
+                text     : {
                     key: 'CLIENT.TEXT_CLIENT_STATUS_' + connectionState.toUpperCase()
                 }
             };
@@ -318,12 +316,12 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
                 // Show error status
                 translationResult => this.notifyConnectionClosed({
                     className: 'error',
-                    title: 'CLIENT.DIALOG_HEADER_CONNECTION_ERROR',
-                    text: {
+                    title    : 'CLIENT.DIALOG_HEADER_CONNECTION_ERROR',
+                    text     : {
                         key: translationResult.id
                     },
                     countdown: countdown,
-                    actions: actions
+                    actions  : actions
                 })
             );
 
@@ -346,12 +344,12 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
                 // Show error status
                 translationResult => this.notifyConnectionClosed({
                     className: 'error',
-                    title: 'CLIENT.DIALOG_HEADER_CONNECTION_ERROR',
-                    text: {
+                    title    : 'CLIENT.DIALOG_HEADER_CONNECTION_ERROR',
+                    text     : {
                         key: translationResult.id
                     },
                     countdown: countdown,
-                    actions: actions
+                    actions  : actions
                 })
             );
 
@@ -360,8 +358,8 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
         // Disconnected
         else if (connectionState === ManagedClientState.ConnectionState.DISCONNECTED) {
             this.notifyConnectionClosed({
-                title: 'CLIENT.DIALOG_HEADER_DISCONNECTED',
-                text: {
+                title  : 'CLIENT.DIALOG_HEADER_DISCONNECTED',
+                text   : {
                     key: 'CLIENT.TEXT_CLIENT_STATUS_' + connectionState.toUpperCase()
                 },
                 actions: actions
@@ -392,9 +390,9 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
          * that the connection continue.
          */
         const SUBMIT_PARAMETERS = {
-            name: 'CLIENT.ACTION_CONTINUE',
+            name     : 'CLIENT.ACTION_CONTINUE',
             className: 'button',
-            callback: () => {
+            callback : () => {
                 if (this.client) {
                     const params = this.client.requiredParameters;
                     this.client.requiredParameters = null;
@@ -408,9 +406,9 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
          * disconnects from the current connection.
          */
         const CANCEL_PARAMETER_SUBMISSION = {
-            name: 'CLIENT.ACTION_CANCEL',
+            name     : 'CLIENT.ACTION_CANCEL',
             className: 'button',
-            callback: () => {
+            callback : () => {
                 this.client.requiredParameters = null;
                 this.client.client.disconnect();
             }
@@ -423,12 +421,12 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
 
         // Prompt for parameters
         this.status = {
-            className: 'parameters-required',
-            formNamespace: Protocol.getNamespace(this.client.protocol),
-            forms: this.client.forms,
-            formModel: requiredParameters,
+            className         : 'parameters-required',
+            formNamespace     : Protocol.getNamespace(this.client.protocol),
+            forms             : this.client.forms,
+            formModel         : requiredParameters,
             formSubmitCallback: SUBMIT_PARAMETERS.callback,
-            actions: [SUBMIT_PARAMETERS, CANCEL_PARAMETER_SUBMISSION]
+            actions           : [SUBMIT_PARAMETERS, CANCEL_PARAMETER_SUBMISSION]
         };
 
     }

@@ -57,7 +57,7 @@ describe('GuacTranslateService', () => {
 
     beforeEach(() => {
         transloco = TestBed.inject(TranslocoService);
-    })
+    });
 
     it('should be created', () => {
         expect(service).toBeTruthy();

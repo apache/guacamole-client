@@ -107,7 +107,7 @@ export class ConnectionHistoryEntryWrapper {
 
         const log: ActivityLog = (this.entry.logs as Record<string, ActivityLog>)[name];
 
-        const description = log.description && log.description.key ? translate(log.description.key, log.description.variables) : ''
+        const description = log.description && log.description.key ? translate(log.description.key, log.description.variables) : '';
 
         return new ConnectionHistoryEntryWrapper.Log({
 
@@ -131,7 +131,7 @@ export class ConnectionHistoryEntryWrapper {
          * The relative URL for a session recording player that loads the
          * session recording represented by this log.
          */
-        url: string
+        url: string;
 
         /**
          * A promise that resolves with a human-readable description of the log.
@@ -150,5 +150,5 @@ export class ConnectionHistoryEntryWrapper {
             this.url = template.url;
             this.description = template.description;
         }
-    }
+    };
 }

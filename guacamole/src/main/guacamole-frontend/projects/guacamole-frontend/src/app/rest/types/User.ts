@@ -88,17 +88,17 @@ export namespace User {
         /**
          * The user's full name.
          */
-        FULL_NAME = 'guac-full-name',
+        FULL_NAME           = 'guac-full-name',
 
         /**
          * The email address of the user.
          */
-        EMAIL_ADDRESS = 'guac-email-address',
+        EMAIL_ADDRESS       = 'guac-email-address',
 
         /**
          * The organization, company, group, etc. that the user belongs to.
          */
-        ORGANIZATION = 'guac-organization',
+        ORGANIZATION        = 'guac-organization',
 
         /**
          * The role that the user has at the organization, company, group, etc.

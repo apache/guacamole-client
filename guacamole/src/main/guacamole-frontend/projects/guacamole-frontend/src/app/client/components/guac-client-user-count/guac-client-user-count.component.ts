@@ -34,9 +34,6 @@ import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
 import { ManagedClient } from '../../types/ManagedClient';
 
 
-
-
-
 /**
  * A component that displays a status indicator showing the number of users
  * joined to a connection. The specific usernames of those users are visible in
@@ -44,8 +41,8 @@ import { ManagedClient } from '../../types/ManagedClient';
  * join/leave the connection.
  */
 @Component({
-    selector: 'guac-client-user-count',
-    templateUrl: './guac-client-user-count.component.html',
+    selector     : 'guac-client-user-count',
+    templateUrl  : './guac-client-user-count.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {

@@ -34,8 +34,8 @@ import { ManagedClientGroup } from '../../types/ManagedClientGroup';
  * automatically determined by the number of clients present.
  */
 @Component({
-    selector: 'guac-tiled-clients',
-    templateUrl: './guac-tiled-clients.component.html',
+    selector     : 'guac-tiled-clients',
+    templateUrl  : './guac-tiled-clients.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class GuacTiledClientsComponent implements DoCheck {
@@ -118,7 +118,7 @@ export class GuacTiledClientsComponent implements DoCheck {
             this.guacEventService.broadcast('guacClientFocused', { newFocusedClient });
 
             // Remember the new focused Client
-            this.lastFocusedClient = newFocusedClient
+            this.lastFocusedClient = newFocusedClient;
 
         }
 

@@ -20,9 +20,9 @@
         "allowSyntheticDefaultImports": true,
         "allowUmdGlobalAccess": true,
         "paths": {
-          "guacamole-frontend-ext-lib": [
-            "dist/guacamole-frontend-ext-lib"
-          ],
+            "guacamole-frontend-ext-lib": [
+                "dist/guacamole-frontend-ext-lib"
+            ],
             "guacamole-frontend-lib": [
                 "dist/guacamole-frontend-lib"
             ]

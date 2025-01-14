@@ -17,15 +17,7 @@
  * under the License.
  */
 
-import {
-    AfterViewInit,
-    Component,
-    DestroyRef,
-    ElementRef,
-    OnInit,
-    ViewChild,
-    ViewEncapsulation
-} from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';

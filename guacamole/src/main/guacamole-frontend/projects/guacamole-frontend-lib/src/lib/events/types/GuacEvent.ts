@@ -52,7 +52,7 @@ export class GuacEvent<T extends GuacEventArguments> {
      * Flag which is true if preventDefault() was called on this event, and
      * false otherwise.
      */
-    defaultPrevented = false
+    defaultPrevented = false;
 
     /**
      * Sets the defaultPrevented flag to true.

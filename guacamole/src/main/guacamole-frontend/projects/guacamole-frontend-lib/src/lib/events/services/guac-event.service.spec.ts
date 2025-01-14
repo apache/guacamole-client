@@ -25,7 +25,7 @@ import { GuacEventArguments } from '../types/GuacEventArguments';
 import { GuacEventService } from './guac-event.service';
 
 interface TestEventArgs extends GuacEventArguments {
-    test: { age: number; }
+    test: { age: number; };
 }
 
 describe('GuacEventService', () => {
@@ -33,7 +33,7 @@ describe('GuacEventService', () => {
     let testScheduler: TestScheduler;
 
     beforeEach(() => {
-        testScheduler = getTestScheduler()
+        testScheduler = getTestScheduler();
         TestBed.configureTestingModule({
             providers: [GuacEventService<TestEventArgs>],
         });

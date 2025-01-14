@@ -79,7 +79,7 @@ const routeToUserHomePage: CanActivateFn = (route: ActivatedRouteSnapshot) => {
 
     // Required services
     const router = inject(Router);
-    const userPageService = inject(UserPageService)
+    const userPageService = inject(UserPageService);
 
 
     // Re-authenticate including any parameters in URL
@@ -109,7 +109,7 @@ const routeToUserHomePage: CanActivateFn = (route: ActivatedRouteSnapshot) => {
             catchError(() => of(false)),
         );
 
-}
+};
 
 
 /**
@@ -344,7 +344,7 @@ export const appRoutes: Routes = [
  */
 export const fallbackRoute: Route = {
     path: '**', redirectTo: ''
-}
+};
 
 @NgModule({
     imports: [RouterModule.forRoot([...appRoutes, fallbackRoute], {

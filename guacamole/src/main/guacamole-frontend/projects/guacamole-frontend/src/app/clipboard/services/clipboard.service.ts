@@ -155,6 +155,6 @@ export class ClipboardService {
      */
     resyncClipboard = () => {
         this.getLocalClipboard().then(data => this.setClipboard(data));
-    }
+    };
 
 }

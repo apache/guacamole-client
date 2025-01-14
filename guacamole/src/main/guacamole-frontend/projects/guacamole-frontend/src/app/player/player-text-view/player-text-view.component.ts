@@ -26,10 +26,10 @@ import { PlayerTimeService } from '../services/player-time.service';
  * Component which plays back session recordings.
  */
 @Component({
-    selector: 'guac-player-text-view',
-    templateUrl: './player-text-view.component.html',
+    selector     : 'guac-player-text-view',
+    templateUrl  : './player-text-view.component.html',
     encapsulation: ViewEncapsulation.None,
-    host: {
+    host         : {
         '[class.fullscreen]': 'fullscreenKeyLog()'
     }
 })

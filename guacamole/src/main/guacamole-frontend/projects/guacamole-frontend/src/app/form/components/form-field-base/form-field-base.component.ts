@@ -60,7 +60,7 @@ export const getFieldOption = (field: Field | undefined, namespace?: string, val
         + '.FIELD_OPTION_' + canonicalize(field.name)
         + '_' + canonicalize(value || 'EMPTY');
 
-}
+};
 
 /**
  * Base class for form field components.

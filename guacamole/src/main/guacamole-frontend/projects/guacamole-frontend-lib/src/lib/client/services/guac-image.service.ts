@@ -57,7 +57,7 @@ export class GuacImageService {
          */
         'image/webp': 'UklGRhoAAABXRUJQVlA4TA0AAAAvAAAAEAcQERGIiP4HAA=='
 
-    }
+    };
 
     /**
      * The resolve function associated with {@link deferredSupportedMimetypes}.

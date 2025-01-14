@@ -256,5 +256,5 @@ export class PlayerHeatmapService {
         // Create an SVG path based on the smoothed data
         return this.createPath(smoothed, maxBucketValue, height, width);
 
-    }
+    };
 }

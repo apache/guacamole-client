@@ -81,8 +81,8 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
  * The Component for the page used to connect to a connection or balancing group.
  */
 @Component({
-    selector: 'guac-client-page',
-    templateUrl: './client-page.component.html',
+    selector     : 'guac-client-page',
+    templateUrl  : './client-page.component.html',
     encapsulation: ViewEncapsulation.None
 })
 export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
@@ -151,10 +151,10 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
      * Menu-specific properties.
      */
     protected menu: ClientMenu = {
-        shown: signal(false),
-        inputMethod: signal(this.preferenceService.preferences.inputMethod),
+        shown               : signal(false),
+        inputMethod         : signal(this.preferenceService.preferences.inputMethod),
         emulateAbsoluteMouse: signal(this.preferenceService.preferences.emulateAbsoluteMouse),
-        scrollState: signal(new ScrollState()),
+        scrollState         : signal(new ScrollState()),
         connectionParameters: {}
     };
 
@@ -284,7 +284,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
                 this.applyParameterChanges(this.focusedClient);
 
             /* Broadcast changes to the menu display state */
-            this.guacEventService.broadcast('guacMenuShown', { menuShown })
+            this.guacEventService.broadcast('guacMenuShown', { menuShown });
 
         });
 
@@ -521,7 +521,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
      * Guacamole menu.
      */
     connectionListContext: ConnectionListContext = {
-        attachedClients: {},
+        attachedClients      : {},
         updateAttachedClients: id => {
             this.addRemoveClient(id, !this.connectionListContext.attachedClients[id]);
         }
@@ -707,7 +707,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
         if (this.lastThumbnailCanvas !== newThumbnailCanvas) {
 
             this.iconService.setIcons(newThumbnailCanvas);
-            this.lastThumbnailCanvas=newThumbnailCanvas;
+            this.lastThumbnailCanvas = newThumbnailCanvas;
 
         }
 
@@ -853,9 +853,9 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
      * any.
      */
     private DISCONNECT_MENU_ACTION: NotificationAction = {
-        name: 'CLIENT.ACTION_DISCONNECT',
+        name     : 'CLIENT.ACTION_DISCONNECT',
         className: 'danger disconnect',
-        callback: () => this.disconnect()
+        callback : () => this.disconnect()
     };
 
     /**
@@ -863,9 +863,9 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
      * currently-connected client and then closes the menu.
      */
     private FULLSCREEN_MENU_ACTION: NotificationAction = {
-        name      : 'CLIENT.ACTION_FULLSCREEN',
-        className : 'fullscreen action',
-        callback  : () => {
+        name     : 'CLIENT.ACTION_FULLSCREEN',
+        className: 'fullscreen action',
+        callback : () => {
 
             this.guacFullscreen.toggleFullscreenMode();
             this.menu.shown.set(false);

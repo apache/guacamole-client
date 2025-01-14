@@ -17,16 +17,7 @@
  * under the License.
  */
 
-import {
-    Component,
-    DoCheck,
-    Input,
-    KeyValueDiffer,
-    KeyValueDiffers,
-    OnChanges,
-    SimpleChanges,
-    ViewEncapsulation
-} from '@angular/core';
+import { Component, DoCheck, Input, ViewEncapsulation } from '@angular/core';
 import { saveAs } from 'file-saver';
 import { GuacTranslateService } from '../../services/guac-translate.service';
 import { ManagedFileTransferState } from '../../types/ManagedFileTransferState';

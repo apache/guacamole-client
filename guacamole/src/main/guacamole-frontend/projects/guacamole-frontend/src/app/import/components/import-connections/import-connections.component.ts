@@ -719,7 +719,7 @@ export class ImportConnectionsComponent {
 
         // Read all the data into memory
         this.fileReader.readAsText(file);
-    }
+    };
 
     /**
      * Make the ConnectionImportConfig.ExistingConnectionMode enum available to
@@ -731,5 +731,5 @@ export class ImportConnectionsComponent {
      * Make the ConnectionImportConfig.ExistingPermissionMode enum available to
      * the template.
      */
-    protected readonly ExistingPermissionMode = ConnectionImportConfig.ExistingPermissionMode
+    protected readonly ExistingPermissionMode = ConnectionImportConfig.ExistingPermissionMode;
 }

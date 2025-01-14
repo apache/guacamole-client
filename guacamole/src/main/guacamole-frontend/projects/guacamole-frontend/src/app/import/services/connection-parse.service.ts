@@ -148,7 +148,7 @@ export class ConnectionParseService {
                         forEach(group.childConnectionGroups,
                             childGroup => saveLookups(nextPrefix, childGroup));
 
-                    }
+                    };
 
                     // Start at the root group
                     saveLookups('', rootGroup);
@@ -194,9 +194,9 @@ export class ConnectionParseService {
         return this.getTreeLookups().then(treeLookups => connection => {
 
             const {
-                groupPathsByIdentifier, groupIdentifiersByPath,
-                connectionIdsByGroupAndName
-            } = treeLookups;
+                      groupPathsByIdentifier, groupIdentifiersByPath,
+                      connectionIdsByGroupAndName
+                  } = treeLookups;
 
             const providedIdentifier = connection.parentIdentifier;
 

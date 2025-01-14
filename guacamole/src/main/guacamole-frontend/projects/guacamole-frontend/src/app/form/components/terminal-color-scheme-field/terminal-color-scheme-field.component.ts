@@ -194,7 +194,7 @@ export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent im
                 this.selectedColorScheme.setValue(CUSTOM_COLOR_SCHEME, { emitEvent: false });
             } else
                 this.selectedColorScheme.setValue(value || '', { emitEvent: false });
-        }
+        };
 
         // Set initial value of the selected color scheme control
         const initialValue: string | null = this.control?.value === undefined ? null : this.control.value;
