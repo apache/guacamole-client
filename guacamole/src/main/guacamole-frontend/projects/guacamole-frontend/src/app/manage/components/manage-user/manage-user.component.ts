@@ -40,9 +40,10 @@ import { User } from '../../../rest/types/User';
 import { ManagementPermissions } from '../../types/ManagementPermissions';
 
 @Component({
-    selector     : 'guac-manage-user',
-    templateUrl  : './manage-user.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-manage-user',
+    templateUrl: './manage-user.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ManageUserComponent implements OnInit {
 

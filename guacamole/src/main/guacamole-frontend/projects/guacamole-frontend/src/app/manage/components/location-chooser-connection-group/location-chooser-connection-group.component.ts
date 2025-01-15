@@ -22,9 +22,10 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 
 @Component({
-    selector     : 'guac-location-chooser-connection-group',
-    templateUrl  : './location-chooser-connection-group.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-location-chooser-connection-group',
+    templateUrl: './location-chooser-connection-group.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class LocationChooserConnectionGroupComponent {
     @Input({ required: true }) context!: { chooseGroup: (item: ConnectionGroup) => void };

@@ -19,9 +19,7 @@
 
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import get from 'lodash/get';
-import mapValues from 'lodash/mapValues';
-import reduce from 'lodash/reduce';
+import _ from 'lodash';
 import { forkJoin, map, Observable } from 'rxjs';
 import { SchemaService } from '../../rest/service/schema.service';
 import { ImportConnection } from '../types/ImportConnection';
@@ -92,7 +90,7 @@ export class ConnectionCSVService {
 
                 // Translate the protocol definitions into a map of protocol
                 // name to map of field name to `true` boolean value
-                protocolParameters: mapValues(
+                protocolParameters: _.mapValues(
                     protocols, protocol => protocol.connectionForms.reduce(
                         (protocolFieldMap: Record<string, boolean>, form) => {
                             form.fields.forEach(
@@ -120,7 +118,7 @@ export class ConnectionCSVService {
         // Keep track of whether a backslash was seen
         let escaped = false;
 
-        return reduce(rawIdentifiers, (identifiers, ch) => {
+        return _.reduce(rawIdentifiers, (identifiers, ch) => {
 
             // The current identifier will be the last one in the final list
             let identifier = identifiers[identifiers.length - 1];
@@ -351,7 +349,7 @@ export class ConnectionCSVService {
                             // Determine if the field refers to an attribute or a
                             // parameter (or both, which is an error)
                             const isAttribute = !!attributes[name];
-                            const isParameter = !!get(
+                            const isParameter = !!_.get(
                                 protocolParameters, [protocol, name]);
 
                             // If there is both an attribute and a protocol-specific

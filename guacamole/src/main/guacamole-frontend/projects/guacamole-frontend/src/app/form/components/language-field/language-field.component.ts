@@ -27,9 +27,10 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Guacamole web application.
  */
 @Component({
-    selector     : 'guac-language-field',
-    templateUrl  : './language-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-language-field',
+    templateUrl: './language-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class LanguageFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
 

@@ -38,9 +38,10 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
  * removed within a separate pair of {@link PermissionSet} objects.
  */
 @Component({
-    selector     : 'connection-permission-editor',
-    templateUrl  : './connection-permission-editor.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'connection-permission-editor',
+    templateUrl: './connection-permission-editor.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
 

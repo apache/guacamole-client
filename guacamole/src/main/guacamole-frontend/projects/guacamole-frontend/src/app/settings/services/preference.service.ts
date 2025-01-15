@@ -21,7 +21,6 @@ import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { getBrowserLang } from '@ngneat/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import * as jstz from 'jstz';
 import { filter } from 'rxjs';
 import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { DEFAULT_LANGUAGE } from '../../locale/service/translation.service';
@@ -133,15 +132,14 @@ export class PreferenceService {
     }
 
     /**
-     * Return the timezone detected for the current browser session
-     * by the JSTZ timezone library.
+     * Return the timezone detected for the current browser session.
      *
      * @returns
      *     The name of the currently-detected timezone in IANA zone key
      *     format (Olson time zone database).
      */
     getDetectedTimezone(): string {
-        return jstz.determine().name();
+        return Intl.DateTimeFormat().resolvedOptions().timeZone;
     }
 
     /**

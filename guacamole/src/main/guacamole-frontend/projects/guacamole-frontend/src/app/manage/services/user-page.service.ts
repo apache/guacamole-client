@@ -18,7 +18,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import cloneDeep from 'lodash/cloneDeep';
+import _ from 'lodash';
 import { catchError, forkJoin, from, map, Observable } from 'rxjs';
 import { AuthenticationService } from '../../auth/service/authentication.service';
 import { canonicalize } from '../../locale/service/translation.service';
@@ -232,7 +232,7 @@ export class UserPageService {
                 return;
 
             // Do not modify original object
-            permissions = cloneDeep(permissions);
+            permissions = _.cloneDeep(permissions);
 
             // Ignore permission to update root group
             PermissionSet.removeConnectionGroupPermission(permissions,

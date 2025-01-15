@@ -20,8 +20,7 @@
 import { Injectable } from '@angular/core';
 import { path } from 'd3-path';
 import { curveCatmullRom } from 'd3-shape';
-import map from 'lodash/map';
-import reduce from 'lodash/reduce';
+import _ from 'lodash';
 
 /**
  * A default, relatively-gentle Gaussian smoothing kernel. This kernel
@@ -61,10 +60,10 @@ export class PlayerHeatmapService {
         const lookBack = Math.floor(GAUSSIAN_KERNEL.length / 2);
 
         // Apply the smoothing kernel to each value in the provided array
-        return map(values, (value, index) => {
+        return _.map(values, (value, index) => {
 
             // Total up the weighted values for each position in the kernel
-            return reduce(GAUSSIAN_KERNEL, (total, weight, kernelIndex) => {
+            return _.reduce(GAUSSIAN_KERNEL, (total, weight, kernelIndex) => {
 
                 // The offset into the original values array for the kernel
                 const valuesOffset = kernelIndex - lookBack;

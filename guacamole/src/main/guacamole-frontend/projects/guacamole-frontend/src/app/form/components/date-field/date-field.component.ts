@@ -27,9 +27,10 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Component to display date fields.
  */
 @Component({
-    selector     : 'guac-date-field',
-    templateUrl  : './date-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-date-field',
+    templateUrl: './date-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class DateFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
 

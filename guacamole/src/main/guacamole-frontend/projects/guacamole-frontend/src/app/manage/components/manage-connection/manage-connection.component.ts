@@ -45,9 +45,10 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
  * Component for editing or creating connections.
  */
 @Component({
-    selector     : 'guac-manage-connection',
-    templateUrl  : './manage-connection.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-manage-connection',
+    templateUrl: './manage-connection.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ManageConnectionComponent implements OnInit {
 

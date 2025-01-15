@@ -101,11 +101,23 @@ guac-player .guac-player-controls {
 }
 
 .guac-player-controls .play-icon {
-    background-image: url('^images/action-icons/guac-play.svg');
+    background-image: url('images/action-icons/guac-play.svg');
 }
 
 .guac-player-controls .pause-icon {
-    background-image: url('^images/action-icons/guac-pause.svg');
+    background-image: url('images/action-icons/guac-pause.svg');
+}
+
+.guac-player-controls .guac-player-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.guac-player-controls .guac-player-keys {
+    margin-left: auto;
+    padding-right: 0.5em;
+    cursor: pointer;
 }
 
 .guac-player-controls .guac-player-buttons {

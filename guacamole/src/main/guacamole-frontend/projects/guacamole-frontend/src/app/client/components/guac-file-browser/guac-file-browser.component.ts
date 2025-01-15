@@ -39,9 +39,10 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
  * Guacamole client.
  */
 @Component({
-    selector     : 'guac-file-browser',
-    templateUrl  : './guac-file-browser.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-file-browser',
+    templateUrl: './guac-file-browser.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacFileBrowserComponent implements OnInit, OnChanges {
 

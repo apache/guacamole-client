@@ -25,9 +25,10 @@ import { PageDefinition } from '../../../navigation/types/PageDefinition';
  * The component for the general settings page.
  */
 @Component({
-    selector     : 'guac-settings',
-    templateUrl  : './settings.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-settings',
+    templateUrl: './settings.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class SettingsComponent implements OnInit {
 

@@ -24,7 +24,8 @@ import { Pipe, PipeTransform } from '@angular/core';
  * that any characters with special meaning for URIs are escaped.
  */
 @Pipe({
-    name: 'escape'
+    name: 'escape',
+    standalone: false
 })
 export class EscapePipe implements PipeTransform {
 

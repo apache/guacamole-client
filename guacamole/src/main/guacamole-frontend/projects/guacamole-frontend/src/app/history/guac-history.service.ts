@@ -18,7 +18,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import remove from 'lodash/remove';
+import _ from 'lodash';
 import { PreferenceService } from '../settings/services/preference.service';
 import { LocalStorageService } from '../storage/local-storage.service';
 import { HistoryEntry } from './HistoryEntry';
@@ -62,7 +62,7 @@ export class GuacHistoryService {
      */
     removeEntry(id: string): boolean {
 
-        return remove(this.recentConnections, entry => entry.id === id).length > 0;
+        return _.remove(this.recentConnections, entry => entry.id === id).length > 0;
 
     }
 

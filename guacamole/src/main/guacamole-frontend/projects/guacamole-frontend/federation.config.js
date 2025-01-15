@@ -17,12 +17,26 @@
  * under the License.
  */
 
-const {shareAll, withModuleFederationPlugin} = require('@angular-architects/module-federation/webpack');
+const {withNativeFederation, shareAll} = require('@angular-architects/native-federation/config');
 
-module.exports = withModuleFederationPlugin({
+module.exports = withNativeFederation({
+
+    name: 'guacamole-frontend',
 
     shared: {
         ...shareAll({singleton: true, strictVersion: true, requiredVersion: 'auto'}),
     },
+
+    // Packages that should not be shared or are not needed at runtime
+    skip: [
+        'rxjs/ajax',
+        'rxjs/fetch',
+        'rxjs/testing',
+        'rxjs/webSocket',
+        'csv'
+    ]
+
+    // Please read our FAQ about sharing libs:
+    // https://shorturl.at/jmzH0
 
 });

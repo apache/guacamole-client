@@ -46,9 +46,10 @@ import { ActiveConnectionWrapper } from '../../types/ActiveConnectionWrapper';
  * A component for managing all active Guacamole sessions.
  */
 @Component({
-    selector     : 'guac-guac-settings-sessions',
-    templateUrl  : './guac-settings-sessions.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-guac-settings-sessions',
+    templateUrl: './guac-settings-sessions.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacSettingsSessionsComponent implements OnInit {
 

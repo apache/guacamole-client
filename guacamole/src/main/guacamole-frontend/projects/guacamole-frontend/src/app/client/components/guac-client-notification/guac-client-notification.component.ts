@@ -78,9 +78,10 @@ type ClientState = [string, Record<string, string> | null, string | null, Form[]
  * necessary to continue the connection.
  */
 @Component({
-    selector     : 'guac-client-notification',
-    templateUrl  : './guac-client-notification.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-client-notification',
+    templateUrl: './guac-client-notification.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacClientNotificationComponent implements OnInit, DoCheck {
 

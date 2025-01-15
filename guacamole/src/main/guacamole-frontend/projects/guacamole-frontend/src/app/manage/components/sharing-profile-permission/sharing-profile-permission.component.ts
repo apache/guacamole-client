@@ -26,9 +26,10 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
  * connection and allows manipulation of the sharing profile permissions.
  */
 @Component({
-    selector     : 'guac-sharing-profile-permission',
-    templateUrl  : './sharing-profile-permission.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-sharing-profile-permission',
+    templateUrl: './sharing-profile-permission.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class SharingProfilePermissionComponent {
 

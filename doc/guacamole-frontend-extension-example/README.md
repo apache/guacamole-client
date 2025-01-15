@@ -1,5 +1,11 @@
 # Frontend Extension Example
 
+Adds global css styles, new routes (/guacamole/guacamole-angular-example and /guacamole/guacamole-angular-example/about)
+and button below the "Logout" user menu.
+
+[//]: # (TODO: Update for native federation)
+## Setup
+
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) 
 version 16.1.1 using the following steps:
 
@@ -38,3 +44,4 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4202/`. The appli
 ## Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+To package the artifacts for guacamole run `node ./package-extension.js`.

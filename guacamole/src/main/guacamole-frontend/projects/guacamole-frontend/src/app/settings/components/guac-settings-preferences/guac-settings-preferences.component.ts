@@ -40,9 +40,10 @@ import { PreferenceService } from '../../services/preference.service';
  * A component for managing preferences local to the current user.
  */
 @Component({
-    selector     : 'guac-settings-preferences',
-    templateUrl  : './guac-settings-preferences.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-settings-preferences',
+    templateUrl: './guac-settings-preferences.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacSettingsPreferencesComponent implements OnInit {
 

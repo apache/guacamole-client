@@ -21,9 +21,10 @@ import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 @Component({
-    selector     : 'guac-email-field',
-    templateUrl  : './email-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-email-field',
+    templateUrl: './email-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class EmailFieldComponent extends FormFieldBaseComponent implements OnChanges {
 

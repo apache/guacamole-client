@@ -45,7 +45,7 @@ export class PatchOperation {
      * JQuery.
      *
      * @param root
-     *     The root element of the template to which
+     *     The JQuery-wrapped root element of the template to which
      *     this patch operation should be applied.
      *
      * @param elements
@@ -53,7 +53,7 @@ export class PatchOperation {
      *     operation. For example, if the patch operation is inserting
      *     elements, these are the elements that will be inserted.
      */
-    apply(root: Element[], elements: Element[]): void {
+    apply(root: JQuery, elements: Element[]): void {
         PatchOperation.Operations[this.name](root, this.selector, elements);
     }
 
@@ -71,14 +71,7 @@ export class PatchOperation {
          * provided CSS selector.
          */
         'before': (root, selector, elements) => {
-            root.forEach(rootElement => {
-                const targets = rootElement.querySelectorAll(selector);
-                targets.forEach(target => {
-                    elements.forEach(element => {
-                        target.before(element);
-                    });
-                });
-            });
+            root.find(selector).before(elements);
         },
 
         /**
@@ -86,14 +79,7 @@ export class PatchOperation {
          * provided CSS selector.
          */
         'after': (root, selector, elements) => {
-            root.forEach(rootElement => {
-                const targets = rootElement.querySelectorAll(selector);
-                targets.forEach(target => {
-                    elements.forEach(element => {
-                        target.after(element);
-                    });
-                });
-            });
+            root.find(selector).after(elements);
         },
 
         /**
@@ -101,12 +87,7 @@ export class PatchOperation {
          * the given elements.
          */
         'replace': (root, selector, elements) => {
-            root.forEach(rootElement => {
-                const targets = rootElement.querySelectorAll(selector);
-                targets.forEach(target => {
-                    target.replaceWith(...elements);
-                });
-            });
+            root.find(selector).replaceWith(elements);
         },
 
         /**
@@ -114,12 +95,7 @@ export class PatchOperation {
          * provided CSS selector, before any existing children.
          */
         'before-children': (root, selector, elements) => {
-            root.forEach(rootElement => {
-                const targets = rootElement.querySelectorAll(selector);
-                targets.forEach(target => {
-                    target.prepend(...elements);
-                });
-            });
+            root.find(selector).prepend(elements);
         },
 
         /**
@@ -127,12 +103,7 @@ export class PatchOperation {
          * provided CSS selector, after any existing children.
          */
         'after-children': (root, selector, elements) => {
-            root.forEach(rootElement => {
-                const targets = rootElement.querySelectorAll(selector);
-                targets.forEach(target => {
-                    target.append(...elements);
-                });
-            });
+            root.find(selector).append(elements);
         },
 
         /**
@@ -140,18 +111,7 @@ export class PatchOperation {
          * provided CSS selector, replacing any existing children.
          */
         'replace-children': (root, selector, elements) => {
-            root.forEach(rootElement => {
-                const targets = rootElement.querySelectorAll(selector);
-                targets.forEach(target => {
-                    while (target.firstChild) {
-                        target.removeChild(target.firstChild);
-                    }
-                    elements.forEach(element => {
-                        target.appendChild(element);
-                    });
-                });
-            });
-
+            root.find(selector).empty().append(elements);
         }
 
     };
@@ -165,7 +125,8 @@ export namespace PatchOperation {
      * given element.
      *
      * @param root
-     *     The root element of the template being patched.
+     *    The JQuery-wrapped root element of the template being
+     *     patched.
      *
      * @param selector
      *     The CSS selector which determines where this patch operation
@@ -176,6 +137,6 @@ export namespace PatchOperation {
      *     template defined by root at the locations selected by the
      *     given CSS selector.
      */
-    export type PatchOperationFunction = (root: Element[], selector: string, elements: Element[]) => void;
+    export type PatchOperationFunction = (root: JQuery, selector: string, elements: Element[]) => void;
 }
 

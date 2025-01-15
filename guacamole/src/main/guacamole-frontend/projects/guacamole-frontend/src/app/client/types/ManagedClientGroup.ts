@@ -17,11 +17,7 @@
  * under the License.
  */
 
-import filter from 'lodash/filter';
-import findIndex from 'lodash/findIndex';
-import isArray from 'lodash/isArray';
-import isString from 'lodash/isString';
-import map from 'lodash/map';
+import _ from 'lodash';
 import { ManagedClient } from './ManagedClient';
 
 export namespace ManagedClientGroup {
@@ -148,8 +144,8 @@ export class ManagedClientGroup {
      */
     static getIdentifier(group: ManagedClientGroup | string[]): string {
 
-        if (!isArray(group))
-            group = map(group.clients, client => client.id);
+        if (!_.isArray(group))
+            group = _.map(group.clients, client => client.id);
 
         return group.join('.');
 
@@ -170,7 +166,7 @@ export class ManagedClientGroup {
      */
     static getClientIdentifiers(group: ManagedClientGroup | string): string[] {
 
-        if (isString(group))
+        if (_.isString(group))
             return group.split(/\./);
 
         return group.clients.map(client => client.id);
@@ -254,11 +250,11 @@ export class ManagedClientGroup {
 
         // Generate a name from ONLY the focused clients, unless there are no
         // focused clients
-        let relevantClients = filter(group.clients, client => client.clientProperties.focused);
+        let relevantClients = _.filter(group.clients, client => client.clientProperties.focused);
         if (!relevantClients.length)
             relevantClients = group.clients;
 
-        return filter(relevantClients, (client => !!client.name)).map(client => client.name).join(', ') || '...';
+        return _.filter(relevantClients, (client => !!client.name)).map(client => client.name).join(', ') || '...';
 
     }
 
@@ -360,7 +356,7 @@ export class ManagedClientGroup {
     static verifyFocus(group: ManagedClientGroup | null): void {
 
         // Focus the first client if there are no clients focused
-        if (group && group.clients.length >= 1 && findIndex(group.clients, client => client.clientProperties.focused) === -1) {
+        if (group && group.clients.length >= 1 && _.findIndex(group.clients, client => client.clientProperties.focused) === -1) {
             group.clients[0].clientProperties.focused = true;
         }
 

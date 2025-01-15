@@ -18,7 +18,7 @@
  */
 
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import keys from 'lodash/keys';
+import _ from 'lodash';
 import { canonicalize } from '../../../locale/service/translation.service';
 import { PageDefinition } from '../../../navigation/types/PageDefinition';
 import { ManagementPermissions } from '../../types/ManagementPermissions';
@@ -29,9 +29,10 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
  * sources.
  */
 @Component({
-    selector     : 'data-source-tabs',
-    templateUrl  : './data-source-tabs.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'data-source-tabs',
+    templateUrl: './data-source-tabs.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class DataSourceTabsComponent implements OnChanges {
 
@@ -62,7 +63,7 @@ export class DataSourceTabsComponent implements OnChanges {
 
             this.pages = [];
 
-            const dataSources = keys(this.permissions).sort();
+            const dataSources = _.keys(this.permissions).sort();
             dataSources.forEach(dataSource => {
 
                 // Determine whether data source contains this object

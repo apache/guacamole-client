@@ -35,9 +35,10 @@ import { ManagedClient } from '../../types/ManagedClient';
  * thumbnail.
  */
 @Component({
-    selector     : 'guac-thumbnail',
-    templateUrl  : './guac-thumbnail.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-thumbnail',
+    templateUrl: './guac-thumbnail.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacThumbnailComponent implements AfterViewInit, OnChanges {
 

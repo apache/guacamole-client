@@ -26,9 +26,10 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Component to display number fields.
  */
 @Component({
-    selector     : 'guac-number-field',
-    templateUrl  : './number-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-number-field',
+    templateUrl: './number-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class NumberFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
 

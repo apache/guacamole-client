@@ -59,9 +59,10 @@ export interface PagerEvent {
  * subset of the elements of some given array.
  */
 @Component({
-    selector     : 'guac-pager',
-    templateUrl  : './guac-pager.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-pager',
+    templateUrl: './guac-pager.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacPagerComponent implements OnChanges {
 

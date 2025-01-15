@@ -36,9 +36,10 @@ import { Notification } from '../../types/Notification';
  * A directive for displaying notifications.
  */
 @Component({
-    selector     : 'guac-notification',
-    templateUrl  : './guac-notification.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-notification',
+    templateUrl: './guac-notification.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy {
 

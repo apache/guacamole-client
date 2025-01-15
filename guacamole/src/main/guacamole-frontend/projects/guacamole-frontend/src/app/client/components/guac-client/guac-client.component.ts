@@ -47,9 +47,10 @@ import { ManagedDisplayCursor, ManagedDisplayDimensions } from '../../types/Mana
  * A component for the guacamole client.
  */
 @Component({
-    selector     : 'guac-client',
-    templateUrl  : './guac-client.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-client',
+    templateUrl: './guac-client.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
 

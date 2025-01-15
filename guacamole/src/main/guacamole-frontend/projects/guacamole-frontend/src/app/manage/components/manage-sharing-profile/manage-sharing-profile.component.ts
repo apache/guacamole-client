@@ -41,9 +41,10 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
  * Component for editing or creating sharing profiles.
  */
 @Component({
-    selector     : 'guac-manage-sharing-profile',
-    templateUrl  : './manage-sharing-profile.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-manage-sharing-profile',
+    templateUrl: './manage-sharing-profile.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ManageSharingProfileComponent implements OnInit {
 

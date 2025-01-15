@@ -22,11 +22,10 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from "@angular/router";
 
 /**
- * Dispays the about extension page.
+ * Displays the about-extension page.
  */
 @Component({
     selector: 'guac-about-extension-page',
-    standalone: true,
     imports: [CommonModule, RouterLink],
     template: `
         <p>
@@ -35,7 +34,7 @@ import { RouterLink } from "@angular/router";
             <a routerLink="../">Go back to the extension page</a>
         </p>
     `,
-    encapsulation: ViewEncapsulation.None,
+    encapsulation: ViewEncapsulation.None
 })
 export class AboutExtensionPageComponent {
 

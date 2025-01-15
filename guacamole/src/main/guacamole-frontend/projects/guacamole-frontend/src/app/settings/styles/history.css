@@ -84,6 +84,6 @@
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    background-image: url('^images/action-icons/guac-play-link.svg');
+    background-image: url('images/action-icons/guac-play-link.svg');
     vertical-align: middle;
 }

@@ -19,7 +19,7 @@
 
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-import keys from 'lodash/keys';
+import _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';
@@ -40,9 +40,10 @@ import { NonNullableProperties } from '../../../util/utility-types';
  * A component for managing all user groups in the system.
  */
 @Component({
-    selector     : 'guac-settings-user-groups',
-    templateUrl  : './guac-settings-user-groups.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-settings-user-groups',
+    templateUrl: './guac-settings-user-groups.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacSettingsUserGroupsComponent implements OnInit {
 
@@ -196,7 +197,7 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
             return null;
 
         // For each data source
-        const dataSources = keys(this.permissions).sort();
+        const dataSources = _.keys(this.permissions).sort();
         for (let i = 0; i < dataSources.length; i++) {
 
             // Retrieve corresponding permission set

@@ -65,7 +65,7 @@
 
 .guac-player-text-container .text-controls .fullscreen-button {
 
-    background-image: url('^images/fullscreen.svg');
+    background-image: url('images/fullscreen.svg');
     background-size: contain;
     cursor: pointer;
     height: 22px;

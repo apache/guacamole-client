@@ -20,8 +20,7 @@
 import { Component, DoCheck, Input, ViewEncapsulation } from '@angular/core';
 
 import { GuacClickCallback, GuacEventService } from 'guacamole-frontend-lib';
-import filter from 'lodash/filter';
-import isEqual from 'lodash/isEqual';
+import _ from 'lodash';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { ManagedClientService } from '../../services/managed-client.service';
 import { ManagedArgument } from '../../types/ManagedArgument';
@@ -34,9 +33,10 @@ import { ManagedClientGroup } from '../../types/ManagedClientGroup';
  * automatically determined by the number of clients present.
  */
 @Component({
-    selector     : 'guac-tiled-clients',
-    templateUrl  : './guac-tiled-clients.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-tiled-clients',
+    templateUrl: './guac-tiled-clients.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacTiledClientsComponent implements DoCheck {
 
@@ -96,7 +96,7 @@ export class GuacTiledClientsComponent implements DoCheck {
 
         const managedClientGroup = this.clientGroup;
         if (managedClientGroup) {
-            const focusedClients = filter(managedClientGroup.clients, client => client.clientProperties.focused);
+            const focusedClients = _.filter(managedClientGroup.clients, client => client.clientProperties.focused);
             if (focusedClients.length === 1)
                 return focusedClients[0];
         }
@@ -125,7 +125,7 @@ export class GuacTiledClientsComponent implements DoCheck {
         // Notify whenever arguments of currently-focused client changes
         const newArguments: Record<string, ManagedArgument> | undefined = this.getFocusedClient()?.arguments;
 
-        if (!isEqual(this.lastFocusedClientArguments, newArguments)) {
+        if (!_.isEqual(this.lastFocusedClientArguments, newArguments)) {
 
             this.guacEventService.broadcast('guacClientArgumentsUpdated', { focusedClient: newFocusedClient });
 

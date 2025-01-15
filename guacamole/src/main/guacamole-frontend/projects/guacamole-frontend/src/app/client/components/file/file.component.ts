@@ -41,9 +41,10 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
  * the user can click on it to initiate a download.
  */
 @Component({
-    selector     : 'guac-file',
-    templateUrl  : './file.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-file',
+    templateUrl: './file.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class FileComponent implements OnInit, OnChanges {
 

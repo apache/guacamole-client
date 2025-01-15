@@ -24,9 +24,10 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
  * TODO
  */
 @Component({
-    selector     : 'guac-connection-group',
-    templateUrl  : './connection-group.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-connection-group',
+    templateUrl: './connection-group.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ConnectionGroupComponent {
 

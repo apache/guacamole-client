@@ -29,9 +29,10 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
  * context of the object being edited/created.
  */
 @Component({
-    selector     : 'management-buttons',
-    templateUrl  : './management-buttons.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'management-buttons',
+    templateUrl: './management-buttons.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ManagementButtonsComponent implements OnInit {
 

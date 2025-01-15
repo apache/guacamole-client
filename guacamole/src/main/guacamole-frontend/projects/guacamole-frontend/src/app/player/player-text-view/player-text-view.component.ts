@@ -18,7 +18,7 @@
  */
 
 import { Component, Input, OnChanges, signal, SimpleChanges, ViewEncapsulation } from '@angular/core';
-import * as fuzzysort from 'fuzzysort';
+import fuzzysort from 'fuzzysort';
 import { TextBatch } from '../services/key-event-display.service';
 import { PlayerTimeService } from '../services/player-time.service';
 
@@ -26,12 +26,13 @@ import { PlayerTimeService } from '../services/player-time.service';
  * Component which plays back session recordings.
  */
 @Component({
-    selector     : 'guac-player-text-view',
-    templateUrl  : './player-text-view.component.html',
+    selector: 'guac-player-text-view',
+    templateUrl: './player-text-view.component.html',
     encapsulation: ViewEncapsulation.None,
-    host         : {
+    host: {
         '[class.fullscreen]': 'fullscreenKeyLog()'
-    }
+    },
+    standalone: false
 })
 export class PlayerTextViewComponent implements OnChanges {
 

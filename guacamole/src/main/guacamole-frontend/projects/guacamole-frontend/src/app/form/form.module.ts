@@ -18,7 +18,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { TranslocoModule } from '@ngneat/transloco';
@@ -71,15 +71,7 @@ import { GuacLenientTimeDirective } from './directives/guac-lenient-time.directi
         TerminalColorSchemeFieldComponent,
         GuacInputColorComponent
     ],
-    imports     : [
-        CommonModule,
-        HttpClientModule,
-        ElementModule,
-        ReactiveFormsModule,
-        TranslocoModule,
-        OrderByPipe
-    ],
-    exports     : [
+    exports: [
         TimeZoneFieldComponent,
         FormFieldComponent,
         FormComponent,
@@ -98,6 +90,13 @@ import { GuacLenientTimeDirective } from './directives/guac-lenient-time.directi
         UsernameFieldComponent,
         TerminalColorSchemeFieldComponent,
         GuacInputColorComponent
+    ],
+    imports: [
+        CommonModule,
+        ElementModule,
+        ReactiveFormsModule,
+        TranslocoModule,
+        OrderByPipe
     ]
 })
 export class FormModule {

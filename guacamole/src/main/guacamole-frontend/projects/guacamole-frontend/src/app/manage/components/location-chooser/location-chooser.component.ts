@@ -24,9 +24,10 @@ import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
  * A component for choosing the location of a connection or connection group.
  */
 @Component({
-    selector     : 'guac-location-chooser',
-    templateUrl  : './location-chooser.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-location-chooser',
+    templateUrl: './location-chooser.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class LocationChooserComponent implements OnInit, OnChanges {
 

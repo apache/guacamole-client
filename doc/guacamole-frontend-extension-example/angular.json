@@ -41,23 +41,60 @@
 			"prefix": "guac",
 			"architect": {
 				"build": {
-					"builder": "ngx-build-plus:browser",
+					"builder": "@angular-architects/native-federation:build",
+					"options": {},
+					"configurations": {
+						"production": {
+							"target": "guacamole-frontend-extension-example:esbuild:production"
+						},
+						"development": {
+							"target": "guacamole-frontend-extension-example:esbuild:development",
+							"dev": true
+						}
+					},
+					"defaultConfiguration": "production"
+				},
+				"serve": {
+					"builder": "@angular-architects/native-federation:build",
 					"options": {
-						"outputPath": "dist/guacamole-frontend-extension-example",
+						"target": "guacamole-frontend-extension-example:serve-original:development",
+						"rebuildDelay": 0,
+						"dev": true,
+						"port": 0
+					}
+				},
+				"extract-i18n": {
+					"builder": "ngx-build-plus:extract-i18n",
+					"options": {
+						"browserTarget": "guacamole-frontend-extension-example:build",
+						"extraWebpackConfig": "webpack.config.js"
+					}
+				},
+				"esbuild": {
+					"builder": "@angular-devkit/build-angular:application",
+					"options": {
+						"outputPath": {
+							"base": "dist/guacamole-frontend-extension-example",
+							"browser": ""
+						},
 						"index": "src/index.html",
-						"main": "src/main.ts",
 						"polyfills": [
-							"zone.js"
+							"zone.js",
+							"es-module-shims"
 						],
 						"tsConfig": "tsconfig.app.json",
 						"assets": [
+							{
+								"glob": "*.html",
+								"input": "src/html",
+								"output": "html"
+							}
 						],
 						"styles": [
 							"src/styles.css"
 						],
 						"scripts": [],
-						"extraWebpackConfig": "webpack.config.js",
-						"commonChunk": false
+						"browser": "src/main.ts"
 					},
 					"configurations": {
 						"production": {
@@ -73,13 +110,10 @@
 									"maximumError": "4kb"
 								}
 							],
-							"outputHashing": "all",
-							"extraWebpackConfig": "webpack.prod.config.js"
+							"outputHashing": "all"
 						},
 						"development": {
-							"buildOptimizer": false,
 							"optimization": false,
-							"vendorChunk": true,
 							"extractLicenses": false,
 							"sourceMap": true,
 							"namedChunks": true
@@ -87,29 +121,19 @@
 					},
 					"defaultConfiguration": "production"
 				},
-				"serve": {
-					"builder": "ngx-build-plus:dev-server",
+				"serve-original": {
+					"builder": "@angular/build:dev-server",
 					"configurations": {
 						"production": {
-							"browserTarget": "guacamole-frontend-extension-example:build:production",
-							"extraWebpackConfig": "webpack.prod.config.js"
+							"buildTarget": "guacamole-frontend-extension-example:esbuild:production"
 						},
 						"development": {
-							"browserTarget": "guacamole-frontend-extension-example:build:development"
+							"buildTarget": "guacamole-frontend-extension-example:esbuild:development"
 						}
 					},
 					"defaultConfiguration": "development",
 					"options": {
-						"port": 4202,
-						"publicHost": "http://localhost:4202",
-						"extraWebpackConfig": "webpack.config.js"
-					}
-				},
-				"extract-i18n": {
-					"builder": "ngx-build-plus:extract-i18n",
-					"options": {
-						"browserTarget": "guacamole-frontend-extension-example:build",
-						"extraWebpackConfig": "webpack.config.js"
+						"port": 4202
 					}
 				}
 			}

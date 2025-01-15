@@ -20,7 +20,7 @@
 import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
-import includes from 'lodash/includes';
+import _ from 'lodash';
 import { ColorScheme } from '../../types/ColorScheme';
 import { FormFieldBaseComponent, getFieldOption } from '../form-field-base/form-field-base.component';
 
@@ -54,9 +54,10 @@ type TerminalColorIndex = typeof terminalColorIndices[number];
  * Component for terminal color scheme fields.
  */
 @Component({
-    selector     : 'guac-terminal-color-scheme-field',
-    templateUrl  : './terminal-color-scheme-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-terminal-color-scheme-field',
+    templateUrl: './terminal-color-scheme-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
 
@@ -189,7 +190,7 @@ export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent im
          * Updates the component data based on the given string value from the form control input.
          */
         const updateComponentData = (value: string | null): void => {
-            if (this.selectedColorScheme.value === CUSTOM_COLOR_SCHEME || (value && !includes(this.field.options, value))) {
+            if (this.selectedColorScheme.value === CUSTOM_COLOR_SCHEME || (value && !_.includes(this.field.options, value))) {
                 this.setCustomColorScheme(ColorScheme.fromString(value as string));
                 this.selectedColorScheme.setValue(CUSTOM_COLOR_SCHEME, { emitEvent: false });
             } else

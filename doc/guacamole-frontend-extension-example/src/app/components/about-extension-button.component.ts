@@ -18,7 +18,6 @@
  */
 
 import { Component, ViewEncapsulation } from '@angular/core';
-import { RouterLink } from "@angular/router";
 
 /**
  * Displays a button to navigate to the about page.
@@ -26,13 +25,10 @@ import { RouterLink } from "@angular/router";
 @Component({
     selector: 'guac-about-extension-button',
     template: `
-        <a routerLink="about">About</a>
+        <a routerLink="angular-extension">Goto Extension Page</a>
     `,
-    imports: [
-        RouterLink
-    ],
-    encapsulation: ViewEncapsulation.None,
-    standalone: true
+    imports: [],
+    encapsulation: ViewEncapsulation.None
 })
 export class AboutExtensionButtonComponent {
 

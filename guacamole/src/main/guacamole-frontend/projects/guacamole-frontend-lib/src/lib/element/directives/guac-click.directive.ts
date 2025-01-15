@@ -41,7 +41,8 @@ export type GuacClickCallback = (shift: boolean, ctrl: boolean) => void;
  * to allow for specific handling of Shift+Click and Ctrl+Click.
  */
 @Directive({
-    selector: '[guacClick]'
+    selector: '[guacClick]',
+    standalone: false
 })
 export class GuacClickDirective {
 

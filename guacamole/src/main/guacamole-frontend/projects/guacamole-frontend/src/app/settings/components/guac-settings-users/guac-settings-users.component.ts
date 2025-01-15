@@ -20,7 +20,7 @@
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslocoService } from '@ngneat/transloco';
-import keys from 'lodash/keys';
+import _ from 'lodash';
 import { BehaviorSubject, take } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';
@@ -41,9 +41,10 @@ import { User } from '../../../rest/types/User';
  * A component for managing all users in the system.
  */
 @Component({
-    selector     : 'guac-settings-users',
-    templateUrl  : './guac-settings-users.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-settings-users',
+    templateUrl: './guac-settings-users.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacSettingsUsersComponent implements OnInit {
 
@@ -267,7 +268,7 @@ export class GuacSettingsUsersComponent implements OnInit {
             return null;
 
         // For each data source
-        const dataSources = keys(this.permissions).sort();
+        const dataSources = _.keys(this.permissions).sort();
         for (let i = 0; i < dataSources.length; i++) {
 
             // Retrieve corresponding permission set

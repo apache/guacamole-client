@@ -27,9 +27,10 @@ import { ManagedFileTransferState } from '../../types/ManagedFileTransferState';
  * Component which displays all active file transfers.
  */
 @Component({
-    selector     : 'guac-file-transfer-manager',
-    templateUrl  : './guac-file-transfer-manager.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-file-transfer-manager',
+    templateUrl: './guac-file-transfer-manager.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacFileTransferManagerComponent {
 

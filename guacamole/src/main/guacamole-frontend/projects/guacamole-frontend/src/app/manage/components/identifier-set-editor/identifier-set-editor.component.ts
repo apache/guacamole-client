@@ -18,9 +18,7 @@
  */
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
-import isEmpty from 'lodash/isEmpty';
-import sortedIndex from 'lodash/sortedIndex';
-import sortedIndexOf from 'lodash/sortedIndexOf';
+import _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
 import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
@@ -35,9 +33,10 @@ import { DataSource } from '../../../list/types/DataSource';
  * identifiers.
  */
 @Component({
-    selector     : 'identifier-set-editor',
-    templateUrl  : './identifier-set-editor.component.html',
+    selector: 'identifier-set-editor',
+    templateUrl: './identifier-set-editor.component.html',
     encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class IdentifierSetEditorComponent implements OnInit, OnChanges {
 
@@ -206,7 +205,7 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
 
         // Determine location that the identifier should be added to
         // maintain sorted order
-        const index = sortedIndex(arr, identifier);
+        const index = _.sortedIndex(arr, identifier);
 
         // Do not add if already present
         if (arr[index] === identifier)
@@ -237,7 +236,7 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
     private removeIdentifier(arr: string[], identifier: string): boolean {
 
         // Search for identifier in sorted array
-        const index = sortedIndexOf(arr, identifier);
+        const index = _.sortedIndexOf(arr, identifier);
 
         // Nothing to do if already absent
         if (index === -1)
@@ -326,8 +325,8 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
      *     editor, false otherwise.
      */
     isEmpty(): boolean {
-        return isEmpty(this.identifiers)
-            && isEmpty(this.identifiersAvailable);
+        return _.isEmpty(this.identifiers)
+            && _.isEmpty(this.identifiersAvailable);
     }
 
 }

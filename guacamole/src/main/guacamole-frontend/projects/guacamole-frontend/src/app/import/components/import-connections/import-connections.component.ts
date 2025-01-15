@@ -19,10 +19,7 @@
 
 import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-import forEach from 'lodash/forEach';
-import get from 'lodash/get';
-import some from 'lodash/some';
-import trim from 'lodash/trim';
+import _ from 'lodash';
 import { firstValueFrom } from 'rxjs';
 import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
 import { ConnectionService } from '../../../rest/service/connection.service';
@@ -110,10 +107,11 @@ const LEGAL_MIME_TYPES: string[] = [CSV_MIME_TYPE, JSON_MIME_TYPE, ...YAML_MIME_
  * The component for the connection import page.
  */
 @Component({
-    selector     : 'guac-import-connections',
-    templateUrl  : './import-connections.component.html',
+    selector: 'guac-import-connections',
+    templateUrl: './import-connections.component.html',
     encapsulation: ViewEncapsulation.None,
-    providers    : [ConnectionParseService, ConnectionCSVService]
+    providers: [ConnectionParseService, ConnectionCSVService],
+    standalone: false
 })
 export class ImportConnectionsComponent {
 
@@ -216,7 +214,7 @@ export class ImportConnectionsComponent {
     // There are errors to display if the parse result generated errors, or
     // if the patch request failed
     hasErrors = () =>
-        !!get(this, 'parseResult.hasErrors') || !!this.patchFailure;
+        !!_.get(this, 'parseResult.hasErrors') || !!this.patchFailure;
 
     /**
      * Create all users and user groups mentioned in the import file that don't
@@ -307,7 +305,7 @@ export class ImportConnectionsComponent {
             });
 
         // Now that we've created all the users, grant access to each
-        forEach(parseResult.users, (connectionIndices, identifier) =>
+        _.forEach(parseResult.users, (connectionIndices, identifier) =>
 
             // Grant the permissions - note the group flag is `false`
             userRequests.push(firstValueFrom(this.permissionService.patchPermissions(
@@ -323,7 +321,7 @@ export class ImportConnectionsComponent {
                 false))));
 
         // Now that we've created all the groups, grant access to each
-        forEach(parseResult.groups, (connectionIndices, identifier) =>
+        _.forEach(parseResult.groups, (connectionIndices, identifier) =>
 
             // Grant the permissions - note the group flag is `true`
             groupRequests.push(firstValueFrom(this.permissionService.patchPermissions(
@@ -622,7 +620,7 @@ export class ImportConnectionsComponent {
         // If no MIME type was provided by the browser at all, use REGEXes as a
         // fallback to try to determine the file type. NOTE: Windows 10/11 are
         // known to do this with YAML files.
-        if (!trim(mimeType).length) {
+        if (!_.trim(mimeType).length) {
 
             // If the file name matches what we'd expect for a CSV file, set the
             // CSV MIME type and move on
@@ -691,7 +689,7 @@ export class ImportConnectionsComponent {
                 const fileData = e.target!.result as string;
 
                 // Check if the file has a header of a known-bad type
-                if (some(ZIP_SIGNATURES,
+                if (_.some(ZIP_SIGNATURES,
                     signature => fileData.startsWith(signature))) {
 
                     // Throw an error and abort processing

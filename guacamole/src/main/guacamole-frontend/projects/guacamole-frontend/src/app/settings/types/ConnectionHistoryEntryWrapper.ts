@@ -18,7 +18,7 @@
  */
 
 import { translate } from '@ngneat/transloco';
-import findKey from 'lodash/findKey';
+import _ from 'lodash';
 import { ActivityLog } from '../../rest/types/ActivityLog';
 import { ConnectionHistoryEntry } from '../../rest/types/ConnectionHistoryEntry';
 
@@ -101,7 +101,7 @@ export class ConnectionHistoryEntryWrapper {
         if (!identifier)
             return null;
 
-        const name: string | undefined = findKey(this.entry.logs, log => log.type === ActivityLog.Type.GUACAMOLE_SESSION_RECORDING);
+        const name: string | undefined = _.findKey(this.entry.logs, log => log.type === ActivityLog.Type.GUACAMOLE_SESSION_RECORDING);
         if (!name)
             return null;
 

@@ -32,7 +32,6 @@ import { PlanetChooserFieldComponent } from "./planet-chooser-field.component";
  */
 @Component({
     selector: 'guac-home-page',
-    standalone: true,
     imports: [CommonModule, AboutExtensionButtonComponent, PlanetChooserFieldComponent, RouterLink, PlanetChooserFieldComponent],
     template: `
         <p>
@@ -52,7 +51,7 @@ import { PlanetChooserFieldComponent } from "./planet-chooser-field.component";
         <a routerLink="/">Home</a>
         <guac-about-extension-button/>
     `,
-    encapsulation: ViewEncapsulation.None,
+    encapsulation: ViewEncapsulation.None
 })
 export class HomePageComponent {
     control = new FormControl<string | null>('');

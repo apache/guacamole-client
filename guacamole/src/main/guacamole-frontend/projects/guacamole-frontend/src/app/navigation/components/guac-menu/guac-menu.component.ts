@@ -21,9 +21,10 @@ import { DOCUMENT } from '@angular/common';
 import { Component, ElementRef, Inject, Input, OnInit, ViewEncapsulation } from '@angular/core';
 
 @Component({
-    selector     : 'guac-menu',
-    templateUrl  : './guac-menu.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-menu',
+    templateUrl: './guac-menu.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacMenuComponent implements OnInit {
 

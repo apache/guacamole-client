@@ -77,9 +77,10 @@ const ALLOWED_KEYS: Record<number, boolean> = {
  * A component which displays the Guacamole text input method.
  */
 @Component({
-    selector     : 'guac-text-input',
-    templateUrl  : './text-input.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-text-input',
+    templateUrl: './text-input.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TextInputComponent implements AfterViewInit {
 

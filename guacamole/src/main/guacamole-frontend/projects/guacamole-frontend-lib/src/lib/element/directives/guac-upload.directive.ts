@@ -26,7 +26,8 @@ import { ChangeDetectorRef, Directive, ElementRef, Inject, Input, OnInit } from 
  * callback function with any chosen files.
  */
 @Directive({
-    selector: '[guacUpload]'
+    selector: '[guacUpload]',
+    standalone: false
 })
 export class GuacUploadDirective implements OnInit {
 

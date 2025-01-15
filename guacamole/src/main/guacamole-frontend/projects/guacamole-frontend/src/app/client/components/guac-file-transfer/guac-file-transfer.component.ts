@@ -18,7 +18,7 @@
  */
 
 import { Component, DoCheck, Input, ViewEncapsulation } from '@angular/core';
-import { saveAs } from 'file-saver';
+import FileSaver from 'file-saver';
 import { GuacTranslateService } from '../../services/guac-translate.service';
 import { ManagedFileTransferState } from '../../types/ManagedFileTransferState';
 import { ManagedFileUpload } from '../../types/ManagedFileUpload';
@@ -28,9 +28,10 @@ import { ManagedFileUpload } from '../../types/ManagedFileUpload';
  * downloads, if applicable.
  */
 @Component({
-    selector     : 'guac-file-transfer',
-    templateUrl  : './guac-file-transfer.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-file-transfer',
+    templateUrl: './guac-file-transfer.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacFileTransferComponent implements DoCheck {
 
@@ -188,7 +189,7 @@ export class GuacFileTransferComponent implements DoCheck {
             return;
 
         // Save file
-        saveAs((this.transfer as any).blob, this.transfer.filename);
+        FileSaver.saveAs((this.transfer as any).blob, this.transfer.filename);
 
     }
 

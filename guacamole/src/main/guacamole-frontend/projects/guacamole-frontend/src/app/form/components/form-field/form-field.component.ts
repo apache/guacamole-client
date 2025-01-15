@@ -38,9 +38,10 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * A component that allows editing of a field.
  */
 @Component({
-    selector     : 'guac-form-field',
-    templateUrl  : './form-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-form-field',
+    templateUrl: './form-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class FormFieldComponent extends FormFieldBaseComponent implements AfterViewInit, OnChanges {
 

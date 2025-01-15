@@ -20,12 +20,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { parse as parseCSVData } from 'csv-parse/browser/esm/sync';
-import forEach from 'lodash/forEach';
-import get from 'lodash/get';
-import mapKeys from 'lodash/mapKeys';
-import mapValues from 'lodash/mapValues';
-import setWith from 'lodash/setWith';
-import trim from 'lodash/trim';
+import _ from 'lodash';
 import { firstValueFrom, map } from 'rxjs';
 import { parse as parseYAMLData } from 'yaml';
 import { ConnectionGroupService } from '../../rest/service/connection-group.service';
@@ -137,15 +132,15 @@ export class ConnectionParseService {
                         lookups.groupIdentifiersByPath[group.identifier!] = currentPath;
 
                         // Add each connection to the connection map
-                        forEach(group.childConnections,
-                            connection => setWith(
+                        _.forEach(group.childConnections,
+                            connection => _.setWith(
                                 lookups.connectionIdsByGroupAndName,
                                 [group.identifier!, connection.name!],
                                 connection.identifier, Object));
 
                         // Add each child group to the lookup
                         const nextPrefix = currentPath + '/';
-                        forEach(group.childConnectionGroups,
+                        _.forEach(group.childConnectionGroups,
                             childGroup => saveLookups(nextPrefix, childGroup));
 
                     };
@@ -294,7 +289,7 @@ export class ConnectionParseService {
 
             // Error out if this is a duplicate of a connection already in the
             // file
-            if (!!get(connectionsInFile, path))
+            if (!!_.get(connectionsInFile, path))
                 connection.errors.push(new ParseError({
                     message  : 'Duplicate connection in file: ' + path,
                     key      : 'IMPORT.ERROR_DUPLICATE_CONNECTION_IN_FILE',
@@ -302,10 +297,10 @@ export class ConnectionParseService {
                 }));
 
             // Mark the current path as already seen in the file
-            setWith(connectionsInFile, path, connection, Object);
+            _.setWith(connectionsInFile, path, connection, Object);
 
             // Check if this would be an update to an existing connection
-            const existingIdentifier = get(connectionIdsByGroupAndName,
+            const existingIdentifier = _.get(connectionIdsByGroupAndName,
                 [parentIdentifier, connection.name]);
 
             // The default behavior is to create connections if no conflict
@@ -361,7 +356,7 @@ export class ConnectionParseService {
 
         // Fetch the protocols and convert to a set of valid protocol names
         return firstValueFrom(this.schemaService.getProtocols(dataSource).pipe(map(
-                protocols => mapValues(protocols, ({ connectionForms }) => {
+                protocols => _.mapValues(protocols, ({ connectionForms }) => {
 
                     const fieldMap: Record<string, Record<string, string> | null> = {};
 
@@ -377,7 +372,7 @@ export class ConnectionParseService {
                             // Set the value to a map of lowercased/trimmed option values
                         // to actual option values
                         else
-                            fieldMap[name] = mapKeys(
+                            fieldMap[name] = _.mapKeys(
                                 options, option => option.trim().toLowerCase());
 
                     }));
@@ -466,7 +461,7 @@ export class ConnectionParseService {
             if (!protocols[protocol])
                 return connection;
 
-            forEach(connection.parameters, (value, name) => {
+            _.forEach(connection.parameters, (value, name) => {
 
                 // An explicit null value for a parameter is valid - do not
                 // process it further
@@ -482,7 +477,7 @@ export class ConnectionParseService {
 
                 // The validated / corrected option value for this connection
                 // parameter, if any
-                const validOptionValue = get(
+                const validOptionValue = _.get(
                     protocols, [protocol, name, comparisonValue]);
 
                 // If the provided value fuzzily matches a valid option value,
@@ -496,7 +491,7 @@ export class ConnectionParseService {
 
             });
 
-            forEach(connection.attributes, (value, name) => {
+            _.forEach(connection.attributes, (value, name) => {
 
                 // An explicit null value for an attribute is valid - do not
                 // process it further
@@ -555,7 +550,7 @@ export class ConnectionParseService {
 
                     // Run the array data through each provided transform
                     let connectionObject = data;
-                    forEach(transformFunctions, transform => {
+                    _.forEach(transformFunctions, transform => {
                         connectionObject = transform(connectionObject);
                     });
 
@@ -624,7 +619,7 @@ export class ConnectionParseService {
                     parseResult.errors[index] = connectionObject.errors;
 
                     // Add this connection index to the list for each user
-                    forEach(connectionObject.users, identifier => {
+                    _.forEach(connectionObject.users, identifier => {
 
                         // If there's an existing list, add the index to that
                         if (users[identifier])
@@ -636,7 +631,7 @@ export class ConnectionParseService {
                     });
 
                     // Add this connection index to the list for each group
-                    forEach(connectionObject.groups, identifier => {
+                    _.forEach(connectionObject.groups, identifier => {
 
                         // If there's an existing list, add the index to that
                         if (groups[identifier])
@@ -692,7 +687,7 @@ export class ConnectionParseService {
             // If the error message looks like the expected (and ugly) message
             // that's thrown when a binary file is provided, throw a more
             // friendly error.
-            if (trim(message).toLowerCase() == BINARY_CSV_ERROR_MESSAGE)
+            if (_.trim(message).toLowerCase() == BINARY_CSV_ERROR_MESSAGE)
                 deferred = Promise.reject(new ParseError({
                     message  : 'CSV binary parse attempt error: ' + error.message,
                     key      : 'IMPORT.ERROR_DETECTED_INVALID_TYPE',

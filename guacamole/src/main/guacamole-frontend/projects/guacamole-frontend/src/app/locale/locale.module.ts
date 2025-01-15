@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import {
     TRANSLOCO_CONFIG,
     TRANSLOCO_LOADER,
@@ -98,13 +98,11 @@ export class GuacMissingHandler implements TranslocoMissingHandler {
 @NgModule({
     exports  : [TranslocoModule],
     providers: [
-        {
-            provide   : APP_INITIALIZER,
-            useFactory: (translationService: TranslationService) =>
-                () => initializeTranslationService(translationService),
-            deps      : [TranslationService],
-            multi     : true,
-        },
+        provideAppInitializer(() => {
+        const initializerFn = ((translationService: TranslationService) =>
+                () => initializeTranslationService(translationService))(inject(TranslationService));
+        return initializerFn();
+      }),
         {
             provide   : TRANSLOCO_CONFIG,
             useFactory: translocoConfigFactory,

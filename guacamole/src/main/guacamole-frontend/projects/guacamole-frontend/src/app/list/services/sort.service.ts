@@ -18,8 +18,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { compile } from 'angular-expressions';
-import orderBy from 'lodash/orderBy';
+import AngularExpression from 'angular-expressions';
+import _ from 'lodash';
 
 /**
  * TODO: Document
@@ -38,7 +38,7 @@ export class SortService {
      * @param iteratees
      */
     orderBy<T>(target: T[], iteratees?: (keyof T)[]): T[] {
-        return orderBy(target, iteratees);
+        return _.orderBy(target, iteratees);
     }
 
     /**
@@ -71,7 +71,7 @@ export class SortService {
             const expression = p.startsWith('-') || p.startsWith('+') ? p.substring(1) : p;
             // Compare strings in a case-insensitive manner
             return (item: T) => {
-                const value = compile(expression)(item);
+                const value = AngularExpression.compile(expression)(item);
 
                 // If the value is a number, return it as-is
                 if (typeof value === 'number')
@@ -85,6 +85,6 @@ export class SortService {
             };
         });
 
-        return orderBy(collection, expressions, orders);
+        return _.orderBy(collection, expressions, orders);
     }
 }

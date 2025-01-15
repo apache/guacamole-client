@@ -39,9 +39,10 @@ import { NonNullableProperties } from '../../../util/utility-types';
  * A component for managing all connections and connection groups in the system.
  */
 @Component({
-    selector     : 'guac-settings-connections',
-    templateUrl  : './guac-settings-connections.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-settings-connections',
+    templateUrl: './guac-settings-connections.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacSettingsConnectionsComponent implements OnInit {
 

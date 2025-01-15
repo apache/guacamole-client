@@ -19,7 +19,7 @@
 
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
-import get from 'lodash/get';
+import _ from 'lodash';
 import { ManagedClient } from '../../../client/types/ManagedClient';
 import { canonicalize } from '../../../locale/service/translation.service';
 import { Field } from '../../../rest/types/Field';
@@ -30,9 +30,10 @@ import { FormService } from '../../service/form.service';
  * A component that allows editing of a collection of fields.
  */
 @Component({
-    selector     : 'guac-form',
-    templateUrl  : './form.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-form',
+    templateUrl: './form.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class FormComponent implements OnChanges {
 
@@ -206,7 +207,7 @@ export class FormComponent implements OnChanges {
          * marked as pending.
          */
         return !!(this.disabled ||
-            get(this.client, ['arguments', field.name, 'pending']));
+            _.get(this.client, ['arguments', field.name, 'pending']));
     }
 
     /**

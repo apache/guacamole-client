@@ -42,9 +42,10 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
  * The component for editing user groups.
  */
 @Component({
-    selector     : 'guac-manage-user-group',
-    templateUrl  : './manage-user-group.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-manage-user-group',
+    templateUrl: './manage-user-group.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ManageUserGroupComponent implements OnInit {
 

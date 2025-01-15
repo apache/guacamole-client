@@ -25,9 +25,10 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
  * TODO
  */
 @Component({
-    selector     : 'guac-connection',
-    templateUrl  : './connection.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-connection',
+    templateUrl: './connection.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ConnectionComponent {
 

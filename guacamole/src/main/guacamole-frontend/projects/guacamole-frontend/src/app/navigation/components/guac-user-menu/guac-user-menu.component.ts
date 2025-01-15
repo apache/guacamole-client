@@ -31,9 +31,10 @@ import { PageDefinition } from '../../types/PageDefinition';
  * navigation and configuration.
  */
 @Component({
-    selector     : 'guac-user-menu',
-    templateUrl  : './guac-user-menu.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-user-menu',
+    templateUrl: './guac-user-menu.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacUserMenuComponent implements OnInit {
 

@@ -27,9 +27,10 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Component for time fields.
  */
 @Component({
-    selector     : 'guac-time-field',
-    templateUrl  : './time-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-time-field',
+    templateUrl: './time-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TimeFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
 

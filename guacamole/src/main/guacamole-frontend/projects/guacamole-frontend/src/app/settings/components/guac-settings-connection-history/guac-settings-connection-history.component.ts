@@ -20,7 +20,7 @@
 import { formatDate } from '@angular/common';
 import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { TranslocoService } from '@ngneat/transloco';
-import { saveAs } from 'file-saver';
+import FileSaver from 'file-saver';
 import { BehaviorSubject, combineLatest, take } from 'rxjs';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
 import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
@@ -38,9 +38,10 @@ import { ConnectionHistoryEntryWrapper } from '../../types/ConnectionHistoryEntr
  * A component for viewing connection history records.
  */
 @Component({
-    selector     : 'guac-settings-connection-history',
-    templateUrl  : './guac-settings-connection-history.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-settings-connection-history',
+    templateUrl: './guac-settings-connection-history.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacSettingsConnectionHistoryComponent implements OnInit {
 
@@ -291,7 +292,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
                 );
 
                 // Save the result
-                saveAs(this.csvService.toBlob(records), filenameHistoryCsv);
+                FileSaver.saveAs(this.csvService.toBlob(records), filenameHistoryCsv);
 
             });
 

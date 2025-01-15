@@ -37,9 +37,10 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
  * The component for editing or creating connection groups.
  */
 @Component({
-    selector     : 'guac-manage-connection-group',
-    templateUrl  : './manage-connection-group.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-manage-connection-group',
+    templateUrl: './manage-connection-group.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ManageConnectionGroupComponent implements OnInit {
 

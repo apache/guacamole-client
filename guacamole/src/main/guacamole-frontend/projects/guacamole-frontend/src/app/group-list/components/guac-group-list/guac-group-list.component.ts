@@ -45,9 +45,10 @@ import { GroupListItem } from '../../types/GroupListItem';
  * automatically-paginated view.
  */
 @Component({
-    selector     : 'guac-group-list',
-    templateUrl  : './guac-group-list.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-group-list',
+    templateUrl: './guac-group-list.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacGroupListComponent implements OnInit, OnChanges {
 

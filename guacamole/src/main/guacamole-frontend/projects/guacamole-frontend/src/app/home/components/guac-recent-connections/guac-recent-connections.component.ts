@@ -30,9 +30,10 @@ import { RecentConnection } from '../../types/RecentConnection';
  * each of the given connection groups.
  */
 @Component({
-    selector     : 'guac-recent-connections',
-    templateUrl  : './guac-recent-connections.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-recent-connections',
+    templateUrl: './guac-recent-connections.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacRecentConnectionsComponent implements OnChanges {
 

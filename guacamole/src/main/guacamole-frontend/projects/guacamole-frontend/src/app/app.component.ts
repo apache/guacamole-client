@@ -58,9 +58,10 @@ const EXTENSION_STYLES_FILENAME = 'app.css';
  * The Component for the root of the application.
  */
 @Component({
-    selector     : 'guac-root',
-    templateUrl  : './app.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-root',
+    templateUrl: './app.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class AppComponent implements OnInit, AfterViewChecked {
 

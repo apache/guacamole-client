@@ -29,9 +29,10 @@ import { ColorPickerService } from '../../service/color-picker.service';
  * @see colorPickerService
  */
 @Component({
-    selector     : 'guac-input-color',
-    templateUrl  : './guac-input-color.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-input-color',
+    templateUrl: './guac-input-color.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacInputColorComponent {
 

@@ -17,13 +17,14 @@
  * under the License.
  */
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { catchError, throwError } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
 import { getTestScheduler } from '../../util/test-helper';
 import { Error } from '../types/Error';
 import { RequestService } from './request.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import Type = Error.Type;
 
 describe('RequestService', () => {
@@ -33,8 +34,9 @@ describe('RequestService', () => {
     beforeEach(() => {
         testScheduler = getTestScheduler();
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
-        });
+    imports: [],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
         service = TestBed.inject(RequestService);
     });
 

@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { compile } from 'angular-expressions';
-import isObjectLike from 'lodash/isObjectLike';
+import AngularExpression from 'angular-expressions';
+import _ from 'lodash';
 import { FilterToken } from './FilterToken';
 import { IPv4Network } from './IPv4Network';
 import { IPv6Network } from './IPv6Network';
@@ -50,7 +50,7 @@ export class FilterPattern {
      *     The expressions whose values are to be filtered.
      */
     constructor(expressions: string[]) {
-        this.getters = expressions.map(expression => compile(expression));
+        this.getters = expressions.map(expression => AngularExpression.compile(expression));
         this.predicate = this.nullPredicate;
     }
 
@@ -124,7 +124,7 @@ export class FilterPattern {
 
             // Retrieve value of current getter
             let value: any;
-            if (isObjectLike(object))
+            if (_.isObjectLike(object))
                 value = (this.getters)[i](object);
             // If the given object is a primitive value use the value directly
             else

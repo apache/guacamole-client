@@ -25,7 +25,8 @@ import { Directive, ElementRef, Input } from '@angular/core';
  * dragged files.
  */
 @Directive({
-    selector: '[guacDrop]'
+    selector: '[guacDrop]',
+    standalone: false
 })
 export class GuacDropDirective {
 

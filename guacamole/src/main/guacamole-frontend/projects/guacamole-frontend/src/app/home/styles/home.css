@@ -93,7 +93,7 @@ a.home-connection, .empty.balancer a.home-connection-group {
     background-repeat: no-repeat;
     background-size: contain;
     background-position: center center;
-    background-image: url('^images/x-black.svg');
+    background-image: url('images/x-black.svg');
 }
 
 .recent-connections .connection .remove-recent {

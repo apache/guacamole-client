@@ -23,9 +23,10 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsu
  * A component which provides a fullscreen environment for its content.
  */
 @Component({
-    selector     : 'guac-viewport',
-    templateUrl  : './viewport.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-viewport',
+    templateUrl: './viewport.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ViewportComponent implements AfterViewInit, OnDestroy {
 

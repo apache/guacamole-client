@@ -25,9 +25,10 @@ import { ClipboardService } from '../../services/clipboard.service';
 import { ClipboardData } from '../../types/ClipboardData';
 
 @Component({
-    selector     : 'guac-clipboard',
-    templateUrl  : './clipboard.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-clipboard',
+    templateUrl: './clipboard.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ClipboardComponent implements OnInit, AfterViewInit {
 

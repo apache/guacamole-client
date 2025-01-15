@@ -55,7 +55,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import debounce from 'lodash/debounce';
+import _ from 'lodash';
 import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArguments';
 import { KeyEventDisplayService, TextBatch } from './services/key-event-display.service';
 import { PlayerHeatmapService } from './services/player-heatmap.service';
@@ -111,12 +111,13 @@ const MOUSE_CLEANUP_TIMER_DELAY = MOUSE_CLEANUP_DELAY - MOUSE_DEBOUNCE_DELAY;
  *         of milliseconds since the start of the recording.
  */
 @Component({
-    selector     : 'guac-player',
-    templateUrl  : './player.component.html',
+    selector: 'guac-player',
+    templateUrl: './player.component.html',
     encapsulation: ViewEncapsulation.None,
-    host         : {
+    host: {
         '[class.recent-mouse-movement]': 'recentMouseMovement()'
-    }
+    },
+    standalone: false
 })
 export class PlayerComponent implements OnChanges, OnDestroy {
 
@@ -515,7 +516,7 @@ export class PlayerComponent implements OnChanges, OnDestroy {
      * Clean up the mouse movement class after no mouse activity has been
      * detected for the appropriate time period.
      */
-    private readonly scheduleCleanupTimeout = debounce(() =>
+    private readonly scheduleCleanupTimeout = _.debounce(() =>
             this.mouseActivityTimer = window.setTimeout(() => {
                 this.mouseActivityTimer = null;
                 this.recentMouseMovement.set(false);

@@ -104,14 +104,17 @@ export class ManagedFilesystemService {
                         type = ManagedFilesystem.File.Type.DIRECTORY;
 
                     // Add file entry
-                    file.files.mutate(files => files[filename] = new ManagedFilesystem.File({
-                        // @ts-ignore
-                        mimetype  : mimetypes[name],
-                        streamName: name,
-                        type      : type,
-                        parent    : file,
-                        name      : filename
-                    }));
+                    file.files.update(files => {
+                        files[filename] = new ManagedFilesystem.File({
+                            // @ts-ignore
+                            mimetype  : mimetypes[name],
+                            streamName: name,
+                            type      : type,
+                            parent    : file,
+                            name      : filename
+                        });
+                        return files;
+                    });
 
                 }
 

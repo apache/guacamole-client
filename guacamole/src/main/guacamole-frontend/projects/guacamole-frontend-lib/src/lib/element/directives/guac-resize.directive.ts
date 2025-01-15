@@ -27,7 +27,8 @@ import { Directive, ElementRef, EventEmitter, Inject, Output } from '@angular/co
  * "position: relative").
  */
 @Directive({
-    selector: '[guacResize]'
+    selector: '[guacResize]',
+    standalone: false
 })
 export class GuacResizeDirective {
 

@@ -23,7 +23,8 @@ import { Directive, ElementRef, Input, OnChanges, OnInit, SimpleChanges } from '
  * A directive which allows elements to be manually focused / blurred.
  */
 @Directive({
-    selector: '[guacFocus]'
+    selector: '[guacFocus]',
+    standalone: false
 })
 export class GuacFocusDirective implements OnInit, OnChanges {
 

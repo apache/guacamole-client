@@ -17,16 +17,19 @@
  * under the License.
  */
 
-import { getManifest, loadRemoteModule } from '@angular-architects/module-federation';
+import { loadRemoteModule } from '@angular-architects/native-federation';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, Injector } from '@angular/core';
 import { Route, Router, Routes } from '@angular/router';
 import { BootsrapExtensionFunction } from 'guacamole-frontend-ext-lib';
+import _ from 'lodash';
+import { lastValueFrom } from 'rxjs';
 import { appRoutes, fallbackRoute, titleResolver } from '../../app-routing.module';
-import { ModuleFederationManifest } from '../types/ModuleFederationManifest';
+import { DEFAULT_BOOTSTRAP_FUNCTION_NAME, FederationRouteConfig } from '../types/FederationRouteConfig';
 
 /**
  * A service which dynamically loads all extensions defined in the
- * module federation manifest, bootstraps them and adds their routes
+ * native federation manifest, bootstraps them and adds their routes
  * to the main application.
  */
 @Injectable({
@@ -38,16 +41,26 @@ export class ExtensionLoaderService {
      * Inject required services.
      */
     constructor(private router: Router,
-                private injector: Injector) {
+                private injector: Injector,
+                private http: HttpClient) {
     }
 
     /**
      * TODO
      */
     async loadExtensionAndSetRouterConfig(): Promise<void> {
-        const manifest = getManifest<ModuleFederationManifest>();
-        this.buildRoutes(manifest)
+
+        const routeConfig = await lastValueFrom(
+            this.http.get<FederationRouteConfig>('native-federation-config.json')
+        );
+
+        // Config is empty if no extensions are installed
+        if (_.isEmpty(routeConfig))
+            return;
+
+        this.buildRoutes(routeConfig)
             .then(routes => this.router.resetConfig(routes));
+
     }
 
     /**
@@ -60,25 +73,25 @@ export class ExtensionLoaderService {
      * @returns
      *     The routes of the main application and all extensions.
      */
-    async buildRoutes(config: ModuleFederationManifest): Promise<Routes> {
+    async buildRoutes(config: FederationRouteConfig): Promise<Routes> {
         const extensionRoutes: Routes = [];
         const keys = Object.keys(config);
 
         for (const key of keys) {
             const entry = config[key];
+            const bootstrapFunctionName = entry.bootstrapFunctionName || DEFAULT_BOOTSTRAP_FUNCTION_NAME;
             const module = await loadRemoteModule({
-                type         : 'manifest',
-                remoteName   : key,
-                exposedModule: entry.entrypoint
+                remoteName: key,
+                exposedModule: bootstrapFunctionName
             });
 
             // Bootstrap the extension
-            const bootstrapFunction: BootsrapExtensionFunction = module[entry.bootsrapFunctionName];
+            const bootstrapFunction: BootsrapExtensionFunction = module[bootstrapFunctionName];
             const moduleRoutes = bootstrapFunction(this.injector);
 
             // Add the routes of the extension to the routes of the main application
             const extensionRoute: Route = {
-                path    : entry.routePath,
+                path: entry.routePath,
                 children: moduleRoutes
             };
 

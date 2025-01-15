@@ -41,9 +41,10 @@ import { ManagedClient } from '../../types/ManagedClient';
  * join/leave the connection.
  */
 @Component({
-    selector     : 'guac-client-user-count',
-    templateUrl  : './guac-client-user-count.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-client-user-count',
+    templateUrl: './guac-client-user-count.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {
 

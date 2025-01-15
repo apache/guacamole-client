@@ -18,8 +18,8 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -39,16 +39,13 @@ import { NotificationModule } from './notification/notification.module';
 import { ErrorHandlingInterceptor } from './rest/interceptor/error-handling.interceptor';
 import { SettingsModule } from './settings/settings.module';
 
-@NgModule({
-    declarations: [
+@NgModule({ declarations: [
         AppComponent,
     ],
-    imports     : [
-        BrowserModule,
+    bootstrap: [AppComponent], imports: [BrowserModule,
         CommonModule,
         LocaleModule,
         AppRoutingModule,
-        HttpClientModule,
         NavigationModule,
         NotificationModule,
         FormModule,
@@ -58,24 +55,17 @@ import { SettingsModule } from './settings/settings.module';
         ManageModule,
         HomeModule,
         ClientModule,
-        ImportModule
-    ],
-    providers   : [
+        ImportModule], providers: [
         // Uses the extension loader service to load the extension and set the router config
         // before the app is initialized.
-        {
-            provide   : APP_INITIALIZER,
-            useFactory: (extensionLoaderService: ExtensionLoaderService) =>
-                () => extensionLoaderService.loadExtensionAndSetRouterConfig(),
-            deps      : [ExtensionLoaderService],
-            multi     : true,
-        },
-
+        provideAppInitializer(() => {
+        const initializerFn = ((extensionLoaderService: ExtensionLoaderService) => () => extensionLoaderService.loadExtensionAndSetRouterConfig())(inject(ExtensionLoaderService));
+        return initializerFn();
+      }),
         { provide: HTTP_INTERCEPTORS, useClass: DefaultHeadersInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorHandlingInterceptor, multi: true },
-    ],
-    bootstrap   : [AppComponent]
-})
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {
 }

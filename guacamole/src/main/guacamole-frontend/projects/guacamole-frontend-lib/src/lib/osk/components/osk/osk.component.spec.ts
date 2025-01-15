@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -26,6 +26,7 @@ import { ElementModule } from '../../../element/element.module';
 import { GuacEventService } from '../../../events/services/guac-event.service';
 import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
 import { OskComponent } from './osk.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('OskComponent', () => {
     let component: OskComponent;
@@ -38,9 +39,10 @@ describe('OskComponent', () => {
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [OskComponent],
-            imports     : [HttpClientTestingModule, ElementModule],
-        })
+    declarations: [OskComponent],
+    imports: [ElementModule],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+})
             .compileComponents();
 
         httpTestingController = TestBed.inject(HttpTestingController);

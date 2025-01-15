@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import isEqual from 'lodash/isEqual';
-import isUndefined from 'lodash/isUndefined';
+import _ from 'lodash';
 
 /**
  * Intermediate representation of a custom color scheme which can be
@@ -220,7 +219,7 @@ export class ColorScheme {
     static equals(a: ColorScheme, b: ColorScheme): boolean {
         return a.foreground === b.foreground
             && a.background === b.background
-            && isEqual(a.colors, b.colors);
+            && _.isEqual(a.colors, b.colors);
     }
 
     /**
@@ -237,7 +236,7 @@ export class ColorScheme {
     static toString(scheme: ColorScheme): string {
 
         // Use originally-provided string if it equates to the exact same color scheme
-        if (!isUndefined(scheme._originalString) && ColorScheme.equals(scheme, ColorScheme.fromString(scheme._originalString)))
+        if (!_.isUndefined(scheme._originalString) && ColorScheme.equals(scheme, ColorScheme.fromString(scheme._originalString)))
             return scheme._originalString;
 
         // Add background and foreground

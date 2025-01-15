@@ -45,9 +45,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import forEach from 'lodash/forEach';
-import last from 'lodash/last';
-import some from 'lodash/some';
+import _ from 'lodash';
 
 /**
  * A set of all keysyms corresponding to modifier keys.
@@ -232,7 +230,7 @@ export class KeyEventDisplayService {
         const batches = [new TextBatch()];
 
         // Process every provided raw
-        forEach(rawEvents, event => {
+        _.forEach(rawEvents, event => {
 
             // Extract all fields from the raw event
             const { definition, pressed, timestamp } = event;
@@ -247,7 +245,7 @@ export class KeyEventDisplayService {
             if (newBatch)
                 batches.push(new TextBatch());
 
-            const currentBatch = last(batches);
+            const currentBatch = _.last(batches);
 
             /**
              * Either push the a new event constructed using the provided fields
@@ -263,7 +261,7 @@ export class KeyEventDisplayService {
              */
             const pushEvent = (text: string, typed: boolean) => {
                 // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
-                const latestEvent = last(currentBatch.events);
+                const latestEvent = _.last(currentBatch.events);
 
                 // Only consolidate the event if configured to do so and it
                 // matches the type of the previous event
@@ -301,7 +299,7 @@ export class KeyEventDisplayService {
 
                 // If any shorcut keys are currently pressed
                 // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
-                if (some(pressedKeys, (def, key) => SHORTCUT_KEYS[key])) {
+                if (_.some(pressedKeys, (def, key) => SHORTCUT_KEYS[key])) {
 
                     let shortcutText = '<';
 

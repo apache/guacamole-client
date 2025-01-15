@@ -23,7 +23,8 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
  * A directive which allows handling of drag gestures on a particular element.
  */
 @Directive({
-    selector: '[guacTouchDrag]'
+    selector: '[guacTouchDrag]',
+    standalone: false
 })
 export class GuacTouchDragDirective {
 

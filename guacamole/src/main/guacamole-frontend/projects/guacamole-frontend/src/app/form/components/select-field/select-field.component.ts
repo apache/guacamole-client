@@ -24,9 +24,10 @@ import { FormFieldBaseComponent, getFieldOption } from '../form-field-base/form-
  * Component for select fields.
  */
 @Component({
-    selector     : 'guac-select-field',
-    templateUrl  : './select-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-select-field',
+    templateUrl: './select-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class SelectFieldComponent extends FormFieldBaseComponent implements OnChanges {
 

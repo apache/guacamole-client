@@ -25,9 +25,10 @@ import { BehaviorSubject } from 'rxjs';
  * to filter connection groups.
  */
 @Component({
-    selector     : 'guac-group-list-filter',
-    templateUrl  : './guac-group-list-filter.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-group-list-filter',
+    templateUrl: './guac-group-list-filter.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacGroupListFilterComponent {
 

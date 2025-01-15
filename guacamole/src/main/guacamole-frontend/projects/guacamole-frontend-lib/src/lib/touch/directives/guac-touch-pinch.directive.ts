@@ -24,7 +24,8 @@ import { Directive, ElementRef, HostListener, Input } from '@angular/core';
  * example) on a particular element.
  */
 @Directive({
-    selector: '[guacTouchPinch]'
+    selector: '[guacTouchPinch]',
+    standalone: false
 })
 export class GuacTouchPinchDirective {
 

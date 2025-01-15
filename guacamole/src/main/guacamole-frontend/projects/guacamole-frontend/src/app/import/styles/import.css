@@ -180,7 +180,7 @@
     content: '';
     visibility: visible;
     display: inline-block;
-    background-image: url('^images/question.svg');
+    background-image: url('images/question.svg');
     background-size: contain;
     width: 20px;
     height: 20px;

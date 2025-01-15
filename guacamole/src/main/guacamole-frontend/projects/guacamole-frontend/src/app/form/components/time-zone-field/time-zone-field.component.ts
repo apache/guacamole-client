@@ -29,9 +29,10 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * zone. These identifiers are also legal Java time zone IDs.
  */
 @Component({
-    selector     : 'guac-time-zone-field',
-    templateUrl  : './time-zone-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-time-zone-field',
+    templateUrl: './time-zone-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class TimeZoneFieldComponent extends FormFieldBaseComponent implements OnChanges, OnInit {
 

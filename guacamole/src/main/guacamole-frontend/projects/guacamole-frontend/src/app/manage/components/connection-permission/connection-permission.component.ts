@@ -26,9 +26,10 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
  * manipulation of the connection permissions.
  */
 @Component({
-    selector     : 'guac-connection-permission',
-    templateUrl  : './connection-permission.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-connection-permission',
+    templateUrl: './connection-permission.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ConnectionPermissionComponent {
 

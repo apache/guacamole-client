@@ -18,7 +18,7 @@
  */
 
 import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
-import findIndex from 'lodash/findIndex';
+import _ from 'lodash';
 import { SortService } from '../../../list/services/sort.service';
 import { SessionStorageEntry, SessionStorageFactory } from '../../../storage/session-storage-factory.service';
 import { GuacClientManagerService } from '../../services/guac-client-manager.service';
@@ -31,9 +31,10 @@ import { ManagedClientState } from '../../types/ManagedClientState';
  * manually hidden/exposed by the user.
  */
 @Component({
-    selector     : 'guac-client-panel',
-    templateUrl  : './guac-client-panel.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-client-panel',
+    templateUrl: './guac-client-panel.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacClientPanelComponent implements AfterViewInit {
 
@@ -134,7 +135,7 @@ export class GuacClientPanelComponent implements AfterViewInit {
      *     false otherwise.
      */
     hasStatusUpdate(clientGroup: ManagedClientGroup): boolean {
-        return findIndex(clientGroup.clients, (client) => {
+        return _.findIndex(clientGroup.clients, (client) => {
 
             // Test whether the client has encountered an error
             switch (client.clientState.connectionState) {

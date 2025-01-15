@@ -18,9 +18,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import find from 'lodash/find';
-import findIndex from 'lodash/findIndex';
-import remove from 'lodash/remove';
+import _ from 'lodash';
 import { SessionStorageEntry, SessionStorageFactory } from '../../storage/session-storage-factory.service';
 import { ManagedClient } from '../types/ManagedClient';
 import { ManagedClientGroup } from '../types/ManagedClientGroup';
@@ -103,7 +101,7 @@ export class GuacClientManagerService {
 
         // Remove client from all groups
         managedClientGroups.forEach(group => {
-            const removed = remove(group.clients, client => (client.id === id));
+            const removed = _.remove(group.clients, client => (client.id === id));
             if (removed.length) {
 
                 // Reset focus state if client is being removed from a group
@@ -122,7 +120,7 @@ export class GuacClientManagerService {
         });
 
         // Remove any groups that are now empty
-        remove(managedClientGroups, group => !group.clients.length);
+        _.remove(managedClientGroups, group => !group.clients.length);
 
     }
 
@@ -188,7 +186,7 @@ export class GuacClientManagerService {
             // Remove client from all groups
             managedClientGroups.forEach(group => {
 
-                const index = findIndex(group.clients, client => (client.id === id));
+                const index = _.findIndex(group.clients, client => (client.id === id));
                 if (index === -1)
                     return;
 
@@ -246,7 +244,7 @@ export class GuacClientManagerService {
     getManagedClientGroup(id: string): ManagedClientGroup {
 
         const managedClientGroups: ManagedClientGroup[] = this.storedManagedClientGroups();
-        const existingGroup = find(managedClientGroups, (group) => {
+        const existingGroup = _.find(managedClientGroups, (group) => {
             return id === ManagedClientGroup.getIdentifier(group);
         });
 
@@ -293,7 +291,7 @@ export class GuacClientManagerService {
         const managedClientGroups: ManagedClientGroup[] = this.storedManagedClientGroups();
 
         // Remove all matching groups (there SHOULD only be one)
-        const removed = remove(managedClientGroups, (group) => ManagedClientGroup.getIdentifier(group) === id);
+        const removed = _.remove(managedClientGroups, (group) => ManagedClientGroup.getIdentifier(group) === id);
 
         // Disconnect all clients associated with the removed group(s)
         removed.forEach((group) => {

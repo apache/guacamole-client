@@ -26,9 +26,10 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * URL.
  */
 @Component({
-    selector     : 'guac-redirect-field',
-    templateUrl  : './redirect-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-redirect-field',
+    templateUrl: './redirect-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class RedirectFieldComponent extends FormFieldBaseComponent implements OnInit {
 

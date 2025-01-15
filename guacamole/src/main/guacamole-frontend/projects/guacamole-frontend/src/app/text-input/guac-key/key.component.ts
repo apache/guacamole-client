@@ -26,9 +26,10 @@ import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEvent
  * single keyboard key.
  */
 @Component({
-    selector     : 'guac-key',
-    templateUrl  : './key.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-key',
+    templateUrl: './key.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class KeyComponent implements OnChanges {
 

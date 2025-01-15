@@ -41,7 +41,8 @@ import { SortOrder } from '../types/SortOrder';
  * class.
  */
 @Directive({
-    selector: '[guacSortOrder]'
+    selector: '[guacSortOrder]',
+    standalone: false
 })
 export class GuacSortOrderDirective implements OnInit, OnChanges {
 

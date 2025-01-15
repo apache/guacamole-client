@@ -17,8 +17,8 @@
  * under the License.
  */
 
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { AuthenticationInterceptor } from '../interceptor/authentication.interceptor';
 
@@ -30,11 +30,13 @@ describe('AuthenticationService', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports  : [HttpClientTestingModule],
-            providers: [
-                { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true }
-            ]
-        });
+    imports: [],
+    providers: [
+        { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting()
+    ]
+});
         service = TestBed.inject(AuthenticationService);
         httpMock = TestBed.inject(HttpTestingController);
     });

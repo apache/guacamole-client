@@ -26,14 +26,15 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
  * is undefined. Converts between human-readable zoom percentage and display scale.
  */
 @Directive({
-    selector : '[guacZoomCtrl]',
+    selector: '[guacZoomCtrl]',
     providers: [
         {
-            provide    : NG_VALUE_ACCESSOR,
+            provide: NG_VALUE_ACCESSOR,
             useExisting: forwardRef(() => GuacZoomCtrlDirective),
-            multi      : true
+            multi: true
         }
-    ]
+    ],
+    standalone: false
 })
 export class GuacZoomCtrlDirective implements ControlValueAccessor {
 

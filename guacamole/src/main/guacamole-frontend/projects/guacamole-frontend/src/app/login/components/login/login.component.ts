@@ -31,9 +31,10 @@ import { Field } from '../../../rest/types/Field';
 import { TranslatableMessage } from '../../../rest/types/TranslatableMessage';
 
 @Component({
-    selector     : 'guac-login',
-    templateUrl  : './login.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-login',
+    templateUrl: './login.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class LoginComponent implements OnInit, OnChanges {
     /**

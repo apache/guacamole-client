@@ -21,7 +21,7 @@ import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
 
 import { GuacAudioService, GuacImageService, GuacVideoService, } from 'guacamole-frontend-lib';
-import isEmpty from 'lodash/isEmpty';
+import _ from 'lodash';
 import { catchError } from 'rxjs';
 import { AuthenticationService } from '../../auth/service/authentication.service';
 import { ClipboardService } from '../../clipboard/services/clipboard.service';
@@ -351,7 +351,7 @@ export class ManagedClientService {
             delete connections[id];
 
             // Delete user entry after no connections remain
-            if (isEmpty(connections))
+            if (_.isEmpty(connections))
                 delete managedClient.users[username];
 
         };

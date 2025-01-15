@@ -26,9 +26,10 @@ import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
  * A component which displays the Guacamole on-screen keyboard.
  */
 @Component({
-    selector     : 'guac-osk',
-    templateUrl  : './osk.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-osk',
+    templateUrl: './osk.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class OskComponent implements OnChanges {
 

@@ -29,7 +29,6 @@ export const PLANET_CHOOSER_FIELD_TYPE = 'planet-chooser';
 
 @Component({
     selector: 'app-planet-chooser-field',
-    standalone: true,
     imports: [CommonModule, ReactiveFormsModule],
     template: `
         <ng-container *ngIf="control">

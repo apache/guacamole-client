@@ -65,7 +65,10 @@ export const getFieldOption = (field: Field | undefined, namespace?: string, val
 /**
  * Base class for form field components.
  */
-@Component({ 'template': '' })
+@Component({
+    'template': '',
+    standalone: false
+})
 export abstract class FormFieldBaseComponent implements FormFieldComponentData {
 
     /**

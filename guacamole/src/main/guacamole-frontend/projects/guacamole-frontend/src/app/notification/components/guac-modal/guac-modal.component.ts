@@ -23,9 +23,10 @@ import { Component, ViewEncapsulation } from '@angular/core';
  * A component for displaying arbitrary modal content.
  */
 @Component({
-    selector     : 'guac-modal',
-    templateUrl  : './guac-modal.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-modal',
+    templateUrl: './guac-modal.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacModalComponent {
 

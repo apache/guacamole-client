@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import cloneDeep from 'lodash/cloneDeep';
+import _ from 'lodash';
 import { map, Observable, of } from 'rxjs';
 import { FilterService } from '../../list/services/filter.service';
 import { FilterPattern } from '../../list/types/FilterPattern';
@@ -240,8 +240,8 @@ export class ConnectionGroupDataSource {
         connectionGroup = new ConnectionGroup(connectionGroup);
 
         // Ensure child arrays are defined and independent copies
-        connectionGroup.childConnections = cloneDeep(connectionGroup.childConnections) || [];
-        connectionGroup.childConnectionGroups = cloneDeep(connectionGroup.childConnectionGroups) || [];
+        connectionGroup.childConnections = _.cloneDeep(connectionGroup.childConnections) || [];
+        connectionGroup.childConnectionGroups = _.cloneDeep(connectionGroup.childConnectionGroups) || [];
 
         // Flatten all children to the top-level group
         connectionGroup.childConnectionGroups?.forEach(child => {
@@ -290,7 +290,7 @@ export class ConnectionGroupDataSource {
         item = new GroupListItem(item);
 
         // Ensure children are defined and independent copies
-        item.children = cloneDeep(item.children) || [];
+        item.children = _.cloneDeep(item.children) || [];
 
         // Flatten all children to the top-level group
         item.children.forEach(child => {

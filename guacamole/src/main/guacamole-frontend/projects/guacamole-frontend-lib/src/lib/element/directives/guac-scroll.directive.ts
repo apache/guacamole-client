@@ -25,7 +25,8 @@ import { ScrollState } from '../types/ScrollState';
  * scroll state to be observed.
  */
 @Directive({
-    selector: '[guacScroll]'
+    selector: '[guacScroll]',
+    standalone: false
 })
 export class GuacScrollDirective implements OnChanges {
 

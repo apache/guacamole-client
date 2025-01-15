@@ -26,9 +26,10 @@ import { ManagedClientGroup } from '../../types/ManagedClientGroup';
  * thumbnail of tiled client displays.
  */
 @Component({
-    selector     : 'guac-tiled-thumbnails',
-    templateUrl  : './guac-tiled-thumbnails.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-tiled-thumbnails',
+    templateUrl: './guac-tiled-thumbnails.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacTiledThumbnailsComponent {
 

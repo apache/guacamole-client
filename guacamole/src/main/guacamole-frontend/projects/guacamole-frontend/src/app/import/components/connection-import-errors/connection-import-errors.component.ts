@@ -19,7 +19,7 @@
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { TranslocoService } from '@ngneat/transloco';
-import get from 'lodash/get';
+import _ from 'lodash';
 import { firstValueFrom, of } from 'rxjs';
 import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
@@ -40,8 +40,9 @@ import { ParseResult } from '../../types/ParseResult';
  * batch creation attempt.
  */
 @Component({
-    selector   : 'connection-import-errors',
+    selector: 'connection-import-errors',
     templateUrl: './connection-import-errors.component.html',
+    standalone: false
 })
 export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
 
@@ -211,8 +212,8 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
         let removeError: TranslatableMessage | null = null;
 
         // Fetch the API error, if any, of the patch at the given index
-        const getAPIError = (index: number): TranslatableMessage =>
-            get(patchFailure, ['patches', index, 'error']);
+        const getAPIError = (index: number): TranslatableMessage | null =>
+            _.get(patchFailure, ['patches', index, 'error']) ?? null;
 
         // The row number for display. Unlike the index, this number will
         // skip any REMOVE patches. In other words, this is the index of

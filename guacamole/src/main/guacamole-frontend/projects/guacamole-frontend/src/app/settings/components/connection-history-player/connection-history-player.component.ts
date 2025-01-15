@@ -24,9 +24,10 @@ import { AuthenticationService } from '../../../auth/service/authentication.serv
  * The component for the session recording player page.
  */
 @Component({
-    selector     : 'guac-connection-history-player',
-    templateUrl  : './connection-history-player.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-connection-history-player',
+    templateUrl: './connection-history-player.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ConnectionHistoryPlayerComponent {
 

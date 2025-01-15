@@ -26,9 +26,10 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
  * manipulation of the connection group permissions.
  */
 @Component({
-    selector     : 'guac-connection-group-permission',
-    templateUrl  : './connection-group-permission.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-connection-group-permission',
+    templateUrl: './connection-group-permission.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ConnectionGroupPermissionComponent {
 

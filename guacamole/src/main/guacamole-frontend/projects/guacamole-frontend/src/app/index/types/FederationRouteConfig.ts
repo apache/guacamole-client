@@ -17,8 +17,6 @@
  * under the License.
  */
 
-import { Manifest, RemoteConfig } from '@angular-architects/module-federation';
-
 /**
  * TODO
  */
@@ -27,19 +25,14 @@ export const DEFAULT_BOOTSTRAP_FUNCTION_NAME = 'bootsrapExtension';
 /**
  * TODO
  */
-export interface ModuleFederationManifestConfig extends RemoteConfig {
+export interface FederationRouteConfigEntry {
 
     /**
-     * The name of the exposed module which contains the bootstrap function.
-     */
-    entrypoint: string;
-
-    /**
-     * The name of the function that will be called by the frontend to bootstrap the extension.
+     * The name of the function that will be called by the shell to bootstrap the extension.
      *
      * @default DEFAULT_BOOTSTRAP_FUNCTION_NAME
      */
-    bootsrapFunctionName: string;
+    bootstrapFunctionName?: string;
 
     /**
      * The title of the page to be displayed in the browser tab when the route is active.
@@ -49,12 +42,12 @@ export interface ModuleFederationManifestConfig extends RemoteConfig {
     pageTitle?: string;
 
     /**
-     * The path where the extension should be mounted.
+     * The path where the routes of the extension should be mounted.
      */
     routePath: string;
 }
 
 /**
- * TODO
+ * A map with the name of the remote module as key and FederationRouteConfigEntry as value.
  */
-export type ModuleFederationManifest = Manifest<ModuleFederationManifestConfig>;
+export type FederationRouteConfig = Record<string, FederationRouteConfigEntry>;

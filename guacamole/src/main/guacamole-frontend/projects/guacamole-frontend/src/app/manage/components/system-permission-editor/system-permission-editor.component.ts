@@ -33,9 +33,10 @@ import { PermissionSet } from '../../../rest/types/PermissionSet';
  * password/attributes) may also be manipulated.
  */
 @Component({
-    selector     : 'system-permission-editor',
-    templateUrl  : './system-permission-editor.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'system-permission-editor',
+    templateUrl: './system-permission-editor.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class SystemPermissionEditorComponent implements OnInit {
 

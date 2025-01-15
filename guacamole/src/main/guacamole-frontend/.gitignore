@@ -7,3 +7,6 @@ node_modules/
 # Miscellaneous
 .angular/
 .idea/
+
+# Build output guacamole-common-js
+**/guacamole-common-js/all.min.js

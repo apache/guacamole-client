@@ -17,13 +17,14 @@
  * under the License.
  */
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { SimpleChange } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LocaleModule } from '../../../locale/locale.module';
 import { GuacPageListComponent } from './guac-page-list.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('PageListComponent', () => {
     let component: GuacPageListComponent;
@@ -31,13 +32,11 @@ describe('PageListComponent', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [GuacPageListComponent],
-            imports     : [
-                HttpClientTestingModule,
-                RouterTestingModule,
-                LocaleModule
-            ]
-        });
+    declarations: [GuacPageListComponent],
+    imports: [RouterTestingModule,
+        LocaleModule],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
         fixture = TestBed.createComponent(GuacPageListComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();

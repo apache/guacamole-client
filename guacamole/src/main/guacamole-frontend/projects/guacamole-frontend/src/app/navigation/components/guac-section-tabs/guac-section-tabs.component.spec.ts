@@ -17,13 +17,14 @@
  * under the License.
  */
 
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { TranslocoTestingModule } from '@ngneat/transloco';
 import { LocaleModule } from '../../../locale/locale.module';
 
 import { GuacSectionTabsComponent } from './guac-section-tabs.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 describe('SectionTabsComponent', () => {
     let component: GuacSectionTabsComponent;
@@ -31,21 +32,19 @@ describe('SectionTabsComponent', () => {
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            declarations: [GuacSectionTabsComponent],
-            imports     : [
-                LocaleModule,
-                TranslocoTestingModule.forRoot({
-                    langs: {
-                        en: {
-                            'TAB_1': 'TAB_1',
-                            'TAB_2': 'TAB_2',
-                            'TAB_3': 'TAB_3'
-                        }
-                    }
-                }),
-                HttpClientTestingModule,
-            ]
-        });
+    declarations: [GuacSectionTabsComponent],
+    imports: [LocaleModule,
+        TranslocoTestingModule.forRoot({
+            langs: {
+                en: {
+                    'TAB_1': 'TAB_1',
+                    'TAB_2': 'TAB_2',
+                    'TAB_3': 'TAB_3'
+                }
+            }
+        })],
+    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+});
         fixture = TestBed.createComponent(GuacSectionTabsComponent);
         component = fixture.componentInstance;
         fixture.detectChanges();

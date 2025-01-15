@@ -17,9 +17,9 @@
  * under the License.
  */
 
-import { initFederation } from '@angular-architects/module-federation';
+import { initFederation } from '@angular-architects/native-federation';
 
-initFederation('moduleFederation/mf.manifest.json')
-    .catch(err => console.error(err))
-    .then(_ => import('./bootstrap'))
-    .catch(err => console.error(err));
+initFederation('native-federation-manifest.json')
+  .catch(err => console.error(err))
+  .then(_ => import('./bootstrap'))
+  .catch(err => console.error(err));

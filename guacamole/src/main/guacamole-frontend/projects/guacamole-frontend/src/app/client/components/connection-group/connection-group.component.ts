@@ -25,10 +25,11 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
  * TODO
  */
 @Component({
-    selector     : 'guac-connection-group',
-    templateUrl  : './connection-group.component.html',
-    styles       : [],
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-connection-group',
+    templateUrl: './connection-group.component.html',
+    styles: [],
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ConnectionGroupComponent {
 

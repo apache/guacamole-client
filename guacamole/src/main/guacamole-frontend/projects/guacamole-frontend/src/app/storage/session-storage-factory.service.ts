@@ -19,8 +19,7 @@
 
 import { Injectable } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import cloneDeep from 'lodash/cloneDeep';
-import isEqual from 'lodash/isEqual';
+import _ from 'lodash';
 import { AuthenticationService } from '../auth/service/authentication.service';
 import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArguments';
 import { isDefined } from '../util/is-defined';
@@ -80,14 +79,14 @@ export class SessionStorageFactory {
             // Otherwise, create and maintain a deep copy (automatically cached to
         // avoid "infdig" errors)
         else {
-            let cached = cloneDeep(template);
+            let cached = _.cloneDeep(template);
             getter = function getIndependentCopy() {
 
                 // Reset to template only if changed externally, such that
                 // session storage values can be safely used in scope watches
                 // even if not logged in
-                if (!isEqual(cached, template))
-                    cached = cloneDeep(template);
+                if (!_.isEqual(cached, template))
+                    cached = _.cloneDeep(template);
 
                 return cached;
 

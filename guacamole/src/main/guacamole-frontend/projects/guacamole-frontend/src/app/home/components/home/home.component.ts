@@ -35,9 +35,10 @@ import { NonNullableProperties } from '../../../util/utility-types';
  * The component for the home page.
  */
 @Component({
-    selector     : 'guac-home',
-    templateUrl  : './home.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-home',
+    templateUrl: './home.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class HomeComponent implements OnInit {
 

@@ -36,14 +36,8 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-
 import { GuacEventService } from 'guacamole-frontend-lib';
-import _filter from 'lodash/filter';
-import findIndex from 'lodash/findIndex';
-import findKey from 'lodash/findKey';
-import intersection from 'lodash/intersection';
-import isEmpty from 'lodash/isEmpty';
-import pull from 'lodash/pull';
+import _ from 'lodash';
 import { catchError, pairwise, startWith } from 'rxjs';
 import { ScrollState } from '../../../../../../guacamole-frontend-lib/src/lib/element/types/ScrollState';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
@@ -81,9 +75,10 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
  * The Component for the page used to connect to a connection or balancing group.
  */
 @Component({
-    selector     : 'guac-client-page',
-    templateUrl  : './client-page.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-client-page',
+    templateUrl: './client-page.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
@@ -394,8 +389,8 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
                 // If one of the End keys is pressed, and we have a one keysym from each
                 // of Ctrl and Alt groups, send Ctrl-Alt-Delete.
                 if (this.END_KEYS[keysym as any]
-                    && findKey(this.ALT_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
-                    && findKey(this.CTRL_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
+                    && _.findKey(this.ALT_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
+                    && _.findKey(this.CTRL_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
                 ) {
 
                     // Don't send this event through to the client.
@@ -545,7 +540,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
         // Add/remove ID as requested
         if (remove)
-            pull(ids, id);
+            _.pull(ids, id);
         else
             ids.push(id);
 
@@ -576,7 +571,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
         // current view (has no clients in common). The menu should remain open
         // only while the current view is being modified, not when navigating
         // to an entirely different view.
-        if (isEmpty(intersection(previousClients, this.clientGroup!.clients)))
+        if (_.isEmpty(_.intersection(previousClients, this.clientGroup!.clients)))
             this.menu.shown.set(false);
 
         // Update newly-attached clients with current contents of clipboard
@@ -603,7 +598,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
             // Remove all disconnected clients from management (the user has
             // seen their status)
-            _filter(this.clientGroup.clients, client => {
+            _.filter(this.clientGroup.clients, client => {
 
                 const connectionState = client.clientState.connectionState;
                 return connectionState === ManagedClientState.ConnectionState.DISCONNECTED
@@ -641,15 +636,15 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
         // Ctrl+Alt+Shift has NOT been pressed if any key is currently held
         // down that isn't Ctrl, Alt, or Shift
-        if (findKey(keyboard.pressed, (val, keysym) => !this.MENU_KEYS[Number(keysym)]))
+        if (_.findKey(keyboard.pressed, (val, keysym) => !this.MENU_KEYS[Number(keysym)]))
             return false;
 
         // Verify that one of each required key is held, regardless of
         // left/right location on the keyboard
         return !!(
-            findKey(this.SHIFT_KEYS, (val, keysym: any) => keyboard.pressed[keysym])
-            && findKey(this.ALT_KEYS, (val, keysym: any) => keyboard.pressed[keysym])
-            && findKey(this.CTRL_KEYS, (val, keysym: any) => keyboard.pressed[keysym])
+            _.findKey(this.SHIFT_KEYS, (val, keysym: any) => keyboard.pressed[keysym])
+            && _.findKey(this.ALT_KEYS, (val, keysym: any) => keyboard.pressed[keysym])
+            && _.findKey(this.CTRL_KEYS, (val, keysym: any) => keyboard.pressed[keysym])
         );
 
     }
@@ -667,10 +662,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
             // Scroll menu by default
             else {
-                this.menu.scrollState.mutate(scrollState => {
-                    scrollState.left -= deltaX;
-                    scrollState.top -= deltaY;
-                });
+                this.menu.scrollState.update(({top, left}) => new ScrollState({left: left - deltaX, top: top-deltaY}));
             }
 
         }
@@ -809,7 +801,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
      *     otherwise.
      */
     isConnectionUnstable(): boolean {
-        return findIndex(this.clientGroup?.clients, client => client.clientState.tunnelUnstable) !== -1;
+        return _.findIndex(this.clientGroup?.clients, client => client.clientState.tunnelUnstable) !== -1;
     }
 
     /**
@@ -985,7 +977,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
         if (!this.clientGroup)
             return false;
 
-        return findIndex(this.clientGroup.clients, this.managedClientService.hasTransfers) !== -1;
+        return _.findIndex(this.clientGroup.clients, this.managedClientService.hasTransfers) !== -1;
 
     }
 

@@ -27,9 +27,10 @@ import { PageDefinition } from '../../types/PageDefinition';
  * A directive which provides a list of links to specific pages.
  */
 @Component({
-    selector     : 'guac-page-list',
-    templateUrl  : './guac-page-list.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-page-list',
+    templateUrl: './guac-page-list.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacPageListComponent implements OnInit, OnChanges {
 

@@ -25,9 +25,10 @@ import { ManagedClient } from '../../types/ManagedClient';
  * a single Guacamole client.
  */
 @Component({
-    selector     : 'guac-client-zoom',
-    templateUrl  : './guac-client-zoom.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-client-zoom',
+    templateUrl: './guac-client-zoom.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class GuacClientZoomComponent {
 

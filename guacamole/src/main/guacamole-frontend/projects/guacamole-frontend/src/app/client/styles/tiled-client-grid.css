@@ -173,7 +173,7 @@
     width: 1em;
     height: 1em;
 
-    background: center / contain no-repeat url('^images/user-icons/guac-user-white.svg');
+    background: center / contain no-repeat url('images/user-icons/guac-user-white.svg');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;

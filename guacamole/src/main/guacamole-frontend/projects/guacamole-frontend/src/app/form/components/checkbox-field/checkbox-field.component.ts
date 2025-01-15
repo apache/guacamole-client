@@ -26,9 +26,10 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
  * Checkbox field component
  */
 @Component({
-    selector     : 'guac-checkbox-field',
-    templateUrl  : './checkbox-field.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-checkbox-field',
+    templateUrl: './checkbox-field.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class CheckboxFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {
 

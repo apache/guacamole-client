@@ -60,9 +60,10 @@ import {
  * the display to fit available space.
  */
 @Component({
-    selector     : 'guac-player-display',
-    templateUrl  : './player-display.component.html',
-    encapsulation: ViewEncapsulation.None
+    selector: 'guac-player-display',
+    templateUrl: './player-display.component.html',
+    encapsulation: ViewEncapsulation.None,
+    standalone: false
 })
 export class PlayerDisplayComponent implements AfterViewInit, OnChanges {
 
