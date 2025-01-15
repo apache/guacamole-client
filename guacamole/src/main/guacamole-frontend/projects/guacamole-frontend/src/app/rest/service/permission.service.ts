@@ -64,7 +64,6 @@ export class PermissionService {
     getEffectivePermissions(dataSource: string, userID: string): Observable<PermissionSet> {
 
         // Retrieve user permissions
-        //TODO cache   : cacheService.users,
         return this.http.get<PermissionSet>(this.getEffectivePermissionsResourceURL(dataSource, userID));
 
     }

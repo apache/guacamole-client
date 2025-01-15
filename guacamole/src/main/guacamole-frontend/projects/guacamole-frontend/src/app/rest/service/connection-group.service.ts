@@ -64,7 +64,6 @@ export class ConnectionGroupService {
         if (permissionTypes)
             httpParameters = httpParameters.appendAll({ 'permission': permissionTypes });
 
-        // TODO: cache: cacheService.connections,
         // Retrieve connection group
         return this.http.get<ConnectionGroup>('api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
             {
@@ -88,7 +87,6 @@ export class ConnectionGroupService {
      */
     getConnectionGroup(dataSource: string, connectionGroupID: string = ConnectionGroup.ROOT_IDENTIFIER): Observable<ConnectionGroup> {
 
-        // TODO cache: cacheService.connections,
         // Retrieve connection group
         return this.http.get<ConnectionGroup>('api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID));
 
@@ -117,15 +115,10 @@ export class ConnectionGroupService {
                 connectionGroup
             )
 
-                // Set the identifier on the new connection group and clear the cache
+                // Set the identifier on the new connection group
                 .pipe(
                     map((newConnectionGroup: ConnectionGroup) => {
                         connectionGroup.identifier = newConnectionGroup.identifier;
-                        // TODO: cacheService.connections.removeAll();
-
-                        // Clear users cache to force reload of permissions for this
-                        // newly created connection group
-                        // TODO cacheService.users.removeAll();
                     })
                 );
         }
@@ -135,18 +128,7 @@ export class ConnectionGroupService {
             return this.http.put<void>(
                 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
                 connectionGroup
-            )
-
-                // Clear the cache
-                .pipe(
-                    tap(() => {
-                        // TODO: cacheService.connections.removeAll();
-
-                        // Clear users cache to force reload of permissions for this
-                        // newly updated connection group
-                        // TODO: cacheService.users.removeAll();
-                    })
-                );
+            );
         }
 
     }
@@ -165,14 +147,7 @@ export class ConnectionGroupService {
     deleteConnectionGroup(dataSource: string, connectionGroup: ConnectionGroup): Observable<void> {
 
         // Delete connection group
-        return this.http.delete<void>('api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier || ''))
-
-            // Clear the cache
-            .pipe(
-                tap(() => {
-                    // TODO: cacheService.connections.removeAll();
-                })
-            );
+        return this.http.delete<void>('api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier || ''));
 
     }
 

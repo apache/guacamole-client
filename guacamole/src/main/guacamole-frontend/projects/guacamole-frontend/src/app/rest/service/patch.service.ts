@@ -49,7 +49,7 @@ export class PatchService {
 
         // Retrieve all applicable HTML patches
         return this.http.get<string[]>('api/patches');
-        // TODO cache   : cacheService.patches,
+
     }
 
 }

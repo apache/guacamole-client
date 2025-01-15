@@ -115,13 +115,7 @@ export class UserService {
     deleteUser(dataSource: string, user: User): Observable<void> {
 
         // Delete user
-        return this.http.delete<void>('api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username))
-
-            // Clear the cache
-            .pipe(tap(() => {
-                // TODO cacheService.users.removeAll();
-            }));
-
+        return this.http.delete<void>('api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username));
 
     }
 
