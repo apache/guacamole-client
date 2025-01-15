@@ -26,24 +26,29 @@
         "ACTION_SHARE"              : "Расшарить",
         "ACTION_UPDATE_PASSWORD"    : "Обновить пароль",
         "ACTION_VIEW_HISTORY"       : "История",
+        "ACTION_VIEW_RECORDING"     : "Записи",
 
         "DIALOG_HEADER_ERROR" : "Ошибка",
 
         "ERROR_PAGE_UNAVAILABLE"  : "Произошла ошибка, действие не может быть завершено. Если проблема будет повторяться, обратитесь к системному администратору или проверьте системные журналы.",
         "ERROR_PASSWORD_BLANK"    : "Пароль не может быть пустым.",
         "ERROR_PASSWORD_MISMATCH" : "Указанные пароли не совпадают.",
+        "ERROR_SINGLE_FILE_ONLY"  : "Пожалуйста, загружайте только один файл за раз",
 
         "FIELD_HEADER_PASSWORD"       : "Пароль:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Повтор пароля:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "Разрешить добавление записи в существующий файл записи:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "Разрешить запись в существующий файл typescript:",
 
         "FIELD_PLACEHOLDER_FILTER" : "Фильтр",
 
         "FORMAT_DATE_TIME_PRECISE" : "dd.MM.yyyy HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "Сейчас в системе {USERS} {USERS, plural, one{пользователь} few{пользователя} many{пользователей} other{пользователя}}.",
+        "INFO_LOGGED_OUT"        : "Вы вышли из системы.",
 
         "TEXT_ANONYMOUS_USER"   : "Аноним",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} few{секуны} many{секунд} other{секуны}}} minute{{VALUE, plural, one{минута} few{минуты} many{минут} other{минуты}}} hour{{VALUE, plural, one{час} few{часа} many{часов} other{часа}}} day{{VALUE, plural, one{день} few{дня} many{дней} other{дня}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} few{секунды} many{секунд} other{секунды}}} minute{{VALUE, plural, one{минута} few{минуты} many{минут} other{минуты}}} hour{{VALUE, plural, one{час} few{часа} many{часов} other{часа}}} day{{VALUE, plural, one{день} few{дня} many{дней} other{дня}}} other{}}"
 
     },
 
@@ -52,6 +57,7 @@
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Очистить",
         "ACTION_DISCONNECT"                : "Отключиться",
+        "ACTION_FULLSCREEN"                : "Полноэкранный режим",
         "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
         "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
@@ -112,6 +118,7 @@
         "HELP_MOUSE_MODE_RELATIVE" : "Потяните, чтобы перемещать курсор. Прикоснитесь, чтобы сделать клик. Клик происходит в точке нахождения курсора.",
         "HELP_SHARE_LINK"          : "Это соединение расшарено и доступно всем по следующ{LINKS, plural, one{ей ссылке} other{им ссылкам}}:",
 
+        "INFO_ANONYMOUS_USER_COUNT" : "Анонимный{COUNT, plural, one{} other{ (#)}}",
         "INFO_CONNECTION_SHARED" : "Это соединение теперь расшарено.",
         "INFO_NO_FILE_TRANSFERS" : "Нет загрузок.",
 
@@ -121,6 +128,7 @@
         "NAME_MOUSE_MODE_ABSOLUTE" : "Тачскрин",
         "NAME_MOUSE_MODE_RELATIVE" : "Тачпад",
 
+        "SECTION_HEADER_CLIENT_MESSAGES" : "Сообщения",
         "SECTION_HEADER_CLIPBOARD"      : "Буфер обмена",
         "SECTION_HEADER_DEVICES"        : "Устройства",
         "SECTION_HEADER_DISPLAY"        : "Экран",
@@ -128,12 +136,16 @@
         "SECTION_HEADER_INPUT_METHOD"   : "Метод ввода",
         "SECTION_HEADER_MOUSE_MODE"     : "Режим эмуляции мыши",
 
+        "TEXT_ANONYMOUS_USER_JOINED"      : "К подключению присоединился анонимный пользователь.",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "Анонимный пользователь прервал соединение.",
         "TEXT_ZOOM_AUTO_FIT"              : "Автоматически умещать в браузере",
         "TEXT_CLIENT_STATUS_IDLE"         : "Бездействие.",
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Подключение к Guacamole...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Вы были отключены.",
         "TEXT_CLIENT_STATUS_UNSTABLE"     : "Сетевое соединение с сервером Guacamole нестабильно.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Подключено к Guacamole. Ожидание ответа...",
+        "TEXT_USER_JOINED"                : "{USERNAME} подключился к соединению.",
+        "TEXT_USER_LEFT"                  : "{USERNAME} отключился от соединения.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Переподключение через {REMAINING} {REMAINING, plural, one{секунду} few{секунды} many{секунд} other{секунды}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
@@ -301,6 +313,7 @@
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Администрирование системы:",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "Аудит системы:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Изменение собственного пароля:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Создание нового пользователя:",
         "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Создание новой группы пользователей:",
@@ -374,6 +387,24 @@
 
     },
 
+    "PLAYER" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
+        "ACTION_SHOW_KEY_LOG" : "Журнал нажатий клавиш",
+
+        "INFO_FRAME_EVENTS_LEGEND" : "Активность на экране",
+        "INFO_KEY_EVENTS_LEGEND"   : "Работа с клавиатурой",
+        "INFO_LOADING_RECORDING"   : "Ваша запись сейчас загружается. Пожалуйста, подождите...",
+        "INFO_NO_KEY_LOG"          : "Журнал нажатий клавиш недоступен",
+        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} {RESULTS, plural, one{Match} other{Matches}}",
+        "INFO_SEEK_IN_PROGRESS"    : "Поиск запрошенной позиции. Пожалуйста, подождите...",
+
+        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+
+    },
+
     "PROTOCOL_KUBERNETES" : {
 
         "FIELD_HEADER_BACKSPACE"                : "Клавиша Backspace посылает:",
@@ -430,7 +461,9 @@
         "FIELD_HEADER_DISABLE_AUDIO"              : "Отключить звук:",
         "FIELD_HEADER_DISABLE_AUTH"               : "Отключить аутентификацию:",
         "FIELD_HEADER_DISABLE_COPY"               : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "Отключить скачивание файлов:",
         "FIELD_HEADER_DISABLE_PASTE"              : "Отключить вставку из буфера обмена:",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "Отключить загрузку файлов:",
         "FIELD_HEADER_DOMAIN"                     : "Домен:",
         "FIELD_HEADER_DPI"                        : "Разрешение экрана (DPI):",
         "FIELD_HEADER_DRIVE_NAME"                 : "Название диска:",
@@ -444,10 +477,13 @@
         "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Отключить кеширование битмапов:",
         "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Отключить кеширование скрытых элементов:",
         "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Отключить кеширование глифов:",
+        "FIELD_HEADER_DISABLE_GFX"                : "Отключить расширение графического конвейера:",
         "FIELD_HEADER_ENABLE_PRINTING"            : "Включить печать:",
         "FIELD_HEADER_ENABLE_SFTP"                : "Включить SFTP:",
         "FIELD_HEADER_ENABLE_THEMING"             : "Включить темы:",
+        "FIELD_HEADER_ENABLE_TOUCH"               : "Включить multi-touch:",
         "FIELD_HEADER_ENABLE_WALLPAPER"           : "Включить обои:",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "Форсированное сжатие без потерь:",
         "FIELD_HEADER_GATEWAY_DOMAIN"             : "Домен:",
         "FIELD_HEADER_GATEWAY_HOSTNAME"           : "Сервер:",
         "FIELD_HEADER_GATEWAY_PASSWORD"           : "Пароль:",
@@ -458,6 +494,7 @@
         "FIELD_HEADER_IGNORE_CERT"                : "Игнорировать сертификат сервера:",
         "FIELD_HEADER_INITIAL_PROGRAM"            : "Запуск программ при подключении:",
         "FIELD_HEADER_LOAD_BALANCE_INFO"          : "Информация о балансировке нагрузки:",
+        "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "Окончания строк:",
         "FIELD_HEADER_PASSWORD"                   : "Пароль:",
         "FIELD_HEADER_PORT"                       : "Порт:",
         "FIELD_HEADER_PRINTER_NAME"               : "Название принтера:",
@@ -466,6 +503,7 @@
         "FIELD_HEADER_READ_ONLY"                  : "Только просмотр:",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"    : "Исключить мышь:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT"   : "Исключить графику/потоки:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "Исключить события касания:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"     : "Включить события клавиатуры:",
         "FIELD_HEADER_RECORDING_NAME"             : "Название записи:",
         "FIELD_HEADER_RECORDING_PATH"             : "Путь для записи:",
@@ -476,6 +514,8 @@
         "FIELD_HEADER_SECURITY"                   : "Режим безопасности:",
         "FIELD_HEADER_SERVER_LAYOUT"              : "Раскладка клавиатуры:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Директория загрузки по умолчанию:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Отключить скачивание файлов:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Отключить загрузку файлов:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Публичный ключ сервера (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Сервер:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Интервал keepalive для SFTP:",
@@ -483,12 +523,22 @@
         "FIELD_HEADER_SFTP_PASSWORD"              : "Пароль:",
         "FIELD_HEADER_SFTP_PORT"                  : "Порт:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Приватный ключ:",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "Публичный ключ:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Директория просмотра по умолчанию:",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "SFTP время ожидания подключения:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Имя пользователя:",
         "FIELD_HEADER_STATIC_CHANNELS"            : "Названия статических каналов:",
+        "FIELD_HEADER_TIMEOUT"                    : "Время ожидания подключения",
         "FIELD_HEADER_TIMEZONE"                   : "Часовой пояс:",
         "FIELD_HEADER_USERNAME"                   : "Имя пользователя:",
         "FIELD_HEADER_WIDTH"                      : "Ширина:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Широковещательный адрес для пакета WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC-адрес удаленного хоста:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Отправить пакет WoL:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-порт для передачи пакетов WoL: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Время ожидания загрузки хоста:",
+
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "Сохранить как есть",
 
         "FIELD_OPTION_COLOR_DEPTH_16" : "Low color (16-бит)",
         "FIELD_OPTION_COLOR_DEPTH_24" : "True color (24-бит)",
@@ -505,6 +555,7 @@
 
         "SECTION_HEADER_AUTHENTICATION"     : "Аутентификация",
         "SECTION_HEADER_BASIC_PARAMETERS"   : "Основные настройки",
+        "SECTION_HEADER_CLIPBOARD"          : "Буфер обмена",
         "SECTION_HEADER_DEVICE_REDIRECTION" : "Перенаправление устройств",
         "SECTION_HEADER_DISPLAY"            : "Экран",
         "SECTION_HEADER_GATEWAY"            : "Шлюз удаленных рабочих столов",
@@ -536,6 +587,7 @@
         "FIELD_HEADER_PASSPHRASE"               : "Секретная фраза:",
         "FIELD_HEADER_PORT"                     : "Порт:",
         "FIELD_HEADER_PRIVATE_KEY"              : "Приватный ключ:",
+        "FIELD_HEADER_PUBLIC_KEY"               : "Публичный ключ:",
         "FIELD_HEADER_SCROLLBACK"               : "Размер буфера прокрутки:",
         "FIELD_HEADER_READ_ONLY"                : "Только просмотр:",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Исключить мышь:",
@@ -544,11 +596,19 @@
         "FIELD_HEADER_RECORDING_NAME"           : "Название записи:",
         "FIELD_HEADER_RECORDING_PATH"           : "Путь для записи:",
         "FIELD_HEADER_SERVER_ALIVE_INTERVAL"    : "Интервал keepalive для сервера:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "Отключить скачивание файлов:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"      : "Директория просмотра по умолчанию:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "Отключить загрузку файлов:",
         "FIELD_HEADER_TERMINAL_TYPE"            : "Тип терминала:",
+        "FIELD_HEADER_TIMEOUT"         : "Время ожидания подключения:",
         "FIELD_HEADER_TIMEZONE"                 : "Часовой пояс ($TZ):",
         "FIELD_HEADER_TYPESCRIPT_NAME"          : "Название typescript:",
         "FIELD_HEADER_TYPESCRIPT_PATH"          : "Путь typescript:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Широковещательный адрес для пакета WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC-адрес удаленного хоста:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Отправить пакет WoL:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-порт для передачи пакетов WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Время ожидания загрузки хоста:",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Черное на белом",
         "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Серое на черном",
@@ -557,6 +617,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Аутентификация",
         "SECTION_HEADER_BEHAVIOR"       : "Поведение терминала",
+        "SECTION_HEADER_CLIPBOARD"      : "Буфер обмена",
         "SECTION_HEADER_DISPLAY"        : "Экран",
         "SECTION_HEADER_NETWORK"        : "Сеть",
         "SECTION_HEADER_RECORDING"      : "Запись экрана",
@@ -593,6 +654,11 @@
         "FIELD_HEADER_TERMINAL_TYPE"            : "Тип терминала:",
         "FIELD_HEADER_TYPESCRIPT_NAME"          : "Название typescript:",
         "FIELD_HEADER_TYPESCRIPT_PATH"          : "Путь typescript:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Широковещательный адрес для пакета WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC-адрес удаленного хоста:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Отправить пакет WoL:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-порт для передачи пакетов WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Время ожидания загрузки хоста:",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Черное на белом",
         "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Серое на черном",
@@ -601,6 +667,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Аутентификация",
         "SECTION_HEADER_BEHAVIOR"       : "Поведение терминала",
+        "SECTION_HEADER_CLIPBOARD"      : "Буфер обмена",
         "SECTION_HEADER_DISPLAY"        : "Экран",
         "SECTION_HEADER_RECORDING"      : "Запись экрана",
         "SECTION_HEADER_TYPESCRIPT"     : "Typescript (запись текстовой сессии)",
@@ -613,17 +680,24 @@
         "FIELD_HEADER_AUDIO_SERVERNAME"           : "Название аудио-сервера:",
         "FIELD_HEADER_CLIPBOARD_ENCODING"         : "Кодировка:",
         "FIELD_HEADER_COLOR_DEPTH"                : "Глубина цвета:",
+        "FIELD_HEADER_COMPRESS_LEVEL"             : "Уровень сжатия:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"      : "Автоматически создавать путь для записи:",
         "FIELD_HEADER_CURSOR"                     : "Курсор:",
         "FIELD_HEADER_DEST_HOST"                  : "Сервер назначения:",
         "FIELD_HEADER_DEST_PORT"                  : "Порт назначения:",
         "FIELD_HEADER_DISABLE_COPY"               : "Отключить копирование в буфер обмена:",
+        "FIELD_HEADER_DISABLE_DISPLAY_RESIZE"     : "Отключить изменение размера удаленного дисплея:",
         "FIELD_HEADER_DISABLE_PASTE"              : "Отключить вставку из буфера обмена:",
+        "FIELD_HEADER_DISABLE_SERVER_INPUT"       : "Отключить ввод данных на сервере при подключении клиента:",
         "FIELD_HEADER_ENABLE_AUDIO"               : "Включить звук:",
         "FIELD_HEADER_ENABLE_SFTP"                : "Включить SFTP:",
+        "FIELD_HEADER_ENCODINGS"                  : "Кодировки дисплея:",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "Форсированное сжатие без потерь:",
         "FIELD_HEADER_HOSTNAME"                   : "Сервер:",
+        "FIELD_HEADER_USERNAME"                   : "Имя пользователя:",
         "FIELD_HEADER_PASSWORD"                   : "Пароль:",
         "FIELD_HEADER_PORT"                       : "Порт:",
+        "FIELD_HEADER_QUALITY_LEVEL"              : "Качество отображения:",
         "FIELD_HEADER_READ_ONLY"                  : "Только просмотр:",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"    : "Исключить мышь:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT"   : "Исключить графику/потоки:",
@@ -631,6 +705,8 @@
         "FIELD_HEADER_RECORDING_NAME"             : "Название записи:",
         "FIELD_HEADER_RECORDING_PATH"             : "Путь для записи:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Директория загрузки по умолчанию:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Отключить скачивание файлов:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Отключить загрузку файлов:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Публичный ключ сервера (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Сервер:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Интервал keepalive для SFTP:",
@@ -638,9 +714,16 @@
         "FIELD_HEADER_SFTP_PASSWORD"              : "Пароль:",
         "FIELD_HEADER_SFTP_PORT"                  : "Порт:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Приватный ключ:",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "Публичный ключ:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Директория просмотра по умолчанию:",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "SFTP время ожидания подключения:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Имя пользователя:",
         "FIELD_HEADER_SWAP_RED_BLUE"              : "Поменять синий и красный компоненты:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR"         : "Широковещательный адрес для пакета WoL:",
+        "FIELD_HEADER_WOL_MAC_ADDR"               : "MAC-адрес удаленного хоста:",
+        "FIELD_HEADER_WOL_SEND_PACKET"            : "Отправить пакет WoL:",
+        "FIELD_HEADER_WOL_UDP_PORT"               : "UDP-порт для передачи пакетов WoL:",
+        "FIELD_HEADER_WOL_WAIT_TIME"              : "Время ожидания загрузки хоста:",
 
         "FIELD_OPTION_COLOR_DEPTH_8"  : "256 цветов",
         "FIELD_OPTION_COLOR_DEPTH_16" : "Low color (16-бит)",
@@ -719,14 +802,17 @@
         "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
-        "FIELD_HEADER_LANGUAGE"           : "Язык:",
-        "FIELD_HEADER_PASSWORD"           : "Пароль:",
-        "FIELD_HEADER_PASSWORD_OLD"       : "Текущий пароль:",
-        "FIELD_HEADER_PASSWORD_NEW"       : "Новый пароль:",
-        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Повтор нового пароля:",
-        "FIELD_HEADER_TIMEZONE"           : "Часовой пояс:",
-        "FIELD_HEADER_USERNAME"           : "Имя пользователя:",
+        "FIELD_HEADER_LANGUAGE"                  : "Язык:",
+        "FIELD_HEADER_NUMBER_RECENT_CONNECTIONS" : "Количество последних подключений для отображения:",
+        "FIELD_HEADER_PASSWORD"                  : "Пароль:",
+        "FIELD_HEADER_PASSWORD_OLD"              : "Текущий пароль:",
+        "FIELD_HEADER_PASSWORD_NEW"              : "Новый пароль:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN"        : "Повтор нового пароля:",
+        "FIELD_HEADER_SHOW_RECENT_CONNECTIONS"   : "Показать последние подключения:",
+        "FIELD_HEADER_TIMEZONE"                  : "Часовой пояс:",
+        "FIELD_HEADER_USERNAME"                  : "Имя пользователя:",
 
+        "HELP_APPEARANCE"           : "Здесь вы можете включить или отключить отображение раздела \"Последние подключения\" на главном экране, а также настроить количество отображаемых последних подключений.",
         "HELP_DEFAULT_INPUT_METHOD" : "Режим ввода по умолчанию определяет, каким образом нажатия на клавиатуру будут передаваться Guacamole. Изменение данной настройки может быть полезным при работе с мобильных устройств или при вводе через IME. Данная настройка может быть сделана для каждого подключения через основное меню Guacamole.",
         "HELP_DEFAULT_MOUSE_MODE"   : "Режим эмуляции мыши по умолчанию определяет, каким образом мышь на удаленном сервере будет реагировать на прикосновения для новых подключений. Данная настройка может быть переопределена для каждого подключения через основное меню Guacamole.",
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
@@ -738,11 +824,13 @@
         "HELP_UPDATE_PASSWORD"      : "Если вы хотите изменить пароль, укажите ваш текущий пароль и дважды укажите новый. Затем нажмите «Обновить пароль». Изменения вступят в силу моментально.",
 
         "INFO_PASSWORD_CHANGED" : "Пароль успешно изменен.",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "Пользовательские настройки сохранены.",
 
         "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
         "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
         "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
 
+        "SECTION_HEADER_APPEARANCE"           : "Внешний вид",
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Метод ввода по умолчанию",
         "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Режим эмуляции мыши по умолчанию",
         "SECTION_HEADER_UPDATE_PASSWORD"      : "Изменить пароль"
@@ -809,10 +897,10 @@
 
         "SECTION_HEADER_SESSIONS" : "Активные сессии",
 
-        "TABLE_HEADER_SESSION_USERNAME"        : "Имя пользователя",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "Активен с",
-        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Удаленный узел",
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Название подключения",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Удаленный узел",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Активен с",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Имя пользователя",
 
         "TEXT_CONFIRM_DELETE" : "Вы уверены, что хотите завершить все выбранные сессии? Пользователи, работающие в этих сессиях, будут немедленно отключены."
 
