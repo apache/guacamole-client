@@ -123,6 +123,17 @@ Guacamole.Mouse = function Mouse(element) {
         Guacamole.Event.DOMEvent.cancelEvent(e);
     }, false);
 
+    // Capture mouse events outside the display element when a button is
+    // pressed to allow drag and drop between multiple windows.
+    element.addEventListener("pointerdown", function(e) {
+        element.setPointerCapture(e.pointerId);
+    }, false);
+
+    // Stop capture when mouse button is released
+    element.addEventListener("pointerup", function(e) {
+        element.releasePointerCapture(e.pointerId);
+    }, false);
+
     element.addEventListener("mousemove", function(e) {
 
         // If ignoring events, decrement counter
