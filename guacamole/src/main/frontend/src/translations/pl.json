@@ -412,6 +412,8 @@
         "FIELD_HEADER_CONTAINER"       : "Nazwa kontenera:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Automatycznie utwórz ścieżkę nagrywania:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automatycznie utwórz ścieżkę maszynopisu:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Wyłącz kopiowanie z terminala:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Wyłącz wklejanie z klienta:",
         "FIELD_HEADER_EXEC_COMMAND"    : "Komenda (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Nazwa czcionki:",
         "FIELD_HEADER_FONT_SIZE"       : "Rozmiar czcionki:",
@@ -461,6 +463,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Uwierzytelnianie",
         "SECTION_HEADER_BEHAVIOR"       : "Zachowanie terminala",
+        "SECTION_HEADER_CLIPBOARD"      : "Schowek",
         "SECTION_HEADER_CONTAINER"      : "Kontener",
         "SECTION_HEADER_DISPLAY"        : "Wyświetlanie",
         "SECTION_HEADER_RECORDING"      : "Nagrywanie Ekranu",

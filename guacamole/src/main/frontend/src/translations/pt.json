@@ -393,6 +393,8 @@
         "FIELD_HEADER_CONTAINER"       : "Nome do container:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Criar caminho de gravação automaticamente:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Criar caminho de transcrição automaticamente:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Desabilitar copiar do terminal:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Desabilitar colar do cliente:",
         "FIELD_HEADER_FONT_NAME"       : "Nome da fonte:",
         "FIELD_HEADER_FONT_SIZE"       : "Tamanho da fonte:",
         "FIELD_HEADER_HOSTNAME"        : "Nome do host:",
@@ -441,6 +443,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Autenticação",
         "SECTION_HEADER_BEHAVIOR"       : "Comportamento do terminal",
+        "SECTION_HEADER_CLIPBOARD"      : "Área de Transferência",
         "SECTION_HEADER_CONTAINER"      : "Container",
         "SECTION_HEADER_DISPLAY"        : "Tela",
         "SECTION_HEADER_RECORDING"      : "Gravação da Tela",
