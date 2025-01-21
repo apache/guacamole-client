@@ -194,7 +194,6 @@ Guacamole.Client = function(tunnel) {
 
                 var index = parseInt(key);
                 var layer = layersSnapshot[key];
-                var canvas = layer.toCanvas();
 
                 // Store layer/buffer dimensions
                 var exportLayer = {
@@ -203,8 +202,10 @@ Guacamole.Client = function(tunnel) {
                 };
 
                 // Store layer/buffer image data, if it can be generated
-                if (layer.width && layer.height)
+                if (layer.width && layer.height) {
+                    var canvas = layer.toCanvas();
                     exportLayer.url = canvas.toDataURL('image/png');
+                }
 
                 // Add layer properties if not a buffer nor the default layer
                 if (index > 0) {
