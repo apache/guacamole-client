@@ -101,6 +101,9 @@ angular.module('client').directive('guacClientStatistics', [function guacClientS
                 $scope.client.managedDisplay.display.onstatistics = null;
         });
 
+        // Display statistics by default
+        $scope.isVisible = true;
+
     }];
 
     return directive;
