@@ -576,6 +576,7 @@
         "FIELD_OPTION_SECURITY_TLS"   : "szyfrowanie TLS",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Czeski (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Duński (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Szwajcarski Niemiecki (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Niemiecki (Qwertz)",
