@@ -104,6 +104,7 @@
                     "type"    : "ENUM",
                     "options" : [
                         "",
+                        "cs-cz-qwertz",
                         "de-ch-qwertz",
                         "de-de-qwertz",
                         "en-gb-qwerty",
