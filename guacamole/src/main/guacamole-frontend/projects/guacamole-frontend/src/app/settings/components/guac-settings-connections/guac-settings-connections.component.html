@@ -1,0 +1,96 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="settings section connections" [ngClass]="{ 'loading': !isLoaded() }">
+
+    <!-- Connection management -->
+    <p>{{ 'SETTINGS_CONNECTIONS.HELP_CONNECTIONS' | transloco }}</p>
+
+    <!-- Connection management toolbar -->
+    <div class="toolbar">
+
+        <!-- Form action buttons -->
+        <div class="action-buttons">
+
+            <a class="add-connection button"
+               [hidden]="!canCreateConnections()"
+               routerLink="/manage/{{dataSource | escape}}/connections/">{{ 'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | transloco }}</a>
+
+            <a class="add-connection-group button"
+               [hidden]="!canCreateConnectionGroups()"
+               routerLink="/manage/{{dataSource | escape}}/connectionGroups/">{{ 'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | transloco }}</a>
+
+            <a class="import-connections button"
+               [hidden]="!canAdminister()"
+               routerLink="/import/{{dataSource | escape}}/connection/">{{ 'SETTINGS_CONNECTIONS.ACTION_IMPORT' | transloco }}</a>
+
+        </div>
+
+        <!-- Connection filter -->
+        <guac-group-list-filter [placeholder]="'SETTINGS_CONNECTIONS.FIELD_PLACEHOLDER_FILTER' | transloco"
+                                class="filter">
+        </guac-group-list-filter>
+
+    </div>
+
+    <!-- List of accessible connections and groups -->
+    <div class="connection-list">
+        <guac-group-list
+            [pageSize]="25"
+            [connectionGroups]="rootGroupsDataSource?.filteredConnectionGroups | async"
+            [decorator]="rootItemDecorator.bind(this)"
+            [templates]="{
+
+                'connection'       : connection,
+                'sharing-profile'  : sharingProfile,
+                'connection-group' : connectionGroup,
+
+                'new-connection'       : newConnection,
+                'new-sharing-profile'  : newSharingProfile,
+                'new-connection-group' : newConnectionGroup
+
+            }"></guac-group-list>
+    </div>
+</div>
+
+<!-- Template refs for the guac-group-list -->
+<ng-template let-item="item" #connection>
+    <guac-connection [item]="item"></guac-connection>
+</ng-template>
+
+<ng-template let-item="item" #sharingProfile>
+    <guac-sharing-profile [item]="item"></guac-sharing-profile>
+</ng-template>
+
+<ng-template let-item="item" #connectionGroup>
+    <guac-connection-group [item]="item"></guac-connection-group>
+</ng-template>
+
+<ng-template let-item="item" #newConnection>
+    <guac-new-connection [item]="item"></guac-new-connection>
+</ng-template>
+
+<ng-template let-item="item" #newSharingProfile>
+    <guac-new-sharing-profile [item]="item"></guac-new-sharing-profile>
+</ng-template>
+
+<ng-template let-item="item" #newConnectionGroup>
+    <guac-new-connection-group [item]="item"></guac-new-connection-group>
+</ng-template>
+

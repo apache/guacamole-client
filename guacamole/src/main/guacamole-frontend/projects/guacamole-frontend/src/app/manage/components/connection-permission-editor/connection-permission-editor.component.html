@@ -1,0 +1,52 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="connection-permissions">
+    <div class="header tabbed">
+        <h2 transloco="MANAGE_USER.SECTION_HEADER_CONNECTIONS"></h2>
+        <guac-group-list-filter [placeholder]="'MANAGE_USER.FIELD_PLACEHOLDER_FILTER' | transloco"
+        ></guac-group-list-filter>
+    </div>
+    <guac-section-tabs [namespace]="'MANAGE_USER'" [(current)]="currentTab" [tabs]="tabs"
+                       (currentChange)="onCurrentTabChange()"></guac-section-tabs>
+    <div class="section">
+        <guac-group-list
+            [context]="groupListContext"
+            [connectionGroups]="rootGroupsDataSource?.filteredConnectionGroups | async"
+            [templates]="{
+                'connection'       : connectionPermission,
+                'sharing-profile'  : sharingProfilePermission,
+                'connection-group' : connectionGroupPermission
+            }"
+            [pageSize]="20"></guac-group-list>
+    </div>
+</div>
+
+<!-- Template refs for the guac-group-list -->
+<ng-template let-context="ctx" let-item="item" #connectionPermission>
+    <guac-connection-permission [context]="context" [item]="item"></guac-connection-permission>
+</ng-template>
+
+<ng-template let-context="ctx" let-item="item" #sharingProfilePermission>
+    <guac-sharing-profile-permission [context]="context" [item]="item"></guac-sharing-profile-permission>
+</ng-template>
+
+<ng-template let-context="ctx" let-item="item" #connectionGroupPermission>
+    <guac-connection-group-permission [context]="context" [item]="item"></guac-connection-group-permission>
+</ng-template>

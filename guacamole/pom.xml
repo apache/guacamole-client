@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
-
-      http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-    KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
--->
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -60,35 +60,62 @@
     <build>
         <plugins>
 
-            <!-- Build AngularJS portion of application using NPM -->
+            <!-- Add files from guacamole-common-js -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>unpack-guacamole-js</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.apache.guacamole</groupId>
+                                    <artifactId>guacamole-common-js</artifactId>
+                                    <type>zip</type>
+                                    <outputDirectory>src/main/guacamole-frontend/projects/guacamole-frontend-lib/src/assets</outputDirectory>
+                                    <includes>**/all.min.js</includes>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Build Angular lib and application with NPM -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>1.11.3</version>
                 <configuration>
-                    <workingDirectory>src/main/frontend</workingDirectory>
                     <installDirectory>${project.build.directory}</installDirectory>
+                    <workingDirectory>src/main/guacamole-frontend</workingDirectory>
 
-                    <!-- Newer Node.js requires the following to avoid an "ERR_OSSL_EVP_UNSUPPORTED"
-                    error when WebPack attempts to use its default hash (MD4) for content hashing -->
-                    <environmentVariables>
-                        <NODE_OPTIONS>--openssl-legacy-provider</NODE_OPTIONS>
-                    </environmentVariables>
-
+                    <!--
+                    Skip tests unless requested otherwise with -DskipTests=false.
+                    Skipped by default because these tests require firefox to be installed.
+                    -->
+                    <skipTests>true</skipTests>
                 </configuration>
                 <executions>
+                    <!-- Install Node-->
                     <execution>
                         <id>install-node-and-npm</id>
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v18.18.0</nodeVersion>
-                            <npmVersion>9.8.1</npmVersion>
+                            <nodeVersion>v22.13.0</nodeVersion>
                         </configuration>
                     </execution>
+
+                    <!-- guacamole-frontend: npm ci-->
                     <execution>
-                        <id>npm-ci</id>
+                        <id>npm-ci-lib</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -96,45 +123,96 @@
                             <arguments>ci</arguments>
                         </configuration>
                     </execution>
+
+                    <!-- guacamole-frontend-lib: npm run build-->
                     <execution>
-                        <id>npm-build</id>
+                        <id>npm-build-lib</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build</arguments>
+                            <arguments>run build guacamole-frontend-lib</arguments>
                         </configuration>
                     </execution>
+
+                    <!-- guacamole-frontend-lib: run tests-->
+                    <execution>
+                        <id>npm-test-lib</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run test-guacamole-frontend-lib:ci</arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- guacamole-frontend-ext-lib: npm run build-->
+                    <execution>
+                        <id>npm-build-ext-lib</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build guacamole-frontend-ext-lib</arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- guacamole-frontend: npm run build-->
+                    <execution>
+                        <id>npm-build-app</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run build:app</arguments>
+                        </configuration>
+                    </execution>
+
+                    <!-- guacamole-frontend: run tests-->
+                    <execution>
+                        <id>npm-test-app</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run test-guacamole-frontend:ci</arguments>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
 
-            <!-- Copy automatically-generated set of NPM module dependencies for
+            <!-- TODO: Copy automatically-generated set of NPM module dependencies for
                 later use by LICENSE generator -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-npm-dependency-list</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${dependency.list.directory}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/frontend/dist</directory>
-                                    <includes>
-                                        <include>npm-dependencies.txt</include>
-                                    </includes>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-resources-plugin</artifactId>-->
+            <!--                <executions>-->
+            <!--                    <execution>-->
+            <!--                        <id>copy-npm-dependency-list</id>-->
+            <!--                        <phase>generate-resources</phase>-->
+            <!--                        <goals>-->
+            <!--                            <goal>copy-resources</goal>-->
+            <!--                        </goals>-->
+            <!--                        <configuration>-->
+            <!--                            <outputDirectory>${dependency.list.directory}</outputDirectory>-->
+            <!--                            <resources>-->
+            <!--                                <resource>-->
+            <!--                                    <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>-->
+            <!--                                    <includes>-->
+            <!--                                        <include>npm-dependencies.txt</include>-->
+            <!--                                    </includes>-->
+            <!--                                </resource>-->
+            <!--                            </resources>-->
+            <!--                        </configuration>-->
+            <!--                    </execution>-->
+            <!--                </executions>-->
+            <!--            </plugin>-->
 
             <!-- Automatically generate LICENSE and NOTICE -->
             <plugin>
@@ -158,22 +236,20 @@
 
                         <!-- Add frontend folder to war package ... -->
                         <resource>
-                            <directory>src/main/frontend/dist</directory>
+                            <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>
                             <excludes>
                                 <exclude>translations/*.json</exclude>
                                 <exclude>index.html</exclude>
-                                <exclude>verifyCachedVersion.js</exclude>
                             </excludes>
                         </resource>
 
                         <!-- ... but filter index.html and translation strings -->
                         <resource>
-                            <directory>src/main/frontend/dist</directory>
+                            <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>
                             <filtering>true</filtering>
                             <includes>
                                 <include>translations/*.json</include>
                                 <include>index.html</include>
-                                <include>verifyCachedVersion.js</include>
                             </includes>
                         </resource>
 
@@ -185,15 +261,13 @@
 
                     </webResources>
 
-                    <!-- Add files from guacamole-common-js -->
-                    <overlays>
-                        <overlay>
-                            <groupId>org.apache.guacamole</groupId>
-                            <artifactId>guacamole-common-js</artifactId>
-                            <type>zip</type>
-                        </overlay>
-                    </overlays>
-            
+                    <delimiters>
+                        <!-- Maven default delimiter -->
+                        <delimiter>${*}</delimiter>
+                        <!-- Alternative delimiter for the index.html of the Angular application -->
+                        <delimiter>#{*}</delimiter>
+                    </delimiters>
+
                 </configuration>
                 <executions>
                     <execution>
@@ -323,7 +397,7 @@
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
         </dependency>
-        
+
         <!-- Jersey - JAX-RS Implementation -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
@@ -359,7 +433,7 @@
             <artifactId>jsr250-api</artifactId>
             <version>1.0</version>
         </dependency>
-        
+
         <!-- Guava Base Libraries -->
         <dependency>
             <groupId>com.google.guava</groupId>

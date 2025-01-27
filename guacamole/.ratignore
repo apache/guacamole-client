@@ -1,1 +1,4 @@
 src/main/frontend/dist/**/*
+**/.idea/**/*
+**/.editorconfig
+**/guacamole-common-js/all.min.js

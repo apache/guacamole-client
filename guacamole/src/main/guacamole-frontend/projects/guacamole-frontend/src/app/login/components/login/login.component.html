@@ -1,0 +1,70 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="login-ui" [ngClass]="{'error': loginError, 'continuation': isContinuation(), 'initial': !isContinuation()}">
+
+    <!-- Login error message -->
+    <p class="login-error" [transloco]="loginError?.key" [translocoParams]="loginError?.variables || {}"></p>
+
+    <div class="login-dialog-middle">
+
+        <div class="login-dialog notification">
+
+            <form class="login-form" (ngSubmit)="login()">
+
+                <!-- Guacamole version -->
+                <div class="logo"></div>
+                <div class="version">
+                    <div class="app-name">{{ 'APP.NAME' | transloco }}</div>
+                    <div class="version-number">{{ 'APP.VERSION' | transloco }}</div>
+                </div>
+
+                <!-- Login message/instructions -->
+                <p [hidden]="!helpText" [transloco]="helpText?.key" [translocoParams]="helpText?.variables || {}"></p>
+
+                <!-- Login fields -->
+                <div class="login-fields">
+                    <guac-form
+                        namespace="LOGIN"
+                        [content]="remainingFields"
+                        [modelFormGroup]="enteredValues"
+                        [focusedField]="relevantField?.name"
+                        [attr.data-disabled]="submitted"></guac-form>
+                </div>
+
+                <!-- Login/continue button -->
+                <div class="buttons">
+
+                    <input type="submit" name="login" class="login"
+                           [disabled]="submitted"
+                           [value]="'LOGIN.ACTION_LOGIN' | transloco">
+
+                    <input type="submit" name="login" class="continue-login"
+                           [disabled]="submitted"
+                           [value]="'LOGIN.ACTION_CONTINUE' | transloco">
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

@@ -105,6 +105,11 @@ public class ExtensionManifest {
     private String largeIcon;
 
     /**
+     * TODO
+     */
+    private String nativeFederationConfiguration;
+
+    /**
      * Returns the version of the Guacamole web application for which the
      * extension was built, such as "0.9.7".
      *
@@ -430,4 +435,19 @@ public class ExtensionManifest {
         this.largeIcon = largeIcon;
     }
 
+    /**
+     * TODO
+     * @return
+     */
+    public String getNativeFederationConfiguration() {
+        return nativeFederationConfiguration;
+    }
+
+    /**
+     * TODO
+     * @param nativeFederationConfiguration
+     */
+    public void setNativeFederationConfiguration(String nativeFederationConfiguration) {
+        this.nativeFederationConfiguration = nativeFederationConfiguration;
+    }
 }

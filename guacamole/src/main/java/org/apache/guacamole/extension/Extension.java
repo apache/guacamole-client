@@ -38,12 +38,19 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.resource.ClassPathResource;
 import org.apache.guacamole.resource.Resource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Guacamole extension, which may provide custom authentication, static
  * files, theming/branding, etc.
  */
 public class Extension {
+
+    /**
+     * TODO
+     */
+    private static final Logger log = LoggerFactory.getLogger(Extension.class);
 
     /**
      * The Jackson parser for parsing the language JSON files.
@@ -126,6 +133,11 @@ public class Extension {
      * will replace the default Guacamole icon.
      */
     private final Resource largeIcon;
+
+    /**
+     * TODO
+     */
+    private final Resource nativeFederationConfiguration;
 
     /**
      * Returns a new map of all resources corresponding to the collection of
@@ -440,6 +452,15 @@ public class Extension {
             largeIcon = new ClassPathResource(classLoader, "image/png", manifest.getLargeIcon());
         else
             largeIcon = null;
+
+        // TODO
+        if (manifest.getNativeFederationConfiguration() != null) {
+            log.info("getNativeFederationConfiguration(): {}", manifest.getNativeFederationConfiguration());
+            nativeFederationConfiguration = new ClassPathResource(classLoader, "application/json", manifest.getNativeFederationConfiguration());
+        } else {
+            nativeFederationConfiguration = null;
+        }
+
     }
 
     /**
@@ -597,4 +618,12 @@ public class Extension {
         return largeIcon;
     }
 
+
+    /**
+     * TODO
+     * @return
+     */
+    public Resource getNativeFederationConfiguration() {
+        return nativeFederationConfiguration;
+    }
 }

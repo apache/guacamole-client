@@ -1,0 +1,71 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="related-objects" [hidden]="isEmpty()">
+    <div class="header">
+        <h2>{{ header | transloco }}</h2>
+        <div class="filter">
+            <input class="search-string" type="text"
+                   placeholder="{{ 'SETTINGS_USERS.FIELD_PLACEHOLDER_FILTER' | transloco }}"
+                   [ngModel]="filterString | async"
+                   (ngModelChange)="filterString.next($event)">
+        </div>
+    </div>
+
+    <div class="section">
+
+        <!-- Abbreviated list of only the currently selected objects -->
+        <div class="abbreviated-related-objects">
+            <img ngSrc="images/arrows/right.svg" alt="Expand" class="expand" [hidden]="expanded"
+                 (click)="expand()" height="64" width="64">
+            <img ngSrc="images/arrows/down.svg" alt="Collapse" class="collapse" [hidden]="!expanded"
+                 (click)="collapse()" height="64" width="64">
+            <p *ngIf="!(identifiersDataSourceView?.totalLength | async)"
+               class="no-related-objects">{{ emptyPlaceholder | transloco }}</p>
+            <ul>
+                <li *ngFor="let identifier of identifiersDataSourceView?.data | async">
+                    <label><img ngSrc="images/x-red.svg" alt="Remove" class="remove"
+                                (click)="removeIdentifierFromScope(identifier)"
+                                [hidden]="!isEditable[identifier]" height="64" width="64"><span
+                        class="identifier">{{ identifier }}</span>
+                    </label>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Exhaustive, paginated list of all objects -->
+        <div class="all-related-objects" [hidden]="!expanded">
+            <p [hidden]="identifiersAvailableDataSourceView?.totalLength | async"
+               class="no-objects-available">{{ unavailablePlaceholder | transloco }}</p>
+            <ul *ngIf="identifiersAvailableDataSourceView !== null">
+                <li *ngFor="let identifier of identifiersAvailableDataSourceView.data | async">
+                    <label><input type="checkbox"
+                                  [(ngModel)]="identifierFlags[identifier]"
+                                  (ngModelChange)="identifierChanged(identifier)">
+                        <span class="identifier">{{ identifier }}</span>
+                    </label>
+                </li>
+            </ul>
+
+            <!-- Pager controls for user list-->
+            <guac-pager [pageSize]="25" [length]="identifiersAvailableDataSourceView?.totalLength | async"></guac-pager>
+        </div>
+
+    </div>
+</div>

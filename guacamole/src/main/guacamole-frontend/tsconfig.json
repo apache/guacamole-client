@@ -1,0 +1,48 @@
+{
+    "compileOnSave": false,
+    "exclude": [
+        "node_modules"
+    ],
+    "compilerOptions": {
+        "typeRoots": [
+            "node_modules/@types",
+            "typings"
+        ],
+        "baseUrl": "./",
+        "outDir": "./dist/out-tsc",
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "esModuleInterop": true,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "allowUmdGlobalAccess": true,
+        "paths": {
+            "guacamole-frontend-ext-lib": [
+                "dist/guacamole-frontend-ext-lib"
+            ],
+            "guacamole-frontend-lib": [
+                "dist/guacamole-frontend-lib"
+            ]
+        },
+        "declaration": false,
+        "experimentalDecorators": true,
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "target": "ES2022",
+        "module": "ES2022",
+        "useDefineForClassFields": false,
+        "lib": [
+            "ES2022",
+            "dom"
+        ]
+    },
+    "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false,
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "strictTemplates": true
+    }
+}

@@ -1,0 +1,105 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="guac-player-container">
+
+    <!-- Actual playback display -->
+    <guac-player-display [display]="recording?.getDisplay() || undefined"
+                         (click)="togglePlayback()"></guac-player-display>
+
+    <!-- Show the text viewer only if text exists -->
+    <guac-player-text-view [hidden]="!showKeyLog"
+                           [textBatches]="textBatches"
+                           [seek]="seekToTimestamp.bind(this)"
+                           [currentPosition]="seekPosition || playbackPosition"
+    ></guac-player-text-view>
+
+</div>
+
+<!-- Player controls -->
+<div class="guac-player-controls" *ngIf="recording"
+     [ngClass]="{
+            'paused' : !recording.isPlaying(),
+            'playing' : recording.isPlaying()
+        }">
+
+    <!-- Playback position slider -->
+    <input class="guac-player-seek" type="range" min="0" step="1"
+           [attr.max]="recording.getDuration()"
+           (input)="beginSeekRequest()"
+           [(ngModel)]="playbackPosition"
+           (ngModelChange)="commitSeekRequest()">
+
+    <div class="heat-map">
+        <svg class="frame-events" [attr.viewBox]="'0 0 ' + HEATMAP_WIDTH + ' ' + HEATMAP_HEIGHT"
+             preserveAspectRatio="none">
+            <path [attr.d]="frameHeatmap"/>
+        </svg>
+
+        <svg class="key-events" [attr.viewBox]="'0 0 ' + HEATMAP_WIDTH + ' ' + HEATMAP_HEIGHT"
+             preserveAspectRatio="none">
+            <path [attr.d]="keyHeatmap"/>
+        </svg>
+
+        <div class="legend">
+            <span class="frame-events">{{ 'PLAYER.INFO_FRAME_EVENTS_LEGEND' | transloco }}</span>
+            <span class="key-events">{{ 'PLAYER.INFO_KEY_EVENTS_LEGEND' | transloco }}</span>
+        </div>
+    </div>
+
+    <div class="guac-player-buttons">
+
+        <!-- Play button -->
+        <button class="guac-player-play"
+                [attr.title]="'PLAYER.ACTION_PLAY' | transloco"
+                (click)="recording.play()"
+                [hidden]="recording.isPlaying()"
+        ><span class="play-icon"></span></button>
+
+        <!-- Pause button -->
+        <button class="guac-player-pause"
+                [attr.title]="'PLAYER.ACTION_PAUSE'  | transloco"
+                (click)="recording.pause()"
+                [hidden]="!recording.isPlaying()"><span class="pause-icon"></span></button>
+
+        <!-- Playback position and duration -->
+        <span class="guac-player-position">
+            {{ formatTime(playbackPosition) }} / {{ formatTime(recording.getDuration()) }}
+        </span>
+
+        <span [hidden]="!hasTextBatches()" class="guac-player-keys" (click)="toggleKeyLogView()">
+            {{ 'PLAYER.ACTION_SHOW_KEY_LOG' | transloco }}
+        </span>
+
+        <span [hidden]="hasTextBatches()" class="guac-player-keys disabled">
+            {{ 'PLAYER.INFO_NO_KEY_LOG' | transloco }}
+        </span>
+    </div>
+
+</div>
+
+<!-- Modal status indicator -->
+<div class="guac-player-status" *ngIf="operationMessage">
+    <guac-player-progress-indicator [progress]="operationProgress"></guac-player-progress-indicator>
+    <p>{{ operationMessage  | transloco }}</p>
+    <button class="guac-player-button guac-player-cancel"
+            [hidden]="!cancelOperation"
+            (click)="cancelOperation()">{{ 'PLAYER.ACTION_CANCEL'  | transloco }}
+    </button>
+</div>

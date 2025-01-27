@@ -1,0 +1,69 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="manage-sharing-profile view" [ngClass]="{loading: !isLoaded()}">
+
+    <ng-container *ngIf="isLoaded()">
+
+        <!-- Main property editor -->
+        <div class="header">
+            <h2>{{ 'MANAGE_SHARING_PROFILE.SECTION_HEADER_EDIT_SHARING_PROFILE' | transloco }}</h2>
+            <guac-user-menu></guac-user-menu>
+        </div>
+        <div class="section">
+            <table class="properties">
+                <tr>
+                    <th>{{ 'MANAGE_SHARING_PROFILE.FIELD_HEADER_NAME' | transloco }}</th>
+                    <td><input type="text" [(ngModel)]="sharingProfile.name"
+                               autocorrect="off" autocapitalize="off"></td>
+                </tr>
+                <tr>
+                    <th>{{ 'MANAGE_SHARING_PROFILE.FIELD_HEADER_PRIMARY_CONNECTION' | transloco }}</th>
+                    <td>{{ primaryConnection.name }}</td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Sharing profile attributes section -->
+        <div class="attributes">
+            <guac-form namespace="'SHARING_PROFILE_ATTRIBUTES'" [content]="attributes"
+                       [modelFormGroup]="sharingProfileAttributesFormGroup"
+                       [modelOnly]="!managementPermissions.canChangeAllAttributes"></guac-form>
+        </div>
+
+        <!-- Sharing profile parameters -->
+        <h2 class="header">{{ 'MANAGE_SHARING_PROFILE.SECTION_HEADER_PARAMETERS' | transloco }}</h2>
+        <div class="section connection-parameters" [ngClass]="{loading: !parameters}">
+            <guac-form [namespace]="getNamespace(primaryConnection.protocol)"
+                       [content]="protocols[primaryConnection.protocol].sharingProfileForms"
+                       [modelFormGroup]="parametersFormGroup"></guac-form>
+        </div>
+
+        <!-- Form action buttons -->
+        <management-buttons namespace="MANAGE_SHARING_PROFILE"
+                            [permissions]="managementPermissions"
+                            [save]="saveSharingProfile.bind(this)"
+                            [delete]="deleteSharingProfile.bind(this)"
+                            [clone]="cloneSharingProfile.bind(this)"
+                            [return]="returnToConnectionList.bind(this)">
+        </management-buttons>
+
+    </ng-container>
+
+</div>

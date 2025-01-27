@@ -1,0 +1,284 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<guac-viewport>
+
+    <!-- Client view -->
+    <div class="client-view">
+        <div class="client-view-content">
+
+            <!-- Central portion of view -->
+            <div class="client-body" [guacTouchDrag]="menuDrag.bind(this)">
+
+                <!-- All connections in current display -->
+                <guac-tiled-clients
+                    [onClose]="closeClientTile.bind(this)"
+                    [clientGroup]="clientGroup"
+                    [emulateAbsoluteMouse]="menu.emulateAbsoluteMouse()">
+                </guac-tiled-clients>
+
+            </div>
+
+            <!-- Bottom portion of view -->
+            <div class="client-bottom">
+
+                <!-- Text input -->
+                <div class="text-input-container" *ngIf="showTextInput()">
+                    <guac-text-input></guac-text-input>
+                </div>
+
+                <!-- On-screen keyboard -->
+                <div class="keyboard-container" *ngIf="showOSK()">
+                    <guac-osk [layout]="'CLIENT.URL_OSK_LAYOUT' | transloco"></guac-osk>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- File transfers -->
+    <div id="file-transfer-dialog" [hidden]="!hasTransfers()">
+        <guac-file-transfer-manager [clientGroup]="clientGroup"></guac-file-transfer-manager>
+    </div>
+
+    <!-- Connection stability warning -->
+    <div id="connection-warning" [hidden]="!isConnectionUnstable()">
+        {{ 'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | transloco }}
+    </div>
+
+    <!-- Menu -->
+    <div class="menu" [ngClass]="{'open': menu.shown()}" id="guac-menu">
+        <div class="menu-content" *ngIf="menu.shown()" [guacTouchDrag]="menuDrag.bind(this)">
+
+            <!-- Stationary header -->
+            <div class="header">
+                <h2 [hidden]="rootConnectionGroups">{{ getName(clientGroup!) }}</h2>
+                <h2 class="connection-select-menu" [hidden]="!rootConnectionGroups">
+                    <guac-menu [menuTitle]="getName(clientGroup!)" [interactive]="true">
+                        <div class="all-connections">
+                            <guac-group-list-filter [placeholder]="'CLIENT.FIELD_PLACEHOLDER_FILTER' | transloco">
+                            </guac-group-list-filter>
+                            <guac-group-list
+                                [connectionGroups]="rootConnectionGroupsDataSource.filteredConnectionGroups | async"
+                                [context]="connectionListContext"
+                                [templates]="{
+                                    'connection'       : connection,
+                                    'connection-group' : connectionGroup
+                                }"
+                                [pageSize]="10"></guac-group-list>
+
+                            <ng-template #connection let-context="ctx" let-item="item">
+                                <guac-connection [context]="context" [item]="item"></guac-connection>
+                            </ng-template>
+
+                            <ng-template #connectionGroup let-context="ctx" let-item="item">
+                                <guac-connection-group [context]="context" [item]="item"></guac-connection-group>
+                            </ng-template>
+
+                        </div>
+                    </guac-menu>
+                </h2>
+                <div class="share-menu" *ngIf="canShareConnection()">
+                    <guac-menu [menuTitle]="'CLIENT.ACTION_SHARE' | transloco">
+                        <ul *ngFor="let sharingProfile of sharingProfiles | keyvalue">
+                            <li><a (click)="share(sharingProfile.value)">{{ sharingProfile.value.name }}</a></li>
+                        </ul>
+                    </guac-menu>
+                </div>
+                <guac-user-menu [localActions]="clientMenuActions"></guac-user-menu>
+            </div>
+
+            <!-- Scrollable body -->
+            <div class="menu-body" [guacScroll]="menu.scrollState()">
+
+                <!-- Connection sharing -->
+                <div class="menu-section" id="share-links" [hidden]="!isShared()">
+                    <div class="content">
+                        <h3>{{ 'CLIENT.INFO_CONNECTION_SHARED' | transloco }}</h3>
+                        <p class="description"
+                           transloco="CLIENT.HELP_SHARE_LINK"
+                           [translocoParams]="{LINKS : getShareLinkCount()}"></p>
+                        <table>
+                            <tr *ngFor="let link of (focusedClient?.shareLinks || {}) | keyvalue | orderBy: 'value.name'">
+                                <th>{{ link.value.name }}</th>
+                                <td><a [routerLink]="link.value.href" target="_blank">{{ link.value.href }}</a></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Clipboard -->
+                <div class="menu-section" id="clipboard-settings">
+                    <h3>{{ 'CLIENT.SECTION_HEADER_CLIPBOARD' | transloco }}</h3>
+                    <div class="content">
+                        <p class="description">{{ 'CLIENT.HELP_CLIPBOARD' | transloco }}</p>
+                        <guac-clipboard></guac-clipboard>
+                    </div>
+                </div>
+
+                <!-- Devices -->
+                <div class="menu-section" id="devices" *ngIf="focusedClient && focusedClient.filesystems?.length">
+                    <h3>{{ 'CLIENT.SECTION_HEADER_DEVICES' | transloco }}</h3>
+                    <div class="content">
+                        <div class="device filesystem" *ngFor="let filesystem of focusedClient.filesystems"
+                             (click)="showFilesystemMenu(filesystem)">
+                            {{ filesystem.name }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connection parameters which may be modified while the connection is open -->
+                <div class="menu-section connection-parameters" id="connection-settings"
+                     *ngIf="focusedClient && focusedClient.protocol">
+                    <guac-form [namespace]="getProtocolNamespace(focusedClient.protocol)"
+                               [content]="focusedClient.forms"
+                               [modelFormGroup]="connectionParameters"
+                               [client]="focusedClient"
+                               [modelOnly]="true"></guac-form>
+                </div>
+
+                <!-- Input method -->
+                <div class="menu-section" id="keyboard-settings">
+                    <h3>{{ 'CLIENT.SECTION_HEADER_INPUT_METHOD' | transloco }}</h3>
+                    <div class="content">
+
+                        <!-- No IME -->
+                        <div class="choice">
+                            <label><input id="ime-none" name="input-method"
+                                          (ngModelChange)="menu.inputMethod.set($event); closeMenu()"
+                                          [ngModel]="menu.inputMethod()" type="radio"
+                                          value="none"> {{ 'CLIENT.NAME_INPUT_METHOD_NONE' | transloco }}</label>
+                            <p class="caption"><label
+                                for="ime-none">{{ 'CLIENT.HELP_INPUT_METHOD_NONE' | transloco }}</label></p>
+                        </div>
+
+                        <!-- Text input -->
+                        <div class="choice">
+                            <div class="figure"><label for="ime-text"><img src="images/settings/tablet-keys.svg"
+                                                                           alt=""></label></div>
+                            <label><input id="ime-text" name="input-method"
+                                          (ngModelChange)="menu.inputMethod.set($event); closeMenu()"
+                                          [ngModel]="menu.inputMethod()" type="radio"
+                                          value="text"> {{ 'CLIENT.NAME_INPUT_METHOD_TEXT' | transloco }}</label>
+                            <p class="caption"><label
+                                for="ime-text">{{ 'CLIENT.HELP_INPUT_METHOD_TEXT' | transloco }} </label></p>
+                        </div>
+
+                        <!-- Guac OSK -->
+                        <div class="choice">
+                            <label><input id="ime-osk" name="input-method"
+                                          (ngModelChange)="menu.inputMethod.set($event); closeMenu()"
+                                          [ngModel]="menu.inputMethod()" type="radio"
+                                          value="osk"> {{ 'CLIENT.NAME_INPUT_METHOD_OSK' | transloco }}</label>
+                            <p class="caption"><label
+                                for="ime-osk">{{ 'CLIENT.HELP_INPUT_METHOD_OSK' | transloco }}</label></p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Mouse mode -->
+                <div class="menu-section" id="mouse-settings">
+                    <h3>{{ 'CLIENT.SECTION_HEADER_MOUSE_MODE' | transloco }}</h3>
+                    <div class="content">
+                        <p class="description">{{ 'CLIENT.HELP_MOUSE_MODE' | transloco }}</p>
+
+                        <!-- Touchscreen -->
+                        <div class="choice">
+                            <input name="mouse-mode"
+                                   (ngModelChange)="menu.emulateAbsoluteMouse.set($event); closeMenu()"
+                                   [ngModel]="menu.emulateAbsoluteMouse()"
+                                   type="radio" [value]="true" checked="checked" id="absolute">
+                            <div class="figure">
+                                <label for="absolute"><img src="images/settings/touchscreen.svg"
+                                                           alt="{{'CLIENT.NAME_MOUSE_MODE_ABSOLUTE' | transloco}}"></label>
+                                <p class="caption"><label
+                                    for="absolute">{{ 'CLIENT.HELP_MOUSE_MODE_ABSOLUTE' | transloco }}</label></p>
+                            </div>
+                        </div>
+
+                        <!-- Touchpad -->
+                        <div class="choice">
+                            <input name="mouse-mode"
+                                   (ngModelChange)="menu.emulateAbsoluteMouse.set($event); closeMenu()"
+                                   [ngModel]="menu.emulateAbsoluteMouse()"
+                                   type="radio" [value]="false" id="relative">
+                            <div class="figure">
+                                <label for="relative"><img src="images/settings/touchpad.svg"
+                                                           alt="{{'CLIENT.NAME_MOUSE_MODE_RELATIVE' | transloco}}"></label>
+                                <p class="caption"><label
+                                    for="relative">{{ 'CLIENT.HELP_MOUSE_MODE_RELATIVE' | transloco }}</label></p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Display options -->
+                <div class="menu-section" id="display-settings" *ngIf="focusedClient">
+                    <h3>{{ 'CLIENT.SECTION_HEADER_DISPLAY' | transloco }}</h3>
+                    <div class="content">
+                        <div id="zoom-settings">
+                            <guac-client-zoom [client]="focusedClient"></guac-client-zoom>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Filesystem menu -->
+    <div id="filesystem-menu" class="menu" [ngClass]="{'open': isFilesystemMenuShown()}">
+        <div class="menu-content">
+
+            <!-- Stationary header -->
+            <div class="header">
+                <h2>{{ filesystemMenuContents?.name }}</h2>
+                <button class="upload button"
+                        [guacUpload]="uploadFiles.bind(this)">{{ 'CLIENT.ACTION_UPLOAD_FILES' | transloco }}
+                </button>
+                <button class="back"
+                        (click)="hideFilesystemMenu()">{{ 'CLIENT.ACTION_NAVIGATE_BACK' | transloco }}
+                </button>
+            </div>
+
+            <!-- Breadcrumbs -->
+            <div class="header breadcrumbs">
+                <div
+                    class="breadcrumb root"
+                    (click)="changeDirectory(filesystemMenuContents!, filesystemMenuContents!.root)"></div>
+                <div
+                    class="breadcrumb"
+                    *ngFor="let file of (filesystemMenuContents ? getPath(filesystemMenuContents.currentDirectory()) : [])"
+                    (click)="changeDirectory(filesystemMenuContents!, file)">{{ file.name }}
+                </div>
+            </div>
+
+            <!-- Scrollable body -->
+            <div class="menu-body">
+                <guac-file-browser [filesystem]="filesystemMenuContents"></guac-file-browser>
+            </div>
+
+        </div>
+    </div>
+
+</guac-viewport>

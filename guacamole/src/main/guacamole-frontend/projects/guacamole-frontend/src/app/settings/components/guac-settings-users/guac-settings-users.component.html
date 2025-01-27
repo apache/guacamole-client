@@ -1,0 +1,88 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="settings section users" [ngClass]="{'loading': !isLoaded()}">
+
+    <!-- User management -->
+    <p>{{ 'SETTINGS_USERS.HELP_USERS' | transloco }}</p>
+
+
+    <!-- User management toolbar -->
+    <div class="toolbar">
+
+        <!-- Form action buttons -->
+        <div class="action-buttons">
+            <a class="add-user button" [hidden]="!canCreateUsers()"
+               routerLink="/manage/{{getDefaultDataSource()}}/users"
+            >{{ 'SETTINGS_USERS.ACTION_NEW_USER' | transloco }}</a>
+        </div>
+
+        <!-- User filter -->
+        <guac-filter [placeholder]="'SETTINGS_USERS.FIELD_PLACEHOLDER_FILTER' | transloco"></guac-filter>
+
+    </div>
+
+    <!-- List of users this user has access to -->
+    <table class="sorted user-list">
+        <thead>
+        <tr>
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="user.username" class="username">
+                {{ 'SETTINGS_USERS.TABLE_HEADER_USERNAME' | transloco }}
+            </th>
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="user.attributes['guac-organization']"
+                class="organization">
+                {{ 'SETTINGS_USERS.TABLE_HEADER_ORGANIZATION' | transloco }}
+            </th>
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="user.attributes['guac-full-name']" class="full-name">
+                {{ 'SETTINGS_USERS.TABLE_HEADER_FULL_NAME' | transloco }}
+            </th>
+            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                sortProperty="user.lastActive" class="last-active">
+                {{ 'SETTINGS_USERS.TABLE_HEADER_LAST_ACTIVE' | transloco }}
+            </th>
+        </tr>
+        </thead>
+        <tbody [ngClass]="{'loading': !isLoaded()}">
+        <tr *ngFor="let manageableUser of dataSourceView?.data | async; trackBy: trackByUsername" class="user"
+            [ngClass]="{disabled: manageableUser.user.disabled}">
+            <td class="username">
+                <a routerLink="/manage/{{manageableUser.dataSource }}/users/{{manageableUser.user.username }}">
+                    <div class="icon user"></div>
+                    <span class="name">{{ manageableUser.user.username }}</span>
+                </a>
+            </td>
+            <td class="organization">{{ manageableUser.user.attributes['guac-organization'] }}</td>
+            <td class="full-name">{{ manageableUser.user.attributes['guac-full-name'] }}</td>
+            <td class="last-active">{{
+                    (manageableUser.user.lastActive !== undefined)
+                        ? (manageableUser.user.lastActive | date : dateFormat || undefined)
+                        : ''
+                }}
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Pager controls for user list -->
+    <guac-pager [pageSize]="25" [length]="dataSourceView?.totalLength | async"></guac-pager>
+
+</div>

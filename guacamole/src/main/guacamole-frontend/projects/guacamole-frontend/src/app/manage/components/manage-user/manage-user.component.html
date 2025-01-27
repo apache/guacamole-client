@@ -1,0 +1,118 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="manage-user view" [ngClass]="{'loading': !isLoaded()}" *ngIf="!isLoaded(); else loaded"></div>
+
+<ng-template #loaded>
+
+    <!-- User is always present. The *ngIf is just make the type checker happy -->
+    <div class="manage-user view" *ngIf="user">
+
+        <!-- User header and data source tabs -->
+        <div class="header tabbed">
+            <h2>{{ 'MANAGE_USER.SECTION_HEADER_EDIT_USER' | transloco }}</h2>
+            <guac-user-menu></guac-user-menu>
+        </div>
+        <data-source-tabs [hidden]="cloneSourceUsername"
+                          [permissions]="managementPermissions"
+                          [url]="getUserURL">
+        </data-source-tabs>
+
+        <!-- Warn if user is read-only -->
+        <div class="section" [hidden]="managementPermissions?.[dataSource]?.canSaveObject">
+            <p class="notice read-only">{{ 'MANAGE_USER.INFO_READ_ONLY' | transloco }}</p>
+        </div>
+
+        <!-- Sections applicable to non-read-only users -->
+        <div *ngIf="managementPermissions" [hidden]="!managementPermissions[dataSource].canSaveObject">
+
+            <!-- User password section -->
+            <div class="section">
+                <table class="properties">
+                    <tr>
+                        <th>{{ 'MANAGE_USER.FIELD_HEADER_USERNAME' | transloco }}</th>
+                        <td>
+                            <input [hidden]="!canEditUsername()" [(ngModel)]="user.username" type="text">
+                            <span [hidden]="canEditUsername()">{{ user.username }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>{{ 'MANAGE_USER.FIELD_HEADER_PASSWORD' | transloco }}</th>
+                        <td><input [(ngModel)]="user.password" type="password"></td>
+                    </tr>
+                    <tr>
+                        <th>{{ 'MANAGE_USER.FIELD_HEADER_PASSWORD_AGAIN' | transloco }}</th>
+                        <td><input [(ngModel)]="passwordMatch" type="password"></td>
+                    </tr>
+                    <tr>
+                        <th>{{ 'MANAGE_USER.FIELD_HEADER_USER_DISABLED' | transloco }}</th>
+                        <td><input [(ngModel)]="user.disabled" type="checkbox"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- User attributes section -->
+            <div class="attributes" [hidden]="!managementPermissions[dataSource].canChangeAttributes">
+                <guac-form namespace="USER_ATTRIBUTES" [content]="attributes || []"
+                           [modelFormGroup]="userAttributes"
+                           [modelOnly]="modelOnly()"
+                ></guac-form>
+            </div>
+
+            <!-- System permissions section -->
+            <system-permission-editor [hidden]="!managementPermissions[dataSource].canChangePermissions"
+                                      [username]="selfUsername"
+                                      [dataSource]="dataSource"
+                                      [permissionFlags]="permissionFlags!"
+                                      [permissionsAdded]="permissionsAdded"
+                                      [permissionsRemoved]="permissionsRemoved">
+            </system-permission-editor>
+
+            <!-- Parent group section -->
+            <identifier-set-editor
+                header="MANAGE_USER.SECTION_HEADER_USER_GROUPS"
+                emptyPlaceholder="MANAGE_USER.HELP_NO_USER_GROUPS"
+                unavailablePlaceholder="MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE"
+                [identifiersAvailable]="availableGroups"
+                [identifiers]="parentGroups!"
+                [identifiersAdded]="parentGroupsAdded"
+                [identifiersRemoved]="parentGroupsRemoved">
+            </identifier-set-editor>
+
+            <!-- Connection permissions section -->
+            <connection-permission-editor [hidden]="!managementPermissions[dataSource].canChangePermissions"
+                                          [dataSource]="dataSource"
+                                          [permissionFlags]="permissionFlags"
+                                          [permissionsAdded]="permissionsAdded"
+                                          [permissionsRemoved]="permissionsRemoved">
+            </connection-permission-editor>
+
+            <!-- Form action buttons -->
+            <management-buttons namespace="MANAGE_USER"
+                                [permissions]="managementPermissions[dataSource]"
+                                [save]="saveUser.bind(this)"
+                                [delete]="deleteUser.bind(this)"
+                                [clone]="cloneUser.bind(this)"
+                                [return]="returnToUserList.bind(this)">
+            </management-buttons>
+
+        </div>
+
+    </div>
+</ng-template>

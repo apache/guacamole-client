@@ -1,0 +1,127 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="manage-connection view" [ngClass]="{'loading' : !isLoaded()}">
+
+    <ng-container *ngIf="isLoaded()">
+
+
+        <!-- Main property editor -->
+        <div class="header">
+            <h2>{{ 'MANAGE_CONNECTION.SECTION_HEADER_EDIT_CONNECTION' | transloco }}</h2>
+            <guac-user-menu></guac-user-menu>
+        </div>
+        <div class="section">
+            <table class="properties">
+
+                <!-- Edit connection name -->
+                <tr>
+                    <th>{{ 'MANAGE_CONNECTION.FIELD_HEADER_NAME' | transloco }}</th>
+
+                    <td><input type="text" [(ngModel)]="connection.name" autocorrect="off" autocapitalize="off"></td>
+                </tr>
+
+                <!-- Edit connection location -->
+                <tr>
+                    <th>{{ 'MANAGE_CONNECTION.FIELD_HEADER_LOCATION' | transloco }}</th>
+
+                    <td>
+                        <guac-location-chooser
+                            [dataSource]="selectedDataSource" [rootGroup]="rootGroup"
+                            [value]="connection.parentIdentifier"></guac-location-chooser>
+                    </td>
+                </tr>
+
+
+                <!-- Edit connection protocol -->
+                <tr>
+                    <th>{{ 'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | transloco }}</th>
+                    <td>
+                        <select [(ngModel)]="selectedProtocol">
+                            <option *ngFor="let protocol of protocols! | keyvalue | orderBy: 'value.name'"
+                                    [value]="protocol.key"
+                                    [transloco]="getProtocolName(protocol.value.name!)"
+                                    [translocoParams]="{protocol: protocol.value.name}"></option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Connection attributes section -->
+        <div class="attributes">
+            <guac-form namespace="CONNECTION_ATTRIBUTES" [content]="attributes!"
+                       [modelFormGroup]="connectionAttributesFormGroup"
+                       [modelOnly]="!managementPermissions.canChangeAllAttributes"></guac-form>
+        </div>
+
+        <!-- Connection parameters -->
+        <h2 class="header">{{ 'MANAGE_CONNECTION.SECTION_HEADER_PARAMETERS' | transloco }}</h2>
+        <div class="section connection-parameters" [ngClass]="{'loading': !parameters}">
+            <guac-form [namespace]="getNamespace(connection.protocol)"
+                       [content]="protocols[connection.protocol].connectionForms"
+                       [modelFormGroup]="parametersFormGroup"></guac-form>
+        </div>
+
+        <!-- Form action buttons -->
+        <management-buttons namespace="MANAGE_CONNECTION"
+                            [permissions]="managementPermissions"
+                            [save]="saveConnection.bind(this)"
+                            [delete]="deleteConnection.bind(this)"
+                            [clone]="cloneConnection.bind(this)"
+                            [return]="returnToConnectionList.bind(this)">
+        </management-buttons>
+
+    </ng-container>
+
+    <!-- Connection history -->
+    <h2 class="header">{{ 'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | transloco }}</h2>
+    <div class="history section" [ngClass]="{'loading': !historyEntryWrappers || dataSourceView === null}">
+        <p [hidden]="dataSourceView?.totalLength | async">{{ 'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | transloco }}</p>
+
+        <!-- History list -->
+        <table [hidden]="!(dataSourceView?.totalLength | async)">
+            <thead>
+            <tr>
+                <th>{{ 'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_USERNAME' | transloco }}</th>
+                <th>{{ 'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_START' | transloco }}</th>
+                <th>{{ 'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_DURATION' | transloco }}</th>
+                <th>{{ 'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_REMOTEHOST' | transloco }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let wrapper of dataSourceView?.data | async">
+                <td class="username">
+                    <guac-user-item [username]="wrapper.entry.username"></guac-user-item>
+                </td>
+                <td class="start">{{ wrapper.entry.startDate | date:historyDateFormat }}</td>
+                <td class="duration"
+                    [transloco]="wrapper.durationText"
+                    [translocoParams]="{VALUE: wrapper.duration?.value, UNIT: wrapper.duration?.unit}"></td>
+                <td class="remoteHost">{{ wrapper.entry.remoteHost }}</td>
+            </tr>
+            </tbody>
+        </table>
+
+        <!-- Pager controls for history list -->
+        <guac-pager [length]="dataSourceView?.totalLength | async"></guac-pager>
+
+    </div>
+
+</div>

@@ -164,6 +164,11 @@ public class ExtensionModule extends ServletModule {
      * Service for adding and retrieving HTML patch resources.
      */
     private final PatchResourceService patchResourceService;
+
+    /**
+     * TODO
+     */
+    private final NativeFederationService nativeFederationService;
     
     /**
      * Returns the classloader that should be used as the parent classloader
@@ -204,6 +209,7 @@ public class ExtensionModule extends ServletModule {
         this.environment = environment;
         this.languageResourceService = new LanguageResourceService(environment);
         this.patchResourceService = new PatchResourceService();
+        this.nativeFederationService = new NativeFederationService();
     }
 
     /**
@@ -608,6 +614,13 @@ public class ExtensionModule extends ServletModule {
             if(extension.getLargeIcon()!= null)
                 serve("/images/logo-144.png").with(new ResourceServlet(extension.getLargeIcon()));
 
+            // TODO
+            nativeFederationService.addNativeFederationConfigurationResource(
+                    extension.getNamespace(),
+                    extension.getNativeFederationConfiguration()
+            );
+
+
             // Log successful loading of extension by name
             logger.info("Extension \"{}\" ({}) loaded.", extension.getName(), extension.getNamespace());
 
@@ -643,6 +656,9 @@ public class ExtensionModule extends ServletModule {
         // Dynamically generate app.js and app.css from extensions
         serve("/app.js").with(new ResourceServlet(new SequenceResource(javaScriptResources)));
         serve("/app.css").with(new ResourceServlet(new SequenceResource(cssResources)));
+        // TODO
+        serve("/native-federation-manifest.json").with(new ResourceServlet(nativeFederationService.getNativeFederationManifest()));
+        serve("/native-federation-config.json").with(new ResourceServlet(nativeFederationService.getNativeFederationConfiguration()));
 
         // Dynamically serve all language resources
         for (Map.Entry<String, Resource> entry : languageResourceService.getLanguageResources().entrySet()) {

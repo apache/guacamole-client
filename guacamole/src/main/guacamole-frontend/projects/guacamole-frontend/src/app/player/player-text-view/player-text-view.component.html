@@ -1,0 +1,47 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+
+<div class="guac-player-text-container">
+
+    <div class="text-controls">
+        <div class="filter">
+            <input class="search-string"
+                   placeholder="{{'PLAYER.FIELD_PLACEHOLDER_TEXT_BATCH_FILTER' | transloco}}"
+                   type="text" [ngModel]="searchPhrase">
+        </div>
+        <span class="fullscreen-button" (click)="toggleKeyLogFullscreen()"></span>
+    </div>
+
+    <div class="result-count"
+         [hidden]="!searchPhrase.length"
+         transloco="PLAYER.INFO_NUMBER_OF_RESULTS"
+         [translocoParams]="{RESULTS: filteredBatches.length}"></div>
+
+    <div class="text-batches">
+        <div *ngFor="let batch of filteredBatches" class="text-batch" (click)="seek(batch.events[0].timestamp)">
+            <div class="timestamp">{{ formatTime(batch.events[0].timestamp) }}</div>
+            <div class="text">
+                <span
+                    *ngFor="let event of batch.events"
+                    class="key-event"
+                    [ngClass]="{ 'not-typed' : !event.typed, 'future': event.timestamp >= currentPosition }"
+                >{{ event.text }}</span>
+            </div>
+        </div>
+    </div>
