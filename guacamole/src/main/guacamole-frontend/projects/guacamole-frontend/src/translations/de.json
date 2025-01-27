@@ -302,7 +302,7 @@
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR:@",
 
-        "ERROR_INVALID_LOGIN" : "Anmeldungsfehler",
+        "ERROR_INVALID_LOGIN" : "Anmeldungefehler",
 
         "FIELD_HEADER_USERNAME" : "Benutzername",
         "FIELD_HEADER_PASSWORD" : "Passwort"
@@ -500,8 +500,10 @@
         "FIELD_HEADER_CLIENT_KEY"      : "Client Schlüssel:",
         "FIELD_HEADER_COLOR_SCHEME"    : "Farbschema:",
         "FIELD_HEADER_CONTAINER"       : "Container Name:",
-        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Aufnahme-Pfad automatisch erstellen:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Aufname-Pfad automatisch erstellen:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Typescript-Pfad automatisch erstellen:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Kopieren deaktivieren:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Einfügen deaktivieren:",
         "FIELD_HEADER_EXEC_COMMAND"    : "Befehl ausführen (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Schriftname:",
         "FIELD_HEADER_FONT_SIZE"       : "Schriftgröße:",
@@ -511,7 +513,7 @@
         "FIELD_HEADER_POD"             : "Pod Name:",
         "FIELD_HEADER_PORT"            : "Port:",
         "FIELD_HEADER_READ_ONLY"       : "Schreibgeschützt:",
-        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Maus ausschließen:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Maus auschließen:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Grafik/Streams ausschließen:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Tasten-Ereignisse einschließen:",
         "FIELD_HEADER_RECORDING_NAME"  : "Aufnahme-Name:",
@@ -533,6 +535,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentifizierung",
         "SECTION_HEADER_BEHAVIOR"       : "Konsolenverhalten",
+        "SECTION_HEADER_CLIPBOARD"      : "Zwischenablage",
         "SECTION_HEADER_CONTAINER"      : "Container",
         "SECTION_HEADER_DISPLAY"        : "Bildschirm",
         "SECTION_HEADER_RECORDING"      : "Monitor-Aufnahme",
@@ -570,13 +573,13 @@
         "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Bitmap-Zwischenspeicherung deaktivieren:",
         "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Offscreen-Caching deaktivieren:",
         "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Glyph-Caching deaktivieren:",
-        "FIELD_HEADER_DISABLE_GFX"                : "Grafik-Pipeline-Erweiterung deaktivieren:",
+        "FIELD_HEADER_DISABLE_GFX"                : "Grafik-Pipline-Erweiterung deaktivieren:",
         "FIELD_HEADER_ENABLE_PRINTING"            : "Druckunterstützung aktivieren:",
         "FIELD_HEADER_ENABLE_SFTP"                : "SFTP aktivieren:",
         "FIELD_HEADER_ENABLE_THEMING"             : "Themen-Unterstützung aktivieren:",
         "FIELD_HEADER_ENABLE_TOUCH"               : "Multi-Touch-Unterstützung aktivieren:",
         "FIELD_HEADER_ENABLE_WALLPAPER"           : "Desktophintergrund aktivieren:",
-        "FIELD_HEADER_FORCE_LOSSLESS"             : "Verlustlose Kompression erzwingen:",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "Verlustlose Kompression erzweingen:",
         "FIELD_HEADER_GATEWAY_DOMAIN"   : "Domäne:",
         "FIELD_HEADER_GATEWAY_HOSTNAME" : "Hostname:",
         "FIELD_HEADER_GATEWAY_PASSWORD" : "Passwort:",
@@ -650,6 +653,7 @@
         "FIELD_OPTION_SECURITY_TLS"   : "TLS Verschlüsselung",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Tschechisch (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Dänisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Deutsch (Schweiz) (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Deutsch (Qwertz)",

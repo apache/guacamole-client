@@ -492,6 +492,8 @@
         "FIELD_HEADER_CONTAINER"       : "容器名称：",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "自动建立录像目录：",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "自动建立 Typescript 目录：",
+        "FIELD_HEADER_DISABLE_COPY"    : "禁用从终端复制：",
+        "FIELD_HEADER_DISABLE_PASTE"   : "禁用从客户端粘贴：",
         "FIELD_HEADER_EXEC_COMMAND"    : "命令（exec）：",
         "FIELD_HEADER_FONT_NAME"      : "字体名：",
         "FIELD_HEADER_FONT_SIZE"      : "字体大小：",
@@ -541,6 +543,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "认证方式",
         "SECTION_HEADER_BEHAVIOR"       : "终端行为",
+        "SECTION_HEADER_CLIPBOARD"      : "剪贴板",
         "SECTION_HEADER_CONTAINER"      : "容器",
         "SECTION_HEADER_DISPLAY"        : "显示",
         "SECTION_HEADER_RECORDING"      : "屏幕录制",
@@ -656,6 +659,7 @@
         "FIELD_OPTION_SECURITY_TLS"   : "TLS 加密",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Czech (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Swiss German (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",

@@ -392,6 +392,8 @@
         "FIELD_HEADER_CONTAINER"       : "Nombre de contenedor:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Crear automáticamente la ruta de grabación:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Crear automáticamente la ruta de transcripción:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Desactivar copia desde el terminal:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Desactivar pegar desde el cliente:",
         "FIELD_HEADER_EXEC_COMMAND"    : "Commando (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Nombre de fuente:",
         "FIELD_HEADER_FONT_SIZE"       : "Tamaño de fuente:",
@@ -441,6 +443,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Autenticación",
         "SECTION_HEADER_BEHAVIOR"       : "Comportamiento del terminal",
+        "SECTION_HEADER_CLIPBOARD"      : "Portapapeles",
         "SECTION_HEADER_CONTAINER"      : "Contenedor",
         "SECTION_HEADER_DISPLAY"        : "Monitor",
         "SECTION_HEADER_RECORDING"      : "Grabación de Pantalla",
@@ -548,6 +551,7 @@
         "FIELD_OPTION_SECURITY_TLS"   : "Encriptación TLS",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ"    : "Checo (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY"    : "Danés (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ"    : "Alemán Suizo (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ"    : "Alemán (Qwertz)",

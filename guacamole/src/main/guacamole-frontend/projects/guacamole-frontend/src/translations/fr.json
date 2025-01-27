@@ -506,6 +506,8 @@
         "FIELD_HEADER_CONTAINER"       : "Nom du conteneur:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Créer automatiquement le chemin d'enregistrement:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Créer automatiquement le chemin typescript:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Désactiver copier depuis le terminal:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Désactiver coller depuis le terminal:",
         "FIELD_HEADER_EXEC_COMMAND"    : "Commande (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Nom police:",
         "FIELD_HEADER_FONT_SIZE"       : "Taille police:",
@@ -557,6 +559,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Authentification",
         "SECTION_HEADER_BEHAVIOR"       : "Comportement Terminal",
+        "SECTION_HEADER_CLIPBOARD"      : "Presse-papiers",
         "SECTION_HEADER_CONTAINER"      : "Conteneur",
         "SECTION_HEADER_DISPLAY"        : "Affichage",
         "SECTION_HEADER_RECORDING"      : "Enregistrement Ecran",
@@ -678,6 +681,7 @@
         "FIELD_OPTION_SECURITY_TLS"   : "Chiffrement TLS",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Tchèque (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danois (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Suisse Allemand (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Allemand (Qwertz)",

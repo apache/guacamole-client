@@ -495,6 +495,8 @@
         "FIELD_HEADER_CONTAINER"       : "Jméno kontejneru:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Automaticky vytvořit cestu k záznamu:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automaticky vytvořit cestu ke strojopisu:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Zakázat kopírování ze vzdáleného terminálu:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Zakázat vkládání z klienta:",
         "FIELD_HEADER_EXEC_COMMAND"    : "Příkaz (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Jméno fontu:",
         "FIELD_HEADER_FONT_SIZE"       : "Velikost fontu:",
@@ -544,6 +546,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Ověřování",
         "SECTION_HEADER_BEHAVIOR"       : "Chování terminálu",
+        "SECTION_HEADER_CLIPBOARD"      : "Schránka",
         "SECTION_HEADER_CONTAINER"      : "Kontejner",
         "SECTION_HEADER_DISPLAY"        : "Zobrazení",
         "SECTION_HEADER_RECORDING"      : "Záznam obrazovky",
@@ -659,6 +662,7 @@
         "FIELD_OPTION_SECURITY_TLS"       : "Šifrování TLS",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Čeština (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Dánština (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Švícarská Němčina (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Němčina (Qwertz)",
