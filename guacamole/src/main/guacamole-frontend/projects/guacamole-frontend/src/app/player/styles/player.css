@@ -50,7 +50,6 @@ guac-player {
 }
 
 guac-player .guac-player-display {
-    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
