@@ -480,7 +480,10 @@ Guacamole.Display = function() {
         this.unblock = function() {
             if (task.blocked) {
                 task.blocked = false;
-                __flush_frames();
+
+                if (frames.length)
+                    __flush_frames();
+
             }
         };
 
@@ -905,17 +908,38 @@ Guacamole.Display = function() {
      */
     this.drawStream = function drawStream(layer, x, y, stream, mimetype) {
 
-        // If createImageBitmap() is available, load the image as a blob so
-        // that function can be used
-        if (window.createImageBitmap) {
-            var reader = new Guacamole.BlobReader(stream, mimetype);
-            reader.onend = function drawImageBlob() {
-                guac_display.drawBlob(layer, x, y, reader.getBlob());
-            };
+        // Leverage ImageDecoder to decode the image stream as it is received
+        // whenever possible, as this reduces latency that might otherwise be
+        // caused by waiting for the full image to be received
+        if (window.ImageDecoder && window.ReadableStream) {
+
+            var imageDecoder = new ImageDecoder({
+                type: mimetype,
+                data: stream.toReadableStream()
+            });
+
+            var decodedFrame = null;
+
+            // Draw image once loaded
+            var task = scheduleTask(function drawImageBitmap() {
+                layer.drawImage(x, y, decodedFrame);
+            }, true);
+
+            imageDecoder.decode({ completeFramesOnly: true }).then(function bitmapLoaded(result) {
+                decodedFrame = result.image;
+                task.unblock();
+            });
+
         }
 
-        // Lacking createImageBitmap(), fall back to data URIs and the Image
-        // object
+        // NOTE: We do not use Blobs and createImageBitmap() here, as doing so
+        // is very latent compared to the old data URI method and the new
+        // ImageDecoder object. The new ImageDecoder object is currently
+        // supported by most browsers, with other browsers being much faster if
+        // data URIs are used. The iOS version of Safari is particularly laggy
+        // if Blobs and createImageBitmap() are used instead.
+
+        // Lacking ImageDecoder, fall back to data URIs and the Image object
         else {
             var reader = new Guacamole.DataURIReader(stream, mimetype);
             reader.onend = function drawImageDataURI() {
