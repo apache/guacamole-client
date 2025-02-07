@@ -34,6 +34,7 @@ import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketTimeoutException;
+import java.net.StandardSocketOptions;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUpstreamTimeoutException;
@@ -101,6 +102,10 @@ public class InetGuacamoleSocket implements GuacamoleSocket {
 
             // Set read timeout
             sock.setSoTimeout(SOCKET_TIMEOUT);
+
+            // Set TCP_NODELAY to avoid any latency that would otherwise be
+            // added by the networking stack and Nagle's algorithm
+            sock.setTcpNoDelay(true);
 
             // On successful connect, retrieve I/O streams
             reader = new ReaderGuacamoleReader(new InputStreamReader(sock.getInputStream(),   "UTF-8"));

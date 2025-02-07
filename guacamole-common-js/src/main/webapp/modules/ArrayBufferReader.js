@@ -39,13 +39,27 @@ Guacamole.ArrayBufferReader = function(stream) {
     // Receive blobs as array buffers
     stream.onblob = function(data) {
 
-        // Convert to ArrayBuffer
-        var binary = window.atob(data);
-        var arrayBuffer = new ArrayBuffer(binary.length);
-        var bufferView = new Uint8Array(arrayBuffer);
+        var arrayBuffer, bufferView;
 
-        for (var i=0; i<binary.length; i++)
-            bufferView[i] = binary.charCodeAt(i);
+        // Use native methods for directly decoding base64 to an array buffer
+        // when possible
+        if (Uint8Array.fromBase64) {
+            bufferView = Uint8Array.fromBase64(data);
+            arrayBuffer = bufferView.buffer;
+        }
+
+        // Rely on binary strings and manual conversions where native methods
+        // like fromBase64() are not available
+        else {
+
+            var binary = window.atob(data);
+            arrayBuffer = new ArrayBuffer(binary.length);
+            bufferView = new Uint8Array(arrayBuffer);
+
+            for (var i=0; i<binary.length; i++)
+                bufferView[i] = binary.charCodeAt(i);
+
+        }
 
         // Call handler, if present
         if (guac_reader.ondata)
