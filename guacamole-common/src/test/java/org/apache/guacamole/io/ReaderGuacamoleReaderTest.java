@@ -41,7 +41,7 @@ public class ReaderGuacamoleReaderTest {
     public void testReader() throws GuacamoleException {
 
         // Test string
-        final String test = "1.a,2.bc,3.def,10.helloworld;4.test,5.test2;0.;3.foo;";
+        final String test = "1.a,2.bc,3.def,10.helloworld;4.test,5.test2;0.;3.foo;1.\uD83E\uDD79;";
 
         GuacamoleReader reader = new ReaderGuacamoleReader(new StringReader(test));
 
@@ -74,6 +74,12 @@ public class ReaderGuacamoleReaderTest {
         assertNotNull(instruction);
         assertEquals(0, instruction.getArgs().size());
         assertEquals("foo", instruction.getOpcode());
+
+        // Validate fifth test instruction
+        instruction = reader.readInstruction();
+        assertNotNull(instruction);
+        assertEquals(0, instruction.getArgs().size());
+        assertEquals("\uD83E\uDD79", instruction.getOpcode());    
 
         // There should be no more instructions
         instruction = reader.readInstruction();
