@@ -84,7 +84,10 @@ angular.module('client').directive('guacClientPanel', ['$injector', function gua
              *     panel, false otherwise.
              */
             $scope.hasClientGroups = function hasClientGroups() {
-                return $scope.clientGroups && $scope.clientGroups.length;
+                return $scope.clientGroups && $scope.clientGroups.some(function(group) {
+                    // Check if there is any group that is not attached
+                    return !group.attached;
+                });
             };
 
             /**
