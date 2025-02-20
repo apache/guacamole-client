@@ -1,0 +1,13 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Новый пароль",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Подтверждение пароля"
+
+    }
+
+}
