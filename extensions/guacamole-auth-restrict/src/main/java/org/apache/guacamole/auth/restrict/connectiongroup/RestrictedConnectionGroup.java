@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.restrict.Restrictable;
 import org.apache.guacamole.auth.restrict.RestrictionVerificationService;
+import org.apache.guacamole.auth.restrict.form.DateTimeRestrictionField;
 import org.apache.guacamole.auth.restrict.form.HostRestrictionField;
 import org.apache.guacamole.auth.restrict.form.TimeRestrictionField;
 import org.apache.guacamole.calendar.RestrictionType;
@@ -47,49 +48,12 @@ public class RestrictedConnectionGroup extends DelegatingConnectionGroup impleme
     private final String remoteAddress;
     
     /**
-     * The name of the attribute that contains a list of weekdays and times (UTC)
-     * that this connection group can be accessed. The presence of values within
-     * this attribute will automatically restrict use of the connection group
-     * at any times that are not specified.
-     */
-    public static final String RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME = "guac-restrict-time-allowed";
-    
-    /**
-     * The name of the attribute that contains a list of weekdays and times (UTC)
-     * that this connection group cannot be accessed. Denied times will always
-     * take precedence over allowed times. The presence of this attribute without
-     * guac-restrict-time-allowed will deny access only during the times listed
-     * in this attribute, allowing access at all other times. The presence of
-     * this attribute along with the guac-restrict-time-allowed attribute will
-     * deny access at any times that overlap with the allowed times.
-     */
-    public static final String RESTRICT_TIME_DENIED_ATTRIBUTE_NAME = "guac-restrict-time-denied";
-    
-    /**
-     * The name of the attribute that contains a list of hosts from which a user
-     * may access this connection group. The presence of this attribute will
-     * restrict access to only users accessing Guacamole from the list of hosts
-     * contained in the attribute, subject to further restriction by the
-     * guac-restrict-hosts-denied attribute.
-     */
-    public static final String RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME = "guac-restrict-hosts-allowed";
-    
-    /**
-     * The name of the attribute that contains a list of hosts from which
-     * a user may not access this connection group. The presence of this
-     * attribute, absent the guac-restrict-hosts-allowed attribute, will allow
-     * access from all hosts except the ones listed in this attribute. The
-     * presence of this attribute coupled with the guac-restrict-hosts-allowed
-     * attribute will block access from any hosts in this list, overriding any
-     * that may be allowed.
-     */
-    public static final String RESTRICT_HOSTS_DENIED_ATTRIBUTE_NAME = "guac-restrict-hosts-denied";
-    
-    /**
      * The list of all connection group attributes provided by this
      * ConnectionGroup implementation.
      */
     public static final List<String> RESTRICT_CONNECTIONGROUP_ATTRIBUTES = Arrays.asList(
+            RESTRICT_TIME_AFTER_ATTRIBUTE_NAME,
+            RESTRICT_TIME_BEFORE_ATTRIBUTE_NAME,
             RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME,
             RESTRICT_TIME_DENIED_ATTRIBUTE_NAME,
             RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME,
@@ -102,6 +66,8 @@ public class RestrictedConnectionGroup extends DelegatingConnectionGroup impleme
      */
     public static final Form RESTRICT_CONNECTIONGROUP_FORM = new Form("restrict-login-form",
             Arrays.asList(
+                    new DateTimeRestrictionField(RESTRICT_TIME_AFTER_ATTRIBUTE_NAME),
+                    new DateTimeRestrictionField(RESTRICT_TIME_BEFORE_ATTRIBUTE_NAME),
                     new TimeRestrictionField(RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME),
                     new TimeRestrictionField(RESTRICT_TIME_DENIED_ATTRIBUTE_NAME),
                     new HostRestrictionField(RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME),
