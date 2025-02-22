@@ -1,0 +1,10 @@
+{
+    "CLIENT" : {
+
+        "FIELD_HEADER_CLIENT_FRAMERATE"   : "Guacamole (Client) :",
+        "FIELD_HEADER_DESKTOP_FRAMERATE"  : "Bureau distant :",
+        "FIELD_HEADER_DROP_FRAMERATE"     : "Perte de paquet :",
+        "FIELD_HEADER_SERVER_FRAMERATE"   : "Guacamole (Serveur) :",
+
+    }
+}
