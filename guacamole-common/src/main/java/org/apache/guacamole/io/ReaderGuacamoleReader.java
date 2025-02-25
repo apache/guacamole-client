@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.Arrays;
 import org.apache.guacamole.GuacamoleConnectionClosedException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
@@ -92,7 +91,7 @@ public class ReaderGuacamoleReader implements GuacamoleReader {
         if (instruction == null)
             return null;
 
-        return instruction.toString().toCharArray();
+        return instruction.toCharArray();
     }
 
     @Override

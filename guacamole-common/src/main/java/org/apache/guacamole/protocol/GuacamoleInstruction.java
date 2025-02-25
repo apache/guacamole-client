@@ -41,18 +41,31 @@ public class GuacamoleInstruction {
     private final List<String> args;
 
     /**
-     * The cached result of converting this GuacamoleInstruction to the format
-     * used by the Guacamole protocol.
+     * The cached String result of converting this GuacamoleInstruction to the
+     * format used by the Guacamole protocol.
+     *
+     * @see #toString()
      */
-    private String protocolForm = null;
+    private String rawString = null;
 
     /**
-     * Creates a new GuacamoleInstruction having the given Operation and
-     * list of arguments values.
+     * The cached char[] result of converting this GuacamoleInstruction to the
+     * format used by the Guacamole protocol.
      *
-     * @param opcode The opcode of the instruction to create.
-     * @param args The list of argument values to provide in the new
-     *             instruction if any.
+     * @see #toCharArray()
+     */
+    private char[] rawChars = null;
+
+    /**
+     * Creates a new GuacamoleInstruction having the given opcode and list of
+     * argument values.
+     *
+     * @param opcode
+     *     The opcode of the instruction to create.
+     *
+     * @param args
+     *     The list of argument values to provide in the new instruction, if
+     *     any.
      */
     public GuacamoleInstruction(String opcode, String... args) {
         this.opcode = opcode;
@@ -60,13 +73,20 @@ public class GuacamoleInstruction {
     }
 
     /**
-     * Creates a new GuacamoleInstruction having the given Operation and
-     * list of arguments values. The list given will be used to back the
-     * internal list of arguments and the list returned by getArgs().
+     * Creates a new GuacamoleInstruction having the given opcode and list of
+     * argument values. The list given will be used to back the internal list of
+     * arguments and the list returned by {@link #getArgs()}.
+     * <p>
+     * The provided argument list may not be modified in any way after being
+     * provided to this constructor. Doing otherwise will result in undefined
+     * behavior.
      *
-     * @param opcode The opcode of the instruction to create.
-     * @param args The list of argument values to provide in the new
-     *             instruction if any.
+     * @param opcode
+     *     The opcode of the instruction to create.
+     *
+     * @param args
+     *     The list of argument values to provide in the new instruction, if
+     *     any.
      */
     public GuacamoleInstruction(String opcode, List<String> args) {
         this.opcode = opcode;
@@ -74,8 +94,38 @@ public class GuacamoleInstruction {
     }
 
     /**
+     * Creates a new GuacamoleInstruction having the given opcode, list of
+     * argument values, and underlying protocol representation. The list given
+     * will be used to back the internal list of arguments and the list
+     * returned by {@link #getArgs()}. The provided protocol representation
+     * will be used to back the internal protocol representation and values
+     * returned by {@link #toCharArray()} and {@link #toString()}.
+     * <p>
+     * Neither the provided argument list nor the provided protocol
+     * representation may be modified in any way after being provided to this
+     * constructor. Doing otherwise will result in undefined behavior.
+     *
+     * @param opcode
+     *     The opcode of the instruction to create.
+     *
+     * @param args
+     *     The list of argument values to provide in the new instruction, if
+     *     any.
+     *
+     * @param raw
+     *     The underlying representation of this instruction as would be sent
+     *     over the network via the Guacamole protocol.
+     */
+    public GuacamoleInstruction(String opcode, List<String> args, char[] raw) {
+        this(opcode, args);
+        this.rawChars = raw;
+    }
+
+    /**
      * Returns the opcode associated with this GuacamoleInstruction.
-     * @return The opcode associated with this GuacamoleInstruction.
+     *
+     * @return
+     *     The opcode associated with this GuacamoleInstruction.
      */
     public String getOpcode() {
         return opcode;
@@ -86,8 +136,9 @@ public class GuacamoleInstruction {
      * GuacamoleInstruction. Note that the List returned is immutable.
      * Attempts to modify the list will result in exceptions.
      *
-     * @return A List of all argument values specified for this
-     *         GuacamoleInstruction.
+     * @return
+     *     An unmodifiable List of all argument values specified for this
+     *     GuacamoleInstruction.
      */
     public List<String> getArgs() {
         return args;
@@ -122,28 +173,58 @@ public class GuacamoleInstruction {
 
         // Avoid rebuilding Guacamole protocol form of instruction if already
         // known
-        if (protocolForm == null) {
+        if (rawString == null) {
 
-            StringBuilder buff = new StringBuilder();
+            // Prefer to construct String from existing char array, rather than
+            // reconstruct protocol from scratch
+            if (rawChars != null)
+                rawString = new String(rawChars);
 
-            // Write opcode
-            appendElement(buff, opcode);
+            // Reconstruct protocol details only if truly necessary
+            else {
 
-            // Write argument values
-            for (String value : args) {
-                buff.append(',');
-                appendElement(buff, value);
+                StringBuilder buff = new StringBuilder();
+
+                // Write opcode
+                appendElement(buff, opcode);
+
+                // Write argument values
+                for (String value : args) {
+                    buff.append(',');
+                    appendElement(buff, value);
+                }
+
+                // Write terminator
+                buff.append(';');
+
+                // Cache result for future calls
+                rawString = buff.toString();
+
             }
-
-            // Write terminator
-            buff.append(';');
-
-            // Cache result for future calls
-            protocolForm = buff.toString();
 
         }
 
-        return protocolForm;
+        return rawString;
+
+    }
+
+    /**
+     * Returns this GuacamoleInstruction in the form it would be sent over the
+     * Guacamole protocol. The returned char[] MUST NOT be modified. If the
+     * returned char[] is modified, the results of doing so are undefined.
+     *
+     * @return
+     *     This GuacamoleInstruction in the form it would be sent over the
+     *     Guacamole protocol. The returned char[] MUST NOT be modified.
+     */
+    public char[] toCharArray() {
+
+        // Avoid rebuilding Guacamole protocol form of instruction if already
+        // known
+        if (rawChars == null)
+            rawChars = toString().toCharArray();
+
+        return rawChars;
 
     }
 
