@@ -94,34 +94,6 @@ public class GuacamoleInstruction {
     }
 
     /**
-     * Creates a new GuacamoleInstruction having the given opcode, list of
-     * argument values, and underlying protocol representation. The list given
-     * will be used to back the internal list of arguments and the list
-     * returned by {@link #getArgs()}. The provided protocol representation
-     * will be used to back the internal protocol representation and values
-     * returned by {@link #toCharArray()} and {@link #toString()}.
-     * <p>
-     * Neither the provided argument list nor the provided protocol
-     * representation may be modified in any way after being provided to this
-     * constructor. Doing otherwise will result in undefined behavior.
-     *
-     * @param opcode
-     *     The opcode of the instruction to create.
-     *
-     * @param args
-     *     The list of argument values to provide in the new instruction, if
-     *     any.
-     *
-     * @param raw
-     *     The underlying representation of this instruction as would be sent
-     *     over the network via the Guacamole protocol.
-     */
-    public GuacamoleInstruction(String opcode, List<String> args, char[] raw) {
-        this(opcode, args);
-        this.rawChars = raw;
-    }
-
-    /**
      * Returns the opcode associated with this GuacamoleInstruction.
      *
      * @return
