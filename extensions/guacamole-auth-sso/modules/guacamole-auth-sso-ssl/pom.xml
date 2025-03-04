@@ -123,16 +123,31 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-fips</artifactId>
-            <version>2.0.7</version>
+            <version>2.1.9</version>
 
-            <!-- Force usage of known version of bc-fips, rather than a future
-            unknown version (bcpkix-fips references bc-fips using a version
-            range, resulting in newer versions getting pulled in automatically,
-            breaking the automated license check) -->
             <exclusions>
+
+                <!--
+                    Force usage of known version of bc-fips, rather than a
+                    future unknown version (bcpkix-fips references bc-fips using
+                    a version range, resulting in newer versions getting pulled
+                    in automatically, breaking the automated license check).
+                -->
                 <exclusion>
                     <groupId>org.bouncycastle</groupId>
                     <artifactId>bc-fips</artifactId>
+                </exclusion>
+
+                <!--
+                    Force usage of known version of bcutil-fips, rather than a
+                    future unknown version (bcpkix-fips references bctuil-fips
+                    using a version range, resulting in newer versions getting
+                    pulled in automatically, breaking the automated license
+                    check).
+                -->
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcutil-fips</artifactId>
                 </exclusion>
             </exclusions>
 
@@ -142,7 +157,14 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bc-fips</artifactId>
-            <version>2.0.0</version>
+            <version>2.1.0</version>
+        </dependency>
+
+        <!-- Force usage of known version of bcutil-fips (see bcpkix-fips above) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcutil-fips</artifactId>
+            <version>2.1.4</version>
         </dependency>
 
     </dependencies>
