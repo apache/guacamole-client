@@ -79,7 +79,7 @@
 
                 <!--
                     Replace older BouncyCastle (1.70) with newer, compatible
-                    version (1.79), which has since been renamed from
+                    version (1.80), which has since been renamed from
                     "bcpkix-jdk15on" to "bcpkix-jdk15to18".
                 -->
                 <exclusion>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk15to18</artifactId>
-            <version>1.79</version>
+            <version>1.80</version>
         </dependency>
 
         <!-- Guava - Utility Library -->
