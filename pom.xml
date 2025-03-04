@@ -40,8 +40,8 @@
         <guice.version>5.1.0</guice.version>
         <hk2.version>2.6.1</hk2.version>
         <ipaddress.version>5.5.1</ipaddress.version>
-        <jackson.version>2.18.2</jackson.version>
-        <jackson-databind.version>2.18.2</jackson-databind.version>
+        <jackson.version>2.18.3</jackson.version>
+        <jackson-databind.version>2.18.3</jackson-databind.version>
         <jersey.version>2.46</jersey.version>
         <junit.version>5.11.4</junit.version>
         <junit4.version>4.13.2</junit4.version>
