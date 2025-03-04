@@ -23,6 +23,39 @@ guac-client-statistics {
     background: #111;
 }
 
+guac-client-statistics div.buttons-statistics {
+    content: '';
+    cursor: pointer;
+    display: block;
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center center;
+    height: 15px;
+    position: absolute;
+}
+
+guac-client-statistics div.hide-statistics {
+    background-image: url('images/x.svg');
+    bottom: 10px;
+    right: 20px;
+    width: 15px;
+}
+
+guac-client-statistics div.show-statistics {
+    background-color: #888;
+    background-image: url('images/arrows/up.svg');
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    bottom: 0;
+    left: 50%;
+    margin-left: -15px;
+    opacity: .5;
+    width: 30px;
+}
+
+guac-client-statistics div.show-statistics:hover {
+    background-color: #FFF;
+}
+
 guac-client-statistics dl.client-statistics {
     display: table;
     margin: 0;
