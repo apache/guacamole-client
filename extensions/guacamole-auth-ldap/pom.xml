@@ -55,6 +55,15 @@
             <exclusions>
 
                 <!--
+                    Replace vulnerable version of Apache MINA until upstream
+                    releases a version with fixed dependencies.
+                -->
+                <exclusion>
+                    <groupId>org.apache.mina</groupId>
+                    <artifactId>mina-core</artifactId>
+                </exclusion>
+
+                <!--
                     Replace slightly older commons-lang3 (3.15.0) with latest
                     compatible version (3.16.0) so that we don't need two copies
                     of the same license information.
@@ -88,6 +97,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.17.0</version>
+        </dependency>
+
+        <!-- Apache MINA (see exclusions for api-all) -->
+        <dependency>
+            <groupId>org.apache.mina</groupId>
+            <artifactId>mina-core</artifactId>
+            <version>2.2.4</version>
         </dependency>
 
     </dependencies>
