@@ -32,5 +32,5 @@
 CERT_PATH="EXTRA_CACERT_$(echo "searchPath" | sed 's/\([a-z]\)\([A-Z]\)/\1_\2/g' | tr 'a-z' 'A-Z')"
 
 for cert_fn in `find ${!CERT_PATH} -name "*.crt"`; do
-    keytool -importcert -file $cert_fn -alias $(basename $cert_fn) -storepass changeit -noprompt -keystore $JAVA_HOME/lib/security/cacerts || true
+    keytool -importcert -file $cert_fn -alias $(basename $cert_fn) -keystore $JAVA_KEYSTORE_FILE -storepass $JAVA_KEYSTORE_PASS -noprompt || true
 done
