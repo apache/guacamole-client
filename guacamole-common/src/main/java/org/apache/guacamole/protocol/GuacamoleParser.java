@@ -45,7 +45,7 @@ public class GuacamoleParser implements Iterator<GuacamoleInstruction> {
     /**
      * The maximum number of elements per instruction, including the opcode.
      */
-    public static final int INSTRUCTION_MAX_ELEMENTS = 64;
+    public static final int INSTRUCTION_MAX_ELEMENTS = 128;
 
     /**
      * All possible states of the instruction parser.
