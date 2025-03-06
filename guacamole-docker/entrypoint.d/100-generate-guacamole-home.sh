@@ -99,7 +99,7 @@ fi
 #
 export JAVA_KEYSTORE_FILE=$GUACAMOLE_HOME/$JAVA_KEYSTORE_FILE
 keytool -importkeystore -srckeystore $JAVA_HOME/lib/security/cacerts -destkeystore $JAVA_KEYSTORE_FILE -deststorepass $JAVA_KEYSTORE_PASS -noprompt
-export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=${JAVA_KEYSTORE_FILE}"
+export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=${JAVA_KEYSTORE_FILE} -Djavax.net.ssl.trustStorePassword=${JAVA_KEYSTORE_PASS}"
 
 # Enable reading of properties directly from environment variables unless
 # overridden
