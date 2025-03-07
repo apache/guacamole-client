@@ -335,8 +335,50 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     };
 
     /**
+     * Calculates the size in bytes of the given UTF8 string.
+     *
+     * @private
+     * @param {!string} str
+     *     The string to calculate the size in bytes.
+     *
+     * @returns {!number}
+     *     The size in bytes of the given string.
+     */
+    var getUtf8StringByteSize = function(str) {
+
+        var byteSize = str.length;
+        for (var i = str.length - 1; i >= 0; i--) {
+            var code = str.charCodeAt(i);
+            // A UTF8 character with such a code will be stored
+            // using two bytes. So we add one byte to the
+            // original string length to get the byte size.
+            if (code > 0x7F && code <= 0x7FF)
+                byteSize++;
+            // This is either a 3 byte UTF8 character or a low
+            // surrogate of a character which JavaSript
+            // interprets as two separate codes. More details:
+            // https://mathiasbynens.be/notes/javascript-encoding
+            else if (code > 0x7FF && code <= 0xFFFF)
+                byteSize += 2;
+            // If this is the low (trail) surrogate, we must skip
+            // the high surrogate code (i - 1). We already have
+            // the original length for two separate codes (this is
+            // how JavaScript interprets the character) plus
+            // we added two bytes at the previous step.
+            // Overall, 4 bytes for the character.
+            if (code >= 0xDC00 && code <= 0xDFFF)
+                i--;
+        }
+        return byteSize;
+
+    };
+
+    /**
      * Calculates the size of the given Guacamole instruction element, in
-     * Unicode characters. The size returned includes the characters which
+     * bytes. This is necessary because the recording is stored as a Blob
+     * and we need to know the start and end positions of a frame (i.e.
+     * all the instructions which make up the frame).
+     * The size returned includes the characters which
      * make up the length, the "." separator between the length and the
      * element itself, and the "," or ";" terminator which follows the
      * element.
@@ -347,25 +389,26 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
      *     the initial length, "." separator, and "," or ";" terminator).
      *
      * @returns {!number}
-     *     The number of Unicode characters which would make up the given
-     *     element within a Guacamole instruction.
+     *     The number of bytes which would make up the given
+     *     element within a Guacamole instruction to be stored in Blob.
      */
     var getElementSize = function getElementSize(value) {
 
-        var valueLength = value.length;
-
         // Calculate base size, assuming at least one digit, the "."
         // separator, and the "," or ";" terminator
-        var protocolSize = valueLength + 3;
+        var byteSize = getUtf8StringByteSize(value) + 3;
+
+        // We need this to calculate the size of the length substring.
+        var valueLength = Guacamole.Parser.codePointCount(value);
 
         // Add one character for each additional digit that would occur
         // in the element length prefix
         while (valueLength >= 10) {
-            protocolSize++;
+            byteSize++;
             valueLength = Math.floor(valueLength / 10);
         }
 
-        return protocolSize;
+        return byteSize;
 
     };
 
