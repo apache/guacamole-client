@@ -429,7 +429,7 @@ Guacamole.HTTPTunnel = function(tunnelURL, crossDomain, extraTunnelHeaders) {
     }
 
 
-    this.sendMessage = function() {
+    this.sendMessage = function sendMessage() {
 
         // Do not attempt to send messages if not connected
         if (!tunnel.isConnected())
