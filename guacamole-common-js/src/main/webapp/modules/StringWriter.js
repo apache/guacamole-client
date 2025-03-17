@@ -161,7 +161,12 @@ Guacamole.StringWriter = function(stream) {
 
         // Fill buffer with UTF-8
         for (var i=0; i<text.length; i++) {
-            var codepoint = text.charCodeAt(i);
+            var codepoint = text.codePointAt(i);
+
+            // For surrogate pairs, skip the second 16 bits.
+            if (text.charCodeAt(i) != codepoint) {
+                i++;
+            }
             __append_utf8(codepoint);
         }
 

@@ -228,9 +228,14 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
 
                 // Send each codepoint within the string
                 for (var i=0; i<content.length; i++) {
-                    var codepoint = content.charCodeAt(i);
+                    var codepoint = content.codePointAt(i);
+
+                    // For surrogate pairs, skip the second 16 bits.
+                    if (content.charCodeAt(i) != codepoint) {
+                        i++;
+                    }
                     if (codepoint !== TEXT_INPUT_PADDING_CODEPOINT) {
-                        sentText += String.fromCharCode(codepoint);
+                        sentText += String.fromCodePoint(codepoint);
                         sendCodepoint(codepoint);
                     }
                 }
