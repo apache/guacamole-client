@@ -624,6 +624,7 @@
         "FIELD_HEADER_HEIGHT"          : "Height:",
         "FIELD_HEADER_HOSTNAME"        : "Hostname:",
         "FIELD_HEADER_IGNORE_CERT"     : "Ignore server certificate:",
+        "FIELD_HEADER_ALWAYS_PROMPT_FOR_CREDENTIALS": "Prompt for credentials in browser form:",
         "FIELD_HEADER_INITIAL_PROGRAM" : "Initial program:",
         "FIELD_HEADER_LOAD_BALANCE_INFO" : "Load balance info/cookie:",
         "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "Line endings:",
