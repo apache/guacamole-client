@@ -773,6 +773,14 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
     };
 
+    ManagedClient.getConnectionParameters = function getConnectionParameters(managedClient) {
+        const clientIdentifier = ClientIdentifier.fromString(managedClient.id);
+        return connectionService.getConnectionParameters(clientIdentifier.dataSource, clientIdentifier.id)
+            .then(function connectionParametersRetrieved(parameters) {
+               return parameters;
+            }, requestService.WARN);
+    }
+    
     /**
      * Sends the given clipboard data over the given Guacamole client, setting
      * the contents of the remote clipboard to the data provided. If the given
