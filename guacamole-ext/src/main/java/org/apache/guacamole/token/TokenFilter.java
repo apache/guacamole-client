@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Filtering object which replaces tokens of the form "${TOKEN_NAME}" with
@@ -33,6 +35,11 @@ import java.util.regex.Pattern;
  */
 public class TokenFilter {
 
+    /**
+     * The logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(TokenFilter.class);
+    
     /**
      * Regular expression which matches individual tokens, with additional
      * capturing groups for convenient retrieval of leading text, the possible
@@ -225,6 +232,17 @@ public class TokenFilter {
                 // strict mode is enabled
                 if (tokenValue == null) {
 
+                    // Token marked as optional, so just skip it and update
+                    // last match.
+                    if (modifier != null && modifier.equals("OPTIONAL")) {
+                        LOGGER.debug("The token \"{}\" has no value and has been "
+                                   + "marked as optional, so it will be treated "
+                                   + "as a blank value instead of a literal.",
+                                     tokenName);
+                        endOfLastMatch = tokenMatcher.end();
+                        continue;
+                    }
+
                     // Fail outright if strict mode is enabled
                     if (strict)
                         throw new GuacamoleTokenUndefinedException("Token "
@@ -232,8 +250,7 @@ public class TokenFilter {
 
                     // If strict mode is NOT enabled, simply interpret as
                     // a literal
-                    String notToken = tokenMatcher.group(TOKEN_GROUP);
-                    output.append(notToken);
+                    output.append(tokenMatcher.group(TOKEN_GROUP));
 
                 }
 
