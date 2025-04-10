@@ -133,7 +133,7 @@ public class SSLClientAuthenticationResource extends SSOResource {
     private String getHeader(HttpHeaders headers, String name) {
 
         List<String> values = headers.getRequestHeader(name);
-        if (values.isEmpty())
+        if (values == null || values.isEmpty())
             return null;
 
         return values.get(0);
