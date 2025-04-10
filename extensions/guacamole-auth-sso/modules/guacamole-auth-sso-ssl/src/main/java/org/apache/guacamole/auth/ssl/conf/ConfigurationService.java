@@ -194,6 +194,50 @@ public class ConfigurationService {
     private Environment environment;
 
     /**
+     * Returns whether the given hostname matches the hostname of the given
+     * URI. The provided hostname may be the value of an HTTP "Host" header,
+     * and may include a port number. If a port number is included in the
+     * hostname, it is ignored.
+     *
+     * @param hostname
+     *     The hostname to check, which may alternatively be the value of an
+     *     HTTP "Host" header, with or without port number. The port number is
+     *     not considered when determining whether this hostname matches the
+     *     hostname of the provided URI.
+     *
+     * @param offset
+     *     The character offset within the provided hostname where checking
+     *     should start. Any characters before this offset are ignored. This
+     *     offset does not affect where checking starts within the hostname of
+     *     the provided URI.
+     *
+     * @param uri
+     *     The URI to check the given hostname against.
+     *
+     * @return
+     *     true if the provided hostname from the given offset onward is
+     *     identical to the hostname of the given URI, false otherwise.
+     */
+    private boolean hostnameMatches(String hostname, int offset, URI uri) {
+
+        // Locate end of actual hostname portion of "Host" header
+        int endOfHostname = hostname.indexOf(':');
+        if (endOfHostname == -1)
+            endOfHostname = hostname.length();
+
+        // Before checking substring equivalence, we need to verify that the
+        // length actually matches what we expect (we'd otherwise consider the
+        // host to match if it starts with the expected hostname, ignoring any
+        // remaining characters)
+        String expectedHostname = uri.getHost();
+        if (expectedHostname.length() != endOfHostname - offset)
+            return false;
+
+        return hostname.regionMatches(true, offset, expectedHostname, 0, expectedHostname.length());
+
+    }
+
+    /**
      * Returns a URI that should be used to authenticate users with SSL/TLS
      * client authentication. The returned URI will consist of the configured
      * client authentication URI with the wildcard portion ("*.") replaced with
@@ -248,9 +292,6 @@ public class ConfigurationService {
         if (isPrimaryHostname(hostname))
             return null;
 
-        URI authURI = environment.getRequiredProperty(SSL_AUTH_URI);
-        String baseHostname = authURI.getHost();
-
         // Verify the first domain component is at least one character in
         // length
         int firstPeriod = hostname.indexOf('.');
@@ -259,7 +300,8 @@ public class ConfigurationService {
 
         // Verify domain matches the configured auth URI except for the leading
         // subdomain
-        if (!hostname.regionMatches(true, firstPeriod + 1, baseHostname, 0, baseHostname.length()))
+        URI authURI = environment.getRequiredProperty(SSL_AUTH_URI);
+        if (!hostnameMatches(hostname, firstPeriod + 1, authURI))
             return null;
 
         // Extract subdomain
@@ -326,7 +368,7 @@ public class ConfigurationService {
      */
     public boolean isPrimaryHostname(String hostname) throws GuacamoleException {
         URI primaryURI = getPrimaryURI();
-        return hostname.equalsIgnoreCase(primaryURI.getHost());
+        return hostnameMatches(hostname, 0, primaryURI);
     }
 
     /**
