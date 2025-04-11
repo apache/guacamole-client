@@ -152,6 +152,18 @@ public class ConfigurationService {
     };
 
     /**
+     * The property that defines what attribute the SAML provider will return
+     * that contains login name for the authenticated user.
+     */
+    private static final StringGuacamoleProperty SAML_USER_ATTRIBUTE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "saml-user-attribute"; }
+
+    };
+
+    /**
      * The maximum amount of time to allow for an in-progress SAML
      * authentication attempt to be completed, in minutes. A user that takes
      * longer than this amount of time to complete authentication with their
@@ -338,6 +350,20 @@ public class ConfigurationService {
      */
     public String getGroupAttribute() throws GuacamoleException {
         return environment.getProperty(SAML_GROUP_ATTRIBUTE, "groups");
+    }
+
+    /**
+     * Return the name of the attribute that will be supplied by the identity
+     * provider that contains the username.
+     *
+     * @return
+     *     The name of the attribute that contains the username.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getUserAttribute() throws GuacamoleException {
+        return environment.getProperty(SAML_USER_ATTRIBUTE, null);
     }
 
     /**
