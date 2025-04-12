@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
@@ -317,10 +316,9 @@ public class UserVerificationService {
 
         // Pull the original HTTP request used to authenticate
         Credentials credentials = authenticatedUser.getCredentials();
-        HttpServletRequest request = credentials.getRequest();
         
         // Get the current client address
-        IPAddress clientAddr = new IPAddressString(request.getRemoteAddr()).getAddress();
+        IPAddress clientAddr = new IPAddressString(credentials.getRemoteAddress()).getAddress();
 
         // Ignore anonymous users
         if (authenticatedUser.getIdentifier().equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
@@ -369,7 +367,7 @@ public class UserVerificationService {
             return;
 
         // Retrieve TOTP from request
-        String code = request.getParameter(AuthenticationCodeField.PARAMETER_NAME);
+        String code = credentials.getParameter(AuthenticationCodeField.PARAMETER_NAME);
 
         // If no TOTP provided, request one
         if (code == null) {

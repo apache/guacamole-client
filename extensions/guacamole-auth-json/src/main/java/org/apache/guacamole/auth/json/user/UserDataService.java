@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.json.ConfigurationService;
 import org.apache.guacamole.auth.json.CryptoService;
@@ -121,18 +120,13 @@ public class UserDataService {
         String json;
         byte[] correctSignature;
 
-        // Pull HTTP request, if available
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
-
         // Abort if the request itself is not allowed
-        if (!requestService.isAuthenticationAllowed(request))
+        if (!requestService.isAuthenticationAllowed(credentials))
             return null;
 
         // Pull base64-encoded, encrypted JSON data from HTTP request, if any
         // such data is present
-        String base64 = request.getParameter(ENCRYPTED_DATA_PARAMETER);
+        String base64 = credentials.getParameter(ENCRYPTED_DATA_PARAMETER);
         if (base64 == null)
             return null;
 

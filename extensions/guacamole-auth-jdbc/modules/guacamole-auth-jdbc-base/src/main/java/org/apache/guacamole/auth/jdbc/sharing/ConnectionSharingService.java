@@ -22,7 +22,6 @@ package org.apache.guacamole.auth.jdbc.sharing;
 import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -175,13 +174,8 @@ public class ConnectionSharingService {
      */
     public String getShareKey(Credentials credentials) {
 
-        // Pull associated HTTP request
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
-
         // Retrieve the share key from the request
-        return request.getParameter(SHARE_KEY_NAME);
+        return credentials.getParameter(SHARE_KEY_NAME);
 
     }
 
