@@ -66,9 +66,15 @@ public class AuthenticationProviderService {
         // Get the username from the header configured in guacamole.properties
         String username = credentials.getHeader(confService.getHttpAuthHeader());
         if (username != null) {
+
+            // Update credentials with username provided via header for sake of
+            // ${GUAC_USERNAME} token
+            credentials.setUsername(username);
+
             AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(username, credentials);
             return authenticatedUser;
+
         }
 
         // Authentication not provided via header, yet, so we request it.
