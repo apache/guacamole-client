@@ -1,0 +1,5 @@
+{
+    "LOGIN": {
+        "ERROR_TOO_MANY_ATTEMPTS" : "Çok fazla kimlik doğrulama denemesi başarısız oldu. Lütfen daha sonra tekrar deneyin."
+    }
+}
