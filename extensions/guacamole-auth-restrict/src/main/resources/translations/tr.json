@@ -1,0 +1,73 @@
+{
+
+    "DATA_SOURCE_LOGIN_RESTRICTIONS" : {
+        "NAME" : "İlave Kısıtlamalar"
+    },
+    
+    "CONNECTION_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Bağlantıya erişebilen bilgisayarlar:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Bağlantıya erişimi olmayan bilgisayarlar:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_AFTER"    : "Bu bağlantının kullanıma açık olmaya başlayacağı tarih ve saat:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Bağlantının kullanımına izin verilen saatler:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_BEFORE"   : "Bu bağlantının kullanıma açık kalacağı son tarih ve saat:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Bağlantının kullanılamayacağı saatler:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Ek Bağlantı Kısıtlamaları"
+        
+    },
+    
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Bağlantı grubuna erişebilen bilgisayarlar:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Bağlantı grubuna erişimi olmayan bilgisayarlar:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_AFTER"    : "Bu bağlantı grubunun kullanıma açık olmaya başlayacağı tarih ve saat:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Bağlantı grubunun kullanımına izin verilen saatler:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_BEFORE"   : "Bu bağlantı grubunun kullanıma açık kalacağı son tarih ve saat:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Bağlantı grubunun kullanılamayacağı saatler:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Ek Bağlantı Kısıtlamaları"
+        
+    },
+    
+    "RESTRICT" : {
+        
+        "ACTION_ADD_ENTRY" : "Girdi Ekle",
+        
+        "ERROR_CONNECTION_NOT_ALLOWED_NOW"       : "Bağlantı bu saatte müsait değil.",
+        "ERROR_CONNECTION_NOT_ALLOWED_FROM_HOST" : "Bu bilgisayardan bağlantıya izin verilmiyor.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_NOW"       : "Bu kullanıcı için bu saatte oturum açmaya izin verilmiyor.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST" : "Bu bilgisayardan bu kullanıcının oturum açmasına izin verilmiyor.",
+        
+        "FIELD_PLACEHOLDER_DATE_TIME_RESTRICTION" : "YYYY-MM-DD HH:MM:SS",
+        
+        "TABLE_HEADER_DAY"        : "Gün",
+        "TABLE_HEADER_END_TIME"   : "Bitiş Saati",
+        "TABLE_HEADER_HOST"       : "Bilgisayar",
+        "TABLE_HEADER_START_TIME" : "Başlangıç Saati"
+        
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Kullanıcının oturum açabileceği bilgisayarlar:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Kullanıcının oturum açamayacağı bilgisayarlar:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Kullanıcının oturum açmasına izin verilen saatler:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Kullanıcının oturum açmasına izin verilmeyen saatler:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Ek Oturum Kısıtlamaları"
+        
+    },
+    
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Üyelerin oturum açabileceği bilgisayarlar:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Üyelerin oturum açamayacağı bilgisayarlar:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Üyelerin oturum açabileceği saatler:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Üyelerin oturum açamayacağı saatler:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Ek Oturum Kısıtlamaları"
+        
+    }
+
+}
