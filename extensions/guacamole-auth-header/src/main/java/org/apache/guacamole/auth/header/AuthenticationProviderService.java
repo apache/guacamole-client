@@ -21,13 +21,11 @@ package org.apache.guacamole.auth.header;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.auth.header.user.AuthenticatedUser;
-import java.security.Principal;
 
 /**
  * Service providing convenience functions for the HTTP Header
@@ -65,19 +63,12 @@ public class AuthenticationProviderService {
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
-        // Pull HTTP header from request if present
-        HttpServletRequest request = credentials.getRequest();
-        if (request != null) {
-
-            // Get the username from the header configured in guacamole.properties
-            String username = request.getHeader(confService.getHttpAuthHeader());
-
-            if (username != null) {
-                AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-                authenticatedUser.init(username, credentials);
-                return authenticatedUser;
-            }
-
+        // Get the username from the header configured in guacamole.properties
+        String username = credentials.getHeader(confService.getHttpAuthHeader());
+        if (username != null) {
+            AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
+            authenticatedUser.init(username, credentials);
+            return authenticatedUser;
         }
 
         // Authentication not provided via header, yet, so we request it.

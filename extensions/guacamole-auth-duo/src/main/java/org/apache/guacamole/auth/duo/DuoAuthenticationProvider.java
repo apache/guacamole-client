@@ -21,7 +21,6 @@ package org.apache.guacamole.auth.duo;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -86,8 +85,7 @@ public class DuoAuthenticationProvider extends AbstractAuthenticationProvider {
         // Ignore requests with no corresponding authentication session ID, as
         // there are no credentials to reconstitute if the user has not yet
         // attempted to authenticate
-        HttpServletRequest request = credentials.getRequest();
-        String duoState = request.getParameter(UserVerificationService.DUO_STATE_PARAMETER_NAME);
+        String duoState = credentials.getParameter(UserVerificationService.DUO_STATE_PARAMETER_NAME);
         if (duoState == null)
             return credentials;
 
@@ -99,7 +97,7 @@ public class DuoAuthenticationProvider extends AbstractAuthenticationProvider {
         // Reconstitute the originally-provided credentials from the users
         // authentication attempt prior to being redirected to Duo
         Credentials previousCredentials = session.getCredentials();
-        previousCredentials.setRequest(request);
+        previousCredentials.setRequestDetails(credentials.getRequestDetails());
         return previousCredentials;
 
     }
