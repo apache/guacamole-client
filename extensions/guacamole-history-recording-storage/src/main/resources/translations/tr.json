@@ -1,0 +1,14 @@
+{
+
+    "DATA_SOURCE_RECORDING_STORAGE" : {
+        "NAME" : "Oturum Kaydı Depolama"
+    },
+
+    "RECORDING_STORAGE" : {
+        "INFO_GUACAMOLE_SESSION_RECORDING" :  "Uzak masaüstü oturumunun grafik kaydı",
+        "INFO_SERVER_LOG" :  "Sunucu/sistem günlüğü",
+        "INFO_TYPESCRIPT" :  "Terminal oturumunun metin tabanlı kaydı",
+        "INFO_TYPESCRIPT_TIMING" :  "Terminal oturumunun metin tabanlı kaydının zamanlama bilgileri"
+    }
+
+}
