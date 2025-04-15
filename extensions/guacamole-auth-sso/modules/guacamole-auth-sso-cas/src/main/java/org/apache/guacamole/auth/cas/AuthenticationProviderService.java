@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.GuacamoleException;
@@ -70,12 +69,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
             throws GuacamoleException {
 
         // Pull CAS ticket from request if present
-        HttpServletRequest request = credentials.getRequest();
-        if (request != null) {
-            String ticket = request.getParameter(TICKET_PARAMETER_NAME);
-            if (ticket != null) {
-                return ticketService.validateTicket(ticket, credentials);
-            }
+        String ticket = credentials.getParameter(TICKET_PARAMETER_NAME);
+        if (ticket != null) {
+            return ticketService.validateTicket(ticket, credentials);
         }
 
         // Request CAS ticket (will automatically redirect the user to the

@@ -21,10 +21,9 @@ package org.apache.guacamole.auth.json;
 
 import com.google.inject.Inject;
 import inet.ipaddr.IPAddressString;
-import java.util.ArrayList;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.Credentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,17 +58,17 @@ public class RequestValidationService {
     }
 
     /**
-     * Returns whether the given request can be used for authentication, taking
-     * into account restrictions specified within guacamole.properties.
+     * Returns whether the given credentials can be used for authentication,
+     * taking into account restrictions specified within guacamole.properties.
      *
-     * @param request
-     *     The HTTP request to test.
+     * @param credentials
+     *     The credentials of the authentication request to test.
      *
      * @return
-     *     true if the given request comes from a trusted source and can be
+     *     true if the given credentials come from a trusted source and can be
      *     used for authentication, false otherwise.
      */
-    public boolean isAuthenticationAllowed(HttpServletRequest request) {
+    public boolean isAuthenticationAllowed(Credentials credentials) {
 
         // Pull list of all trusted networks
         Collection<String> trustedNetworks;
@@ -79,14 +78,14 @@ public class RequestValidationService {
 
         // Deny all requests if restrictions cannot be parsed
         catch (GuacamoleException e) {
-            logger.warn("Authentication request from \"{}\" is DENIED due to parse error: {}", request.getRemoteAddr(), e.getMessage());
+            logger.warn("Authentication request from \"{}\" is DENIED due to parse error: {}", credentials.getRemoteAddress(), e.getMessage());
             logger.debug("Error parsing authentication request restrictions from guacamole.properties.", e);
             return false;
         }
 
         // All requests are allowed if no restrictions are defined
         if (trustedNetworks.isEmpty()) {
-            logger.debug("Authentication request from \"{}\" is ALLOWED (no restrictions).", request.getRemoteAddr());
+            logger.debug("Authentication request from \"{}\" is ALLOWED (no restrictions).", credentials.getRemoteAddress());
             return true;
         }
 
@@ -94,15 +93,15 @@ public class RequestValidationService {
         for (String network : trustedNetworks) {
 
             // Request is allowed if any subnet matches
-            if (new IPAddressString(network).contains(new IPAddressString(request.getRemoteAddr()))) {
-                logger.debug("Authentication request from \"{}\" is ALLOWED (matched subnet).", request.getRemoteAddr());
+            if (new IPAddressString(network).contains(new IPAddressString(credentials.getRemoteAddress()))) {
+                logger.debug("Authentication request from \"{}\" is ALLOWED (matched subnet).", credentials.getRemoteAddress());
                 return true;
             }
 
         }
 
         // Otherwise request is denied - no subnets matched
-        logger.debug("Authentication request from \"{}\" is DENIED (did not match subnet).", request.getRemoteAddr());
+        logger.debug("Authentication request from \"{}\" is DENIED (did not match subnet).", credentials.getRemoteAddress());
         return false;
 
     }
