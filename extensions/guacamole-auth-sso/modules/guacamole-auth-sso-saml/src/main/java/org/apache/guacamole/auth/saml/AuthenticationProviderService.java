@@ -96,15 +96,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
                 getSessionIdentifier(credentials));
 
         if (identity != null) {
-
-            // Back-port the username to the credentials
-            credentials.setUsername(identity.getUsername());
-
-            // Configure the AuthenticatedUser and return it
             SAMLAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(identity, credentials);
             return authenticatedUser;
-
         }
 
         // Redirect to SAML IdP if no SAML identity is associated with the
