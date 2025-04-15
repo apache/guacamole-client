@@ -24,7 +24,6 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
@@ -85,20 +84,12 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
         // Return the session identifier from the request params, if set, or
         // null otherwise
-        return credentials != null && credentials.getRequest() != null
-                ? credentials.getRequest().getParameter(AUTH_SESSION_QUERY_PARAM)
-                : null;
+        return credentials != null ? credentials.getParameter(AUTH_SESSION_QUERY_PARAM) : null;
     }
 
     @Override
     public SAMLAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
-
-        // No authentication can be attempted without a corresponding HTTP
-        // request
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
 
         // Use established SAML identity if already provided by the SAML IdP
         AssertedIdentity identity = sessionManager.getIdentity(
