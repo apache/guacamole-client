@@ -170,7 +170,7 @@
         "TEXT_RECONNECT_COUNTDOWN"        : "{REMAINING} {REMAINING, plural, one{saniye} other{saniye}} içinde tekrar bağlanıyor...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
-        "URL_OSK_LAYOUT" : "layouts/tr-tr-qwerty-q.json"
+        "URL_OSK_LAYOUT" : "layouts/tr-tr-qwerty.json"
 
     },
 
