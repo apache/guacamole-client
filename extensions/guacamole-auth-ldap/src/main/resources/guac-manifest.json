@@ -12,6 +12,7 @@
     "translations" : [
         "translations/de.json",
         "translations/en.json",
+        "translations/tr.json",
         "translations/zh.json"
     ]
 

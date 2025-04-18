@@ -1,0 +1,18 @@
+{
+
+    "DATA_SOURCE_QUICKCONNECT" : {
+        "NAME" : "QuickConnect"
+    },
+
+    "QUICKCONNECT" : {
+        "ACTION_CONNECT"        : "Bağlan",
+        
+        "ERROR_INVALID_URI"      : "Geçersiz URI Belirtildi",
+        "ERROR_NO_HOST"          : "Bilgisayar belirtilmedi",
+        "ERROR_NO_PROTOCOL"      : "Protokol belirtilmedi",
+        "ERROR_NOT_ABSOLUTE_URI" : "URI tam değil",
+        
+        "FIELD_PLACEHOLDER_URI" : "Bağlantı URI Girin"
+    }
+
+}
