@@ -3,7 +3,7 @@
     "LOGIN" : {
 
         "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
-        "ERROR_PASSWORD_SAME"     : "Yeni parola süresi geçen paroladan farklı olmalı.",
+        "ERROR_PASSWORD_SAME"     : "Yeni parola, süresi geçen paroladan farklı olmalı.",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
         "ERROR_NOT_VALID"         : "Bu kullanıcı hesabı şu anda geçerli değil.",
         "ERROR_NOT_ACCESSIBLE"    : "Bu hesaba erişime şu an için izin verilmiyor. Lütfen daha sonra tekrar deneyin.",
