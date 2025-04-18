@@ -98,7 +98,7 @@
         ],
         "1" : [
             { "title" : "1", "requires" : [         ] },
-            { "title" : "!", "requires" : [ "shift" ] },
+            { "title" : "!", "requires" : [ "shift" ] }
         ],
         "2" : [
             { "title" : "2", "requires" : [         ] },
@@ -147,7 +147,7 @@
         "*" : [
             { "title" : "*", "requires" : [         ] },
             { "title" : "?", "requires" : [ "shift" ] },
-            { "title" : "\"", "requires" : [ "alt-gr" ] }
+            { "title" : "\\", "requires" : [ "alt-gr" ] }
         ],
         "-" : [
             { "title" : "-", "requires" : [         ] },
@@ -163,8 +163,7 @@
             { "title" : ":", "requires" : [ "shift" ] }
         ],
         "/" : [
-            { "title" : "/", "requires" : [         ] },
-            { "title" : "\\", "requires" : [ "shift" ] }
+            { "title" : "/", "requires" : [         ] }
         ],
         "<" : [
             { "title" : "<", "requires" : [         ] },
