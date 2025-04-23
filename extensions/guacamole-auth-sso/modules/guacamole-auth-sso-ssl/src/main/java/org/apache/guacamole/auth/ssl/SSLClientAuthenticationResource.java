@@ -142,6 +142,12 @@ public class SSLClientAuthenticationResource extends SSOResource {
 
     /**
      * Decodes the provided URL-encoded string as UTF-8, returning the result.
+     * <p>
+     * NOTE: The escape() function of the Apache HTTPD server is known to not
+     * encode plus signs, which can appear in the base64-encoded certificates
+     * typically received here. To avoid mangling such certificates, this
+     * function specifically avoids decoding plus signs as spaces (as would
+     * otherwise happen if URLDecoder is used directly).
      *
      * @param value
      *     The URL-encoded string to decode.
@@ -153,6 +159,13 @@ public class SSLClientAuthenticationResource extends SSOResource {
      *     If the provided value is not a valid URL-encoded string.
      */
     private byte[] decode(String value) throws GuacamoleException {
+
+        // Ensure all plus signs are decoded literally rather than as spaces
+        // (the Apache HTTPD implementation of URL escaping that applies to
+        // request headers does not encode plus signs, whereas the Nginx
+        // implementation does)
+        value = value.replace("+", "%2B");
+
         try {
             return URLDecoder.decode(value, StandardCharsets.UTF_8.name())
                     .getBytes(StandardCharsets.UTF_8);
