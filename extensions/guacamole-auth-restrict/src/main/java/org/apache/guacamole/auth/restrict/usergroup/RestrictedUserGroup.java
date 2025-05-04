@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.guacamole.auth.restrict.Restrictable;
 import org.apache.guacamole.auth.restrict.form.HostRestrictionField;
 import org.apache.guacamole.auth.restrict.form.TimeRestrictionField;
 import org.apache.guacamole.form.Form;
@@ -33,48 +34,7 @@ import org.apache.guacamole.net.auth.UserGroup;
  * UserGroup implementation which wraps a UserGroup from another extension and
  * enforces additional restrictions for members of that group.
  */
-public class RestrictedUserGroup extends DelegatingUserGroup {
-    
-    /**
-     * The name of the attribute that contains a list of weekdays and times (UTC)
-     * that members of a group are allowed to log in. The presence of this
-     * attribute will restrict any users who are members of the group to logins
-     * only during the times that are contained within the attribute,
-     * subject to further restriction by the guac-restrict-time-denied attribute.
-     */
-    public static final String RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME = "guac-restrict-time-allowed";
-    
-    /**
-     * The name of the attribute that contains a list of weekdays and times (UTC)
-     * that members of a group are not allowed to log in. Denied times will
-     * always take precedence over allowed times. The presence of this attribute
-     * without guac-restrict-time-allowed will deny logins only during the times
-     * listed in this attribute, allowing logins at all other times. The
-     * presence of this attribute along with the guac-restrict-time-allowed
-     * attribute will deny logins at any times that overlap with the allowed
-     * times.
-     */
-    public static final String RESTRICT_TIME_DENIED_ATTRIBUTE_NAME = "guac-restrict-time-denied";
-    
-    /**
-     * The name of the attribute that contains a list of IP addresses from which
-     * members of a group are allowed to log in. The presence of this attribute
-     * will restrict users to only the list of IP addresses contained in the
-     * attribute, subject to further restriction by the
-     * guac-restrict-hosts-denied attribute.
-     */
-    public static final String RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME = "guac-restrict-hosts-allowed";
-    
-    /**
-     * The name of the attribute that contains a list of IP addresses from which
-     * members of a group are not allowed to log in. The presence of this
-     * attribute, absent the guac-restrict-hosts-allowed attribute, will allow
-     * logins from all hosts except the ones listed in this attribute. The
-     * presence of this attribute coupled with the guac-restrict-hosts-allowed
-     * attribute will block access from any IPs in this list, overriding any
-     * that may be allowed.
-     */
-    public static final String RESTRICT_HOSTS_DENIED_ATTRIBUTE_NAME = "guac-restrict-hosts-denied";
+public class RestrictedUserGroup extends DelegatingUserGroup implements Restrictable {
     
     /**
      * The list of all user attributes provided by this UserGroup implementation.
