@@ -102,14 +102,16 @@ public class RequestDetails {
 
         // Headers are case-insensitive
         Map<String, List<String>> headers = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        names.asIterator().forEachRemaining((String name) -> {
+        while (names.hasMoreElements()) {
+
+            String name = names.nextElement();
 
             @SuppressWarnings("unchecked") // getHeaders() is explicitly documented as returning a Enumeration<String>
             Enumeration<String> values = (Enumeration<String>) request.getHeaders(name);
             if (values != null && values.hasMoreElements())
                 headers.put(name, Collections.unmodifiableList(Collections.list(values)));
 
-        });
+        }
 
         return Collections.unmodifiableMap(headers);
 
@@ -139,13 +141,15 @@ public class RequestDetails {
 
         // Unlike headers, parameters are case-sensitive
         Map<String, List<String>> parameters = new HashMap<>();
-        names.asIterator().forEachRemaining((String name) -> {
+        while (names.hasMoreElements()) {
+
+            String name = names.nextElement();
 
             String[] values = request.getParameterValues(name);
             if (values != null && values.length != 0)
                 parameters.put(name, Collections.unmodifiableList(Arrays.asList(values)));
 
-        });
+        }
 
         return Collections.unmodifiableMap(parameters);
 
