@@ -723,6 +723,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Romanian (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turkish-Q (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_RU_RU_QWERTY" : "Russian (Qwerty)"
 
         "NAME" : "RDP",
 
