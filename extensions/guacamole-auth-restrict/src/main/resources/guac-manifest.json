@@ -10,7 +10,8 @@
     ],
 
     "translations" : [
-        "translations/en.json"
+        "translations/en.json",
+        "translations/tr.json"
     ],
     
     "js" : [

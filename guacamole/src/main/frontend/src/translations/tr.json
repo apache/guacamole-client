@@ -1,0 +1,1238 @@
+{
+
+    "NAME" : "Türkçe",
+
+    "APP" : {
+
+        "ACTION_ACKNOWLEDGE"        : "Tamam",
+        "ACTION_CANCEL"             : "İptal",
+        "ACTION_CLEAR"              : "Temizle",
+        "ACTION_CLONE"              : "Klonla",
+        "ACTION_CONTINUE"           : "Devam",
+        "ACTION_DELETE"             : "Sil",
+        "ACTION_DELETE_SESSIONS"    : "Oturumları Sonlandır",
+        "ACTION_DOWNLOAD"           : "İndir",
+        "ACTION_IMPORT"             : "İçe Aktar",
+        "ACTION_LOGIN"              : "Giriş",
+        "ACTION_LOGIN_AGAIN"        : "Yeniden Giriş",
+        "ACTION_LOGOUT"             : "Çıkış",
+        "ACTION_MANAGE_CONNECTIONS" : "Bağlantılar",
+        "ACTION_MANAGE_PREFERENCES" : "Tercihler",
+        "ACTION_MANAGE_SETTINGS"    : "Ayarlar",
+        "ACTION_MANAGE_SESSIONS"    : "Açık Oturumlar",
+        "ACTION_MANAGE_USERS"       : "Kullanıcılar",
+        "ACTION_MANAGE_USER_GROUPS" : "Gruplar",
+        "ACTION_NAVIGATE_BACK"      : "Geri",
+        "ACTION_NAVIGATE_HOME"      : "Ana Ekran",
+        "ACTION_PAUSE"              : "Durdur",
+        "ACTION_PLAY"               : "Oynat",
+        "ACTION_SAVE"               : "Kaydet",
+        "ACTION_SEARCH"             : "Ara",
+        "ACTION_SHARE"              : "Paylaş",
+        "ACTION_UPDATE_PASSWORD"    : "Parolayı Güncelle",
+        "ACTION_VIEW_HISTORY"       : "Geçmiş",
+        "ACTION_VIEW_RECORDING"     : "Görüntüle",
+
+        "DIALOG_HEADER_ERROR" : "Hata",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "Bir hata oluştu ve bu işlem tamamlanamıyor. Eğer sorun devam ederse sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
+        "ERROR_PASSWORD_BLANK"    : "Parolanız boş olamaz.",
+        "ERROR_PASSWORD_MISMATCH" : "Girilen parolalar eşleşmiyor.",
+        "ERROR_SINGLE_FILE_ONLY"  : "Lütfen dosyaları birer birer yükleyin",
+
+        "FIELD_HEADER_PASSWORD"       : "Parola:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Parolayı tekrar girin:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "Mevcut kayıt dosyasına yazmaya izin ver:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "Mevcut typescript dosyasına yazmaya izin ver:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Filtrele",
+
+        "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "Şu an {USERS} {USERS, plural, one{kullanıcısı} other{kullanıcıları}} tarafından kullanılıyor.",
+        "INFO_LOGGED_OUT"        : "Çıkış yaptınız.",
+
+        "TEXT_ANONYMOUS_USER"   : "Anonim",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{saniye} other{saniye}}} minute{{VALUE, plural, one{dakika} other{dakika}}} hour{{VALUE, plural, one{saat} other{saat}}} day{{VALUE, plural, one{gün} other{gün}}} other{}}",
+        "TEXT_UNTRANSLATED" : "{MESSAGE}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "@:APP.ACTION_CLEAR",
+        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
+        "ACTION_DISCONNECT"                : "Bağlantıyı Kes",
+        "ACTION_FULLSCREEN"                : "Tam Ekran",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "Yeniden Bağlan",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SHOW_CLIPBOARD"            : "Pano içeriğini görüntülemek için tıkla.",
+        "ACTION_UPLOAD_FILES"              : "Dosya Yükle",
+
+        "DIALOG_HEADER_CONNECTING"       : "Bağlanıyor",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Bağlantı Hatası",
+        "DIALOG_HEADER_DISCONNECTED"     : "Bağlantı Kesildi",
+
+        "ERROR_CLIENT_201"     : "Bu bağlantı kapatıldı çünkü sunucu meşgul. Lütfen birkaç dakika bekleyip terkar deneyin.",
+        "ERROR_CLIENT_202"     : "Guacamole sunucusu bağlantıyı sonlandırdı çünkü uzak masaüstünün yanıt vermesi çok uzun sürüyor. Lütfen tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
+        "ERROR_CLIENT_203"     : "Uzak masaüstü sunucusunda bir hata oluştu ve bağlantıyı kapattı. Lütfen tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
+        "ERROR_CLIENT_207"     : "Uzak masaüstü sunucusuna şu an erişilemiyor. Eğer sorun devam ederse sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
+        "ERROR_CLIENT_208"     : "Uzak masaüstü sunucusu şu an müsait değil. Eğer sorun devam ederse sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
+        "ERROR_CLIENT_209"     : "Uzak masaüstü sunucusu bağlantıyı kapattı çünkü bir başka bağlantı ile çakışıyor. Lütfen daha sonra tekrar deneyin.",
+        "ERROR_CLIENT_20A"     : "Uzak masaüstü sunucusu bağlantıyı kapattı çünkü bağlantı faal görünmüyordu. Eğer bu istenmeyen veya beklenmeyen bir durumsa, sistem yöneticinizi bilgilendirin veya sistem ayarlarını kontrol edin.",
+        "ERROR_CLIENT_20B"     : "Uzak masaüstü sunucusu bağlantıyı zorla kapattı. Eğer bu istenmeyen veya beklenmeyen bir durumsa, sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
+        "ERROR_CLIENT_301"     : "Giriş başarısız oldu. Lütfen yeniden bağlanıp tekrar deneyin.",
+        "ERROR_CLIENT_303"     : "Uzak masaüstü sunucusu bu bağlantıya erişim izni vermedi. Eğer erişmeniz gerekiyorsa sistem yöneticinizden hesabınıza erişim izni vermesini isteyin veya sistem ayarlarını kontrol edin.",
+        "ERROR_CLIENT_308"     : "Guacamole sunucusu bağlantıyı kapattı çünkü tarayıcınızdan bağlantının koptuğu düşünülecek kadar uzun bir süre yanıt gelmedi. Bu genellikle zayıf kablosuz sinyali veya çok düşük ağ hızı gibi ağ sorunlarından kaynaklanır. Lütfen ağınızı kontrol edip tekrar deneyin.",
+        "ERROR_CLIENT_31D"     : "Guacamole sunucusu bu bağlantıya erişimi reddediyor çünkü tekil bir kullanıcı tarafından kullanılabilecek eşzamanlı bağlantı sınırını aştınız. Lütfen bir veya daha fazla bağlantıyı kapatıp tekrar deneyin.",
+        "ERROR_CLIENT_DEFAULT" : "Guacamole sunucusunda bir iç hata oluştu ve bağlantı sonlandırıldı. Eğer sorun devam ederse sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
+
+        "ERROR_TUNNEL_201"     : "Guacamole sunucusu bu bağlantı denemesini reddetti çünkü çok miktarda açık bağlantı var. Lütfen birkaç dakika bekleyip tekrar deneyin.",
+        "ERROR_TUNNEL_202"     : "Bağlantı kapatıldı çünkü sunucunun yanıt vermesi çok uzun sürüyor. Bu genellikle zayıf kablosuz sinyali veya çok düşük ağ hızı gibi ağ sorunlarından kaynaklanır. Lütfen ağ bağlantınızı kontrol edip tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
+        "ERROR_TUNNEL_203"     : "Sunucu bir sorunla karşılaştı ve bağlantıyı kapattı. Lütfen daha sonra tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
+        "ERROR_TUNNEL_204"     : "Talep edilen bağlantı mevcut değil. Lütfen bağlantı adını kontrol edip tekrar deneyin.",
+        "ERROR_TUNNEL_205"     : "Bağlantı halihazırda kullanımda ve bu bağlantıya eşzamanlı erişime izin verilmiyor. Lütfen daha sonra tekrar deneyin.",
+        "ERROR_TUNNEL_207"     : "Guacamole sunucusuna şu anda erişilemiyor. Lütfen ağınızı kontrol edip tekrar deneyin.",
+        "ERROR_TUNNEL_208"     : "Guacamole sunucusu bağlantıları kabul etmiyor. Lütfen ağınızı kontrol edip tekrar deneyin.",
+        "ERROR_TUNNEL_301"     : "Bu bağlantıya erişim izniniz yok çünkü oturum açmadınız. Lütfen oturum açıp tekrar deneyin.",
+        "ERROR_TUNNEL_303"     : "Bu bağlantıya erişim izniniz bulunmuyor. Eğer erişmeniz gerekiyorsa lütfen sistem yöneticinizden sizi izin verilen kullanıcı listesine eklemesini isteyin veya sistem ayarlarını kontrol edin.",
+        "ERROR_TUNNEL_308"     : "Guacamole sunucusu bağlantıyı kapattı çünkü tarayıcınızdan bağlantının koptuğu düşünülecek kadar uzun bir süre yanıt gelmedi. Bu genellikle zayıf kablosuz sinyali veya çok düşük ağ hızı gibi ağ sorunlarından kaynaklanır. Lütfen ağınızı kontrol edip tekrar deneyin.",
+        "ERROR_TUNNEL_31D"     : "Guacamole sunucusu bu bağlantıya erişimi reddediyor çünkü tekil bir kullanıcı tarafından kullanılabilecek eşzamanlı bağlantı sınırını aştınız. Lütfen bir veya daha fazla bağlantıyı kapatıp tekrar deneyin.",
+        "ERROR_TUNNEL_DEFAULT" : "Guacamole sunucusunda bir iç hata oluştu ve bağlantı sonlandırıldı. Eğer sorun devam ederse sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
+
+        "ERROR_UPLOAD_100"     : "Dosya aktarımı ya desteklenmiyor ya da etkinleştirilmemiş. Lütfen sistem yöneticinizle iletişime geçin veya sistem günlüklerini kontrol edin.",
+        "ERROR_UPLOAD_201"     : "Şu anda çok miktarda dosya aktarılıyor. Lütfen mevcut aktarımların tamamlanmasını bekleyin ve daha sonra tekrar deneyin.",
+        "ERROR_UPLOAD_202"     : "Dosya aktarımı yapılamıyor çünkü uzak masaüstü sunucusunun yanıt vermesi çok uzun sürüyor. Lütfen tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
+        "ERROR_UPLOAD_203"     : "Uzak masaüstü sunucusu aktarım sırasında bir hata ile karşılaştı. Lütfen tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
+        "ERROR_UPLOAD_204"     : "Dosya aktarım hedefi mevcut değil. Lütfen hedefin var olduğunu kontrol edip tekrar deneyin.",
+        "ERROR_UPLOAD_205"     : "Dosya aktarım hedefi şu anda kilitli. Lütfen devam eden görevlerin tamamlanmasını bekleyip tekrar deneyin.",
+        "ERROR_UPLOAD_301"     : "Bu dosyayı yüklemek için izniniz yok çünkü oturum açmadınız. Lütfen oturum açıp tekrar deneyin.",
+        "ERROR_UPLOAD_303"     : "Bu dosyayı yüklemek için izniniz yok. Eğer erişim gerekiyorsa lütfen sistem ayarlarınızı kontrol edin veya sistem yöneticinizle görüşün.",
+        "ERROR_UPLOAD_308"     : "Dosya aktarımı durdu. Bu genellikle zayıf kablosuz sinyali veya çok düşük ağ hızı gibi ağ sorunlarından kaynaklanır. Lütfen ağınızı kontrol edip tekrar deneyin.",
+        "ERROR_UPLOAD_31D"     : "Şu anda çok miktarda dosya aktarılıyor. Lütfen mevcut aktarımların tamamlanmasını bekleyin ve sonra tekrar deneyin.",
+        "ERROR_UPLOAD_DEFAULT" : "Guacamole sunucusunda bir iç hata oluştu ve bağlantı sonlandırıldı. Eğer sorun devam ederse sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CLIPBOARD"           : "Guacamole içerisinde kopyalanan/kesilen metinler burada görünür. Aşağıdaki metinde yapılan değişiklikler uzak panoyu etkiler.",
+        "HELP_INPUT_METHOD_NONE"   : "Hiçbir giriş yöntemi kullanılmıyor. Fiziksel olarak bağlı bir klavyeden girişler kabul ediliyor.",
+        "HELP_INPUT_METHOD_OSK"    : "Yerleşik Guacamole ekran klavyesini göster ve buradan girişleri kabul et. Ekran klavyesi diğer yöntemlerle girmenin imkansız olduğu tuş bileşimlerini girmenizi sağlar (örneğin Ctrl-Alt-Del gibi).",
+        "HELP_INPUT_METHOD_TEXT"   : "Metin yazmaya izin ver ve girilen metne dayalı olarak klavye olaylarını öykün. Bu fiziksel klavyesi olmayan cep telefonları gibi cihazlar için gereklidir.",
+        "HELP_MOUSE_MODE"          : "Uzak farenin dokunmalara nasıl tepki vereceğini belirler.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Tıklamak için bas. Tıklama dokunmanın olduğu noktada oluşur.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Fare işaretçisini sürükle ve tıklamak için bas. Tıklama işaretçinin olduğu noktada oluşur.",
+        "HELP_SHARE_LINK"          : "Şu anki bağlantı paylaşılıyor ve şu {LINKS, plural, one{bağlantıyla} other{bağlantılarla}} herhangi bir kişi tarafından erişilebilir:",
+
+        "INFO_ANONYMOUS_USER_COUNT" : "Anonim{COUNT, plural, one{} other{ (#)}}",
+        "INFO_CONNECTION_SHARED"    : "Bu ağlantı şu an paylaşılıyor.",
+        "INFO_NO_FILE_TRANSFERS"    : "Dosya aktarımı yok.",
+        "INFO_USER_COUNT"           : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
+
+        "NAME_INPUT_METHOD_NONE"   : "Hiçbiri",
+        "NAME_INPUT_METHOD_OSK"    : "Ekran klavyesi",
+        "NAME_INPUT_METHOD_TEXT"   : "Metin girişi",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Dokunmatik ekran",
+        "NAME_MOUSE_MODE_RELATIVE" : "Dokunmatik yüzey",
+
+        "SECTION_HEADER_CLIENT_MESSAGES" : "İletiler",
+        "SECTION_HEADER_CLIPBOARD"       : "Pano",
+        "SECTION_HEADER_DEVICES"         : "Cihazlar",
+        "SECTION_HEADER_DISPLAY"         : "Görünüm",
+        "SECTION_HEADER_FILE_TRANSFERS"  : "Dosya Aktarımları",
+        "SECTION_HEADER_INPUT_METHOD"    : "Giriş yöntemi",
+
+        "SECTION_HEADER_MOUSE_MODE"     : "Fare öykünme biçimi",
+
+        "TEXT_ANONYMOUS_USER_JOINED"      : "Anonim bir kullanıcı bağlantıya katıldı.",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "Anonim bir kullanıcı bağlantıdan ayrıldı.",
+        "TEXT_ZOOM_AUTO_FIT"              : "Otomatik olarak tarayıcı penceresine sığdır",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Boşta.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Guacamole bağlanıypr...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "Bağlantınız kesildi.",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "Guacamole sunucusuna bağlantı kararsız görünüyor.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Guacamole bağlantısı kuruldu. Yanıt bekleniyor...",
+        "TEXT_USER_JOINED"                : "{USERNAME} bağlantıya katıldı.",
+        "TEXT_USER_LEFT"                  : "{USERNAME} bağlantıdan ayrıldı.",
+        "TEXT_RECONNECT_COUNTDOWN"        : "{REMAINING} {REMAINING, plural, one{saniye} other{saniye}} içinde tekrar bağlanıyor...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/tr-tr-qwerty.json"
+
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "Gizle",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "Göster",
+
+        "FIELD_HEADER_BACKGROUND" : "Arkaplan",
+        "FIELD_HEADER_FOREGROUND" : "Önplan",
+
+        "FIELD_OPTION_CUSTOM" : "Özel...",
+
+        "SECTION_HEADER_DETAILS" : "Ayrıntılar:"
+
+    },
+
+    "IMPORT": {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_BROWSE"             : "Dosya için Gözat",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR"              : "@:APP.ACTION_CLEAR",
+        "ACTION_VIEW_FORMAT_HELP"   : "Biçim İpuçlarını Görüntüle",
+        "ACTION_IMPORT"             : "@:APP.ACTION_IMPORT",
+        "ACTION_IMPORT_CONNECTIONS" : "Bağlantıları İçe Aktar",
+
+        "DIALOG_HEADER_ERROR"   : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_SUCCESS" : "Başarı",
+
+        "ERROR_AMBIGUOUS_CSV_HEADER"         : "Belirsiz CSV başlığı \"{HEADER}\" bir bağlantı niteliği veya parametresi olabilir",
+        "ERROR_AMBIGUOUS_PARENT_GROUP"       : "Hem grup (group) hem de üst tanımlayıcı (parentIdentifier) aynı anda belirtilemez",
+        "ERROR_ARRAY_REQUIRED"               : "Sağlanan dosya bir bağlantı listesi içeriyor olmalı",
+        "ERROR_DETECTED_INVALID_TYPE"        : "Desteklenmeyen dosya biçimi. Lütfen dosyanın geçerli bir CSV, JSON veya YAML dosyası olduğundan emin olun.",
+        "ERROR_DUPLICATE_CONNECTION_IN_FILE" : "İçe aktarım dosyasında \"{NAME}\" bağlantısı \"{PATH}\" konumunda kopya olarak bulunuyor",
+        "ERROR_DUPLICATE_CSV_HEADER"         : "Kopya CSV Başlığı: {HEADER}",
+        "ERROR_EMPTY_FILE"                   : "Sağlanan dosya boş",
+        "ERROR_INVALID_CSV_HEADER"           : "Geçersiz CSV Başlığı \"{HEADER}\" ne bir nitelik ne de bir parametre",
+        "ERROR_INVALID_MIME_TYPE"            : "Desteklenmeyen dosya biçimi: \"{TYPE}\"",
+        "ERROR_INVALID_GROUP"                : "\"{GROUP}\" ile eşleşen bir grup bulunmuyor",
+        "ERROR_INVALID_GROUP_IDENTIFIER"     : "\"{IDENTIFIER}\" tanımlayıcısına sahip bir bağlantı grubu bulunmuyor",
+        "ERROR_INVALID_GROUP_TYPE"           : "Geçersiz grup - bir dize olmalı.",
+        "ERROR_INVALID_PROTOCOL"             : "Geçersiz protokol \"{PROTOCOL}\"",
+        "ERROR_INVALID_USER_GROUPS_TYPE"     : "Geçersiz kullanıcı grupları - kullanıcı grubu tanımlayıcıları dizisi olmalı.",
+        "ERROR_INVALID_USERS_TYPE"           : "Geçersiz kullanıcılar - kullanıcı tanımlayıcıları dizisi olmalı.",
+        "ERROR_NO_FILE_SUPPLIED"             : "Lütfen içe aktarmak için bir dosya seçin",
+        "ERROR_PARSE_FAILURE_CSV"            : "Lütfen dosyanızın geçerli bir CSV dosyası olduğundan emin olur. Ayrıştırma \"{ERROR}\" hatasıyla başarısız oldu. ",
+        "ERROR_PARSE_FAILURE_JSON"           : "Lütfen dosyanızın geçerli bir JSON dosyası olduğundan emin olur. Ayrıştırma \"{ERROR}\" hatasıyla başarısız oldu. ",
+        "ERROR_PARSE_FAILURE_YAML"           : "Lütfen dosyanızın geçerli bir YAML dosyası olduğundan emin olur. Ayrıştırma \"{ERROR}\" hatasıyla başarısız oldu. ",
+        "ERROR_REJECT_UPDATE_CONNECTION"     : "\"{NAME}\" bağlantısı zaten \"{PATH}\" konumunda mevcut",
+        "ERROR_REQUIRED_NAME_CONNECTION"     : "Bağlantı adı zorunlu",
+        "ERROR_REQUIRED_PROTOCOL_CONNECTION" : "Bağlantı protokolü zorunlu",
+        "ERROR_REQUIRED_NAME_FILE"           : "Sağlanan dosyada bağlantı adı bulunmuyor",
+        "ERROR_REQUIRED_PROTOCOL_FILE"       : "Sağlanan dosyada bağlantı protokolü bulunmuyor",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Mevcut bağlantıları değiştir/güncelle",
+        "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "İzinleri sıfırla",
+
+        "HELP_CSV_DESCRIPTION"              : "Bir bağlantı içe aktarım CSV dosyası her satırda bir bağlantı içerir. Her sütun bir bağlantı alanını belirler. En azından bağlantı adı ve protokolü belirtilmelidir.",
+        "HELP_CSV_EXAMPLE"                  : "name,protocol,username,password,hostname,group,users,groups,guacd-encryption (attribute)\nconn1,vnc,alice,pass1,conn1.web.com,ROOT,guac user 1;guac user 2,Connection 1 Users,none\nconn2,rdp,bob,pass2,conn2.web.com,ROOT/Parent Group,guac user 1,,ssl\nconn3,ssh,carol,pass3,conn3.web.com,ROOT/Parent Group/Child Group,guac user 2;guac user 3,,\nconn4,kubernetes,,,,,,,",
+        "HELP_CSV_MORE_DETAILS"             : "CSV başlığı her satır için bağlantı alanını belirler. Bağlantının aktarılacağı bağlantı grup ID'si doğrudan \"parentIdentifier\" ile tanımlanabilir veya aşağıda gösterildiği gibi \"group\" kullanılarak ana gruba yol belirlenebilir. Çoğu durumda alanlar arasında bir çakışma olmamalı ancak ihtiyaç olursa, bir nitelik \" (attribute)\" veya parametre \" (parameter)\" eki belirsizliği çözmek için kullanılabilir. Kullanıcı veya kullanıcı grubu dizileri noktalı virgülle ayrılmalıdır.¹",
+        "HELP_FILE_TYPE_DESCRIPTION"        : "Bağlantı içe aktarımı için üç dosya biçimi destekleniyor: CSV, JSON ve YAML. Her dosya biçimi ile aynı veri belirlenebilir. Bağlantı adı ve protokolü içermelidir. İsteğe bağlı olarak bir bağlantı grubu konumu, erişim verilecek bir kullanıcı ve/veya kullanıcı grubu dizisi veya bağlantı parametreleri belirtilebilir. Mevcut veri kaynağında bulunmayan kullanıcı veya kullanıcı grupları otomatik olarak oluşturulacaktır. \"İzinleri sıfırla\" işaretli olmadığı durumda güncellenen bağlantılar için bağlantı izinleri kaldırılmayacaktır.",
+        "HELP_FILE_TYPE_HEADER"             : "Dosya Türleri",
+        "HELP_JSON_DESCRIPTION"             : "Bir bağlantı içe aktarım JSON dosyası bağlantı nesneleri dizisi içerir. Her bağlantı nesnesinde en azından bağlantı adı ve protokolü belirtilmelidir.",
+        "HELP_JSON_EXAMPLE"                 : "[\n  \\{\n    \"name\": \"conn1\",\n    \"protocol\": \"vnc\",\n    \"parameters\": \\{ \"username\": \"alice\", \"password\": \"pass1\", \"hostname\": \"conn1.web.com\" \\},\n    \"parentIdentifier\": \"ROOT\",\n    \"users\": [ \"guac user 1\", \"guac user 2\" ],\n    \"groups\": [ \"Connection 1 Users\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn2\",\n    \"protocol\": \"rdp\",\n    \"parameters\": \\{ \"username\": \"bob\", \"password\": \"pass2\", \"hostname\": \"conn2.web.com\" \\},\n    \"group\": \"ROOT/Parent Group\",\n    \"users\": [ \"guac user 1\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn3\",\n    \"protocol\": \"ssh\",\n    \"parameters\": \\{ \"username\": \"carol\", \"password\": \"pass3\", \"hostname\": \"conn3.web.com\" \\},\n    \"group\": \"ROOT/Parent Group/Child Group\",\n    \"users\": [ \"guac user 2\", \"guac user 3\" ]\n  \\},\n  \\{\n    \"name\": \"conn4\",\n    \"protocol\": \"kubernetes\"\n  \\}\n]",
+        "HELP_JSON_MORE_DETAILS"            : "Bağlantının aktarılacağı bağlantı grup ID'si doğrudan \"parentIdentifier\" ile tanımlanabilir veya aşağıda gösterildiği gibi \"group\" kullanılarak ana gruba yol belirlenebilir. Her bağlantı için izin vermek üzere bir kullanıcı ve kullanıcı grubu tanımlayıcı dizisi belirtilebilir.",
+        "HELP_EXISTING_CONNECTION_MODE"     : "Sağlanan dosyadaki bağlantı adı ve ana bağlantı grubu değerleri mevcut bağlantılarla eşleşiyorsa mevcut bağlantıyı tümüyle değiştir/güncelle. Eğer seçili olmazsa, mevcut bir bağlantı ile aynı isim ve bağlantı grup adına sahip bir bağlantıyı içe aktarmayı denemek hata olarak değerlendirilecek.",
+        "HELP_EXISTING_PERMISSION_MODE"     : "Sağlanan dosyadaki tüm bağlantılar için izinleri dosyada girilmiş olanlara sıfırla. Eğer hiç izin belirtilmemişse, ilgili tüm bağlantı izinleri kaldırılacak. Eğer işaretlenmezse mevcut izinler korunur ve dosyada belirtilmiş izinler de eklenir.",
+        "HELP_SEMICOLON_FOOTNOTE"           : "Eğer mevcutsa noktalı virgüller ters bölü ile öncelenebilir, ör. \"ilk\\\\;son\"",
+        "HELP_UPLOAD_DROP_TITLE"            : "Buraya Bir Dosya Sürükle",
+        "HELP_UPLOAD_FILE_TYPES"            : "CSV, JSON veya YAML",
+        "HELP_YAML_DESCRIPTION"             : "Bir bağlantı içe aktarım YAML dosyası JSON biçimiyle bire bir aynı yapıda bir bağlantı nesneleri dizisi içerir.",
+        "HELP_YAML_EXAMPLE"                 : "---\n  - name: conn1\n    protocol: vnc\n    parameters:\n      username: alice\n      password: pass1\n      hostname: conn1.web.com\n    group: ROOT\n    users:\n      - guac user 1\n      - guac user 2\n    groups:\n    - Connection 1 Users\n    attributes:\n      guacd-encryption: none\n  - name: conn2\n    protocol: rdp\n    parameters:\n      username: bob\n      password: pass2\n      hostname: conn2.web.com\n    group: ROOT/Parent Group\n    users:\n      - guac user 1\n    attributes:\n      guacd-encryption: none\n  - name: conn3\n    protocol: ssh\n    parameters:\n      username: carol\n      password: pass3\n      hostname: conn3.web.com\n    group: ROOT/Parent Group/Child Group\n    users:\n      - guac user 2\n      - guac user 3\n  - name: conn4\n    protocol: kubernetes",
+
+        "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "{NUMBER} {NUMBER, plural, one{bağlantı} other{bağlantılar}} başarıyla içe aktarıldı.",
+
+        "SECTION_HEADER_CONNECTION_IMPORT"           : "Bağlantı İçe Aktarım",
+        "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "Bağlantı İçe Aktarım Dosya Biçimi",
+        "SECTION_HEADER_CSV"                         : "CSV Biçimi",
+        "SECTION_HEADER_JSON"                        : "JSON Biçimi",
+        "SECTION_HEADER_YAML"                        : "YAML Biçimi",
+
+        "TABLE_HEADER_ERRORS"     : "Hatalar",
+        "TABLE_HEADER_GROUP"      : "Grup",
+        "TABLE_HEADER_NAME"       : "İsim",
+        "TABLE_HEADER_PROTOCOL"   : "Protokol",
+        "TABLE_HEADER_ROW_NUMBER" : "Satır #"
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Varsayılan (XML)"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "Şifreyi görüntülemek için tıkla",
+        "HELP_HIDE_PASSWORD" : "Şifreyi gizlemek için tıkla"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "Yakınlarda kullanılan bağlantı yok.",
+
+        "PASSWORD_CHANGED" : "Parola değişti.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "Tüm Bağlantılar",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Son Bağlantılar"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "Anonim"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "Geçersiz Giriş",
+
+        "FIELD_HEADER_USERNAME" : "Kullanıcı adı",
+        "FIELD_HEADER_PASSWORD" : "Parola"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Bağlantıyı Sil",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Konum:",
+        "FIELD_HEADER_NAME"     : "İsim:",
+        "FIELD_HEADER_PROTOCOL" : "Protokol:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Şimdi Etkin",
+        "INFO_CONNECTION_NOT_USED"         : "Bu bağlantı henüz kullanılmadı.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Bağlantıyı Düzenle",
+        "SECTION_HEADER_HISTORY"         : "Kullanım Geçmişi",
+        "SECTION_HEADER_PARAMETERS"      : "Parametreler",
+
+        "TABLE_HEADER_HISTORY_USERNAME"   : "Kullanıcı Adı",
+        "TABLE_HEADER_HISTORY_START"      : "Başlangıç Saati",
+        "TABLE_HEADER_HISTORY_DURATION"   : "Süre",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "Uzak Bilgisayar",
+
+        "TEXT_CONFIRM_DELETE"   : "Bağlantılar silindikten sonra geri yüklenemez. Bu bağlantıyı silmek istediğinize emin misiniz?",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Bağlantı Grubunu Sil",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Konum:",
+        "FIELD_HEADER_NAME"     : "İsim:",
+        "FIELD_HEADER_TYPE"     : "Tür:",
+
+        "NAME_TYPE_BALANCING"       : "Dengeleme",
+        "NAME_TYPE_ORGANIZATIONAL"  : "Organizasyonel",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Bağlantı Grubunu Düzenle",
+
+        "TEXT_CONFIRM_DELETE" : "Bağlantı grupları silindikten sonra geri yüklenemez. Bu bağlantı grubunu silmek istediğinize emin misiniz?"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Paylaşım Profilini Sil",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME"               : "İsim:",
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "Birincil Bağlantı:",
+
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "Paylaşım Profilini Düzenle",
+        "SECTION_HEADER_PARAMETERS"           : "Parametreler",
+
+        "TEXT_CONFIRM_DELETE" : "Paylaşım profilleri silindikten sonra geri yüklenemez. Bu paylaşım profilini silmek istediğinize emin misiniz?"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Kullanıcıyı Sil",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Sistemi yönetebilir:",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "Sistemi denetleyebilir:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Kendi şifresini değiştirebilir:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Yeni kullanıcılar oluşturabilir:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Yeni kullanıcı grupları oluşturabilir:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Yeni bağlantılar oluşturabilir:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Yeni bağlantı grupları oluşturabilir:",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Yeni paylaşım profilleri oluşturabilir:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "Giriş yapması devre dışı:",
+        "FIELD_HEADER_USERNAME"                      : "Kullanıcı adı:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS" : "Bu kullanıcı şu anda hiçbir gruba dahil değil. Grup eklemek için bu bölümü genişletin.",
+
+        "INFO_READ_ONLY"                : "Üzgünüm, fakat bu kullanıcı hesabı düzenlenemez.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "Hiç uygun grup yok.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "Tüm Bağlantılar",
+        "SECTION_HEADER_CONNECTIONS"         : "Bağlantılar",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "Mevcut Bağlantılar",
+        "SECTION_HEADER_EDIT_USER"           : "Kullanıcıyı Düzenle",
+        "SECTION_HEADER_PERMISSIONS"         : "İzinler",
+        "SECTION_HEADER_USER_GROUPS"         : "Gruplar",
+
+        "TEXT_CONFIRM_DELETE" : "Kullanıcılar silindikten sonra geri yüklenemez. Bu kullanıcıyı silmek istediğinize emin misiniz?"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Grubu Sil",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "@:MANAGE_USER.FIELD_HEADER_AUDIT_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "Devre dışı:",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "Grup adı:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "Bu grup şu anda herhangi bir gruba ait değil. Grup eklemek için bu bölümü genişletin.",
+        "HELP_NO_MEMBER_USER_GROUPS" : "Bu grup şu anda hiç grup içermiyor. Grup eklemek için bu bölümü genişletin.",
+        "HELP_NO_MEMBER_USERS"       : "Bu grup şu anda hiç kullanıcı içermiyor. Kullanıcı eklemek için bu bölümü genişletin.",
+
+        "INFO_READ_ONLY"                : "Üzgünüm, fakat bu grup düzenlenemez.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "Hiç uygun kullanıcı yok.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "Grubu Düzenle",
+        "SECTION_HEADER_MEMBER_USERS"        : "Üye Kullanıcılar",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Üye Grupları",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "Üst Gruplar",
+
+        "TEXT_CONFIRM_DELETE" : "Gruplar silindikten sonra geri yüklenemez. Bu grubu silmek istediğinize emin misiniz?"
+
+    },
+
+    "PLAYER" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
+        "ACTION_SHOW_KEY_LOG" : "Tuş Basımı Günlüğü",
+
+        "INFO_FRAME_EVENTS_LEGEND" : "Ekrandaki Faliyet",
+        "INFO_KEY_EVENTS_LEGEND"   : "Klavye Faaliyeti",
+        "INFO_LOADING_RECORDING"   : "Kaydınız yükleniyor. Lütfen bekleyin...",
+        "INFO_NO_KEY_LOG"          : "Tuş Basımı Günlüğü Mevcut Değil",
+        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} {RESULTS, plural, one{Eşleşme} other{Eşleşme}}",
+        "INFO_SEEK_IN_PROGRESS"    : "Talep edilen noktaya ulaşılıyor. Lütfen bekleyin...",
+
+        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+
+    },
+
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"       : "Geriboşluk tuşu gönderir:",
+        "FIELD_HEADER_CA_CERT"         : "Sertifika sağlayıcı sertifikası:",
+        "FIELD_HEADER_CLIENT_CERT"     : "İstemci sertifikası:",
+        "FIELD_HEADER_CLIENT_KEY"      : "İstemci anahtarı:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Pano veri boyutu sınırı:",
+        "FIELD_HEADER_COLOR_SCHEME"    : "Renk şeması:",
+        "FIELD_HEADER_CONTAINER"       : "Konteyner adı:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Kayıt yolunu otomatik oluştur:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Typescript yolunu otomatik oluştur:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Terminalden kopyalamayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "İstemciden yapıştırmayı devre dışı bırak:",
+        "FIELD_HEADER_EXEC_COMMAND"    : "Komut (çalıştır):",
+        "FIELD_HEADER_FONT_NAME"       : "Yazıtipi adı:",
+        "FIELD_HEADER_FONT_SIZE"       : "Yazıtipi boyutu:",
+        "FIELD_HEADER_HOSTNAME"        : "Bilgisayar adı:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Sunucu sertifikasını gözardı et:",
+        "FIELD_HEADER_NAMESPACE"       : "İsim uzayı:",
+        "FIELD_HEADER_POD"             : "Kapsül adı:",
+        "FIELD_HEADER_PORT"            : "Bağlantı noktası:",
+        "FIELD_HEADER_READ_ONLY"       : "Salt okunur:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Fareyi hariç tut:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Grafikleri/akışları hariç tut:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Tuş olaylarını dahil et:",
+        "FIELD_HEADER_RECORDING_NAME"  : "Kayıt adı:",
+        "FIELD_HEADER_RECORDING_PATH"  : "Kayıt yolu:",
+        "FIELD_HEADER_SCROLLBACK"      : "Maksimum geri kaydırma boyutu:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript adı:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript yolu:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
+        "FIELD_HEADER_USE_SSL"         : "SSL/TLS kullan",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Geriboşluk (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Sil (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Beyaz üzerine siyah",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Siyah üzerine gri",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Siyah üzerine yeşil",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Siyah üzerine beyaz",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Kubernetes",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Kimlik doğrulama",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminal davranışı",
+        "SECTION_HEADER_CLIPBOARD"      : "Pano",
+        "SECTION_HEADER_CONTAINER"      : "Konteyner",
+        "SECTION_HEADER_DISPLAY"        : "Ekran",
+        "SECTION_HEADER_RECORDING"      : "Ekran Kaydı",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Metin Oturum Kaydı)",
+        "SECTION_HEADER_NETWORK"        : "Ağ"
+
+    },
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CERT_TOFU"             : "İlk kullanımda sunan bilgisayarın gerçek sertifikası:",
+        "FIELD_HEADER_CERT_FINGERPRINTS"     : "Güvenilen sunan bilgisayar sertifikalarının parmak izleri:",
+        "FIELD_HEADER_CLIENT_NAME"           : "İstemci adı:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Pano veri boyutu sınırı:",
+        "FIELD_HEADER_COLOR_DEPTH"           : "Renk derinliği:",
+        "FIELD_HEADER_CONSOLE"               : "Yönetici konsolu:",
+        "FIELD_HEADER_CONSOLE_AUDIO"         : "Konsolde sesi destekle:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH"     : "Sürücüyü otomatik oluştur:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Kayıt yolunu otomatik oluştur",
+        "FIELD_HEADER_DISABLE_AUDIO"    : "Sesi devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_AUTH"     : "Kimlik doğrulamayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_COPY"     : "Uzak masaüstünden kopyalamayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "Dosya indirmeyi devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_PASTE"    : "İstemciden yapıştırmayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "Dosya yüklemeyi devre dışı bırak:",
+        "FIELD_HEADER_DOMAIN"           : "Alan adı:",
+        "FIELD_HEADER_DPI"              : "Çözünürlük (DPI):",
+        "FIELD_HEADER_DRIVE_NAME"       : "Sürücü adı:",
+        "FIELD_HEADER_DRIVE_PATH"       : "Sürücü yolu:",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Ses girişini etkinleştir (mikrofon):",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Masaüstü kompozisyonunu etkinleştir (Aero):",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "Sürücüyü etkinleştir:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Yazı tipi yumuşatmayı etkinleştir (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Tüm pencere sürüklemeyi etkinleştir:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Menü animasyonlarını etkinleştir:",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Bit eşlem önbelleğe almayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Ekran dışı önbelleğe almayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Glif önbelleğe almayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_GFX"                : "Grafik Boru Hattını Devre Dışı Bırak:",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "Yazdırmayı etkinleştir:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "SFTP'yi etkinleştir:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Tema desteğini etkinleştir:",
+        "FIELD_HEADER_ENABLE_TOUCH"               : "Çoklu dokunmayı etkinleştir:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "Duvar kağıdını etkinleştir:",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "Kayıpsız sıkıştırmayı zorla:",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "Alan adı:",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "Bilgisayar adı:",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "Parola:",
+        "FIELD_HEADER_GATEWAY_PORT"     : "Bağlantı noktası:",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "Kullanıcı adı:",
+        "FIELD_HEADER_HEIGHT"          : "Yükseklik:",
+        "FIELD_HEADER_HOSTNAME"        : "Bilgisayar adı:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Sunucu sertifikasını gözardı et:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "Başlangıç programı:",
+        "FIELD_HEADER_LOAD_BALANCE_INFO" : "Yük dengeleme bilgi/çerez:",
+        "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "Satır sonları:",
+        "FIELD_HEADER_PASSWORD"        : "Parola:",
+        "FIELD_HEADER_PORT"            : "Bağlantı noktası:",
+        "FIELD_HEADER_PRINTER_NAME"    : "Yönlendirilmiş yazıcı adı:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "Bağlantı öncesi BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDP kaynak ID:",
+        "FIELD_HEADER_READ_ONLY"      : "Salt okunur:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Fareyi hariç tut:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Grafikleri/akışları hariç tut:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "Dokunma olaylarını hariç tut:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Tuş olaylarını dahil et:",
+        "FIELD_HEADER_RECORDING_NAME" : "Kayıt adı:",
+        "FIELD_HEADER_RECORDING_PATH" : "Kayıt yolu:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Yeniden boyutlandırma yöntemi:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "Parametreler:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "Çalışma klasörü:",
+        "FIELD_HEADER_REMOTE_APP"      : "Program:",
+        "FIELD_HEADER_SECURITY"        : "Güvenlik kipi:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "Klavye düzeni:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Varsayılan yükleme klasörü:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Dosya indirmeyi devre dışı bırak:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Dosya yüklemeyi devre dışı bırak:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Bilgisayar açık anahtarı (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Bilgisayar adı:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP canlı tutma aralığı:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Geçiş anahtarı:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Parola:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Bağlantı noktası:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Gizli anahtar:",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "Açık anahtar:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Dosya gözatıcı kök klasörü:",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "SFTP bağlantı zaman aşımı:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Kullanıcı adı:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Statik kanal adları:",
+        "FIELD_HEADER_TIMEOUT"         : "Bağlantı zaman aşımı",
+        "FIELD_HEADER_TIMEZONE"        : "Saat dilimi:",
+        "FIELD_HEADER_USERNAME"        : "Kullanıcı adı:",
+        "FIELD_HEADER_WIDTH"           : "Genişlik:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL paketi için yayın adresi:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Uzak bilgisayar için MAC adresi:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL paketi gönder:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL paketi için UDP bağlantı noktası: ",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Bilgisayar başlatma bekleme süresi:",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
+
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "Olduğu gibi koru",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_UNIX"     : "Linux/Mac/Unix (LF)",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_WINDOWS"  : "Windows (CRLF)",
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Düşük renk (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Gerçek renkler (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Gerçek renkler (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 renk",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Görüntü Güncelle\" sanal kanal (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Yeniden bağlan",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "Herhangi",
+        "FIELD_OPTION_SECURITY_EMPTY" : "",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (Ağ Düzeyi Kimlik Doğrulama)",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP şifreleme",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS şifreleme",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
+
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Çekçe (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danca (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "İsveç Almancası (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Almanca (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "İngiliz İngilizcesi (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "Amerikan İngilizcesi (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "İspanyolca (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Latin Amerikan (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Belçika Fransızcası (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CA_QWERTY" : "Kanada Fransızcası (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "İsveç Fransızcası (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Fransızca (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Moğolca (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "İtalyanca (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japonca (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norweççe (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Lehçe (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Brezilya Portekizcesi (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portekizce (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Romen (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "İsveççe (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Türkçe-Q (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "Kimlik doğrulama",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "Temel Ayarlar",
+        "SECTION_HEADER_CLIPBOARD"          : "Pano",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Aygıt Yönlendirme",
+        "SECTION_HEADER_DISPLAY"            : "Ekran",
+        "SECTION_HEADER_GATEWAY"            : "Uzak Masaüstü Ağ Geçidi",
+        "SECTION_HEADER_LOAD_BALANCING"     : "Yük Dengeleme",
+        "SECTION_HEADER_NETWORK"            : "Ağ",
+        "SECTION_HEADER_PERFORMANCE"        : "Performans",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "Bağlantı öncesi PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "Ekran Kaydı",
+        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_BACKSPACE"    : "Geriboşluk tuşu gönderir:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Pano veri boyutu sınırı:",
+        "FIELD_HEADER_COLOR_SCHEME" : "Renk şeması:",
+        "FIELD_HEADER_COMMAND"      : "Komutu çalıştır:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Kayıt yolunu otomatik oluştur:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Typescript yolunu otomatik oluştur:",
+        "FIELD_HEADER_DISABLE_COPY"  : "Terminalden kopyalamayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_PASTE" : "İstemciden yapıştırmayı devre dışı bırak:",
+        "FIELD_HEADER_FONT_NAME"     : "Yazıtipi adı:",
+        "FIELD_HEADER_FONT_SIZE"     : "Yazıtipi boyutu:",
+        "FIELD_HEADER_ENABLE_SFTP"   : "SFTP'yi etkinleştir:",
+        "FIELD_HEADER_HOST_KEY"      : "Bilgisayar açık anahtarı (Base64):",
+        "FIELD_HEADER_HOSTNAME"      : "Bilgisayar adı:",
+        "FIELD_HEADER_LOCALE"        : "Dil/Yerellik ($LANG):",
+        "FIELD_HEADER_USERNAME"      : "Kullanıcı adı:",
+        "FIELD_HEADER_PASSWORD"      : "Parola:",
+        "FIELD_HEADER_PASSPHRASE"    : "Geçiş anahtarı:",
+        "FIELD_HEADER_PORT"          : "Bağlantı noktası:",
+        "FIELD_HEADER_PRIVATE_KEY"   : "Gizli anahtar:",
+        "FIELD_HEADER_PUBLIC_KEY"    : "Açık anahtar:",
+        "FIELD_HEADER_SCROLLBACK"    : "Maksimum geri kaydırma boyutu:",
+        "FIELD_HEADER_READ_ONLY"     : "Salt okunur:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Fareyi hariç tut:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Grafikleri/akışları hariç tut:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Tuş olaylarını dahil et:",
+        "FIELD_HEADER_RECORDING_NAME" : "Kayıt adı:",
+        "FIELD_HEADER_RECORDING_PATH" : "Kayıt yolu:",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Sunucu canlı tutma aralığı:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "Dosya indirmeyi devre dışı bırak:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "Dosya gözatıcı kök klasörü:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "Dosya yüklemeyi devre dışı bırak:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "Terminal türü:",
+        "FIELD_HEADER_TIMEOUT"         : "Bağlantı zaman aşımı:",
+        "FIELD_HEADER_TIMEZONE"        : "Saat dilimi ($TZ):",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript adı:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript yolu:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL paketi için yayın adresi:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Uzak bilgisayar için MAC adresi:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL paketi gönder:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL paketi için bağlantı noktası:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Bilgisayar başlatma bekleme süresi:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Geriboşluk (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Sil (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Beyaz üzerine siyah",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Siyah üzerine gri",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Siyah üzerine yeşil",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Siyah üzerine beyaz",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Kimlik doğrulama",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminal davranışı",
+        "SECTION_HEADER_CLIPBOARD"      : "Pano",
+        "SECTION_HEADER_DISPLAY"        : "Ekran",
+        "SECTION_HEADER_NETWORK"        : "Ağ",
+        "SECTION_HEADER_RECORDING"      : "Ekran Kaydı",
+        "SECTION_HEADER_SESSION"        : "Oturum / Çevre",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Metin Oturum Kaydı)",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_BACKSPACE"      : "Geriboşluk tuşu gönderir:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Pano veri boyutu sınırı:",
+        "FIELD_HEADER_COLOR_SCHEME"   : "Renk şeması:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Kayıt yolunu otomatik oluştur:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Typescript yolunu otomatik oluştur:",
+        "FIELD_HEADER_DISABLE_COPY"   : "Terminalden kopyalamayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_PASTE"  : "İstemciden yapıştırmayı devre dışı bırak:",
+        "FIELD_HEADER_FONT_NAME"      : "Yazıtipi adı:",
+        "FIELD_HEADER_FONT_SIZE"      : "Yazıtipi boyutu :",
+        "FIELD_HEADER_HOSTNAME"       : "Bilgisayar adı:",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "Başarısız giriş düzenli ifade:",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "Başarılı giriş düzenli ifade:",
+        "FIELD_HEADER_USERNAME"       : "Kullanıcı adı:",
+        "FIELD_HEADER_USERNAME_REGEX" : "Kullanıcı adı düzenli ifade:",
+        "FIELD_HEADER_PASSWORD"       : "Parola:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "Parola düzenli ifade:",
+        "FIELD_HEADER_PORT"           : "Bağlantı noktası:",
+        "FIELD_HEADER_READ_ONLY"      : "Satl okunur:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Fareyi hariç tut:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Grafikleri/akışları hariç tut:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Tuş olaylarını dahil et:",
+        "FIELD_HEADER_RECORDING_NAME" : "Kayıt adı:",
+        "FIELD_HEADER_RECORDING_PATH" : "Kayıt yolu:",
+        "FIELD_HEADER_SCROLLBACK"     : "Maksimum geri kaydırma boyutu:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "Terminal türü:",
+        "FIELD_HEADER_TIMEOUT"         : "Bağlantı zaman aşımı:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript adı:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript yolu:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL paketi için yayın adresi:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Uzak bilgisayar için MAC addresi:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL paketi gönder:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL paketi için UDP bağlantı noktası:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Bilgisayar başlatma bekleme süresi:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Geriboşluk (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Sil (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Beyaz üzerine siyah",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Siyah üzerine gri",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Siyah üzerine yeşil",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Siyah üzerine beyaz",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Kimlik doğrulama",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminal davranışı",
+        "SECTION_HEADER_CLIPBOARD"      : "Pano",
+        "SECTION_HEADER_DISPLAY"        : "Ekran",
+        "SECTION_HEADER_RECORDING"      : "Ekran Kaydı",
+        "SECTION_HEADER_TYPESCRIPT"     : "Typescript (Metin Oturum Kaydı)",
+        "SECTION_HEADER_NETWORK"        : "Ağ",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "Ses sunucusu adı:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE"  : "Pano veri boyutu sınırı:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Kodlama:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "Renk derinliği:",
+        "FIELD_HEADER_COMPRESS_LEVEL"   : "Sıkıştırma düzeyi:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Kayıt yolunu otomatik oluştur:",
+        "FIELD_HEADER_CURSOR"           : "İmleç:",
+        "FIELD_HEADER_DEST_HOST"        : "Hedef bilgisayar:",
+        "FIELD_HEADER_DEST_PORT"        : "Hedef bağlantı noktası:",
+        "FIELD_HEADER_DISABLE_COPY"           : "Uzak masaüstünden kopyalamayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_DISPLAY_RESIZE" : "Uzak ekranın yeniden boyutlandırılmasını devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_PASTE"          : "İstemciden yapıştırmayı devre dışı bırak:",
+        "FIELD_HEADER_DISABLE_SERVER_INPUT"   : "İstemci bağlıyken sunucudan girişleri devre dışı bırak:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "Sesi etkinleştir:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "SFTP'yi etkinleştir:",
+        "FIELD_HEADER_ENCODINGS"        : "Kodlamaları görüntüle:",
+        "FIELD_HEADER_FORCE_LOSSLESS"   : "Kayıpsız sıkıştırmayı zorla:",
+        "FIELD_HEADER_HOSTNAME"         : "Bilgisayar adı:",
+        "FIELD_HEADER_USERNAME"         : "Kullanıcı adı:",
+        "FIELD_HEADER_PASSWORD"         : "Parola:",
+        "FIELD_HEADER_PORT"             : "Bağlantı noktası:",
+        "FIELD_HEADER_QUALITY_LEVEL"    : "Ekran kalitesi:",
+        "FIELD_HEADER_READ_ONLY"        : "Salt okunur:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Fareyi hariç tut:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Grafikleri/akışları hariç tut:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Tuş olaylarını dahil et:",
+        "FIELD_HEADER_RECORDING_NAME" : "Kayıt adı:",
+        "FIELD_HEADER_RECORDING_PATH" : "Kayıt yolu:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Varsayılan yükleme klasörü:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Dosya indirmeyi devre dışı bırak:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Dosya yüklemeyi devre dışı bırak:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Bilgisayar açık anahtarı (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Bilgisayar adı:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP canlı tutma aralığı:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Geçiş anahtarı:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Parola:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Bağlantı noktası:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Gizli anahtar:",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "Açık anahtar:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Dosya gözatıcı kök klasörü:",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "SFTP bağlantı zaman aşımı:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Kullanıcı adı:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "Kırmızı/mavi bileşenleri takas et:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL paketi için yayın adresi:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Uzak bilgisayar için MAC addresi:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL paketi gönderi:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL paketi için UDP bağlantı noktası:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Bilgisayar başlatma bekleme süresi:",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 renk",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Düşük renk (16-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Gerçek renkler (24-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Gerçek renkler (32-bit)",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_COMPRESS_LEVEL_0"     : "0",
+        "FIELD_OPTION_COMPRESS_LEVEL_1"     : "1",
+        "FIELD_OPTION_COMPRESS_LEVEL_2"     : "2",
+        "FIELD_OPTION_COMPRESS_LEVEL_3"     : "3",
+        "FIELD_OPTION_COMPRESS_LEVEL_4"     : "4",
+        "FIELD_OPTION_COMPRESS_LEVEL_5"     : "5",
+        "FIELD_OPTION_COMPRESS_LEVEL_6"     : "6",
+        "FIELD_OPTION_COMPRESS_LEVEL_7"     : "7",
+        "FIELD_OPTION_COMPRESS_LEVEL_8"     : "8",
+        "FIELD_OPTION_COMPRESS_LEVEL_9"     : "9",
+        "FIELD_OPTION_COMPRESS_LEVEL_EMPTY" : "",
+
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
+        "FIELD_OPTION_CURSOR_LOCAL"  : "Yerel",
+        "FIELD_OPTION_CURSOR_REMOTE" : "Uzak",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "FIELD_OPTION_QUALITY_LEVEL_0"     : "0",
+        "FIELD_OPTION_QUALITY_LEVEL_1"     : "1",
+        "FIELD_OPTION_QUALITY_LEVEL_2"     : "2",
+        "FIELD_OPTION_QUALITY_LEVEL_3"     : "3",
+        "FIELD_OPTION_QUALITY_LEVEL_4"     : "4",
+        "FIELD_OPTION_QUALITY_LEVEL_5"     : "5",
+        "FIELD_OPTION_QUALITY_LEVEL_6"     : "6",
+        "FIELD_OPTION_QUALITY_LEVEL_7"     : "7",
+        "FIELD_OPTION_QUALITY_LEVEL_8"     : "8",
+        "FIELD_OPTION_QUALITY_LEVEL_9"     : "9",
+        "FIELD_OPTION_QUALITY_LEVEL_EMPTY" : "",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "Ses",
+        "SECTION_HEADER_AUTHENTICATION" : "Kimlik Doğrulama",
+        "SECTION_HEADER_CLIPBOARD"      : "Pano",
+        "SECTION_HEADER_DISPLAY"        : "Ekran",
+        "SECTION_HEADER_NETWORK"        : "Ağ",
+        "SECTION_HEADER_RECORDING"      : "Ekran Kaydı",
+        "SECTION_HEADER_REPEATER"       : "VNC Tekrarlayıcı",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "Ayarlar"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_DOWNLOAD"       : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"         : "@:APP.ACTION_SEARCH",
+        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FILENAME_HISTORY_CSV" : "gecmis.csv",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "Önceki bağlantılar için geçmiş kayıtları burada listelenir ve sütun başlıklarına tıklanarak sıralanabilir. Belirli kayıtları aramak için bir filtre dizesi girin ve \"Ara\"ya tıklayın. Sadece sağlanan filtre dizesiyle eşleşen kayıtlar listelenecektir.",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Eşleşen kayıt yok",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Bağlantı adı",
+        "TABLE_HEADER_SESSION_DURATION"        : "Süre",
+        "TABLE_HEADER_SESSION_LOGS"            : "Günlükler",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Uzak bilgisayar",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Başlangıç zamanı",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Kullanıcı adı",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_IMPORT"               : "@:APP.ACTION_IMPORT",
+        "ACTION_NEW_CONNECTION"       : "Yeni Bağlantı",
+        "ACTION_NEW_CONNECTION_GROUP" : "Yeni Grup",
+        "ACTION_NEW_SHARING_PROFILE"  : "Yeni Paylaşım Profili",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "Bir bağlantıyı yönetmek için üzerine tıklayın veya dokunun. Erişim seviyenize bağlı olarak, bağlantılar eklenebilir, silinebilir ve özellikleri (protokol, uzak bilgisayar adı, bağlantı noktası vb.) değiştirilebilir.",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "Bağlantılar"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"                  : "Görüntüleme dili:",
+        "FIELD_HEADER_NUMBER_RECENT_CONNECTIONS" : "Gösterilecek Son Bağlantı Sayısı:",
+        "FIELD_HEADER_PASSWORD"                  : "Parola:",
+        "FIELD_HEADER_PASSWORD_OLD"              : "Mevcut Parola:",
+        "FIELD_HEADER_PASSWORD_NEW"              : "Yeni Parola:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN"        : "Yeni Parolayı Onayla:",
+        "FIELD_HEADER_SHOW_RECENT_CONNECTIONS"   : "Son Bağlantıları Görüntüle:",
+        "FIELD_HEADER_TIMEZONE"                  : "Saat dilimi:",
+        "FIELD_HEADER_USERNAME"                  : "Kullanıcı adı:",
+
+        "HELP_APPEARANCE"           : "Burada \"Son Bağlantılar\" bölümünü etkinleştirebilir veya devre dışı bırakabilir ve yakınlarda yapılmış bağlantıların gösterilecek sayısını ayarlayabilirsiniz.",
+        "HELP_DEFAULT_INPUT_METHOD" : "Varsayılan giriş yöntemi Guacamole tarafından klavye olaylarının nasıl algılanacağını belirler. Mobil cihaz veya bir giriş yöntemi düzenleyicisi kullanırken bu ayarı değiştirmek gerekebilir. Bu ayar Guacamole menüsünde bağlantı bazlı olarak yeniden düzenlenebilir.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "Varsayılan fare öykünme biçimi uzak farenin yeni bağlantılarda dokunmalara karşı nasıl davranacağını belirler. Bu ayar Guacamole menüsünde bağlantı bazlı olarak yeniden düzenlenebilir.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LOCALE"               : "Aşağıdaki seçenekler kullanıcının yerelleştirme ayarlarıyla ilintili olup arayüzün çeşitli yerlerinin nasıl görüntülendiğini etkileyecektir.",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "Parolanızı değiştirmek istiyorsanız, mevcut parolanızı ve onun altına da yeni parolanızı girin ve \"Parolayı Güncelle\"ye tıklayın. Değişiklik hemen devreye girecektir.",
+
+        "INFO_PASSWORD_CHANGED" : "Parola değiştirildi.",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "Kullanıcı ayarları kaydedildi.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_APPEARANCE"           : "Görünüm",
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Varsayılan Giriş Yöntemi",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Varsayılan Fare Öykünme Biçimi",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Parolayı Değiştir"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "Yeni Kullanıcı",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "Bir kullanıcıyı yönetmek için üzerine tıklayın veya dokunun. Erişim seviyenize bağlı olarak, kullanıcılar eklenebilir, silinebilir ve parolaları değiştirilebilir.",
+
+        "SECTION_HEADER_USERS"       : "Kullanıcılar",
+
+        "TABLE_HEADER_FULL_NAME"   : "Tam adı",
+        "TABLE_HEADER_LAST_ACTIVE" : "Son etkinlik",
+        "TABLE_HEADER_ORGANIZATION" : "Organizasyon",
+        "TABLE_HEADER_USERNAME"    : "Kullanıcı adı"
+
+    },
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "Yeni Grup",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "Bir grubu yönetmek için üzerine tıklayın veya dokunun. Erişim seviyenize bağlı olarak, gruplar eklenebilir, silinebilir ve gruba üye kullanıcılar ile alt gruplar değiştirilebilir.",
+
+        "SECTION_HEADER_USER_GROUPS" : "Gruplar",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "Grup Adı"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "Oturumları Sonlandır",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Oturumları Sonlandır",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "Bu sayfa şu anda açık olan bağlantıları gösterecektir. Listelenen bağlantılar ve bunları sonlandırma yetisi erişim seviyenize bağlıdır. Eğer bir veya daha fazla oturumu sonlandırmak isterseniz, ilgili oturumların yanındaki kutucuğu işaretleyip \"Oturumları Sonlandır\"a tıklayın. Bir oturumu sonlandırmak, bağlantıyla ilintili kullanıcının bağlantısını derhal kesecektir.",
+
+        "INFO_NO_SESSIONS" : "Açık oturum yok",
+
+        "SECTION_HEADER_SESSIONS" : "Açık Oturumlar",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Bağlantı adı",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Uzak bilgisayar",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Ne zamandır açık",
+        "TABLE_HEADER_SESSION_USERNAME"        : "KUllanıcı adı",
+
+        "TEXT_CONFIRM_DELETE" : "Açık olan tüm oturumları sonlandırmak istediğinize emin misiniz? Bu oturumları kullanan kullanıcıların bağlantıları derhal kesilecektir."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "Eposta adresi:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "Tam adı:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "Organizasyon:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "Rol:"
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}
