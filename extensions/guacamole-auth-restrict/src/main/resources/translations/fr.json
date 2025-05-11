@@ -1,0 +1,72 @@
+{
+
+    "DATA_SOURCE_LOGIN_RESTRICTIONS" : {
+        "NAME" : "Restrictions Additionnelles"
+    },
+    
+    "CONNECTION_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Hôtes pouvant accéder à la connexion:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Hôtes NE pouvant PAS accéder à la connexion:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_AFTER"    : "Date et heure après lesquelles cette connexion pourra être utilisée:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Horaires d'utilisation autorisés de la connexion:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_BEFORE"   : "Date et heure avant lesquelles cette connexion peut être utilisée:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Horaires d'utilisation NON autorisés de la connexion:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Restrictions Additionnelles de connexion"
+        
+    },
+    
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Hôtes pouvant accéder à la connexion:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Hôtes NE pouvant PAS accéder à la connexion:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_AFTER"    : "Date et heure après lesquelles cette connexion pourra être utilisée:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Horaires d'utilisation autorisés de la connexion:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_BEFORE"   : "Date et heure avant lesquelles cette connexion peut être utilisée:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Horaires d'utilisation NON autorisés de la connexion:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Restrictions Additionnelles de connexion"
+        
+    },
+    
+    "RESTRICT" : {
+        
+        "ACTION_ADD_ENTRY" : "Ajouter une entrée",
+        
+        "ERROR_CONNECTION_NOT_ALLOWED_NOW"       : "La connexion n'est pas accessible pour le moment.",
+        "ERROR_CONNECTION_NOT_ALLOWED_FROM_HOST" : "La connexion n'est pas autorisée pour le moment.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_NOW"       : "Cet utilisateur n'a pas le droit de se connecter pour le moment.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST" : "Cet utilisateur n'a pas le droit de se connecter depuis cet hôte.",
+        
+        "FIELD_PLACEHOLDER_DATE_TIME_RESTRICTION" : "YYYY-MM-DD HH:MM:SS",
+        
+        "TABLE_HEADER_DAY"        : "Jour",
+        "TABLE_HEADER_END_TIME"   : "Heure de fin",
+        "TABLE_HEADER_HOST"       : "Hôte",
+        "TABLE_HEADER_START_TIME" : "Heure de début",
+        
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Hôtes desquels l'utilisateur peut se connecter:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Hôtes desquels l'utilisateur NE peut PAS se connecter:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Horaires auxquels l'utilisateur peut se connecter:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Horaires auxquels l'utilisateur NE peut PAS se connecter:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Restrictions Additionnelles de connexion utilisateur"
+        
+    },
+    
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Hôtes desquels les membres peuvent se connecter:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Hôtes desquels les membres NE peuvent PAS se connecter:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Horaires auxquels les membres peuvent se connecter:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Horaires auxquels les membres NE peuvent PAS se connecter:",
+        
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Restrictions Additionnelles de connexion utilisateur"
+        
+    }
+}
