@@ -40,6 +40,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     const dataSourceService      = $injector.get('dataSourceService');
     const guacClientManager      = $injector.get('guacClientManager');
     const guacFullscreen         = $injector.get('guacFullscreen');
+    const guacManageMonitor      = $injector.get('guacManageMonitor');
     const iconService            = $injector.get('iconService');
     const preferenceService      = $injector.get('preferenceService');
     const requestService         = $injector.get('requestService');
@@ -725,6 +726,83 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION,FULLSCREEN_MENU_ACTION ];
 
     /**
+     * Ensure that the limit of open monitors is not reached.
+     * 
+     * @returns {boolean}
+     *     true when the limit of opened monitors is reached, false otherwise.
+     */
+    function monitorLimitReached() {
+
+        // Max open monitors allowed (add 1 for the primary monitor)
+        const max_monitors = $scope.focusedClient.arguments['secondary-monitors']
+                ? parseInt($scope.focusedClient.arguments['secondary-monitors']) + 1
+                : 1;
+
+        // Prevent opening of too many monitors
+        if (guacManageMonitor.getMonitorCount() >= max_monitors)
+            return true;
+
+        return false;
+
+    };
+
+    /**
+     * Show the section to add an additional monitor only on supported protocols
+     * and when the functionality is enabled.
+     *
+     * @returns {boolean}
+     *     true when user can use multi monitor, false otherwise.
+     */
+    $scope.showAddMonitor = function showAddMonitor() {
+
+        // Multi monitor only supported with rdp protocol
+        if ($scope.focusedClient.protocol !== 'rdp')
+            return false;
+
+        // Secondary monitors disabled
+        if (!$scope.focusedClient.arguments['secondary-monitors']
+                || $scope.focusedClient.arguments['secondary-monitors'] < 1)
+            return false;
+
+        // Disable button when the limit is reached (still visible)
+        $scope.disableAddMonitor = monitorLimitReached();
+
+        return true;
+        
+    };
+
+    /**
+     * Action that adds an additional monitor on the RDP connection. Will open
+     * a new window to display the new monitor.
+     * Check that the client is in connected state and that the monitor limit
+     * is not reached before triggering the open.
+     */
+    $scope.addMonitor = function addMonitor() {
+
+        // Prevent opening an additional monitor when the client is not connected
+        if ($scope.focusedClient.clientState.connectionState !== 'CONNECTED')
+            return;
+
+        // Prevent opening of too many monitors
+        if (monitorLimitReached())
+            return;
+
+        // Init guacManageMonitor
+        guacManageMonitor.init();
+        guacManageMonitor.menuShown = function menuShown() {
+            $scope.menu.shown = !$scope.menu.shown;
+            $scope.$apply();
+        }
+
+        // Add or remove additional monitor
+        guacManageMonitor.addMonitor();
+
+        // Close menu
+        $scope.menu.shown = false;
+
+    };
+
+    /**
      * @borrows Protocol.getNamespace
      */
     $scope.getProtocolNamespace = Protocol.getNamespace;
@@ -874,6 +952,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
         // always unset fullscreen mode to not confuse user 
         guacFullscreen.setFullscreenMode(false);
+
+        // Close additional monitors
+        guacManageMonitor.closeAllMonitors();
     });
 
 }]);
