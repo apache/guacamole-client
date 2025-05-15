@@ -23,7 +23,6 @@ import com.google.common.io.BaseEncoding;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Arrays;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.radius.user.AuthenticatedUser;
 import org.apache.guacamole.auth.radius.form.GuacamoleRadiusChallenge;
 import org.apache.guacamole.auth.radius.form.RadiusStateField;
@@ -148,8 +147,7 @@ public class AuthenticationProviderService {
             return null;
 
         // Grab HTTP request object and a response to a challenge.
-        HttpServletRequest request = credentials.getRequest();
-        String challengeResponse = request.getParameter(CHALLENGE_RESPONSE_PARAM);
+        String challengeResponse = credentials.getParameter(CHALLENGE_RESPONSE_PARAM);
 
         // RadiusPacket object to store response from server.
         RadiusPacket radPack;
@@ -173,7 +171,7 @@ public class AuthenticationProviderService {
         // This is a response to a previous challenge, authenticate with that.
         else {
             try {
-                String stateString = request.getParameter(RadiusStateField.PARAMETER_NAME);
+                String stateString = credentials.getParameter(RadiusStateField.PARAMETER_NAME);
                 if (stateString == null) {
                     logger.warn("Expected state parameter was not present in challenge/response.");
                     throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);

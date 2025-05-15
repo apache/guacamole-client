@@ -26,7 +26,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
@@ -522,9 +521,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         String username = user.getIdentifier();
 
         // Pull new password from HTTP request
-        HttpServletRequest request = credentials.getRequest();
-        String newPassword = request.getParameter(NEW_PASSWORD_PARAMETER);
-        String confirmNewPassword = request.getParameter(CONFIRM_NEW_PASSWORD_PARAMETER);
+        String newPassword = credentials.getParameter(NEW_PASSWORD_PARAMETER);
+        String confirmNewPassword = credentials.getParameter(CONFIRM_NEW_PASSWORD_PARAMETER);
 
         // Require new password if account is expired
         if (newPassword == null || confirmNewPassword == null) {

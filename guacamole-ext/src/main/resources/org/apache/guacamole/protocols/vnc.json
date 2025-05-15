@@ -89,6 +89,11 @@
             "name"  : "clipboard",
             "fields" : [
                 {
+                    "name"    : "clipboard-buffer-size",
+                    "type"    : "ENUM",
+                    "options" : [ "", "262144", "1048576", "10485760", "52428800" ]
+                },
+                {
                     "name"    : "clipboard-encoding",
                     "type"    : "ENUM",
                     "options" : [ "", "ISO8859-1", "UTF-8", "UTF-16", "CP1252" ]

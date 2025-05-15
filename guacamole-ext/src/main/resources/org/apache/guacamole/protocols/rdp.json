@@ -38,7 +38,7 @@
                 {
                     "name"    : "security",
                     "type"    : "ENUM",
-                    "options" : [ "", "rdp", "tls", "nla", "vmconnect", "any" ]
+                    "options" : [ "", "any", "nla", "rdp", "tls", "vmconnect" ]
                 },
                 {
                     "name"    : "disable-auth",
@@ -111,12 +111,11 @@
                         "en-us-qwerty",
                         "es-es-qwerty",
                         "es-latam-qwerty",
-                        "failsafe",
                         "fr-be-azerty",
                         "fr-fr-azerty",
                         "fr-ca-qwerty",
                         "fr-ch-qwertz",
-                        "hu-hu-qwertz",                        
+                        "hu-hu-qwertz",
                         "it-it-qwerty",
                         "ja-jp-qwerty",
                         "no-no-qwerty",
@@ -126,7 +125,8 @@
                         "ro-ro-qwerty",
                         "sv-se-qwerty",
                         "da-dk-qwerty",
-                        "tr-tr-qwerty"
+                        "tr-tr-qwerty",
+                        "failsafe"
                     ]
                 },
                 {
@@ -174,7 +174,7 @@
                 {
                     "name"    : "resize-method",
                     "type"    : "ENUM",
-                    "options" : [ "", "reconnect", "display-update" ]
+                    "options" : [ "", "display-update", "reconnect" ]
                 },
                 {
                     "name"    : "read-only",
@@ -191,6 +191,11 @@
                     "name"    : "normalize-clipboard",
                     "type"    : "ENUM",
                     "options" : [ "", "preserve", "unix", "windows" ]
+                },
+                {
+                    "name"    : "clipboard-buffer-size",
+                    "type"    : "ENUM",
+                    "options" : [ "", "262144", "1048576", "10485760", "52428800" ]
                 },
                 {
                     "name"    : "disable-copy",

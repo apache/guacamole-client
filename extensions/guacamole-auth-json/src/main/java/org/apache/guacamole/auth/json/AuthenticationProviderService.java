@@ -76,6 +76,10 @@ public class AuthenticationProviderService {
         if (userData == null)
             throw new GuacamoleInvalidCredentialsException("Permission denied.", CredentialsInfo.EMPTY);
 
+        // Update credentials with username provided via JSON for sake of
+        // ${GUAC_USERNAME} token
+        credentials.setUsername(userData.getUsername());
+
         // Produce AuthenticatedUser associated with derived UserData
         AuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
         authenticatedUser.init(credentials, userData);

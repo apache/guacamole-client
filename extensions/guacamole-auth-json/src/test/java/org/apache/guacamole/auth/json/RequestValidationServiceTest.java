@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.ServletInputStream;
 import javax.servlet.RequestDispatcher;
+import org.apache.guacamole.net.auth.Credentials;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -375,13 +376,13 @@ public class RequestValidationServiceTest {
         requestService = new RequestValidationService(new MockConfigurationService(null));
 
         try {
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("1.1.1.1")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("10.10.10.10")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("100.100.100.100")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("1:1:1:1:1:1:1:1")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("10:10:10:10:10:10:10:10")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("100:100:100:100:100:100:100:100")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("1000:1000:1000:1000:1000:1000:1000:1000")));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("1.1.1.1"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("10.10.10.10"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("100.100.100.100"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("1:1:1:1:1:1:1:1"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("10:10:10:10:10:10:10:10"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("100:100:100:100:100:100:100:100"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("1000:1000:1000:1000:1000:1000:1000:1000"))));
         }
         catch (AssertionError e) {
             fail("A network was denied to authenticate even though no trusted networks were specified.");
@@ -399,18 +400,18 @@ public class RequestValidationServiceTest {
         requestService = new RequestValidationService(new MockConfigurationService("10.0.0.0/8,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16,1.2.3.4/32,::1/128,fc00::/7"));
 
         try {
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("10.0.0.0")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("10.255.255.255")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("127.0.0.0")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("127.255.255.255")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("172.16.0.0")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("172.31.255.255")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("192.168.0.0")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("192.168.255.255")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("1.2.3.4")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("::1")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("fc00::")));
-            assertTrue(requestService.isAuthenticationAllowed(mockHttpServletRequest("fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("10.0.0.0"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("10.255.255.255"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("127.0.0.0"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("127.255.255.255"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("172.16.0.0"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("172.31.255.255"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("192.168.0.0"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("192.168.255.255"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("1.2.3.4"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("::1"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("fc00::"))));
+            assertTrue(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"))));
         }
         catch (AssertionError e) {
             fail("A trusted network was denied to authenticate.");
@@ -428,20 +429,20 @@ public class RequestValidationServiceTest {
         requestService = new RequestValidationService(new MockConfigurationService("10.0.0.0/8,127.0.0.0/8,172.16.0.0/12,192.168.0.0/16,1.2.3.4/32,::1/128,fc00::/7"));
 
         try {
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("9.255.255.255")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("11.0.0.0")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("126.255.255.255")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("128.0.0.0")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("172.15.255.255")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("172.32.0.0")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("192.167.255.255")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("192.169.0.0")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("1.2.3.3")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("1.2.3.5")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("::0")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("::2")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("fbff:ffff:ffff:ffff:ffff:ffff:ffff:ffff")));
-            assertFalse(requestService.isAuthenticationAllowed(mockHttpServletRequest("fe00::")));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("9.255.255.255"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("11.0.0.0"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("126.255.255.255"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("128.0.0.0"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("172.15.255.255"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("172.32.0.0"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("192.167.255.255"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("192.169.0.0"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("1.2.3.3"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("1.2.3.5"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("::0"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("::2"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("fbff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"))));
+            assertFalse(requestService.isAuthenticationAllowed(new Credentials(null, null, mockHttpServletRequest("fe00::"))));
         }
         catch (AssertionError e) {
             fail("An untrusted network was allowed to authenticate.");
