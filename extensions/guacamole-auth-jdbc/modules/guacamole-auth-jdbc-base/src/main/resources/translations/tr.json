@@ -1,0 +1,114 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "Yeni parola, süresi geçen paroladan farklı olmalı.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "Bu kullanıcı hesabı şu anda geçerli değil.",
+        "ERROR_NOT_ACCESSIBLE"    : "Bu hesaba erişime şu an için izin verilmiyor. Lütfen daha sonra tekrar deneyin.",
+
+        "INFO_PASSWORD_EXPIRED" : "Parolanızın süresi doldu ve yenilenmesi gerekiyor. Devam etmek için lütfen yeni bir parola girin.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Yeni parola",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Yeni parolayı onaylayın"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maksimum bağlantı sayısı:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Kullanıcı başına maksimum bağlantı sayısı:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Yalnızca acil durum yedeği olarak kullan:",
+        "FIELD_HEADER_WEIGHT"                   : "Bağlantı ağırlığı:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Bilgisayar adı:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Şifreleme:",
+        "FIELD_HEADER_GUACD_PORT"       : "Bağlantı noktası:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "Hiçbiri (şifrelemesiz)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Eşzaman Sınırlamaları",
+        "SECTION_HEADER_LOAD_BALANCING" : "Yük Dengeleme",
+        "SECTION_HEADER_GUACD"          : "Guacamole Vekil Parametreleri (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Oturum yakınlığını etkinleştir:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maksimum bağlantı sayısı:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Kullanıcı başına maksimum bağlantı sayısı:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Eşzaman Sınırlamaları (Dengeleme Grupları)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Paylaşımlı Bağlantılar (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Paylaşımlı Bağlantılar (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Paylaşımlı Bağlantılar (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "{USERNAME} tarafından paylaşıldı"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Parolalar kullanıcı adını içeremez.",
+        "ERROR_REQUIRES_DIGIT"         : "Parolalar en az bir rakam içermeli.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Parolalar hem büyük hem küçük harf içermeli.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Parolalar en az bir simge içermeli.",
+        "ERROR_REUSED"                 : "Bu parola zaten kullanıldı. Lütfen önceki {HISTORY_SIZE} {HISTORY_SIZE, plural, one{parola} other{parola}}dan birini kullanmayın.",
+        "ERROR_TOO_SHORT"              : "Parolalar en az {LENGTH} {LENGTH, plural, one{karakter} other{karakter}} uzunluğunda olmalı.",
+        "ERROR_TOO_YOUNG"              : "Bu hesabın parolası zaten yenilendi. Parolayı tekrar değiştirmeden önce lütfen {WAIT} {WAIT, plural, one{gün} other{gün}} daha bekleyiniz."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "Parola süresi geçti:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Sonrasında erişime izin verme:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Sonrasında erişime izin ver:",
+        "FIELD_HEADER_TIMEZONE"            : "Kullanıcı saat dilimi:",
+        "FIELD_HEADER_VALID_FROM"          : "Hesabı sonrasında etkinleştir:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Hesabı sonrasında devre dışı bırak:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Hesap Kısıtlamaları",
+        "SECTION_HEADER_PROFILE"      : "Profil"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "Grup Kısıtlamaları"
+
+    },
+
+    "CONNECTION_PARAMETERS": {
+        "DATABASE_PARAMETER_VALUE_TOO_LONG": "Belirtilen {PARAMETER_NAME} bağlantı parametresinin değeri izin verilen {MAX_SIZE} {MAX_SIZE, plural, one{karakter} other{karakter}} uzunluğunu aşıyor."
+    } 
+
+}
