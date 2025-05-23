@@ -34,15 +34,16 @@ Guacamole.Display = function() {
      * Reference to this Guacamole.Display.
      * @private
      */
-    var guac_display = this;
+    const guac_display = this;
 
-    var displayWidth = 0;
-    var displayHeight = 0;
-    var displayMonitors = 1;
-    var displayScale = 1;
+    let displayWidth = 0;
+    let displayHeight = 0;
+    let monitorWidth = null;
+    let monitorHeight = null;
+    let displayScale = 1;
 
     // Create display
-    var display = document.createElement("div");
+    const display = document.createElement("div");
     display.style.position = "relative";
     display.style.width = displayWidth + "px";
     display.style.height = displayHeight + "px";
@@ -552,16 +553,6 @@ Guacamole.Display = function() {
     };
 
     /**
-     * Returns the number of monitors.
-     * 
-     * @return {!number}
-     *     The number of monitors.
-     */
-    this.getMonitors = function getMonitors() {
-        return displayMonitors;
-    };
-
-    /**
      * Returns the default layer of this display. Each Guacamole display always
      * has at least one layer. Other layers can optionally be created within
      * this layer, but the default layer cannot be removed and is the absolute
@@ -764,13 +755,16 @@ Guacamole.Display = function() {
     };
 
     /**
-     * Change the number of monitors.
+     * Set the current monitor size.
      * 
-     * @param {!number} monitors
-     *     The number of monitors.
+     * @param {!number} width
+     *     The width of the monitor, in pixels.
+     * @param {!number} height
+     *     The height of the monitor, in pixels.
      */
-    this.updateMonitors = function updateMonitors(monitors) {
-        displayMonitors = monitors;
+    this.setMonitorSize = function setMonitorSize(width, height) {
+        monitorWidth = width;
+        monitorHeight = height;
     }
 
     /**
@@ -791,7 +785,12 @@ Guacamole.Display = function() {
         scheduleTask(function __display_resize() {
 
             // Adjust width when using multiple monitors
-            width = width / displayMonitors;
+            if (monitorWidth)
+                width = monitorWidth;
+
+            // Adjust height when using multiple monitors
+            if (monitorHeight)
+                height = monitorHeight;
 
             layer.resize(width, height);
 

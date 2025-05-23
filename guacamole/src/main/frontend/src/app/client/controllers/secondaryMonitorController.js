@@ -46,7 +46,7 @@ angular.module('client').controller('secondaryMonitorController', ['$scope', '$i
           MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
 
     guacManageMonitor.init("secondary");
-    guacManageMonitor.monitorAttributes.monitorId = monitorId;
+    guacManageMonitor.monitorId = monitorId;
 
     guacManageMonitor.openConsentButton = function openConsentButton() {
 
@@ -85,15 +85,15 @@ angular.module('client').controller('secondaryMonitorController', ['$scope', '$i
 
         // Ctrl+Alt+Shift has NOT been pressed if any key is currently held
         // down that isn't Ctrl, Alt, or Shift
-        if (_.findKey(keyboard.pressed, (val, keysym) => !MENU_KEYS[keysym]))
+        if (_.findKey(keyboard.pressed, (_, keysym) => !MENU_KEYS[keysym]))
             return false;
 
         // Verify that one of each required key is held, regardless of
         // left/right location on the keyboard
         return !!(
-                _.findKey(SHIFT_KEYS, (val, keysym) => keyboard.pressed[keysym])
-                && _.findKey(ALT_KEYS,   (val, keysym) => keyboard.pressed[keysym])
-                && _.findKey(CTRL_KEYS,  (val, keysym) => keyboard.pressed[keysym])
+                _.findKey(SHIFT_KEYS, (_, keysym) => keyboard.pressed[keysym])
+                && _.findKey(ALT_KEYS,   (_, keysym) => keyboard.pressed[keysym])
+                && _.findKey(CTRL_KEYS,  (_, keysym) => keyboard.pressed[keysym])
         );
 
     };

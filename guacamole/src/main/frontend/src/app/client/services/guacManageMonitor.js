@@ -17,6 +17,8 @@
  * under the License.
  */
 
+const { last } = require("lodash");
+
 /**
  * A service for adding additional monitors and handle instructions transfer.
  */
@@ -42,16 +44,16 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
     let monitorType = "primary";
 
     /**
-     * The display of the current Guacamole client instance.
+     * The current Guacamole client instance.
      * 
-     * @type Guacamole.Display
+     * @type Guacamole.Client 
      */
     let client = null;
 
     /**
-     * The current Guacamole client instance.
+     * The display of the current Guacamole client instance.
      * 
-     * @type Guacamole.Client 
+     * @type Guacamole.Display
      */
     let display = null;
 
@@ -76,6 +78,23 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      */
     let lastMonitorId = 0;
 
+    /**
+     * Object containing monitors informations.
+     *
+     * @type Object
+     * @property {Number} count
+     *     The number of monitors, including the main window.
+     * @property {Object.<Number, Number>} map
+     *     A map of monitor id to position.
+     * @property {Object.<Number, Object>} details
+     *     Details of each monitor, including width, height, etc.
+     */
+    let monitorsInfos = {
+        count: 1,
+        map: {},
+        details: {},
+    };
+
     const service = {};
 
     /**
@@ -83,7 +102,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      * 
      * @type Object.<Number>
      */
-    service.monitorAttributes = {};
+    service.monitorId = 0;
 
     /**
      * Init the monitor type and broadcast channel used for bidirectionnal
@@ -100,7 +119,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         if (monitorType == "primary") {
             guacFullscreen.onfullscreen = function onfullscreen(state) {
                 service.pushBroadcastMessage('fullscreen', state);
-            }        
+            }
         }
 
         // Create broadcast if supported
@@ -169,9 +188,9 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
 
         "primary": function primary(message) {
 
-            // Send monitors infos and trigger the screen resize event
-            if (message.data.resize)
-                sendMonitorsInfos();
+            // Send size event to guacd
+            if (message.data.size)
+                service.sendSize(message.data.size);
 
             // Mouse state changed on secondary screen
             if (message.data.mouseState)
@@ -204,20 +223,19 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
 
             if (message.data.monitorsInfos) {
 
-                const monitorsInfos = message.data.monitorsInfos;
-                const monitorId = service.monitorAttributes.monitorId;
+                monitorsInfos = message.data.monitorsInfos;
+                const monitorId = service.monitorId;
 
-                // Store new monitor count and position
-                service.monitorAttributes.count = monitorsInfos.count;
-                service.monitorAttributes.position = monitorsInfos.map[monitorId];
-
-                // Set the monitor count in display
-                display.updateMonitors(service.monitorAttributes.count);
+                // Set the monitor size in the display
+                display.setMonitorSize(
+                    monitorsInfos.details[monitorId].width,
+                    monitorsInfos.details[monitorId].height,
+                );
 
             }
 
-            // Resize display and window with parameters sent by guacd in the size handler
-            if (message.data.handler?.opcode === 'size' && !guacFullscreen.isInFullscreenMode()) {
+            // Handle resize event
+            if (message.data.handler?.opcode === 'size') {
 
                 const parameters = message.data.handler.parameters;
                 const default_layer = 0;
@@ -227,30 +245,13 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
                 if (layer !== default_layer)
                     return;
 
-                // Set the new display size
-                service.monitorAttributes.width  = parseInt(parameters[1]) / service.monitorAttributes.count;
-                service.monitorAttributes.height = parseInt(parameters[2]);
-
-                // Translate all draw actions on X to draw the current display
-                // instead of the first
-                client.offsetX = service.monitorAttributes.width * service.monitorAttributes.position;
-
-                // Get unusable window height and width (ex: titlebar)
-                const windowUnusableHeight = $window.outerHeight - $window.innerHeight;
-                const windowUnusableWidth = $window.outerWidth - $window.innerWidth;
+                // Add offset to the display to not show the same content on
+                // all windows
+                client.offsetX = service.getOffsetX();
+                client.offsetY = service.getOffsetY();
 
                 // Remove scrollbars
                 document.querySelector('.client-main').style.overflow = 'hidden';
-
-                // Resize window to the display size
-                $window.resizeTo(
-                    service.monitorAttributes.width + windowUnusableWidth,
-                    service.monitorAttributes.height + windowUnusableHeight
-                );
-
-                // Adjust scaling to new size
-                service.mainElementResized();
-
             }
 
             // Full screen mode instructions
@@ -277,24 +278,6 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      * not click on it.
      */
     service.openConsentButton = null;
-
-    /**
-     * Adjust the display scaling according to the window size.
-     */
-    service.mainElementResized = function mainElementResized() {
-
-        // Calculate required scaling factor
-        const scaleX = $window.innerWidth / service.monitorAttributes.width;
-        const scaleY = $window.innerHeight / service.monitorAttributes.height;
-
-        // Use the lowest scaling to avoid acreen overflow
-        if (scaleX <= scaleY)
-            service.monitorAttributes.currentScaling = scaleX;
-        else
-            service.monitorAttributes.currentScaling = scaleY;
-        
-        display.scale(service.monitorAttributes.currentScaling);
-    };
 
     /**
      * Open or close Guacamole menu (ctrl+alt+shift).
@@ -346,7 +329,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
     };
 
     /**
-     * Open or close additional monitor window.
+     * Open an additional monitor window.
      */
     service.addMonitor = function addMonitor() {
 
@@ -356,7 +339,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         // New window parameters
         const windowUrl  = './#/secondaryMonitor/' + lastMonitorId;
         const windowId   = 'monitor' + lastMonitorId;
-        const windowSize = 'width=' + $window.innerWidth + ',height=' + $window.innerHeight;
+        const windowSize = 'width=800,height=600';
 
         // Open new window
         monitors[lastMonitorId] = $window.open(windowUrl, windowId, windowSize);
@@ -382,9 +365,13 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         // Delete monitor
         delete monitors[monitorId];
 
-        // Send updated informations to secondary monitors and trigger the
-        // resize event to notify guacd of deleted monitor.
-        sendMonitorsInfos();
+        // Notify guacd that a monitor has been closed
+        service.sendSize({
+            width: 0,
+            height: 0,
+            top: 0,
+            monitorId: monitorId,
+        });
 
     }
 
@@ -394,70 +381,133 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
     service.closeAllMonitors = function closeAllMonitors() {
 
         // Loop on all existing monitors
-        for (const key in monitors) {
-
-            // Close monitor
-            if (!monitors[key].closed)
-                monitors[key].close();
-
-            // Delete monitor
-            delete monitors[key];
-
-        }
-
-        // Trigger the screen resize event to notify guacd that a monitor
-        // has been removed.
-        $window.dispatchEvent(new Event('monitor-count'));
+        for (const key in monitors)
+            service.closeMonitor(key);
 
     };
 
     /**
-     * Get open monitors count. Force additional monitor to close if it's
-     * window is closed.
+     * Get open monitors count.
      *
      * @returns {!number}
      *     Actual count of monitors.
      */
     service.getMonitorCount = function getMonitorCount() {
-
-        // Loop on all existing monitors
-        for (const key in monitors) {
-
-            // Dead monitor, close it
-            if (monitors[key].closed)
-                service.closeMonitor(key);
-
-        }
-
         // Return additionals monitors count + 1 for the main window
         return Object.keys(monitors).length + 1;
-
     };
 
     /**
-     * Send monitor informations into the broadcast channel and notify guacd
-     * that the monitor count has changed.
+     * Send size event to guacd and update monitorsInfos object.
+     *
+     * @param {Object} size
+     *     The size object containing width, height, top and monitorId.
      */
-    function sendMonitorsInfos() {
+    service.sendSize = function sendSize(size) {
 
-        const monitorsInfos = {
-            count: service.getMonitorCount(),
-            map: {},
-        };
+        let monitorPosition = monitorsInfos.map[size.monitorId]
+            ?? service.getMonitorCount() - 1;
 
-        // The main window would represent 0
-        let monitorPosition = 1;
+        updateMonitorsInfos({
+            id: size.monitorId,
+            width: size.width,
+            height: size.height,
+        });
 
-        // Generate monitors map (id => position)
-        for (const monitorKey in monitors)
-            monitorsInfos.map[monitorKey] = monitorPosition++;
+        if (size.monitorId === 0)
+            display.setMonitorSize(
+                monitorsInfos.details[0].width,
+                monitorsInfos.details[0].height,
+            );
+
+        // Send size event to guacd
+        client.sendSize(
+            size.width,
+            size.height,
+            monitorPosition,
+            size.top,
+        );
 
         // Push informations to all monitors
         service.pushBroadcastMessage('monitorsInfos', monitorsInfos);
 
-        // Trigger the screen resize event to notify guacd that a monitor
-        // has been added or removed.
-        $window.dispatchEvent(new Event('monitor-count'));
+    }
+
+    /**
+    * Get the X offset of the current monitor. The X offset is the
+    * total width of all previous monitors.
+    *
+    * @return {number}
+    *     The X offset of the current monitor, in pixels.
+    */
+    service.getOffsetX = function getOffsetX() {
+        const monitorId = service.monitorId;
+
+        if (monitorId === 0)
+            return 0;
+    
+        const thisPosition = monitorsInfos.map[monitorId];
+        let offsetX = 0;
+    
+        // Loop through all monitors to add their widths as offset if they
+        // are before the current monitor
+        for (const [id, pos] of Object.entries(monitorsInfos.map)) {
+            if (pos < thisPosition) {
+                const details = monitorsInfos.details[id];
+                if (details) offsetX += details.width;
+            }
+        }
+
+        return offsetX;
+    }
+
+    /**
+    * Get the Y offset of the current monitor.
+    *
+    * @return {number}
+    *     The Y offset of the current monitor, in pixels.
+    */
+    service.getOffsetY = function getOffsetY() {
+        return 0;
+    }
+
+    /**
+     * Update monitorsInfos object with current monitors count and map.
+     *
+     * @param {Object} monitorDetails
+     *     Optional monitor details to update the monitorsInfos object.
+     */
+    function updateMonitorsInfos(monitorDetails) {
+
+        monitorsInfos.count = service.getMonitorCount();
+
+        // The main window would represent 0
+        let monitorPosition = 1;
+
+        // Generate monitors map (id => position), main window is always at
+        // position 0
+        monitorsInfos.map[0] = 0;
+        for (const monitorKey in monitors) {
+            monitorsInfos.map[monitorKey] = monitorPosition++;
+        }
+
+        // Set monitor details if provided
+        if (!monitorDetails)
+            return;
+
+        // If width or height is 0, remove monitor details
+        if (monitorDetails.width === 0 || monitorDetails.height === 0) {
+            delete monitorsInfos.details[monitorDetails.id];
+            delete monitorsInfos.map[monitorDetails.id];
+        }
+        // Update or add monitor details
+        else {
+            const monitorId = monitorDetails.id;
+            monitorsInfos.details[monitorId] = {
+                width: monitorDetails.width,
+                height: monitorDetails.height,
+            };
+        }        
 
     };
 

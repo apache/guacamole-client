@@ -64,7 +64,7 @@
     "CLIENT" : {
 
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_ADD_MONITOR"               : "Add an additional monitor",
+        "ACTION_ADD_MONITOR"               : "Add an additional screen",
         "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
         "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "@:APP.ACTION_CLEAR",

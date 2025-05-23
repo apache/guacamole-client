@@ -331,16 +331,19 @@ Guacamole.Client = function(tunnel) {
      * @param {!number} height
      *     The height of the screen.
      * 
-     * @param {!number} monitors
-     *     The count of monitors.
+     * @param {!number} x_position
+     *     The x position of the screen (relative to the main window).
+     *
+     * @param {!number} top_offset
+     *     The top offset of the screen, in pixel.
      */
-    this.sendSize = function sendSize(width, height, monitors) {
+    this.sendSize = function sendSize(width, height, x_position, top_offset) {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
-        tunnel.sendMessage("size", width, height, monitors);
+        tunnel.sendMessage("size", width, height, x_position, top_offset);
 
     };
 
@@ -1679,10 +1682,10 @@ Guacamole.Client = function(tunnel) {
 
         "size": function(parameters) {
 
-            var layer_index = parseInt(parameters[0]);
-            var layer = getLayer(layer_index);
-            var width = parseInt(parameters[1]);
-            var height = parseInt(parameters[2]);
+            const layer_index = parseInt(parameters[0]);
+            const layer = getLayer(layer_index);
+            const width = parseInt(parameters[1]);
+            const height = parseInt(parameters[2]);
 
             display.resize(layer, width, height);
 
