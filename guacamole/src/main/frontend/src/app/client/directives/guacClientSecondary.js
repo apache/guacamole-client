@@ -47,6 +47,7 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
 
         // Required services
         const $document         = $injector.get('$document');
+        const $window           = $injector.get('$window');
         const clipboardService  = $injector.get('clipboardService');
         const guacManageMonitor = $injector.get('guacManageMonitor');
 
@@ -80,6 +81,13 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
         const displayContainer = $element.find('.display')[0];
 
         /**
+         * The main containing element for the entire directive.
+         * 
+         * @type Element
+         */
+        const main = $element[0];
+
+        /**
          * The tracked mouse.
          *
          * @type Guacamole.Mouse
@@ -100,13 +108,6 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
          */
         const keyboard = new Guacamole.Keyboard($document[0]);
 
-        // Init monitor attributes with default values
-        guacManageMonitor.monitorAttributes.width = 0;
-        guacManageMonitor.monitorAttributes.height = 0;
-        guacManageMonitor.monitorAttributes.position = 0;
-        guacManageMonitor.monitorAttributes.count = 0;
-        guacManageMonitor.monitorAttributes.currentScaling = 1;
-
         // Set client instance on guacManageMonitor service
         guacManageMonitor.setClient(client);
 
@@ -123,10 +124,26 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
         };
 
         // Adjust the display scaling according to the window size.
-        $scope.mainElementResized = guacManageMonitor.mainElementResized;
+        $scope.mainElementResized = function mainElementResized() {
+
+            const pixelDensity = $window.devicePixelRatio ?? 1;
+            const width  = main.offsetWidth  * pixelDensity;
+            const height = main.offsetHeight * pixelDensity;
+            const top    = 0 // TODO: $window.screenY ?? 0;
+
+            const size = {
+                width: width,
+                height: height,
+                top: top > 0 ? top : 0,
+                monitorId: guacManageMonitor.monitorId,
+            };
+
+            // Send resize event to main window
+            guacManageMonitor.pushBroadcastMessage('size', size);
+        }
 
         // Ready for resize
-        guacManageMonitor.pushBroadcastMessage('resize', true);
+        $scope.mainElementResized();
 
         // Handle any received clipboard data
         client.onclipboard = function clientClipboardReceived(stream, mimetype) {
@@ -176,13 +193,11 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
             display.showCursor(true);
 
             // Update client-side cursor
-            display.moveCursor(
-                Math.floor(e.state.x / guacManageMonitor.monitorAttributes.currentScaling),
-                Math.floor(e.state.y / guacManageMonitor.monitorAttributes.currentScaling)
-            );
+            display.moveCursor(e.state.x, e.state.y);
 
             // Click on actual display instead of the first
-            const displayOffset = guacManageMonitor.monitorAttributes.width * guacManageMonitor.monitorAttributes.position;
+            const displayOffsetX = guacManageMonitor.getOffsetX();
+            const displayOffsetY = guacManageMonitor.getOffsetY();
 
             // Convert mouse state to serializable object
             mouseState.down = e.state.down;
@@ -190,8 +205,8 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
             mouseState.left = e.state.left;
             mouseState.middle = e.state.middle;
             mouseState.right = e.state.right;
-            mouseState.x = e.state.x / guacManageMonitor.monitorAttributes.currentScaling + displayOffset;
-            mouseState.y = e.state.y / guacManageMonitor.monitorAttributes.currentScaling;
+            mouseState.x = e.state.x + displayOffsetX;
+            mouseState.y = e.state.y + displayOffsetY;
 
             // Send mouse state to main window
             guacManageMonitor.pushBroadcastMessage('mouseState', mouseState);
