@@ -74,12 +74,16 @@ EOF
 if [ -e "$GUACAMOLE_HOME_TEMPLATE" ]; then
 
     # Create links for any libraries provided in the template GUACAMOLE_HOME
-    find "$GUACAMOLE_HOME_TEMPLATE/lib" -mindepth 1 -maxdepth 1 \
-        -exec ln -sv "{}" "$GUACAMOLE_HOME/lib/" ";"
+    if [ -e "$GUACAMOLE_HOME_TEMPLATE/lib" ]; then
+        find "$GUACAMOLE_HOME_TEMPLATE/lib" -mindepth 1 -maxdepth 1 \
+            -exec ln -sv "{}" "$GUACAMOLE_HOME/lib/" ";"
+    fi
 
     # Create links for any extensions provided in the template GUACAMOLE_HOME
-    find "$GUACAMOLE_HOME_TEMPLATE/extensions" -mindepth 1 -maxdepth 1 \
-        -exec ln -sv "{}" "$GUACAMOLE_HOME/extensions/" ";"
+    if [ -e "$GUACAMOLE_HOME_TEMPLATE/extensions" ]; then
+        find "$GUACAMOLE_HOME_TEMPLATE/extensions" -mindepth 1 -maxdepth 1 \
+            -exec ln -sv "{}" "$GUACAMOLE_HOME/extensions/" ";"
+    fi
 
     # Create links for all other files directly within the template
     # GUACAMOLE_HOME
