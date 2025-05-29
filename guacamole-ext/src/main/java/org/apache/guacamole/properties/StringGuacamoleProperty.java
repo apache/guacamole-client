@@ -21,6 +21,7 @@ package org.apache.guacamole.properties;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -28,6 +29,14 @@ import org.apache.guacamole.GuacamoleException;
  */
 public abstract class StringGuacamoleProperty implements GuacamoleProperty<String> {
 
+    /**
+     * A pattern which matches against the delimiters between values. This is
+     * currently either a comma or a semicolon and any following whitespace.
+     * Parts of the input string which match this pattern will not be included
+     * in the parsed result.
+     */
+    static final Pattern DELIMITER_PATTERN = Pattern.compile("[,;]\\s*");
+    
     @Override
     public String parseValue(String value) throws GuacamoleException {
         return value;
