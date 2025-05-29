@@ -87,11 +87,23 @@ WORKDIR /opt/guacamole
 # Copy artifacts from builder image into this image
 COPY --from=builder /opt/guacamole/ .
 
-# Create a new user guacamole
-ARG UID=1001
-ARG GID=1001
-RUN groupadd --gid $GID guacamole
-RUN useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $GID guacamole
+# User and group configuration for recording permissions compatibility
+ARG GUACD_GID=1000
+ARG GUACAMOLE_UID=1001
+ARG GUACAMOLE_GID=1001
+
+# Create guacd group to match the guacd container (for shared volume access)
+RUN groupadd --gid $GUACD_GID guacd
+
+# Create guacamole group
+RUN groupadd --gid $GUACAMOLE_GID guacamole
+
+# Create guacamole user with primary group guacamole
+RUN useradd --system --create-home --shell /usr/sbin/nologin \
+    --uid $GUACAMOLE_UID --gid $GUACAMOLE_GID guacamole
+
+# Add guacamole user to guacd group for shared recording volume access
+RUN usermod -aG guacd guacamole
 
 # Run with user guacamole
 USER guacamole
