@@ -21,7 +21,6 @@ package org.apache.guacamole.properties;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -32,14 +31,6 @@ import org.apache.guacamole.GuacamoleException;
  *     The type this GuacamoleProperty will parse into.
  */
 public interface GuacamoleProperty<Type> {
-
-    /**
-     * A pattern which matches against the delimiters between values. This is
-     * currently simply a semicolon and any following whitespace. Parts of the
-     * input string which match this pattern will not be included in the parsed
-     * result.
-     */
-    static final Pattern DELIMITER_PATTERN = Pattern.compile(";\\s*");
     
     /**
      * Returns the name of the property in guacamole.properties that this
