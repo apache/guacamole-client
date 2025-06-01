@@ -51,6 +51,11 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "always-prompt-for-credentials",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "cert-tofu",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
