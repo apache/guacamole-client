@@ -36,9 +36,9 @@ angular.module('client').factory('guacFullscreen', ['$injector',
     service.setFullscreenMode = function setFullscreenMode(state) {
         if (document.fullscreenEnabled) {
             if (state && !service.isInFullscreenMode())
-                document.documentElement.requestFullscreen().then(navigator.keyboard.lock()); 
+                document.documentElement.requestFullscreen();
             else if (!state && service.isInFullscreenMode())
-                document.exitFullscreen().then(navigator.keyboard.unlock()); 
+                document.exitFullscreen();
         }
     }
 
@@ -48,6 +48,19 @@ angular.module('client').factory('guacFullscreen', ['$injector',
             service.setFullscreenMode(true);
         else
             service.setFullscreenMode(false);
+    }
+
+    // If the browser supports keyboard lock, lock the keyboard when entering
+    // fullscreen mode and unlock it when exiting fullscreen mode.
+    if (navigator.keyboard?.lock) {
+        document.addEventListener('fullscreenchange', () => {
+            if (document.fullscreenElement) {
+                navigator.keyboard.lock();
+                return;
+            }
+
+            navigator.keyboard.unlock();
+        });
     }
 
     return service;
