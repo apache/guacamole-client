@@ -129,17 +129,23 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
             const pixelDensity = $window.devicePixelRatio ?? 1;
             const width  = main.offsetWidth  * pixelDensity;
             const height = main.offsetHeight * pixelDensity;
-            const top    = 0 // TODO: $window.screenY ?? 0;
+            const top    = window.screenY;
+            const left   = window.screenX;
 
             const size = {
                 width: width,
                 height: height,
-                top: top > 0 ? top : 0,
+                top: top,
+                left: left,
                 monitorId: guacManageMonitor.monitorId,
             };
 
             // Send resize event to main window
             guacManageMonitor.pushBroadcastMessage('size', size);
+
+            // Remove scrollbars
+            document.querySelector('.client-main').style.overflow = 'hidden';
+
         }
 
         // Ready for resize
@@ -207,6 +213,7 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
             mouseState.right = e.state.right;
             mouseState.x = e.state.x + displayOffsetX;
             mouseState.y = e.state.y + displayOffsetY;
+            mouseState.offsedProcessed = true;
 
             // Send mouse state to main window
             guacManageMonitor.pushBroadcastMessage('mouseState', mouseState);
