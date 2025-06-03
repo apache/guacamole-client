@@ -17,8 +17,6 @@
  * under the License.
  */
 
-const { last } = require("lodash");
-
 /**
  * A service for adding additional monitors and handle instructions transfer.
  */
@@ -126,6 +124,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         if (!service.supported())
             return;
 
+        // TODO: ensure that there is no mixing of data between multiple connections
         broadcast = new BroadcastChannel('guac_monitors');
 
         /**
@@ -136,6 +135,10 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
          *     Received message event from guac_monitors channel.
          */
         broadcast.onmessage = messageHandlers[monitorType];
+
+        // Check the window position every second and send a resize event if it
+        // has changed
+        setInterval(() => updatePosition(), 1000);
 
     };
 
@@ -211,7 +214,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
             // CTRL+ALT+SHIFT pressed on secondary window
             if (message.data.guacMenu && service.menuShown)
                 service.menuShown();
-            
+
         },
 
         "secondary": function secondaryMonitor(message) {
@@ -232,26 +235,9 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
                     monitorsInfos.details[monitorId].height,
                 );
 
-            }
-
-            // Handle resize event
-            if (message.data.handler?.opcode === 'size') {
-
-                const parameters = message.data.handler.parameters;
-                const default_layer = 0;
-                const layer = parseInt(parameters[0]);
-
-                // Ignore other layers (ex: mouse) that can have other size
-                if (layer !== default_layer)
-                    return;
-
-                // Add offset to the display to not show the same content on
-                // all windows
                 client.offsetX = service.getOffsetX();
-                client.offsetY = service.getOffsetY();
+                client.offsetY = service.getOffsetY();        
 
-                // Remove scrollbars
-                document.querySelector('.client-main').style.overflow = 'hidden';
             }
 
             // Full screen mode instructions
@@ -405,28 +391,31 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      */
     service.sendSize = function sendSize(size) {
 
-        let monitorPosition = monitorsInfos.map[size.monitorId]
-            ?? service.getMonitorCount() - 1;
+        const monitorPosition = monitorsInfos.map[size.monitorId];
 
         updateMonitorsInfos({
-            id: size.monitorId,
-            width: size.width,
+            id:     size.monitorId,
+            width:  size.width,
             height: size.height,
+            left:   size.left,
+            top:    size.top,
         });
 
-        if (size.monitorId === 0)
-            display.setMonitorSize(
-                monitorsInfos.details[0].width,
-                monitorsInfos.details[0].height,
-            );
-
-        // Send size event to guacd
-        client.sendSize(
-            size.width,
-            size.height,
-            monitorPosition,
-            size.top,
+        display.setMonitorSize(
+            monitorsInfos.details[0].width,
+            monitorsInfos.details[0].height,
         );
+
+        client.offsetX = service.getOffsetX();
+        client.offsetY = service.getOffsetY();    
+
+        // Monitor has been closed
+        if (size.width === 0 || size.height === 0)
+            client.sendSize(0, 0, monitorPosition, 0);
+
+        // Send new size to guacd
+        else
+            sendAllSizes();
 
         // Push informations to all monitors
         service.pushBroadcastMessage('monitorsInfos', monitorsInfos);
@@ -434,12 +423,12 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
     }
 
     /**
-    * Get the X offset of the current monitor. The X offset is the
-    * total width of all previous monitors.
-    *
-    * @return {number}
-    *     The X offset of the current monitor, in pixels.
-    */
+     * Get the X offset of the current monitor. The X offset is the
+     * total width of all previous monitors.
+     *
+     * @return {number}
+     *     The X offset of the current monitor, in pixels.
+     */
     service.getOffsetX = function getOffsetX() {
         const monitorId = service.monitorId;
 
@@ -462,13 +451,84 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
     }
 
     /**
-    * Get the Y offset of the current monitor.
-    *
-    * @return {number}
-    *     The Y offset of the current monitor, in pixels.
-    */
+     * Get the Y offset of the current monitor. The monitor displayed on the
+     * highest position (lowest top value) will have an offset of 0 and for
+     * other monitors, the offset is the top value of the monitor minus the top
+     * value of the highest monitor (lowest top offset).
+     * This is used to calculate the Y offset to draw operations and mouse
+     * events.
+     *
+     * @return {number}
+     *     The Y offset of the current monitor, in pixels.
+     */
     service.getOffsetY = function getOffsetY() {
-        return 0;
+        const currentOffset = monitorsInfos.details[service.monitorId]?.top ?? 0;
+        return currentOffset - getLowestTopOffset();
+    }
+
+    /**
+     * Send the size of all monitors to guacd. This is used to update the
+     * monitor sizes in guacd when a new monitor is added or updated.
+     *
+     * This function loops through all monitors and sends their sizes to guacd
+     * using the client.sendSize method. The size includes width, height,
+     * monitor position and top offset.
+     */
+    function sendAllSizes() {
+        // Loop through all monitors and send their sizes to guacd
+        for (const [id, details] of Object.entries(monitorsInfos.details)) {
+            client.sendSize(
+                details.width,
+                details.height,
+                monitorsInfos.map[id],
+                getTopOffset(id, details.top)
+            );
+        }
+    }
+
+    /**
+     * Get the top offset of the given monitor id and top value based on the
+     * primary monitor's top value. The top offset is the difference between the
+     * top value of the monitor and the top value of the primary monitor.
+     * This is used to calculate the Y offset to send to guacd.
+     *
+     * @param {number} id
+     *     The id of the monitor.
+     * @param {number} top
+     *     The top value of the monitor.
+     *
+     * @return {number}
+     *     The top offset of the monitor, in pixels.
+     */
+    function getTopOffset(id, top) {
+
+        const primaryMonitorId = 0;
+
+        // If this is the primary monitor, return 0
+        if (id === primaryMonitorId)
+            return 0;
+
+        return top - Math.abs(monitorsInfos.details[primaryMonitorId].top ?? 0);
+    }
+
+    /**
+     * Get the lowest top value of all monitors. This is used to calculate the
+     * Y offset of the current monitor.
+     *
+     * @return {number}
+     *     The lowest top value of all monitors, in pixels.
+     */
+    function getLowestTopOffset() {
+        let lowestTopValue = monitorsInfos.details[0]?.top ?? 0;
+
+        // Loop through all monitors to find the highest monitor
+        for (const [_, details] of Object.entries(monitorsInfos.details)) {
+            if (details?.top < lowestTopValue) {
+                lowestTopValue = details.top;
+            }
+        }
+
+        return lowestTopValue;
     }
 
     /**
@@ -504,12 +564,59 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         else {
             const monitorId = monitorDetails.id;
             monitorsInfos.details[monitorId] = {
-                width: monitorDetails.width,
+                width:  monitorDetails.width,
                 height: monitorDetails.height,
+                top:    monitorDetails.top,
+                // TODO: Use the left value to reorder monitors if needed
+                left:   monitorDetails.left,
             };
         }        
 
     };
+
+    /**
+     * Check if the window position has changed since the last check.
+     * This is used to avoid unnecessary updates.
+     *
+     * @returns {boolean}
+     *     True if the position has changed, false otherwise.
+     */
+    function positionHasChanged() {
+        const monitorDetails = monitorsInfos.details[service.monitorId];
+
+        // Monitor not initialized
+        if (!monitorDetails)
+            return false;
+
+        return monitorDetails.left !== window.screenX
+            || monitorDetails.top  !== window.screenY;
+    }
+
+    /**
+     * Trigger a resize event if the window position has changed.
+     */
+    function updatePosition() {
+        if (!positionHasChanged() || !client)
+            return;
+
+        const monitorDetails = monitorsInfos.details[service.monitorId];
+
+        // Update the position of the monitor
+        monitorDetails.left      = window.screenX ?? 0;
+        monitorDetails.top       = window.screenY ?? 0;
+        monitorDetails.monitorId = service.monitorId;
+
+        // Send size event to guacd and update monitorsInfos if this is the
+        // primary monitor
+        if (monitorType === "primary") {
+            service.sendSize(monitorDetails);
+            return;
+        }
+
+        // Send broadcast message to primary monitor if this is a secondary
+        // monitor
+        service.pushBroadcastMessage('size', monitorDetails);
+    }
 
     // Close additional monitors when window is unloaded
     $window.addEventListener('unload', service.closeAllMonitors);
