@@ -462,6 +462,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 const pixelDensity = $window.devicePixelRatio || 1;
                 const width    = main.offsetWidth  * pixelDensity;
                 const height   = main.offsetHeight * pixelDensity;
+                const top      = window.screenY;
+                const left     = window.screenX;
 
                 // Window resized
                 if (display.getWidth() !== width || display.getHeight() !== height)
@@ -469,7 +471,8 @@ angular.module('client').directive('guacClient', [function guacClient() {
                         width: width,
                         height: height,
                         monitorId: 0,
-                        top: 0,
+                        top: top,
+                        left: left,
                     });
 
             }
