@@ -52,6 +52,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     const guacAudio               = $injector.get('guacAudio');
     const guacHistory             = $injector.get('guacHistory');
     const guacImage               = $injector.get('guacImage');
+    const guacManageMonitor       = $injector.get('guacManageMonitor');
     const guacVideo               = $injector.get('guacVideo');
 
     /**
@@ -647,7 +648,9 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             reader.onend = function textComplete() {
                 ManagedArgument.getInstance(managedClient, name, value).then(function argumentIsMutable(argument) {
                     managedClient.arguments[name] = argument;
-                }, function ignoreImmutableArguments() {});
+                }, function immutableArguments() {
+                    managedClient.arguments[name] = value;
+                });
             };
 
         };
@@ -726,6 +729,26 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 });
             });
         };
+        
+        // Update display on other monitors
+        client.ondisplayupdate = async function displayUpdate(opcode, parameters) {
+
+            // Skip if no other monitor
+            if (guacManageMonitor.getMonitorCount() <= 1)
+                return;
+
+            const handler = {
+                'opcode': opcode,
+                'parameters': parameters,
+            };
+
+            // Send handler
+            guacManageMonitor.pushBroadcastMessage('handler', handler);
+
+        };
+
+        // Set the current client on guacManageMonitor service
+        guacManageMonitor.setClient(client);
 
         // Manage the client display
         managedClient.managedDisplay = ManagedDisplay.getInstance(client.getDisplay());
