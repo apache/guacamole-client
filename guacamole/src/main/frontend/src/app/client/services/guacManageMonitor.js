@@ -85,12 +85,16 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      * @property {Object.<Number, Number>} map
      *     A map of monitor id to position.
      * @property {Object.<Number, Object>} details
-     *     Details of each monitor, including width, height, etc.
+     *     Details of each browser window, including width, height, etc.
+     * @property {Object.<Number, Object>} rendered
+     *     Details of each rendered monitor, including width, height, etc.
+     *     This is used to display what is expected by guacd.
      */
     let monitorsInfos = {
         count: 1,
         map: {},
         details: {},
+        rendered: {},
     };
 
     const service = {};
@@ -224,21 +228,8 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
                 client.runHandler(message.data.handler.opcode,
                                   message.data.handler.parameters);
 
-            if (message.data.monitorsInfos) {
-
+            if (message.data.monitorsInfos)
                 monitorsInfos = message.data.monitorsInfos;
-                const monitorId = service.monitorId;
-
-                // Set the monitor size in the display
-                display.setMonitorSize(
-                    monitorsInfos.details[monitorId].width,
-                    monitorsInfos.details[monitorId].height,
-                );
-
-                client.offsetX = service.getOffsetX();
-                client.offsetY = service.getOffsetY();        
-
-            }
 
             // Full screen mode instructions
             if (message.data.fullscreen !== undefined) {
@@ -280,6 +271,8 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
 
         client  = guac_client;
         display = client.getDisplay();
+
+        client.onmultimonlayout = onmultimonlayout;
 
         // Close all secondary monitors on client disconnect
         if (monitorType === "primary")
@@ -401,14 +394,6 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
             top:    size.top,
         });
 
-        display.setMonitorSize(
-            monitorsInfos.details[0].width,
-            monitorsInfos.details[0].height,
-        );
-
-        client.offsetX = service.getOffsetX();
-        client.offsetY = service.getOffsetY();    
-
         // Monitor has been closed
         if (size.width === 0 || size.height === 0)
             client.sendSize(0, 0, monitorPosition, 0);
@@ -442,8 +427,8 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         // are before the current monitor
         for (const [id, pos] of Object.entries(monitorsInfos.map)) {
             if (pos < thisPosition) {
-                const details = monitorsInfos.details[id];
-                if (details) offsetX += details.width;
+                const rendered = monitorsInfos.rendered[id];
+                if (rendered?.width) offsetX += rendered.width;
             }
         }
 
@@ -462,7 +447,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      *     The Y offset of the current monitor, in pixels.
      */
     service.getOffsetY = function getOffsetY() {
-        const currentOffset = monitorsInfos.details[service.monitorId]?.top ?? 0;
+        const currentOffset = monitorsInfos.rendered[service.monitorId]?.top ?? 0;
         return currentOffset - getLowestTopOffset();
     }
 
@@ -519,12 +504,12 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      *     The lowest top value of all monitors, in pixels.
      */
     function getLowestTopOffset() {
-        let lowestTopValue = monitorsInfos.details[0]?.top ?? 0;
+        let lowestTopValue = monitorsInfos.rendered[0]?.top ?? 0;
 
         // Loop through all monitors to find the highest monitor
-        for (const [_, details] of Object.entries(monitorsInfos.details)) {
-            if (details?.top < lowestTopValue) {
-                lowestTopValue = details.top;
+        for (const [_, rendered] of Object.entries(monitorsInfos.rendered)) {
+            if (rendered?.top < lowestTopValue) {
+                lowestTopValue = rendered.top;
             }
         }
 
@@ -558,6 +543,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         // If width or height is 0, remove monitor details
         if (monitorDetails.width === 0 || monitorDetails.height === 0) {
             delete monitorsInfos.details[monitorDetails.id];
+            delete monitorsInfos.rendered[monitorDetails.id];
             delete monitorsInfos.map[monitorDetails.id];
         }
         // Update or add monitor details
@@ -616,6 +602,54 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         // Send broadcast message to primary monitor if this is a secondary
         // monitor
         service.pushBroadcastMessage('size', monitorDetails);
+    }
+
+    /**
+     * Handle the multimonitor layout event. This is used to update the
+     * monitorsInfos object when the layout changes.
+     *
+     * @param {Object} layout
+     *     An object describing the layout of monitors.
+     */
+    function onmultimonlayout(layout) {
+        if (!layout)
+            return;
+
+        for (const [id, pos] of Object.entries(monitorsInfos.map)) {
+
+            // If the monitor is not in the layout, it is not known by
+            // guacd anymore, so we close it
+            if (!layout[pos]) {
+                service.closeMonitor(id);
+                continue;
+            }
+
+            if (!monitorsInfos.rendered[id])
+                monitorsInfos.rendered[id] = {};
+                
+            // Update the monitor details
+            monitorsInfos.rendered[id].width  = layout[pos].width;
+            monitorsInfos.rendered[id].height = layout[pos].height;
+            monitorsInfos.rendered[id].top    = layout[pos].top;
+            monitorsInfos.rendered[id].left   = layout[pos].left;
+
+            // Set the monitor size in the display only if the id matches the
+            // current monitor id
+            if (id === String(service.monitorId)) {
+                display.setMonitorSize(
+                    monitorsInfos.rendered[id].width,
+                    monitorsInfos.rendered[id].height,
+                );
+            }
+    
+        }
+
+        // Update the offset of the client when monitorInfos is fully updated
+        // This is needed to ensure that the client knows the correct offset
+        // of each monitor
+        client.offsetX = service.getOffsetX();
+        client.offsetY = service.getOffsetY();
+
     }
 
     // Close additional monitors when window is unloaded
