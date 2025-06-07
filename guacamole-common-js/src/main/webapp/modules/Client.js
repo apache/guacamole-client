@@ -886,6 +886,15 @@ Guacamole.Client = function(tunnel) {
     this.onmultitouch = null;
 
     /**
+     * Fired when the remote client is explicitly declaring the layout of
+     * monitors, if any.
+     *
+     * @param {Object} layout
+     *     An object describing the layout of monitors.
+     */
+    this.onmultimonlayout = null;
+
+    /**
      * Fired when the current value of a connection parameter is being exposed
      * by the server.
      *
@@ -1086,6 +1095,13 @@ Guacamole.Client = function(tunnel) {
             // Process "multi-touch" property only for true visible layers (not off-screen buffers)
             if (guac_client.onmultitouch && layer instanceof Guacamole.Display.VisibleLayer)
                 guac_client.onmultitouch(layer, parseInt(value));
+
+        },
+
+        "multimon-layout": function multimonLayout(layer, value) {
+
+            if (guac_client.onmultimonlayout)
+                guac_client.onmultimonlayout(JSON.parse(value));
 
         }
 
