@@ -23,14 +23,14 @@ import inet.ipaddr.HostName;
 import inet.ipaddr.HostNameException;
 import inet.ipaddr.IPAddress;
 import java.net.UnknownHostException;
+import java.text.ParseException;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.auth.restrict.connection.RestrictedConnection;
-import org.apache.guacamole.auth.restrict.user.RestrictedUser;
-import org.apache.guacamole.auth.restrict.usergroup.RestrictedUserGroup;
+import org.apache.guacamole.auth.restrict.form.DateTimeRestrictionField;
 import org.apache.guacamole.calendar.DailyRestriction;
 import org.apache.guacamole.calendar.RestrictionType;
 import org.apache.guacamole.calendar.TimeRestrictionParser;
@@ -54,6 +54,67 @@ public class RestrictionVerificationService {
      */
     private static final Logger LOGGER = LoggerFactory.getLogger(RestrictionVerificationService.class);
 
+    /**
+     * Given the provided strings of an absolute date after which an action is
+     * valid and before which an action is valid, parse the strings into Date
+     * objects and determine if the current date and time falls within the
+     * provided window, returning the appropriate restriction type.
+     * 
+     * @param afterTimeString
+     *     The string that has the date and time value after which the activity
+     *     is allowed.
+     * 
+     * @param beforeTimeString
+     *     The string that has the date and time value before which the activity
+     *     is allowed.
+     * 
+     * @return 
+     *     The RestrictionType that represents the allowed or denied state of
+     *     the activity.
+     */
+    private static RestrictionType allowedByDateTimeRestrictions(
+            String afterTimeString, String beforeTimeString) {
+        
+        // Set a default restriction.
+        RestrictionType dateTimeRestriction = RestrictionType.IMPLICIT_ALLOW;
+        
+        // Check the after string and make sure that now is after that date.
+        if (afterTimeString != null && !afterTimeString.isEmpty()) {
+            Date now = new Date();
+            try {
+                Date afterTime = DateTimeRestrictionField.parse(afterTimeString);
+                if (now.before(afterTime))
+                    return RestrictionType.EXPLICIT_DENY;
+            }
+            catch (ParseException e) {
+                LOGGER.warn("Failed to parse date and time string: {}:", e.getMessage());
+                LOGGER.debug("Parse exception while parsing date and time string.", e);
+                return RestrictionType.IMPLICIT_DENY;
+            }
+            dateTimeRestriction = RestrictionType.EXPLICIT_ALLOW;
+        }
+        
+        // Check the before string and make sure that now is prior to that date.
+        if (beforeTimeString != null && !beforeTimeString.isEmpty()) {
+            Date now = new Date();
+            try {
+                Date beforeTime = DateTimeRestrictionField.parse(beforeTimeString);
+                if (now.after(beforeTime))
+                    return RestrictionType.EXPLICIT_DENY;
+            }
+            catch (ParseException e) {
+                LOGGER.warn("Failed to parse date and time string: {}:", e.getMessage());
+                LOGGER.debug("Parse exception while parsing date and time string.", e);
+                return RestrictionType.IMPLICIT_DENY;
+            }
+            dateTimeRestriction = RestrictionType.EXPLICIT_ALLOW;
+            
+        }
+        
+        // Return the determined RestrictionType for the given date/time strings.
+        return dateTimeRestriction;
+    }
+    
     /**
      * Parse out the provided strings of allowed and denied times, verifying
      * whether or not a login or connection should be allowed at the current
@@ -251,8 +312,8 @@ public class RestrictionVerificationService {
         Map<String, String> userAttributes = currentUser.getAttributes();
         
         // Verify host-based restrictions specific to the user
-        String allowedHostString = userAttributes.get(RestrictedUser.RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME);
-        String deniedHostString = userAttributes.get(RestrictedUser.RESTRICT_HOSTS_DENIED_ATTRIBUTE_NAME);
+        String allowedHostString = userAttributes.get(Restrictable.RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME);
+        String deniedHostString = userAttributes.get(Restrictable.RESTRICT_HOSTS_DENIED_ATTRIBUTE_NAME);
         RestrictionType hostRestrictionResult = allowedByHostRestrictions(allowedHostString, deniedHostString, remoteAddress);
         
         switch (hostRestrictionResult) {
@@ -284,8 +345,8 @@ public class RestrictionVerificationService {
             Map<String, String> grpAttributes = userGroup.getAttributes();
             
             // Pull host-based restrictions for this group and verify
-            String grpAllowedHostString = grpAttributes.get(RestrictedUserGroup.RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME);
-            String grpDeniedHostString = grpAttributes.get(RestrictedUserGroup.RESTRICT_HOSTS_DENIED_ATTRIBUTE_NAME);
+            String grpAllowedHostString = grpAttributes.get(Restrictable.RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME);
+            String grpDeniedHostString = grpAttributes.get(Restrictable.RESTRICT_HOSTS_DENIED_ATTRIBUTE_NAME);
             RestrictionType grpRestrictionResult = allowedByHostRestrictions(grpAllowedHostString, grpDeniedHostString, remoteAddress);
             
             // Any explicit denials are thrown immediately
@@ -344,8 +405,8 @@ public class RestrictionVerificationService {
             String remoteAddress) throws GuacamoleException {
         
         // Verify time-based restrictions specific to this connection.
-        String allowedHostsString = restrictable.getAttributes().get(RestrictedConnection.RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME);
-        String deniedHostsString = restrictable.getAttributes().get(RestrictedConnection.RESTRICT_HOSTS_DENIED_ATTRIBUTE_NAME);
+        String allowedHostsString = restrictable.getAttributes().get(Restrictable.RESTRICT_HOSTS_ALLOWED_ATTRIBUTE_NAME);
+        String deniedHostsString = restrictable.getAttributes().get(Restrictable.RESTRICT_HOSTS_DENIED_ATTRIBUTE_NAME);
         RestrictionType hostRestrictionResult = allowedByHostRestrictions(allowedHostsString, deniedHostsString, remoteAddress);
         
         // If the host is not allowed
@@ -393,8 +454,8 @@ public class RestrictionVerificationService {
         Map<String, String> userAttributes = currentUser.getAttributes();
         
         // Verify time-based restrictions specific to the user
-        String allowedTimeString = userAttributes.get(RestrictedUser.RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME);
-        String deniedTimeString = userAttributes.get(RestrictedUser.RESTRICT_TIME_DENIED_ATTRIBUTE_NAME);
+        String allowedTimeString = userAttributes.get(Restrictable.RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME);
+        String deniedTimeString = userAttributes.get(Restrictable.RESTRICT_TIME_DENIED_ATTRIBUTE_NAME);
         RestrictionType timeRestrictionResult = allowedByTimeRestrictions(allowedTimeString, deniedTimeString);
         
         // Check the time restriction for explicit results.
@@ -426,8 +487,8 @@ public class RestrictionVerificationService {
             Map<String, String> grpAttributes = userGroup.getAttributes();
             
             // Pull time-based restrictions for this group and verify
-            String grpAllowedTimeString = grpAttributes.get(RestrictedUserGroup.RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME);
-            String grpDeniedTimeString = grpAttributes.get(RestrictedUserGroup.RESTRICT_TIME_DENIED_ATTRIBUTE_NAME);
+            String grpAllowedTimeString = grpAttributes.get(Restrictable.RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME);
+            String grpDeniedTimeString = grpAttributes.get(Restrictable.RESTRICT_TIME_DENIED_ATTRIBUTE_NAME);
             RestrictionType grpRestrictionResult = allowedByTimeRestrictions(grpAllowedTimeString, grpDeniedTimeString);
             
             // An explicit deny results in immediate denial of the login.
@@ -463,6 +524,18 @@ public class RestrictionVerificationService {
         
     }
     
+    public static void verifyDateTimeRestrictions(Restrictable restrictable) throws GuacamoleException {
+        
+        String afterTimeString = restrictable.getAttributes().get(Restrictable.RESTRICT_TIME_AFTER_ATTRIBUTE_NAME);
+        String beforeTimeString = restrictable.getAttributes().get(Restrictable.RESTRICT_TIME_BEFORE_ATTRIBUTE_NAME);
+        RestrictionType dateRestriction = allowedByDateTimeRestrictions(afterTimeString, beforeTimeString);
+        if (!dateRestriction.isAllowed())
+            throw new TranslatableGuacamoleSecurityException(
+                    "Use of this connection or connection group is not allowed at this time.",
+                    "RESTRICT.ERROR_CONNECTION_NOT_ALLOWED_NOW"
+            );
+    }
+    
     /**
      * Verify the time restrictions for the given Connection object, throwing
      * an exception if the connection should not be allowed, or silently
@@ -478,8 +551,8 @@ public class RestrictionVerificationService {
     public static void verifyTimeRestrictions(Restrictable restrictable) throws GuacamoleException {
         
         // Verify time-based restrictions specific to this connection.
-        String allowedTimeString = restrictable.getAttributes().get(RestrictedConnection.RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME);
-        String deniedTimeString = restrictable.getAttributes().get(RestrictedConnection.RESTRICT_TIME_DENIED_ATTRIBUTE_NAME);
+        String allowedTimeString = restrictable.getAttributes().get(Restrictable.RESTRICT_TIME_ALLOWED_ATTRIBUTE_NAME);
+        String deniedTimeString = restrictable.getAttributes().get(Restrictable.RESTRICT_TIME_DENIED_ATTRIBUTE_NAME);
         RestrictionType timeRestriction = allowedByTimeRestrictions(allowedTimeString, deniedTimeString);
         if (!timeRestriction.isAllowed())
             throw new TranslatableGuacamoleSecurityException(
@@ -536,6 +609,7 @@ public class RestrictionVerificationService {
      */
     public static void verifyConnectionRestrictions(Restrictable restrictable,
             String remoteAddress) throws GuacamoleException {
+        verifyDateTimeRestrictions(restrictable);
         verifyTimeRestrictions(restrictable);
         verifyHostRestrictions(restrictable, remoteAddress);
     }
