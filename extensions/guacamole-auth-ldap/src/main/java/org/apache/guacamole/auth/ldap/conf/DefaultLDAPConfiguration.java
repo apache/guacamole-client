@@ -151,4 +151,9 @@ public class DefaultLDAPConfiguration implements LDAPConfiguration {
         return MemberAttributeType.DN;
     }
 
+    @Override
+    public boolean getNestedGroups() {
+        return false;
+    }
+
 }
