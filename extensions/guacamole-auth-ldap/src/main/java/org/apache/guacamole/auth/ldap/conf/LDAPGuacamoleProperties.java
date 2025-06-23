@@ -307,4 +307,15 @@ public class LDAPGuacamoleProperties {
 
     };
 
+    /**
+     * Whether or not to search nested groups.
+     */
+    public static final BooleanGuacamoleProperty LDAP_NESTED_GROUPS = 
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "ldap-nested-groups"; }
+        
+    };
+
 }
