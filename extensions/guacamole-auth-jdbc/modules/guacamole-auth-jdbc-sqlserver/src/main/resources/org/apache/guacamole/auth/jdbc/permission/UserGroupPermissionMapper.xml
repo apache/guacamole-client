@@ -176,9 +176,9 @@
                 <when test="caseSensitivity.caseSensitiveGroupNames()">
                     affected_entity.name = permissions.affected_name
                 </when>
-                <test>
+                <otherwise>
                     LOWER(affected_entity.name) = LOWER(permissions.affected_name)
-                </test>
+                </otherwise>
             </choose>
         JOIN [guacamole_user_group] affected_group ON affected_group.entity_id = affected_entity.entity_id
         WHERE NOT EXISTS (SELECT 1 FROM [guacamole_user_group_permission]
