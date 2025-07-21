@@ -83,6 +83,7 @@ guac-player .guac-player-controls {
     margin: 0;
 }
 
+.guac-player-controls .guac-player-close:hover,
 .guac-player-controls .guac-player-play:hover,
 .guac-player-controls .guac-player-pause:hover {
     background: rgba(255, 255, 255, 0.5);
@@ -111,6 +112,31 @@ guac-player .guac-player-controls {
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+.guac-player-controls .guac-player-close {
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+}
+
+.guac-player-controls .guac-player-close .close-icon {
+    background-image: url('images/x.svg');
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 50%;
+    content: "";
+    cursor: pointer;
+    display: block;
+    height: 40px;
+    margin: 0;
+    width: 40px;
 }
 
 .guac-player-controls .guac-player-keys {
@@ -190,11 +216,12 @@ guac-player-display {
 
 guac-player-text-view {
 
+    margin-top: 40px;
     min-width: 25em;
     flex-basis: 0;
 
-    /* Make room for the control bar at the bottom */
-    height: calc(100% - 48px);
+    /* Make room for the control bar at the bottom and close button at the top */
+    height: calc(100% - 88px);
 
 }
 
