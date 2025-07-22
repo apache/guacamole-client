@@ -152,21 +152,21 @@ public class KsmSecretService implements VaultSecretService {
         // Attempt to find a KSM config for this connection or group
         String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
 
+        // Get the user-supplied KSM config, if allowed by config and
+        // set by the user
+        String userKsmConfig = getUserKSMConfig(userContext, connectable);
+
+        // If the user config is not defined or happens to be the same
+        // as admin-defined one, resolve without the fallback
+        if (userKsmConfig == null || Objects.equal(userKsmConfig, ksmConfig)) {
+            return getClient(ksmConfig).getSecret(name);
+        }
+
         return getClient(ksmConfig).getSecret(name, new GuacamoleExceptionSupplier<Future<String>>() {
 
             @Override
             public Future<String> get() throws GuacamoleException {
-
-                // Get the user-supplied KSM config, if allowed by config and
-                // set by the user
-                String userKsmConfig = getUserKSMConfig(userContext, connectable);
-
-                // If the user config happens to be the same as admin-defined one,
-                // don't bother trying again
-                if (userKsmConfig != null && !Objects.equal(userKsmConfig, ksmConfig))
-                    return getClient(userKsmConfig).getSecret(name);
-
-                return CompletableFuture.completedFuture(null);
+                return getClient(userKsmConfig).getSecret(name);
             }
 
         });
