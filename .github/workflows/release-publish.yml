@@ -23,14 +23,14 @@ jobs:
       - name: Build Docker container
         shell: sh
         run: |
-          docker build --pull --no-cache --force-rm -t ${{ secrets.DEPLOY_USERNAME }}/guacamole-client:${{ github.ref_name }} .
+          docker build --pull --no-cache --force-rm -t ${{ secrets.DOCKERHUB_USERNAME }}/guacamole-client:${{ github.ref_name }} .
 
       - name: Log in to DockerHub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DEPLOY_USERNAME }}
-          password: ${{ secrets.DEPLOY_TOKEN }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.DEPLOY_USERNAME }}/guacamole-client:${{ github.ref_name }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/guacamole-client:${{ github.ref_name }}
