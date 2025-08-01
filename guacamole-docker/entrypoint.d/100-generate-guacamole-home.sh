@@ -59,8 +59,25 @@ is_property_set() {
 # Start with a fresh GUACAMOLE_HOME
 #
 
-rm -rf /tmp/guacamole-home.*
-GUACAMOLE_HOME="`mktemp -p /tmp -d guacamole-home.XXXXXXXXXX`"
+if [[ -z "$APACHE_BASE" ]]; then
+    # If APACHE_BASE is not set, use a temporary directory for CATALINA_BASE
+    rm -rf /tmp/guacamole-home.*
+    GUACAMOLE_HOME="`mktemp -p /tmp -d guacamole-home.XXXXXXXXXX`"
+else
+    # If APACHE_BASE is set, GUACAMOLE_HOME = APACHE_BASE/guacamole-home
+    # - ensure APACHE_BASE is a directory
+    if [[ -e "$APACHE_BASE" && ! -d "$APACHE_BASE" ]]; then
+        echo "Error: APACHE_BASE must be a directory." >&2
+        exit 1
+    fi
+    export GUACAMOLE_HOME="$APACHE_BASE/guacamole-home"
+    # If GUACAMOLE_HOME does not exists, create it
+    if [[ ! -d "$GUACAMOLE_HOME" ]]; then
+        mkdir -p "$GUACAMOLE_HOME"
+    fi
+fi
+echo "Using GUACAMOLE_HOME: $GUACAMOLE_HOME"
+
 mkdir -p "$GUACAMOLE_HOME/"{lib,extensions}
 
 cat > "$GUACAMOLE_HOME/guacamole.properties" <<EOF
