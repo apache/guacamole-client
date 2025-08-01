@@ -30,8 +30,23 @@
 # Start with a fresh CATALINA_BASE
 #
 
-rm -rf /tmp/catalina-base.*
-export CATALINA_BASE="`mktemp -p /tmp -d catalina-base.XXXXXXXXXX`"
+if [[ -z "$CATALINA_BASE" ]]; then
+    # If CATALINA_BASE is not set, use a temporary directory
+    rm -rf /tmp/catalina-base.*
+    export CATALINA_BASE="`mktemp -p /tmp -d catalina-base.XXXXXXXXXX`"
+else
+    # If CATALINA_BASE is set, ensure it is a directory
+    if [[ -e "$CATALINA_BASE" && ! -d "$CATALINA_BASE" ]]; then
+        echo "Error: CATALINA_BASE must be a directory." >&2
+        exit 1
+    fi
+    # If CATALINA_BASE is set, ensure it is empty
+    if [ "$(ls -A $CATALINA_BASE)" ]; then
+        echo "Directory $CATALINA_BASE is not empty -> Emptying now."
+        rm -rf $CATALINA_BASE/*
+    fi
+fi
+echo "Using CATALINA_BASE: $CATALINA_BASE"
 
 # User-only writable CATALINA_BASE
 for dir in logs temp webapps work; do
