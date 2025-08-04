@@ -656,13 +656,16 @@ public class KsmClient {
         // There is no way to differentiate if an error is caused by
         // a non-existing record or a pure parse failure.
         catch (Error | Exception e) {
-            logger.warn("Keeper notation \"{}\" could not be resolved "
-                    + "to a record: {}", notation, e.getMessage());
             logger.debug("Retrieval of record by Keeper notation failed.", e);
 
             // If the secret is not found, invoke the fallback function
             if (fallbackFunction != null)
                 return fallbackFunction.get();
+
+            // Show the warning only if there is no fallback function
+            // and this was the last attempt
+            logger.warn("Keeper notation \"{}\" could not be resolved "
+                    + "to a record: {}", notation, e.getMessage());
 
             return CompletableFuture.completedFuture(null);
         }
