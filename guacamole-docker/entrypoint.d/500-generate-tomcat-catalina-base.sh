@@ -53,7 +53,7 @@ echo "Using CATALINA_BASE: $CATALINA_BASE"
 if [[ "$(ls -A $CATALINA_BASE)" ]]; then
     if [[ -e $CATALINA_BASE/conf/catalina.properties ]]; then
         echo "Warning: CATALINA_BASE seems to be already configured"
-        return
+        return 0
     else
         echo "Warning: CATALINA_BASE is not empty, but does not contain a conf/catalina.properties file."
         echo "         The contents of CATALINA_BASE will be erased."

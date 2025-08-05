@@ -82,7 +82,8 @@ echo "Using GUACAMOLE_HOME: $GUACAMOLE_HOME"
 if [[ "$(ls -A $GUACAMOLE_HOME)" ]]; then
     if [[ -e $GUACAMOLE_HOME/guacamole.properties ]]; then
         echo "Warning: GUACAMOLE_HOME seems to be already configured"
-        return
+        export SKIP_GUACAMOLE_HOME=1
+        return 0
     else
         echo "Warning: GUACAMOLE_HOME is not empty, but does not contain a guacamole.properties file."
         echo "         The contents of GUACAMOLE_HOME will be erased."
