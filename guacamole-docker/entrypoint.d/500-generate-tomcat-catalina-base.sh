@@ -30,24 +30,36 @@
 # Start with a fresh CATALINA_BASE
 #
 
-if [[ -z "$APACHE_BASE" ]]; then
-    # If APACHE_BASE is not set, use a temporary directory for CATALINA_BASE
+if [[ -z "$WEBAPPS_BASE" ]]; then
+    # If WEBAPPS_BASE is not set, use a temporary directory for CATALINA_BASE
     rm -rf /tmp/catalina-base.*
     export CATALINA_BASE="`mktemp -p /tmp -d catalina-base.XXXXXXXXXX`"
 else
-    # If APACHE_BASE is set, CATALINA_BASE = APACHE_BASE/catalina-base    
-    # - ensure APACHE_BASE is a directory
-    if [[ -e "$APACHE_BASE" && ! -d "$APACHE_BASE" ]]; then
-        echo "Error: APACHE_BASE must be a directory." >&2
+    # If WEBAPPS_BASE is set, CATALINA_BASE = WEBAPPS_BASE/catalina-base    
+    # - ensure WEBAPPS_BASE is a directory
+    if [[ -e "$WEBAPPS_BASE" && ! -d "$WEBAPPS_BASE" ]]; then
+        echo "Error: WEBAPPS_BASE must be a directory." >&2
         exit 1
     fi
-    export CATALINA_BASE="$APACHE_BASE/catalina-base"
+    export CATALINA_BASE="$WEBAPPS_BASE/catalina-base"
     # If CATALINA_BASE does not exists, create it
     if [[ ! -d "$CATALINA_BASE" ]]; then
         mkdir -p "$CATALINA_BASE"
     fi
 fi
 echo "Using CATALINA_BASE: $CATALINA_BASE"
+
+# Handle non-empty CATALINA_BASE
+if [[ "$(ls -A $CATALINA_BASE)" ]]; then
+    if [[ -e $CATALINA_BASE/conf/catalina.properties ]]; then
+        echo "Warning: CATALINA_BASE seems to be already configured"
+        return
+    else
+        echo "Warning: CATALINA_BASE is not empty, but does not contain a conf/catalina.properties file."
+        echo "         The contents of CATALINA_BASE will be erased."
+        rm -rf "$CATALINA_BASE"/*
+    fi
+fi
 
 # User-only writable CATALINA_BASE
 for dir in logs temp webapps work; do
