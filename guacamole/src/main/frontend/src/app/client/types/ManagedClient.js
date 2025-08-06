@@ -36,6 +36,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     const ManagedFilesystem      = $injector.get('ManagedFilesystem');
     const ManagedFileUpload      = $injector.get('ManagedFileUpload');
     const ManagedShareLink       = $injector.get('ManagedShareLink');
+    const ManagedUSB             = $injector.get('ManagedUSB');
 
     // Required services
     const $document               = $injector.get('$document');
@@ -292,6 +293,13 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type {Object.<String, Function>}
          */
         this.deferredPipeStreamHandlers = template.deferredPipeStreamHandlers || {};
+
+        /**
+         * All currently-connected USB devices for this client.
+         *
+         * @type ManagedUSB[]
+         */
+        this.usbDevices = template.usbDevices || [];
 
     };
 
@@ -726,6 +734,40 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 });
             });
         };
+        
+        // Handle USB disconnection notifications from server  
+        client.onusbdisconnect = function usbDisconnectNotify(deviceId) {
+            $rootScope.$apply(function handleUSBDisconnect() {
+                
+                // Find the corresponding ManagedUSB device
+                const managedUSB = managedClient.usbDevices.find(usb => 
+                    (usb.id || usb.device.serialNumber) === deviceId);
+                    
+                if (managedUSB) {
+                    console.log("Server requested USB device disconnection:", deviceId);
+                    
+                    // Disconnect the device locally
+                    ManagedClient.disconnectUSBDevice(managedClient, managedUSB)
+                        .catch(error => {
+                            console.error("Error disconnecting USB device:", error);
+                        });
+                }
+            });
+        };
+        
+        // Handle incoming data to a specific USB device endpoint
+        client.onusbdata = function usbDataReceived(deviceId, endpointNumber, data) {
+            // Find the corresponding ManagedUSB device
+            const managedUSB = managedClient.usbDevices.find(usb => 
+                (usb.id || usb.device.serialNumber) === deviceId);
+
+            if (managedUSB)
+                // Forward data with endpoint information to the ManagedUSB instance
+                managedUSB.handleRemoteData(data, endpointNumber);
+
+            else
+                console.warn("Received USB data for unknown device:", deviceId);
+        };
 
         // Manage the client display
         managedClient.managedDisplay = ManagedDisplay.getInstance(client.getDisplay());
@@ -1140,6 +1182,69 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         // Remove the handler if found
         if (managedClient.deferredPipeStreamHandlers[name] === handler)
             delete managedClient.deferredPipeStreamHandlers[name];
+    };
+
+    /**
+     * Connects a WebUSB device to this client, creating a ManagedUSB
+     * instance to handle the device connection.
+     *
+     * @param {ManagedClient} managedClient
+     *     The client that should use the USB device.
+     *
+     * @param {USBDevice} device
+     *     The WebUSB device to connect.
+     *
+     * @returns {Promise.<ManagedUSB>}
+     *     A promise that resolves with the created ManagedUSB instance when
+     *     the device is connected, or rejects if the connection fails.
+     */
+    ManagedClient.connectUSBDevice = function connectUSBDevice(managedClient, device) {
+        
+        // Create a ManagedUSB instance to handle this device
+        var managedUSB = ManagedUSB.getInstance(managedClient, device);
+        
+        // Add to the client's collection of USB devices
+        managedClient.usbDevices.push(managedUSB);
+        
+        // Connect the device
+        return managedUSB.connect()
+            .catch(function connectionFailed(error) {
+                // Remove from collection if connection fails
+                var index = managedClient.usbDevices.indexOf(managedUSB);
+                if (index !== -1)
+                    managedClient.usbDevices.splice(index, 1);
+
+                throw error;
+            });
+        
+    };
+
+    /**
+     * Disconnects a USB device from this client.
+     *
+     * @param {ManagedClient} managedClient
+     *     The client the device is connected to.
+     *
+     * @param {ManagedUSB} managedUSB
+     *     The ManagedUSB device to disconnect.
+     *
+     * @returns {Promise}
+     *     A promise that resolves when the device is disconnected.
+     */
+    ManagedClient.disconnectUSBDevice = function disconnectUSBDevice(
+            managedClient, managedUSB) {
+        
+        // Don't proceed if the device isn't in this client's collection
+        var index = managedClient.usbDevices.indexOf(managedUSB);
+        if (index === -1)
+            return $q.resolve();
+        
+        // Remove from collection
+        managedClient.usbDevices.splice(index, 1);
+        
+        // Disconnect the device
+        return managedUSB.disconnect();
+        
     };
 
     return ManagedClient;
