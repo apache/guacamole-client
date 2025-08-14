@@ -130,6 +130,11 @@
                     "name"    : "backspace",
                     "type"    : "ENUM",
                     "options" : [ "", "127", "8" ]
+                },
+                {
+                    "name"    : "func-keys-and-keypad",
+                    "type"    : "ENUM",
+                    "options" : [ "", "esc", "vt100" ]
                 }
             ]
         },
