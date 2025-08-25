@@ -651,25 +651,22 @@ public class KsmClient {
 
         }
 
-        // Unfortunately, the notation parser within the Keeper SDK throws
-        // plain Errors for retrieval failures ...
-        catch (Error e) {
-            logger.warn("Record \"{}\" does not exist.", notation);
+        // Unfortunately, the notation parser within the Keeper SDK
+        // only throws plain Errors and Exceptions.
+        // There is no way to differentiate if an error is caused by
+        // a non-existing record or a pure parse failure.
+        catch (Error | Exception e) {
             logger.debug("Retrieval of record by Keeper notation failed.", e);
 
             // If the secret is not found, invoke the fallback function
             if (fallbackFunction != null)
                 return fallbackFunction.get();
 
-            return CompletableFuture.completedFuture(null);
-        }
+            // Show the warning only if there is no fallback function
+            // and this was the last attempt
+            logger.warn("Keeper notation \"{}\" could not be resolved "
+                    + "to a record: {}", notation, e.getMessage());
 
-        // ... and plain Exceptions for parse failures (no subclasses)
-        catch (Exception e) {
-            logger.warn("\"{}\" is not valid Keeper notation. Please check "
-                    + "the documentation at {} for valid formatting.",
-                    notation, KEEPER_NOTATION_DOC_URL);
-            logger.debug("Provided Keeper notation could not be parsed.", e);
             return CompletableFuture.completedFuture(null);
         }
         finally {

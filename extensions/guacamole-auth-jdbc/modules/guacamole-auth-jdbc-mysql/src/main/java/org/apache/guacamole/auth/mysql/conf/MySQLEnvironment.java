@@ -80,7 +80,7 @@ public class MySQLEnvironment extends JDBCEnvironment {
      * The default value for the default maximum number of connections to be
      * allowed per user to any one connection.
      */
-    private final int DEFAULT_MAX_CONNECTIONS_PER_USER = 1;
+    private final int DEFAULT_MAX_CONNECTIONS_PER_USER = 0;
 
     /**
      * The default value for the default maximum number of connections to be
@@ -439,7 +439,39 @@ public class MySQLEnvironment extends JDBCEnvironment {
         // Enforce access window restrictions for active sessions unless explicitly disabled
         return getProperty(
                 MySQLGuacamoleProperties.MYSQL_ENFORCE_ACCESS_WINDOWS_FOR_ACTIVE_SESSIONS,
-                true);
+                true
+        );
+    }
+
+    /**
+     * Returns the absolute path to the public key for the server being connected to,
+     * if any, or null if the configuration property is unset.
+     *
+     * @return
+     *     The absolute path to the public key for the server being connected to.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs retrieving the configuration value.
+     */
+    public String getMYSQLServerRSAPublicKeyFile() throws GuacamoleException {
+        return getProperty(MySQLGuacamoleProperties.MYSQL_SERVER_RSA_PUBLIC_KEY_FILE);
+    }
+
+    /**
+     * Returns true if the database server public key should be automatically
+     * retrieved from the MySQL server, or false otherwise.
+     *
+     * @return
+     *     Whether the database server public key should be automatically
+     *     retrieved from the MySQL server.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs retrieving the configuration value.
+     */
+    public boolean getMYSQLAllowPublicKeyRetrieval() throws GuacamoleException {
+        return getProperty(
+                MySQLGuacamoleProperties.MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL,
+                false);
     }
 
 }

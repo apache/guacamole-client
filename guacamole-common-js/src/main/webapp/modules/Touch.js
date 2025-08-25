@@ -43,6 +43,23 @@ Guacamole.Touch = function Touch(element) {
     var guacTouch = this;
 
     /**
+     * Pool of touch IDs available to be used for Guacamole touch events.
+     *
+     * @private
+     * @type {!Guacamole.IntegerPool}
+     */
+    var identifierPool = new Guacamole.IntegerPool();
+
+    /**
+     * Mapping of local touch IDs to their corresponding Guacamole touch IDs
+     * allocated from the identifierPool.
+     *
+     * @private
+     * @type {!Object.<Number, Number>}
+     */
+    var identifierMapping = {};
+
+    /**
      * The default X/Y radius of each touch if the device or browser does not
      * expose the size of the contact area.
      *
@@ -95,13 +112,62 @@ Guacamole.Touch = function Touch(element) {
      *     event.
      */
 
+    /**
+     * Returns the Guacamole touch ID for the given touch ID provided by the
+     * local browser from a local touch event. New touch IDs will be
+     * automatically allocated as necessary to ensure that each local touch ID
+     * has a sequential, predictable ID for the Guacamole event.
+     *
+     * NOTE: This is necessary to ensure that the touch IDs included within
+     * Guacamole touch events are predictable and reasonably sized. There is
+     * otherwise no guarantee that the browser will supply sequential or small
+     * integer values. The touch IDs supplied by the local browser may well be
+     * so large that server-side protocol implementations would each need a
+     * similar translation layer if we don't take care of this here.
+     *
+     * @private
+     * @param {!number} identifier
+     * @returns {!number}
+     */
+    var mapIdentifier = function mapIdentifier(identifier) {
+
+        if (identifier in identifierMapping)
+            return identifierMapping[identifier];
+
+        return (identifierMapping[identifier] = identifierPool.next());
+
+    };
+
+    /**
+     * Removes any established ID mapping for the given local touch ID,
+     * allowing the corresponding Guacamole touch ID to be reused by other
+     * touches.
+     *
+     * @private
+     * @param {!number} identifier
+     * @returns {!number}
+     */
+    var unmapIdentifier = function unmapIdentifier(identifier) {
+
+        // NOTE: Here, we intentionally return the ID that _would_ have been
+        // mapped had mapIdentifier() been properly called. This simplifies the
+        // logic while keeping things consistent.
+
+        var id = mapIdentifier(identifier);
+        delete identifierMapping[identifier];
+
+        identifierPool.free(id);
+        return id;
+
+    };
+
     element.addEventListener('touchstart', function touchstart(e) {
 
         // Fire "ontouchstart" events for all new touches
         for (var i = 0; i < e.changedTouches.length; i++) {
 
             var changedTouch = e.changedTouches[i];
-            var identifier = changedTouch.identifier;
+            var identifier = mapIdentifier(changedTouch.identifier);
 
             // Ignore duplicated touches
             if (guacTouch.touches[identifier])
@@ -130,7 +196,7 @@ Guacamole.Touch = function Touch(element) {
         for (var i = 0; i < e.changedTouches.length; i++) {
 
             var changedTouch = e.changedTouches[i];
-            var identifier = changedTouch.identifier;
+            var identifier = mapIdentifier(changedTouch.identifier);
 
             // Ignore any unrecognized touches
             var touch = guacTouch.touches[identifier];
@@ -161,7 +227,7 @@ Guacamole.Touch = function Touch(element) {
         for (var i = 0; i < e.changedTouches.length; i++) {
 
             var changedTouch = e.changedTouches[i];
-            var identifier = changedTouch.identifier;
+            var identifier = unmapIdentifier(changedTouch.identifier);
 
             // Ignore any unrecognized touches
             var touch = guacTouch.touches[identifier];

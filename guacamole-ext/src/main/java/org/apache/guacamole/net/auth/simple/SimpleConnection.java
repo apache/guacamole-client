@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -53,6 +52,11 @@ public class SimpleConnection extends AbstractConnection {
      * Backing configuration, containing all sensitive information.
      */
     private GuacamoleConfiguration fullConfig;
+    
+    /**
+     * The proxy configuration describing how to connect to guacd.
+     */
+    private GuacamoleProxyConfiguration proxyConfig;
 
     /**
      * Whether parameter tokens in the underlying GuacamoleConfiguration should
@@ -158,6 +162,39 @@ public class SimpleConnection extends AbstractConnection {
         this.interpretTokens = interpretTokens;
 
     }
+    
+    /**
+     * Creates a new SimpleConnection having the given identifier,
+     * GuacamoleConfiguration, and GuacamoleProxyConfiguration. Parameter tokens
+     * will be interpreted if explicitly requested.
+     *
+     * @param name
+     *     The name to associate with this connection.
+     *
+     * @param identifier
+     *     The identifier to associate with this connection.
+     * 
+     * @param proxyConfig
+     *     The Guacamole proxy configuration describing how the connection to
+     *     guacd should be established, or null if the default settings will be
+     *     used.
+     *
+     * @param config
+     *     The configuration describing how to connect to this connection.
+     *
+     * @param interpretTokens
+     *     Whether parameter tokens in the underlying GuacamoleConfiguration
+     *     should be automatically applied upon connecting. If false, parameter
+     *     tokens will not be interpreted at all.
+     */
+    public SimpleConnection(String name, String identifier,
+            GuacamoleProxyConfiguration proxyConfig,
+            GuacamoleConfiguration config, boolean interpretTokens) {
+
+        this(name, identifier, config, interpretTokens);
+        this.proxyConfig = proxyConfig;
+
+    }
 
     /**
      * Returns the GuacamoleConfiguration describing how to connect to this
@@ -201,9 +238,9 @@ public class SimpleConnection extends AbstractConnection {
     public GuacamoleTunnel connect(GuacamoleClientInformation info)
             throws GuacamoleException {
 
-        // Retrieve proxy configuration from environment
-        Environment environment = LocalEnvironment.getInstance();
-        GuacamoleProxyConfiguration proxyConfig = environment.getDefaultGuacamoleProxyConfiguration();
+        // Retrieve proxy configuration from environment if we don't have one
+        if (proxyConfig == null)
+            proxyConfig = LocalEnvironment.getInstance().getDefaultGuacamoleProxyConfiguration();
 
         // Get guacd connection parameters
         String hostname = proxyConfig.getHostname();

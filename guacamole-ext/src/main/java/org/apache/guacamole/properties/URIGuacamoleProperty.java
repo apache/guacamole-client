@@ -21,6 +21,10 @@ package org.apache.guacamole.properties;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
@@ -28,6 +32,13 @@ import org.apache.guacamole.GuacamoleServerException;
  * A GuacamoleProperty whose value is a URI.
  */
 public abstract class URIGuacamoleProperty implements GuacamoleProperty<URI> {
+    
+    /**
+     * A pattern which matches against the delimiters between values. For the
+     * URIGuacamoleProperty, this is set to one or more spaces, as commas and
+     * semicolons are valid in URIs while white space is not.
+     */
+    static final Pattern DELIMITER_PATTERN = Pattern.compile("\\s+");
     
     @Override
     public URI parseValue(String value) throws GuacamoleException {
@@ -43,6 +54,28 @@ public abstract class URIGuacamoleProperty implements GuacamoleProperty<URI> {
             throw new GuacamoleServerException("Value \"" + value
                 + "\" is not a valid URI.");
         }
+        
+    }
+    
+    @Override
+    public List<URI> parseValueCollection(String value) throws GuacamoleException {
+        
+        // Nothing provided, return nothing.
+        if (value == null)
+            return null;
+        
+        // Split string into a list of individual values
+        List<String> stringValues = Arrays.asList(DELIMITER_PATTERN.split(value));
+        if (stringValues.isEmpty())
+            return null;
+        
+        // Translate values to URIs, validating along the way.
+        List<URI> uriValues = new ArrayList<>();
+        for (String stringUri : stringValues) {
+            uriValues.add(parseValue(stringUri));
+        }
+
+        return uriValues;
         
     }
     

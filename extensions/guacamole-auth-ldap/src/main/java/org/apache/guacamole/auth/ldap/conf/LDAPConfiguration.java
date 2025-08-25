@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.ldap.conf;
 
-import java.util.List;
+import java.util.Collection;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
 import org.apache.directory.api.ldap.model.message.AliasDerefMode;
 import org.apache.directory.api.ldap.model.name.Dn;
@@ -84,7 +84,7 @@ public interface LDAPConfiguration {
      * @throws GuacamoleException
      *     If the username attributes cannot be retrieved.
      */
-    List<String> getUsernameAttributes() throws GuacamoleException;
+    Collection<String> getUsernameAttributes() throws GuacamoleException;
 
     /**
      * Returns the base DN under which all Guacamole users will be stored
@@ -125,7 +125,7 @@ public interface LDAPConfiguration {
      * @throws GuacamoleException
      *     If the group name attributes cannot be retrieved.
      */
-    List<String> getGroupNameAttributes() throws GuacamoleException;
+    Collection<String> getGroupNameAttributes() throws GuacamoleException;
 
     /**
      * Returns the base DN under which all Guacamole role based access control
@@ -305,7 +305,7 @@ public interface LDAPConfiguration {
      *     If the names of the LDAP user attributes to be exposed as parameter
      *     tokens cannot be retrieved.
      */
-    List<String> getAttributes() throws GuacamoleException;
+    Collection<String> getAttributes() throws GuacamoleException;
     
     /**
      * Returns the name of the LDAP attribute used to enumerate members in a

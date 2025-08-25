@@ -39,6 +39,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     const clipboardService       = $injector.get('clipboardService');
     const dataSourceService      = $injector.get('dataSourceService');
     const guacClientManager      = $injector.get('guacClientManager');
+    const guacFullscreen         = $injector.get('guacFullscreen');
     const iconService            = $injector.get('iconService');
     const preferenceService      = $injector.get('preferenceService');
     const requestService         = $injector.get('requestService');
@@ -467,7 +468,20 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         else if (menuShownPreviousState)
             $scope.applyParameterChanges($scope.focusedClient);
 
+        /* Broadcast changes to the menu display state */
+        $scope.$broadcast('guacMenuShown', menuShown);
+
     });
+
+    // Toggle the menu when the guacClientToggleMenu event is received
+    $scope.$on('guacToggleMenu',
+            () => $scope.menu.shown = !$scope.menu.shown);
+
+    // Show the menu when the guacClientShowMenu event is received
+    $scope.$on('guacShowMenu', () => $scope.menu.shown = true);
+
+    // Hide the menu when the guacClientHideMenu event is received
+    $scope.$on('guacHideMenu', () => $scope.menu.shown = false);
 
     // Automatically track and cache the currently-focused client
     $scope.$on('guacClientFocused', function focusedClientChanged(event, newFocusedClient) {
@@ -483,6 +497,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // client
         $scope.menu.connectionParameters = newFocusedClient ?
             ManagedClient.getArgumentModel(newFocusedClient) : {};
+
+    });
+
+    // Automatically update connection parameters that have been modified
+    // for the current focused client
+    $scope.$on('guacClientArgumentsUpdated', function argumentsChanged(event, focusedClient) {
+
+        // Ignore any updated arguments not for the current focused client
+        if ($scope.focusedClient && $scope.focusedClient === focusedClient)
+            $scope.menu.connectionParameters = ManagedClient.getArgumentModel(focusedClient);
 
     });
 
@@ -683,8 +707,22 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         callback  : $scope.disconnect
     };
 
+    /**
+     * Action that toggles fullscreen mode within the
+     * currently-connected client and then closes the menu.
+     */
+    var FULLSCREEN_MENU_ACTION = {
+        name      : 'CLIENT.ACTION_FULLSCREEN',
+        classname : 'fullscreen action',
+        callback  : function fullscreen() {
+            
+            guacFullscreen.toggleFullscreenMode();
+            $scope.menu.shown = false;
+        }
+    };
+
     // Set client-specific menu actions
-    $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION ];
+    $scope.clientMenuActions = [ DISCONNECT_MENU_ACTION,FULLSCREEN_MENU_ACTION ];
 
     /**
      * @borrows Protocol.getNamespace
@@ -833,6 +871,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Clean up when view destroyed
     $scope.$on('$destroy', function clientViewDestroyed() {
         setAttachedGroup(null);
+
+        // always unset fullscreen mode to not confuse user 
+        guacFullscreen.setFullscreenMode(false);
     });
 
 }]);

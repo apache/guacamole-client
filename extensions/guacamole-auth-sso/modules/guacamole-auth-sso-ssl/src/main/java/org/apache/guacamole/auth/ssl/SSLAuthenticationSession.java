@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.auth.ssl;
 
-import org.apache.guacamole.auth.sso.AuthenticationSession;
+import org.apache.guacamole.net.auth.AuthenticationSession;
 
 /**
  * Representation of an in-progress SSL/TLS authentication attempt.

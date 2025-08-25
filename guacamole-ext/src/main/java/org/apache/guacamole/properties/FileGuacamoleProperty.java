@@ -20,6 +20,10 @@
 package org.apache.guacamole.properties;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -27,6 +31,14 @@ import org.apache.guacamole.GuacamoleException;
  */
 public abstract class FileGuacamoleProperty implements GuacamoleProperty<File> {
 
+    /**
+     * A pattern which matches against the delimiters between values. This is
+     * currently either a comma or a semicolon and any following whitespace.
+     * Parts of the input string which match this pattern will not be included
+     * in the parsed result.
+     */
+    static final Pattern DELIMITER_PATTERN = Pattern.compile("[,;]\\s*");
+    
     @Override
     public File parseValue(String value) throws GuacamoleException {
 
@@ -36,6 +48,28 @@ public abstract class FileGuacamoleProperty implements GuacamoleProperty<File> {
 
         return new File(value);
 
+    }
+    
+    @Override
+    public List<File> parseValueCollection(String value) throws GuacamoleException {
+        
+        // If no property is provided, return null.
+        if (value == null)
+            return null;
+        
+        // Split string into a list of individual values
+        List<String> stringValues = Arrays.asList(DELIMITER_PATTERN.split(value));
+        if (stringValues.isEmpty())
+            return null;
+        
+        // Translate values to Files and add to result array.
+        List<File> fileValues = new ArrayList<>();
+        for (String stringFile : stringValues) {
+            fileValues.add(new File(stringFile));
+        }
+
+        return fileValues;
+        
     }
 
 }

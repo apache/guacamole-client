@@ -21,11 +21,11 @@ package org.apache.guacamole.rest.auth;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.inject.Inject;
 
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
-import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
@@ -43,9 +43,12 @@ import org.glassfish.jersey.server.ContainerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.inject.Singleton;
+
 /**
  * A service for performing authentication checks in REST endpoints.
  */
+@Singleton
 public class AuthenticationService {
 
     /**
@@ -354,24 +357,39 @@ public class AuthenticationService {
     public String authenticate(Credentials credentials, String token)
             throws GuacamoleException {
 
-        // Fire pre-authentication event before ANY authn/authz occurs at all
-        listenerService.handleEvent((AuthenticationRequestReceivedEvent) () -> credentials);
-
-        // Pull existing session if token provided
-        GuacamoleSession existingSession;
-        if (token != null)
-            existingSession = tokenSessionMap.get(token);
-        else
-            existingSession = null;
-
-        AuthenticatedUser authenticatedUser;
         String authToken;
-
         try {
 
+            // Allow extensions to make updated to credentials prior to
+            // actual authentication (NOTE: We do this here instead of in a
+            // separate function to ensure that failure events accurately
+            // represent the credentials that failed when a chain of credential
+            // updates is involved)
+            for (AuthenticationProvider authProvider : authProviders) {
+                try {
+                    credentials = authProvider.updateCredentials(credentials);
+                }
+                catch (GuacamoleException | RuntimeException | Error e) {
+                    throw new GuacamoleAuthenticationProcessException("User "
+                            + "authentication aborted during credential "
+                            + "update/revision.", authProvider, e);
+                }
+            }
+
+            // Fire pre-authentication event before ANY authn/authz occurs at all
+            final Credentials updatedCredentials = credentials;
+            listenerService.handleEvent((AuthenticationRequestReceivedEvent) () -> updatedCredentials);
+
+            // Pull existing session if token provided
+            GuacamoleSession existingSession;
+            if (token != null)
+                existingSession = tokenSessionMap.get(token);
+            else
+                existingSession = null;
+
             // Get up-to-date AuthenticatedUser and associated UserContexts
-            authenticatedUser = getAuthenticatedUser(existingSession, credentials);
-            List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, credentials);
+            AuthenticatedUser authenticatedUser = getAuthenticatedUser(existingSession, updatedCredentials);
+            List<DecoratedUserContext> userContexts = getUserContexts(existingSession, authenticatedUser, updatedCredentials);
 
             // Update existing session, if it exists
             if (existingSession != null) {
@@ -401,6 +419,11 @@ public class AuthenticationService {
         // Log and rethrow any authentication errors
         catch (GuacamoleAuthenticationProcessException e) {
 
+            // NOTE: The credentials referenced here are intentionally NOT the
+            // final updatedCredentials reference (though they may often be
+            // equivalent) to ensure that failure events accurately represent
+            // the credentials that failed if that failure occurs in the middle
+            // of a chain of credential updates via updateCredentials()
             listenerService.handleEvent(new AuthenticationFailureEvent(credentials,
                     e.getAuthenticationProvider(), e.getCause()));
 

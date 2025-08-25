@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.jdbc.tunnel;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,6 +34,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
@@ -65,6 +67,7 @@ import org.apache.guacamole.auth.jdbc.sharingprofile.SharingProfileParameterMode
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.protocol.FailoverGuacamoleSocket;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,8 +82,58 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(AbstractGuacamoleTunnelService.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractGuacamoleTunnelService.class);
 
+    /**
+     * The prefix that will be used to generate JDBC tokens.
+     */
+    private static final String JDBC_TOKEN_PREFIX = "JDBC_";
+
+    /**
+     * The token that contains the date the connection was started.
+     */
+    private static final String JDBC_DATE_TOKEN = JDBC_TOKEN_PREFIX + "STARTDATE";
+    
+    /**
+     * The format of the date in the date token.
+     */
+    private static final String JDBC_DATE_TOKEN_FORMAT = "yyyyMMdd";
+    
+    /**
+     * The token that contains the start time of the connection.
+     */
+    private static final String JDBC_TIME_TOKEN = JDBC_TOKEN_PREFIX + "STARTTIME";
+    
+    /**
+     * The format of the time in the time token.
+     */
+    private static final String JDBC_TIME_TOKEN_FORMAT = "HHmmss";
+    
+    /**
+     * The token that contains the connection name.
+     */
+    private static final String JDBC_CONNECTION_NAME_TOKEN = JDBC_TOKEN_PREFIX + "CONNECTION_NAME";
+    
+    /**
+     * The token that contains the connection identifier.
+     */
+    private static final String JDBC_CONNECTION_ID_TOKEN = JDBC_TOKEN_PREFIX + "CONNECTION_ID";
+    
+    /**
+     * The token that contains the hostname configured in the connection parameters.
+     */
+    private static final String JDBC_CONNECTION_HOSTNAME_TOKEN = JDBC_TOKEN_PREFIX + "HOSTNAME";
+    
+    /**
+     * The name of the parameter containing the hostname in the configuration.
+     */
+    private static final String JDBC_CONNECTION_HOSTNAME_TOKEN_PARAMETER = "hostname";
+    
+    /**
+     * The token containing the protocol configured in the connection.
+     */
+    private static final String JDBC_CONNECTION_PROTOCOL_TOKEN = JDBC_TOKEN_PREFIX + "PROTOCOL";
+    
     /**
      * Mapper for accessing connections.
      */
@@ -116,12 +169,18 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      */
     @Inject
     private SharedConnectionMap connectionMap;
+    
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * All active connections through the tunnel having a given UUID.
      */
     private final Map<String, ActiveConnectionRecord> activeTunnels =
-            new ConcurrentHashMap<String, ActiveConnectionRecord>();
+            new ConcurrentHashMap<>();
     
     /**
      * All active connections to a connection having a given identifier.
@@ -415,11 +474,13 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     private GuacamoleTunnel assignGuacamoleTunnel(ActiveConnectionRecord activeConnection,
             GuacamoleClientInformation info, Map<String, String> tokens,
             boolean interceptErrors) throws GuacamoleException {
-
+        
         // Record new active connection
         Runnable cleanupTask = new ConnectionCleanupTask(activeConnection);
         try {
-            connectionRecordMapper.insert(activeConnection.getModel()); // This MUST happen before getUUID() is invoked, to ensure the ID driving the UUID exists
+            // This MUST happen before getUUID() is invoked, to ensure the ID driving the UUID exists
+            connectionRecordMapper.insert(activeConnection.getModel(),
+                    environment.getCaseSensitivity());
             activeTunnels.put(activeConnection.getUUID().toString(), activeConnection);
         }
 
@@ -459,9 +520,25 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 config = getGuacamoleConfiguration(connection, connectionID, activeConnection.getSharingProfile());
 
             }
-
-            // Include history record UUID as token
+            
+            // Make a copy of the tokens
             tokens = new HashMap<>(tokens);
+
+            // Set up JDBC-specific tokens
+            tokens.put(JDBC_DATE_TOKEN,
+                    new SimpleDateFormat(JDBC_DATE_TOKEN_FORMAT)
+                        .format(activeConnection.getStartDate()));
+            tokens.put(JDBC_TIME_TOKEN,
+                    new SimpleDateFormat(JDBC_TIME_TOKEN_FORMAT)
+                        .format(activeConnection.getStartDate()));
+            tokens.put(JDBC_CONNECTION_NAME_TOKEN, activeConnection.getConnectionName());
+            tokens.put(JDBC_CONNECTION_ID_TOKEN, activeConnection.getConnectionIdentifier());
+            tokens.put(JDBC_CONNECTION_HOSTNAME_TOKEN,
+                    activeConnection.getConnection().getConfiguration().getParameter(JDBC_CONNECTION_HOSTNAME_TOKEN_PARAMETER));
+            tokens.put(JDBC_CONNECTION_PROTOCOL_TOKEN,
+                    activeConnection.getConnection().getConfiguration().getProtocol());
+            
+            // Include history record UUID as token
             tokens.put("HISTORY_UUID", activeConnection.getUUID().toString());
 
             // Build token filter containing credential tokens
@@ -562,7 +639,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             identifiers = getPreferredConnections(user, identifiers);
 
         // Retrieve all children
-        Collection<ConnectionModel> models = connectionMapper.select(identifiers);
+        Collection<ConnectionModel> models = connectionMapper.select(identifiers, environment.getCaseSensitivity());
         List<ModeledConnection> connections = new ArrayList<ModeledConnection>(models.size());
 
         // Convert each retrieved model to a modeled connection
@@ -603,7 +680,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         // Produce collection of readable connection identifiers
         Collection<ConnectionModel> connections =
                 connectionMapper.selectReadable(user.getUser().getModel(),
-                        identifiers, user.getEffectiveUserGroups());
+                        identifiers, user.getEffectiveUserGroups(),
+                        environment.getCaseSensitivity());
 
         // Ensure set contains only identifiers of readable connections
         identifiers.clear();

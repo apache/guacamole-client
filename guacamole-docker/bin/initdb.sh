@@ -55,15 +55,15 @@ fi
 case $DATABASE in
 
     --postgresql)
-        cat /opt/guacamole/postgresql/schema/*.sql
+        cat /opt/guacamole/extensions/guacamole-auth-jdbc/postgresql/schema/*.sql
         ;;
 
     --mysql)
-        cat /opt/guacamole/mysql/schema/*.sql
+        cat /opt/guacamole/extensions/guacamole-auth-jdbc/mysql/schema/*.sql
         ;;
 
     --sqlserver)
-        cat /opt/guacamole/sqlserver/schema/*.sql
+        cat /opt/guacamole/extensions/guacamole-auth-jdbc/sqlserver/schema/*.sql
         ;;
 
     *)

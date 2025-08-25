@@ -26,14 +26,14 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>extensions</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.2</version>
+    <version>1.6.0</version>
     <name>extensions</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-client</artifactId>
-        <version>1.5.2</version>
+        <version>1.6.0</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -47,6 +47,7 @@
         <module>guacamole-auth-json</module>
         <module>guacamole-auth-ldap</module>
         <module>guacamole-auth-quickconnect</module>
+        <module>guacamole-auth-restrict</module>
         <module>guacamole-auth-sso</module>
         <module>guacamole-auth-totp</module>
 

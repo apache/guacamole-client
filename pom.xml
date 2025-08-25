@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-client</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.2</version>
+    <version>1.6.0</version>
     <name>guacamole-client</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -36,16 +36,17 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Dependency versions -->
-        <guava.version>31.1-jre</guava.version>
+        <guava.version>32.1.3-jre</guava.version>
         <guice.version>5.1.0</guice.version>
         <hk2.version>2.6.1</hk2.version>
-        <jackson.version>2.15.0</jackson.version>
-        <jackson-databind.version>2.15.0</jackson-databind.version>
-        <jersey.version>2.39.1</jersey.version>
-        <junit.version>5.9.2</junit.version>
+        <ipaddress.version>5.5.1</ipaddress.version>
+        <jackson.version>2.19.0</jackson.version>
+        <jackson-databind.version>2.19.0</jackson-databind.version>
+        <jersey.version>2.46</jersey.version>
+        <junit.version>5.12.2</junit.version>
         <junit4.version>4.13.2</junit4.version>
-        <logback.version>1.3.7</logback.version>
-        <slf4j.version>2.0.7</slf4j.version>
+        <logback.version>1.3.15</logback.version>
+        <slf4j.version>2.0.17</slf4j.version>
 
         <!-- The directory that should receive all generated dependency lists
             (for LICENSE generation) -->
@@ -56,6 +57,13 @@
             well as errors that occur during the RAT check (such as incorrect
             or missing license headers). -->
         <ignoreLicenseErrors>false</ignoreLicenseErrors>
+
+        <!-- Set to "true" to perform automated checks for available dependency
+            updates, including whether the declared versions of any
+            dependencies have associated CVEs in NVD. Beware that both checks
+            may produce false positives and false negatives. Updates need to be
+            checked for compatibility and any changes in license information. -->
+        <checkDependencies>false</checkDependencies>
 
     </properties>
 
@@ -337,7 +345,14 @@
                 <artifactId>guice-servlet</artifactId>
                 <version>${guice.version}</version>
             </dependency>
-        
+
+            <!-- IPAddress (IP address matching library) -->
+            <dependency>
+                <groupId>com.github.seancfoley</groupId>
+                <artifactId>ipaddress</artifactId>
+                <version>${ipaddress.version}</version>
+            </dependency>
+
             <!-- Jersey JAX-RS implementation -->
             <dependency>
                 <groupId>org.glassfish.jersey.containers</groupId>
@@ -471,6 +486,91 @@
                             </execution>
                         </executions>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Perform automated dependency checks if "checkDependencies" is set to "true" -->
+        <profile>
+            <id>check-dependencies</id>
+            <activation>
+                <property>
+                    <name>checkDependencies</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+
+                    <!-- Checks for availability of likely-compatibile updates to
+                        dependencies -->
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>versions-maven-plugin</artifactId>
+                        <version>2.16.0</version>
+                        <configuration>
+                            <allowMajorUpdates>false</allowMajorUpdates>
+                            <dependencyExcludes>*:*:*:*:*:provided,*:*:*:*:*:system</dependencyExcludes>
+                            <outputFile>${project.build.directory}/dependency-update-report.txt</outputFile>
+                            <ruleSet>
+                                <ignoreVersions>
+                                    <ignoreVersion>
+                                        <type>regex</type>
+                                        <version>(.+-SNAPSHOT|.+-(M|RC)\d+)</version>
+                                    </ignoreVersion>
+                                    <ignoreVersion>
+                                        <type>regex</type>
+                                        <version>.+-(alpha|Alpha|beta|Beta)[0-9]*\b.*?</version>
+                                    </ignoreVersion>
+                                </ignoreVersions>
+                                <rules>
+                                    <rule>
+                                        <groupId>ch.qos.logback</groupId>
+                                        <artifactId>logback-classic</artifactId>
+                                        <ignoreVersions>
+                                            <ignoreVersion>
+                                                <type>regex</type>
+                                                <version>1\.[45]\..+</version>
+                                            </ignoreVersion>
+                                        </ignoreVersions>
+                                    </rule>
+                                </rules>
+                            </ruleSet>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>check-dependency-updates</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>display-dependency-updates</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Checks for possible known CVEs against dependencies
+                        NOTE: This WILL produce false positives!!! -->
+                    <plugin>
+                        <groupId>org.owasp</groupId>
+                        <artifactId>dependency-check-maven</artifactId>
+                        <version>8.3.1</version>
+                        <configuration>
+                            <skipProvidedScope>true</skipProvidedScope>
+                            <skipSystemScope>true</skipSystemScope>
+                            <skipTestScope>true</skipTestScope>
+                            <nodeAuditAnalyzerUrl>/-/npm/v1/security/advisories/bulk</nodeAuditAnalyzerUrl>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>check-dependency-updates</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                 </plugins>
             </build>
         </profile>

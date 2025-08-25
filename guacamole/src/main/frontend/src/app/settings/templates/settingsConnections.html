@@ -9,10 +9,6 @@
         <!-- Form action buttons -->
         <div class="action-buttons">
 
-            <a class="import-connections button"
-                ng-show="canAdminister()"
-                href="#/import/{{dataSource | escape}}/connection/">{{'SETTINGS_CONNECTIONS.ACTION_IMPORT' | translate}}</a>
-
             <a class="add-connection button"
                ng-show="canCreateConnections()"
                href="#/manage/{{dataSource | escape}}/connections/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | translate}}</a>
@@ -20,6 +16,10 @@
             <a class="add-connection-group button"
                ng-show="canCreateConnectionGroups()"
                href="#/manage/{{dataSource | escape}}/connectionGroups/">{{'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | translate}}</a>
+
+            <a class="import-connections button"
+                ng-show="canAdminister()"
+                href="#/import/{{dataSource | escape}}/connection/">{{'SETTINGS_CONNECTIONS.ACTION_IMPORT' | translate}}</a>
 
         </div>
 

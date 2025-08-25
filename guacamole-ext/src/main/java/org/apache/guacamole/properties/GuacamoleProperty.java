@@ -19,6 +19,8 @@
 
 package org.apache.guacamole.properties;
 
+import java.util.Collection;
+import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -29,13 +31,14 @@ import org.apache.guacamole.GuacamoleException;
  *     The type this GuacamoleProperty will parse into.
  */
 public interface GuacamoleProperty<Type> {
-
+    
     /**
      * Returns the name of the property in guacamole.properties that this
      * GuacamoleProperty will parse.
      *
-     * @return The name of the property in guacamole.properties that this
-     *         GuacamoleProperty will parse.
+     * @return
+     *     The name of the property in guacamole.properties that this
+     *     GuacamoleProperty will parse.
      */
     public String getName();
 
@@ -43,11 +46,37 @@ public interface GuacamoleProperty<Type> {
      * Parses the given string value into the type associated with this
      * GuacamoleProperty.
      *
-     * @param value The string value to parse.
-     * @return The parsed value.
-     * @throws GuacamoleException If an error occurs while parsing the
-     *                            provided value.
+     * @param value
+     *     The string value to parse.
+     * 
+     * @return
+     *     The parsed value.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the provided value.
      */
     public Type parseValue(String value) throws GuacamoleException;
+    
+    /**
+     * Parses the given string value into a Collection of values of the type
+     * associated with this GuacamoleProperty. The default implementation
+     * simply returns a list containing a single item as parsed by the
+     * parseValue method.
+     * 
+     * @param value
+     *     The string value to parse.
+     * 
+     * @return
+     *     A sorted Collection of the parsed values.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs while parsing the provided value.
+     */
+    default public Collection<Type> parseValueCollection(String value)
+            throws GuacamoleException {
+        
+        return Collections.singletonList(parseValue(value));
+        
+    }
 
 }

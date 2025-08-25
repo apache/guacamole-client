@@ -1,1 +1,0 @@
-org.apache.servicemix.bundles:org.apache.servicemix.bundles.dom4j:jar:2.1.3_1

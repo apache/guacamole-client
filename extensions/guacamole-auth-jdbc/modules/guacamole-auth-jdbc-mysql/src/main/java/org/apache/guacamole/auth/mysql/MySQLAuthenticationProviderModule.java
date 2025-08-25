@@ -29,13 +29,21 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.mysql.conf.MySQLDriver;
 import org.apache.guacamole.auth.mysql.conf.MySQLEnvironment;
 import org.apache.guacamole.auth.mysql.conf.MySQLSSLMode;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.mybatis.guice.datasource.helper.JdbcHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Guice module which configures MySQL-specific injections.
  */
 public class MySQLAuthenticationProviderModule implements Module {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(MySQLAuthenticationProviderModule.class);
+    
     /**
      * MyBatis-specific configuration properties.
      */
@@ -76,6 +84,10 @@ public class MySQLAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
+        // Set whether public key retrieval from the server is allowed
+        driverProperties.setProperty("allowPublicKeyRetrieval",
+            environment.getMYSQLAllowPublicKeyRetrieval() ? "true" : "false");
+
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
 
@@ -113,14 +125,36 @@ public class MySQLAuthenticationProviderModule implements Module {
         if (clientPassword != null)
             driverProperties.setProperty("clientCertificateKeyStorePassword",
                     clientPassword);
-        
+
         // Get the MySQL-compatible driver to use.
         mysqlDriver = environment.getMySQLDriver();
+
+        // Set the path to the server public key, if any
+        // Note that the property name casing is slightly different for MySQL
+        // and MariaDB drivers. See
+        // https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-security.html#cj-conn-prop_serverRSAPublicKeyFile
+        // and https://mariadb.com/kb/en/about-mariadb-connector-j/#infrequently-used-parameters
+        String publicKeyFile = environment.getMYSQLServerRSAPublicKeyFile();
+        if (publicKeyFile != null)
+            driverProperties.setProperty(
+                mysqlDriver == MySQLDriver.MYSQL
+                    ? "serverRSAPublicKeyFile" : "serverRsaPublicKeyFile",
+                publicKeyFile);
 
         // If timezone is present, set it.
         TimeZone serverTz = environment.getServerTimeZone();
         if (serverTz != null)
             driverProperties.setProperty("serverTimezone", serverTz.getID());
+        
+        // Check for case sensitivity and warn admin
+        if (environment.getCaseSensitivity() != CaseSensitivity.DISABLED)
+            LOGGER.warn("The MySQL module is currently configured to support "
+                    + "case-sensitive username and/or group name comparisons, "
+                    + "however, the default collations for MySQL databases do "
+                    + "not support case-sensitive string comparisons. If you "
+                    + "want identifiers within Guacamole to be treated as "
+                    + "case-sensitive, further database configuration may be "
+                    + "required.");
 
     }
 

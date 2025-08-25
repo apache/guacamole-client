@@ -194,5 +194,5 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
     public boolean isPrivileged() throws GuacamoleException {
         return getUser().isPrivileged();
     }
-
+    
 }

@@ -21,20 +21,17 @@ package org.apache.guacamole.auth.jdbc.usergroup;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.form.BooleanField;
-import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.UserGroup;
+import org.apache.guacamole.properties.CaseSensitivity;
 
 /**
  * An implementation of the UserGroup object which is backed by a database model.
@@ -43,35 +40,16 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
         implements UserGroup {
 
     /**
-     * The name of the attribute which controls whether a user group is
-     * disabled.
-     */
-    public static final String DISABLED_ATTRIBUTE_NAME = "disabled";
-
-    /**
-     * All attributes related to restricting user groups, within a logical
-     * form.
-     */
-    public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
-        new BooleanField(DISABLED_ATTRIBUTE_NAME, "true")
-    ));
-
-    /**
      * All possible attributes of user groups organized as individual,
      * logical forms.
      */
-    public static final Collection<Form> ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(
-        ACCOUNT_RESTRICTIONS
-    ));
-
+    public static final Collection<Form> ATTRIBUTES = Collections.emptyList();
+    
     /**
      * The names of all attributes which are explicitly supported by this
      * extension's UserGroup objects.
      */
-    public static final Set<String> ATTRIBUTE_NAMES =
-            Collections.unmodifiableSet(new HashSet<String>(Arrays.asList(
-                DISABLED_ATTRIBUTE_NAME
-            )));
+    public static final Set<String> ATTRIBUTE_NAMES = Collections.emptySet();
 
     /**
      * Provider for RelatedObjectSets containing the user groups of which this
@@ -93,12 +71,17 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
      */
     @Inject
     private Provider<UserGroupMemberUserGroupSet> memberUserGroupSetProvider;
-
+    
     /**
      * Whether attributes which control access restrictions should be exposed
      * via getAttributes() or allowed to be set via setAttributes().
      */
     private boolean exposeRestrictedAttributes = false;
+
+    /**
+     * Whether group names should be considered case-sensitive.
+     */
+    private boolean caseSensitive = true;
 
     /**
      * Initializes this ModeledUserGroup, associating it with the current
@@ -115,11 +98,36 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
      *     Whether attributes which control access restrictions should be
      *     exposed via getAttributes() or allowed to be set via
      *     setAttributes().
+     *
+     * @param caseSensitive
+     *     true if group names should be considered case-sensitive, false
+     *     otherwise.
      */
     public void init(ModeledAuthenticatedUser currentUser, UserGroupModel model,
-            boolean exposeRestrictedAttributes) {
+            boolean exposeRestrictedAttributes, boolean caseSensitive) {
         super.init(currentUser, model);
         this.exposeRestrictedAttributes = exposeRestrictedAttributes;
+        this.caseSensitive = caseSensitive;
+    }
+
+    @Override
+    public String getIdentifier() {
+        return CaseSensitivity.canonicalize(super.getIdentifier(), caseSensitive);
+    }
+
+    @Override
+    public void setIdentifier(String identifier) {
+        super.setIdentifier(CaseSensitivity.canonicalize(identifier, caseSensitive));
+    }
+
+    @Override
+    public boolean isDisabled() {
+        return getModel().isDisabled();
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled) {
+        getModel().setDisabled(disabled);
     }
 
     /**
@@ -133,9 +141,6 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
      */
     private void putRestrictedAttributes(Map<String, String> attributes) {
 
-        // Set disabled attribute
-        attributes.put(DISABLED_ATTRIBUTE_NAME, getModel().isDisabled() ? "true" : null);
-
     }
 
     /**
@@ -146,9 +151,6 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
      *     The Map to pull all restricted attributes from.
      */
     private void setRestrictedAttributes(Map<String, String> attributes) {
-
-        // Translate disabled attribute
-        getModel().setDisabled("true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
 
     }
 
@@ -202,5 +204,5 @@ public class ModeledUserGroup extends ModeledPermissions<UserGroupModel>
         memberUserGroupSet.init(getCurrentUser(), this);
         return memberUserGroupSet;
     }
-
+    
 }

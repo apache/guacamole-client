@@ -41,7 +41,7 @@ public class ReaderGuacamoleReaderTest {
     public void testReader() throws GuacamoleException {
 
         // Test string
-        final String test = "1.a,2.bc,3.def,10.helloworld;4.test,5.test2;0.;3.foo;";
+        final String test = "1.a,2.bc,3.def,10.helloworld;4.test,5.test2;0.;3.foo;1.\uD83E\uDD79;";
 
         GuacamoleReader reader = new ReaderGuacamoleReader(new StringReader(test));
 
@@ -75,12 +75,46 @@ public class ReaderGuacamoleReaderTest {
         assertEquals(0, instruction.getArgs().size());
         assertEquals("foo", instruction.getOpcode());
 
+        // Validate fifth test instruction
+        instruction = reader.readInstruction();
+        assertNotNull(instruction);
+        assertEquals(0, instruction.getArgs().size());
+        assertEquals("\uD83E\uDD79", instruction.getOpcode());    
+
         // There should be no more instructions
         instruction = reader.readInstruction();
         assertNull(instruction);
 
     }
 
+    /**
+     * Test of ReaderGuacamoleReader's read method.
+     *
+     * @throws GuacamoleException If an error occurs while reading the instructions.
+     */
+    @Test
+    public void testRead() throws GuacamoleException {
+        // Test string containing multiple instructions
+        final String test = "3.foo,3.bar;2.az,4.bazz;";
 
-   
+        ReaderGuacamoleReader reader = new ReaderGuacamoleReader(new StringReader(test));
+
+        // Expected character arrays for the instructions
+        char[] expectedFirstInstruction = "3.foo,3.bar;".toCharArray();
+        char[] expectedSecondInstruction = "2.az,4.bazz;".toCharArray();
+
+        // Read first instruction and verify
+        char[] firstInstructionChars = reader.read();
+        assertNotNull(firstInstructionChars);
+        assertArrayEquals(expectedFirstInstruction, firstInstructionChars);
+
+        // Read second instruction and verify
+        char[] secondInstructionChars = reader.read();
+        assertNotNull(secondInstructionChars);
+        assertArrayEquals(expectedSecondInstruction, secondInstructionChars);
+
+        // Verify that there are no more instructions
+        assertNull(reader.read());
+    }
+
 }

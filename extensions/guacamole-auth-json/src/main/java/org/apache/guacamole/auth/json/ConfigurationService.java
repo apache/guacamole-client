@@ -25,7 +25,7 @@ import java.util.Collections;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.ByteArrayProperty;
-import org.apache.guacamole.properties.StringListProperty;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 /**
  * Service for retrieving configuration information regarding the JSON
@@ -38,7 +38,7 @@ public class ConfigurationService {
      */
     @Inject
     private Environment environment;
-
+    
     /**
      * The encryption key to use for all decryption and signature verification.
      */
@@ -56,7 +56,7 @@ public class ConfigurationService {
      * be allowed to perform authentication. If not specified, ALL address will
      * be allowed.
      */
-    private static final StringListProperty JSON_TRUSTED_NETWORKS = new StringListProperty() {
+    private static final StringGuacamoleProperty JSON_TRUSTED_NETWORKS = new StringGuacamoleProperty() {
 
         @Override
         public String getName() {
@@ -95,7 +95,7 @@ public class ConfigurationService {
      *     If guacamole.properties cannot be parsed.
      */
     public Collection<String> getTrustedNetworks() throws GuacamoleException {
-        return environment.getProperty(JSON_TRUSTED_NETWORKS, Collections.<String>emptyList());
+        return environment.getPropertyCollection(JSON_TRUSTED_NETWORKS, Collections.<String>emptyList());
     }
 
 }

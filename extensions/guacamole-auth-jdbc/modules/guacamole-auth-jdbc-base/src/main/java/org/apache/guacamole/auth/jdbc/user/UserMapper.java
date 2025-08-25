@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.annotations.Param;
 
 /**
@@ -33,10 +34,15 @@ public interface UserMapper extends ModeledDirectoryObjectMapper<UserModel> {
      *
      * @param username
      *     The username of the user to return.
+     * 
+     * @param caseSensitivity
+     *     The object that contains current configuration for case sensitivity
+     *     for usernames and group names.
      *
      * @return
      *     The user having the given username, or null if no such user exists.
      */
-    UserModel selectOne(@Param("username") String username);
+    UserModel selectOne(@Param("username") String username,
+                        @Param("caseSensitivity") CaseSensitivity caseSensitivity);
 
 }

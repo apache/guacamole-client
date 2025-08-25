@@ -1,0 +1,31 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "Restriction Authentication Backend",
+    "namespace" : "restrict",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.restrict.RestrictionAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json",
+        "translations/tr.json"
+    ],
+    
+    "js" : [
+        "restrict.min.js"
+    ],
+
+    "css" : [
+        "restrict.min.css"
+    ],
+
+    "resources" : {
+        "templates/dateTimeRestrictionField.html" : "text/html",
+        "templates/hostRestrictionField.html"     : "text/html",
+        "templates/timeRestrictionField.html"     : "text/html"
+    }
+
+}

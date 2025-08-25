@@ -22,7 +22,7 @@ package org.apache.guacamole.auth.ssl.conf;
 import com.google.inject.Inject;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
+import java.util.Collection;
 import javax.naming.ldap.LdapName;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
@@ -30,7 +30,6 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
-import org.apache.guacamole.properties.StringListProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 
 /**
@@ -71,11 +70,11 @@ public class ConfigurationService {
      * to THIS instance of Guacamole, but behind SSL termination that requires
      * SSL/TLS client authentication.
      */
-    private static final WildcardURIGuacamoleProperty SSL_CLIENT_AUTH_URI =
+    private static final WildcardURIGuacamoleProperty SSL_AUTH_URI =
             new WildcardURIGuacamoleProperty() {
 
         @Override
-        public String getName() { return "ssl-client-auth-uri"; }
+        public String getName() { return "ssl-auth-uri"; }
 
     };
 
@@ -85,11 +84,11 @@ public class ConfigurationService {
      * to THIS instance of Guacamole, but behind SSL termination that DOES NOT
      * require or request SSL/TLS client authentication.
      */
-    private static final URIGuacamoleProperty SSL_PRIMARY_URI =
+    private static final URIGuacamoleProperty SSL_AUTH_PRIMARY_URI =
             new URIGuacamoleProperty() {
 
         @Override
-        public String getName() { return "ssl-primary-uri"; }
+        public String getName() { return "ssl-auth-primary-uri"; }
 
     };
 
@@ -98,11 +97,11 @@ public class ConfigurationService {
      * URL-encoded client certificate from an HTTP request received from an
      * SSL termination service providing SSL/TLS client authentication.
      */
-    private static final StringGuacamoleProperty SSL_CLIENT_CERTIFICATE_HEADER =
+    private static final StringGuacamoleProperty SSL_AUTH_CLIENT_CERTIFICATE_HEADER =
             new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "ssl-client-certificate-header"; }
+        public String getName() { return "ssl-auth-client-certificate-header"; }
 
     };
 
@@ -113,11 +112,11 @@ public class ConfigurationService {
      * value of this header must be "SUCCESS" (all uppercase) if the
      * certificate was successfully verified.
      */
-    private static final StringGuacamoleProperty SSL_CLIENT_VERIFIED_HEADER =
+    private static final StringGuacamoleProperty SSL_AUTH_CLIENT_VERIFIED_HEADER =
             new StringGuacamoleProperty() {
 
         @Override
-        public String getName() { return "ssl-client-verified-header"; }
+        public String getName() { return "ssl-auth-client-verified-header"; }
 
     };
 
@@ -131,11 +130,11 @@ public class ConfigurationService {
      * resources and cannot potentially be guessed while the token is still
      * valid. These tokens are 256-bit secure random values.
      */
-    private static final IntegerGuacamoleProperty SSL_MAX_TOKEN_VALIDITY =
+    private static final IntegerGuacamoleProperty SSL_AUTH_MAX_TOKEN_VALIDITY =
             new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "ssl-max-token-validity"; }
+        public String getName() { return "ssl-auth-max-token-validity"; }
 
     };
 
@@ -146,11 +145,11 @@ public class ConfigurationService {
      * one of these attributes, the certificate will be rejected. By default,
      * any attribute is accepted.
      */
-    private static final StringListProperty SSL_SUBJECT_USERNAME_ATTRIBUTE =
-            new StringListProperty () {
+    private static final StringGuacamoleProperty SSL_AUTH_SUBJECT_USERNAME_ATTRIBUTE =
+            new StringGuacamoleProperty () {
 
         @Override
-        public String getName() { return "ssl-subject-username-attribute"; }
+        public String getName() { return "ssl-auth-subject-username-attribute"; }
 
     };
 
@@ -159,11 +158,11 @@ public class ConfigurationService {
      * specified, only certificates asserting subject DNs beneath this base DN
      * will be accepted. By default, all DNs are accepted.
      */
-    private static final LdapNameGuacamoleProperty SSL_SUBJECT_BASE_DN =
+    private static final LdapNameGuacamoleProperty SSL_AUTH_SUBJECT_BASE_DN =
             new LdapNameGuacamoleProperty () {
 
         @Override
-        public String getName() { return "ssl-subject-base-dn"; }
+        public String getName() { return "ssl-auth-subject-base-dn"; }
 
     };
 
@@ -180,11 +179,11 @@ public class ConfigurationService {
      * guessed while that subdomain is still valid. These subdomains are
      * 128-bit secure random values.
      */
-    private static final IntegerGuacamoleProperty SSL_MAX_DOMAIN_VALIDITY =
+    private static final IntegerGuacamoleProperty SSL_AUTH_MAX_DOMAIN_VALIDITY =
             new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "ssl-max-domain-validity"; }
+        public String getName() { return "ssl-auth-max-domain-validity"; }
 
     };
 
@@ -193,6 +192,50 @@ public class ConfigurationService {
      */
     @Inject
     private Environment environment;
+
+    /**
+     * Returns whether the given hostname matches the hostname of the given
+     * URI. The provided hostname may be the value of an HTTP "Host" header,
+     * and may include a port number. If a port number is included in the
+     * hostname, it is ignored.
+     *
+     * @param hostname
+     *     The hostname to check, which may alternatively be the value of an
+     *     HTTP "Host" header, with or without port number. The port number is
+     *     not considered when determining whether this hostname matches the
+     *     hostname of the provided URI.
+     *
+     * @param offset
+     *     The character offset within the provided hostname where checking
+     *     should start. Any characters before this offset are ignored. This
+     *     offset does not affect where checking starts within the hostname of
+     *     the provided URI.
+     *
+     * @param uri
+     *     The URI to check the given hostname against.
+     *
+     * @return
+     *     true if the provided hostname from the given offset onward is
+     *     identical to the hostname of the given URI, false otherwise.
+     */
+    private boolean hostnameMatches(String hostname, int offset, URI uri) {
+
+        // Locate end of actual hostname portion of "Host" header
+        int endOfHostname = hostname.indexOf(':');
+        if (endOfHostname == -1)
+            endOfHostname = hostname.length();
+
+        // Before checking substring equivalence, we need to verify that the
+        // length actually matches what we expect (we'd otherwise consider the
+        // host to match if it starts with the expected hostname, ignoring any
+        // remaining characters)
+        String expectedHostname = uri.getHost();
+        if (expectedHostname.length() != endOfHostname - offset)
+            return false;
+
+        return hostname.regionMatches(true, offset, expectedHostname, 0, expectedHostname.length());
+
+    }
 
     /**
      * Returns a URI that should be used to authenticate users with SSL/TLS
@@ -214,7 +257,7 @@ public class ConfigurationService {
      */
     public URI getClientAuthenticationURI(String subdomain) throws GuacamoleException {
 
-        URI authURI = environment.getRequiredProperty(SSL_CLIENT_AUTH_URI);
+        URI authURI = environment.getRequiredProperty(SSL_AUTH_URI);
         String baseHostname = authURI.getHost();
 
         // Add provided subdomain to auth URI
@@ -249,9 +292,6 @@ public class ConfigurationService {
         if (isPrimaryHostname(hostname))
             return null;
 
-        URI authURI = environment.getRequiredProperty(SSL_CLIENT_AUTH_URI);
-        String baseHostname = authURI.getHost();
-
         // Verify the first domain component is at least one character in
         // length
         int firstPeriod = hostname.indexOf('.');
@@ -260,7 +300,8 @@ public class ConfigurationService {
 
         // Verify domain matches the configured auth URI except for the leading
         // subdomain
-        if (!hostname.regionMatches(true, firstPeriod + 1, baseHostname, 0, baseHostname.length()))
+        URI authURI = environment.getRequiredProperty(SSL_AUTH_URI);
+        if (!hostnameMatches(hostname, firstPeriod + 1, authURI))
             return null;
 
         // Extract subdomain
@@ -281,7 +322,7 @@ public class ConfigurationService {
      *     or cannot be parsed.
      */
     public URI getPrimaryURI() throws GuacamoleException {
-        return environment.getRequiredProperty(SSL_PRIMARY_URI);
+        return environment.getRequiredProperty(SSL_AUTH_PRIMARY_URI);
     }
 
     /**
@@ -327,7 +368,7 @@ public class ConfigurationService {
      */
     public boolean isPrimaryHostname(String hostname) throws GuacamoleException {
         URI primaryURI = getPrimaryURI();
-        return hostname.equalsIgnoreCase(primaryURI.getHost());
+        return hostnameMatches(hostname, 0, primaryURI);
     }
 
     /**
@@ -345,7 +386,7 @@ public class ConfigurationService {
      *     be parsed.
      */
     public String getClientCertificateHeader() throws GuacamoleException {
-        return environment.getProperty(SSL_CLIENT_CERTIFICATE_HEADER, DEFAULT_CLIENT_CERTIFICATE_HEADER);
+        return environment.getProperty(SSL_AUTH_CLIENT_CERTIFICATE_HEADER, DEFAULT_CLIENT_CERTIFICATE_HEADER);
     }
 
     /**
@@ -363,7 +404,7 @@ public class ConfigurationService {
      *     cannot be parsed.
      */
     public String getClientVerifiedHeader() throws GuacamoleException {
-        return environment.getProperty(SSL_CLIENT_VERIFIED_HEADER, DEFAULT_CLIENT_VERIFIED_HEADER);
+        return environment.getProperty(SSL_AUTH_CLIENT_VERIFIED_HEADER, DEFAULT_CLIENT_VERIFIED_HEADER);
     }
 
     /**
@@ -382,7 +423,7 @@ public class ConfigurationService {
      *     If guacamole.properties cannot be parsed.
      */
     public int getMaxTokenValidity() throws GuacamoleException {
-        return environment.getProperty(SSL_MAX_TOKEN_VALIDITY, DEFAULT_MAX_TOKEN_VALIDITY);
+        return environment.getProperty(SSL_AUTH_MAX_TOKEN_VALIDITY, DEFAULT_MAX_TOKEN_VALIDITY);
     }
 
     /**
@@ -402,7 +443,7 @@ public class ConfigurationService {
      *     If guacamole.properties cannot be parsed.
      */
     public int getMaxDomainValidity() throws GuacamoleException {
-        return environment.getProperty(SSL_MAX_DOMAIN_VALIDITY, DEFAULT_MAX_DOMAIN_VALIDITY);
+        return environment.getProperty(SSL_AUTH_MAX_DOMAIN_VALIDITY, DEFAULT_MAX_DOMAIN_VALIDITY);
     }
 
     /**
@@ -417,7 +458,7 @@ public class ConfigurationService {
      *     If the configured base DN cannot be read or is not a valid LDAP DN.
      */
     public LdapName getSubjectBaseDN() throws GuacamoleException {
-        return environment.getProperty(SSL_SUBJECT_BASE_DN);
+        return environment.getProperty(SSL_AUTH_SUBJECT_BASE_DN);
     }
 
     /**
@@ -433,8 +474,8 @@ public class ConfigurationService {
      * @throws GuacamoleException
      *     If the configured set of username attributes cannot be read.
      */
-    public List<String> getSubjectUsernameAttributes() throws GuacamoleException {
-        return environment.getProperty(SSL_SUBJECT_USERNAME_ATTRIBUTE);
+    public Collection<String> getSubjectUsernameAttributes() throws GuacamoleException {
+        return environment.getPropertyCollection(SSL_AUTH_SUBJECT_USERNAME_ATTRIBUTE);
     }
 
 }

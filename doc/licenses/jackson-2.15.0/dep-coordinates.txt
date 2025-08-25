@@ -1,4 +1,0 @@
-com.fasterxml.jackson.core:jackson-core:jar:2.15.0
-com.fasterxml.jackson.core:jackson-annotations:jar:2.15.0
-com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:jar:2.15.0
-com.fasterxml.jackson.module:jackson-module-jaxb-annotations:jar:2.15.0

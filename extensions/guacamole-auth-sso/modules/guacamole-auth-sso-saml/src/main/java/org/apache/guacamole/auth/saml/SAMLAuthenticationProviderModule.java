@@ -24,18 +24,29 @@ import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 import org.apache.guacamole.auth.saml.acs.AssertionConsumerServiceResource;
 import org.apache.guacamole.auth.saml.acs.SAMLAuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
+import org.apache.guacamole.auth.saml.conf.SAMLEnvironment;
+import org.apache.guacamole.environment.Environment;
 
 /**
  * Guice module which configures SAML-specific injections.
  */
 public class SAMLAuthenticationProviderModule extends AbstractModule {
 
+    /**
+     * The environment for this server and extension.
+     */
+    private final Environment environment = new SAMLEnvironment();
+    
     @Override
     protected void configure() {
         bind(AssertionConsumerServiceResource.class);
         bind(ConfigurationService.class);
         bind(SAMLAuthenticationSessionManager.class);
         bind(SAMLService.class);
+        
+        bind(Environment.class).toInstance(environment);
+        
+        requestStaticInjection(SAMLAuthenticationEventListener.class);
     }
 
 }

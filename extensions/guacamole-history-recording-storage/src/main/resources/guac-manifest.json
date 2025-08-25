@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.5.2",
+    "guacamoleVersion" : "1.6.0",
 
     "name"      : "Session Recording Storage",
     "namespace" : "recording-storage",
@@ -11,7 +11,8 @@
 
     "translations" : [
         "translations/en.json",
-        "translations/pl.json"
+        "translations/pl.json",
+        "translations/tr.json"
     ]
 
 }

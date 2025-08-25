@@ -51,11 +51,23 @@
                     JOIN guacamole_user_group ON guacamole_user_group.entity_id = guacamole_entity.entity_id
                     WHERE
                         type = 'USER_GROUP'::guacamole_entity_type
-                        AND name IN
-                            <foreach collection="${groups}" item="effectiveGroup"
-                                     open="(" separator="," close=")">
-                                #{effectiveGroup,jdbcType=VARCHAR}
-                            </foreach>
+                        AND 
+                        <choose>
+                            <when test="caseSensitivity.caseSensitiveGroupNames()">
+                                name IN
+                                <foreach collection="${groups}" item="effectiveGroup"
+                                         open="(" separator="," close=")">
+                                    #{effectiveGroup,jdbcType=VARCHAR}
+                                </foreach>
+                            </when>
+                            <otherwise>
+                                LOWER(name) IN
+                                <foreach collection="${groups}" item="effectiveGroup"
+                                         open="(" separator="," close=")">
+                                    LOWER(#{effectiveGroup,jdbcType=VARCHAR})
+                                </foreach>
+                            </otherwise>
+                        </choose>
                         AND disabled = false
                 )
             </if>
@@ -81,11 +93,23 @@
                     JOIN guacamole_user_group ON guacamole_user_group.entity_id = guacamole_entity.entity_id
                     WHERE
                         type = 'USER_GROUP'::guacamole_entity_type
-                        AND name IN
-                            <foreach collection="effectiveGroups" item="effectiveGroup"
-                                     open="(" separator="," close=")">
-                                #{effectiveGroup,jdbcType=VARCHAR}
-                            </foreach>
+                        AND 
+                        <choose>
+                            <when test="caseSensitivity.caseSensitiveGroupNames()">
+                                name IN
+                                <foreach collection="effectiveGroups" item="effectiveGroup"
+                                         open="(" separator="," close=")">
+                                    #{effectiveGroup,jdbcType=VARCHAR}
+                                </foreach>
+                            </when>
+                            <otherwise>
+                                LOWER(name) IN
+                                <foreach collection="effectiveGroups" item="effectiveGroup"
+                                         open="(" separator="," close=")">
+                                    LOWER(#{effectiveGroup,jdbcType=VARCHAR})
+                                </foreach>
+                            </otherwise>
+                        </choose>
                         AND guacamole_user_group.disabled = false
             </if>
             UNION

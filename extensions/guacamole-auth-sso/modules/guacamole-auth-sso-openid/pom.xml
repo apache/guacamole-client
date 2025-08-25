@@ -26,14 +26,14 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-sso-openid</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.2</version>
+    <version>1.6.0</version>
     <name>guacamole-auth-sso-openid</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-auth-sso</artifactId>
-        <version>1.5.2</version>
+        <version>1.6.0</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
             <artifactId>jose4j</artifactId>
-            <version>0.9.3</version>
+            <version>0.9.6</version>
         </dependency>
 
         <!-- Guice -->

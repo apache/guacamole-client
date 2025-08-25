@@ -34,7 +34,7 @@ import org.apache.guacamole.GuacamoleServerException;
  * required (such as {@link #getUserBaseDN()}), an exception is thrown.
  */
 public class DefaultLDAPConfiguration implements LDAPConfiguration {
-
+    
     @Override
     public String appliesTo(String username) {
         return null;

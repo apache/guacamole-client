@@ -21,15 +21,22 @@ package org.apache.guacamole.environment;
 
 import org.apache.guacamole.properties.GuacamoleProperties;
 import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
+import java.util.function.Supplier;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.CaseSensitivity;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.protocols.ProtocolInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The environment of an arbitrary Guacamole instance, describing available
@@ -67,6 +74,19 @@ public interface Environment {
         public String getName() { return "guacd-ssl"; }
 
     };
+    
+    /**
+     * A property that configures how Guacamole handles case sensitivity - it
+     * can be enabled for both usernames and group names, just usernames, just
+     * group names, or disabled for both.
+     */
+    public static final EnumGuacamoleProperty<CaseSensitivity> CASE_SENSITIVITY =
+            new EnumGuacamoleProperty<CaseSensitivity>(CaseSensitivity.class) {
+    
+        @Override
+        public String getName() { return "case-sensitivity"; }
+
+    };
 
     /**
      * Returns the Guacamole home directory as determined when this Environment
@@ -102,13 +122,18 @@ public interface Environment {
      * Given a GuacamoleProperty, parses and returns the value set for that
      * property in guacamole.properties, if any.
      *
-     * @param <Type> The type that the given property is parsed into.
-     * @param property The property to read from guacamole.properties.
-     * @return The parsed value of the property as read from
-     *         guacamole.properties.
-     * @throws GuacamoleException If an error occurs while parsing the value
-     *                            for the given property in
-     *                            guacamole.properties.
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @return
+     *     The parsed value of the property as read from guacamole.properties.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
      */
     public <Type> Type getProperty(GuacamoleProperty<Type> property)
             throws GuacamoleException;
@@ -118,20 +143,118 @@ public interface Environment {
      * property in guacamole.properties, if any. If no value is found, the
      * provided default value is returned.
      *
-     * @param <Type> The type that the given property is parsed into.
-     * @param property The property to read from guacamole.properties.
-     * @param defaultValue The value to return if no value was given in
-     *                     guacamole.properties.
-     * @return The parsed value of the property as read from
-     *         guacamole.properties, or the provided default value if no value
-     *         was found.
-     * @throws GuacamoleException If an error occurs while parsing the value
-     *                            for the given property in
-     *                            guacamole.properties.
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @param defaultValue
+     *     The value to return if no value was given in guacamole.properties.
+     * 
+     * @return
+     *     The parsed value of the property as read from guacamole.properties,
+     *     or the provided default value if no value was found.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
      */
     public <Type> Type getProperty(GuacamoleProperty<Type> property,
             Type defaultValue) throws GuacamoleException;
 
+    /**
+     * Given a GuacamoleProperty, parses and returns a sorted Collection of the
+     * value set for that property in guacamole.properties, if any. The
+     * implementation of parsing and returning a collection of multiple
+     * values is up to the individual property implementations, and not all
+     * implementations will support reading and returning multiple values.
+     *
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @return
+     *     A sorted collection of the the parsed values of the property as read
+     *     from guacamole.properties.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
+     */
+    public default <Type> Collection<Type> getPropertyCollection(
+            GuacamoleProperty<Type> property) throws GuacamoleException {
+        return new DefaultEnvironment(this).getPropertyCollection(property);
+    }
+    
+    /**
+     * Given a GuacamoleProperty, parses and returns the value set for that
+     * property in guacamole.properties, if any. If no value is found, a
+     * Collection is returned with the provided default value. The
+     * implementation of parsing and returning a collection of multiple
+     * values is up to the individual property implementations, and not all
+     * implementations will support reading and returning multiple values.
+     *
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @param defaultValue
+     *     The single value to return in the Collection if no value was given
+     *     in guacamole.properties.
+     * 
+     * @return
+     *     A sorted collection of the the parsed values of the property as read
+     *     from guacamole.properties, or a Collection with the single default
+     *     value provided.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
+     */
+    public default <Type> Collection<Type> getPropertyCollection(
+            GuacamoleProperty<Type> property, Type defaultValue)
+            throws GuacamoleException {
+        return new DefaultEnvironment(this).getPropertyCollection(property, defaultValue);
+    }
+    
+    /**
+     * Given a GuacamoleProperty, parses and returns the value set for that
+     * property in guacamole.properties, if any. If no value is found, the
+     * provided Collection of default values is returned. The
+     * implementation of parsing and returning a collection of multiple
+     * values is up to the individual property implementations, and not all
+     * implementations will support reading and returning multiple values.
+     *
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @param defaultValue
+     *     The Collection of values to return in the Collection if no value was
+     *     given in guacamole.properties.
+     * 
+     * @return
+     *     A sorted collection of the the parsed values of the property as read
+     *     from guacamole.properties, or a Collection with the single default
+     *     value provided.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties.
+     */
+    public default <Type> Collection<Type> getPropertyCollection(
+            GuacamoleProperty<Type> property, Collection<Type> defaultValue)
+            throws GuacamoleException {
+        return new DefaultEnvironment(this).getPropertyCollection(property, defaultValue);
+    }
+    
     /**
      * Given a GuacamoleProperty, parses and returns the value set for that
      * property in guacamole.properties. An exception is thrown if the value
@@ -148,6 +271,32 @@ public interface Environment {
      */
     public <Type> Type getRequiredProperty(GuacamoleProperty<Type> property)
             throws GuacamoleException;
+    
+    /**
+     * Given a GuacamoleProperty, parses and returns a sorted Collection of
+     * values for that property in guacamole.properties. An exception is thrown
+     * if the value is not provided. The implementation of parsing and returning
+     * a collection of multiple values is up to the individual property
+     * implementations, and not all implementations will support reading and
+     * returning multiple values.
+     * 
+     * @param <Type>
+     *     The type that the given property is parsed into.
+     * 
+     * @param property
+     *     The property to read from guacamole.properties.
+     * 
+     * @return
+     *     A sorted Collection of the property as read from guacamole.properties.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs while parsing the value for the given property in
+     *     guacamole.properties, or if the property is not specified.
+     */
+    public default <Type> Collection<Type> getRequiredPropertyCollection(
+            GuacamoleProperty<Type> property) throws GuacamoleException {
+        return new DefaultEnvironment(this).getRequiredPropertyCollection(property);
+    }
 
     /**
      * Returns the connection information which should be used, by default, to
@@ -178,9 +327,20 @@ public interface Environment {
      */
     public default void addGuacamoleProperties(GuacamoleProperties properties)
             throws GuacamoleException {
-        throw new GuacamoleUnsupportedException(String.format("%s does not "
-                + "support dynamic definition of Guacamole properties.",
-                getClass()));
+        new DefaultEnvironment(this).addGuacamoleProperties(properties);
+    }
+
+    /**
+     * Returns the case sensitivity configuration for Guacamole as defined
+     * in guacamole.properties, or the default of enabling case sensitivity
+     * for both usernames and group names.
+     * 
+     * @return
+     *     The case sensitivity setting as configured in guacamole.properties,
+     *     or the default of enabling case sensitivity.
+     */
+    public default CaseSensitivity getCaseSensitivity() {
+        return new DefaultEnvironment(this).getCaseSensitivity();
     }
 
 }

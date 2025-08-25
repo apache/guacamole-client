@@ -58,6 +58,16 @@ angular.module('client').factory('ManagedArgument', ['$q', function defineManage
          */
         this.stream = template.stream;
 
+        /**
+         * True if this argument has been modified in the webapp, but yet to
+         * be confirmed by guacd, or false in any other case. A pending
+         * argument cannot be modified again, and must be recreated before
+         * editing is enabled again.
+         *
+         * @type {boolean}
+         */
+        this.pending = false;
+
     };
 
     /**
@@ -110,9 +120,9 @@ angular.module('client').factory('ManagedArgument', ['$q', function defineManage
      * Sets the given editable argument (connection parameter) to the given
      * value, updating the behavior of the associated connection in real-time.
      * If successful, the ManagedArgument provided cannot be used for future
-     * calls to setValue() and must be replaced with a new instance. This
-     * function only has an effect if the new parameter value is different from
-     * the current value.
+     * calls to setValue() and will be read-only until replaced with a new
+     * instance. This function only has an effect if the new parameter value
+     * is different from the current value.
      *
      * @param {ManagedArgument} managedArgument
      *     The ManagedArgument instance associated with the connection
@@ -120,30 +130,21 @@ angular.module('client').factory('ManagedArgument', ['$q', function defineManage
      *
      * @param {String} value
      *     The new value to assign to the connection parameter.
-     *
-     * @returns {Boolean}
-     *     true if the connection parameter was sent and the provided
-     *     ManagedArgument instance may no longer be used for future setValue()
-     *     calls, false if the connection parameter was NOT sent as it has not
-     *     changed.
      */
     ManagedArgument.setValue = function setValue(managedArgument, value) {
 
-        // Stream new value only if value has changed
-        if (value !== managedArgument.value) {
+        // Stream new value only if value has changed and a change is not
+        // already pending
+        if (!managedArgument.pending && value !== managedArgument.value) {
 
             var writer = new Guacamole.StringWriter(managedArgument.stream);
             writer.sendText(value);
             writer.sendEnd();
 
             // ManagedArgument instance is no longer usable
-            return true;
+            managedArgument.pending = true;
 
         }
-
-        // No parameter value change was attempted and the ManagedArgument
-        // instance may be reused
-        return false;
 
     };
 

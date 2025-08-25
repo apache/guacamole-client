@@ -50,6 +50,7 @@ import org.apache.guacamole.net.auth.ActivityRecordSet;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.RelatedObjectSet;
 import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,12 +63,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(ModeledUser.class);
-
-    /**
-     * The name of the attribute which controls whether a user account is
-     * disabled.
-     */
-    public static final String DISABLED_ATTRIBUTE_NAME = "disabled";
 
     /**
      * The name of the attribute which controls whether a user's password is
@@ -121,7 +116,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      * form.
      */
     public static final Form ACCOUNT_RESTRICTIONS = new Form("restrictions", Arrays.<Field>asList(
-        new BooleanField(DISABLED_ATTRIBUTE_NAME, "true"),
         new BooleanField(EXPIRED_ATTRIBUTE_NAME, "true"),
         new TimeField(ACCESS_WINDOW_START_ATTRIBUTE_NAME),
         new TimeField(ACCESS_WINDOW_END_ATTRIBUTE_NAME),
@@ -149,7 +143,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
                 User.Attribute.EMAIL_ADDRESS,
                 User.Attribute.ORGANIZATION,
                 User.Attribute.ORGANIZATIONAL_ROLE,
-                DISABLED_ATTRIBUTE_NAME,
                 EXPIRED_ATTRIBUTE_NAME,
                 ACCESS_WINDOW_START_ATTRIBUTE_NAME,
                 ACCESS_WINDOW_END_ATTRIBUTE_NAME,
@@ -157,12 +150,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
                 VALID_UNTIL_ATTRIBUTE_NAME,
                 TIMEZONE_ATTRIBUTE_NAME
             )));
-
-    /**
-     * Service for managing users.
-     */
-    @Inject
-    private UserService userService;
 
     /**
      * Service for hashing passwords.
@@ -196,6 +183,11 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
     private boolean exposeRestrictedAttributes = false;
 
     /**
+     * Whether usernames should be considered case-sensitive.
+     */
+    private boolean caseSensitive = true;
+
+    /**
      * Initializes this ModeledUser, associating it with the current
      * authenticated user and populating it with data from the given user
      * model.
@@ -212,9 +204,10 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      *     setAttributes().
      */
     public void init(ModeledAuthenticatedUser currentUser, UserModel model,
-            boolean exposeRestrictedAttributes) {
+            boolean exposeRestrictedAttributes, boolean caseSensitive) {
         super.init(currentUser, model);
         this.exposeRestrictedAttributes = exposeRestrictedAttributes;
+        this.caseSensitive = caseSensitive;
     }
 
     /**
@@ -250,6 +243,16 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
     }
 
     @Override
+    public String getIdentifier() {
+        return CaseSensitivity.canonicalize(super.getIdentifier(), caseSensitive);
+    }
+
+    @Override
+    public void setIdentifier(String identifier) {
+        super.setIdentifier(CaseSensitivity.canonicalize(identifier, caseSensitive));
+    }
+
+    @Override
     public String getPassword() {
         return password;
     }
@@ -281,6 +284,16 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         userModel.setPasswordDate(new Timestamp(System.currentTimeMillis()));
 
     }
+    
+    @Override
+    public boolean isDisabled() {
+        return getModel().isDisabled();
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled) {
+        getModel().setDisabled(disabled);
+    }
 
     /**
      * Returns the this user's current password record. If the user is new, this
@@ -308,9 +321,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      *     The Map to store all restricted attributes within.
      */
     private void putRestrictedAttributes(Map<String, String> attributes) {
-
-        // Set disabled attribute
-        attributes.put(DISABLED_ATTRIBUTE_NAME, getModel().isDisabled() ? "true" : null);
 
         // Set password expired attribute
         attributes.put(EXPIRED_ATTRIBUTE_NAME, getModel().isExpired() ? "true" : null);
@@ -423,10 +433,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      *     The Map to pull all restricted attributes from.
      */
     private void setRestrictedAttributes(Map<String, String> attributes) {
-
-        // Translate disabled attribute
-        if (attributes.containsKey(DISABLED_ATTRIBUTE_NAME))
-            getModel().setDisabled("true".equals(attributes.get(DISABLED_ATTRIBUTE_NAME)));
 
         // Translate password expired attribute
         if (attributes.containsKey(EXPIRED_ATTRIBUTE_NAME))
@@ -738,19 +744,6 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
     }
 
     /**
-     * Returns whether this user account has been disabled. The credentials of
-     * disabled user accounts are treated as invalid, effectively disabling
-     * that user's access to data for which they would otherwise have
-     * permission.
-     *
-     * @return
-     *     true if this user account has been disabled, false otherwise.
-     */
-    public boolean isDisabled() {
-        return getModel().isDisabled();
-    }
-
-    /**
      * Returns whether this user's password has expired. If a user's password
      * is expired, it must be immediately changed upon login. A user account
      * with an expired password cannot be used until the password has been
@@ -798,5 +791,5 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
     public boolean isSkeleton() {
         return (getModel().getEntityID() == null);
     }
-
+    
 }

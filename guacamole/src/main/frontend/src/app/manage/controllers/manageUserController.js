@@ -34,6 +34,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
     var $location                = $injector.get('$location');
     var $routeParams             = $injector.get('$routeParams');
     var $q                       = $injector.get('$q');
+    var $window                  = $injector.get('$window');
     var authenticationService    = $injector.get('authenticationService');
     var dataSourceService        = $injector.get('dataSourceService');
     var membershipService        = $injector.get('membershipService');
@@ -431,6 +432,7 @@ angular.module('manage').controller('manageUserController', ['$scope', '$injecto
      */
     $scope.cloneUser = function cloneUser() {
         $location.path('/manage/' + encodeURIComponent($scope.dataSource) + '/users').search('clone', username);
+        $window.scrollTo(0,0);
     };
             
     /**

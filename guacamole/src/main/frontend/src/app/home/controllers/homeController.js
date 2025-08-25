@@ -31,6 +31,7 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     var authenticationService  = $injector.get('authenticationService');
     var connectionGroupService = $injector.get('connectionGroupService');
     var dataSourceService      = $injector.get('dataSourceService');
+    var preferenceService      = $injector.get('preferenceService');
     var requestService         = $injector.get('requestService');
 
     /**
@@ -59,6 +60,18 @@ angular.module('home').controller('homeController', ['$scope', '$injector',
     $scope.filteredConnectionGroupProperties = [
         'name'
     ];
+    
+    /**
+     * Returns whether the "Recent Connections" section should be displayed on
+     * the home screen.
+     * 
+     * @returns {!boolean}
+     *     true if recent connections should be displayed on the home screen,
+     *     false otherwise.
+     */
+    $scope.isRecentConnectionsVisible = function isRecentConnectionsVisible() {
+        return preferenceService.preferences.showRecentConnections;
+    };
 
     /**
      * Returns whether critical data has completed being loaded.

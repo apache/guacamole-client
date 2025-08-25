@@ -26,13 +26,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
-import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
+import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
+import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectService;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
@@ -50,12 +49,14 @@ import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredential
 import org.apache.guacamole.net.auth.ActivityRecord;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
+import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -156,6 +157,12 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     @Inject
     private PasswordPolicyService passwordPolicyService;
 
+    /**
+     * The server environment for retrieving configuration.
+     */
+    @Inject
+    private JDBCEnvironment environment;
+    
     @Override
     protected ModeledDirectoryObjectMapper<UserModel> getObjectMapper() {
         return userMapper;
@@ -189,7 +196,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Produce ModeledUser exposing only those attributes for which the
         // current user has permission
         ModeledUser user = userProvider.get();
-        user.init(currentUser, model, exposeRestrictedAttributes);
+        user.init(currentUser, model, exposeRestrictedAttributes,
+                environment.getCaseSensitivity().caseSensitiveUsernames());
         return user;
 
     }
@@ -209,6 +217,11 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         return model;
         
+    }
+    
+    @Override
+    protected CaseSensitivity getCaseSensitivity() throws GuacamoleException {
+        return environment.getCaseSensitivity();
     }
 
     @Override
@@ -241,7 +254,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             throw new GuacamoleClientException("The username must not be blank.");
         
         // Do not create duplicate users
-        Collection<UserModel> existing = userMapper.select(Collections.singleton(model.getIdentifier()));
+        Collection<UserModel> existing = userMapper.select(Collections.singleton(
+                    model.getIdentifier()), getCaseSensitivity());
         if (!existing.isEmpty())
             throw new GuacamoleClientException("User \"" + model.getIdentifier() + "\" already exists.");
 
@@ -277,7 +291,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             throw new GuacamoleClientException("The username must not be blank.");
         
         // Check whether such a user is already present
-        UserModel existing = userMapper.selectOne(model.getIdentifier());
+        UserModel existing = userMapper.selectOne(model.getIdentifier(),
+                getCaseSensitivity());
         if (existing != null) {
 
             // Do not rename to existing user
@@ -337,6 +352,17 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             throw new GuacamoleUnsupportedException("Deleting your own user is not allowed.");
 
     }
+    
+    @Override
+    public void deleteObject(ModeledAuthenticatedUser user, String identifier)
+        throws GuacamoleException {
+
+        beforeDelete(user, identifier);
+        
+        // Delete object
+        userMapper.delete(identifier, getCaseSensitivity());
+
+    }
 
     @Override
     protected boolean isValidIdentifier(String identifier) {
@@ -375,7 +401,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         String password = credentials.getPassword();
 
         // Retrieve corresponding user model, if such a user exists
-        UserModel userModel = userMapper.selectOne(username);
+        UserModel userModel = userMapper.selectOne(username,
+                getCaseSensitivity());
         if (userModel == null)
             return null;
 
@@ -416,7 +443,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
             AuthenticatedUser authenticatedUser) throws GuacamoleException {
 
         // Retrieve corresponding user model, if such a user exists
-        UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier());
+        UserModel userModel = userMapper.selectOne(authenticatedUser.getIdentifier(),
+                getCaseSensitivity());
         if (userModel == null)
             return null;
 
@@ -493,9 +521,8 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         String username = user.getIdentifier();
 
         // Pull new password from HTTP request
-        HttpServletRequest request = credentials.getRequest();
-        String newPassword = request.getParameter(NEW_PASSWORD_PARAMETER);
-        String confirmNewPassword = request.getParameter(CONFIRM_NEW_PASSWORD_PARAMETER);
+        String newPassword = credentials.getParameter(NEW_PASSWORD_PARAMETER);
+        String confirmNewPassword = credentials.getParameter(CONFIRM_NEW_PASSWORD_PARAMETER);
 
         // Require new password if account is expired
         if (newPassword == null || confirmNewPassword == null) {
@@ -611,17 +638,19 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         List<ActivityRecordModel> searchResults;
 
-        // Bypass permission checks if the user is privileged
-        if (user.isPrivileged())
+        // Bypass permission checks if the user is privileged or has System-level audit permissions
+        if (user.isPrivileged() || user.getUser().getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.AUDIT))
             searchResults = userRecordMapper.search(username, recordIdentifier,
-                    requiredContents, sortPredicates, limit);
+                    requiredContents, sortPredicates, limit,
+                    getCaseSensitivity());
 
         // Otherwise only return explicitly readable history records
         else
             searchResults = userRecordMapper.searchReadable(username, 
                     user.getUser().getModel(), recordIdentifier,
                     requiredContents, sortPredicates, limit,
-                    user.getEffectiveUserGroups());
+                    user.getEffectiveUserGroups(),
+                    getCaseSensitivity());
 
         return getObjectInstances(searchResults);
 

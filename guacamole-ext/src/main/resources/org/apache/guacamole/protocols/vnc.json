@@ -39,6 +39,16 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "disable-server-input",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-display-resize",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "swap-red-blue",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
@@ -59,6 +69,16 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "compress-level",
+                    "type"    : "ENUM",
+                    "options" : [ "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+                },
+                {
+                    "name"    : "quality-level",
+                    "type"    : "ENUM",
+                    "options" : [ "", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9" ]
+                },
+                {
                     "name" : "encodings",
                     "type" : "TEXT"
                 }
@@ -68,6 +88,11 @@
         {
             "name"  : "clipboard",
             "fields" : [
+                {
+                    "name"    : "clipboard-buffer-size",
+                    "type"    : "ENUM",
+                    "options" : [ "", "262144", "1048576", "10485760", "52428800" ]
+                },
                 {
                     "name"    : "clipboard-encoding",
                     "type"    : "ENUM",
@@ -130,6 +155,11 @@
                     "name"  : "create-recording-path",
                     "type"  : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-write-existing",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
@@ -151,6 +181,10 @@
                     "type"  : "NUMERIC"
                 },
                 {
+                    "name"  : "sftp-timeout",
+                    "type"  : "NUMERIC"
+                },
+                {
                     "name"  : "sftp-host-key",
                     "type"  : "TEXT"
                 },
@@ -169,6 +203,10 @@
                 {
                     "name"  : "sftp-passphrase",
                     "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "sftp-public-key",
+                    "type"  : "MULTILINE"
                 },
                 {
                     "name"  : "sftp-root-directory",

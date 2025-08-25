@@ -33,6 +33,7 @@ angular.module('manage').controller('manageUserGroupController', ['$scope', '$in
     var $location             = $injector.get('$location');
     var $routeParams          = $injector.get('$routeParams');
     var $q                    = $injector.get('$q');
+    var $window               = $injector.get('$window');
     var authenticationService = $injector.get('authenticationService');
     var dataSourceService     = $injector.get('dataSourceService');
     var membershipService     = $injector.get('membershipService');
@@ -505,6 +506,7 @@ angular.module('manage').controller('manageUserGroupController', ['$scope', '$in
      */
     $scope.cloneUserGroup = function cloneUserGroup() {
         $location.path('/manage/' + encodeURIComponent($scope.dataSource) + '/userGroups').search('clone', identifier);
+        $window.scrollTo(0,0);
     };
 
     /**

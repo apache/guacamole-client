@@ -314,6 +314,7 @@
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "새로운 공유 프로파일 생성",
         "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "로그인 비활성화:",
         "FIELD_HEADER_USERNAME"                      : "사용자 이름:",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
@@ -351,6 +352,7 @@
         "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "비활성화:",
         "FIELD_HEADER_USER_GROUP_NAME"               : "그룹 이름:",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
@@ -387,6 +389,8 @@
         "FIELD_HEADER_CONTAINER"       : "컨테이너 이름 :",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "자동으로 레코드 경로 생성 :",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "자동으로 typescript 경로 생성 :",
+        "FIELD_HEADER_DISABLE_COPY"    : "터미널에서 복사 비활성화:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "클라이언트에서 붙여넣기 비활성화:",
         "FIELD_HEADER_EXEC_COMMAND"    : "명령어 (exec):",
         "FIELD_HEADER_FONT_NAME"       : "글꼴 이름 :",
         "FIELD_HEADER_FONT_SIZE"       : "글꼴 크기 :",
@@ -432,6 +436,7 @@
         "NAME" : "Kubernetes",
         "SECTION_HEADER_AUTHENTICATION" : "인증",
         "SECTION_HEADER_BEHAVIOR"       : "터미널 동작",
+        "SECTION_HEADER_CLIPBOARD"      : "클립보드",
         "SECTION_HEADER_CONTAINER"      : "컨테이너",
         "SECTION_HEADER_DISPLAY"        : "디스플레이",
         "SECTION_HEADER_RECORDING"      : "스크린 레코드",
@@ -536,6 +541,8 @@
         "FIELD_OPTION_SECURITY_TLS"   : "TLS 암호화",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Czech (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Swiss German (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "German (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "UK English (Qwerty)",
@@ -553,7 +560,6 @@
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portuguese Brazilian (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portuguese (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Swedish (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turkish-Q (Qwerty)",
 
         "NAME" : "RDP",

@@ -22,7 +22,9 @@ package org.apache.guacamole.auth.ssl;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
+import org.apache.guacamole.auth.ssl.conf.SSLEnvironment;
 import org.apache.guacamole.auth.sso.NonceService;
+import org.apache.guacamole.environment.Environment;
 
 /**
  * Guice module which configures injections specific to SSO using SSL/TLS
@@ -30,11 +32,20 @@ import org.apache.guacamole.auth.sso.NonceService;
  */
 public class SSLAuthenticationProviderModule extends AbstractModule {
 
+    /**
+     * The configuration environment of this server and extension.
+     */
+    private final Environment environment = new SSLEnvironment();
+    
     @Override
     protected void configure() {
         bind(ConfigurationService.class);
         bind(NonceService.class).in(Scopes.SINGLETON);
         bind(SSLAuthenticationSessionManager.class);
+
+        bind(Environment.class).toInstance(environment);
+        
+        requestStaticInjection(SSLAuthenticationEventListener.class);
     }
 
 }

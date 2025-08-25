@@ -317,6 +317,7 @@
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Crear nuevos perfiles de compartir:",
         "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "Inicio de sesión deshabilitado:",
         "FIELD_HEADER_USERNAME"                      : "Nombre de usuario:",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
@@ -355,6 +356,7 @@
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "Deshabilitado:",
         "FIELD_HEADER_USER_GROUP_NAME"               : "Nombre del grupo:",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
@@ -390,6 +392,8 @@
         "FIELD_HEADER_CONTAINER"       : "Nombre de contenedor:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Crear automáticamente la ruta de grabación:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Crear automáticamente la ruta de transcripción:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Desactivar copia desde el terminal:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Desactivar pegar desde el cliente:",
         "FIELD_HEADER_EXEC_COMMAND"    : "Commando (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Nombre de fuente:",
         "FIELD_HEADER_FONT_SIZE"       : "Tamaño de fuente:",
@@ -439,6 +443,7 @@
 
         "SECTION_HEADER_AUTHENTICATION" : "Autenticación",
         "SECTION_HEADER_BEHAVIOR"       : "Comportamiento del terminal",
+        "SECTION_HEADER_CLIPBOARD"      : "Portapapeles",
         "SECTION_HEADER_CONTAINER"      : "Contenedor",
         "SECTION_HEADER_DISPLAY"        : "Monitor",
         "SECTION_HEADER_RECORDING"      : "Grabación de Pantalla",
@@ -546,6 +551,8 @@
         "FIELD_OPTION_SECURITY_TLS"   : "Encriptación TLS",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
 
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ"    : "Checo (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY"    : "Danés (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ"    : "Alemán Suizo (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ"    : "Alemán (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_EMPTY"           : "",
@@ -565,7 +572,6 @@
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY"    : "Portugués (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY"    : "Rumano (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY"    : "Sueco (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY"    : "Danés (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY"    : "Turco-Q (Qwerty)",
 
         "NAME" : "RDP",

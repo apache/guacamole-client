@@ -22,19 +22,28 @@ package org.apache.guacamole.auth.openid;
 import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
+import org.apache.guacamole.auth.openid.conf.OpenIDEnvironment;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
+import org.apache.guacamole.environment.Environment;
 
 /**
  * Guice module which configures OpenID-specific injections.
  */
 public class OpenIDAuthenticationProviderModule extends AbstractModule {
 
+    /**
+     * The configuration environment for this server and extension.
+     */
+    private final Environment environment = new OpenIDEnvironment();
+    
     @Override
     protected void configure() {
         bind(ConfigurationService.class);
         bind(NonceService.class).in(Scopes.SINGLETON);
         bind(TokenValidationService.class);
+        
+        bind(Environment.class).toInstance(environment);
     }
 
 }

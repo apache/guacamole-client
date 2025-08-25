@@ -36,7 +36,7 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
      */
     @Inject
     private AuthenticationProvider authProvider;
-
+    
     /**
      * The credentials provided when this user was authenticated.
      */
@@ -50,7 +50,7 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
      */
     public void init(Credentials credentials) {
         this.credentials = credentials;
-        setIdentifier(credentials.getUsername().toLowerCase());
+        setIdentifier(credentials.getUsername());
     }
 
     @Override

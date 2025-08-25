@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import org.apache.directory.api.ldap.model.name.Dn;
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.ldap.ConnectedLDAPConfiguration;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;

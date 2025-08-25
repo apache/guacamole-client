@@ -70,6 +70,7 @@ public class EnumGuacamolePropertyTest {
          * @see <a href="https://en.wikipedia.org/wiki/Tuna">Tuna (Wikipedia)</a>
          */
         @PropertyValue("tuna")
+        @PropertyValue("yellowfin")
         TUNA,
 
         /**
@@ -135,6 +136,7 @@ public class EnumGuacamolePropertyTest {
         assertEquals(Fish.TROUT,    FAVORITE_FISH.parseValue("trout"));
         assertEquals(Fish.MACKEREL, FAVORITE_FISH.parseValue("mackerel"));
         assertEquals(Fish.TUNA,     FAVORITE_FISH.parseValue("tuna"));
+        assertEquals(Fish.TUNA,     FAVORITE_FISH.parseValue("yellowfin"));
         assertEquals(Fish.SARDINE,  FAVORITE_FISH.parseValue("sardine"));
     }
 
@@ -164,7 +166,7 @@ public class EnumGuacamolePropertyTest {
         }
         catch (GuacamoleException e) {
             String message = e.getMessage();
-            assertTrue(message.contains("\"mackerel\", \"salmon\", \"sardine\", \"trout\", \"tuna\""));
+            assertTrue(message.contains("\"mackerel\", \"salmon\", \"sardine\", \"trout\", \"tuna\", \"yellowfin\""));
         }
     }
 

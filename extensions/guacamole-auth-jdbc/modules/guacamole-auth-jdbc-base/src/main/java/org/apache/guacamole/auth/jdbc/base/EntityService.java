@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import java.util.Collection;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.guice.transactional.Transactional;
 
@@ -76,9 +77,12 @@ public class EntityService {
     public Set<String> retrieveEffectiveGroups(ModeledPermissions<? extends EntityModel> entity,
             Collection<String> effectiveGroups) {
 
+        CaseSensitivity caseSensitivity = environment.getCaseSensitivity();
+
         // Retrieve the effective user groups of the given entity, recursively if possible
         boolean recursive = environment.isRecursiveQuerySupported(sqlSession);
-        Set<String> identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), effectiveGroups, recursive);
+        Set<String> identifiers = entityMapper.selectEffectiveGroupIdentifiers(
+                entity.getModel(), effectiveGroups, recursive, caseSensitivity);
 
         // If the set of user groups retrieved was not produced recursively,
         // manually repeat the query to expand the set until all effective
@@ -87,7 +91,9 @@ public class EntityService {
             Set<String> previousIdentifiers;
             do {
                 previousIdentifiers = identifiers;
-                identifiers = entityMapper.selectEffectiveGroupIdentifiers(entity.getModel(), previousIdentifiers, false);
+                identifiers = entityMapper.selectEffectiveGroupIdentifiers(
+                        entity.getModel(), previousIdentifiers, false,
+                        caseSensitivity);
             } while (identifiers.size() > previousIdentifiers.size());
         }
 

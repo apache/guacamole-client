@@ -24,7 +24,6 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
@@ -69,28 +68,37 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     @Inject
     private SAMLService saml;
 
+    /**
+     * Return the value of the session identifier associated with the given
+     * credentials, or null if no session identifier is found in the
+     * credentials.
+     *
+     * @param credentials
+     *     The credentials from which to extract the session identifier.
+     *
+     * @return
+     *     The session identifier associated with the given credentials, or
+     *     null if no identifier is found.
+     */
+    public static String getSessionIdentifier(Credentials credentials) {
+
+        // Return the session identifier from the request params, if set, or
+        // null otherwise
+        return credentials != null ? credentials.getParameter(AUTH_SESSION_QUERY_PARAM) : null;
+    }
+
     @Override
     public SAMLAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
-        // No authentication can be attempted without a corresponding HTTP
-        // request
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
-
         // Use established SAML identity if already provided by the SAML IdP
-        AssertedIdentity identity = sessionManager.getIdentity(request.getParameter(AUTH_SESSION_QUERY_PARAM));
+        AssertedIdentity identity = sessionManager.getIdentity(
+                getSessionIdentifier(credentials));
+
         if (identity != null) {
-
-            // Back-port the username to the credentials
-            credentials.setUsername(identity.getUsername());
-
-            // Configure the AuthenticatedUser and return it
             SAMLAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(identity, credentials);
             return authenticatedUser;
-
         }
 
         // Redirect to SAML IdP if no SAML identity is associated with the

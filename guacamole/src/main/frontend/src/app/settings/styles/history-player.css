@@ -96,7 +96,7 @@
     background: rgba(0, 0, 0, 0.5);
 }
 
-.settings.connectionHistoryPlayer.playing .guac-player-controls {
+.settings.connectionHistoryPlayer .guac-player-controls {
     opacity: 0;
     -webkit-transition: opacity 0.25s linear 0.25s;
     -moz-transition: opacity 0.25s linear 0.25s;
@@ -104,11 +104,85 @@
     transition: opacity 0.25s linear 0.25s;
 }
 
-.settings.connectionHistoryPlayer.paused .guac-player-controls,
-.settings.connectionHistoryPlayer.playing:hover .guac-player-controls {
+.settings.connectionHistoryPlayer .guac-player-controls:hover,
+.settings.connectionHistoryPlayer guac-player.recent-mouse-movement .guac-player-controls {
     opacity: 1;
-    -webkit-transition-delay: 0s;
-    -moz-transition-delay: 0s;
-    -o-transition-delay: 0s;
-    transition-delay: 0s;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map {
+    position: absolute;
+    width: 100%;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map svg {
+    position: absolute;
+    bottom: 7px;
+    height: 50px;
+    width: 100%;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    -webkit-transition: opacity 0.1s linear 0.1s;
+    -moz-transition: opacity 0.1s linear 0.1s;
+    -o-transition: opacity 0.1s linear 0.1s;
+    transition: opacity 0.1s linear 0.1s;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls:hover .heat-map svg {
+    opacity: 1;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+    bottom: 65px;
+    right: 10px;
+    z-index: 100;
+    background-color: rgba(0, 0, 0, 0.85);
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 6px;
+    border-radius: 5px;
+    opacity: 0;
+    -webkit-transition: opacity 0.1s linear 0.1s;
+    -moz-transition: opacity 0.1s linear 0.1s;
+    -o-transition: opacity 0.1s linear 0.1s;
+    transition: opacity 0.1s linear 0.1s;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls:hover .heat-map .legend {
+    opacity: 1;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .key-events::after,
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .frame-events::after {
+    display: inline-block;
+    content: '';
+    width: 25px;
+    height: 10px;
+    margin-left: 3px;
+    margin-right: 10px;
+    border-radius: 3px;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .key-events::after {
+    background-color: #5BA300;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .frame-events::after {
+    background-color: #888888;
+}
+
+.settings.connectionHistoryPlayer .heat-map svg.key-events path {
+
+    /* #5BA300 color at 50% opacity */
+    fill: rgba(91, 163, 0, 0.5);
+}
+
+.settings.connectionHistoryPlayer .heat-map svg.frame-events path {
+
+    /* #888888 color at 75% opacity */
+    fill: rgba(135, 135, 135, 0.75);
 }

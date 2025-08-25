@@ -31,17 +31,22 @@ import org.apache.guacamole.GuacamoleException;
  * compatibility with the behavior of Java properties in general, only
  * whitespace at the beginning of each value is ignored; trailing whitespace
  * becomes part of the value.
+ * 
+ * @deprecated 
+ *     This class is now deprecated in favor of using the StringGuacamoleProperty
+ *     class with the parseValueCollection method.
  */
+@Deprecated
 public abstract class StringListProperty implements GuacamoleProperty<List<String>> {
 
     /**
      * A pattern which matches against the delimiters between values. This is
-     * currently simply a comma and any following whitespace. Parts of the
-     * input string which match this pattern will not be included in the parsed
-     * result.
+     * currently either a comma or a semicolon and any following whitespace.
+     * Parts of the input string which match this pattern will not be included
+     * in the parsed result.
      */
-    private static final Pattern DELIMITER_PATTERN = Pattern.compile(",\\s*");
-
+    static final Pattern DELIMITER_PATTERN = Pattern.compile("[,;]\\s*");
+    
     @Override
     public List<String> parseValue(String values) throws GuacamoleException {
 

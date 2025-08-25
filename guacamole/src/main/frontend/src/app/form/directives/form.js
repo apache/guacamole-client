@@ -17,6 +17,7 @@
  * under the License.
  */
 
+/* global _ */
 
 /**
  * A directive that allows editing of a collection of fields.
@@ -79,7 +80,19 @@ angular.module('form').directive('guacForm', [function form() {
              *
              * @type String
              */
-            focused : '='
+            focused : '=',
+
+            /**
+             * The client associated with this form, if any.
+             *
+             * NOTE: If the provided client has any managed arguments in the
+             * pending state, any fields with the same name rendered by this
+             * form will be disabled. The fields will be re-enabled when guacd
+             * sends an updated argument with a the same name.
+             *
+             * @type ManagedClient
+             */
+            client: '='
 
         },
         templateUrl: 'app/form/templates/form.html',
@@ -238,6 +251,28 @@ angular.module('form').directive('guacForm', [function form() {
                 // within the model
                 return field && (field.name in $scope.values);
 
+            };
+
+
+            /**
+             * Returns whether the given field should be disabled (read-only)
+             * when presented to the current user.
+             *
+             * @param {Field} field
+             *     The field to check.
+             *
+             * @returns {Boolean}
+             *     true if the given field should be disabled, false otherwise.
+             */
+            $scope.isDisabled = function isDisabled(field) {
+
+                /*
+                 * The field is disabled if either the form as a whole is disabled,
+                 * or if a client is provided to the directive, and the field is
+                 * marked as pending.
+                 */
+                return $scope.disabled ||
+                        _.get($scope.client, ['arguments', field.name, 'pending']);
             };
 
             /**

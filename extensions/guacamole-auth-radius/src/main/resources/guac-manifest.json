@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.5.2",
+    "guacamoleVersion" : "1.6.0",
 
     "name"      : "RADIUS Authentication Backend",
     "namespace" : "radius",
@@ -15,6 +15,7 @@
         "translations/en.json",
         "translations/ja.json",
         "translations/ru.json",
+        "translations/tr.json",
         "translations/zh.json"
     ],
 

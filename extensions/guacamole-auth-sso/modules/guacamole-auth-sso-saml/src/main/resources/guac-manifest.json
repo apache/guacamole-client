@@ -1,12 +1,16 @@
 {
 
-    "guacamoleVersion" : "1.5.2",
+    "guacamoleVersion" : "1.6.0",
 
     "name"      : "SAML Authentication Extension",
     "namespace" : "saml",
 
     "authProviders" : [
         "org.apache.guacamole.auth.saml.SAMLAuthenticationProvider"
+    ],
+
+    "listeners" : [
+        "org.apache.guacamole.auth.saml.SAMLAuthenticationEventListener"
     ],
 
     "css" : [
@@ -28,6 +32,7 @@
         "translations/pl.json",
         "translations/pt.json",
         "translations/ru.json",
+        "translations/tr.json",
         "translations/zh.json"
     ]
 

@@ -19,7 +19,9 @@
 
 package org.apache.guacamole.auth.jdbc.usergroup;
 
+import java.util.Collection;
 import org.apache.guacamole.auth.jdbc.base.ObjectRelationMapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * Mapper for the one-to-many relationship between a user group and its user

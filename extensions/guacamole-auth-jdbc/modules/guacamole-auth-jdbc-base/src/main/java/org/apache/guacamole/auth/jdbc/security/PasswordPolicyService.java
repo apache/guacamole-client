@@ -131,16 +131,21 @@ public class PasswordPolicyService {
      * @return
      *     true if the given password matches any of the user's previous
      *     passwords, up to the specified limit, false otherwise.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs accessing environment information used for
+     *     retrieving configuration values.
      */
     private boolean matchesPreviousPasswords(String password, String username,
-            int historySize) {
+            int historySize) throws GuacamoleException {
 
         // No need to compare if no history is relevant
         if (historySize <= 0)
             return false;
 
         // Check password against all recorded hashes
-        List<PasswordRecordModel> history = passwordRecordMapper.select(username, historySize);
+        List<PasswordRecordModel> history = passwordRecordMapper.select(username,
+                historySize, environment.getCaseSensitivity());
         for (PasswordRecordModel record : history) {
 
             byte[] hash = encryptionService.createPasswordHash(password, record.getPasswordSalt());

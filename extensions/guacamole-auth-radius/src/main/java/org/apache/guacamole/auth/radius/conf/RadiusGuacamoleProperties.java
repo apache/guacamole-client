@@ -205,5 +205,4 @@ public class RadiusGuacamoleProperties {
         
     };
 
-
 }

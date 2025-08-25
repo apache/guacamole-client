@@ -89,7 +89,6 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "Connexion désactivée:",
         "FIELD_HEADER_EXPIRED"             : "Mot de passe expiré:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "Ne pas autoriser l'accès après:",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "Autoriser l'accès après:",
@@ -104,10 +103,12 @@
 
     "USER_GROUP_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED" : "Désactivé:",
-
         "SECTION_HEADER_RESTRICTIONS" : "Restrictions de groupe"
 
+    },
+
+    "CONNECTION_PARAMETERS": {
+        "DATABASE_PARAMETER_VALUE_TOO_LONG": "La valeur fournie pour le paramètre de connexion {PARAMETER_NAME} dépasse la longueur maximale autorisée de {MAX_SIZE} {MAX_SIZE, plural, one{caractère} other{caractères}}."
     }
 
 }

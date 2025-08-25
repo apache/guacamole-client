@@ -21,9 +21,11 @@ package org.apache.guacamole.auth.jdbc.usergroup;
 
 import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ObjectRelationMapper;
 import org.apache.guacamole.auth.jdbc.base.RelatedObjectSet;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.apache.guacamole.properties.CaseSensitivity;
 
 /**
  * RelatedObjectSet implementation which represents the one-to-many
@@ -37,6 +39,17 @@ public class UserGroupParentUserGroupSet extends RelatedObjectSet<ModeledUserGro
      */
     @Inject
     private UserGroupParentUserGroupMapper userGroupParentUserGroupMapper;
+    
+    /**
+     * The server environment for retrieving configuration.
+     */
+    @Inject
+    private JDBCEnvironment environment;
+    
+    @Override
+    protected CaseSensitivity getCaseSensitivity() throws GuacamoleException {
+        return environment.getCaseSensitivity();
+    }
 
     @Override
     protected ObjectRelationMapper<UserGroupModel> getObjectRelationMapper() {

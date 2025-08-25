@@ -34,7 +34,7 @@ import org.apache.guacamole.net.auth.Credentials;
  * by that user.
  */
 public class SSOAuthenticatedUser extends AbstractAuthenticatedUser {
-
+    
     /**
      * Reference to the authentication provider associated with this
      * authenticated user.
@@ -60,14 +60,17 @@ public class SSOAuthenticatedUser extends AbstractAuthenticatedUser {
 
     /**
      * Initializes this SSOAuthenticatedUser, associating it with the given
-     * username, credentials, groups, and parameter tokens. This function must
-     * be invoked for every SSOAuthenticatedUser created.
+     * username, credentials, groups, and parameter tokens. The contents of the
+     * given credentials are automatically updated to match the provided
+     * username. This function must be invoked for every SSOAuthenticatedUser
+     * created.
      *
      * @param username
      *     The username of the user that was authenticated.
      *
      * @param credentials
-     *     The credentials provided when this user was authenticated.
+     *     The credentials provided when this user was authenticated. These
+     *     credentials will be updated to match the provided username.
      *
      * @param effectiveGroups
      *     The groups that the authenticated user belongs to.
@@ -78,10 +81,16 @@ public class SSOAuthenticatedUser extends AbstractAuthenticatedUser {
      */
     public void init(String username, Credentials credentials,
             Set<String> effectiveGroups, Map<String, String> tokens) {
+
         this.credentials = credentials;
         this.effectiveGroups = Collections.unmodifiableSet(effectiveGroups);
         this.tokens = Collections.unmodifiableMap(tokens);
         setIdentifier(username);
+
+        // Update credentials with username provided via SSO for sake of
+        // ${GUAC_USERNAME} token
+        credentials.setUsername(username);
+
     }
 
     /**

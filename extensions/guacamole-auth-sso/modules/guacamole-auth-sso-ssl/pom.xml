@@ -26,14 +26,14 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-sso-ssl</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.2</version>
+    <version>1.6.0</version>
     <name>guacamole-auth-sso-ssl</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-auth-sso</artifactId>
-        <version>1.5.2</version>
+        <version>1.6.0</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -123,7 +123,48 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-fips</artifactId>
-            <version>1.0.7</version>
+            <version>2.1.9</version>
+
+            <exclusions>
+
+                <!--
+                    Force usage of known version of bc-fips, rather than a
+                    future unknown version (bcpkix-fips references bc-fips using
+                    a version range, resulting in newer versions getting pulled
+                    in automatically, breaking the automated license check).
+                -->
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bc-fips</artifactId>
+                </exclusion>
+
+                <!--
+                    Force usage of known version of bcutil-fips, rather than a
+                    future unknown version (bcpkix-fips references bctuil-fips
+                    using a version range, resulting in newer versions getting
+                    pulled in automatically, breaking the automated license
+                    check).
+                -->
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcutil-fips</artifactId>
+                </exclusion>
+            </exclusions>
+
+        </dependency>
+
+        <!-- Force usage of known version of bc-fips (see bcpkix-fips above) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bc-fips</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+
+        <!-- Force usage of known version of bcutil-fips (see bcpkix-fips above) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcutil-fips</artifactId>
+            <version>2.1.4</version>
         </dependency>
 
     </dependencies>

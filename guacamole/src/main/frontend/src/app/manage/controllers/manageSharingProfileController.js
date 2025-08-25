@@ -33,6 +33,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
     var $location                = $injector.get('$location');
     var $q                       = $injector.get('$q');
     var $routeParams             = $injector.get('$routeParams');
+    var $window                  = $injector.get('$window');
     var authenticationService    = $injector.get('authenticationService');
     var connectionService        = $injector.get('connectionService');
     var permissionService        = $injector.get('permissionService');
@@ -299,6 +300,7 @@ angular.module('manage').controller('manageSharingProfileController', ['$scope',
      */
     $scope.cloneSharingProfile = function cloneSharingProfile() {
         $location.path('/manage/' + encodeURIComponent($scope.selectedDataSource) + '/sharingProfiles').search('clone', identifier);
+        $window.scrollTo(0,0);
     };
 
     /**

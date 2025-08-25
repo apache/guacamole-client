@@ -23,6 +23,8 @@ import com.google.inject.Inject;
 import org.apache.guacamole.net.auth.AbstractAuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of AuthenticatedUser specific to the
@@ -31,6 +33,11 @@ import org.apache.guacamole.net.auth.Credentials;
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticatedUser.class);
+    
     /**
      * Reference to the authentication provider associated with this
      * authenticated user.

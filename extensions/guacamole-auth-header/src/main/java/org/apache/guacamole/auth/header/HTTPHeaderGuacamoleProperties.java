@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.header;
 
-import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
 
@@ -36,7 +35,7 @@ public class HTTPHeaderGuacamoleProperties {
     private HTTPHeaderGuacamoleProperties() {}
 
     /**
-     * The header used for HTTP header authentication.
+     * A property used to configure the header used for HTTP header authentication.
      */
     public static final StringGuacamoleProperty HTTP_AUTH_HEADER = new StringGuacamoleProperty() {
 

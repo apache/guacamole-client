@@ -26,14 +26,14 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-sso-cas</artifactId>
     <packaging>jar</packaging>
-    <version>1.5.2</version>
+    <version>1.6.0</version>
     <name>guacamole-auth-sso-cas</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-auth-sso</artifactId>
-        <version>1.5.2</version>
+        <version>1.6.0</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -65,10 +65,40 @@
                     <groupId>org.glassfish.jaxb</groupId>
                     <artifactId>jaxb-core</artifactId>
                 </exclusion>
+                
+                <!--
+                    Replace slightly older commons-codec (1.15) with newer
+                    and identical version to that used by Apache Directory API
+                    for LDAP (1.16.0) so that we don't need two copies of the
+                    same license information.
+                -->
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+
+                <!--
+                    Replace older BouncyCastle (1.70) with newer, compatible
+                    version (1.80), which has since been renamed from
+                    "bcpkix-jdk15on" to "bcpkix-jdk15to18".
+                -->
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcpkix-jdk15on</artifactId>
+                </exclusion>
 
             </exclusions>
         </dependency>
-        
+
+        <!-- BouncyCastle for Java 5 and above (formerly "bcpkix-jdk15on", a
+        transitive dependency of cas-client-core that we are overriding to
+        force an update) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15to18</artifactId>
+            <version>1.80</version>
+        </dependency>
+
         <!-- Guava - Utility Library -->
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -116,6 +146,13 @@
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
             <version>2.3.1</version>
+        </dependency>
+
+        <!-- Apache Commons Codec (see exclusions for cas-client-core) -->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.17.1</version>
         </dependency>
 
     </dependencies>

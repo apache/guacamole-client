@@ -30,7 +30,7 @@ import org.apache.guacamole.net.auth.Credentials;
  * provider.
  */
 public class AuthenticatedUser extends AbstractAuthenticatedUser {
-
+    
     /**
      * Reference to the authentication provider associated with this
      * authenticated user.
@@ -57,7 +57,7 @@ public class AuthenticatedUser extends AbstractAuthenticatedUser {
         this.credentials = credentials;
         setIdentifier(username.toLowerCase());
     }
-
+    
     @Override
     public AuthenticationProvider getAuthenticationProvider() {
         return authProvider;

@@ -22,11 +22,12 @@ package org.apache.guacamole.auth.jdbc.base;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.apache.guacamole.properties.CaseSensitivity;
 
 /**
  * A database implementation of RelatedObjectSet which provides access to a
@@ -75,6 +76,24 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
         this.parent = parent;
     }
 
+    /**
+     * Return the current case sensitivity setting, which can be used to
+     * determine whether or not certain identifiers should be treated as
+     * case-sensitive.
+     * 
+     * @return
+     *     The current case sensitivity setting.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving configuration information on
+     *     case sensitivity.
+     */
+    protected CaseSensitivity getCaseSensitivity() throws GuacamoleException {
+        
+        // Identifiers are not case-sensitive by default.
+        return CaseSensitivity.DISABLED;
+    }
+    
     /**
      * Returns the mapper which provides low-level access to the database
      * models which drive the relation represented by this RelatedObjectSet.
@@ -171,6 +190,7 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
         // Otherwise only return explicitly readable identifiers
         return getObjectRelationMapper().selectReadableChildIdentifiers(
                 user.getUser().getModel(), user.getEffectiveUserGroups(),
+                getCaseSensitivity(),
                 parent.getModel());
 
     }
@@ -184,7 +204,8 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
 
         // Create relations only if permission is granted
         if (canAlterRelation(identifiers))
-            getObjectRelationMapper().insert(parent.getModel(), identifiers);
+            getObjectRelationMapper().insert(parent.getModel(), identifiers,
+                    getCaseSensitivity());
 
         // User lacks permission to add user groups
         else
@@ -201,7 +222,8 @@ public abstract class RelatedObjectSet<ParentObjectType extends ModeledDirectory
 
         // Delete relations only if permission is granted
         if (canAlterRelation(identifiers))
-            getObjectRelationMapper().delete(parent.getModel(), identifiers);
+            getObjectRelationMapper().delete(parent.getModel(), identifiers,
+                    getCaseSensitivity());
 
         // User lacks permission to remove user groups
         else

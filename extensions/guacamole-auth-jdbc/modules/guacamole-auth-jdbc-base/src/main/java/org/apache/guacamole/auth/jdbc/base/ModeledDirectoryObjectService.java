@@ -27,9 +27,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
@@ -37,6 +37,7 @@ import org.apache.guacamole.auth.jdbc.user.UserModel;
 import org.apache.guacamole.net.auth.Identifiable;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.apache.guacamole.properties.CaseSensitivity;
 import org.mybatis.guice.transactional.Transactional;
 
 /**
@@ -115,7 +116,25 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
      */
     protected abstract InternalType getObjectInstance(ModeledAuthenticatedUser currentUser,
             ModelType model) throws GuacamoleException;
-
+    
+    /**
+     * Returns the case sensitivity configuration for this service, which will
+     * be used to determine whether usernames and/or group names will be treated
+     * as case-sensitive.
+     * 
+     * @return
+     *     The case sensitivity configuration for this service.
+     * 
+     * @throws GuacamoleException 
+     *     If an error occurs retrieving relevant configuration information.
+     */
+    protected CaseSensitivity getCaseSensitivity() throws GuacamoleException {
+        
+        // Retrieve the Guacamole setting.
+        return environment.getCaseSensitivity();
+        
+    }
+    
     /**
      * Returns an instance of a model object which is based on the given
      * object.
@@ -228,7 +247,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
             Collection<ModelType> models) throws GuacamoleException {
 
         // Create new collection of objects by manually converting each model
-        Collection<InternalType> objects = new ArrayList<InternalType>(models.size());
+        Collection<InternalType> objects = new ArrayList<>(models.size());
         for (ModelType model : models)
             objects.add(getObjectInstance(currentUser, model));
 
@@ -407,6 +426,8 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         int batchSize = environment.getBatchSize();
 
         boolean userIsPrivileged = user.isPrivileged();
+        
+        CaseSensitivity caseSensitivity = getCaseSensitivity();
 
         // Process the filteredIdentifiers in batches using Lists.partition() and flatMap
         Collection<ModelType> allObjects = Lists.partition(filteredIdentifiers, batchSize).stream()
@@ -415,12 +436,12 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
                     // Bypass permission checks if the user is privileged
                     if (userIsPrivileged)
-                        objects = getObjectMapper().select(chunk);
+                        objects = getObjectMapper().select(chunk, caseSensitivity);
 
                     // Otherwise only return explicitly readable identifiers
                     else
                         objects = getObjectMapper().selectReadable(user.getUser().getModel(),
-                                chunk, user.getEffectiveUserGroups());
+                                chunk, user.getEffectiveUserGroups(), caseSensitivity);
 
                     return objects.stream();
                 })
@@ -493,7 +514,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         // Add implicit permissions
         Collection<ObjectPermissionModel> implicitPermissions = getImplicitPermissions(user, model);
         if (!implicitPermissions.isEmpty())
-            getPermissionMapper().insert(implicitPermissions);
+            getPermissionMapper().insert(implicitPermissions, getCaseSensitivity());
 
         // Add any arbitrary attributes
         if (model.hasArbitraryAttributes())
@@ -510,7 +531,7 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
         beforeDelete(user, identifier);
         
         // Delete object
-        getObjectMapper().delete(identifier);
+        getObjectMapper().delete(identifier, getCaseSensitivity());
 
     }
 
@@ -542,8 +563,11 @@ public abstract class ModeledDirectoryObjectService<InternalType extends Modeled
 
         // Otherwise only return explicitly readable identifiers
         else
-            return getObjectMapper().selectReadableIdentifiers(user.getUser().getModel(),
-                    user.getEffectiveUserGroups());
+            return getObjectMapper().selectReadableIdentifiers(
+                    user.getUser().getModel(),
+                    user.getEffectiveUserGroups(),
+                    getCaseSensitivity()
+            );
 
     }
 

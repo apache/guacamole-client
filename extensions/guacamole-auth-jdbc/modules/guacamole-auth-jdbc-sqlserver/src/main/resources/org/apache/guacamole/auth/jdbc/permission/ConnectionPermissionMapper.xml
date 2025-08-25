@@ -41,9 +41,10 @@
         FROM [guacamole_connection_permission]
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
 
     </select>
@@ -58,9 +59,10 @@
         FROM [guacamole_connection_permission]
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
             AND permission = #{type,jdbcType=VARCHAR}
             AND connection_id = #{identifier,jdbcType=INTEGER}
@@ -74,9 +76,10 @@
         FROM [guacamole_connection_permission]
         WHERE
             <include refid="org.apache.guacamole.auth.jdbc.base.EntityMapper.isRelatedEntity">
-                <property name="column"   value="entity_id"/>
-                <property name="entityID" value="#{entity.entityID,jdbcType=INTEGER}"/>
-                <property name="groups"   value="effectiveGroups"/>
+                <property name="column"          value="entity_id"/>
+                <property name="entityID"        value="#{entity.entityID,jdbcType=INTEGER}"/>
+                <property name="groups"          value="effectiveGroups"/>
+                <property name="caseSensitivity" value="${caseSensitivity}"/>
             </include>
             AND connection_id IN
                 <foreach collection="identifiers" item="identifier"

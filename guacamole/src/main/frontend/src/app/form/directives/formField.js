@@ -68,7 +68,14 @@ angular.module('form').directive('guacFormField', [function formField() {
              *
              * @type Boolean
              */
-            focused : '='
+            focused : '=',
+
+            /**
+             * The client associated with this form field, if any.
+             *
+             * @type ManagedClient
+             */
+            client: '='
 
         },
         templateUrl: 'app/form/templates/formField.html',

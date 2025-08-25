@@ -88,7 +88,6 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_DISABLED"            : "로그인 비활성화:",
         "FIELD_HEADER_EXPIRED"             : "비밀번호 만료됨:",
         "FIELD_HEADER_ACCESS_WINDOW_END"   : "다음 이후에 액세스 허용 안함 :",
         "FIELD_HEADER_ACCESS_WINDOW_START" : "다음 이후에 엑세스 허용:",
@@ -102,8 +101,6 @@
     },
 
     "USER_GROUP_ATTRIBUTES" : {
-
-        "FIELD_HEADER_DISABLED" : "비활성화:",
 
         "SECTION_HEADER_RESTRICTIONS" : "그룹 제한"
 

@@ -22,6 +22,8 @@ package org.apache.guacamole.net.auth;
 import java.util.Collections;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
@@ -29,7 +31,44 @@ import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
  * Base implementation of UserGroup which provides default implementations of
  * most functions.
  */
-public class AbstractUserGroup extends AbstractIdentifiable implements UserGroup {
+public abstract class AbstractUserGroup extends AbstractIdentifiable implements UserGroup {
+
+    /**
+     * Creates a new AbstractUserGroup that considers group names to be
+     * case-sensitive or case-insensitive based on the provided case
+     * sensitivity flag.
+     *
+     * @param caseSensitive
+     *     true if group names should be considered case-sensitive, false
+     *     otherwise.
+     */
+    public AbstractUserGroup(boolean caseSensitive) {
+        super(caseSensitive);
+    }
+
+    /**
+     * Creates a new AbstractUserGroup that considers group names to be
+     * case-sensitive or case-insensitive based on the case sensitivity setting
+     * of the provided {@link Environment}, as returned by
+     * {@link Environment#getCaseSensitivity()}.
+     *
+     * @param environment
+     *     The Environment that should determine whether this AbstractUserGroup
+     *     considers group names to be case-sensitive.
+     */
+    public AbstractUserGroup(Environment environment) {
+        this(environment.getCaseSensitivity().caseSensitiveGroupNames());
+    }
+
+    /**
+     * Creates a new AbstractUserGroup that considers group names to be
+     * case-sensitive or case-insensitive based on the case sensitivity setting
+     * of an instance of {@link LocalEnvironment}, as returned by
+     * {@link LocalEnvironment#getCaseSensitivity()}.
+     */
+    public AbstractUserGroup() {
+        this(LocalEnvironment.getInstance());
+    }
 
     /**
      * {@inheritDoc}

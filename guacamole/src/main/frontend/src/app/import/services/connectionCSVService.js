@@ -286,7 +286,7 @@ angular.module('import').factory('connectionCSVService',
                 else if (header.endsWith(PARAMETER_SUFFIX)) {
 
                     // Push as an explicit parameter getter
-                    const parameterName = header.replace(PARAMETER_SUFFIX);
+                    const parameterName = header.replace(PARAMETER_SUFFIX, '');
                     transformConfig.parameterOrAttributeGetters.push(
                         row => ({
                             type: 'parameters',
@@ -300,7 +300,7 @@ angular.module('import').factory('connectionCSVService',
                 else if (header.endsWith(ATTRIBUTE_SUFFIX)) {
 
                     // Push as an explicit attribute getter
-                    const attributeName = header.replace(ATTRIBUTE_SUFFIX);
+                    const attributeName = header.replace(ATTRIBUTE_SUFFIX, '');
                     transformConfig.parameterOrAttributeGetters.push(
                         row => ({
                             type: 'attributes',

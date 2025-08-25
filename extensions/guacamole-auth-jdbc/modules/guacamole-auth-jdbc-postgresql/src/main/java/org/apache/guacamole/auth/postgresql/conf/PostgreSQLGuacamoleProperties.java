@@ -314,5 +314,17 @@ public class PostgreSQLGuacamoleProperties {
         public String getName() { return "postgresql-batch-size"; }
 
     };
+    
+    /**
+     * A property used to configure whether or not usernames within the Postgres
+     * JDBC module should be treated as case-sensitive.
+     */
+    public static final BooleanGuacamoleProperty POSTGRESQL_CASE_SENSITIVE_USERNAMES =
+            new BooleanGuacamoleProperty() {
+                
+        @Override
+        public String getName() { return "postgresql-case-sensitive-usernames"; }
+        
+    };
 
 }

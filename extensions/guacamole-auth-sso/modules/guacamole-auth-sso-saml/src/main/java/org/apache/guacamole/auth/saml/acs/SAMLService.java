@@ -36,7 +36,7 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
-import org.apache.guacamole.auth.sso.IdentifierGenerator;
+import org.apache.guacamole.net.auth.IdentifierGenerator;
 import org.xml.sax.SAXException;
 
 /**
@@ -57,12 +57,6 @@ public class SAMLService {
      */
     @Inject
     private SAMLAuthenticationSessionManager sessionManager;
-
-    /**
-     * Generator of arbitrary, unique, unpredictable identifiers.
-     */
-    @Inject
-    private IdentifierGenerator idGenerator;
 
     /**
      * Creates a new SAML request, beginning the overall authentication flow
@@ -89,7 +83,7 @@ public class SAMLService {
             Auth auth = new Auth(samlSettings, null, null);
 
             // Generate a unique ID to use for the relay state
-            String identifier = idGenerator.generateIdentifier();
+            String identifier = IdentifierGenerator.generateIdentifier();
 
             // Create the request URL for the SAML IdP
             String requestUrl = auth.login(

@@ -1,12 +1,16 @@
 {
 
-    "guacamoleVersion" : "1.5.2",
+    "guacamoleVersion" : "1.6.0",
 
     "name"      : "SSL Authentication Extension",
     "namespace" : "ssl",
 
     "authProviders" : [
         "org.apache.guacamole.auth.ssl.SSLAuthenticationProvider"
+    ],
+
+    "listeners" : [
+        "org.apache.guacamole.auth.ssl.SSLAuthenticationEventListener"
     ],
 
     "css" : [
@@ -29,6 +33,7 @@
         "translations/ko.json",
         "translations/pt.json",
         "translations/ru.json",
+        "translations/tr.json",
         "translations/zh.json"
     ]
 

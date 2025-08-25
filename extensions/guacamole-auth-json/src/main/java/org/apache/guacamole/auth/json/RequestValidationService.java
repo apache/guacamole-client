@@ -20,13 +20,12 @@
 package org.apache.guacamole.auth.json;
 
 import com.google.inject.Inject;
-import java.util.ArrayList;
+import inet.ipaddr.IPAddressString;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.Credentials;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.web.util.matcher.IpAddressMatcher;
 
 /**
  * Service for testing the validity of received HTTP requests.
@@ -42,21 +41,34 @@ public class RequestValidationService {
      * Service for retrieving configuration information regarding the
      * JSONAuthenticationProvider.
      */
-    @Inject
     private ConfigurationService confService;
 
     /**
-     * Returns whether the given request can be used for authentication, taking
-     * into account restrictions specified within guacamole.properties.
+     * Create a new instance of the request validation service, with the
+     * provided ConfigurationService object used to retrieve configuration
+     * properties for this extension.
      *
-     * @param request
-     *     The HTTP request to test.
+     * @param confService
+     *     The instance of ConfigurationService for retrieving configuration
+     *     properties for this extension.
+     */
+    @Inject
+    public RequestValidationService(ConfigurationService confService) {
+        this.confService = confService;
+    }
+
+    /**
+     * Returns whether the given credentials can be used for authentication,
+     * taking into account restrictions specified within guacamole.properties.
+     *
+     * @param credentials
+     *     The credentials of the authentication request to test.
      *
      * @return
-     *     true if the given request comes from a trusted source and can be
+     *     true if the given credentials come from a trusted source and can be
      *     used for authentication, false otherwise.
      */
-    public boolean isAuthenticationAllowed(HttpServletRequest request) {
+    public boolean isAuthenticationAllowed(Credentials credentials) {
 
         // Pull list of all trusted networks
         Collection<String> trustedNetworks;
@@ -66,35 +78,30 @@ public class RequestValidationService {
 
         // Deny all requests if restrictions cannot be parsed
         catch (GuacamoleException e) {
-            logger.warn("Authentication request from \"{}\" is DENIED due to parse error: {}", request.getRemoteAddr(), e.getMessage());
+            logger.warn("Authentication request from \"{}\" is DENIED due to parse error: {}", credentials.getRemoteAddress(), e.getMessage());
             logger.debug("Error parsing authentication request restrictions from guacamole.properties.", e);
             return false;
         }
 
         // All requests are allowed if no restrictions are defined
         if (trustedNetworks.isEmpty()) {
-            logger.debug("Authentication request from \"{}\" is ALLOWED (no restrictions).", request.getRemoteAddr());
+            logger.debug("Authentication request from \"{}\" is ALLOWED (no restrictions).", credentials.getRemoteAddress());
             return true;
         }
 
-        // Build matchers for each trusted network
-        Collection<IpAddressMatcher> matchers = new ArrayList<>(trustedNetworks.size());
-        for (String network : trustedNetworks)
-            matchers.add(new IpAddressMatcher(network));
-
-        // Otherwise ensure at least one subnet matches
-        for (IpAddressMatcher matcher : matchers) {
+        // Otherwise ensure that the remote address is part of a trusted network
+        for (String network : trustedNetworks) {
 
             // Request is allowed if any subnet matches
-            if (matcher.matches(request)) {
-                logger.debug("Authentication request from \"{}\" is ALLOWED (matched subnet).", request.getRemoteAddr());
+            if (new IPAddressString(network).contains(new IPAddressString(credentials.getRemoteAddress()))) {
+                logger.debug("Authentication request from \"{}\" is ALLOWED (matched subnet).", credentials.getRemoteAddress());
                 return true;
             }
 
         }
 
         // Otherwise request is denied - no subnets matched
-        logger.debug("Authentication request from \"{}\" is DENIED (did not match subnet).", request.getRemoteAddr());
+        logger.debug("Authentication request from \"{}\" is DENIED (did not match subnet).", credentials.getRemoteAddress());
         return false;
 
     }

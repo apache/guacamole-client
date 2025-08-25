@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-example</artifactId>
     <packaging>war</packaging>
-    <version>1.5.2</version>
+    <version>1.6.0</version>
     <name>guacamole-example</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.0</version>
             <scope>compile</scope>
         </dependency>
 
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.0</version>
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>
@@ -122,7 +122,7 @@
 	<dependency>
 		<groupId>org.slf4j</groupId>
 		<artifactId>slf4j-simple</artifactId>
-		<version>2.0.6</version>
+		<version>2.0.13</version>
 	</dependency>
 
 

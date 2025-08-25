@@ -23,13 +23,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.EntityModel;
 import org.apache.guacamole.auth.jdbc.base.ModeledPermissions;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.apache.guacamole.properties.CaseSensitivity;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -132,11 +133,18 @@ public abstract class ModeledObjectPermissionService
 
         // Create permissions only if user has permission to do so
         if (canAlterPermissions(user, targetEntity, permissions)) {
-            Collection<ObjectPermissionModel> models = getModelInstances(targetEntity, permissions);
-            getPermissionMapper().insert(models);
+
+            CaseSensitivity caseSensitivity = getCaseSensitivity();
+            
+            batchPermissionUpdates(permissions, permissionSubset -> {
+                Collection<ObjectPermissionModel> models = getModelInstances(
+                        targetEntity, permissionSubset);
+                getPermissionMapper().insert(models, caseSensitivity);
+            });
+
             return;
         }
-        
+
         // User lacks permission to create object permissions
         throw new GuacamoleSecurityException("Permission denied.");
 
@@ -150,8 +158,15 @@ public abstract class ModeledObjectPermissionService
 
         // Delete permissions only if user has permission to do so
         if (canAlterPermissions(user, targetEntity, permissions)) {
-            Collection<ObjectPermissionModel> models = getModelInstances(targetEntity, permissions);
-            getPermissionMapper().delete(models);
+
+            CaseSensitivity caseSensitivity = getCaseSensitivity();
+            
+            batchPermissionUpdates(permissions, permissionSubset -> {
+                Collection<ObjectPermissionModel> models = getModelInstances(
+                        targetEntity, permissionSubset);
+                getPermissionMapper().delete(models, caseSensitivity);
+            });
+
             return;
         }
         
@@ -169,7 +184,7 @@ public abstract class ModeledObjectPermissionService
         // Retrieve permissions only if allowed
         if (canReadPermissions(user, targetEntity))
             return getPermissionMapper().selectOne(targetEntity.getModel(),
-                    type, identifier, effectiveGroups) != null;
+                    type, identifier, effectiveGroups, getCaseSensitivity()) != null;
 
         // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");
@@ -195,7 +210,7 @@ public abstract class ModeledObjectPermissionService
         if (canReadPermissions(user, targetEntity))
             return getPermissionMapper().selectAccessibleIdentifiers(
                     targetEntity.getModel(), permissions, identifiers,
-                    effectiveGroups);
+                    effectiveGroups, getCaseSensitivity());
 
         // User cannot read this entity's permissions
         throw new GuacamoleSecurityException("Permission denied.");

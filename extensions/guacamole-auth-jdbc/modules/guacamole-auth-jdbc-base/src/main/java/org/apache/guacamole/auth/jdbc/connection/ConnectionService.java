@@ -28,17 +28,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
-import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
-import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
+import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
+import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObjectService;
+import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.auth.jdbc.permission.ConnectionPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
+import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
+import org.apache.guacamole.language.TranslatableGuacamoleClientOverrunException;
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionRecord;
@@ -83,12 +86,23 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
      */
     @Inject
     private Provider<ModeledConnection> connectionProvider;
+    
+    /**
+     * The server environment for retrieving configuration.
+     */
+    @Inject
+    private JDBCEnvironment environment;
 
     /**
      * Service for creating and tracking tunnels.
      */
     @Inject
     private GuacamoleTunnelService tunnelService;
+
+    /**
+     * Known limit for the size of the connection parameter values.
+     */
+    private static final int CONNECTION_PARAMETER_VALUE_LIMIT = 4096;
     
     @Override
     protected ModeledDirectoryObjectMapper<ConnectionModel> getObjectMapper() {
@@ -154,10 +168,49 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
     }
 
+    /**
+     * Validates that all connection parameter values are within the expected size limit.
+     *
+     * @param parameters
+     *     The map of connection parameter name/value pairs to validate.
+     *
+     * @throws GuacamoleClientException
+     *     If any of the parameter values exceed the defined limit.
+     */
+    private void validateParameters(Map<String, String> parameters) throws GuacamoleClientException {
+        // Iterate through each parameter to validate its size
+        for (Map.Entry<String, String> parameter : parameters.entrySet()) {
+            String value = parameter.getValue();
+
+            // Check if parameter value exceeds size limit
+            if (value != null && value.length() > CONNECTION_PARAMETER_VALUE_LIMIT) {
+                
+                Map<String, Object> vars = new HashMap<>();
+                vars.put("MAX_SIZE", CONNECTION_PARAMETER_VALUE_LIMIT);
+                vars.put("PARAMETER_NAME", parameter.getKey());
+                
+                // Create a translatable message with the error key and substitution variables
+                TranslatableMessage translatableMessage = new TranslatableMessage(
+                    "CONNECTION_PARAMETERS.DATABASE_PARAMETER_VALUE_TOO_LONG",
+                    vars
+                );
+                
+                throw new TranslatableGuacamoleClientOverrunException(
+                    "The value provided for connection parameter \"" + parameter.getKey() +
+                    "\" exceeds the maximum allowed length.",
+                    translatableMessage
+                );
+            }
+        }
+    }
+
     @Override
     protected void beforeCreate(ModeledAuthenticatedUser user,
             Connection object, ConnectionModel model)
             throws GuacamoleException {
+
+        // Validate parameters before saving
+        validateParameters(object.getConfiguration().getParameters());
 
         super.beforeCreate(user, object, model);
         
@@ -176,6 +229,9 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
     protected void beforeUpdate(ModeledAuthenticatedUser user,
             ModeledConnection object, ConnectionModel model)
             throws GuacamoleException {
+
+        // Validate parameters before saving
+        validateParameters(object.getConfiguration().getParameters());
 
         super.beforeUpdate(user, object, model);
 
@@ -305,7 +361,8 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
         else
             return connectionMapper.selectReadableIdentifiersWithin(
                     user.getUser().getModel(), identifier,
-                    user.getEffectiveUserGroups());
+                    user.getEffectiveUserGroups(),
+                    getCaseSensitivity());
 
     }
 
@@ -434,17 +491,19 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         List<ConnectionRecordModel> searchResults;
 
-        // Bypass permission checks if the user is privileged
-        if (user.isPrivileged())
+        // Bypass permission checks if the user is privileged or has System-level audit permissions
+        if (user.isPrivileged() || user.getUser().getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.AUDIT))
             searchResults = connectionRecordMapper.search(identifier,
-                    recordIdentifier, requiredContents, sortPredicates, limit);
+                    recordIdentifier, requiredContents, sortPredicates, limit,
+                    getCaseSensitivity());
 
         // Otherwise only return explicitly readable history records
         else
             searchResults = connectionRecordMapper.searchReadable(identifier,
                     user.getUser().getModel(), recordIdentifier,
                     requiredContents, sortPredicates, limit,
-                    user.getEffectiveUserGroups());
+                    user.getEffectiveUserGroups(),
+                    getCaseSensitivity());
 
         return getObjectInstances(searchResults);
 

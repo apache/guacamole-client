@@ -32,7 +32,7 @@
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-auth-jdbc</artifactId>
-        <version>1.5.2</version>
+        <version>1.6.0</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -42,21 +42,21 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-jdbc-mysql</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.0</version>
         </dependency>
 
         <!-- PostgreSQL Authentication Extension -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-jdbc-postgresql</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.0</version>
         </dependency>
 
         <!-- SQL Server Authentication Extension -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-auth-jdbc-sqlserver</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.0</version>
         </dependency>
 
     </dependencies>

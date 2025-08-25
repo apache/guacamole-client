@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.net.auth.permission.SystemPermissionSet;
 
@@ -40,6 +42,40 @@ public abstract class AbstractUser extends AbstractIdentifiable
      */
     private String password;
 
+    /**
+     * Creates a new AbstractUser that considers usernames to be case-sensitive
+     * or case-insensitive based on the provided case sensitivity flag.
+     *
+     * @param caseSensitive
+     *     true if usernames should be considered case-sensitive, false
+     *     otherwise.
+     */
+    public AbstractUser(boolean caseSensitive) {
+        super(caseSensitive);
+    }
+
+    /**
+     * Creates a new AbstractUser that considers usernames to be case-sensitive
+     * or case-insensitive based on the case sensitivity setting of the provided
+     * {@link Environment}, as returned by {@link Environment#getCaseSensitivity()}.
+     *
+     * @param environment
+     *     The Environment that should determine whether this AbstractUser
+     *     considers usernames to be case-sensitive.
+     */
+    public AbstractUser(Environment environment) {
+        this(environment.getCaseSensitivity().caseSensitiveUsernames());
+    }
+
+    /**
+     * Creates a new AbstractUser that considers usernames to be case-sensitive
+     * or case-insensitive based on the case sensitivity setting of an instance
+     * of {@link LocalEnvironment}, as returned by @link LocalEnvironment#getCaseSensitivity()}.
+     */
+    public AbstractUser() {
+        this(LocalEnvironment.getInstance());
+    }
+
     @Override
     public String getPassword() {
         return password;
@@ -49,7 +85,7 @@ public abstract class AbstractUser extends AbstractIdentifiable
     public void setPassword(String password) {
         this.password = password;
     }
-
+    
     /**
      * {@inheritDoc}
      *

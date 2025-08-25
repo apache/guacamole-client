@@ -20,10 +20,14 @@
 package org.apache.guacamole.auth.totp.conf;
 
 import com.google.inject.Inject;
+import inet.ipaddr.IPAddress;
+import java.util.Collections;
+import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.EnumGuacamoleProperty;
+import org.apache.guacamole.properties.IPAddressListProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.totp.TOTPGenerator;
@@ -87,6 +91,36 @@ public class ConfigurationService {
         @Override
         public String getName() { return "totp-mode"; }
 
+    };
+    
+    /**
+     * A property that contains a list of IP addresses and/or subnets for which
+     * MFA via the TOTP module should be bypassed. Users logging in from addresses
+     * contained in this list will not be prompted for a second authentication
+     * factor. If this property is empty or not defined, and the TOTP module
+     * is installed, all users will be prompted for MFA.
+     */
+    private static final IPAddressListProperty TOTP_BYPASS_HOSTS =
+            new IPAddressListProperty() {
+                
+        @Override
+        public String getName() { return "totp-bypass-hosts"; }
+                
+    };
+    
+    /**
+     * A property that contains a list of IP addresses and/or subnets for which
+     * MFA via the TOTP module should explicitly be enabled. If this property is defined,
+     * and the TOTP module is installed, users logging in from hosts contained
+     * in this list will be prompted for MFA, and users logging in from all
+     * other hosts will not be prompted for MFA.
+     */
+    private static final IPAddressListProperty TOTP_ENFORCE_HOSTS =
+            new IPAddressListProperty() {
+    
+        @Override
+        public String getName() { return "totp-enforce-hosts"; }
+                
     };
 
     /**
@@ -157,6 +191,40 @@ public class ConfigurationService {
      */
     public TOTPGenerator.Mode getMode() throws GuacamoleException {
         return environment.getProperty(TOTP_MODE, TOTPGenerator.Mode.SHA1);
+    }
+    
+    /**
+     * Return the list of IP addresses and/or subnets for which MFA authentication via the
+     * TOTP module should be bypassed, allowing users from those addresses to log in
+     * without the MFA requirement.
+     * 
+     * @return
+     *     A list of IP addresses and/or subnets for which MFA authentication
+     *     should be bypassed.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed, or an invalid IP address
+     *     or subnet is specified.
+     */
+    public List<IPAddress> getBypassHosts() throws GuacamoleException {
+        return environment.getProperty(TOTP_BYPASS_HOSTS, Collections.emptyList());
+    }
+    
+    /**
+     * Return the list of IP addresses and/or subnets for which MFA authentication via the TOTP
+     * module should be explicitly enabled, requiring users logging in from hosts specified in
+     * the list to complete MFA.
+     * 
+     * @return
+     *     A list of IP addresses and/or subnets for which MFA authentication
+     *     should be explicitly enabled.
+     * 
+     * @throws GuacamoleException 
+     *     If guacamole.properties cannot be parsed, or an invalid IP address
+     *     or subnet is specified.
+     */
+    public List<IPAddress> getEnforceHosts() throws GuacamoleException {
+        return environment.getProperty(TOTP_ENFORCE_HOSTS, Collections.emptyList());
     }
 
 }

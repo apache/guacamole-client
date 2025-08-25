@@ -61,6 +61,16 @@ public class APIUserGroupWrapper implements UserGroup {
     public void setIdentifier(String identifier) {
         apiUserGroup.setIdentifier(identifier);
     }
+    
+    @Override
+    public boolean isDisabled() {
+        return apiUserGroup.isDisabled();
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled) {
+        apiUserGroup.setDisabled(disabled);
+    }
 
     @Override
     public Map<String, String> getAttributes() {

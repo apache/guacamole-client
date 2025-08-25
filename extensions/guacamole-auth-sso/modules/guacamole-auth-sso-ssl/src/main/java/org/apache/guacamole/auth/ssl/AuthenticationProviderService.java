@@ -25,7 +25,6 @@ import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
@@ -75,22 +74,40 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     private static final String AUTH_SESSION_PARAMETER_NAME = "state";
 
     /**
-     * Processes the given HTTP request, returning the identity represented by
-     * the auth session token present in that request. If no such token is
-     * present, or the token does not represent a valid identity, null is
-     * returned.
+     * Return the value of the session identifier associated with the given
+     * credentials, or null if no session identifier is found in the credentials.
      *
-     * @param request
-     *     The HTTP request to process.
+     * @param credentials
+     *      The credentials from which to extract the session identifier.
+     *
+     * @return
+     *      The session identifier associated with the given credentials, or
+     *      null if no identifier is found.
+     */
+    public static String getSessionIdentifier(Credentials credentials) {
+
+        // Return the session identifier from the request params, if set, or
+        // null otherwise
+        return credentials != null ? credentials.getParameter(AUTH_SESSION_PARAMETER_NAME) : null;
+    }
+
+    /**
+     * Processes the given credentials, returning the identity represented by
+     * the auth session token present in that request associated with the 
+     * credentials. If no such token is present, or the token does not represent
+     * a valid identity, null is returned.
+     *
+     * @param credentials
+     *     The credentials to extract the auth session token from.
      *
      * @return
      *     The identity represented by the auth session token in the request,
      *     or null if there is no such token or the token does not represent a
      *     valid identity.
      */
-    private SSOAuthenticatedUser processIdentity(Credentials credentials, HttpServletRequest request) {
+    private SSOAuthenticatedUser processIdentity(Credentials credentials) {
 
-        String state = request.getParameter(AUTH_SESSION_PARAMETER_NAME);
+        String state = getSessionIdentifier(credentials);
         String username = sessionManager.getIdentity(state);
         if (username == null)
             return null;
@@ -134,15 +151,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         // was signed by the expected CA.
         //
 
-        // We can't authenticate using SSL/TLS client auth unless there's an
-        // associated HTTP request
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
-
         // We MUST have the domain associated with the request to ensure we
         // always get fresh SSL sessions when validating client certificates
-        String host = request.getHeader("Host");
+        String host = credentials.getHeader("Host");
         if (host == null)
             return null;
 
@@ -153,7 +164,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         //
 
         if (confService.isPrimaryHostname(host))
-            return processIdentity(credentials, request);
+            return processIdentity(credentials);
 
         // All other requests are not allowed - redirect to proper hostname
         throw new GuacamoleInvalidCredentialsException("Authentication is "

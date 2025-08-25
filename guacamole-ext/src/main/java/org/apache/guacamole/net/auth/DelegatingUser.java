@@ -77,6 +77,16 @@ public class DelegatingUser implements User {
     public void setPassword(String password) {
         user.setPassword(password);
     }
+    
+    @Override
+    public boolean isDisabled() {
+        return user.isDisabled();
+    }
+    
+    @Override
+    public void setDisabled(boolean disabled) {
+        user.setDisabled(disabled);
+    }
 
     @Override
     public Map<String, String> getAttributes() {
