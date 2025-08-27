@@ -43,6 +43,8 @@
         
         "FIELD_HEADER_PASSWORD"       : "Heslo:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Heslo znovu:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "Povolit zápis do existujícího záznamového souboru:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "Povolit zápis do existujícího souboru s textem:",
 
         "FIELD_PLACEHOLDER_FILTER" : "Filtr",
 
@@ -65,6 +67,7 @@
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Vyčistit",
         "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
         "ACTION_DISCONNECT"                : "Odpojit",
+        "ACTION_FULLSCREEN"                : "Celá obrazovka",
         "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
         "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
@@ -150,7 +153,7 @@
         "SECTION_HEADER_FILE_TRANSFERS"  : "Přenos souborů",
         "SECTION_HEADER_INPUT_METHOD"    : "Metoda vstupu",
         
-        "SECTION_HEADER_MOUSE_MODE"      : "Mód emulace myši",
+        "SECTION_HEADER_MOUSE_MODE"     : "Mód emulace myši",
 
         "TEXT_ANONYMOUS_USER_JOINED"      : "K připojení se připojil anonymní uživatel.",
         "TEXT_ANONYMOUS_USER_LEFT"        : "Anonymní uživatel opustil připojení.",
@@ -403,6 +406,7 @@
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Spravovat systém:",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "Zkontrolovat systém:",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Změnit vlastní heslo:",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "Vytvořit nové uživatele:",
         "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Vytvořit novou uživatelskou skupinu:",
@@ -411,6 +415,7 @@
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Vytvořit nový sdílený profil:",
         "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "Přihlášení zakázáno:",
         "FIELD_HEADER_USERNAME"                      : "Uživatelské jméno:",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
@@ -443,12 +448,14 @@
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "@:MANAGE_USER.FIELD_HEADER_AUDIT_SYSTEM",
         "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
         "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
         "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
         "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
         "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
         "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "Vypnuto:",
         "FIELD_HEADER_USER_GROUP_NAME"               : "Jméno skupiny:",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
@@ -476,12 +483,19 @@
 
     "PLAYER" : {
 
-        "ACTION_CANCEL" : "@:APP.ACTION_CANCEL",
-        "ACTION_PAUSE"  : "@:APP.ACTION_PAUSE",
-        "ACTION_PLAY"   : "@:APP.ACTION_PLAY",
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
+        "ACTION_SHOW_KEY_LOG" : "Záznam stisků kláves",
 
-        "INFO_LOADING_RECORDING" : "Vaše nahrávka se nyní načítá. Čekejte prosím...",
-        "INFO_SEEK_IN_PROGRESS"  : "Hledání požadované pozice. Čekejte prosím..."
+        "INFO_FRAME_EVENTS_LEGEND" : "Aktivita na obrazovce",
+        "INFO_KEY_EVENTS_LEGEND"   : "Aktivita klávesnice",
+        "INFO_LOADING_RECORDING"   : "Vaše nahrávka se nyní načítá. Prosím, vyčkejte...",
+        "INFO_NO_KEY_LOG"          : "Záznam stisků kláves není k dispozici",
+        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} {RESULTS, plural, one{Match} other{Matches}}",
+        "INFO_SEEK_IN_PROGRESS"    : "Hledání požadované pozice. Čekejte prosím...",
+
+        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
 
     },
 
@@ -491,6 +505,7 @@
         "FIELD_HEADER_CA_CERT"         : "Certifikát certifikační autority:",
         "FIELD_HEADER_CLIENT_CERT"     : "Klientský certifikát:",
         "FIELD_HEADER_CLIENT_KEY"      : "Klientský klíč:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Limit velikosti dat ve schránce:",
         "FIELD_HEADER_COLOR_SCHEME"    : "Barevné schéma:",
         "FIELD_HEADER_CONTAINER"       : "Jméno kontejneru:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Automaticky vytvořit cestu k záznamu:",
@@ -506,6 +521,7 @@
         "FIELD_HEADER_POD"             : "Jméno podu:",
         "FIELD_HEADER_PORT"            : "Port:",
         "FIELD_HEADER_READ_ONLY"       : "Pouze ke čtení:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vyloučit myš:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vyloučit grafiku/streamování:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Zahrnout události kláves:",
@@ -514,11 +530,17 @@
         "FIELD_HEADER_SCROLLBACK"      : "Maximální délka historie:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Jméno strojopisu:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Cesta ke strojopisu:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
         "FIELD_HEADER_USE_SSL"         : "Použít SSL/TLS",
 
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Zpět (Ctrl-H)",
         "FIELD_OPTION_BACKSPACE_127"   : "Smazat (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Černá na bílé",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -557,20 +579,23 @@
 
     "PROTOCOL_RDP" : {
 
-        "FIELD_HEADER_CLIENT_NAME"     : "Jméno klienta:",
-        "FIELD_HEADER_COLOR_DEPTH"     : "Barevná hloubka:",
-        "FIELD_HEADER_CONSOLE"         : "Konzola pro správu:",
-        "FIELD_HEADER_CONSOLE_AUDIO"   : "Podpora zvuku v konzole:",
-        "FIELD_HEADER_CREATE_DRIVE_PATH" : "Automaticky vytvořit disk:",
+        "FIELD_HEADER_CERT_TOFU"             : "Důvěřovat certifikátu hostitele při prvním použití:",
+        "FIELD_HEADER_CERT_FINGERPRINTS"     : "Otisky důvěryhodných certifikátů hostitele:“,
+        "FIELD_HEADER_CLIENT_NAME"           : "Jméno klienta:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Limit velikosti dat ve schránce:",
+        "FIELD_HEADER_COLOR_DEPTH"           : "Barevná hloubka:",
+        "FIELD_HEADER_CONSOLE"               : "Konzola pro správu:",
+        "FIELD_HEADER_CONSOLE_AUDIO"         : "Podpora zvuku v konzole:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH"     : "Automaticky vytvořit disk:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automaticky vytvořit cestu k záznamu:",
-        "FIELD_HEADER_DISABLE_AUDIO"   : "Zakázat zvuk:",
-        "FIELD_HEADER_DISABLE_AUTH"    : "Zakázat ověřování:",
-        "FIELD_HEADER_DISABLE_COPY"    : "Zakázat kopírování ze vzdálené plochy:",
+        "FIELD_HEADER_DISABLE_AUDIO"    : "Zakázat zvuk:",
+        "FIELD_HEADER_DISABLE_AUTH"     : "Zakázat ověřování:",
+        "FIELD_HEADER_DISABLE_COPY"     : "Zakázat kopírování ze vzdálené plochy:",
         "FIELD_HEADER_DISABLE_DOWNLOAD" : "Zakázat stahování souborů:",
-        "FIELD_HEADER_DISABLE_PASTE"   : "Zakázat vkládání z klienta:",
+        "FIELD_HEADER_DISABLE_PASTE"    : "Zakázat vkládání z klienta:",
         "FIELD_HEADER_DISABLE_UPLOAD"   : "Zakázat nahrávání souborů:",
-        "FIELD_HEADER_DOMAIN"          : "Doména:",
-        "FIELD_HEADER_DPI"             : "Rozlišení (DPI):",
+        "FIELD_HEADER_DOMAIN"           : "Doména:",
+        "FIELD_HEADER_DPI"              : "Rozlišení (DPI):",
         "FIELD_HEADER_DRIVE_NAME"       : "Název jednotky:",
         "FIELD_HEADER_DRIVE_PATH"       : "Cesta na disku:",
         "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Povolit zvukový vstup (mikrofon):",
@@ -603,9 +628,10 @@
         "FIELD_HEADER_PASSWORD"        : "Heslo:",
         "FIELD_HEADER_PORT"            : "Port:",
         "FIELD_HEADER_PRINTER_NAME"    : "Název přesměrované tiskárny:",
-        "FIELD_HEADER_PRECONNECTION_BLOB" : "Preconnection BLOB (VM ID):",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "Předběžné připojení BLOB (VM ID):",
         "FIELD_HEADER_PRECONNECTION_ID"   : "Zdrojové ID RDP:",
         "FIELD_HEADER_READ_ONLY"      : "Pouze ke čtení:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vyloučit myš:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vyloučit grafiku/strímování:",
         "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "Vyloučit dotykové události:",
@@ -620,6 +646,7 @@
         "FIELD_HEADER_SERVER_LAYOUT"   : "Rozložení klávesnice:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Výchozí složka pro uložení záznamu:",
         "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Zakázat stahování souborů:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Zakázat nahrávání souborů:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Veřejný klíč hosta (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Jméno hostitele:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Interval udržování SFTP:",
@@ -627,10 +654,12 @@
         "FIELD_HEADER_SFTP_PASSWORD"              : "Heslo:",
         "FIELD_HEADER_SFTP_PORT"                  : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privátní klíč:",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "Veřejný klíč:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Souborový prohlížeč kořenové složky:",
-        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Zakázat nahrávání souborů:",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "Časový limit připojení SFTP:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Uživatelské jméno:",
         "FIELD_HEADER_STATIC_CHANNELS" : "Názvy statických kanálů:",
+        "FIELD_HEADER_TIMEOUT"         : "Časový limit připojení",
         "FIELD_HEADER_TIMEZONE"        : "Časová zóna:",
         "FIELD_HEADER_USERNAME"        : "Uživatelské jméno:",
         "FIELD_HEADER_WIDTH"           : "Šířka:",
@@ -639,6 +668,11 @@
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Odeslat paket WoL:",
         "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port pro paket WoL: ",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Doba čekání na spuštění hostitele:",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
 
         "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
         "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "Zachovat tak, jak je",
@@ -709,6 +743,7 @@
     "PROTOCOL_SSH" : {
 
         "FIELD_HEADER_BACKSPACE"    : "Klávesa Zpět odešle:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Limit velikosti dat ve schránce:",
         "FIELD_HEADER_COLOR_SCHEME" : "Barva:",
         "FIELD_HEADER_COMMAND"      : "Provést příkaz:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automaticky vytvořit cestu pro uložení záznamu:",
@@ -726,8 +761,10 @@
         "FIELD_HEADER_PASSPHRASE"    : "Přístupová fráze:",
         "FIELD_HEADER_PORT"          : "Port:",
         "FIELD_HEADER_PRIVATE_KEY"   : "Privátní klíč:",
+        "FIELD_HEADER_PUBLIC_KEY"    : "Veřejný klíč:",
         "FIELD_HEADER_SCROLLBACK"    : "Maximální délka historie:",
         "FIELD_HEADER_READ_ONLY"     : "Pouze ke čtení:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vynechat myš:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vynechat grafiku/streamování:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Zahrnout události kláves:",
@@ -738,9 +775,11 @@
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "Souborový prohlížeč kořenové složky:",
         "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "Zakázat nahrávání souborů:",
         "FIELD_HEADER_TERMINAL_TYPE"   : "Typ terminálu:",
+        "FIELD_HEADER_TIMEOUT"         : "Časový limit připojení:",
         "FIELD_HEADER_TIMEZONE"        : "Časová zóna ($TZ):",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Jméno strojopisu:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Cesta ke strojopisu:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Vysílací adresa pro paket WoL:",
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC adresa vzdáleného hosta:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Odeslat paket WoL:",
@@ -750,6 +789,11 @@
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Zpět (Ctrl-H)",
         "FIELD_OPTION_BACKSPACE_127"   : "Smazat (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Černá na bílé",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -799,6 +843,7 @@
     "PROTOCOL_TELNET" : {
 
         "FIELD_HEADER_BACKSPACE"      : "Klávesa Zpět odešle:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Limit velikosti dat ve schránce:",
         "FIELD_HEADER_COLOR_SCHEME"   : "Barevné schéma:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automaticky vytvořit cestu pro uložení záznamu:",
         "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Automaticky vytvořit cestu ke strojopisu:",
@@ -815,6 +860,7 @@
         "FIELD_HEADER_PASSWORD_REGEX" : "Heslo regulární výraz:",
         "FIELD_HEADER_PORT"           : "Port:",
         "FIELD_HEADER_READ_ONLY"      : "Pouze ke čtení:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vyloučit myš:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vyloučit grafiku/streamování:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Zahrnout klíčové události:",
@@ -822,8 +868,10 @@
         "FIELD_HEADER_RECORDING_PATH" : "Cesta pro záznam:",
         "FIELD_HEADER_SCROLLBACK"     : "Maximální délka historie:",
         "FIELD_HEADER_TERMINAL_TYPE"   : "Typ terminálu:",
+        "FIELD_HEADER_TIMEOUT"         : "Časový limit připojení:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Jméno strojopisu:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Cesta ke strojopisu:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Vysílací adresa pro paket WoL:",
         "FIELD_HEADER_WOL_MAC_ADDR"       : "MAC adresa vzdáleného hosta:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Odeslat paket WoL:",
@@ -833,6 +881,11 @@
         "FIELD_OPTION_BACKSPACE_EMPTY" : "",
         "FIELD_OPTION_BACKSPACE_8"     : "Zpět (Ctrl-H)",
         "FIELD_OPTION_BACKSPACE_127"   : "Smazat (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
 
         "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Černá na bílé",
         "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
@@ -880,22 +933,29 @@
     "PROTOCOL_VNC" : {
 
         "FIELD_HEADER_AUDIO_SERVERNAME" : "Název zvukového serveru:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE"  : "Limit velikosti dat ve schránce:",
         "FIELD_HEADER_CLIPBOARD_ENCODING" : "Kódovávání:",
         "FIELD_HEADER_COLOR_DEPTH"      : "Hloubka barev:",
+        "FIELD_HEADER_COMPRESS_LEVEL"   : "Úroveň komprese:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Automaticky vytvořit cestu pro uložení záznamu:",
         "FIELD_HEADER_CURSOR"           : "Kurzor:",
         "FIELD_HEADER_DEST_HOST"        : "Cílový host:",
         "FIELD_HEADER_DEST_PORT"        : "Vzdálený port:",
-        "FIELD_HEADER_DISABLE_COPY"     : "Zakázat kopírování ze vzdálené plochy:",
-        "FIELD_HEADER_DISABLE_PASTE"    : "Zakázat vkládání z klienta:",
+        "FIELD_HEADER_DISABLE_COPY"           : "Zakázat kopírování ze vzdálené plochy:",
+        "FIELD_HEADER_DISABLE_DISPLAY_RESIZE" : "Zakázat změnu velikosti vzdáleného displeje:",
+        "FIELD_HEADER_DISABLE_PASTE"          : "Zakázat vkládání z klienta:",
+        "FIELD_HEADER_DISABLE_SERVER_INPUT"   : "Zakázat vstup serveru, když je připojen klient:",
         "FIELD_HEADER_ENABLE_AUDIO"     : "Zapnout audio:",
         "FIELD_HEADER_ENABLE_SFTP"      : "Povolit SFTP:",
+        "FIELD_HEADER_ENCODINGS"        : "Zobrazit kódování:",
         "FIELD_HEADER_FORCE_LOSSLESS"   : "Vynutit bezeztrátovou kompresi:",
         "FIELD_HEADER_HOSTNAME"         : "Jméno hostitele:",
         "FIELD_HEADER_USERNAME"         : "Uživatelské jméno:",
         "FIELD_HEADER_PASSWORD"         : "Heslo:",
         "FIELD_HEADER_PORT"             : "Port:",
+        "FIELD_HEADER_QUALITY_LEVEL"    : "Kvalita zobrazení:",
         "FIELD_HEADER_READ_ONLY"        : "Pouze čtení:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Vynechat myš:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Vynechat grafiku/stremování:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Zahrnout události kláves:",
@@ -903,6 +963,7 @@
         "FIELD_HEADER_RECORDING_PATH" : "Cesta pro záznam:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Výchozí složka pro uložení záznamu:",
         "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Zakázat stahování souborů:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Zakázat nahrávání souborů:",
         "FIELD_HEADER_SFTP_HOST_KEY"              : "Veřejný klíč hosta (Base64):",
         "FIELD_HEADER_SFTP_HOSTNAME"              : "Jméno hostitele:",
         "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Interval udržování SFTP:",
@@ -910,8 +971,9 @@
         "FIELD_HEADER_SFTP_PASSWORD"              : "Heslo:",
         "FIELD_HEADER_SFTP_PORT"                  : "Port:",
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privátní klíč:",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "Veřejný klíč:",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Souborový prohlížeč kořenové složky:",
-        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Zakázat nahrávání souborů:",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "Časový limit připojení SFTP:",
         "FIELD_HEADER_SFTP_USERNAME"              : "Uživatelské jméno:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Přehodit červené/modré komponenty:",
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Vysílací adresa pro paket WoL:",
@@ -920,11 +982,29 @@
         "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port pro paket WoL:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Doba čekání na spuštění hostitele:",
 
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
+
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 barev",
         "FIELD_OPTION_COLOR_DEPTH_16"    : "Nízké barvy (16-bitů)",
         "FIELD_OPTION_COLOR_DEPTH_24"    : "Opravdové barvy (24-bitů)",
         "FIELD_OPTION_COLOR_DEPTH_32"    : "Opravdové barvy (32-bitů)",
         "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_COMPRESS_LEVEL_0"     : "0",
+        "FIELD_OPTION_COMPRESS_LEVEL_1"     : "1",
+        "FIELD_OPTION_COMPRESS_LEVEL_2"     : "2",
+        "FIELD_OPTION_COMPRESS_LEVEL_3"     : "3",
+        "FIELD_OPTION_COMPRESS_LEVEL_4"     : "4",
+        "FIELD_OPTION_COMPRESS_LEVEL_5"     : "5",
+        "FIELD_OPTION_COMPRESS_LEVEL_6"     : "6",
+        "FIELD_OPTION_COMPRESS_LEVEL_7"     : "7",
+        "FIELD_OPTION_COMPRESS_LEVEL_8"     : "8",
+        "FIELD_OPTION_COMPRESS_LEVEL_9"     : "9",
+        "FIELD_OPTION_COMPRESS_LEVEL_EMPTY" : "",
 
         "FIELD_OPTION_CURSOR_EMPTY"  : "",
         "FIELD_OPTION_CURSOR_LOCAL"  : "Místní",
@@ -935,6 +1015,18 @@
         "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
         "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
         "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "FIELD_OPTION_QUALITY_LEVEL_0"     : "0",
+        "FIELD_OPTION_QUALITY_LEVEL_1"     : "1",
+        "FIELD_OPTION_QUALITY_LEVEL_2"     : "2",
+        "FIELD_OPTION_QUALITY_LEVEL_3"     : "3",
+        "FIELD_OPTION_QUALITY_LEVEL_4"     : "4",
+        "FIELD_OPTION_QUALITY_LEVEL_5"     : "5",
+        "FIELD_OPTION_QUALITY_LEVEL_6"     : "6",
+        "FIELD_OPTION_QUALITY_LEVEL_7"     : "7",
+        "FIELD_OPTION_QUALITY_LEVEL_8"     : "8",
+        "FIELD_OPTION_QUALITY_LEVEL_9"     : "9",
+        "FIELD_OPTION_QUALITY_LEVEL_EMPTY" : "",
 
         "NAME" : "VNC",
 
@@ -1016,14 +1108,17 @@
         "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
         "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
 
-        "FIELD_HEADER_LANGUAGE"           : "Jazyk zobrazení:",
-        "FIELD_HEADER_PASSWORD"           : "Heslo:",
-        "FIELD_HEADER_PASSWORD_OLD"       : "Aktuální heslo:",
-        "FIELD_HEADER_PASSWORD_NEW"       : "Nové heslo:",
-        "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Potvrďte nové heslo:",
-        "FIELD_HEADER_TIMEZONE"           : "Časové pásmo:",
-        "FIELD_HEADER_USERNAME"           : "Uživatelské jméno:",
+        "FIELD_HEADER_LANGUAGE"                  : "Jazyk zobrazení:",
+        "FIELD_HEADER_NUMBER_RECENT_CONNECTIONS" : "Počet posledních připojení k zobrazení:",
+        "FIELD_HEADER_PASSWORD"                  : "Heslo:",
+        "FIELD_HEADER_PASSWORD_OLD"              : "Aktuální heslo:",
+        "FIELD_HEADER_PASSWORD_NEW"              : "Nové heslo:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN"        : "Potvrďte nové heslo:",
+        "FIELD_HEADER_SHOW_RECENT_CONNECTIONS"   : "Zobrazit poslední připojení:",
+        "FIELD_HEADER_TIMEZONE"                  : "Časové pásmo:",
+        "FIELD_HEADER_USERNAME"                  : "Uživatelské jméno:",
         
+        "HELP_APPEARANCE"           : "Here you can enable or disable whether the \"Recent Connections\" section is shown on the home screen, and adjust the number of recent connections included.",
         "HELP_DEFAULT_INPUT_METHOD" : "Výchozí metoda vstupu určuje, jak Guacamole přijímá události klávesnice. Změna tohoto nastavení může být nezbytná při používání mobilního zařízení nebo při psaní přes IME. Toto nastavení může být přepsáno na základě připojení v rámci nabídky Guacamole.",
         "HELP_DEFAULT_MOUSE_MODE"   : "Výchozí režim emulace myši určuje, jak se bude vzdálená myš chovat v nových spojeních s ohledem na dotyky. Toto nastavení může být přepsáno na základě připojení v rámci nabídky Guacamole.",
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
@@ -1041,6 +1136,7 @@
         "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
         "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
 
+        "SECTION_HEADER_APPEARANCE"           : "Vzhled",
         "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Výchozí metoda vstupu",
         "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Výchozí mód emulace myši",
         "SECTION_HEADER_UPDATE_PASSWORD"      : "Změnit heslo"
@@ -1050,7 +1146,7 @@
     "SETTINGS_USERS" : {
 
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_NEW_USER"    : "Nový uživatel",
+        "ACTION_NEW_USER"      : "Nový uživatel",
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
@@ -1062,10 +1158,10 @@
 
         "SECTION_HEADER_USERS" : "Uživatel",
 
-        "TABLE_HEADER_FULL_NAME"    : "Celé jméno",
-        "TABLE_HEADER_LAST_ACTIVE"  : "Naposledy aktivní",
+        "TABLE_HEADER_FULL_NAME"   : "Celé jméno",
+        "TABLE_HEADER_LAST_ACTIVE" : "Naposledy aktivní",
         "TABLE_HEADER_ORGANIZATION" : "Organizace",
-        "TABLE_HEADER_USERNAME"     : "Uživatelské jméno"
+        "TABLE_HEADER_USERNAME"    : "Uživatelské jméno"
 
     },
 
