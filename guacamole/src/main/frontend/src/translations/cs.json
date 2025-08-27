@@ -580,7 +580,7 @@
     "PROTOCOL_RDP" : {
 
         "FIELD_HEADER_CERT_TOFU"             : "Důvěřovat certifikátu hostitele při prvním použití:",
-        "FIELD_HEADER_CERT_FINGERPRINTS"     : "Otisky důvěryhodných certifikátů hostitele:“,
+        "FIELD_HEADER_CERT_FINGERPRINTS"     : "Otisky důvěryhodných certifikátů hostitele:",
         "FIELD_HEADER_CLIENT_NAME"           : "Jméno klienta:",
         "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Limit velikosti dat ve schránce:",
         "FIELD_HEADER_COLOR_DEPTH"           : "Barevná hloubka:",
