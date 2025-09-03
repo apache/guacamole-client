@@ -59,7 +59,8 @@ public class ActiveConnectionObjectTranslator
 
     @Override
     public void filterExternalObject(UserContext context,
-            APIActiveConnection object) throws GuacamoleException {
+            ActiveConnection existingObject, APIActiveConnection object)
+            throws GuacamoleException {
         // Nothing to filter on ActiveConnections (no attributes)
     }
 
