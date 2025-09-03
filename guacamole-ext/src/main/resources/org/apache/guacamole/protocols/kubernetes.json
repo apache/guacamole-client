@@ -130,6 +130,11 @@
                     "name"    : "backspace",
                     "type"    : "ENUM",
                     "options" : [ "", "127", "8" ]
+                },
+                {
+                    "name"    : "function-keys",
+                    "type"    : "ENUM",
+                    "options" : [ "", "vt100plus" ]
                 }
             ]
         },

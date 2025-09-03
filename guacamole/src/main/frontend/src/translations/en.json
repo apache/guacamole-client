@@ -517,6 +517,7 @@
         "FIELD_HEADER_EXEC_COMMAND"    : "Command (exec):",
         "FIELD_HEADER_FONT_NAME"       : "Font name:",
         "FIELD_HEADER_FONT_SIZE"       : "Font size:",
+        "FIELD_HEADER_FUNCTION_KEYS"   : "Function keys and keypad behavior:",
         "FIELD_HEADER_HOSTNAME"        : "Hostname:",
         "FIELD_HEADER_IGNORE_CERT"     : "Ignore server certificate:",
         "FIELD_HEADER_NAMESPACE"       : "Namespace:",
@@ -565,6 +566,9 @@
         "FIELD_OPTION_FONT_SIZE_72"    : "72",
         "FIELD_OPTION_FONT_SIZE_96"    : "96",
         "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_FUNCTION_KEYS_EMPTY"     : "",
+        "FIELD_OPTION_FUNCTION_KEYS_VT100PLUS" : "VT100+",
 
         "NAME" : "Kubernetes",
 
@@ -755,6 +759,7 @@
         "FIELD_HEADER_DISABLE_PASTE" : "Disable pasting from client:",
         "FIELD_HEADER_FONT_NAME"     : "Font name:",
         "FIELD_HEADER_FONT_SIZE"     : "Font size:",
+        "FIELD_HEADER_FUNCTION_KEYS" : "Function keys and keypad behavior:",
         "FIELD_HEADER_ENABLE_SFTP"   : "Enable SFTP:",
         "FIELD_HEADER_HOST_KEY"      : "Public host key (Base64):",
         "FIELD_HEADER_HOSTNAME"      : "Hostname:",
@@ -820,6 +825,9 @@
         "FIELD_OPTION_FONT_SIZE_96"    : "96",
         "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
 
+        "FIELD_OPTION_FUNCTION_KEYS_EMPTY"     : "",
+        "FIELD_OPTION_FUNCTION_KEYS_VT100PLUS" : "VT100+",
+
         "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
         "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
         "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
@@ -854,6 +862,7 @@
         "FIELD_HEADER_DISABLE_PASTE"  : "Disable pasting from client:",
         "FIELD_HEADER_FONT_NAME"      : "Font name:",
         "FIELD_HEADER_FONT_SIZE"      : "Font size:",
+        "FIELD_HEADER_FUNCTION_KEYS"  : "Function keys and keypad behavior:",
         "FIELD_HEADER_HOSTNAME"       : "Hostname:",
         "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "Login failure regular expression:",
         "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "Login success regular expression:",
@@ -911,6 +920,9 @@
         "FIELD_OPTION_FONT_SIZE_72"    : "72",
         "FIELD_OPTION_FONT_SIZE_96"    : "96",
         "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_FUNCTION_KEYS_EMPTY"     : "",
+        "FIELD_OPTION_FUNCTION_KEYS_VT100PLUS" : "VT100+",
 
         "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
         "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
