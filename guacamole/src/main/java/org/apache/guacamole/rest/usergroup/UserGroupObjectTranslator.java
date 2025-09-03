@@ -56,7 +56,8 @@ public class UserGroupObjectTranslator
     }
 
     @Override
-    public void filterExternalObject(UserContext userContext, APIUserGroup object)
+    public void filterExternalObject(UserContext userContext,
+            UserGroup existingObject, APIUserGroup object)
             throws GuacamoleException {
 
         // Filter object attributes by defined schema
