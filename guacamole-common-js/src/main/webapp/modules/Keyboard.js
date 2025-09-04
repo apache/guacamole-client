@@ -892,6 +892,11 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             // Determine keysym of current character
             var codepoint = str.codePointAt ? str.codePointAt(i) : str.charCodeAt(i);
+
+            // For surrogate pairs, skip the second 16 bits.
+            if (str.charCodeAt(i) != codepoint) {
+                i++;
+            }
             var keysym = keysym_from_charcode(codepoint);
 
             // Press and release key for current character
