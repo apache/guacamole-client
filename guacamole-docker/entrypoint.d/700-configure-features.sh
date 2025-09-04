@@ -44,6 +44,11 @@
 ##     Zero if the feature associated with the given environment variable
 ##     prefix is enabled, non-zero otherwise.
 ##
+if [[ ! -z "$SKIP_GUACAMOLE_HOME" && "$SKIP_GUACAMOLE_HOME" == 1 ]]; then
+    echo "Skipping feature configuration due to pre-configured GUACAMOLE_HOME."
+    return 0
+fi
+
 is_feature_enabled() {
 
     local VAR_BASE="$1"
