@@ -60,7 +60,7 @@
         <dependency>
             <groupId>com.keepersecurity.secrets-manager</groupId>
             <artifactId>core</artifactId>
-            <version>17.0.0</version>
+            <version>17.1.1</version>
 
             <!-- Correct version conflict (different versions across transitive
                 dependencies) -->
