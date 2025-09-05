@@ -39,6 +39,9 @@ angular.module('client').factory('guacFullscreen', ['$injector',
                 document.documentElement.requestFullscreen();
             else if (!state && service.isInFullscreenMode())
                 document.exitFullscreen();
+
+            // Send instruction to other monitors
+            if (service.onfullscreen) service.onfullscreen(state);
         }
     }
 
@@ -49,6 +52,13 @@ angular.module('client').factory('guacFullscreen', ['$injector',
         else
             service.setFullscreenMode(false);
     }
+
+    /**
+     * Handle the full screen mode change event.
+     *
+     * @param {!boolean} state
+     */
+    service.onfullscreen = null;
 
     // If the browser supports keyboard lock, lock the keyboard when entering
     // fullscreen mode and unlock it when exiting fullscreen mode.
