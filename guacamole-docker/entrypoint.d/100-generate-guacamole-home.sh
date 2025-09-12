@@ -90,6 +90,13 @@ if [[ "$(ls -A $GUACAMOLE_HOME)" ]]; then
     fi
 fi
 
+#
+# Create JVM keystore by copying the default in JAVA_HOME
+#
+export JAVA_KEYSTORE_FILE=$GUACAMOLE_HOME/$JAVA_KEYSTORE_FILE
+keytool -importkeystore -srckeystore $JAVA_HOME/lib/security/cacerts -destkeystore $JAVA_KEYSTORE_FILE -deststorepass $JAVA_KEYSTORE_PASS -noprompt
+export JAVA_OPTS="${JAVA_OPTS} -Djavax.net.ssl.trustStore=${JAVA_KEYSTORE_FILE} -Djavax.net.ssl.trustStorePassword=${JAVA_KEYSTORE_PASS}"
+
 if [[ ! -z "$SKIP_GUACAMOLE_HOME" && "$SKIP_GUACAMOLE_HOME" == 1 ]]; then
     echo "Required links are already assumed to be in the pre-configured GUACAMOLE_HOME."
     return 0
@@ -146,4 +153,3 @@ if ! is_property_set "enable-environment-properties"; then
 enable-environment-properties: true
 EOF
 fi
-
