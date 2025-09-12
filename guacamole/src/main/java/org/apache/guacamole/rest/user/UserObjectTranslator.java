@@ -59,11 +59,11 @@ public class UserObjectTranslator
     }
 
     @Override
-    public void filterExternalObject(UserContext userContext, APIUser object)
-            throws GuacamoleException {
+    public void filterExternalObject(UserContext userContext,
+            User existingObject, APIUser object) throws GuacamoleException {
 
         // If a user is editing themselves ...
-        if (object.getUsername().equals(userContext.self().getIdentifier())) {
+        if (existingObject != null && existingObject.getIdentifier().equals(userContext.self().getIdentifier())) {
 
             // ... they may only edit preference attributes
             object.setAttributes(filterAttributes(userContext.getUserPreferenceAttributes(),
