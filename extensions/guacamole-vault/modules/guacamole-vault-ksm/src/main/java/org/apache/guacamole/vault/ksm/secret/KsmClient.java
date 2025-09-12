@@ -24,9 +24,11 @@ import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import com.keepersecurity.secretsManager.core.Hosts;
 import com.keepersecurity.secretsManager.core.KeeperRecord;
+import com.keepersecurity.secretsManager.core.KeeperRecordLink;
 import com.keepersecurity.secretsManager.core.KeeperSecrets;
 import com.keepersecurity.secretsManager.core.Login;
 import com.keepersecurity.secretsManager.core.Notation;
+import com.keepersecurity.secretsManager.core.QueryOptions;
 import com.keepersecurity.secretsManager.core.SecretsManager;
 import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
 
@@ -157,6 +159,22 @@ public class KsmClient {
     private final Map<String, KeeperRecord> cachedRecordsByHost = new HashMap<>();
 
     /**
+     * All linked admin records retrieved from Keeper Secrets Manager, where each key is a
+     * KeeperRecord and the value is its associated linked admin KeeperRecord. The contents
+     * of this Map are automatically updated if {@link #validateCache()} refreshes the cache.
+     * This Map must not be accessed without {@link #cacheLock} acquired appropriately.
+     */
+    private final Map<KeeperRecord, KeeperRecord> cachedLinkedAdminRecords = new HashMap<>();
+
+    /**
+     * All linked launch records retrieved from Keeper Secrets Manager, where each key is a
+     * KeeperRecord and the value is its associated linked launch KeeperRecord. The contents
+     * of this Map are automatically updated if {@link #validateCache()} refreshes the cache.
+     * This Map must not be accessed without {@link #cacheLock} acquired appropriately.
+     */
+    private final Map<KeeperRecord, KeeperRecord> cachedLinkedLaunchRecords = new HashMap<>();
+
+    /**
      * The set of all hostnames or IP addresses that are associated with
      * multiple records, and thus cannot uniquely identify a record. The
      * contents of this Set are automatically updated if
@@ -264,9 +282,16 @@ public class KsmClient {
             if (currentTime - cacheTimestamp < cacheInterval)
                 return;
 
+            // Enable GraphSync
+            QueryOptions queryOptions = new QueryOptions(
+                Collections.emptyList(),
+                Collections.emptyList(),
+                true
+            );
+
             // Attempt to pull all records first, allowing that operation to
             // succeed/fail BEFORE we clear out the last cached success
-            KeeperSecrets secrets = SecretsManager.getSecrets(ksmConfig);
+            KeeperSecrets secrets = SecretsManager.getSecrets2(ksmConfig, queryOptions);
             List<KeeperRecord> records = secrets.getRecords();
 
             // Store all secrets within cache
@@ -274,6 +299,10 @@ public class KsmClient {
 
             // Clear unambiguous cache of all records by UID
             cachedRecordsByUid.clear();
+
+            // Clear cache of all linked records
+            cachedLinkedAdminRecords.clear();
+            cachedLinkedLaunchRecords.clear();
 
             // Clear cache of host-based records
             cachedAmbiguousHosts.clear();
@@ -339,6 +368,9 @@ public class KsmClient {
 
             });
 
+            // Run through again and build a cache of linked records
+            records.forEach(record -> cacheLinkedRecords(record));
+
             // Cache has been refreshed
             this.cacheTimestamp = System.currentTimeMillis();
 
@@ -395,6 +427,42 @@ public class KsmClient {
         if (existing != null && record != existing)
             cachedAmbiguousHosts.add(hostname);
 
+    }
+
+    /**
+     * Populates {@link #cachedLinkedAdminRecords} and {@link #cachedLinkedLaunchRecords}
+     * with any linked admin or launch records from the provided record. The write lock of
+     * {@link #cacheLock} must already be acquired before invoking this function.
+     *
+     * @param record
+     *     The record whose linked records should be processed and cached.
+     */
+    private void cacheLinkedRecords(KeeperRecord record) {
+        List<KeeperRecordLink> links = record.getLinks();
+
+        if (links != null && !links.isEmpty()) {
+
+            for (KeeperRecordLink link : links) {
+
+                KeeperRecord linkedRecord = cachedRecordsByUid.get(link.getRecordUid());
+
+                if (linkedRecord != null && link.isAdminUser()) {
+                    if (cachedLinkedAdminRecords.containsKey(record)) {
+                        logger.warn("Multiple 'admin' linked records exist "
+                                + "for record UID: {}", record.getRecordUid());
+                    }
+                    cachedLinkedAdminRecords.put(record, linkedRecord);
+                }
+
+                if (linkedRecord != null && link.isLaunchCredential()) {
+                    if (cachedLinkedLaunchRecords.containsKey(record)) {
+                        logger.warn("Multiple 'launch' linked records exist "
+                                + "for record UID: {}", record.getRecordUid());
+                    }
+                    cachedLinkedLaunchRecords.put(record, linkedRecord);
+                }
+            }
+        }
     }
 
     /**
@@ -588,6 +656,54 @@ public class KsmClient {
     }
 
     /**
+     * Returns the linked admin record for the given Keeper record, if one exists.
+     * If no such linked admin record exists, null is returned.
+     *
+     * @param record
+     *     The KeeperRecord for which to retrieve the linked admin record.
+     *
+     * @return
+     *     The linked KeeperRecord, or null if there is no such record.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs that prevents the linked record from being retrieved.
+     */
+    public KeeperRecord getLinkedAdminRecord(KeeperRecord record) throws GuacamoleException {
+        validateCache();
+        cacheLock.readLock().lock();
+        try {
+            return cachedLinkedAdminRecords.get(record);
+        }
+        finally {
+            cacheLock.readLock().unlock();
+        }
+    }
+
+    /**
+     * Returns the linked launch record for the given Keeper record, if one exists.
+     * If no such linked launch record exists, null is returned.
+     *
+     * @param record
+     *     The KeeperRecord for which to retrieve the linked launch record.
+     *
+     * @return
+     *     The linked KeeperRecord, or null if there is no such record.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs that prevents the linked record from being retrieved.
+     */
+    public KeeperRecord getLinkedLaunchRecord(KeeperRecord record) throws GuacamoleException {
+        validateCache();
+        cacheLock.readLock().lock();
+        try {
+            return cachedLinkedLaunchRecords.get(record);
+        }
+        finally {
+            cacheLock.readLock().unlock();
+        }
+    }
+
+    /**
      * Returns the value of the secret stored within Keeper Secrets Manager and
      * represented by the given Keeper notation. Keeper notation locates the
      * value of a specific field, custom field, or file associated with a
@@ -656,13 +772,16 @@ public class KsmClient {
         // There is no way to differentiate if an error is caused by
         // a non-existing record or a pure parse failure.
         catch (Error | Exception e) {
-            logger.warn("Keeper notation \"{}\" could not be resolved "
-                    + "to a record: {}", notation, e.getMessage());
             logger.debug("Retrieval of record by Keeper notation failed.", e);
 
             // If the secret is not found, invoke the fallback function
             if (fallbackFunction != null)
                 return fallbackFunction.get();
+
+            // Show the warning only if there is no fallback function
+            // and this was the last attempt
+            logger.warn("Keeper notation \"{}\" could not be resolved "
+                    + "to a record: {}", notation, e.getMessage());
 
             return CompletableFuture.completedFuture(null);
         }

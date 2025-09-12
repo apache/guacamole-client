@@ -152,21 +152,21 @@ public class KsmSecretService implements VaultSecretService {
         // Attempt to find a KSM config for this connection or group
         String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
 
+        // Get the user-supplied KSM config, if allowed by config and
+        // set by the user
+        String userKsmConfig = getUserKSMConfig(userContext, connectable);
+
+        // If the user config is not defined or happens to be the same
+        // as admin-defined one, resolve without the fallback
+        if (userKsmConfig == null || Objects.equal(userKsmConfig, ksmConfig)) {
+            return getClient(ksmConfig).getSecret(name);
+        }
+
         return getClient(ksmConfig).getSecret(name, new GuacamoleExceptionSupplier<Future<String>>() {
 
             @Override
             public Future<String> get() throws GuacamoleException {
-
-                // Get the user-supplied KSM config, if allowed by config and
-                // set by the user
-                String userKsmConfig = getUserKSMConfig(userContext, connectable);
-
-                // If the user config happens to be the same as admin-defined one,
-                // don't bother trying again
-                if (userKsmConfig != null && !Objects.equal(userKsmConfig, ksmConfig))
-                    return getClient(userKsmConfig).getSecret(name);
-
-                return CompletableFuture.completedFuture(null);
+                return getClient(userKsmConfig).getSecret(name);
             }
 
         });
@@ -370,7 +370,7 @@ public class KsmSecretService implements VaultSecretService {
      *
      * @param connectable
      *    The connectable to which the connection is being established. This
-     *    is the conneciton which will be checked to see if user KSM configs
+     *    is the connection which will be checked to see if user KSM configs
      *    are enabled.
      *
      * @return
@@ -435,18 +435,30 @@ public class KsmSecretService implements VaultSecretService {
 
         // Retrieve and define server-specific tokens, if any
         String hostname = parameters.get("hostname");
-        if (hostname != null && !hostname.isEmpty())
+        if (hostname != null && !hostname.isEmpty()) {
+            KeeperRecord record = ksm.getRecordByHost(filter.filter(hostname));
+            KeeperRecord adminRecord = ksm.getLinkedAdminRecord(record);
+            KeeperRecord launchRecord = ksm.getLinkedLaunchRecord(record);
             addRecordTokens(tokens, "KEEPER_SERVER_",
-                    ksm.getRecordByHost(filter.filter(hostname)));
+                    adminRecord != null ? adminRecord : record);
+            addRecordTokens(tokens, "KEEPER_SERVER_ADMIN_", adminRecord);
+            addRecordTokens(tokens, "KEEPER_SERVER_LAUNCH_", launchRecord);
+        }
 
         // Tokens specific to RDP
         if ("rdp".equals(config.getProtocol())) {
 
             // Retrieve and define gateway server-specific tokens, if any
             String gatewayHostname = parameters.get("gateway-hostname");
-            if (gatewayHostname != null && !gatewayHostname.isEmpty())
+            if (gatewayHostname != null && !gatewayHostname.isEmpty()) {
+                KeeperRecord record = ksm.getRecordByHost(filter.filter(gatewayHostname));
+                KeeperRecord adminRecord = ksm.getLinkedAdminRecord(record);
+                KeeperRecord launchRecord = ksm.getLinkedLaunchRecord(record);
                 addRecordTokens(tokens, "KEEPER_GATEWAY_",
-                        ksm.getRecordByHost(filter.filter(gatewayHostname)));
+                        adminRecord != null ? adminRecord : record);
+                addRecordTokens(tokens, "KEEPER_GATEWAY_ADMIN_", adminRecord);
+                addRecordTokens(tokens, "KEEPER_GATEWAY_LAUNCH_", launchRecord);
+            }
 
             // Retrieve and define domain tokens, if any
             String domain = parameters.get("domain");
@@ -518,7 +530,7 @@ public class KsmSecretService implements VaultSecretService {
                     config, getClient(userKsmConfig), tokens, parameters, filter);
 
         // Add connection group or globally defined tokens after the user-specific
-        // ones to ensure that the user config will be overriden on collision
+        // ones to ensure that the user config will be overridden on collision
         String ksmConfig = getConnectionGroupKsmConfig(userContext, connectable);
         addConnectableTokens(
             config, getClient(ksmConfig), tokens, parameters, filter);

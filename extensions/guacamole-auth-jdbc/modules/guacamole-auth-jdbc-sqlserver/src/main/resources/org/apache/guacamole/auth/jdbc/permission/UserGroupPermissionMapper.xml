@@ -135,7 +135,7 @@
                      open="(" separator=" OR " close=")">
                 ([guacamole_user_group_permission].entity_id = #{permission.entityID,jdbcType=INTEGER} AND
                  permission = #{permission.type,jdbcType=VARCHAR} AND
-                 affected_entity.type = 'USER_GROUP'
+                 affected_entity.type = 'USER_GROUP' AND
                 <choose>
                     <when test="caseSensitivity.caseSensitiveGroupNames()">
                         affected_entity.name = #{permission.objectIdentifier,jdbcType=VARCHAR}

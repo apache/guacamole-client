@@ -106,6 +106,10 @@ public abstract class DirectoryObjectTranslator<InternalType extends Identifiabl
      * @param userContext
      *     The UserContext associated with the object being filtered.
      *
+     * @param existingObject
+     *     The existing object from the Guacamole extension API which is being
+     *     modified, or null if the object is being created.
+     *
      * @param object
      *     The object to modify such that it strictly conforms to the declared
      *     schema.
@@ -114,7 +118,8 @@ public abstract class DirectoryObjectTranslator<InternalType extends Identifiabl
      *     If the object cannot be filtered due to an error.
      */
     public abstract void filterExternalObject(UserContext userContext,
-            ExternalType object) throws GuacamoleException;
+            InternalType existingObject, ExternalType object)
+            throws GuacamoleException;
 
     /**
      * Filters the given map of attribute name/value pairs, producing a new
