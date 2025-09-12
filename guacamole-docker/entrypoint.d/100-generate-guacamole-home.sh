@@ -59,8 +59,37 @@ is_property_set() {
 # Start with a fresh GUACAMOLE_HOME
 #
 
-rm -rf /tmp/guacamole-home.*
-GUACAMOLE_HOME="`mktemp -p /tmp -d guacamole-home.XXXXXXXXXX`"
+if [[ -z "$WEBAPPS_BASE" ]]; then
+    # If WEBAPPS_BASE is not set, use a temporary directory for CATALINA_BASE
+    rm -rf /tmp/guacamole-home.*
+    GUACAMOLE_HOME="`mktemp -p /tmp -d guacamole-home.XXXXXXXXXX`"
+else
+    # If WEBAPPS_BASE is set, GUACAMOLE_HOME = WEBAPPS_BASE/guacamole-home
+    # - ensure WEBAPPS_BASE is a directory
+    if [[ -e "$WEBAPPS_BASE" && ! -d "$WEBAPPS_BASE" ]]; then
+        echo "Error: WEBAPPS_BASE must be a directory." >&2
+        exit 1
+    fi
+    export GUACAMOLE_HOME="$WEBAPPS_BASE/guacamole-home"
+    # If GUACAMOLE_HOME does not exists, create it
+    if [[ ! -d "$GUACAMOLE_HOME" ]]; then
+        mkdir -p "$GUACAMOLE_HOME"
+    fi
+fi
+echo "Using GUACAMOLE_HOME: $GUACAMOLE_HOME"
+
+# Handle non-empty GUACAMOLE_HOME
+if [[ "$(ls -A $GUACAMOLE_HOME)" ]]; then
+    if [[ -e $GUACAMOLE_HOME/guacamole.properties ]]; then
+        echo "Warning: GUACAMOLE_HOME seems to be already configured"
+        export SKIP_GUACAMOLE_HOME=1
+        return 0
+    else
+        echo "Warning: GUACAMOLE_HOME is not empty, but does not contain a guacamole.properties file."
+        echo "         The contents of GUACAMOLE_HOME will be erased."
+        rm -rf "$GUACAMOLE_HOME"/*
+    fi
+fi
 
 #
 # Create JVM keystore by copying the default in JAVA_HOME
@@ -120,4 +149,3 @@ if ! is_property_set "enable-environment-properties"; then
 enable-environment-properties: true
 EOF
 fi
-
