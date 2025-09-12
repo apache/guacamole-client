@@ -129,8 +129,11 @@ public class TokenFilter {
      *     The value of the token with the given name, or null if no such
      *     token exists.
      */
-    public String getToken(String name) {
-        return tokenValues.get(name);
+    public String getToken(String name, String modifier) {
+	if (modifier != null && tokenValues.containsKey(name + ":" + modifier))
+        	return tokenValues.get(name + ":" + modifier);
+	else
+        	return tokenValues.get(name);
     }
 
     /**
@@ -226,7 +229,7 @@ public class TokenFilter {
 
                 // Pull token value
                 String tokenName = tokenMatcher.group(TOKEN_NAME_GROUP);
-                String tokenValue = getToken(tokenName);
+                String tokenValue = getToken(tokenName, modifier);
 
                 // If token is unknown, interpretation depends on whether
                 // strict mode is enabled
