@@ -170,9 +170,9 @@ public class HvClient {
             @Nullable GuacamoleExceptionSupplier<Future<String>> fallbackFunction)
             throws GuacamoleException {
 
-        // If it's not an HV token, change nothing
+        // If it's not an HV token, fail
         if (!notation.startsWith(HASHICORP_VAULT_TOKEN_PREFIX))
-            return CompletableFuture.completedFuture(notation);
+            throw new GuacamoleException("Invalid token HV notation: " + notation);
 
         /*
          * HASHIVAULT:path/to/secret  <-- the Guacamole token name and its modifier
@@ -188,8 +188,15 @@ public class HvClient {
 
         // Try to get the whole secret from cache and return key
         HvTimedSecretData cachedSecret = cachedSecrets.get(path);
-        if (cachedSecret != null && System.currentTimeMillis() < cachedSecret.dateCreated + cacheLifetime)
-            return CompletableFuture.completedFuture(cachedSecret.jsonNode.get("data").get("data").get(secret).asText());
+        if (cachedSecret != null && System.currentTimeMillis() < cachedSecret.dateCreated + cacheLifetime) {
+            try {
+                JsonNode secretNode = cachedSecret.jsonNode.get("data").get("data").get(secret);
+                return CompletableFuture.completedFuture(secretNode != null ? secretNode.asText() : null);
+            }
+            catch (Exception e) {
+                throw new GuacamoleException("Failed to extract secret from cached JSON for " + notation, e);
+            }
+        }
 
         // Cache miss, either get an existing in-flight request or create a new one
         CompletableFuture<JsonNode> futureResponse = inFlightRequests.computeIfAbsent(path, k -> {
@@ -227,14 +234,28 @@ public class HvClient {
             inFlightRequests.remove(path);
 
         }).thenApply(jsonNode -> {
-            if (jsonNode == null)
-                return null;
-
-            // Extract and return the secret
-            return jsonNode.get("data").get("data").get(secret).asText();
+            /*
+             * Extract and return the secret
+             * If there's no data.data, it's weird so fail with an exception
+             */
+            try {
+                JsonNode secretNode = jsonNode.get("data").get("data").get(secret);
+                return secretNode != null ? secretNode.asText() : null;
+            }
+            catch (Exception e) {
+                throw new CompletionException("Failed to parse JSON response for path " + path, e);
+            }
 
         }).exceptionally(e -> {
-            return null;
+            // Make sure that the exception is a GuacamoleException
+            Throwable cause = e.getCause();
+            String errorMessage = (cause != null) ? cause.getMessage() : "Unknown error";
+
+            if (cause instanceof GuacamoleException)
+                throw new CompletionException(cause);
+
+            throw new CompletionException(
+                new GuacamoleException("Vault query failed for " + path + ": " + errorMessage, cause));
         });
     }
 }
