@@ -39,14 +39,9 @@ import javax.annotation.Nullable;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.hv.GuacamoleExceptionSupplier;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
+import org.apache.guacamole.vault.hv.secret.HvTimedSecretData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-// record TimedSecretData(long dateCreated, JsonNode jsonNode) {};
-final class TimedSecretData {
-    public long dateCreated;
-    public JsonNode jsonNode;
-}
 
 /**
  * Client which retrieves records from Hashicorp Vault.
@@ -92,7 +87,7 @@ public class HvClient {
      * UID of the corresponding record. The contents of this Map are
      * automatically updated.
      */
-    private final ConcurrentMap<String, TimedSecretData> cachedSecrets = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, HvTimedSecretData> cachedSecrets = new ConcurrentHashMap<>();
 
     /**
      * All in-flight HTTP requests to Vault, it prevents multiple queries
@@ -164,7 +159,7 @@ public class HvClient {
         String secret = notation.substring(lastSlashIndex + 1);
 
         // Get from cache
-        TimedSecretData cachedSecret = cachedSecrets.get(path);
+        HvTimedSecretData cachedSecret = cachedSecrets.get(path);
         if (cachedSecret != null && System.currentTimeMillis() < cachedSecret.dateCreated + cacheLifetime)
             return CompletableFuture.completedFuture(cachedSecret.jsonNode.get("data").get("data").get(secret).asText());
 
@@ -193,7 +188,7 @@ public class HvClient {
         return futureResponse.whenComplete((jsonNode, ex) -> {
             // Cache
             if (ex == null && jsonNode != null) {
-                TimedSecretData secretToCache = new TimedSecretData();
+                HvTimedSecretData secretToCache = new HvTimedSecretData();
                 secretToCache.dateCreated = System.currentTimeMillis();
                 secretToCache.jsonNode = jsonNode;
                 cachedSecrets.put(path, secretToCache);
