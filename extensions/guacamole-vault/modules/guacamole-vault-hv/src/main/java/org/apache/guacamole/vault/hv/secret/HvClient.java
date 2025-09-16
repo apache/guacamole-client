@@ -48,10 +48,6 @@ import org.slf4j.LoggerFactory;
  */
 public class HvClient {
 
-    static final String CONFIG_PARAM_NAME_VAULT_URL = "vault_url";
-    static final String CONFIG_PARAM_NAME_VAULT_TOKEN = "vault_token";
-    static final String CONFIG_PARAM_NAME_CACHE_LIFETIME = "cache_lifetime";
-
     static final String HASHICORP_VAULT_HTTP_HEADER_TOKEN = "X-Vault-Token";
     static final String HASHICORP_VAULT_HTTP_VERSION = "/v1/";
     static final String HASHICORP_VAULT_TOKEN_PREFIX = "HASHIVAULT:";
@@ -109,13 +105,13 @@ public class HvClient {
         this.objectMapper = new ObjectMapper();
 
         this.cacheLifetime = 60000;
-        if (hvConfig.containsKey(CONFIG_PARAM_NAME_CACHE_LIFETIME)) {
-            String strCacheLifetime = hvConfig.get(CONFIG_PARAM_NAME_CACHE_LIFETIME);
+        if (hvConfig.containsKey(HvConfigurationService.PARAM_NAME_CACHE_LIFETIME)) {
+            String strCacheLifetime = hvConfig.get(HvConfigurationService.PARAM_NAME_CACHE_LIFETIME);
             try {
                 this.cacheLifetime = Long.parseLong(strCacheLifetime);
             }
             catch (NumberFormatException e) {
-                logger.warn("Bogus {} in HV config: {}", CONFIG_PARAM_NAME_CACHE_LIFETIME, strCacheLifetime);
+                logger.warn("Bogus {} in HV config: {}", HvConfigurationService.PARAM_NAME_CACHE_LIFETIME, strCacheLifetime);
             }
         }
     }
@@ -168,8 +164,8 @@ public class HvClient {
                 try {
                     // Perform the Vault query
                     HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(hvConfig.get(CONFIG_PARAM_NAME_VAULT_URL) + HASHICORP_VAULT_HTTP_VERSION + path))
-                        .header(HASHICORP_VAULT_HTTP_HEADER_TOKEN, hvConfig.get(CONFIG_PARAM_NAME_VAULT_TOKEN))
+                        .uri(URI.create(hvConfig.get(HvConfigurationService.PARAM_NAME_VAULT_URL) + HASHICORP_VAULT_HTTP_VERSION + path))
+                        .header(HASHICORP_VAULT_HTTP_HEADER_TOKEN, hvConfig.get(HvConfigurationService.PARAM_NAME_VAULT_TOKEN))
                         .GET()
                         .build();
                     HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());

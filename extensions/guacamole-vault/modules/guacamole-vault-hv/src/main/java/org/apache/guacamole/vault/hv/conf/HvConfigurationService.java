@@ -39,6 +39,10 @@ import org.apache.guacamole.vault.conf.VaultConfigurationService;
 @Singleton
 public class HvConfigurationService extends VaultConfigurationService {
 
+    public static final String PARAM_NAME_VAULT_URL = "vault_url";
+    public static final String PARAM_NAME_VAULT_TOKEN = "vault_token";
+    public static final String PARAM_NAME_CACHE_LIFETIME = "cache_lifetime";
+
     /**
      * The Guacamole server environment.
      */
