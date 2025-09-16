@@ -19,30 +19,26 @@
 
 package org.apache.guacamole.vault.hv.secret;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
+import java.util.concurrent.Future;
 import javax.annotation.Nullable;
-
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
 import org.apache.guacamole.vault.hv.GuacamoleExceptionSupplier;
+import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -19,13 +19,11 @@
 
 package org.apache.guacamole.vault.hv.user;
 
+import com.google.common.collect.Maps;
 import java.util.Map;
-
+import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.DelegatingConnection;
 import org.apache.guacamole.vault.hv.conf.HvAttributeService;
-import org.apache.guacamole.net.auth.Connection;
-
-import com.google.common.collect.Maps;
 
 /**
  * A Connection that explicitly adds a blank entry for any defined HV

@@ -20,7 +20,6 @@
 package org.apache.guacamole.vault.hv.secret;
 
 import java.util.Map;
-
 import javax.annotation.Nonnull;
 
 /**

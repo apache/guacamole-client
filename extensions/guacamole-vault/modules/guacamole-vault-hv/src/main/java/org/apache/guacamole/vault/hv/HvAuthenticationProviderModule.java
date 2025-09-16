@@ -19,27 +19,24 @@
 
 package org.apache.guacamole.vault.hv;
 
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import java.security.Security;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.VaultAuthenticationProviderModule;
+import org.apache.guacamole.vault.conf.VaultAttributeService;
+import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.hv.conf.HvAttributeService;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
+import org.apache.guacamole.vault.hv.secret.HvClient;
+import org.apache.guacamole.vault.hv.secret.HvClientFactory;
 import org.apache.guacamole.vault.hv.secret.HvSecretService;
 import org.apache.guacamole.vault.hv.user.HvConnectionGroup;
 import org.apache.guacamole.vault.hv.user.HvDirectoryService;
-import org.apache.guacamole.vault.hv.user.HvUserFactory;
 import org.apache.guacamole.vault.hv.user.HvUser;
-import org.apache.guacamole.vault.conf.VaultAttributeService;
-import org.apache.guacamole.vault.conf.VaultConfigurationService;
-import org.apache.guacamole.vault.hv.secret.HvClient;
-import org.apache.guacamole.vault.hv.secret.HvClientFactory;
+import org.apache.guacamole.vault.hv.user.HvUserFactory;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
-
 import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
-
-import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 /**
  * Guice module which configures injections specific to Hashicorp Vault

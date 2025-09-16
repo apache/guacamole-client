@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.vault.hv.conf;
 
+import com.google.inject.Singleton;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
@@ -26,15 +27,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.vault.conf.VaultAttributeService;
-
-import com.google.inject.Singleton;
 
 @Singleton
 public class HvAttributeService implements VaultAttributeService {

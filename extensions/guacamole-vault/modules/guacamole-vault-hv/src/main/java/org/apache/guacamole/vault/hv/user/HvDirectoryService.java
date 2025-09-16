@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.vault.hv.user;
 
+import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.ConnectionGroup;
@@ -30,8 +31,6 @@ import org.apache.guacamole.vault.hv.user.HvConnectionGroup;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.inject.Inject;
 
 public class HvDirectoryService extends VaultDirectoryService {
 

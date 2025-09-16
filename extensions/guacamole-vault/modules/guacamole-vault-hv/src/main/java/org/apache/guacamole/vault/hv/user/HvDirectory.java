@@ -21,7 +21,6 @@ package org.apache.guacamole.vault.hv.user;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.DelegatingDirectory;
 import org.apache.guacamole.net.auth.Directory;

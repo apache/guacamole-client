@@ -19,20 +19,18 @@
 
 package org.apache.guacamole.vault.hv.user;
 
-import java.util.Map;
-
-import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.User;
-import org.apache.guacamole.net.auth.DelegatingUser;
-import org.apache.guacamole.vault.hv.conf.HvAttributeService;
-import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import java.util.Map;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.DelegatingUser;
+import org.apache.guacamole.net.auth.User;
+import org.apache.guacamole.vault.hv.conf.HvAttributeService;
+import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A HV-specific user implementation that exposes the

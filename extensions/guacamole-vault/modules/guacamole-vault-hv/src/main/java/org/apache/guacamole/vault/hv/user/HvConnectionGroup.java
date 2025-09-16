@@ -19,17 +19,15 @@
 
 package org.apache.guacamole.vault.hv.user;
 
+import com.google.common.collect.Maps;
 import java.util.HashMap;
 import java.util.Map;
-
+import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DelegatingConnectionGroup;
 import org.apache.guacamole.vault.hv.conf.HvAttributeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.guacamole.GuacamoleException;
-
-import com.google.common.collect.Maps;
 
 /**
  * A HV-specific connection group implementation that always exposes
