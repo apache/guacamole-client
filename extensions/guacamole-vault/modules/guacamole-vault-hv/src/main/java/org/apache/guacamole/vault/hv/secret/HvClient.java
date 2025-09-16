@@ -48,8 +48,21 @@ import org.slf4j.LoggerFactory;
  */
 public class HvClient {
 
+    /**
+     * Name of the HTTP header for the token, as specified in documentation:
+     * https://developer.hashicorp.com/vault/docs/auth/token
+     */
     static final String HASHICORP_VAULT_HTTP_HEADER_TOKEN = "X-Vault-Token";
+
+    /**
+     * API version.
+     */
     static final String HASHICORP_VAULT_HTTP_VERSION = "/v1/";
+
+    /**
+     * Name of the Guacamole token to resolve on a Hashicorp Vault (secret path
+     * is set in the token modifier).
+     */
     static final String HASHICORP_VAULT_TOKEN_PREFIX = "HASHIVAULT:";
 
     /**
@@ -111,11 +124,25 @@ public class HvClient {
                 this.cacheLifetime = Long.parseLong(strCacheLifetime);
             }
             catch (NumberFormatException e) {
-                logger.warn("Bogus {} in HV config: {}", HvConfigurationService.PARAM_NAME_CACHE_LIFETIME, strCacheLifetime);
+                logger.warn("Invalid {} in HV config: {}", HvConfigurationService.PARAM_NAME_CACHE_LIFETIME, strCacheLifetime);
             }
         }
     }
 
+    /**
+     * Returns the value of the secret stored within Hashicorp Vault.
+     *
+     * @param notation
+     *     The HV notation of the secret to retrieve.
+     *
+     * @return
+     *     A Future which completes with the value of the secret represented by
+     *     the given HV notation, or null if there is no such secret.
+     *
+     * @throws GuacamoleException
+     *     If the requested secret cannot be retrieved or the HV notation
+     *     is invalid.
+     */
     public Future<String> getSecret(String notation) throws GuacamoleException {
         return getSecret(notation, null);
     }
@@ -143,9 +170,15 @@ public class HvClient {
             @Nullable GuacamoleExceptionSupplier<Future<String>> fallbackFunction)
             throws GuacamoleException {
 
+        // If it's not an HV token, change nothing
         if (!notation.startsWith(HASHICORP_VAULT_TOKEN_PREFIX))
             return CompletableFuture.completedFuture(notation);
 
+        /*
+         * HASHIVAULT:path/to/secret  <-- the Guacamole token name and its modifier
+         *            ^^^^^^^         <-- this is the path
+         *                    ^^^^^^  <-- this is the secret (or key in HV terms)
+         */
         int lastSlashIndex = notation.lastIndexOf('/');
         if (lastSlashIndex == -1)
             lastSlashIndex = HASHICORP_VAULT_TOKEN_PREFIX.length();
@@ -153,7 +186,7 @@ public class HvClient {
         String path = notation.substring(HASHICORP_VAULT_TOKEN_PREFIX.length(), lastSlashIndex);
         String secret = notation.substring(lastSlashIndex + 1);
 
-        // Get from cache
+        // Try to get the whole secret from cache and return key
         HvTimedSecretData cachedSecret = cachedSecrets.get(path);
         if (cachedSecret != null && System.currentTimeMillis() < cachedSecret.dateCreated + cacheLifetime)
             return CompletableFuture.completedFuture(cachedSecret.jsonNode.get("data").get("data").get(secret).asText());
@@ -182,7 +215,7 @@ public class HvClient {
         });
 
         return futureResponse.whenComplete((jsonNode, ex) -> {
-            // Cache
+            // Put newly received JSON data into the cache
             if (ex == null && jsonNode != null) {
                 HvTimedSecretData secretToCache = new HvTimedSecretData();
                 secretToCache.dateCreated = System.currentTimeMillis();
@@ -190,7 +223,7 @@ public class HvClient {
                 cachedSecrets.put(path, secretToCache);
             }
 
-            // Cleanup
+            // Now that the cache is filled, this in-flight request is obsolete and must be removed
             inFlightRequests.remove(path);
 
         }).thenApply(jsonNode -> {

@@ -304,6 +304,10 @@ public class HvSecretService implements VaultSecretService {
         return null;
     }
 
+    /*
+     * Scan the configuration parameters and fill the token map with all 
+     * supported HV matches.
+     */
     @Override
     public Map<String, Future<String>> getTokens(UserContext userContext,
             Connectable connectable, GuacamoleConfiguration config,

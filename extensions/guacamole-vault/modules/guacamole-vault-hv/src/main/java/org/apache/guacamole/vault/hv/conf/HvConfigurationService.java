@@ -39,8 +39,20 @@ import org.apache.guacamole.vault.conf.VaultConfigurationService;
 @Singleton
 public class HvConfigurationService extends VaultConfigurationService {
 
+    /**
+     * Property name of the URL of the vault specified in the base64 configuration blob.
+     */
     public static final String PARAM_NAME_VAULT_URL = "vault_url";
+
+    /**
+     * Property name of the authentication token for the vault specified in the
+     * base64 configuration blob.
+     */
     public static final String PARAM_NAME_VAULT_TOKEN = "vault_token";
+
+    /**
+     * Property name of the maximum time that cached data is considered valid.
+     */
     public static final String PARAM_NAME_CACHE_LIFETIME = "cache_lifetime";
 
     /**

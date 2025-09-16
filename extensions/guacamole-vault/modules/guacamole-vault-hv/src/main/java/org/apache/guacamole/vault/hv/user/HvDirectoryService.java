@@ -32,6 +32,10 @@ import org.apache.guacamole.vault.user.VaultDirectoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A HV-specific vault directory service that wraps the connection group directory
+ * to sanitize sensitive data from exposed settings.
+ */
 public class HvDirectoryService extends VaultDirectoryService {
 
     /**
