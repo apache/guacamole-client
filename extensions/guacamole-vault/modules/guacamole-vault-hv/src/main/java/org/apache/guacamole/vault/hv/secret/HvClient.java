@@ -160,7 +160,8 @@ public class HvClient {
      *
      * @return
      *     A Future which completes with the value of the secret represented by
-     *     the given HV notation, or null if there is no such secret.
+     *     the given HV notation, or empty string if there is no such secret to
+     *     remove the token.
      *
      * @throws GuacamoleException
      *     If the requested secret cannot be retrieved or the HV notation
@@ -191,7 +192,11 @@ public class HvClient {
         if (cachedSecret != null && System.currentTimeMillis() < cachedSecret.dateCreated + cacheLifetime) {
             try {
                 JsonNode secretNode = cachedSecret.jsonNode.get("data").get("data").get(secret);
-                return CompletableFuture.completedFuture(secretNode != null ? secretNode.asText() : null);
+                if (secretNode == null) {
+                    logger.warn("Could not find {}/{}", path, secret);
+                    return CompletableFuture.completedFuture("");
+                }
+                return CompletableFuture.completedFuture(secretNode.asText());
             }
             catch (Exception e) {
                 throw new GuacamoleException("Failed to extract secret from cached JSON for " + notation, e);
@@ -240,7 +245,11 @@ public class HvClient {
              */
             try {
                 JsonNode secretNode = jsonNode.get("data").get("data").get(secret);
-                return secretNode != null ? secretNode.asText() : null;
+                if (secretNode == null) {
+                    logger.warn("Could not find {}/{}", path, secret);
+                    return "";
+                }
+                return secretNode.asText();
             }
             catch (Exception e) {
                 throw new CompletionException("Failed to parse JSON response for path " + path, e);
