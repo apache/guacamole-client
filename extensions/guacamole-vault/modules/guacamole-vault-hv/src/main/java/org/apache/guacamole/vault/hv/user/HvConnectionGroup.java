@@ -98,7 +98,8 @@ public class HvConnectionGroup extends DelegatingConnectionGroup {
             super.setAttributes(
                 HvAttributeService.processAttributes(attributes)
             );
-        } catch (GuacamoleException e) {
+        }
+        catch (GuacamoleException e) {
             logger.warn("HvConnectionGroup setAttributes failed");
         }
     }

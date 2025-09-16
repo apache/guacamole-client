@@ -130,10 +130,10 @@ public class TokenFilter {
      *     token exists.
      */
     public String getToken(String name, String modifier) {
-	if (modifier != null && tokenValues.containsKey(name + ":" + modifier))
-        	return tokenValues.get(name + ":" + modifier);
-	else
-        	return tokenValues.get(name);
+        if (modifier != null && tokenValues.containsKey(name + ":" + modifier))
+            return tokenValues.get(name + ":" + modifier);
+        else
+            return tokenValues.get(name);
     }
 
     /**

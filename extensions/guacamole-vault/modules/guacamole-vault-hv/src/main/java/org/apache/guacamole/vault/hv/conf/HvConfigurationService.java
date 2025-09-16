@@ -176,10 +176,11 @@ public class HvConfigurationService extends VaultConfigurationService {
             });
 
             return config;
-
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             throw new GuacamoleServerException("Invalid JSON configuration for Hashicorp Vault.", e);
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e) {
             throw new GuacamoleServerException("Invalid base64 configuration for Hashicorp Vault.", e);
         }
     }

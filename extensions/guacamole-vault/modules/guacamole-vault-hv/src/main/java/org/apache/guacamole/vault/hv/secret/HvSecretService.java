@@ -140,11 +140,9 @@ public class HvSecretService implements VaultSecretService {
     }
 
     @Override
-    public Future<String> getValue(
-        UserContext userContext,
-        Connectable connectable,
-        String name
-    ) throws GuacamoleException {
+    public Future<String> getValue( UserContext userContext,
+            Connectable connectable, String name) throws GuacamoleException {
+
         // Attempt to find a HV config for this connection or group
         String hvConfig = getConnectionGroupHvConfig(userContext, connectable);
 
@@ -196,10 +194,9 @@ public class HvSecretService implements VaultSecretService {
      *     defined in the config file.
      */
     @Nonnull
-    private String getConnectionGroupHvConfig(
-        UserContext userContext,
-        Connectable connectable
-    ) throws GuacamoleException {
+    private String getConnectionGroupHvConfig(UserContext userContext,
+            Connectable connectable) throws GuacamoleException {
+
         // Check to make sure it's a usable type before proceeding
         if (!(connectable instanceof Connection) && !(connectable instanceof ConnectionGroup)) {
             logger.warn(
@@ -301,17 +298,16 @@ public class HvSecretService implements VaultSecretService {
      * @throws GuacamoleException
      *     If an error occurs while attempting to fetch the HV config.
      */
-    private String getUserHVConfig(UserContext userContext, Connectable connectable) throws GuacamoleException {
+    private String getUserHVConfig(UserContext userContext,
+            Connectable connectable) throws GuacamoleException {
+
         return null;
     }
 
     @Override
-    public Map<String, Future<String>> getTokens(
-        UserContext userContext,
-        Connectable connectable,
-        GuacamoleConfiguration config,
-        TokenFilter filter
-    ) throws GuacamoleException {
+    public Map<String, Future<String>> getTokens(UserContext userContext,
+            Connectable connectable, GuacamoleConfiguration config,
+            TokenFilter filter) throws GuacamoleException {
 
         Map<String, Future<String>> tokens = new HashMap<>();
         Map<String, String> parameters = config.getParameters();

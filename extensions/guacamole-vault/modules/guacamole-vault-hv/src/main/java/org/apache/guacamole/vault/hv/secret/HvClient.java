@@ -103,9 +103,7 @@ public class HvClient {
      *     The HV configuration to use when retrieving properties from HV.
      */
     @AssistedInject
-    public HvClient(
-        @Assisted Map<String, String> hvConfig
-    ) {
+    public HvClient(@Assisted Map<String, String> hvConfig) {
         this.hvConfig = hvConfig;
         this.httpClient = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
@@ -115,7 +113,8 @@ public class HvClient {
             String strCacheLifetime = hvConfig.get(CONFIG_PARAM_NAME_CACHE_LIFETIME);
             try {
                 this.cacheLifetime = Long.parseLong(strCacheLifetime);
-            } catch (NumberFormatException e) {
+            }
+            catch (NumberFormatException e) {
                 logger.warn("Bogus {} in HV config: {}", CONFIG_PARAM_NAME_CACHE_LIFETIME, strCacheLifetime);
             }
         }
@@ -144,10 +143,10 @@ public class HvClient {
      *     If the requested secret cannot be retrieved or the HV notation
      *     is invalid.
      */
-    public Future<String> getSecret(
-        String notation,
-        @Nullable GuacamoleExceptionSupplier<Future<String>> fallbackFunction
-    ) throws GuacamoleException {
+    public Future<String> getSecret(String notation,
+            @Nullable GuacamoleExceptionSupplier<Future<String>> fallbackFunction)
+            throws GuacamoleException {
+
         if (!notation.startsWith(HASHICORP_VAULT_TOKEN_PREFIX))
             return CompletableFuture.completedFuture(notation);
 
@@ -178,7 +177,8 @@ public class HvClient {
 
                     return jsonNode;
 
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     logger.warn("Vault query failed for {} with {}", path, e);
                     throw new CompletionException("Vault query failed for " + path, e);
                 }

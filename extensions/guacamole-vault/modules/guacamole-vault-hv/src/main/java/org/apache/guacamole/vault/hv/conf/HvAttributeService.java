@@ -62,7 +62,8 @@ public class HvAttributeService implements VaultAttributeService {
     );
 
     /**
-     * All HV-specific attributes for users, connections, or connection groups, organized by form.
+     * All HV-specific attributes for users, connections, or connection groups,
+     * organized by form.
      */
     public static final Collection<Form> HV_ATTRIBUTES = Collections.unmodifiableCollection(Arrays.asList(HV_CONFIGURATION_FORM));
 
@@ -137,8 +138,8 @@ public class HvAttributeService implements VaultAttributeService {
     }
 
     public static Map<String, String> processAttributes(
-        Map<String, String> attributes
-    ) throws GuacamoleException {
+            Map<String, String> attributes) throws GuacamoleException {
+
         // Get the value of the HV config attribute in the provided map
         String hvConfigValue = attributes.get(HvAttributeService.HV_CONFIGURATION_ATTRIBUTE);
 

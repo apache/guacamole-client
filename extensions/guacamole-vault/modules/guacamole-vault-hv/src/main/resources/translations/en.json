@@ -1,12 +1,8 @@
 {
+
     "CONNECTION_ATTRIBUTES" : {
         "SECTION_HEADER_HV_CONFIG"            : "Hashicorp Vault",
         "FIELD_HEADER_HV_USER_CONFIG_ENABLED" : "Allow user-provided HV configuration"
-    },
-
-    "USER_ATTRIBUTES" : {
-        "SECTION_HEADER_HV_CONFIG" : "Hashicorp Vault",
-        "FIELD_HEADER_HV_CONFIG"   : "HV Service Configuration "
     },
 
     "CONNECTION_GROUP_ATTRIBUTES" : {
@@ -14,6 +10,15 @@
         "FIELD_HEADER_HV_CONFIG"   : "HV Service Configuration ",
 
         "ERROR_INVALID_HV_CONFIG_BLOB" : "The provided base64-encoded HV configuration blob is not valid."
+    },
+
+    "DATA_SOURCE_HASHICORP_VAULT" : {
+        "NAME" : "Hashicorp Vault"
+    },
+
+    "USER_ATTRIBUTES" : {
+        "SECTION_HEADER_HV_CONFIG" : "Hashicorp Vault",
+        "FIELD_HEADER_HV_CONFIG"   : "HV Service Configuration "
     }
 
 }

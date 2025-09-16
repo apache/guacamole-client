@@ -85,7 +85,8 @@ public class HvUser extends DelegatingUser {
         boolean userHvConfigEnabled = false;
         try {
             userHvConfigEnabled = configurationService.getAllowUserConfig();
-        } catch (GuacamoleException e) {
+        }
+        catch (GuacamoleException e) {
 
             logger.warn(
                     "Disabling user HV config due to exception: {}"
@@ -116,7 +117,8 @@ public class HvUser extends DelegatingUser {
             super.setAttributes(
                 HvAttributeService.processAttributes(attributes)
             );
-        } catch (GuacamoleException e) {
+        }
+        catch (GuacamoleException e) {
             logger.warn("HvUser setAttributes failed");
         }
     }
