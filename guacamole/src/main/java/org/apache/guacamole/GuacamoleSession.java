@@ -19,6 +19,7 @@
 
 package org.apache.guacamole;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +61,11 @@ public class GuacamoleSession {
      * All currently-active tunnels, indexed by tunnel UUID.
      */
     private final Map<String, UserTunnel> tunnels = new ConcurrentHashMap<>();
+
+    /**
+     * Creation times for all tunnels, indexed by tunnel UUID.
+     */
+    private final Map<String, Long> tunnelCreationTimes = new ConcurrentHashMap<>();
 
     /**
      * Service for dispatching events to registered event listeners.
@@ -246,7 +252,9 @@ public class GuacamoleSession {
      */
     public void addTunnel(UserTunnel tunnel) {
         this.access();
-        tunnels.put(tunnel.getUUID().toString(), tunnel);
+        String tunnelId = tunnel.getUUID().toString();
+        tunnels.put(tunnelId, tunnel);
+        tunnelCreationTimes.put(tunnelId, System.currentTimeMillis());
     }
 
     /**
@@ -262,6 +270,7 @@ public class GuacamoleSession {
      */
     public boolean removeTunnel(String uuid) {
         this.access();
+        tunnelCreationTimes.remove(uuid);
         return tunnels.remove(uuid) != null;
     }
 
@@ -282,6 +291,94 @@ public class GuacamoleSession {
      */
     public long getLastAccessedTime() {
         return lastAccessedTime;
+    }
+
+    /**
+     * Returns the creation time of the specified tunnel, as the number of
+     * milliseconds since midnight January 1, 1970 GMT. Invoking this function
+     * does not affect the last access time of this session.
+     *
+     * @param uuid
+     *     The UUID of the tunnel to get the creation time for.
+     *
+     * @return 
+     *     The time the tunnel was created, or 0 if the tunnel doesn't exist.
+     */
+    public long getTunnelCreationTime(String uuid) {
+        Long creationTime = tunnelCreationTimes.get(uuid);
+        return creationTime != null ? creationTime : 0;
+    }
+
+    /**
+     * Returns the age of the oldest tunnel in this session, in milliseconds.
+     * If no tunnels exist, returns 0. Invoking this function does not affect 
+     * the last access time of this session.
+     *
+     * @return 
+     *     The age of the oldest tunnel in milliseconds, or 0 if no tunnels exist.
+     */
+    public long getOldestTunnelAge() {
+        if (tunnelCreationTimes.isEmpty()) {
+            return 0;
+        }
+        
+        long currentTime = System.currentTimeMillis();
+        long oldestCreationTime = tunnelCreationTimes.values().stream()
+                .mapToLong(Long::longValue)
+                .min()
+                .orElse(currentTime);
+        
+        return currentTime - oldestCreationTime;
+    }
+
+    /**
+     * Closes and removes any tunnels in this session that exceed the specified
+     * age limit. Invoking this function does not affect the last access time
+     * of this session.
+     *
+     * @param maxAge
+     *     The maximum allowed age of tunnels in milliseconds. Tunnels older
+     *     than this will be closed and removed.
+     *
+     * @return 
+     *     The number of tunnels that were closed and removed.
+     */
+    public int closeExpiredTunnels(long maxAge) {
+        if (maxAge <= 0 || tunnelCreationTimes.isEmpty()) {
+            return 0;
+        }
+        
+        long currentTime = System.currentTimeMillis();
+        int closedCount = 0;
+        
+        // Find tunnels that exceed the age limit
+        List<String> expiredTunnelIds = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : tunnelCreationTimes.entrySet()) {
+            long tunnelAge = currentTime - entry.getValue();
+            if (tunnelAge >= maxAge) {
+                expiredTunnelIds.add(entry.getKey());
+            }
+        }
+        
+        // Close and remove expired tunnels
+        for (String tunnelId : expiredTunnelIds) {
+            UserTunnel tunnel = tunnels.get(tunnelId);
+            if (tunnel != null) {
+                try {
+                    tunnel.close();
+                    logger.debug("Closed tunnel \"{}\" due to connection timeout.", tunnelId);
+                }
+                catch (GuacamoleException e) {
+                    logger.debug("Unable to close expired tunnel \"" + tunnelId + "\".", e);
+                }
+                // Remove from both maps regardless of whether close succeeded
+                tunnels.remove(tunnelId);
+                tunnelCreationTimes.remove(tunnelId);
+                closedCount++;
+            }
+        }
+        
+        return closedCount;
     }
 
     /**
