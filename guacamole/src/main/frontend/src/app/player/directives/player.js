@@ -83,6 +83,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
     const keyEventDisplayService = $injector.get('keyEventDisplayService');
     const playerHeatmapService = $injector.get('playerHeatmapService');
     const playerTimeService = $injector.get('playerTimeService');
+    const $location         = $injector.get('$location');
+    const $routeParams      = $injector.get('$routeParams');
 
     /**
      * The number of milliseconds after the last detected mouse activity after
@@ -404,6 +406,14 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 else
                     $scope.recording.play();
             }
+        };
+
+        /**
+         * Close recording player and return to history.
+         */
+        $scope.closePlayer = function closePlayer() {
+            const datasource = encodeURIComponent($routeParams.dataSource);
+            $location.path('/settings/' + datasource + '/history');
         };
 
         // Automatically load the requested session recording

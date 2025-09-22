@@ -45,6 +45,11 @@
 
     <div class="guac-player-buttons">
 
+        <!-- Close button -->
+        <button class="guac-player-close"
+                ng-attr-title="{{ 'PLAYER.ACTION_CLOSE' | translate }}"
+                ng-click="closePlayer()"><span class="close-icon"></span></button>
+
         <!-- Play button -->
         <button class="guac-player-play"
                 ng-attr-title="{{ 'PLAYER.ACTION_PLAY' | translate }}"
