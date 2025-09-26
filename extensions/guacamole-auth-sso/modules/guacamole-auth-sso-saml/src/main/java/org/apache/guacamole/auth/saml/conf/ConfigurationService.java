@@ -371,7 +371,13 @@ public class ConfigurationService {
      *     If the X.509 certificate cannot be parsed.
      */
     public File getCertificateFile() throws GuacamoleException {
-        return environment.getProperty(SAML_X509_CERT_PATH);
+    	File certificate = null;
+    	try {
+			certificate = environment.getProperty(SAML_X509_CERT_PATH).getCanonicalFile();
+		} catch (IOException | GuacamoleException e) {			
+			e.printStackTrace();
+		}
+        return certificate;
     }
 
     /**
@@ -387,7 +393,13 @@ public class ConfigurationService {
      *     If the private key file cannot be parsed.
      */
     public File getPrivateKeyFile() throws GuacamoleException {
-        return environment.getProperty(SAML_PRIVATE_KEY_PATH);
+    	File privateKey = null;
+    	try {
+    		privateKey = environment.getProperty(SAML_PRIVATE_KEY_PATH).getCanonicalFile();
+		} catch (IOException | GuacamoleException e) {			
+			e.printStackTrace();
+		}
+        return privateKey;
     }
 
     /**
@@ -480,7 +492,7 @@ public class ConfigurationService {
                     readFileContentsIntoString(privateKeyFile, "Private Key"));
 
         // If a certificate file is set, load the value into the builder now
-        File certificateFile = getCertificateFile();
+        File certificateFile = getCertificateFile();       
         if (certificateFile != null)
             samlMap.put(SettingsBuilder.SP_X509CERT_PROPERTY_KEY,
                     readFileContentsIntoString(certificateFile, "X.509 Certificate"));
