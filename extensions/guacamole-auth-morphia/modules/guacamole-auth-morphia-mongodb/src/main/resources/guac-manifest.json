@@ -1,0 +1,29 @@
+{
+
+    "guacamoleVersion" : "0.9.14",
+
+    "name"      : "MongoDB Authentication",
+    "namespace" : "guac-mongodb",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.mongodb.MongoDBAuthenticationProvider",
+        "org.apache.guacamole.auth.mongodb.MongoDBSharedAuthenticationProvider"
+    ],
+
+    "css" : [
+        "styles/jdbc.css"
+    ],
+
+    "html" : [
+        "html/shared-connection.html"
+    ],
+
+    "translations" : [
+        "translations/en.json",
+        "translations/es.json",
+        "translations/fr.json",
+        "translations/ru.json"
+    ]
+
+}
+
