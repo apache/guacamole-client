@@ -321,43 +321,47 @@ angular.module('player').factory('keyEventDisplayService',
                     // Add the shortcut to the current batch
                     pushEvent(shortcutText, false);
                 }
-            }
 
-            // Print the key itself
-            else {
-
-                var keyText;
-                var typed;
-
-                // Print the value if explicitly defined
-                if (value !== undefined) {
-
-                    keyText = value;
-                    typed = true;
-
-                    // If the name should be printed in addition, add it as a
-                    // seperate event before the actual character value
-                    if (PRINT_NAME_TOO_KEYS[keysym])
-                        pushEvent(formatKeyName(name), false);
-
-                }
-
-                // Otherwise print the name
+                // Print the key itself
                 else {
 
-                    keyText = formatKeyName(name);
-
-                    // While this is a representation for a single character,
-                    // the key text is the name of the key, not the actual
-                    // character itself
-                    typed = false;
+                    var keyText;
+                    var typed;
+    
+                    // Print the value if explicitly defined
+                    if (value !== undefined) {
+    
+                        keyText = value;
+                        typed = true;
+    
+                        // If the name should be printed in addition, add it as a
+                        // seperate event before the actual character value
+                        if (PRINT_NAME_TOO_KEYS[keysym])
+                            pushEvent(formatKeyName(name), false);
+    
+                    }
+    
+                    // Otherwise print the name
+                    else {
+    
+                        keyText = formatKeyName(name);
+    
+                        // While this is a representation for a single character,
+                        // the key text is the name of the key, not the actual
+                        // character itself
+                        typed = false;
+    
+                    }
+    
+                    // Add the key to the current batch
+                    pushEvent(keyText, typed);
 
                 }
-
-                // Add the key to the current batch
-                pushEvent(keyText, typed);
-
             }
+
+            // We ignore key release events here because in practice characters
+            // are printed when you press keys not release them. The release order
+            // can be different and lead to wrong character printing order in the log.
 
         });
 
