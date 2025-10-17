@@ -131,6 +131,11 @@
                     "options" : [ "", "127", "8" ]
                 },
                 {
+                    "name"    : "func-keys-and-keypad",
+                    "type"    : "ENUM",
+                    "options" : [ "", "esc", "vt100" ]
+                },
+                {
                     "name"    : "terminal-type",
                     "type"    : "ENUM",
                     "options" : [ "", "xterm", "xterm-256color", "vt220", "vt100", "ansi", "linux" ]
