@@ -60,7 +60,7 @@ public class UserGroupService {
     /**
      * Constant for nested LDAP group matching in Active Directory
      */
-    private final String LDAP_GROUP_NESTED_MATCHING_OID = "1.2.840.113556.1.4.1941";
+    private static final String LDAP_GROUP_NESTED_MATCHING_OID = "1.2.840.113556.1.4.1941";
 
     /**
      * Service for executing LDAP queries.
