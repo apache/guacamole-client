@@ -1421,6 +1421,8 @@ Guacamole.Client = function(tunnel) {
             if (guac_client.onerror)
                 guac_client.onerror(new Guacamole.Status(code, reason));
 
+            if (guac_client.ondisconnect) guac_client.ondisconnect();
+
             guac_client.disconnect();
 
         },
