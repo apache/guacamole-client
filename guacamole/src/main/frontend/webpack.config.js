@@ -137,6 +137,7 @@ module.exports = {
             { from: 'fonts/**/*' },
             { from: 'images/**/*' },
             { from: 'layouts/**/*' },
+            { from: 'manifest.json' },
             { from: 'translations/**/*' },
             { from: 'verifyCachedVersion.js' }
         ], {
