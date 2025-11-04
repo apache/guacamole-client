@@ -478,6 +478,25 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
+     * Opens a new video stream for writing, having the given mimetype. The
+     * instruction necessary to create this stream will automatically be sent.
+     *
+     * @param {!string} mimetype
+     *     The mimetype of the video data being sent.
+     *
+     * @return {!Guacamole.OutputStream}
+     *     The created video stream.
+     */
+    this.createVideoStream = function(mimetype) {
+
+        // Allocate and associate stream with video metadata
+        var stream = guac_client.createOutputStream();
+        tunnel.sendMessage("video", stream.index, mimetype);
+        return stream;
+
+    };
+
+    /**
      * Opens a new file for writing, having the given index, mimetype and
      * filename. The instruction necessary to create this stream will
      * automatically be sent.
