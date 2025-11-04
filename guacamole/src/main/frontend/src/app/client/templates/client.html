@@ -44,7 +44,12 @@
     <div id="connection-warning" ng-show="isConnectionUnstable()">
         {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
     </div>
-    
+
+    <!-- Video delay notification -->
+    <div id="video-delay-notification" ng-show="videoDelayNotification.message">
+        {{ videoDelayNotification.message }}
+    </div>
+
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
         <div class="menu-content" ng-if="menu.shown" guac-touch-drag="menuDrag">
@@ -188,6 +193,33 @@
                     <div class="content">
                         <div id="zoom-settings">
                             <guac-client-zoom client="focusedClient"></guac-client-zoom>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Camera settings -->
+                <div class="menu-section" id="camera-settings" ng-if="cameraActive">
+                    <h3>Camera</h3>
+                    <div class="content">
+                        <p class="description">
+                            Video delay: +{{ videoDelay }}ms
+                        </p>
+                        <p class="caption">
+                            Adjust video delay to synchronize video and audio during calls.
+                        </p>
+                        <div class="video-delay-slider">
+                            <input type="range"
+                                   min="0"
+                                   max="1000"
+                                   step="100"
+                                   ng-model="videoDelay"
+                                   ng-change="updateVideoDelay()"
+                                   id="video-delay-range">
+                            <div class="delay-labels">
+                                <span>0ms</span>
+                                <span>500ms</span>
+                                <span>1000ms</span>
+                            </div>
                         </div>
                     </div>
                 </div>

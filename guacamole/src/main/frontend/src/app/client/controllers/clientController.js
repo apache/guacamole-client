@@ -40,6 +40,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     const dataSourceService      = $injector.get('dataSourceService');
     const guacClientManager      = $injector.get('guacClientManager');
     const guacFullscreen         = $injector.get('guacFullscreen');
+    const guacRDPECAM            = $injector.get('guacRDPECAM');
     const iconService            = $injector.get('iconService');
     const preferenceService      = $injector.get('preferenceService');
     const requestService         = $injector.get('requestService');
@@ -167,6 +168,48 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      * @type ManagedClient
      */
     $scope.focusedClient = null;
+
+    /**
+     * Camera redirection state
+     */
+    $scope.cameraActive = false;
+    $scope.cameraSupported = guacRDPECAM.isSupported();
+
+    /**
+     * Video delay setting (0-1000ms) bound to slider in UI.
+     * @type {number}
+     */
+    $scope.videoDelay = guacRDPECAM.getVideoDelay();
+
+    /**
+     * Video delay notification state
+     */
+    $scope.videoDelayNotification = {
+        message: null,
+        timeoutHandle: null
+    };
+
+    /**
+     * Shows a video delay notification message for 3 seconds
+     * @param {string} message - The message to display
+     */
+    $scope.showVideoDelayNotification = function(message) {
+        // Clear existing timeout if any
+        if ($scope.videoDelayNotification.timeoutHandle) {
+            clearTimeout($scope.videoDelayNotification.timeoutHandle);
+        }
+
+        // Show new message
+        $scope.videoDelayNotification.message = message;
+
+        // Auto-hide after 3 seconds
+        $scope.videoDelayNotification.timeoutHandle = setTimeout(function() {
+            $scope.$apply(function() {
+                $scope.videoDelayNotification.message = null;
+                $scope.videoDelayNotification.timeoutHandle = null;
+            });
+        }, 3000);
+    };
 
     /**
      * The set of clients that should be attached to the client UI. This will
@@ -489,6 +532,11 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         const oldFocusedClient = $scope.focusedClient;
         $scope.focusedClient = newFocusedClient;
 
+        // Stop any active camera stream associated with the previously focused client
+        if (oldFocusedClient && oldFocusedClient !== newFocusedClient && $scope.cameraActive) {
+            $scope.stopCamera();
+        }
+
         // Apply any parameter changes when focus is changing
         if (oldFocusedClient)
             $scope.applyParameterChanges(oldFocusedClient);
@@ -497,6 +545,32 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // client
         $scope.menu.connectionParameters = newFocusedClient ?
             ManagedClient.getArgumentModel(newFocusedClient) : {};
+
+        // Register camera state callback for the new focused client
+        if (newFocusedClient && newFocusedClient.client) {
+            // Register callback to update $scope.cameraActive when server sends start/stop signals
+            guacRDPECAM.registerStateCallback(newFocusedClient.client, function(state) {
+                $scope.$apply(function() {
+                    var wasInactive = !$scope.cameraActive;
+                    $scope.cameraActive = state.active;
+
+                    // Sync slider value with stored delay when camera starts
+                    if (state.active) {
+                        $scope.videoDelay = guacRDPECAM.getVideoDelay();
+
+                        // Show reminder notification when camera starts with delay configured
+                        if (wasInactive && $scope.videoDelay > 0) {
+                            $scope.showVideoDelayNotification('Video delay active: +' + $scope.videoDelay + 'ms');
+                        }
+                    }
+                });
+            });
+        }
+
+        // Always prepare camera capabilities if supported
+        if (newFocusedClient && newFocusedClient.client && guacRDPECAM.isSupported()) {
+            $scope.prepareCameraCapabilities();
+        }
 
     });
 
@@ -677,6 +751,69 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // Hide menu
         $scope.menu.shown = false;
 
+    };
+
+    /**
+     * Prepares camera capabilities for the focused client.
+     * 
+     * This prefetches the browser's camera capabilities and advertises them
+     * to the server. The actual camera start is protocol-driven - when Windows
+     * sends Start Streams Request, the server sends argv instructions that
+     * trigger camera start automatically.
+     */
+    $scope.prepareCameraCapabilities = function prepareCameraCapabilities() {
+        if (!$scope.focusedClient || !guacRDPECAM.isSupported()) {
+            return;
+        }
+
+        guacRDPECAM.prefetchCapabilities($scope.focusedClient.client);
+    };
+
+    /**
+     * Stops camera redirection for the focused client.
+     */
+    $scope.stopCamera = function stopCamera() {
+        if ($scope.focusedClient) {
+            guacRDPECAM.stopCamera($scope.focusedClient.client);
+        }
+        $scope.cameraActive = false;
+    };
+
+    /**
+     * Gets the current video delay setting in milliseconds.
+     *
+     * @returns {number}
+     *     The current video delay in milliseconds (0-1000).
+     */
+    $scope.getVideoDelay = function getVideoDelay() {
+        return $scope.videoDelay;
+    };
+
+    /**
+     * Updates the video delay when slider is changed.
+     * Saves to localStorage and shows notification.
+     */
+    $scope.updateVideoDelay = function updateVideoDelay() {
+        // Read directly from slider element to avoid child scope issues (ng-if creates child scope)
+        var sliderElement = document.getElementById('video-delay-range');
+        if (!sliderElement) {
+            return;
+        }
+
+        var delay = parseInt(sliderElement.value, 10);
+
+        if (isNaN(delay)) delay = 0;
+        if (delay < 0) delay = 0;
+        if (delay > 1000) delay = 1000;
+
+        // Update the service (saves to localStorage)
+        guacRDPECAM.setVideoDelay(delay);
+
+        // Update parent scope value (for display)
+        $scope.videoDelay = delay;
+
+        // Show notification
+        $scope.showVideoDelayNotification('Video delay: +' + delay + 'ms');
     };
 
     /**
