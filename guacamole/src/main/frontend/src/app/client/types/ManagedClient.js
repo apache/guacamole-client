@@ -683,6 +683,8 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                                 fpsDenom: parseInt(m[4]) || 1,
                                 streamIndex: m[5] ? parseInt(m[5]) : 0,
                                 deviceId: m[6] ? m[6].toString() : undefined
+                            }).catch(function(error) {
+                                console.error('Failed to start camera with params:', error);
                             });
                         } catch (e) {
                             // Failed to parse camera-start string - ignore
