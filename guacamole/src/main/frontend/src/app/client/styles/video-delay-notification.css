@@ -36,10 +36,6 @@
 
 }
 
-.video-delay-slider {
-    margin-top: 1em;
-}
-
 .video-delay-slider input[type="range"] {
     width: 100%;
     margin: 0.5em 0;

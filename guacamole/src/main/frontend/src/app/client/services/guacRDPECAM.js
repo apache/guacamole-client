@@ -26,6 +26,7 @@
 angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPECAM($injector) {
 
     // Required services
+    const preferenceService = $injector.get('preferenceService');
 
     /**
      * The mimetype of video data to be sent along the Guacamole connection if
@@ -53,6 +54,36 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
     ];
 
     const probedClients = new WeakSet();
+
+    /**
+     * Camera registry tracking all available cameras and their state.
+     * Map of deviceId -> camera object with:
+     * - deviceId: string (browser device ID)
+     * - label: string (friendly name)
+     * - enabled: boolean (user preference - checkbox state)
+     * - isActive: boolean (currently streaming to Windows)
+     * - formats: array (supported video formats)
+     *
+     * @type {Object.<string, Object>}
+     * @private
+     */
+    var cameraRegistry = {};
+
+    /**
+     * Reference to the current Guacamole client for capability updates.
+     *
+     * @type {Guacamole.Client}
+     * @private
+     */
+    var currentClient = null;
+
+    /**
+     * Callbacks to notify when camera registry changes (for UI updates).
+     *
+     * @type {Array.<Function>}
+     * @private
+     */
+    var registryChangeCallbacks = [];
 
     // Always use a local, stable ID for each Guacamole.Client
     const clientIds = new WeakMap();
@@ -87,6 +118,144 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
         }
 
         return true;
+    }
+
+    /**
+     * Notifies all registered callbacks that the camera registry has changed.
+     *
+     * @private
+     */
+    function notifyRegistryChange() {
+        registryChangeCallbacks.forEach(function(callback) {
+            try {
+                callback(getCameraList());
+            } catch (e) {
+                // Ignore callback errors
+            }
+        });
+    }
+
+    /**
+     * Gets an array of all cameras in the registry.
+     *
+     * @returns {Array.<Object>}
+     *     Array of camera objects from registry.
+     */
+    function getCameraList() {
+        return Object.keys(cameraRegistry).map(function(deviceId) {
+            return cameraRegistry[deviceId];
+        });
+    }
+
+    /**
+     * Saves currently enabled camera device IDs to preferences.
+     *
+     * @private
+     */
+    function saveEnabledDevicesToPreferences() {
+        var enabledDevices = Object.keys(cameraRegistry)
+            .filter(function(deviceId) {
+                return cameraRegistry[deviceId].enabled;
+            });
+        preferenceService.preferences.rdpecamEnabledDevices = enabledDevices;
+        preferenceService.save();
+    }
+
+    /**
+     * Gets array of enabled camera objects from registry.
+     *
+     * @returns {Array.<Object>}
+     *     Array of enabled camera objects with deviceId, deviceName, and formats.
+     *
+     * @private
+     */
+    function getEnabledCameras() {
+        return Object.keys(cameraRegistry)
+            .filter(function(deviceId) {
+                return cameraRegistry[deviceId].enabled;
+            })
+            .map(function(deviceId) {
+                var camera = cameraRegistry[deviceId];
+                return {
+                    deviceId: camera.deviceId,
+                    deviceName: camera.label,
+                    formats: camera.formats
+                };
+            });
+    }
+
+    /**
+     * Sends updated capabilities to the server via rdpecam-capabilities-update argv stream.
+     * Only includes enabled cameras.
+     *
+     * @param {Guacamole.Client} client
+     *     The Guacamole client.
+     *
+     * @private
+     */
+    function updateCapabilities(client) {
+        if (!client)
+            return;
+
+        var enabledCameras = getEnabledCameras();
+
+        // If no cameras are enabled, send empty string
+        if (enabledCameras.length === 0) {
+            try {
+                var stream = client.createArgumentValueStream('text/plain', 'rdpecam-capabilities-update');
+                var writer = new Guacamole.StringWriter(stream);
+                writer.sendText('');
+                writer.sendEnd();
+            }
+            catch (e) {
+                // Unable to send capability update - ignore
+            }
+            return;
+        }
+
+        // Build and send capability string (same format as initial capabilities)
+        try {
+            var deviceEntries = enabledCameras.map(function(device) {
+                if (!device || !device.formats || !device.formats.length)
+                    return null;
+
+                var deviceId = (device.deviceId && device.deviceId.trim()) ? device.deviceId.trim() : '';
+                if (!deviceId) {
+                    return null;
+                }
+
+                var entries = device.formats.map(function(format) {
+                    var width = Math.round(format.width);
+                    var height = Math.round(format.height);
+                    var fpsNum = Math.round(format.fpsNumerator || format.frameRate || 0);
+                    var fpsDen = Math.round(format.fpsDenominator || 1);
+
+                    if (fpsNum <= 0)
+                        fpsNum = 1;
+                    if (fpsDen <= 0)
+                        fpsDen = 1;
+
+                    return width + 'x' + height + '@' + fpsNum + '/' + fpsDen;
+                }).join(',');
+
+                var name = (device.deviceName && device.deviceName.trim()) ? device.deviceName.trim() : '';
+                return deviceId + ':' + name + '|' + entries;
+            }).filter(function(entry) { return entry !== null; });
+
+            if (deviceEntries.length === 0) {
+                return;
+            }
+
+            var payload = deviceEntries.join(';');
+
+            var stream = client.createArgumentValueStream('text/plain', 'rdpecam-capabilities-update');
+            var writer = new Guacamole.StringWriter(stream);
+            writer.sendText(payload);
+            writer.sendEnd();
+        }
+        catch (e) {
+            // Unable to send capability update - ignore
+        }
     }
 
     function deriveFormatsFromCapabilities(capabilities) {
@@ -199,40 +368,138 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
 
         probedClients.add(client);
 
-        // Enumerate all video devices
-        if (typeof navigator.mediaDevices.enumerateDevices === 'function') {
-            navigator.mediaDevices.enumerateDevices({ video: true })
-                .then(function(devices) {
-                    var videoDevices = devices.filter(function(device) {
-                        return device.kind === 'videoinput';
+        // Store client reference for capability updates
+        currentClient = client;
+
+        // Set up hot-plug detection (only once per client)
+        if (typeof navigator.mediaDevices.ondevicechange !== 'undefined') {
+            navigator.mediaDevices.ondevicechange = function() {
+                enumerateAndUpdateCameras(client);
+            };
+        }
+
+        // Initial enumeration
+        enumerateAndUpdateCameras(client);
+    }
+
+    /**
+     * Enumerates cameras, updates registry, and sends capabilities.
+     *
+     * @param {Guacamole.Client} client
+     *     The Guacamole client.
+     *
+     * @private
+     */
+    function enumerateAndUpdateCameras(client) {
+        if (typeof navigator.mediaDevices.enumerateDevices !== 'function')
+            return;
+
+        navigator.mediaDevices.enumerateDevices()
+            .then(function(devices) {
+                var videoDevices = devices.filter(function(device) {
+                    return device.kind === 'videoinput';
+                });
+
+                if (videoDevices.length === 0) {
+                    // No cameras detected, clear registry
+                    cameraRegistry = {};
+                    notifyRegistryChange();
+                    return;
+                }
+
+                // Probe capabilities for each device
+                var devicePromises = videoDevices.map(function(deviceInfo) {
+                    return probeDeviceCapabilities(deviceInfo.deviceId, deviceInfo.label || '');
+                });
+
+                Promise.all(devicePromises).then(function(deviceCapabilities) {
+                    // Filter out devices with no capabilities or no device ID
+                    var validDevices = deviceCapabilities.filter(function(dev) {
+                        return dev && dev.deviceId && dev.deviceId.trim() && dev.formats && dev.formats.length > 0;
                     });
 
-                    if (videoDevices.length === 0) {
+                    if (validDevices.length === 0) {
+                        cameraRegistry = {};
+                        notifyRegistryChange();
                         return;
                     }
 
-                    // Probe capabilities for each device
-                    var devicePromises = videoDevices.map(function(deviceInfo) {
-                        return probeDeviceCapabilities(deviceInfo.deviceId, deviceInfo.label || '');
-                    });
+                    // Load saved preferences
+                    var savedEnabledDevices = preferenceService.preferences.rdpecamEnabledDevices;
+                    var isFirstTime = (typeof savedEnabledDevices === 'undefined' || savedEnabledDevices === null);
 
-                    Promise.all(devicePromises).then(function(deviceCapabilities) {
-                        // Filter out devices with no capabilities or no device ID
-                        var validDevices = deviceCapabilities.filter(function(dev) {
-                            return dev && dev.deviceId && dev.deviceId.trim() && dev.formats && dev.formats.length > 0;
-                        });
+                    // If not first time, ensure it's an array
+                    if (!isFirstTime && !Array.isArray(savedEnabledDevices)) {
+                        savedEnabledDevices = [];
+                    }
 
-                        if (validDevices.length > 0) {
-                            sendCapabilities(client, validDevices);
+                    // Build new registry
+                    var newRegistry = {};
+                    var deviceIdsChanged = false;
+
+                    validDevices.forEach(function(device) {
+                        var wasInRegistry = cameraRegistry.hasOwnProperty(device.deviceId);
+                        var wasEnabled = wasInRegistry ? cameraRegistry[device.deviceId].enabled : false;
+
+                        // Determine enabled state
+                        var enabled;
+                        if (isFirstTime) {
+                            // First time (preference never set): enable all cameras by default
+                            enabled = true;
+                        } else if (wasInRegistry) {
+                            // Keep existing enabled state from current session
+                            enabled = wasEnabled;
+                        } else if (savedEnabledDevices.indexOf(device.deviceId) !== -1) {
+                            // New camera that user previously enabled
+                            enabled = true;
+                        } else {
+                            // New camera or user disabled it: default to disabled
+                            enabled = false;
                         }
-                    }).catch(function(error) {
-                        // Error probing device capabilities - capabilities not sent
+
+                        newRegistry[device.deviceId] = {
+                            deviceId: device.deviceId,
+                            label: device.deviceName,
+                            enabled: enabled,
+                            isActive: wasInRegistry ? cameraRegistry[device.deviceId].isActive : false,
+                            formats: device.formats
+                        };
+
+                        if (!wasInRegistry || wasEnabled !== enabled) {
+                            deviceIdsChanged = true;
+                        }
                     });
-                })
-                .catch(function(error) {
-                    // Error enumerating devices - capabilities not sent
+
+                    // Check for removed devices
+                    Object.keys(cameraRegistry).forEach(function(deviceId) {
+                        if (!newRegistry.hasOwnProperty(deviceId)) {
+                            deviceIdsChanged = true;
+                        }
+                    });
+
+                    cameraRegistry = newRegistry;
+
+                    // Save enabled devices if first time or if devices changed
+                    if (isFirstTime || deviceIdsChanged) {
+                        saveEnabledDevicesToPreferences();
+                    }
+
+                    // Send capabilities for enabled cameras only
+                    var enabledCameras = getEnabledCameras();
+                    if (enabledCameras.length > 0) {
+                        sendCapabilities(client, enabledCameras);
+                    }
+
+                    // Notify UI
+                    notifyRegistryChange();
+
+                }).catch(function(error) {
+                    // Error probing device capabilities - capabilities not sent
                 });
-        }
+            })
+            .catch(function(error) {
+                // Error enumerating devices - capabilities not sent
+            });
     }
 
     /**
@@ -372,7 +639,8 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
                     // Update state to inactive
                     var clientId = getLocalClientId(client);
                     if (clientId) {
-                        updateCameraState(clientId, false);
+                        var deviceId = cameraStates[clientId] ? cameraStates[clientId].deviceId : null;
+                        updateCameraState(clientId, false, deviceId);
                     }
                     
                     if (onState) {
@@ -384,7 +652,8 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
                     // Update state to inactive on error
                     var clientId = getLocalClientId(client);
                     if (clientId) {
-                        updateCameraState(clientId, false);
+                        var deviceId = cameraStates[clientId] ? cameraStates[clientId].deviceId : null;
+                        updateCameraState(clientId, false, deviceId);
                     }
                     
                     if (onState) {
@@ -415,7 +684,14 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
                 if (clientId) {
                     cameraRecorders[clientId] = recorder;
                     cameraControllers[clientId] = stopFunction;  // Register BEFORE resolving promise
-                    updateCameraState(clientId, true);
+                    
+                    // Store deviceId in cameraStates for later use when stopping
+                    if (!cameraStates[clientId]) {
+                        cameraStates[clientId] = {};
+                    }
+                    cameraStates[clientId].deviceId = constraints.deviceId;
+                    
+                    updateCameraState(clientId, true, constraints.deviceId);
                 }
 
                 // Notify state change
@@ -523,15 +799,6 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
     var stateUpdateCallbacks = {};
 
     /**
-     * LocalStorage key for persisting video delay setting.
-     *
-     * @constant
-     * @type {string}
-     * @private
-     */
-    var DELAY_STORAGE_KEY = 'guac_rdpecam_video_delay';
-
-    /**
      * Maximum queue size in bytes before overflow protection triggers.
      * Set to 500KB (4x normal max at 1000ms delay).
      *
@@ -553,20 +820,12 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
 
     /**
      * Current video delay in milliseconds (0-1000ms).
-     * Loaded from localStorage on first access.
+     * Loaded from preferenceService on first access.
      *
      * @type {number}
      * @private
      */
     var videoDelayMs = 0;
-
-    /**
-     * Whether videoDelayMs has been loaded from localStorage.
-     *
-     * @type {boolean}
-     * @private
-     */
-    var videoDelayLoaded = false;
 
     /**
      * Map of client IDs to their delay queues.
@@ -586,59 +845,23 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
     var delayTimerIntervals = {};
 
     /**
-     * Loads the video delay setting from localStorage.
-     * Falls back to memory-only storage if localStorage is unavailable.
-     *
-     * @private
-     */
-    function loadVideoDelay() {
-        if (videoDelayLoaded)
-            return;
-
-        try {
-            var stored = localStorage.getItem(DELAY_STORAGE_KEY);
-            if (stored !== null) {
-                var parsed = parseInt(stored, 10);
-                if (!isNaN(parsed) && parsed >= 0 && parsed <= 1000) {
-                    videoDelayMs = parsed;
-                }
-            }
-        }
-        catch (e) {
-            // localStorage unavailable, using memory-only delay storage
-        }
-
-        videoDelayLoaded = true;
-    }
-
-    /**
-     * Saves the video delay setting to localStorage.
-     * Silently fails if localStorage is unavailable.
-     *
-     * @private
-     */
-    function saveVideoDelay() {
-        try {
-            localStorage.setItem(DELAY_STORAGE_KEY, String(videoDelayMs));
-        }
-        catch (e) {
-            // Silent fallback - localStorage may be unavailable
-        }
-    }
-
-    /**
-     * Gets the current video delay setting in milliseconds.
+     * Gets the current video delay setting in milliseconds from preferenceService.
      *
      * @returns {number}
      *     The current delay in milliseconds (0-1000).
      */
     function getVideoDelay() {
-        loadVideoDelay();
+        var delay = preferenceService.preferences.rdpecamVideoDelay;
+        // Ensure it's a valid number in range
+        if (typeof delay !== 'number' || isNaN(delay) || delay < 0 || delay > 1000) {
+            delay = 0;
+        }
+        videoDelayMs = delay;
         return videoDelayMs;
     }
 
     /**
-     * Sets the video delay to an absolute value.
+     * Sets the video delay to an absolute value and saves to preferenceService.
      *
      * @param {number} delayMs
      *     The new delay value in milliseconds (0-1000).
@@ -647,7 +870,6 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
      *     The new delay value after clamping.
      */
     function setVideoDelay(delayMs) {
-        loadVideoDelay();
         videoDelayMs = delayMs;
 
         // Clamp to [0, 1000]
@@ -656,7 +878,10 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
         else if (videoDelayMs > 1000)
             videoDelayMs = 1000;
 
-        saveVideoDelay();
+        // Save to preferenceService
+        preferenceService.preferences.rdpecamVideoDelay = videoDelayMs;
+        preferenceService.save();
+
         return videoDelayMs;
     }
 
@@ -703,7 +928,8 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
              *     Base64-encoded blob data to send.
              */
             sendBlob: function(data) {
-                loadVideoDelay();
+                // Load current delay from preferenceService
+                getVideoDelay();
 
                 // If no delay, send immediately (zero overhead path)
                 if (videoDelayMs === 0) {
@@ -802,7 +1028,7 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
         if (!queue)
             return;
 
-        loadVideoDelay();
+        getVideoDelay();
         var now = Date.now();
 
         // Process frames in FIFO order until we hit one that's not ready
@@ -898,7 +1124,14 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
             stopQueueTimer(clientId);
             clearDelayQueue(clientId);
 
-            updateCameraState(clientId, false);
+            // Get deviceId from cameraStates before updating state
+            var deviceId = cameraStates[clientId] ? cameraStates[clientId].deviceId : null;
+            updateCameraState(clientId, false, deviceId);
+            
+            // Clear deviceId from cameraStates
+            if (cameraStates[clientId]) {
+                delete cameraStates[clientId].deviceId;
+            }
         } catch (error) {
             // Error stopping camera - ignore
         }
@@ -913,14 +1146,23 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
      * @param {boolean} active
      *     Whether the camera is active.
      *
+     * @param {string} [deviceId]
+     *     Optional device ID to mark as active/inactive in registry.
+     *
      * @private
      */
-    function updateCameraState(clientId, active) {
+    function updateCameraState(clientId, active, deviceId) {
         if (!cameraStates[clientId]) {
             cameraStates[clientId] = {};
         }
         cameraStates[clientId].active = active;
-        
+
+        // Update registry if deviceId provided
+        if (deviceId && cameraRegistry[deviceId]) {
+            cameraRegistry[deviceId].isActive = active;
+            notifyRegistryChange();
+        }
+
         // Call any registered state update callbacks
         if (stateUpdateCallbacks[clientId]) {
             try {
@@ -953,6 +1195,56 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
         }
     }
 
+    /**
+     * Toggles camera enabled state and sends capability update to server.
+     *
+     * @param {string} deviceId
+     *     The camera device ID.
+     *
+     * @param {boolean} enabled
+     *     Whether to enable or disable the camera.
+     */
+    function toggleCamera(deviceId, enabled) {
+        if (!cameraRegistry[deviceId])
+            return;
+
+        // If disabling an active camera, stop it first
+        if (!enabled && cameraRegistry[deviceId].isActive) {
+            // Find and stop the camera
+            // Note: We don't have a per-device stop mechanism yet, but the server
+            // will handle removing the device when it receives the capability update
+            cameraRegistry[deviceId].isActive = false;
+        }
+
+        // Update enabled state
+        cameraRegistry[deviceId].enabled = enabled;
+
+        // Save to preferences
+        saveEnabledDevicesToPreferences();
+
+        // Send capability update to server
+        if (currentClient) {
+            updateCapabilities(currentClient);
+        }
+
+        // Notify UI
+        notifyRegistryChange();
+    }
+
+    /**
+     * Registers a callback to be invoked when the camera list changes.
+     *
+     * @param {Function} callback
+     *     Function to call with updated camera list.
+     */
+    function registerCameraListCallback(callback) {
+        if (typeof callback === 'function') {
+            registryChangeCallbacks.push(callback);
+            // Immediately call with current list
+            callback(getCameraList());
+        }
+    }
+
     // Public API
     return {
         startCameraWithParams: startCameraWithParams,
@@ -961,7 +1253,10 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
         stopCamera: stopCamera,
         registerStateCallback: registerStateCallback,
         getVideoDelay: getVideoDelay,
-        setVideoDelay: setVideoDelay
+        setVideoDelay: setVideoDelay,
+        toggleCamera: toggleCamera,
+        getCameraList: getCameraList,
+        registerCameraListCallback: registerCameraListCallback
     };
 
 }]);

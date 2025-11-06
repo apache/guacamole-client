@@ -212,6 +212,32 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
+     * Array of available camera devices with their enabled/active state.
+     * @type {Array.<Object>}
+     */
+    $scope.cameraDevices = [];
+
+    /**
+     * Registers callback to update camera device list from guacRDPECAM service.
+     */
+    guacRDPECAM.registerCameraListCallback(function(cameras) {
+        // Use $evalAsync to avoid digest cycle errors
+        // This safely updates the scope whether we're in a digest or not
+        $scope.$evalAsync(function() {
+            $scope.cameraDevices = cameras;
+        });
+    });
+
+    /**
+     * Handles camera checkbox toggle from UI.
+     * @param {string} deviceId - The camera device ID
+     * @param {boolean} enabled - Whether camera should be enabled
+     */
+    $scope.onCameraToggle = function(deviceId, enabled) {
+        guacRDPECAM.toggleCamera(deviceId, enabled);
+    };
+
+    /**
      * The set of clients that should be attached to the client UI. This will
      * be immediately initialized by a call to updateAttachedClients() below.
      *
