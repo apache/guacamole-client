@@ -1035,6 +1035,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     $scope.$on('$destroy', function clientViewDestroyed() {
         setAttachedGroup(null);
 
+        guacRDPECAM.resetDeviceChangeHandler();
+
         // always unset fullscreen mode to not confuse user 
         guacFullscreen.setFullscreenMode(false);
     });

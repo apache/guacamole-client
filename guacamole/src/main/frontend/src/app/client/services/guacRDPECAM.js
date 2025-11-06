@@ -78,6 +78,16 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
     var currentClient = null;
 
     /**
+     * Tracks the currently registered devicechange handler and which client it
+     * is associated with. Only one handler is active at a time to mirror the
+     * legacy behaviour that targeted the most recently focused client.
+     */
+    var deviceChangeHandler = null;
+    var deviceChangeListenerClientId = null;
+    var previousOnDeviceChangeHandler = null;
+    var deviceChangeHandlerUsesAddEventListener = false;
+
+    /**
      * Callbacks to notify when camera registry changes (for UI updates).
      *
      * @type {Array.<Function>}
@@ -107,6 +117,96 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
         id = 'local-' + Date.now().toString(36) + '-' + Math.floor(Math.random() * 1e6).toString(36);
         clientIds.set(client, id);
         return id;
+    }
+
+    /**
+     * Removes the currently registered media device change handler if it is
+     * associated with the given client. If no client is provided, any registered
+     * handler is removed unconditionally.
+     *
+     * @param {Guacamole.Client} [client]
+     *     The Guacamole client whose handler should be removed, or undefined to
+     *     force removal of the active handler.
+     */
+    function unregisterDeviceChangeHandler(client) {
+        if (!deviceChangeHandler)
+            return;
+
+        var shouldRemove = true;
+        if (client) {
+            var clientId = getLocalClientId(client);
+            shouldRemove = (clientId && clientId === deviceChangeListenerClientId);
+        }
+
+        if (!shouldRemove)
+            return;
+
+        if (typeof navigator !== 'undefined' && navigator.mediaDevices) {
+            if (deviceChangeHandlerUsesAddEventListener &&
+                    typeof navigator.mediaDevices.removeEventListener === 'function') {
+                navigator.mediaDevices.removeEventListener('devicechange', deviceChangeHandler);
+            }
+            else if (!deviceChangeHandlerUsesAddEventListener &&
+                    Object.prototype.hasOwnProperty.call(navigator.mediaDevices, 'ondevicechange')) {
+                navigator.mediaDevices.ondevicechange = previousOnDeviceChangeHandler || null;
+            }
+        }
+
+        deviceChangeHandler = null;
+        deviceChangeListenerClientId = null;
+        previousOnDeviceChangeHandler = null;
+        deviceChangeHandlerUsesAddEventListener = false;
+    }
+
+    /**
+     * Ensures a media device change handler is registered for the given client,
+     * replacing any previously registered handler.
+     *
+     * @param {Guacamole.Client} client
+     *     The Guacamole client that should receive device change updates.
+     */
+    function registerDeviceChangeHandler(client) {
+        if (typeof navigator === 'undefined' || !navigator.mediaDevices)
+            return;
+
+        var clientId = getLocalClientId(client);
+        if (!clientId)
+            return;
+
+        if (deviceChangeListenerClientId === clientId && deviceChangeHandler)
+            return;
+
+        /* Remove any previously registered handler (different client). */
+        unregisterDeviceChangeHandler();
+
+        if (typeof navigator.mediaDevices.addEventListener === 'function') {
+            deviceChangeHandler = function() {
+                if (currentClient)
+                    enumerateAndUpdateCameras(currentClient);
+            };
+            navigator.mediaDevices.addEventListener('devicechange', deviceChangeHandler);
+            deviceChangeHandlerUsesAddEventListener = true;
+            deviceChangeListenerClientId = clientId;
+        }
+        else if (Object.prototype.hasOwnProperty.call(navigator.mediaDevices, 'ondevicechange')) {
+            previousOnDeviceChangeHandler = navigator.mediaDevices.ondevicechange;
+            deviceChangeHandler = function(event) {
+                if (typeof previousOnDeviceChangeHandler === 'function')
+                    previousOnDeviceChangeHandler.call(this, event);
+                if (currentClient)
+                    enumerateAndUpdateCameras(currentClient);
+            };
+            navigator.mediaDevices.ondevicechange = deviceChangeHandler;
+            deviceChangeHandlerUsesAddEventListener = false;
+            deviceChangeListenerClientId = clientId;
+        }
+    }
+
+    /**
+     * Clears any active device change handler.
+     */
+    function resetDeviceChangeHandler() {
+        unregisterDeviceChangeHandler();
     }
 
     /**
@@ -407,12 +507,8 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
         // Store client reference for capability updates
         currentClient = client;
 
-        // Set up hot-plug detection (only once per client)
-        if (typeof navigator.mediaDevices.ondevicechange !== 'undefined') {
-            navigator.mediaDevices.ondevicechange = function() {
-                enumerateAndUpdateCameras(client);
-            };
-        }
+        // Set up hot-plug detection (only once per active client)
+        registerDeviceChangeHandler(client);
 
         // Initial enumeration
         enumerateAndUpdateCameras(client);
@@ -1176,6 +1272,7 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
         } catch (error) {
             // Error stopping camera - ignore
         }
+
     }
 
     /**
@@ -1297,7 +1394,8 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
         setVideoDelay: setVideoDelay,
         toggleCamera: toggleCamera,
         getCameraList: getCameraList,
-        registerCameraListCallback: registerCameraListCallback
+        registerCameraListCallback: registerCameraListCallback,
+        resetDeviceChangeHandler: resetDeviceChangeHandler
     };
 
 }]);
