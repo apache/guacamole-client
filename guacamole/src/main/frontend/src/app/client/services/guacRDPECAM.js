@@ -94,6 +94,13 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
      * @private
      */
     var registryChangeCallbacks = [];
+    /**
+     * Tracks any in-flight permission request so we don't spam
+     * getUserMedia() when device IDs are unavailable.
+     *
+     * @type {Promise|Null}
+     */
+    var pendingPermissionRequest = null;
 
     // Always use a local, stable ID for each Guacamole.Client
     const clientIds = new WeakMap();
@@ -539,6 +546,23 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
                     return;
                 }
 
+                var hasUsableDeviceIds = videoDevices.some(function(device) {
+                    return device.deviceId && device.deviceId.trim().length > 0;
+                });
+
+                // If browsers redact device IDs prior to permission being granted,
+                // request access once and retry enumeration so that prompting occurs.
+                if (!hasUsableDeviceIds) {
+                    requestCameraPermission().then(function() {
+                        enumerateAndUpdateCameras(client);
+                    }).catch(function(error) {
+                        console.error('Camera permission request failed:', error);
+                        cameraRegistry = {};
+                        notifyRegistryChange();
+                    });
+                    return;
+                }
+
                 // Probe capabilities for each device
                 var devicePromises = videoDevices.map(function(deviceInfo) {
                     return probeDeviceCapabilities(deviceInfo.deviceId, deviceInfo.label || '');
@@ -640,6 +664,42 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
     }
 
     /**
+     * Requests generic camera access to trigger the browser permission prompt.
+     * Subsequent enumerateDevices() calls will include device IDs.
+     *
+     * @returns {Promise<void>}
+     *     Resolves once permission request completes (granted or denied).
+     *
+     * @private
+     */
+    function requestCameraPermission() {
+        if (pendingPermissionRequest)
+            return pendingPermissionRequest;
+
+        if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function')
+            return Promise.reject(new Error('Camera APIs unavailable'));
+
+        pendingPermissionRequest = navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                if (stream) {
+                    try {
+                        stream.getTracks().forEach(function(track) { track.stop(); });
+                    }
+                    catch (ignore) {}
+                }
+            })
+            .catch(function(error) {
+                console.error('Camera permission request failed:', error);
+                return Promise.reject(error);
+            })
+            .finally(function() {
+                pendingPermissionRequest = null;
+            });
+
+        return pendingPermissionRequest;
+    }
+
+    /**
      * Probes capabilities for a single device by device ID.
      *
      * @param {string} deviceId
@@ -654,6 +714,9 @@ angular.module('client').factory('guacRDPECAM', ['$injector', function guacRDPEC
     function probeDeviceCapabilities(deviceId, deviceName) {
         return new Promise(function(resolve, reject) {
             var constraints = { video: { deviceId: { exact: deviceId } } };
+            if (!deviceId || !deviceId.trim()) {
+                constraints = { video: true };
+            }
 
             navigator.mediaDevices.getUserMedia(constraints).then(function(stream) {
                 try {
