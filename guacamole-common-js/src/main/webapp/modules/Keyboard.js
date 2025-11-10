@@ -1514,13 +1514,13 @@ Guacamole.Keyboard.ModifierState = function() {
  *     The current state of keyboard modifiers.
  */
 Guacamole.Keyboard.ModifierState.fromKeyboardEvent = function(e) {
-    
+
     var state = new Guacamole.Keyboard.ModifierState();
 
     // Assign states from old flags
     state.shift = e.shiftKey;
-    state.ctrl  = e.ctrlKey;
-    state.alt   = e.altKey;
+    state.ctrl  = e.getModifierState('AltGraph') || e.ctrlKey;
+    state.alt   = e.getModifierState('AltGraph') || e.altKey;
     state.meta  = e.metaKey;
 
     // Use DOM3 getModifierState() for others
