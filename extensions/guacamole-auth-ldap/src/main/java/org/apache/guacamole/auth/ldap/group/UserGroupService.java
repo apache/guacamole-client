@@ -27,10 +27,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.directory.api.ldap.model.entry.Entry;
+import org.apache.directory.api.ldap.model.entry.Value;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidAttributeValueException;
 import org.apache.directory.api.ldap.model.filter.AndNode;
 import org.apache.directory.api.ldap.model.filter.EqualityNode;
 import org.apache.directory.api.ldap.model.filter.ExprNode;
+import org.apache.directory.api.ldap.model.filter.ExtensibleNode;
 import org.apache.directory.api.ldap.model.filter.NotNode;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.guacamole.auth.ldap.conf.MemberAttributeType;
@@ -54,6 +56,11 @@ public class UserGroupService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(UserGroupService.class);
+
+    /**
+     * Constant for nested LDAP group matching in Active Directory
+     */
+    private static final String LDAP_GROUP_NESTED_MATCHING_OID = "1.2.840.113556.1.4.1941";
 
     /**
      * Service for executing LDAP queries.
@@ -227,14 +234,36 @@ public class UserGroupService {
         groupAttributes.add(memberAttribute);
 
         // Get all groups the user is a member of starting at the groupBaseDN,
-        // excluding guacConfigGroups
+        // excluding guacConfigGroups and evaluating nested groups 
+        // (if enabled).
+
+        ExprNode groupFilter = config.getGroupSearchFilter();
+        String filterValue = userIDorDN;
+
+        if (config.getNestedGroups()) {
+
+            // Add support for nested groups using LDAP_MATCHING_RULE_IN_CHAIN
+            // (memberOf:1.2.840.113556.1.4.1941:=<UserDN>)
+            // Matching rule OID for LDAP_MATCHING_RULE_IN_CHAIN
+            // ** This possibly only supports Active Directory **
+            ExtensibleNode node = new ExtensibleNode("member");
+            filterValue = null;
+
+            // Explicitly set the matching rule ID and dnAttributes
+            node.setMatchingRuleId(LDAP_GROUP_NESTED_MATCHING_OID);
+            node.setDnAttributes(false);
+            node.setValue(new Value(userIDorDN));
+            groupFilter = new AndNode(
+                    groupFilter, node
+            );
+        }
         return queryService.search(
             config,
             config.getLDAPConnection(),
             groupBaseDN,
-            getGroupSearchFilter(config),
+            groupFilter,
             Collections.singleton(memberAttribute),
-            userIDorDN,
+            filterValue,
             groupAttributes
         );
 
