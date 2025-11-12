@@ -70,11 +70,11 @@ public class HashTokenSessionMap implements TokenSessionMap {
      * The connection timeout for individual Guacamole connections, in minutes.
      * If 0, connections will not be automatically terminated based on age.
      */
-    private final IntegerGuacamoleProperty CONNECTION_TIMEOUT =
+    private final IntegerGuacamoleProperty MAXIMUM_CONNECTION_DURATION =
             new IntegerGuacamoleProperty() {
 
         @Override
-        public String getName() { return "connection-timeout"; }
+        public String getName() { return "maximum-connection-duration"; }
 
     };
 
@@ -101,19 +101,20 @@ public class HashTokenSessionMap implements TokenSessionMap {
 
         // Read connection timeout from guacamole.properties
         try {
-            connectionTimeoutValue = environment.getProperty(CONNECTION_TIMEOUT, 0); // Disabled by default
+            connectionTimeoutValue = environment.getProperty(MAXIMUM_CONNECTION_DURATION, 0); // Disabled by default
         }
         catch (GuacamoleException e) {
             logger.error("Unable to read guacamole.properties: {}", e.getMessage());
             logger.debug("Error while reading connection timeout value.", e);
-            connectionTimeoutValue = 0;  
+            connectionTimeoutValue = 0;
         }
         
         // Check for expired sessions every minute
         logger.info("Sessions will expire after {} minutes of inactivity.", sessionTimeoutValue);
         if (connectionTimeoutValue > 0) {
             logger.info("Connections will be terminated after {} minutes regardless of activity.", connectionTimeoutValue);
-        } else {
+        }
+        else {
             logger.info("Connection timeout disabled (set to 0).");
         }
         executor.scheduleAtFixedRate(new SessionEvictionTask(sessionTimeoutValue * 60000l, connectionTimeoutValue * 60000l), 1, 1, TimeUnit.MINUTES);
@@ -143,11 +144,11 @@ public class HashTokenSessionMap implements TokenSessionMap {
          * older than the specified timeout, or are marked as invalid by an
          * extension.
          * 
-         * @param sessionTimeout The maximum age of any session, in
-         *                       milliseconds.
-         * @param connectionTimeout The maximum age of any connection, in
-         *                         milliseconds. If 0, connections will not be
-         *                         terminated based on age.
+         * @param sessionTimeout 
+         *     The maximum age of any session, in milliseconds.
+         * @param connectionTimeout 
+         *     The maximum age of any connection, in milliseconds. If 0, 
+         *     connections will not be terminated based on age.
          */
         public SessionEvictionTask(long sessionTimeout, long connectionTimeout) {
             this.sessionTimeout = sessionTimeout;

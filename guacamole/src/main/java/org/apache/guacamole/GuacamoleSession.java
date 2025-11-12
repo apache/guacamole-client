@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
@@ -246,7 +245,6 @@ public class GuacamoleSession {
      *
      * @param tunnel The tunnel to associate with this session.
      */
-
     public void addTunnel(UserTunnel tunnel) {
         this.access();
         String tunnelId = tunnel.getUUID().toString();
@@ -352,7 +350,7 @@ public class GuacamoleSession {
                     logger.debug("Unable to close expired tunnel \"" + tunnelId + "\".", e);
                 }
                 // Remove from the tunnels map regardless of whether close succeeded
-                tunnels.remove(tunnelId);
+                removeTunnel(tunnelId);
                 closedCount++;
             }
         }
