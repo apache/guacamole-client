@@ -19,6 +19,7 @@
 
 package org.apache.guacamole;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -246,7 +247,8 @@ public class GuacamoleSession {
      */
     public void addTunnel(UserTunnel tunnel) {
         this.access();
-        tunnels.put(tunnel.getUUID().toString(), tunnel);
+        String tunnelId = tunnel.getUUID().toString();
+        tunnels.put(tunnelId, tunnel);
     }
 
     /**
@@ -282,6 +284,78 @@ public class GuacamoleSession {
      */
     public long getLastAccessedTime() {
         return lastAccessedTime;
+    }
+
+
+    /**
+     * Returns the age of the oldest tunnel in this session, in milliseconds.
+     * If no tunnels exist, returns 0. Invoking this function does not affect 
+     * the last access time of this session.
+     *
+     * @return 
+     *     The age of the oldest tunnel in milliseconds, or 0 if no tunnels exist.
+     */
+    public long getOldestTunnelAge() {
+        if (tunnels.isEmpty()) {
+            return 0;
+        }
+        
+        long currentTime = System.currentTimeMillis();
+        long oldestCreationTime = tunnels.values().stream()
+                .mapToLong(tunnel -> tunnel.getCreationTime())
+                .min()
+                .orElse(currentTime);
+
+        return currentTime - oldestCreationTime;
+    }
+
+    /**
+     * Closes and removes any tunnels in this session that exceed the specified
+     * age limit. Invoking this function does not affect the last access time
+     * of this session.
+     *
+     * @param maxAge
+     *     The maximum allowed age of tunnels in milliseconds. Tunnels older
+     *     than this will be closed and removed.
+     *
+     * @return 
+     *     The number of tunnels that were closed and removed.
+     */
+    public int closeExpiredTunnels(long maxAge) {
+        if (maxAge <= 0 || tunnels.isEmpty()) {
+            return 0;
+        }
+        
+        long currentTime = System.currentTimeMillis();
+        int closedCount = 0;
+        
+        // Find tunnels that exceed the age limit
+        List<String> expiredTunnelIds = new ArrayList<>();
+        for (Map.Entry<String, UserTunnel> entry : tunnels.entrySet()) {
+            long tunnelAge = currentTime - entry.getValue().getCreationTime();
+            if (tunnelAge >= maxAge) {
+                expiredTunnelIds.add(entry.getKey());
+            }
+        }
+        
+        // Close and remove expired tunnels
+        for (String tunnelId : expiredTunnelIds) {
+            UserTunnel tunnel = tunnels.get(tunnelId);
+            if (tunnel != null) {
+                try {
+                    tunnel.close();
+                    logger.debug("Closed tunnel \"{}\" due to connection timeout.", tunnelId);
+                }
+                catch (GuacamoleException e) {
+                    logger.debug("Unable to close expired tunnel \"" + tunnelId + "\".", e);
+                }
+                // Remove from the tunnels map regardless of whether close succeeded
+                removeTunnel(tunnelId);
+                closedCount++;
+            }
+        }
+        
+        return closedCount;
     }
 
     /**
