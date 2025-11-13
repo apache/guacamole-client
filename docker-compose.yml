@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  # Guacamole web application
+  guacamole:
+    image: guacamole/guacamole:latest
+    container_name: guacamole-test
+    environment:
+      # Set GUACAMOLE_HOME to /etc/guacamole
+      - GUACAMOLE_HOME=/etc/guacamole
+      # Guacd connection settings
+      - GUACD_HOSTNAME=guacd
+      - GUACD_PORT=4822
+      # Optional: Enable debug logging
+      - GUACD_LOG_LEVEL=debug
+    volumes:
+      # Mount configuration directory
+      - ./deployment:/etc/guacamole:ro
+    ports:
+      - "8080:8080"
+    depends_on:
+      - guacd
+    restart: unless-stopped
+    networks:
+      - guacamole-network
+
+  # Guacamole proxy daemon (guacd)
+  guacd:
+    image: guacamole/guacd:latest
+    container_name: guacd-test
+    ports:
+      - "4822:4822"
+    restart: unless-stopped
+    networks:
+      - guacamole-network
+
+networks:
+  guacamole-network:
+    driver: bridge
+

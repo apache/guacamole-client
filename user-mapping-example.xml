@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Example user-mapping.xml file for use with OpenID authentication extension.
+    
+    IMPORTANT: This file defines connections that will be available ONLY to users
+    who have the "admin" or "console_accesser" role from Keycloak. Users without
+    these roles will NOT see any connections from this file.
+    
+    ACCESS CONTROL: Access is determined SOLELY by Keycloak roles (admin or 
+    console_accesser). The <authorize> tags and usernames in this file are 
+    ONLY for XML structure - they do NOT control access. Any user with the 
+    required Keycloak role will see ALL connections defined in this file.
+    
+    All connections from all <authorize> sections will be aggregated and placed
+    in the ROOT connection group for users with the required roles.
+    
+    Note: The username/password pairs in the <authorize> tags are NOT used for
+    authentication or authorization. Authentication is handled by Keycloak/OpenID,
+    and authorization is based on Keycloak roles. The <authorize> structure is 
+    only required for XML validity - you can use any dummy values.
+    
+    File Location:
+    - In Docker: Place in the volume mounted to /etc/guacamole/user-mapping.xml
+    - Or set GUACAMOLE_HOME environment variable to point to the directory containing this file
+    - Default locations checked (in order):
+      1. System property: guacamole.home
+      2. Environment variable: GUACAMOLE_HOME
+      3. ~/.guacamole/user-mapping.xml
+      4. /etc/guacamole/user-mapping.xml
+    
+    The file is automatically re-read when modified - no restart required.
+-->
+
+<user-mapping>
+
+    <!-- 
+        NOTE: The <authorize> tags below are ONLY for XML structure.
+        Access is controlled by Keycloak roles (admin or console_accesser).
+        All connections here are available to ANY user with those roles.
+        You can organize connections by purpose/category using multiple
+        <authorize> sections, but they don't affect who can access them.
+    -->
+
+    <!-- Development Servers - All users with admin/console_accesser role can access -->
+    <authorize username="connections" password="dummy">
+        
+        <!-- VNC Connection to Development Server -->
+        <connection name="dev-server-vnc">
+            <protocol>vnc</protocol>
+            <param name="hostname">dev-server.example.com</param>
+            <param name="port">5900</param>
+            <param name="password">VNCPASS123</param>
+            <param name="color-depth">24</param>
+            <param name="dpi">96</param>
+        </connection>
+
+        <!-- RDP Connection to Windows Development Machine -->
+        <connection name="dev-windows-rdp">
+            <protocol>rdp</protocol>
+            <param name="hostname">dev-windows.example.com</param>
+            <param name="port">3389</param>
+            <param name="username">administrator</param>
+            <param name="password">RDPPASS123</param>
+            <param name="domain">EXAMPLE</param>
+            <param name="security">rdp</param>
+            <param name="ignore-cert">true</param>
+        </connection>
+
+        <!-- SSH Connection to Linux Server -->
+        <connection name="dev-linux-ssh">
+            <protocol>ssh</protocol>
+            <param name="hostname">dev-linux.example.com</param>
+            <param name="port">22</param>
+            <param name="username">${GUAC_USERNAME}</param>
+            <param name="private-key">-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA...
+-----END RSA PRIVATE KEY-----</param>
+        </connection>
+
+    </authorize>
+
+    <!-- Production Servers - All users with admin/console_accesser role can access -->
+    <authorize username="connections" password="dummy">
+        
+        <!-- Production VNC Server -->
+        <connection name="prod-server-vnc">
+            <protocol>vnc</protocol>
+            <param name="hostname">prod-server.example.com</param>
+            <param name="port">5901</param>
+            <param name="password">PRODVNCPASS</param>
+            <param name="read-only">false</param>
+        </connection>
+
+        <!-- Production RDP Server -->
+        <connection name="prod-windows-rdp">
+            <protocol>rdp</protocol>
+            <param name="hostname">prod-windows.example.com</param>
+            <param name="port">3389</param>
+            <param name="username">admin</param>
+            <param name="password">PRODRDPASS</param>
+            <param name="domain">PROD</param>
+            <param name="security">nla</param>
+            <param name="enable-drive">true</param>
+            <param name="drive-path">/tmp</param>
+            <param name="create-drive-path">true</param>
+        </connection>
+
+        <!-- Production SSH Server -->
+        <connection name="prod-linux-ssh">
+            <protocol>ssh</protocol>
+            <param name="hostname">prod-linux.example.com</param>
+            <param name="port">22</param>
+            <param name="username">${GUAC_USERNAME}</param>
+            <param name="private-key">-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA...
+-----END RSA PRIVATE KEY-----</param>
+            <param name="server-alive-interval">60</param>
+        </connection>
+
+    </authorize>
+
+    <!-- Testing Environment - All users with admin/console_accesser role can access -->
+    <authorize username="connections" password="dummy">
+        
+        <!-- Test VNC Connection -->
+        <connection name="test-vnc">
+            <protocol>vnc</protocol>
+            <param name="hostname">test-server.example.com</param>
+            <param name="port">5900</param>
+            <param name="password">TESTVNC</param>
+        </connection>
+
+        <!-- Test RDP Connection -->
+        <connection name="test-rdp">
+            <protocol>rdp</protocol>
+            <param name="hostname">test-windows.example.com</param>
+            <param name="port">3389</param>
+            <param name="username">testuser</param>
+            <param name="password">TESTPASS</param>
+            <param name="security">any</param>
+            <param name="ignore-cert">true</param>
+            <param name="enable-wallpaper">false</param>
+            <param name="enable-theming">false</param>
+        </connection>
+
+    </authorize>
+
+    <!-- Single Connection Example -->
+    <!-- When only one connection is needed, you can use the simplified format -->
+    <!-- All users with admin/console_accesser role can access -->
+    <authorize username="connections" password="dummy">
+        <protocol>vnc</protocol>
+        <param name="hostname">single-server.example.com</param>
+        <param name="port">5900</param>
+        <param name="password">SINGLEVNC</param>
+    </authorize>
+
+    <!-- Kubernetes/Docker Containers - All users with admin/console_accesser role can access -->
+    <authorize username="connections" password="dummy">
+        
+        <!-- SSH to Kubernetes Node -->
+        <connection name="k8s-node-1">
+            <protocol>ssh</protocol>
+            <param name="hostname">k8s-node-1.example.com</param>
+            <param name="port">22</param>
+            <param name="username">ubuntu</param>
+            <param name="private-key">-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA...
+-----END RSA PRIVATE KEY-----</param>
+            <param name="font-name">DejaVu Sans Mono</param>
+            <param name="font-size">12</param>
+        </connection>
+
+        <!-- SSH to Kubernetes Node 2 -->
+        <connection name="k8s-node-2">
+            <protocol>ssh</protocol>
+            <param name="hostname">k8s-node-2.example.com</param>
+            <param name="port">22</param>
+            <param name="username">ubuntu</param>
+            <param name="private-key">-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA...
+-----END RSA PRIVATE KEY-----</param>
+        </connection>
+
+    </authorize>
+
+</user-mapping>
+

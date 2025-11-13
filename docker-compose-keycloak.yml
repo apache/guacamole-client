@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  # PostgreSQL database for Keycloak
+  postgres:
+    image: postgres:15-alpine
+    container_name: keycloak-postgres
+    environment:
+      - POSTGRES_DB=keycloak
+      - POSTGRES_USER=keycloak
+      - POSTGRES_PASSWORD=keycloak
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+    networks:
+      - keycloak-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Keycloak Identity Provider
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak-test
+    command: start-dev
+    environment:
+      # Database configuration
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
+      - KC_DB_USERNAME=keycloak
+      - KC_DB_PASSWORD=keycloak
+      
+      # Keycloak admin credentials (change these in production!)
+      - KC_BOOTSTRAP_ADMIN_USERNAME=admin
+      - KC_BOOTSTRAP_ADMIN_PASSWORD=admin
+      
+      # Hostname configuration
+      - KC_HOSTNAME=localhost
+      - KC_HOSTNAME_PORT=8090
+      - KC_HTTP_ENABLED=true
+      
+      # Proxy configuration (if behind reverse proxy)
+      - KC_PROXY=edge
+    ports:
+      - "8090:8080"
+      - "8443:8443"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - keycloak-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/health/ready || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  keycloak-db-data:
+    driver: local
+
+networks:
+  keycloak-network:
+    driver: bridge
+
