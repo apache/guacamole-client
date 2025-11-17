@@ -17,9 +17,6 @@
     },
 
     "LOGIN" : {
-        "FIELD_HEADER_ID_TOKEN"      : "",
-        "FIELD_HEADER_STATE"         : "",
-        "FIELD_HEADER_TICKET"        : "",
         "INFO_IDP_REDIRECT_PENDING"  : "Lütfen bekleyin, kimlik sağlayıcısına yönlendiriliyor...",
         "INFO_REDIRECT_PENDING"      : "Yönlendirilirken lütfen bekleyin...",
         "NAME_IDP_CAS"               : "CAS",
