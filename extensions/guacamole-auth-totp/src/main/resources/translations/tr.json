@@ -4,10 +4,6 @@
         "NAME" : "TOTP TFA Altyapısı"
     },
 
-    "LOGIN" : {
-        "FIELD_HEADER_GUAC_TOTP" : ""
-    },
-
     "TOTP" : {
 
         "ACTION_HIDE_DETAILS" : "Gizle",
