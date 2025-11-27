@@ -197,7 +197,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
 
             // Send size event to guacd
             if (message.data.size)
-                service.sendSize(message.data.size);
+                service.sendSize(client, message.data.size);
 
             // Mouse state changed on secondary screen
             if (message.data.mouseState)
@@ -345,7 +345,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         delete monitors[monitorId];
 
         // Notify guacd that a monitor has been closed
-        service.sendSize({
+        service.sendSize(client, {
             width: 0,
             height: 0,
             top: 0,
@@ -379,10 +379,13 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
     /**
      * Send size event to guacd and update monitorsInfos object.
      *
+     * @param {Guacamole.Client} requestedClient
+     *     The Guacamole client to send the size to. This is needed for
+     *     connection groups with multiple clients.
      * @param {Object} size
      *     The size object containing width, height, top and monitorId.
      */
-    service.sendSize = function sendSize(size) {
+    service.sendSize = function sendSize(requestedClient, size) {
 
         const monitorPosition = monitorsInfos.map[size.monitorId];
 
@@ -396,11 +399,11 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
 
         // Monitor has been closed
         if (size.width === 0 || size.height === 0)
-            client.sendSize(0, 0, monitorPosition, 0);
+            requestedClient.sendSize(0, 0, monitorPosition, 0);
 
         // Send new size to guacd
         else
-            sendAllSizes();
+            sendAllSizes(requestedClient);
 
         // Push informations to all monitors
         service.pushBroadcastMessage('monitorsInfos', monitorsInfos);
@@ -458,11 +461,14 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
      * This function loops through all monitors and sends their sizes to guacd
      * using the client.sendSize method. The size includes width, height,
      * monitor position and top offset.
+     *
+     * @param {Guacamole.Client} requestedClient
+     *     The Guacamole client to send the sizes to.
      */
-    function sendAllSizes() {
+    function sendAllSizes(requestedClient) {
         // Loop through all monitors and send their sizes to guacd
         for (const [id, details] of Object.entries(monitorsInfos.details)) {
-            client.sendSize(
+            requestedClient.sendSize(
                 details.width,
                 details.height,
                 monitorsInfos.map[id],
@@ -595,7 +601,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         // Send size event to guacd and update monitorsInfos if this is the
         // primary monitor
         if (monitorType === "primary") {
-            service.sendSize(monitorDetails);
+            service.sendSize(client, monitorDetails);
             return;
         }
 
