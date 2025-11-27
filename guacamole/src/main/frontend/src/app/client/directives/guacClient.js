@@ -133,6 +133,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
         const touch = new Guacamole.Touch(displayContainer);
 
         /**
+         * Whether clipboard synchronization is currently in progress.
+         *
+         * @type boolean
+         */
+        let clipboardSyncInProgress = false;
+
+        /**
          * Updates the scale of the attached Guacamole.Client based on current window
          * size and "auto-fit" setting.
          */
@@ -239,14 +246,46 @@ angular.module('client').directive('guacClient', [function guacClient() {
             event.stopPropagation();
             event.preventDefault();
 
-            // Send mouse state, show cursor if necessary
-            display.showCursor(!localCursor);
-            client.sendMouseState(event.state, true);
+            // Wait for any in-progress clipboard synchronization to complete.
+            // This avoids the pasting of outdated clipboard content when guacamole
+            // window regains focus.
+            waitForClipboardSync().then(() => {
 
-            // Broadcast the mouse event
-            $rootScope.$broadcast(getMouseEventName(event), event, client);
+                // Send mouse state, show cursor if necessary
+                display.showCursor(!localCursor);
+                client.sendMouseState(event.state, true);
+
+                // Broadcast the mouse event
+                $rootScope.$broadcast(getMouseEventName(event), event, client);
+
+            });
 
         };
+
+        /**
+         * Returns a promise which resolves once any in-progress clipboard
+         * synchronization has completed.
+         *
+         * @returns {Promise}
+         *     A promise which resolves once any in-progress clipboard
+         *     synchronization has completed.
+         */
+        function waitForClipboardSync() {
+            return new Promise((resolve) => {
+                function checkClipboardSync() {
+                    if (!clipboardSyncInProgress) {
+                        resolve();
+                        return;
+                    }
+
+                    // Synchronization can take 8-10ms, so check again shortly
+                    // to not add slight latency in fast environments.
+                    setTimeout(checkClipboardSync, 10);
+                }
+
+                checkClipboardSync();
+            });
+        }
 
         /**
          * Handles a mouse event originating from one of Guacamole's mouse
@@ -599,6 +638,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
         $scope.$on('guacSyntheticKeyup', function syntheticKeyupListener(event, keysym) {
             if ($scope.client.clientProperties.focused)
                 client.sendKeyEvent(0, keysym);
+        });
+
+        // Track clipboard synchronization status
+        $rootScope.$on('clipboardSyncInProgress', function clipboardSyncStatus(event, status) {
+            clipboardSyncInProgress = status;
         });
 
         /**
