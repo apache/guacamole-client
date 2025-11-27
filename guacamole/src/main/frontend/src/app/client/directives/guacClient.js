@@ -467,7 +467,7 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
                 // Window resized
                 if (display.getWidth() !== width || display.getHeight() !== height)
-                    guacManageMonitor.sendSize({
+                    guacManageMonitor.sendSize(client, {
                         width: width,
                         height: height,
                         monitorId: 0,

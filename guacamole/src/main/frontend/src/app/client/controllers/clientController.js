@@ -316,6 +316,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             $scope.clientGroup.lastUsed = new Date().getTime();
         }
 
+        // Close additional monitors when changing group
+        guacManageMonitor.closeAllMonitors();
     };
 
     // Init sets of clients based on current URL ...
@@ -742,8 +744,12 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
             return false;
 
         // The maximum number of secondary monitors that can be added.
-        const secondaryMonitorsAllowed = parseInt(
+        let secondaryMonitorsAllowed = parseInt(
                 $scope.focusedClient.arguments['secondary-monitors'] ?? 0);
+
+        // Allow secondary monitors only if there is a single client in the group
+        if ($scope.clientGroup.clients.length > 1)
+            secondaryMonitorsAllowed = 0;
         
         guacManageMonitor.setMaxSecondaryMonitors(secondaryMonitorsAllowed);
 
