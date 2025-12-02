@@ -18,7 +18,10 @@
  */
 package org.apache.guacamole.auth.lablec2;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connection;
@@ -61,6 +64,19 @@ public class LabMergingConnectionDirectory implements Directory<Connection> {
             return labConnection;
 
         return base.get(identifier);
+    }
+
+    @Override
+    public Collection<Connection> getAll(Collection<String> identifiers)
+            throws GuacamoleException {
+
+        List<Connection> connections = new ArrayList<>(
+                base.getAll(identifiers));
+
+        if (identifiers.contains(labConnection.getIdentifier()))
+            connections.add(labConnection);
+
+        return connections;
     }
 
     @Override

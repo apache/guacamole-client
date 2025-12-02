@@ -79,6 +79,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
      * @throws GuacamoleException
      *     if configuration cannot be read.
      */
+    @SuppressWarnings("deprecation")
     public LabEc2AuthenticationProvider() throws GuacamoleException {
         Environment env = new LocalEnvironment();
 
@@ -324,8 +325,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             config.setParameter("password", vmPassword);
 
         SimpleConnection connection = new SimpleConnection("My Lab VM",
-                connectionId);
-        connection.setConfiguration(config);
+                connectionId, config);
         connection.setParentIdentifier("ROOT");
 
         return connection;
