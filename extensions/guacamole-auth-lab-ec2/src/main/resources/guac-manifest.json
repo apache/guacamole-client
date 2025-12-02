@@ -1,0 +1,12 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "Lab EC2 Connection Decorator",
+    "namespace" : "lab-ec2",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.lablec2.LabEc2AuthenticationProvider"
+    ]
+
+}
