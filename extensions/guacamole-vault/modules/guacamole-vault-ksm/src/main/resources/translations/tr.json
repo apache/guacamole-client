@@ -1,0 +1,26 @@
+{
+
+    "DATA_SOURCE_KEEPER_SECRETS_MANAGER" : {
+        "NAME" : "Keeper Sır Merkezi"
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+        "FIELD_HEADER_KSM_USER_CONFIG_ENABLED" : "Kullanıcı tarafından sağlanan KSM yapılandırmasına izin ver",
+        "SECTION_HEADER_KSM_CONFIG"            : "Keeper Sır Merkezi"
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+        "ERROR_INVALID_KSM_CONFIG_BLOB"    : "Sağlanan base64 kodlamalı KSM yapılandırma blob'u geçerli değil. Lütfen blob'un tamamını kopyaladığınızdan emin olun.",
+        "ERROR_INVALID_KSM_ONE_TIME_TOKEN" : "Sağlanan yapılandırma geçerli bir KSM tek kullanımlık jetonu veya base64 kodlamalı KSM yapılandırma blob'u değil. Lütfen jeton değerinin tamamını kopyaladığınızdan emin olun.",
+
+        "FIELD_HEADER_KSM_CONFIG"   : "KSM Servis Ayarları ",
+
+        "SECTION_HEADER_KSM_CONFIG" : "Keeper Sır Merkezi"
+    },
+
+    "USER_ATTRIBUTES" : {
+        "FIELD_HEADER_KSM_CONFIG"   : "KSM Servis Ayarları ",
+        "SECTION_HEADER_KSM_CONFIG" : "Keeper Sır Merkezi"
+    }
+
+}

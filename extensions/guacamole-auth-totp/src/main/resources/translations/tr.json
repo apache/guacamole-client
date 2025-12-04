@@ -1,0 +1,47 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP TFA Altyapısı"
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Gizle",
+        "ACTION_SHOW_DETAILS" : "Göster",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algoritma:",
+        "FIELD_HEADER_DIGITS"     : "Rakamlar:",
+        "FIELD_HEADER_INTERVAL"   : "Aralık:",
+        "FIELD_HEADER_SECRET_KEY" : "Gizli Anahtar:",
+        "FIELD_PLACEHOLDER_CODE"  : "Kimlik Doğrulama Kodu",
+
+        "HELP_ENROLL_BARCODE" : "Kayıt işlemini tamamlamak için aşağıdaki kare kodu cihazınızdaki veya telefonunuzdaki iki faktörlü kimlik doğrulama uygulamasında tarayın.",
+        "HELP_ENROLL_VERIFY"  : "Kare kodu taradıktan sonra, kaydınızın başarılı olduğunu doğrulamak için ekranda görünen {DIGITS} rakamlı kimlik doğrulama kodunu girin.",
+
+        "INFO_CODE_REQUIRED"       : "Kimliğinizi doğrulamak için lütfen kimlik doğrulama kodunuzu girin.",
+        "INFO_ENROLL_REQUIRED"     : "Hesabınızda çok faktörlü kimlik doğrulama etkinleştirildi.",
+        "INFO_VERIFICATION_FAILED" : "Doğrulama başarısız oldu. Lütfen tekrar deneyin.",
+
+        "SECTION_HEADER_DETAILS" : "Ayrıntılar:"
+
+    },
+    
+    "USER_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED"      : "TOTP Devre Dışı Bırak:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Gizli anahtar üretildi:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Kimlik doğrulama cihazı onaylandı:",
+        
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "TOTP Kayıt Durumu"
+        
+    },
+    
+    "USER_GROUP_ATTRIBUTES" : {
+        
+        "FIELD_HEADER_GUAC_TOTP_DISABLED" : "TOTP Devre Dışı Bırak:",
+        
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "TOTP Ayarları"
+        
+    }
+
+}
