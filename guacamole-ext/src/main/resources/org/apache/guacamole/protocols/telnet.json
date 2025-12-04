@@ -83,6 +83,11 @@
             "name"  : "clipboard",
             "fields" : [
                 {
+                    "name"    : "clipboard-buffer-size",
+                    "type"    : "ENUM",
+                    "options" : [ "", "262144", "1048576", "10485760" ]
+                },
+                {
                     "name"    : "disable-copy",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
@@ -102,6 +107,11 @@
                     "name"    : "backspace",
                     "type"    : "ENUM",
                     "options" : [ "", "127", "8" ]
+                },
+                {
+                    "name"    : "func-keys-and-keypad",
+                    "type"    : "ENUM",
+                    "options" : [ "", "esc", "vt100" ]
                 },
                 {
                     "name"  : "terminal-type",
