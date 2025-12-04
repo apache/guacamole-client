@@ -83,18 +83,18 @@
         "ERROR_REQUIRES_NON_ALNUM"     : "Parolalar en az bir simge içermeli.",
         "ERROR_REUSED"                 : "Bu parola zaten kullanıldı. Lütfen önceki {HISTORY_SIZE} {HISTORY_SIZE, plural, one{parola} other{parola}}dan birini kullanmayın.",
         "ERROR_TOO_SHORT"              : "Parolalar en az {LENGTH} {LENGTH, plural, one{karakter} other{karakter}} uzunluğunda olmalı.",
-        "ERROR_TOO_YOUNG"              : "Bu hesabın parolası zaten yenilendi. Parolayı tekrar değiştirmeden önce lütfen {WAIT} {WAIT, plural, one{gün} other{gün}} daha bekleyin."
+        "ERROR_TOO_YOUNG"              : "Bu hesabın parolası zaten yenilendi. Parolayı tekrar değiştirmeden önce lütfen {WAIT} {WAIT, plural, one{gün} other{gün}} daha bekleyiniz."
 
     },
 
     "USER_ATTRIBUTES" : {
 
         "FIELD_HEADER_EXPIRED"             : "Parola süresi geçti:",
-        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Bu andan sonra erişime izin verme:",
-        "FIELD_HEADER_ACCESS_WINDOW_START" : "Bu andan sonra erişime izin ver:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Sonrasında erişime izin verme:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Sonrasında erişime izin ver:",
         "FIELD_HEADER_TIMEZONE"            : "Kullanıcı saat dilimi:",
-        "FIELD_HEADER_VALID_FROM"          : "Hesabı bu andan sonra etkinleştir:",
-        "FIELD_HEADER_VALID_UNTIL"         : "Hesabı bu andan sonra devre dışı bırak:",
+        "FIELD_HEADER_VALID_FROM"          : "Hesabı sonrasında etkinleştir:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Hesabı sonrasında devre dışı bırak:",
 
         "SECTION_HEADER_RESTRICTIONS" : "Hesap Kısıtlamaları",
         "SECTION_HEADER_PROFILE"      : "Profil"

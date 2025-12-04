@@ -20,8 +20,8 @@
         "INFO_ENROLL_REQUIRED"     : "Hesabınızda çok faktörlü kimlik doğrulama etkinleştirildi.",
         "INFO_VERIFICATION_FAILED" : "Doğrulama başarısız oldu. Lütfen tekrar deneyin.",
 
-        "HELP_ENROLL_BARCODE" : "Kayıt işlemini tamamlamak için aşağıdaki kare kodu cihazınızdaki veya telefonunuzdaki iki faktörlü kimlik doğrulama uygulamasında tarayın.",
-        "HELP_ENROLL_VERIFY"  : "Kare kodu taradıktan sonra, kaydınızın başarılı olduğunu doğrulamak için ekranda görünen {DIGITS} rakamlı kimlik doğrulama kodunu girin.",
+        "HELP_ENROLL_BARCODE" : "Kayıt işlemini tamamlamak için aşağıdaki karekodu cihazınızdaki veya telefonunuzdaki iki faktörlü kimlik doğrulama uygulamasında taratın.",
+        "HELP_ENROLL_VERIFY"  : "Karekodu taradıktan sonra, kaydınızın başarılı olduğunu doğrulamak için ekranda görünen {DIGITS} rakamlı kimlik doğrulama kodunu girin.",
 
         "SECTION_HEADER_DETAILS" : "Ayrıntılar:"
 
