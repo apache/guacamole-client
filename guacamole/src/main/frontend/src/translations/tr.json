@@ -80,7 +80,7 @@
         "DIALOG_HEADER_CONNECTION_ERROR" : "Bağlantı Hatası",
         "DIALOG_HEADER_DISCONNECTED"     : "Bağlantı Kesildi",
 
-        "ERROR_CLIENT_201"     : "Bu bağlantı kapatıldı çünkü sunucu meşgul. Lütfen birkaç dakika bekleyip terkar deneyin.",
+        "ERROR_CLIENT_201"     : "Bu bağlantı kapatıldı çünkü sunucu meşgul. Lütfen birkaç dakika bekleyip tekrar deneyin.",
         "ERROR_CLIENT_202"     : "Guacamole sunucusu bağlantıyı sonlandırdı çünkü uzak masaüstünün yanıt vermesi çok uzun sürüyor. Lütfen tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
         "ERROR_CLIENT_203"     : "Uzak masaüstü sunucusunda bir hata oluştu ve bağlantıyı kapattı. Lütfen tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
         "ERROR_CLIENT_207"     : "Uzak masaüstü sunucusuna şu an erişilemiyor. Eğer sorun devam ederse sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
@@ -91,20 +91,20 @@
         "ERROR_CLIENT_301"     : "Giriş başarısız oldu. Lütfen yeniden bağlanıp tekrar deneyin.",
         "ERROR_CLIENT_303"     : "Uzak masaüstü sunucusu bu bağlantıya erişim izni vermedi. Eğer erişmeniz gerekiyorsa sistem yöneticinizden hesabınıza erişim izni vermesini isteyin veya sistem ayarlarını kontrol edin.",
         "ERROR_CLIENT_308"     : "Guacamole sunucusu bağlantıyı kapattı çünkü tarayıcınızdan bağlantının koptuğu düşünülecek kadar uzun bir süre yanıt gelmedi. Bu genellikle zayıf kablosuz sinyali veya çok düşük ağ hızı gibi ağ sorunlarından kaynaklanır. Lütfen ağınızı kontrol edip tekrar deneyin.",
-        "ERROR_CLIENT_31D"     : "Guacamole sunucusu bu bağlantıya erişimi reddediyor çünkü tekil bir kullanıcı tarafından kullanılabilecek eşzamanlı bağlantı sınırını aştınız. Lütfen bir veya daha fazla bağlantıyı kapatıp tekrar deneyin.",
+        "ERROR_CLIENT_31D"     : "Guacamole sunucusu bu bağlantıya erişimi reddediyor çünkü tekil bir kullanıcı tarafından kullanılabilecek eş zamanlı bağlantı sınırını aştınız. Lütfen bir veya daha fazla bağlantıyı kapatıp tekrar deneyin.",
         "ERROR_CLIENT_DEFAULT" : "Guacamole sunucusunda bir iç hata oluştu ve bağlantı sonlandırıldı. Eğer sorun devam ederse sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
 
         "ERROR_TUNNEL_201"     : "Guacamole sunucusu bu bağlantı denemesini reddetti çünkü çok miktarda açık bağlantı var. Lütfen birkaç dakika bekleyip tekrar deneyin.",
         "ERROR_TUNNEL_202"     : "Bağlantı kapatıldı çünkü sunucunun yanıt vermesi çok uzun sürüyor. Bu genellikle zayıf kablosuz sinyali veya çok düşük ağ hızı gibi ağ sorunlarından kaynaklanır. Lütfen ağ bağlantınızı kontrol edip tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
         "ERROR_TUNNEL_203"     : "Sunucu bir sorunla karşılaştı ve bağlantıyı kapattı. Lütfen daha sonra tekrar deneyin veya sistem yöneticinizle iletişime geçin.",
         "ERROR_TUNNEL_204"     : "Talep edilen bağlantı mevcut değil. Lütfen bağlantı adını kontrol edip tekrar deneyin.",
-        "ERROR_TUNNEL_205"     : "Bağlantı halihazırda kullanımda ve bu bağlantıya eşzamanlı erişime izin verilmiyor. Lütfen daha sonra tekrar deneyin.",
+        "ERROR_TUNNEL_205"     : "Bağlantı halihazırda kullanımda ve bu bağlantıya eş zamanlı erişime izin verilmiyor. Lütfen daha sonra tekrar deneyin.",
         "ERROR_TUNNEL_207"     : "Guacamole sunucusuna şu anda erişilemiyor. Lütfen ağınızı kontrol edip tekrar deneyin.",
         "ERROR_TUNNEL_208"     : "Guacamole sunucusu bağlantıları kabul etmiyor. Lütfen ağınızı kontrol edip tekrar deneyin.",
         "ERROR_TUNNEL_301"     : "Bu bağlantıya erişim izniniz yok çünkü oturum açmadınız. Lütfen oturum açıp tekrar deneyin.",
         "ERROR_TUNNEL_303"     : "Bu bağlantıya erişim izniniz bulunmuyor. Eğer erişmeniz gerekiyorsa lütfen sistem yöneticinizden sizi izin verilen kullanıcı listesine eklemesini isteyin veya sistem ayarlarını kontrol edin.",
         "ERROR_TUNNEL_308"     : "Guacamole sunucusu bağlantıyı kapattı çünkü tarayıcınızdan bağlantının koptuğu düşünülecek kadar uzun bir süre yanıt gelmedi. Bu genellikle zayıf kablosuz sinyali veya çok düşük ağ hızı gibi ağ sorunlarından kaynaklanır. Lütfen ağınızı kontrol edip tekrar deneyin.",
-        "ERROR_TUNNEL_31D"     : "Guacamole sunucusu bu bağlantıya erişimi reddediyor çünkü tekil bir kullanıcı tarafından kullanılabilecek eşzamanlı bağlantı sınırını aştınız. Lütfen bir veya daha fazla bağlantıyı kapatıp tekrar deneyin.",
+        "ERROR_TUNNEL_31D"     : "Guacamole sunucusu bu bağlantıya erişimi reddediyor çünkü tekil bir kullanıcı tarafından kullanılabilecek eş zamanlı bağlantı sınırını aştınız. Lütfen bir veya daha fazla bağlantıyı kapatıp tekrar deneyin.",
         "ERROR_TUNNEL_DEFAULT" : "Guacamole sunucusunda bir iç hata oluştu ve bağlantı sonlandırıldı. Eğer sorun devam ederse sistem yöneticinizi bilgilendirin veya sistem günlüklerini kontrol edin.",
 
         "ERROR_UPLOAD_100"     : "Dosya aktarımı ya desteklenmiyor ya da etkinleştirilmemiş. Lütfen sistem yöneticinizle iletişime geçin veya sistem günlüklerini kontrol edin.",
@@ -131,7 +131,7 @@
         "HELP_SHARE_LINK"          : "Şu anki bağlantı paylaşılıyor ve şu {LINKS, plural, one{bağlantıyla} other{bağlantılarla}} herhangi bir kişi tarafından erişilebilir:",
 
         "INFO_ANONYMOUS_USER_COUNT" : "Anonim{COUNT, plural, one{} other{ (#)}}",
-        "INFO_CONNECTION_SHARED"    : "Bu ağlantı şu an paylaşılıyor.",
+        "INFO_CONNECTION_SHARED"    : "Bu bağlantı şu an paylaşılıyor.",
         "INFO_NO_FILE_TRANSFERS"    : "Dosya aktarımı yok.",
         "INFO_USER_COUNT"           : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
 
@@ -158,7 +158,7 @@
         "TEXT_ANONYMOUS_USER_LEFT"        : "Anonim bir kullanıcı bağlantıdan ayrıldı.",
         "TEXT_ZOOM_AUTO_FIT"              : "Otomatik olarak tarayıcı penceresine sığdır",
         "TEXT_CLIENT_STATUS_IDLE"         : "Boşta.",
-        "TEXT_CLIENT_STATUS_CONNECTING"   : "Guacamole bağlanıypr...",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Guacamole bağlanıyor...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Bağlantınız kesildi.",
         "TEXT_CLIENT_STATUS_UNSTABLE"     : "Guacamole sunucusuna bağlantı kararsız görünüyor.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Guacamole bağlantısı kuruldu. Yanıt bekleniyor...",
@@ -178,8 +178,8 @@
         "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
         "ACTION_SHOW_DETAILS" : "Göster",
 
-        "FIELD_HEADER_BACKGROUND" : "Arkaplan",
-        "FIELD_HEADER_FOREGROUND" : "Önplan",
+        "FIELD_HEADER_BACKGROUND" : "Arka plan",
+        "FIELD_HEADER_FOREGROUND" : "Ön plan",
 
         "FIELD_OPTION_CUSTOM" : "Özel...",
 
@@ -483,11 +483,12 @@
     "PLAYER" : {
 
         "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_CLOSE"        : "Kapat",
         "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
         "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
         "ACTION_SHOW_KEY_LOG" : "Tuş Basımı Günlüğü",
 
-        "INFO_FRAME_EVENTS_LEGEND" : "Ekrandaki Faliyet",
+        "INFO_FRAME_EVENTS_LEGEND" : "Ekrandaki Faaliyet",
         "INFO_KEY_EVENTS_LEGEND"   : "Klavye Faaliyeti",
         "INFO_LOADING_RECORDING"   : "Kaydınız yükleniyor. Lütfen bekleyin...",
         "INFO_NO_KEY_LOG"          : "Tuş Basımı Günlüğü Mevcut Değil",
@@ -584,7 +585,7 @@
         "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Pano veri boyutu sınırı:",
         "FIELD_HEADER_COLOR_DEPTH"           : "Renk derinliği:",
         "FIELD_HEADER_CONSOLE"               : "Yönetici konsolu:",
-        "FIELD_HEADER_CONSOLE_AUDIO"         : "Konsolde sesi destekle:",
+        "FIELD_HEADER_CONSOLE_AUDIO"         : "Konsolda sesi destekle:",
         "FIELD_HEADER_CREATE_DRIVE_PATH"     : "Sürücüyü otomatik oluştur:",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "Kayıt yolunu otomatik oluştur",
         "FIELD_HEADER_DISABLE_AUDIO"    : "Sesi devre dışı bırak:",
@@ -713,7 +714,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Moğolca (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "İtalyanca (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japonca (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norweççe (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norveççe (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Lehçe (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Brezilya Portekizcesi (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portekizce (Qwerty)",
@@ -859,7 +860,7 @@
         "FIELD_HEADER_PASSWORD"       : "Parola:",
         "FIELD_HEADER_PASSWORD_REGEX" : "Parola düzenli ifade:",
         "FIELD_HEADER_PORT"           : "Bağlantı noktası:",
-        "FIELD_HEADER_READ_ONLY"      : "Satl okunur:",
+        "FIELD_HEADER_READ_ONLY"      : "Salt okunur:",
         "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Fareyi hariç tut:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Grafikleri/akışları hariç tut:",
@@ -873,7 +874,7 @@
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript yolu:",
         "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL paketi için yayın adresi:",
-        "FIELD_HEADER_WOL_MAC_ADDR"       : "Uzak bilgisayar için MAC addresi:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Uzak bilgisayar için MAC adresi:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL paketi gönder:",
         "FIELD_HEADER_WOL_UDP_PORT"       : "WoL paketi için UDP bağlantı noktası:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Bilgisayar başlatma bekleme süresi:",
@@ -977,7 +978,7 @@
         "FIELD_HEADER_SFTP_USERNAME"              : "Kullanıcı adı:",
         "FIELD_HEADER_SWAP_RED_BLUE"    : "Kırmızı/mavi bileşenleri takas et:",
         "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL paketi için yayın adresi:",
-        "FIELD_HEADER_WOL_MAC_ADDR"       : "Uzak bilgisayar için MAC addresi:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Uzak bilgisayar için MAC adresi:",
         "FIELD_HEADER_WOL_SEND_PACKET"    : "WoL paketi gönderi:",
         "FIELD_HEADER_WOL_UDP_PORT"       : "WoL paketi için UDP bağlantı noktası:",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Bilgisayar başlatma bekleme süresi:",
@@ -1206,7 +1207,7 @@
         "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Bağlantı adı",
         "TABLE_HEADER_SESSION_REMOTEHOST"      : "Uzak bilgisayar",
         "TABLE_HEADER_SESSION_STARTDATE"       : "Ne zamandır açık",
-        "TABLE_HEADER_SESSION_USERNAME"        : "KUllanıcı adı",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Kullanıcı adı",
 
         "TEXT_CONFIRM_DELETE" : "Açık olan tüm oturumları sonlandırmak istediğinize emin misiniz? Bu oturumları kullanan kullanıcıların bağlantıları derhal kesilecektir."
 
