@@ -36,6 +36,8 @@ import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
@@ -56,6 +58,10 @@ import software.amazon.awssdk.services.ec2.model.TagSpecification;
  * per-user EC2-backed lab connection.
  */
 public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider {
+
+    /** Logger. */
+    private static final Logger logger = LoggerFactory.getLogger(
+            LabEc2AuthenticationProvider.class);
 
     /** EC2 client used to orchestrate lab instances. */
     private final Ec2Client ec2;
@@ -110,18 +116,31 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
 
-        if (context == null)
+        if (context == null) {
+            logger.debug("Skipping lab EC2 decoration because no base context was provided.");
             return null;
+        }
 
         Set<String> groups = authenticatedUser.getEffectiveUserGroups();
-        if (groups == null || !groups.contains(labGroupName))
-            return context;
+        logger.debug("Evaluating lab EC2 decoration for user '{}' with groups {}.",
+                authenticatedUser.getIdentifier(), groups);
 
+        if (groups == null || !groups.contains(labGroupName)) {
+            logger.debug("User '{}' is not in the lab group '{}'; leaving context unchanged.",
+                    authenticatedUser.getIdentifier(), labGroupName);
+            return context;
+        }
+
+        logger.info("Ensuring lab EC2 instance for user '{}'.",
+                authenticatedUser.getIdentifier());
         Instance instance = ensureLabInstance(authenticatedUser.getIdentifier());
 
         String hostname = instance.publicDnsName();
         if (hostname == null || hostname.isEmpty())
             hostname = instance.publicIpAddress();
+
+        logger.info("Using lab instance '{}' at host '{}' for user '{}'.",
+                instance.instanceId(), hostname, authenticatedUser.getIdentifier());
 
         SimpleConnection labConnection = buildLabConnection(
                 authenticatedUser.getIdentifier(), hostname);
@@ -167,16 +186,29 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         DescribeInstancesResponse describeResponse = describeInstances(ownerFilter,
                 stateFilter);
 
+        logger.debug("DescribeInstances returned {} reservations for owner '{}'.",
+                describeResponse.reservations().size(), owner);
+
         Instance instance = describeResponse.reservations().stream()
                 .flatMap(reservation -> reservation.instances().stream())
                 .findFirst()
                 .orElse(null);
 
-        if (instance == null)
+        if (instance == null) {
+            logger.info("No existing lab instance found for owner '{}'; launching new instance.",
+                    owner);
             instance = runLabInstance(owner);
+        }
         else if (InstanceStateName.STOPPED.equals(instance.state().name())
-                || InstanceStateName.STOPPING.equals(instance.state().name()))
+                || InstanceStateName.STOPPING.equals(instance.state().name())) {
+            logger.info("Found stopped lab instance '{}' for owner '{}'; starting it.",
+                    instance.instanceId(), owner);
             instance = startInstance(instance.instanceId());
+        }
+        else {
+            logger.info("Using existing lab instance '{}' in state '{}' for owner '{}'.",
+                    instance.instanceId(), instance.state().name(), owner);
+        }
 
         return instance;
     }
@@ -195,6 +227,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
      */
     private Instance startInstance(String instanceId) throws GuacamoleException {
         try {
+            logger.debug("Starting EC2 instance '{}'.", instanceId);
             StartInstancesResponse startResponse = ec2.startInstances(builder ->
                     builder.instanceIds(instanceId));
             if (startResponse.startingInstances().isEmpty())
@@ -203,6 +236,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             ec2.waiter().waitUntilInstanceRunning(waiter ->
                     waiter.instanceIds(instanceId));
 
+            logger.debug("Instance '{}' reported as running; fetching details.", instanceId);
             return getInstanceById(instanceId);
         }
         catch (SdkException e) {
@@ -224,6 +258,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
      */
     private Instance runLabInstance(String owner) throws GuacamoleException {
         try {
+            logger.debug("Preparing to run new lab instance for owner '{}'.", owner);
             RunInstancesRequest.Builder builder = RunInstancesRequest.builder()
                     .minCount(1)
                     .maxCount(1);
@@ -261,6 +296,8 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             ec2.waiter().waitUntilInstanceRunning(waiter ->
                     waiter.instanceIds(instance.instanceId()));
 
+            logger.info("Launched lab instance '{}' for owner '{}'; waiting until running.",
+                    instance.instanceId(), owner);
             return getInstanceById(instance.instanceId());
         }
         catch (SdkException e) {
@@ -282,6 +319,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
      */
     private Instance getInstanceById(String instanceId) throws GuacamoleException {
         try {
+            logger.debug("Describing EC2 instance '{}'.", instanceId);
             DescribeInstancesResponse response = ec2.describeInstances(builder ->
                     builder.instanceIds(instanceId));
 
