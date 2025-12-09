@@ -95,7 +95,6 @@ public class AuthenticationProviderService {
         RadiusAttribute stateAttr = challengePacket.findAttribute(Attr_State.TYPE);
         if (stateAttr == null) {
             logger.error("Something went wrong, state attribute not present.");
-            logger.debug("State Attribute turned up null, which shouldn't happen in AccessChallenge.");
             return null;
         }
 
@@ -103,7 +102,6 @@ public class AuthenticationProviderService {
         RadiusAttribute replyAttr = challengePacket.findAttribute(Attr_ReplyMessage.TYPE);
         if (replyAttr == null) {
             logger.error("No reply message received from the server.");
-            logger.debug("Expecting a Attr_ReplyMessage attribute on this packet, and did not get one.");
             return null;
         }
 
@@ -162,8 +160,7 @@ public class AuthenticationProviderService {
                                                 null);
             }
             catch (GuacamoleException e) {
-                logger.error("Cannot configure RADIUS server: {}", e.getMessage());
-                logger.debug("Error configuring RADIUS server.", e);
+                logger.error("Cannot configure RADIUS server: {}", e.getMessage(), e);
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
         }
@@ -184,13 +181,11 @@ public class AuthenticationProviderService {
                                                               stateBytes);
             }
             catch (IllegalArgumentException e) {
-                logger.warn("Illegal hexadecimal value while parsing RADIUS state string: {}", e.getMessage());
-                logger.debug("Encountered exception while attempting to parse the hexidecimal state value.", e);
+                logger.warn("Illegal hexadecimal value while parsing RADIUS state string: {}", e.getMessage(), e);
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
             catch (GuacamoleException e) {
-                logger.error("Cannot configure RADIUS server: {}", e.getMessage());
-                logger.debug("Error configuring RADIUS server.", e);
+                logger.error("Cannot configure RADIUS server: {}", e.getMessage(), e);
                 throw new GuacamoleInvalidCredentialsException("Authentication error.", CredentialsInfo.USERNAME_PASSWORD);
             }
         }

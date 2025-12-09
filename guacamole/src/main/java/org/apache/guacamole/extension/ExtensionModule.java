@@ -434,8 +434,9 @@ public class ExtensionModule extends ServletModule {
 
         // Use empty set by default if property cannot be parsed
         catch (GuacamoleException e) {
-            logger.warn("The list of authentication providers specified via the \"{}\" property could not be parsed: {}", SKIP_IF_UNAVAILABLE.getName(), e.getMessage());
-            logger.debug("Unable to parse \"{}\" property.", SKIP_IF_UNAVAILABLE.getName(), e);
+            logger.warn("The list of authentication providers specified via "
+                    + "the \"{}\" property could not be parsed: {}",
+                    SKIP_IF_UNAVAILABLE.getName(), e.getMessage(), e);
             return Collections.<String>emptySet();
         }
 
@@ -457,8 +458,9 @@ public class ExtensionModule extends ServletModule {
 
         // Sort by filename if the desired order cannot be read
         catch (GuacamoleException e) {
-            logger.warn("The list of extensions specified via the \"{}\" property could not be parsed: {}", EXTENSION_PRIORITY.getName(), e.getMessage());
-            logger.debug("Unable to parse \"{}\" property.", EXTENSION_PRIORITY.getName(), e);
+            logger.warn("The list of extensions specified via the \"{}\" "
+                    + "property could not be parsed: {}",
+                    EXTENSION_PRIORITY.getName(), e.getMessage(), e);
             return ExtensionOrderProperty.DEFAULT_COMPARATOR;
         }
 
@@ -522,8 +524,8 @@ public class ExtensionModule extends ServletModule {
 
             }
             catch (GuacamoleException e) {
-                logger.error("Extension \"{}\" could not be loaded: {}", extensionFile.getName(), e.getMessage());
-                logger.debug("Unable to load extension.", e);
+                logger.error("Extension \"{}\" could not be loaded: {}",
+                        extensionFile.getName(), e.getMessage(), e);
             }
 
         }

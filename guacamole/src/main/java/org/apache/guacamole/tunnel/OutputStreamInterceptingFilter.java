@@ -130,8 +130,7 @@ public class OutputStreamInterceptingFilter
             blob = BaseEncoding.base64().decode(data);
         }
         catch (IllegalArgumentException e) {
-            logger.warn("Received base64 data for intercepted stream was invalid.");
-            logger.debug("Decoding base64 data for intercepted stream failed.", e);
+            logger.warn("Received base64 data for intercepted stream was invalid.", e);
             return null;
         }
 

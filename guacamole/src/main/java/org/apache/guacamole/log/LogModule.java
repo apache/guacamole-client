@@ -187,7 +187,7 @@ public class LogModule extends AbstractModule {
             }
             catch (FileNotFoundException e) {
                 logger.info("Logback configuration could not be read "
-                        + "from \"{}\": {}", logbackFile, e.getMessage());
+                        + "from \"{}\": {}", logbackFile, e.getMessage(), e);
             }
         }
 
@@ -200,7 +200,7 @@ public class LogModule extends AbstractModule {
         }
         catch (GuacamoleException e) {
             level = LogLevel.INFO;
-            logger.error("Falling back to \"{}\" log level: {}", level.getCanonicalName(), e.getMessage());
+            logger.error("Falling back to \"{}\" log level: {}", level.getCanonicalName(), e.getMessage(), e);
         }
 
         return level.getLogbackConfiguration();
@@ -232,12 +232,10 @@ public class LogModule extends AbstractModule {
 
         }
         catch (JoranException e) {
-            logger.error("Initialization of logback failed: {}", e.getMessage());
-            logger.debug("Unable to load logback configuration.", e);
+            logger.error("Initialization of logback failed: {}", e.getMessage(), e);
         }
         catch (IOException e) {
-            logger.warn("Logback configuration file could not be cleanly closed: {}", e.getMessage());
-            logger.debug("Failed to close logback configuration file.", e);
+            logger.warn("Logback configuration file could not be cleanly closed: {}", e.getMessage(), e);
         }
 
     }

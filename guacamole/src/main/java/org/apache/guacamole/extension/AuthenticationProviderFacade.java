@@ -182,15 +182,11 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
      *     authentication provider being skipped.
      */
     private void warnAuthProviderSkipped(Throwable e) {
-
         logger.warn("The \"{}\" authentication provider has been skipped due "
                 + "to an internal error. If this is unexpected or you are the "
                 + "developer of this authentication provider, you may wish to "
                 + "enable debug-level logging: {}",
-                getIdentifier(), e.getMessage());
-
-        logger.debug("Authentication provider skipped due to an internal failure.", e);
-
+                getIdentifier(), e.getMessage(), e);
     }
 
     /**

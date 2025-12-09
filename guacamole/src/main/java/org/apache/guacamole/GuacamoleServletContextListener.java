@@ -166,8 +166,7 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
             logger.info("Read configuration parameters from \"{}\".", guacProperties);
         }
         catch (GuacamoleException e) {
-            logger.error("Unable to read guacamole.properties: {}", e.getMessage());
-            logger.debug("Error reading guacamole.properties.", e);
+            logger.error("Unable to read guacamole.properties: {}", e.getMessage(), e);
         }
 
         // For any values not defined in GUACAMOLE_HOME/guacamole.properties,
@@ -181,8 +180,7 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
             }
         }
         catch (GuacamoleException e) {
-            logger.error("Unable to configure support for environment properties: {}", e.getMessage());
-            logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_ENVIRONMENT_PROPERTIES.getName(), e);
+            logger.error("Unable to configure support for environment properties: {}", e.getMessage(), e);
         }
 
         // For any values not defined in GUACAMOLE_HOME/guacamole.properties
@@ -198,8 +196,7 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
             }
         }
         catch (GuacamoleException e) {
-            logger.error("Unable to configure support for file environment properties: {}", e.getMessage());
-            logger.debug("Error reading \"{}\" property from guacamole.properties.", ENABLE_FILE_ENVIRONMENT_PROPERTIES.getName(), e);
+            logger.error("Unable to configure support for file environment properties: {}", e.getMessage(), e);
         }
 
         // Now that at least the main guacamole.properties source of
@@ -225,8 +222,7 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
             });
         }
         catch (GuacamoleException e) {
-            logger.error("An extension listening for application startup failed: {}", e.getMessage());
-            logger.debug("Extension failed internally while handling the application startup event.", e);
+            logger.error("An extension listening for application startup failed: {}", e.getMessage(), e);
         }
 
     }
@@ -307,8 +303,7 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
                 });
             }
             catch (GuacamoleException e) {
-                logger.error("An extension listening for application shutdown failed: {}", e.getMessage());
-                logger.debug("Extension failed internally while handling the application shutdown event.", e);
+                logger.error("An extension listening for application shutdown failed: {}", e.getMessage(), e);
             }
 
         }

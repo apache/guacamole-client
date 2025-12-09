@@ -781,7 +781,7 @@ public class KsmClient {
             // Show the warning only if there is no fallback function
             // and this was the last attempt
             logger.warn("Keeper notation \"{}\" could not be resolved "
-                    + "to a record: {}", notation, e.getMessage());
+                    + "to a record: {}", notation, e.getMessage(), e);
 
             return CompletableFuture.completedFuture(null);
         }
