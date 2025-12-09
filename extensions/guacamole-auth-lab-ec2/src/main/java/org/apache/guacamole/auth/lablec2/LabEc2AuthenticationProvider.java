@@ -39,6 +39,7 @@ import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
@@ -102,6 +103,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         labGroupName = env.getProperty(LabEc2Properties.LAB_EC2_LAB_GROUP, "lab_user");
 
         ec2 = Ec2Client.builder()
+                .httpClientBuilder(UrlConnectionHttpClient.builder())
                 .region(Region.of(region))
                 .build();
     }
