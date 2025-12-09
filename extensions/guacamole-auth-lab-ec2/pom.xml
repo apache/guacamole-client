@@ -78,6 +78,13 @@
             <version>2.39.6</version>
         </dependency>
 
+        <!-- AWS SDK URL Connection Client -->
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>url-connection-client</artifactId>
+            <version>2.39.6</version>
+        </dependency>
+
     </dependencies>
 
     <build>
