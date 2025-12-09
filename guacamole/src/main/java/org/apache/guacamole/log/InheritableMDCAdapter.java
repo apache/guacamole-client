@@ -33,8 +33,26 @@ import org.slf4j.spi.MDCAdapter;
  */
 public class InheritableMDCAdapter implements MDCAdapter {
 
+    //
+    // IMPORTANT: Thread-local values MUST be removed at web application
+    // shutdown or a memory leak may result. To avoid this, care must be
+    // taken in this implementation:
+    //
+    // * Ensure that a balanced remove() for every put() is sufficient to
+    //   clear and remove the thread-local itself.
+    //
+    // * Calls to ThreadLocal.get() implicitly assign a value to the
+    //   thread-local if no value was present before. This value needs to be
+    //   removed to avoid leaking references at web application shutdown.
+    //
+
     /**
      * MDC context map that is automatically inherited by child threads.
+     * <p>
+     * IMPORTANT: As a thread-local value, it is critical that this value be
+     * removed at web application shutdown or a memory leak may result. Here,
+     * we maintain a reference within the thread-local only as long as at least
+     * one value is stored. Once the map is empty, the thread-local is removed.
      */
     private final InheritableThreadLocal<ForkableHashMap<String, String>> context =
             new InheritableThreadLocal<ForkableHashMap<String, String>>() {
@@ -64,6 +82,12 @@ public class InheritableMDCAdapter implements MDCAdapter {
      * {@link #get(java.lang.String)} which are intentionally stored
      * separately in {@link #context}. This matches the behavior of the Logback
      * implementation of MDC.
+     * <p>
+     * IMPORTANT: As a thread-local value, it is critical that this value be
+     * removed at web application shutdown or a memory leak may result. Here,
+     * we maintain a reference within the thread-local only as long as at least
+     * one non-empty deque is stored. Once no non-empty deques are present
+     * empty, the thread-local is removed.
      */
     private final ThreadLocal<Map<String, Deque<String>>> contextDeques =
             new ThreadLocal<Map<String, Deque<String>>>() {
@@ -82,30 +106,67 @@ public class InheritableMDCAdapter implements MDCAdapter {
 
     @Override
     public String get(String key) {
-        return context.get().get(key);
+
+        ForkableHashMap<String, String> contextMap = context.get();
+
+        // Do not maintain a thread-local reference to an empty map
+        if (contextMap.isEmpty()) {
+            context.remove();
+            return null;
+        }
+
+        return contextMap.get(key);
+
     }
 
     @Override
     public void remove(String key) {
-        context.get().remove(key);
+
+        ForkableHashMap<String, String> contextMap = context.get();
+        contextMap.remove(key);
+
+        // Do not maintain a thread-local reference to an empty map
+        if (contextMap.isEmpty())
+            context.remove();
+
     }
 
     @Override
     public void clear() {
-        context.get().clear();
+        // Do not maintain a thread-local reference to an empty map
+        context.remove();
     }
 
     @Override
     public Map<String, String> getCopyOfContextMap() {
-        // This function is invoked by Logback for every log message produced,
-        // so simply copying the context map is expensive. We instead create a
-        // copy-on-write reference to the context map.
-        return context.get().fork();
+
+        ForkableHashMap<String, String> contextMap = context.get();
+
+        // Do not maintain a thread-local reference to an empty map - instead
+        // repurpose the new empty map as the "copy"
+        if (contextMap.isEmpty()) {
+            context.remove();
+            return contextMap;
+        }
+
+        // Universally copying the context map would be expensive, as the
+        // getCopyOfContextMap() function is invoked by Logback for every log
+        // message produced. Instead, we create a copy-on-write reference to
+        // the context map.
+        return contextMap.fork();
+
     }
 
     @Override
     public void setContextMap(Map<String, String> contextMap) {
-        context.set(new ForkableHashMap<>(contextMap));
+
+        // Do not maintain a thread-local reference to an empty map
+        if (contextMap.isEmpty())
+            context.remove();
+
+        else
+            context.set(new ForkableHashMap<>(contextMap));
+
     }
 
     /**
@@ -139,17 +200,46 @@ public class InheritableMDCAdapter implements MDCAdapter {
 
     @Override
     public String popByKey(String key) {
-        return getDeque(key).pop();
+
+        Deque<String> deque = getDeque(key);
+        String value = deque.pop();
+
+        // Do not maintain any references to empty deques (so that it's easy to
+        // detect when there are no items in any deques)
+        if (deque.isEmpty())
+            clearDequeByKey(key);
+
+        return value;
+
     }
 
     @Override
     public Deque<String> getCopyOfDequeByKey(String key) {
-        return new LinkedList<>(getDeque(key));
+
+        Deque<String> deque = getDeque(key);
+
+        // Do not maintain a thread-local reference to an empty deque - instead
+        // repurpose the new empty deque as the "copy"
+        if (deque.isEmpty()) {
+            clearDequeByKey(key); // ... and ensure the deque map is removed if empty, too
+            return deque;
+        }
+
+        return new LinkedList<>(deque);
+
     }
 
     @Override
     public void clearDequeByKey(String key) {
-        getDeque(key).clear();
+
+        // Clear by entirely removing
+        Map<String, Deque<String>> dequeMap = contextDeques.get();
+        dequeMap.remove(key);
+
+        // Do not maintain a thread-local reference to an empty map
+        if (dequeMap.isEmpty())
+            contextDeques.remove();
+
     }
 
 }

@@ -135,7 +135,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
             return authProvider.getResource();
         }
         finally {
-            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
         }
 
     }
@@ -153,7 +153,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
             return authProvider.updateCredentials(credentials);
         }
         finally {
-            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
         }
 
     }
@@ -249,7 +249,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         }
 
         finally {
-            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
         }
 
     }
@@ -272,7 +272,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
             return authProvider.updateAuthenticatedUser(authenticatedUser, credentials);
         }
         finally {
-            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
         }
 
     }
@@ -318,7 +318,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         }
 
         finally {
-            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
         }
 
     }
@@ -342,7 +342,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
             return authProvider.updateUserContext(context, authenticatedUser, credentials);
         }
         finally {
-            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
         }
 
     }
@@ -362,7 +362,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
             return authProvider.decorate(context, authenticatedUser, credentials);
         }
         finally {
-            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
         }
 
     }
@@ -383,7 +383,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
                     authenticatedUser, credentials);
         }
         finally {
-            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
         }
 
     }
@@ -396,7 +396,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
                 authProvider.shutdown();
         }
         finally {
-            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
         }
     }
 

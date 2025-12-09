@@ -126,7 +126,7 @@ public class SessionResource {
 
 		}
 		finally {
-			MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
 		}
 
     }
@@ -168,7 +168,7 @@ public class SessionResource {
 
 		}
 		finally {
-			MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+            MDC.remove(LogModule.MDC_CONTEXT_KEY);
 		}
 
     }
