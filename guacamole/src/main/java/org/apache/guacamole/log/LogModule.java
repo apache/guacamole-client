@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +50,95 @@ public class LogModule extends AbstractModule {
      * The Guacamole server environment.
      */
     private final Environment environment;
+
+    /**
+     * The name of the MDC key that should be used to store Guacamole-specific
+     * context information. If an extension logs a message, this information
+     * will include the identifier of the relevant authentication provider.
+     */
+    public static final String MDC_CONTEXT_KEY = "context";
+
+    /**
+     * The name that should be considered the top-level context when populating
+     * the MDC entry pointed to by {@link #MDC_CONTEXT_KEY}.
+     */
+    public static final String MDC_CONTEXT_ROOT = "guacamole";
+
+    /**
+     * Returns the context information that should be stored in MDC under
+     * {@link #MDC_CONTEXT_KEY} for any message logged by the given
+     * authentication provider.
+     *
+     * @param authProvider
+     *     The authentication provider to provide context for.
+     *
+     * @return
+     *     The context information that should be stored in MDC for any message
+     *     logged by the given authentication provider.
+     */
+    public static String getMDCContext(AuthenticationProvider authProvider) {
+        return LogModule.MDC_CONTEXT_ROOT + "/" + authProvider.getIdentifier();
+    }
+
+    /**
+     * Regular expression that matches one or more newlines, regardless of style
+     * (Windows, Linux, etc.), preserving only the first such newline. This
+     * expression is intended to reliably match newlines that may be interpreted
+     * by the shell/viewer, regardless of the platform producing the log
+     * message.
+     */
+    private static final String NEWLINE_REGEX =
+
+              // Locate the right edge of the first newline sequence, whether
+              // that is CR, LF, CRLF, or LFCR
+              "(?<="
+
+                // Do not match newline sequences that are not the first
+                // newline in the sequence
+                + "(?<![\\n\\r])"
+
+                // Match either CR, LF, CRLF, or LFCR, ensuring that CRLF
+                // does not get matched as just CR (same for LFCR vs. LF)
+                + "("
+                    +  "\\n(?!\\r)" // LF (with no following CR)
+                    + "|\\r(?!\\n)" // CR (with no following LF)
+                    + "|\\n\\r"     // LFCR
+                    + "|\\r\\n"     // CRLF
+                + ")"
+
+            + ")"
+
+               // Ignore (and strip) and remaining newline characters
+            + "[\\n\\r]*";
+
+    /**
+     * Logback encoder pattern fragment that produces a local timestamp (with
+     * timezone information) in roughly ISO 8601 format.
+     */
+    private static final String LOG_PATTERN_FRAGMENT_TIMESTAMP = "%d{yyyy-MM-dd HH:mm:ss.SSS xxx}";
+
+    /**
+     * Logback encoder pattern fragment that produces the logged message. This
+     * automatically prepends any newlines within the message with a "+ " prefix
+     * to clearly represent when a message has been split across multiple lines.
+     */
+    private static final String LOG_PATTERN_FRAGMENT_MESSAGE_BODY = "%replace(%msg){'" + NEWLINE_REGEX + "','+ '}";
+
+    /**
+     * Logback encoder pattern that should be used for messages when the highest
+     * level of verbosity is not needed.
+     */
+    private static final String LOG_PATTERN_DEFAULT = LOG_PATTERN_FRAGMENT_TIMESTAMP
+            + " [%X{" + MDC_CONTEXT_KEY + ":-" + MDC_CONTEXT_ROOT + "}] %level: "
+            + LOG_PATTERN_FRAGMENT_MESSAGE_BODY + "%n%nopex";
+
+    /**
+     * Logback encoder pattern that should be used for messages with the highest
+     * level of verbosity.
+     */
+    private static final String LOG_PATTERN_VERBOSE = LOG_PATTERN_FRAGMENT_TIMESTAMP
+            + " [%X{" + MDC_CONTEXT_KEY + ":-" + MDC_CONTEXT_ROOT + "}] %logger{48} %level: "
+            + LOG_PATTERN_FRAGMENT_MESSAGE_BODY + "%n%ex";
 
     /**
      * Property that specifies the highest level of verbosity that Guacamole
@@ -124,6 +214,13 @@ public class LogModule extends AbstractModule {
 
             LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
             context.reset();
+
+            // Include convenience properties for building off Guacamole's
+            // built-in configuration with a custom logback.xml
+            context.putProperty("guac_timestamp_pattern", LOG_PATTERN_FRAGMENT_TIMESTAMP);
+            context.putProperty("guac_message_pattern", LOG_PATTERN_FRAGMENT_MESSAGE_BODY);
+            context.putProperty("guac_pattern", LOG_PATTERN_DEFAULT);
+            context.putProperty("guac_verbose_pattern", LOG_PATTERN_VERBOSE);
 
             // Initialize logback
             JoranConfigurator configurator = new JoranConfigurator();

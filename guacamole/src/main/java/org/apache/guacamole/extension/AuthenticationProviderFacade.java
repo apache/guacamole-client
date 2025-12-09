@@ -23,12 +23,14 @@ import java.util.Set;
 import java.util.UUID;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.log.LogModule;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * Provides a safe wrapper around an AuthenticationProvider subclass, such that
@@ -40,7 +42,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(AuthenticationProviderFacade.class);
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderFacade.class);
 
     /**
      * The underlying authentication provider, or null if the authentication
@@ -57,6 +59,12 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
      * authentication halt the authentication process entirely.
      */
     private final Set<String> tolerateFailures;
+
+    /**
+     * The logging context that should be provided to SLF4J's MDC for all log
+     * messages originating from the underlying authentication provider.
+     */
+    private final String logContext;
 
     /**
      * The identifier to provide for the underlying authentication provider if
@@ -86,9 +94,16 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
     public AuthenticationProviderFacade(
             Class<? extends AuthenticationProvider> authProviderClass,
             Set<String> tolerateFailures) {
+
         this.tolerateFailures = tolerateFailures;
         this.authProvider = ProviderFactory.newInstance("authentication provider",
             authProviderClass);
+
+        if (this.authProvider != null)
+            this.logContext = LogModule.getMDCContext(authProvider);
+        else
+            this.logContext = LogModule.MDC_CONTEXT_ROOT;
+
     }
 
     @Override
@@ -115,7 +130,13 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         }
 
         // Delegate to underlying auth provider
-        return authProvider.getResource();
+        try {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, logContext);
+            return authProvider.getResource();
+        }
+        finally {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+        }
 
     }
 
@@ -127,7 +148,13 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
             return credentials;
 
         // Delegate to underlying auth provider
-        return authProvider.updateCredentials(credentials);
+        try {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, logContext);
+            return authProvider.updateCredentials(credentials);
+        }
+        finally {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+        }
 
     }
 
@@ -199,6 +226,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         // Delegate to underlying auth provider
         try {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, logContext);
             return authProvider.authenticateUser(credentials);
         }
 
@@ -224,6 +252,10 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         }
 
+        finally {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+        }
+
     }
 
     @Override
@@ -239,7 +271,13 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         }
 
         // Delegate to underlying auth provider
-        return authProvider.updateAuthenticatedUser(authenticatedUser, credentials);
+        try {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, logContext);
+            return authProvider.updateAuthenticatedUser(authenticatedUser, credentials);
+        }
+        finally {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+        }
 
     }
 
@@ -257,6 +295,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         // Delegate to underlying auth provider
         try {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, logContext);
             return authProvider.getUserContext(authenticatedUser);
         }
 
@@ -282,6 +321,10 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         }
 
+        finally {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+        }
+
     }
 
     @Override
@@ -298,8 +341,14 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
         }
 
         // Delegate to underlying auth provider
-        return authProvider.updateUserContext(context, authenticatedUser, credentials);
-        
+        try {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, logContext);
+            return authProvider.updateUserContext(context, authenticatedUser, credentials);
+        }
+        finally {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+        }
+
     }
 
     @Override
@@ -312,7 +361,13 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
             return context;
 
         // Delegate to underlying auth provider
-        return authProvider.decorate(context, authenticatedUser, credentials);
+        try {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, logContext);
+            return authProvider.decorate(context, authenticatedUser, credentials);
+        }
+        finally {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+        }
 
     }
 
@@ -326,15 +381,27 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
             return context;
 
         // Delegate to underlying auth provider
-        return authProvider.redecorate(decorated, context,
-                authenticatedUser, credentials);
+        try {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, logContext);
+            return authProvider.redecorate(decorated, context,
+                    authenticatedUser, credentials);
+        }
+        finally {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+        }
 
     }
 
     @Override
     public void shutdown() {
-        if (authProvider != null)
-            authProvider.shutdown();
+        try {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, logContext);
+            if (authProvider != null)
+                authProvider.shutdown();
+        }
+        finally {
+            MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.MDC_CONTEXT_ROOT);
+        }
     }
 
 }
