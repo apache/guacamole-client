@@ -137,9 +137,9 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                 authenticatedUser.getIdentifier());
         Instance instance = ensureLabInstance(authenticatedUser.getIdentifier());
 
-        String hostname = instance.publicDnsName();
+        String hostname = instance.privateDnsName();
         if (hostname == null || hostname.isEmpty())
-            hostname = instance.publicIpAddress();
+            hostname = instance.privateIpAddress();
 
         logger.info("Using lab instance '{}' at host '{}' for user '{}'.",
                 instance.instanceId(), hostname, authenticatedUser.getIdentifier());
