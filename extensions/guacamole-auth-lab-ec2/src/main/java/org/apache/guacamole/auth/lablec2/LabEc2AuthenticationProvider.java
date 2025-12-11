@@ -137,9 +137,26 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                 authenticatedUser.getIdentifier());
         Instance instance = ensureLabInstance(authenticatedUser.getIdentifier());
 
-        String hostname = instance.privateDnsName();
-        if (hostname == null || hostname.isEmpty())
-            hostname = instance.privateIpAddress();
+        // Use Private IP as requested
+        String hostname = instance.privateIpAddress();
+
+        // Determine connection ID
+        String connectionId = "lab-" + authenticatedUser.getIdentifier();
+
+        // Check if connection already exists
+        Directory<Connection> baseDir = context.getConnectionDirectory();
+        Connection existingConnection = null;
+        try {
+            existingConnection = baseDir.get(connectionId);
+        } catch (GuacamoleException e) {
+            logger.debug("Failed to check for existing connection '{}': {}", connectionId, e.getMessage());
+        }
+
+        if (existingConnection != null) {
+            logger.info("Connection '{}' already exists for user '{}'. Using existing connection.",
+                    connectionId, authenticatedUser.getIdentifier());
+            return context;
+        }
 
         logger.info("Using lab instance '{}' at host '{}' for user '{}'.",
                 instance.instanceId(), hostname, authenticatedUser.getIdentifier());
@@ -147,7 +164,6 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         SimpleConnection labConnection = buildLabConnection(
                 authenticatedUser.getIdentifier(), hostname);
 
-        Directory<Connection> baseDir = context.getConnectionDirectory();
         Directory<Connection> mergedDir = new LabMergingConnectionDirectory(
                 baseDir, labConnection);
 

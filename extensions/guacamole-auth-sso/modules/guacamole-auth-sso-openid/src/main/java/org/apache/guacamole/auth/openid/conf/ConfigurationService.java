@@ -46,7 +46,7 @@ public class ConfigurationService {
      * The default claim type to use to retrieve an authenticated user's
      * groups.
      */
-    private static final String DEFAULT_GROUPS_CLAIM_TYPE = "cognito:groups";
+    private static final String DEFAULT_GROUPS_CLAIM_TYPE = "groups";
 
     /**
      * The default JWT claims list to map to tokens.
