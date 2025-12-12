@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
  * the given .jar. If classes are defined in both the parent and the extension
  * .jar, the versions defined within the extension .jar are used.
  */
-public class ExtensionClassLoader extends URLClassLoader {
+public class ExtensionClassLoader extends URLClassLoader implements LoggerContextProvider {
 
     /**
      * Logger for this class.
@@ -70,6 +70,11 @@ public class ExtensionClassLoader extends URLClassLoader {
      * fails.
      */
     private final ClassLoader parent;
+
+    /**
+     * The parsed manifest file of the extension that this class loader is for.
+     */
+    private final ExtensionManifest manifest;
 
     /**
      * Returns the URL that refers to the given file. If the given file refers
@@ -251,6 +256,9 @@ public class ExtensionClassLoader extends URLClassLoader {
      * multiple times will not affect previously-returned instances of
      * ExtensionClassLoader.
      *
+     * @param manifest
+     *     The parsed manifest of the extension.
+     *
      * @param extension
      *     The extension .jar file from which classes should be loaded.
      *
@@ -267,10 +275,11 @@ public class ExtensionClassLoader extends URLClassLoader {
      *     If the given file is not actually a file, or the contents of the
      *     file cannot be read.
      */
-    public ExtensionClassLoader(File extension, List<File> temporaryFiles,
-            ClassLoader parent) throws GuacamoleException {
+    public ExtensionClassLoader(ExtensionManifest manifest, File extension,
+            List<File> temporaryFiles, ClassLoader parent) throws GuacamoleException {
         super(getExtensionURLs(extension, temporaryFiles), null);
         this.parent = parent;
+        this.manifest = manifest;
     }
 
     @Override
@@ -286,6 +295,11 @@ public class ExtensionClassLoader extends URLClassLoader {
             return parent.loadClass(string);
         }
 
+    }
+
+    @Override
+    public String getLoggerContext() {
+        return "ext:" + manifest.getNamespace();
     }
 
 }

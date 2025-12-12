@@ -19,10 +19,7 @@
 
 package org.apache.guacamole.log;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.util.ContextInitializer;
-import ch.qos.logback.core.joran.spi.JoranException;
-import org.slf4j.ILoggerFactory;
+import ch.qos.logback.classic.util.LogbackMDCAdapter;
 import org.slf4j.IMarkerFactory;
 import org.slf4j.helpers.BasicMarkerFactory;
 import org.slf4j.spi.MDCAdapter;
@@ -30,7 +27,7 @@ import org.slf4j.spi.SLF4JServiceProvider;
 
 /**
  * SLF4JServiceProvider that overrides the default behavior of Logback's
- * service provider, forcing the use of a custom MDCAdapter.
+ * service provider, forcing the use of a custom, context-aware logger factory.
  */
 public class GuacamoleLogbackServiceProvider implements SLF4JServiceProvider {
 
@@ -42,22 +39,18 @@ public class GuacamoleLogbackServiceProvider implements SLF4JServiceProvider {
     private static final String SLF4J_API_MAX_VERSION = "2.0.99";
 
     /**
-     * The name of the LoggerContext maintained by this service provider.
+     * The singleton instance of the LoggerFactory maintained by this service
+     * provider. The custom implementation provided here uses the call stack
+     * and our various custom class loaders to determine the context of the
+     * loggers that will be created.
      */
-    private static final String LOGGER_CONTEXT_NAME = "guacamole";
-
-    /**
-     * The singleton instance of the LoggerContext maintained by this service
-     * provider. The LoggerContext is actually the LoggerFactory.
-     */
-    private LoggerContext context;
+    private ContextAwareLoggerFactory loggerFactory;
 
     /**
      * The singleton instance of the MDCAdapter implementation that should be
-     * used by Logback and SLF4J. The custom implementation provided here
-     * allows the context map to be inherited by child threads.
+     * used by Logback and SLF4J.
      */
-    private final MDCAdapter mdcAdapter = new InheritableMDCAdapter();
+    private final MDCAdapter mdcAdapter = new LogbackMDCAdapter();
 
     /**
      * The singleton MarkerFactory instance maintained by this service
@@ -67,23 +60,7 @@ public class GuacamoleLogbackServiceProvider implements SLF4JServiceProvider {
 
     @Override
     public void initialize() {
-
-        context = new LoggerContext();
-        context.setName(LOGGER_CONTEXT_NAME);
-        context.setMDCAdapter(mdcAdapter);
-
-        // Perform basic init (prior to loading any Guacamole-specific
-        // configuration, which is loaded by the LogModule)
-        try {
-            new ContextInitializer(context).autoConfig();
-        }
-        catch (JoranException | RuntimeException | Error e) {
-            System.err.println("Logging system could not be initialized: " + e.getMessage());
-            e.printStackTrace(System.err);
-        }
-
-        context.start();
-
+        loggerFactory = new ContextAwareLoggerFactory(mdcAdapter);
     }
 
     @Override
@@ -92,8 +69,8 @@ public class GuacamoleLogbackServiceProvider implements SLF4JServiceProvider {
     }
 
     @Override
-    public ILoggerFactory getLoggerFactory() {
-        return context;
+    public ContextAwareLoggerFactory getLoggerFactory() {
+        return loggerFactory;
     }
 
     @Override

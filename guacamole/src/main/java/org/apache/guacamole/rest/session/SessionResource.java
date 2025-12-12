@@ -32,12 +32,10 @@ import javax.ws.rs.core.MediaType;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSession;
-import org.apache.guacamole.log.LogModule;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.rest.auth.AuthenticationService;
 import org.apache.guacamole.rest.tunnel.TunnelCollectionResource;
 import org.apache.guacamole.rest.tunnel.TunnelCollectionResourceFactory;
-import org.slf4j.MDC;
 
 /**
  * A REST resource which exposes all data associated with a Guacamole user's
@@ -118,16 +116,8 @@ public class SessionResource {
         // Pull UserContext defined by the given auth provider identifier
         UserContext userContext = session.getUserContext(authProviderIdentifier);
 
-		MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.getMDCContext(userContext.getAuthenticationProvider()));
-		try {
-
-			// Return a resource exposing the retrieved UserContext
-			return userContextResourceFactory.create(session.getAuthenticatedUser(), userContext);
-
-		}
-		finally {
-            MDC.remove(LogModule.MDC_CONTEXT_KEY);
-		}
+        // Return a resource exposing the retrieved UserContext
+        return userContextResourceFactory.create(session.getAuthenticatedUser(), userContext);
 
     }
 
@@ -155,21 +145,13 @@ public class SessionResource {
         // Pull UserContext defined by the given auth provider identifier
         UserContext userContext = session.getUserContext(authProviderIdentifier);
 
-		MDC.put(LogModule.MDC_CONTEXT_KEY, LogModule.getMDCContext(userContext.getAuthenticationProvider()));
-		try {
+        // Pull resource from user context
+        Object resource = userContext.getResource();
+        if (resource != null)
+            return resource;
 
-            // Pull resource from user context
-            Object resource = userContext.getResource();
-            if (resource != null)
-                return resource;
-
-            // UserContext-specific resource could not be found
-            throw new GuacamoleResourceNotFoundException("No such resource.");
-
-		}
-		finally {
-            MDC.remove(LogModule.MDC_CONTEXT_KEY);
-		}
+        // UserContext-specific resource could not be found
+        throw new GuacamoleResourceNotFoundException("No such resource.");
 
     }
 
