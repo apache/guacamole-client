@@ -292,6 +292,22 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         var keyTimestamps = [];
 
         /**
+         * Clipboard events extracted from the recording, stored for merging
+         * with key events.
+         *
+         * @type {!Guacamole.ClipboardEventInterpreter.ClipboardEvent[]}
+         */
+        var clipboardEvents = [];
+
+        /**
+         * Key events extracted from the recording, stored for merging
+         * with clipboard events.
+         *
+         * @type {!Guacamole.KeyEventInterpreter.KeyEvent[]}
+         */
+        var keyEvents = [];
+
+        /**
          * Return true if any batches of key event logs are available for this
          * recording, or false otherwise.
          *
@@ -495,11 +511,25 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 // Extract key events from the recording
                 $scope.recording.onkeyevents = function keyEventsReceived(events) {
 
-                    // Convert to a display-optimized format
-                    $scope.textBatches = (
-                            keyEventDisplayService.parseEvents(events));
-
+                    keyEvents = events;
                     keyTimestamps = events.map(event => event.timestamp);
+
+                    // Convert to a display-optimized format
+                    $scope.textBatches = keyEventDisplayService.parseEventsWithClipboard(
+                        keyEvents, clipboardEvents
+                    );
+
+                };
+
+                // Extract clipboard events from the recording
+                $scope.recording.onclipboardevents = function clipboardEventsReceived(events) {
+
+                    clipboardEvents = events;
+
+                    // Convert to a display-optimized format
+                    $scope.textBatches = keyEventDisplayService.parseEventsWithClipboard(
+                        keyEvents, clipboardEvents
+                    );
 
                 };
 

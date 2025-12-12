@@ -428,16 +428,24 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     var keyEventInterpreter = null;
 
     /**
-     * Initialize the key interpreter. This function should be called only once
-     * with the first timestamp in the recording as an argument.
+     * A clipboard event interpreter to extract all clipboard events from
+     * this recording.
+     *
+     * @type {Guacamole.ClipboardEventInterpreter}
+     */
+    var clipboardEventInterpreter = null;
+
+    /**
+     * Initialize the key and clipboard interpreters. This function should be
+     * called only once with the first timestamp in the recording.
      *
      * @private
      * @param {!number} startTimestamp
-     *     The timestamp of the first frame in the recording, i.e. the start of
-     *     the recording.
+     *     The timestamp of the first frame in the recording.
      */
-    function initializeKeyInterpreter(startTimestamp) {
+    function initializeInterpreters(startTimestamp) {
         keyEventInterpreter = new Guacamole.KeyEventInterpreter(startTimestamp);
+        clipboardEventInterpreter = new Guacamole.ClipboardEventInterpreter(startTimestamp);
     }
 
     /**
@@ -466,6 +474,12 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
             // Parse frame timestamp from sync instruction
             var timestamp = parseInt(args[0]);
 
+            // Update the clipboard interpreter's timestamp so clipboard events
+            // are recorded with the correct time. Clipboard events don't have 
+            // their own timestamps
+            if (clipboardEventInterpreter)
+                clipboardEventInterpreter.setTimestamp(timestamp);
+
             // Add a new frame containing the instructions read since last frame
             var frame = new Guacamole.SessionRecording._Frame(timestamp, frameStart, frameEnd);
             frames.push(frame);
@@ -474,7 +488,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
             // If this is the first frame, intialize the key event interpreter
             // with the timestamp of the first frame
             if (frames.length === 1)
-                initializeKeyInterpreter(timestamp);
+                initializeInterpreters(timestamp);
 
             // This frame should eventually become a keyframe if enough data
             // has been processed and enough recording time has elapsed, or if
@@ -492,8 +506,27 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
         }
 
-        else if (opcode === 'key')
+        else if (opcode === 'key') {
             keyEventInterpreter.handleKeyEvent(args);
+            // The clipboard gets updated on Ctrl+C key events so we update the 
+            // clipboard interpreter's timestamp to match the timestamp as
+            // clipboard events don't have own timestamps
+            if (clipboardEventInterpreter) {
+                var keyTimestamp = parseInt(args[2]);
+                clipboardEventInterpreter.setTimestamp(keyTimestamp);
+            }
+        }
+
+        else if (opcode === 'clipboard' && clipboardEventInterpreter)
+            clipboardEventInterpreter.handleClipboard(args);
+
+        // Handle blob data (may be clipboard data)
+        else if (opcode === 'blob' && clipboardEventInterpreter)
+            clipboardEventInterpreter.handleBlob(args);
+
+        // Handle stream end (may complete clipboard stream)
+        else if (opcode === 'end' && clipboardEventInterpreter)
+            clipboardEventInterpreter.handleEnd(args);
     };
 
     /**
@@ -562,8 +595,13 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
                 // Now that the recording is fully processed, and all key events
                 // have been extracted, call the onkeyevents handler if defined
-                if (recording.onkeyevents)
+                if (recording.onkeyevents && keyEventInterpreter)
                     recording.onkeyevents(keyEventInterpreter.getEvents());
+
+                // call the onclipboardevents handler if defined with extracted
+                // clipboard events
+                if (recording.onclipboardevents && clipboardEventInterpreter)
+                    recording.onclipboardevents(clipboardEventInterpreter.getEvents());
 
                 // Consider recording loaded if tunnel has closed without errors
                 if (!errorEncountered)
