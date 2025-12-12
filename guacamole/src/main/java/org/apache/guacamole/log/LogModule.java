@@ -120,7 +120,7 @@ public class LogModule extends AbstractModule {
 
         try (InputStream logbackConfiguration = getLogbackConfiguration()) {
 
-            // Bail out if the system is somehow preventing Guacamole from
+            // Warn if the system is somehow preventing Guacamole from
             // using its own logging
             ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
             if (!(loggerFactory instanceof ReconfigurableLoggerFactory)) {
