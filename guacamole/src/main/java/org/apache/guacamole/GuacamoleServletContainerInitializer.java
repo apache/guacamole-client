@@ -19,11 +19,17 @@
 
 package org.apache.guacamole;
 
+import ch.qos.logback.core.joran.spi.JoranException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Set;
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import org.apache.guacamole.log.GuacamoleLogbackServiceProvider;
+import org.apache.guacamole.log.LogLevel;
+import org.apache.guacamole.log.ReconfigurableLoggerFactory;
+import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.Reporter;
 
@@ -37,6 +43,12 @@ import org.slf4j.helpers.Reporter;
  * to be chosen, which this initializer sets automatically.
  */
 public class GuacamoleServletContainerInitializer implements ServletContainerInitializer {
+
+    /**
+     * The log level that should be used when we have not yet loaded any
+     * configuration dictating otherwise.
+     */
+    private static final LogLevel EARLY_LOG_LEVEL = LogLevel.INFO;
 
     @Override
     public void onStartup(Set<Class<?>> c, ServletContext ctx) throws ServletException {
@@ -57,6 +69,20 @@ public class GuacamoleServletContainerInitializer implements ServletContainerIni
             if (System.getProperty(Reporter.SLF4J_INTERNAL_VERBOSITY_KEY) == null)
                 System.setProperty(Reporter.SLF4J_INTERNAL_VERBOSITY_KEY, "WARN");
 
+        }
+
+        // Attempt early initialization of Logback (before we begin parsing
+        // Guacamole's configuration), such that even startup messages follow
+        // a consistent format
+        try (InputStream logbackConfiguration = EARLY_LOG_LEVEL.getLogbackConfiguration()) {
+            ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
+            if (loggerFactory instanceof ReconfigurableLoggerFactory)
+                ((ReconfigurableLoggerFactory) loggerFactory).reconfigure(logbackConfiguration);
+        }
+        catch (JoranException | IOException e) {
+            System.err.println("Early initialization of Logback failed - "
+                    + "logging format may not match until the web application "
+                    + "finishes starting up: " + e.getMessage());
         }
 
     }
