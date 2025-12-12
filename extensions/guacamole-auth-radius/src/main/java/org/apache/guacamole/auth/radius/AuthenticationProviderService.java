@@ -94,14 +94,18 @@ public class AuthenticationProviderService {
         // Try to get the state attribute - if it's not there, we have a problem
         RadiusAttribute stateAttr = challengePacket.findAttribute(Attr_State.TYPE);
         if (stateAttr == null) {
-            logger.error("Something went wrong, state attribute not present.");
+            logger.error("RADIUS server did not include the required \"{}\" "
+                    + "attribute in its challenge packet - cannot continue.",
+                    Attr_State.NAME);
             return null;
         }
 
         // We need to get the reply message so we know what to ask the user
         RadiusAttribute replyAttr = challengePacket.findAttribute(Attr_ReplyMessage.TYPE);
         if (replyAttr == null) {
-            logger.error("No reply message received from the server.");
+            logger.error("RADIUS server did not include the required \"{}\" "
+                    + "attribute in its challenge packet - cannot continue.",
+                    Attr_ReplyMessage.NAME);
             return null;
         }
 
