@@ -70,10 +70,15 @@ public class LabMergingConnectionDirectory implements Directory<Connection> {
     public Collection<Connection> getAll(Collection<String> identifiers)
             throws GuacamoleException {
 
-        List<Connection> connections = new ArrayList<>(
-                base.getAll(identifiers));
+        // Filter out lab connection ID before passing to base directory
+        // to avoid potential errors if base directory is strict
+        Set<String> baseIdentifiers = new HashSet<>(identifiers);
+        boolean includeLab = baseIdentifiers.remove(labConnection.getIdentifier());
 
-        if (identifiers.contains(labConnection.getIdentifier()))
+        List<Connection> connections = new ArrayList<>(
+                base.getAll(baseIdentifiers));
+
+        if (includeLab)
             connections.add(labConnection);
 
         return connections;
