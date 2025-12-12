@@ -297,13 +297,15 @@ public class GuacamoleServletContextListener extends GuiceServletContextListener
             }
 
             // Inform any listeners that application shutdown has completed
-            try {
-                listenerService.handleEvent(new ApplicationShutdownEvent() {
-                    // The application shutdown event currently has no content
-                });
-            }
-            catch (GuacamoleException e) {
-                logger.error("An extension listening for application shutdown failed: {}", e.getMessage(), e);
+            if (listenerService != null) {
+                try {
+                    listenerService.handleEvent(new ApplicationShutdownEvent() {
+                        // The application shutdown event currently has no content
+                    });
+                }
+                catch (GuacamoleException e) {
+                    logger.error("An extension listening for application shutdown failed: {}", e.getMessage(), e);
+                }
             }
 
         }
