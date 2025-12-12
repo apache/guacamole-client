@@ -149,7 +149,12 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
         // connection has changed, and synchronization need only be performed
         // in context of the new remote.
         synchronized (remote) {
-            remote.sendText(instruction);
+            try {
+                remote.sendText(instruction);
+            }
+            catch (IllegalStateException e) {
+                throw new IOException("WebSocket message could not be sent.", e);
+            }
         }
 
     }
@@ -280,7 +285,7 @@ public abstract class GuacamoleWebSocketTunnelEndpoint extends Endpoint {
 
                 }
                 catch (IOException e) {
-                    logger.debug("I/O error prevents further reads.", e);
+                    logger.debug("I/O error prevents further WebSocket communication.", e);
                     closeConnection(session, GuacamoleStatus.SERVER_ERROR);
                 }
 
