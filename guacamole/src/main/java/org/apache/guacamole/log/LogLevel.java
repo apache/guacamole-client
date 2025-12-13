@@ -56,14 +56,14 @@ public enum LogLevel {
      * messages, while verbose, will not affect performance.
      */
     @PropertyValue("debug")
-    DEBUG("debug"),
+    DEBUG("debug", "${guac_verbose_pattern}"),
 
     /**
      * Informational messages that may be useful for debugging, but which are
      * so low-level that they may affect performance.
      */
     @PropertyValue("trace")
-    TRACE("trace");
+    TRACE("trace", "${guac_verbose_pattern}");
 
     /**
      * Format string whose sole format argument is a String containing the
@@ -77,7 +77,7 @@ public enum LogLevel {
             + "    <!-- Default appender -->\n"
             + "    <appender name=\"GUAC-DEFAULT\" class=\"ch.qos.logback.core.ConsoleAppender\">\n"
             + "        <encoder>\n"
-            + "            <pattern>%%d{HH:mm:ss.SSS} [%%thread] %%-5level %%logger{36} - %%msg%%n</pattern>\n"
+            + "            <pattern>%s</pattern>\n"
             + "        </encoder>\n"
             + "    </appender>\n"
             + "\n"
@@ -102,9 +102,10 @@ public enum LogLevel {
     private final byte[] logbackConfig;
 
     /**
-     * Creates a new LogLevel with the given names. The pair of names provided
-     * correspond to the name used within Guacamole's configuration and the
-     * name used within Logback's configuration.
+     * Creates a new LogLevel with the given names and pattern. The pair of
+     * names provided correspond to the name used within Guacamole's
+     * configuration and the name used within Logback's configuration, while
+     * the pattern determines how Logback will convert log messages to text.
      *
      * @param canonicalName
      *     The name that should be used for this log level when configuring
@@ -113,10 +114,14 @@ public enum LogLevel {
      * @param logbackLogLevel
      *     The name that would be provided to Logback to log at this level if
      *     manually configuring Logback using "logback.xml".
+     *
+     * @param pattern
+     *     The Logback encoder pattern that should be use for messages logged
+     *     at this level.
      */
-    private LogLevel(String canonicalName, String logbackLogLevel) {
+    private LogLevel(String canonicalName, String logbackLogLevel, String pattern) {
         this.canonicalName = canonicalName;
-        this.logbackConfig = String.format(LOGBACK_XML_TEMPLATE, logbackLogLevel).getBytes(StandardCharsets.UTF_8);
+        this.logbackConfig = String.format(LOGBACK_XML_TEMPLATE, pattern, logbackLogLevel).getBytes(StandardCharsets.UTF_8);
     }
 
     /**
@@ -131,7 +136,27 @@ public enum LogLevel {
      *     "logback.xml" configuration file.
      */
     private LogLevel(String logLevel) {
-        this(logLevel, logLevel);
+        this(logLevel, logLevel, "${guac_pattern}");
+    }
+
+    /**
+     * Creates a new LogLevel with the given name and pattern. The provided name
+     * corresponds to both the name used within Guacamole's configuration and
+     * the name used within Logback's configuration, while the pattern
+     * determines how Logback will convert log messages to text.
+     *
+     * @param logLevel
+     *     The name that should be used for this log level when configuring
+     *     Guacamole to log at this level using the "log-level" property AND
+     *     when manually configuring Logback to log at this level using a
+     *     "logback.xml" configuration file.
+     *
+     * @param pattern
+     *     The Logback encoder pattern that should be use for messages logged
+     *     at this level.
+     */
+    private LogLevel(String logLevel, String pattern) {
+        this(logLevel, logLevel, pattern);
     }
 
     /**

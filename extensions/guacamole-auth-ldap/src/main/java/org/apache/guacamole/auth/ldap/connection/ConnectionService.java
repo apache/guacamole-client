@@ -202,8 +202,7 @@ public class ConnectionService {
                 }
                 catch (LdapInvalidAttributeValueException e) {
                     logger.error("Invalid value for {} attribute: {}",
-                            LDAP_ATTRIBUTE_NAME_ID, e.getMessage());
-                    logger.debug("LDAP exception while getting CN attribute.", e);
+                            LDAP_ATTRIBUTE_NAME_ID, e.getMessage(), e);
                     return null;
                 }
 
@@ -223,8 +222,7 @@ public class ConnectionService {
                     config.setProtocol(protocol.getString());
                 }
                 catch (LdapInvalidAttributeValueException e) {
-                    logger.error("Invalid value of the protocol entry: {}", e.getMessage());
-                    logger.debug("LDAP exception when getting protocol value.", e);
+                    logger.error("Invalid value of the protocol entry: {}", e.getMessage(), e);
                     return null;
                 }
                 
@@ -234,8 +232,7 @@ public class ConnectionService {
                     proxyConfig = getProxyConfiguration(entry);
                 }
                 catch (GuacamoleException e) {
-                    logger.error("Failed to retrieve proxy configuration.", e.getMessage());
-                    logger.debug("Guacamole Exception when retrieving proxy configuration.", e);
+                    logger.error("Failed to retrieve proxy configuration.", e.getMessage(), e);
                     return null;
                 }
 
@@ -250,8 +247,7 @@ public class ConnectionService {
                             parameter = parameterAttribute.getString();
                         }
                         catch (LdapInvalidAttributeValueException e) {
-                            logger.warn("Parameter value not valid for {}: {}", cnName, e.getMessage());
-                            logger.debug("LDAP exception when getting parameter value.", e);
+                            logger.warn("Parameter value not valid for {}: {}", cnName, e.getMessage(), e);
                             return null;
                         }
                         parameterAttribute.remove(parameter);
@@ -394,8 +390,7 @@ public class ConnectionService {
             return new GuacamoleProxyConfiguration(proxyHostname, proxyPort, proxyEncryption);
         }
         catch (LdapInvalidAttributeValueException e) {
-            logger.error("Invalid value in proxy configuration: {}", e.getMessage());
-            logger.debug("LDAP exception fetching proxy attribute value.", e);
+            logger.error("Invalid value in proxy configuration: {}", e.getMessage(), e);
             throw new GuacamoleServerException("Invalid LDAP value in proxy configuration.", e);
         }
     }

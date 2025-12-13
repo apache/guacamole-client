@@ -351,16 +351,16 @@ public class SSLClientAuthenticationResource extends SSOResource {
 
         }
         catch (GuacamoleClientException e) {
-            logger.warn("SSL/TLS client authentication attempt rejected: {}", e.getMessage());
-            logger.debug("SSL/TLS client authentication failed.", e);
+            logger.warn("SSL/TLS client authentication attempt rejected: {}",
+                    e.getMessage(), e);
         }
         catch (GuacamoleException e) {
-            logger.error("SSL/TLS client authentication attempt could not be processed: {}", e.getMessage());
-            logger.debug("SSL/TLS client authentication failed.", e);
+            logger.error("SSL/TLS client authentication attempt could not be "
+                    + "processed: {}", e.getMessage(), e);
         }
         catch (RuntimeException | Error e) {
-            logger.error("SSL/TLS client authentication attempt failed internally: {}", e.getMessage());
-            logger.debug("Internal failure processing SSL/TLS client authentication attempt.", e);
+            logger.error("SSL/TLS client authentication attempt failed "
+                    + "internally: {}", e.getMessage(), e);
         }
 
         return sessionManager.generateInvalid();

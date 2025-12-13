@@ -265,8 +265,7 @@ public class ObjectQueryService {
                                             + "URL \"{}\".", url);
                             }
                             catch (GuacamoleException e) {
-                                logger.warn("Referral to \"{}\" could not be followed: {}", url, e.getMessage());
-                                logger.debug("Failed to follow LDAP referral.", e);
+                                logger.warn("Referral to \"{}\" could not be followed: {}", url, e.getMessage(), e);
                             }
 
                         }

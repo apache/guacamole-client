@@ -183,30 +183,33 @@ public class EventLoggingListener implements Listener {
         if (creds.isEmpty())
             logger.debug("Empty authentication attempt (login screen "
                     + "initialization) from {} failed: {}",
-                    new RemoteAddress(creds), new Failure(event));
+                    new RemoteAddress(creds), new Failure(event), event.getFailure());
         else if (username == null || username.isEmpty())
             logger.debug("Anonymous authentication attempt from {} failed: {}",
-                    new RemoteAddress(creds), new Failure(event));
+                    new RemoteAddress(creds), new Failure(event), event.getFailure());
         else if (event.getFailure() instanceof GuacamoleInsufficientCredentialsException) {
             if (authProvider != null)
                 logger.debug("Authentication attempt from {} for user \"{}\" "
                         + "requires additional credentials to continue: {} "
                         + "(requested by \"{}\")", new RemoteAddress(creds),
-                        username, new Failure(event), authProvider.getIdentifier());
+                        username, new Failure(event), authProvider.getIdentifier(),
+                        event.getFailure());
             else
                 logger.debug("Authentication attempt from {} for user \"{}\" "
                         + "requires additional credentials to continue: {}",
-                        new RemoteAddress(creds), username, new Failure(event));
+                        new RemoteAddress(creds), username, new Failure(event),
+                        event.getFailure());
         }
         else {
             if (authProvider != null)
                 logger.warn("Authentication attempt from {} for user \"{}\" "
                         + "failed: {} (rejected by \"{}\")", new RemoteAddress(creds),
-                        username, new Failure(event), authProvider.getIdentifier());
+                        username, new Failure(event), authProvider.getIdentifier(),
+                        event.getFailure());
             else
                 logger.warn("Authentication attempt from {} for user \"{}\" "
                         + "failed: {}", new RemoteAddress(creds), username,
-                        new Failure(event));
+                        new Failure(event), event.getFailure());
         }
 
     }

@@ -221,9 +221,7 @@ public class UserGroupService {
                 }
                 catch (LdapInvalidAttributeValueException e) {
                     logger.error("User group missing identifier: {}",
-                            e.getMessage());
-                    logger.debug("LDAP exception while getting "
-                            + "group identifier.", e);
+                            e.getMessage(), e);
                 }
             }
         }
@@ -309,8 +307,7 @@ public class UserGroupService {
             }
             catch (LdapInvalidAttributeValueException e) {
                 logger.error("User group missing identifier: {}",
-                        e.getMessage());
-                logger.debug("LDAP exception while getting group identifier.", e);
+                        e.getMessage(), e);
             }
 
         });
