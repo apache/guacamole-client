@@ -122,12 +122,10 @@ public class TokenValidationService {
         }
         // Log any failures to validate/parse the JWT
         catch (MalformedClaimException e) {
-            logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage());
-            logger.debug("Malformed claim within received JWT.", e);
+            logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage(), e);
         }
         catch (InvalidJwtException e) {
-            logger.info("Rejected invalid OpenID token: {}", e.getMessage());
-            logger.debug("Invalid JWT received.", e);
+            logger.info("Rejected invalid OpenID token: {}", e.getMessage(), e);
         }
 
         return null;
@@ -160,8 +158,7 @@ public class TokenValidationService {
                     return username;
             }
             catch (MalformedClaimException e) {
-                logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage());
-                logger.debug("Malformed claim within received JWT.", e);
+                logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage(), e);
             }
 
             // Warn if username was not present in token, as it likely means
@@ -203,8 +200,7 @@ public class TokenValidationService {
                     return Collections.unmodifiableSet(new HashSet<>(oidcGroups));
             }   
             catch (MalformedClaimException e) {
-                logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage());
-                logger.debug("Malformed claim within received JWT.", e);
+                logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage(), e);
             }
         }
 
@@ -262,8 +258,7 @@ public class TokenValidationService {
                 return Collections.unmodifiableMap(tokens);
             }
             catch (MalformedClaimException e) {
-                logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage());
-                logger.debug("Malformed claim within received JWT.", e);
+                logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage(), e);
             }
         }
 

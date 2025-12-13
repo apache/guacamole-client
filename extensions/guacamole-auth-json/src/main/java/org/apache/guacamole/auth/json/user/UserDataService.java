@@ -168,22 +168,19 @@ public class UserDataService {
 
         // Fail if base64 data is not valid
         catch (IllegalArgumentException e) {
-            logger.warn("Submitted data is not proper base64.");
-            logger.debug("Invalid base64 data.", e);
+            logger.warn("Submitted data is not proper base64: {}", e.getMessage(), e);
             return null;
         }
 
         // Handle lack of standard UTF-8 support (should never happen)
         catch (UnsupportedEncodingException e) {
-            logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage());
-            logger.debug("Unable to decode base64 data as UTF-8.", e);
+            logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage(), e);
             return null;
         }
 
         // Fail if decryption or key retrieval fails for any reason
         catch (GuacamoleException e) {
-            logger.error("Decryption of received data failed: {}", e.getMessage());
-            logger.debug("Unable to decrypt received data.", e);
+            logger.error("Decryption of received data failed: {}", e.getMessage(), e);
             return null;
         }
 
@@ -205,8 +202,7 @@ public class UserDataService {
 
         // Fail UserData creation if JSON is invalid/unreadable
         catch (IOException e) {
-            logger.error("Received JSON is invalid: {}", e.getMessage());
-            logger.debug("Error parsing UserData JSON.", e);
+            logger.error("Received JSON is invalid: {}", e.getMessage(), e);
             return null;
         }
 

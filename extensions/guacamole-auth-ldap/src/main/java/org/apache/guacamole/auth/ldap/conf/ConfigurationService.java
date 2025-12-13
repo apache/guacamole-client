@@ -122,7 +122,7 @@ public class ConfigurationService {
 
                 }
                 catch (IOException e) {
-                    logger.error("\"{}\" could not be read/parsed: {}", ldapServers, e.getMessage());
+                    logger.error("\"{}\" could not be read/parsed: {}", ldapServers, e.getMessage(), e);
                 }
             }
             else

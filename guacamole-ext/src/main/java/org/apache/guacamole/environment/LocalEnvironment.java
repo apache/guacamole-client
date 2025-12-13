@@ -266,8 +266,9 @@ public class LocalEnvironment implements Environment {
 
                 }
                 catch (IOException e) {
-                    logger.error("Unable to read connection parameter information from \"{}\": {}", file.getAbsolutePath(), e.getMessage());
-                    logger.debug("Error reading protocol JSON.", e);
+                    logger.error("Unable to read connection parameter "
+                            + "information from \"{}\": {}",
+                            file.getAbsolutePath(), e.getMessage(), e);
                 }
 
             }
@@ -290,8 +291,9 @@ public class LocalEnvironment implements Environment {
                         protocols.put(protocol, readProtocol(stream));
                     }
                     catch (IOException e) {
-                        logger.error("Unable to read pre-defined connection parameter information for protocol \"{}\": {}", protocol, e.getMessage());
-                        logger.debug("Error reading pre-defined protocol JSON.", e);
+                        logger.error("Unable to read pre-defined connection "
+                                + "parameter information for protocol \"{}\": {}",
+                                protocol, e.getMessage(), e);
                     }
                 }
 
