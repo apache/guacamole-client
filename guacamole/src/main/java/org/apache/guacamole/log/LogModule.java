@@ -19,10 +19,7 @@
 
 package org.apache.guacamole.log;
 
-import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
 import com.google.inject.AbstractModule;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +29,7 @@ import java.io.InputStream;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.EnumGuacamoleProperty;
+import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +95,7 @@ public class LogModule extends AbstractModule {
             }
             catch (FileNotFoundException e) {
                 logger.info("Logback configuration could not be read "
-                        + "from \"{}\": {}", logbackFile, e.getMessage());
+                        + "from \"{}\": {}", logbackFile, e.getMessage(), e);
             }
         }
 
@@ -110,7 +108,7 @@ public class LogModule extends AbstractModule {
         }
         catch (GuacamoleException e) {
             level = LogLevel.INFO;
-            logger.error("Falling back to \"{}\" log level: {}", level.getCanonicalName(), e.getMessage());
+            logger.error("Falling back to \"{}\" log level: {}", level.getCanonicalName(), e.getMessage(), e);
         }
 
         return level.getLogbackConfiguration();
@@ -122,25 +120,26 @@ public class LogModule extends AbstractModule {
 
         try (InputStream logbackConfiguration = getLogbackConfiguration()) {
 
-            LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-            context.reset();
+            // Warn if the system is somehow preventing Guacamole from
+            // using its own logging
+            ILoggerFactory loggerFactory = LoggerFactory.getILoggerFactory();
+            if (!(loggerFactory instanceof ReconfigurableLoggerFactory)) {
+                logger.warn("Guacamole depends on its own SLF4J service "
+                        + "provider to configure logging, but your system has "
+                        + "forced a different service provider to take "
+                        + "priority. Guacamole's own logging configuration "
+                        + "may not have any effect, and logging context may "
+                        + "be missing.");
+            }
 
-            // Initialize logback
-            JoranConfigurator configurator = new JoranConfigurator();
-            configurator.setContext(context);
-            configurator.doConfigure(logbackConfiguration);
-
-            // Dump any errors that occur during logback init
-            StatusPrinter.printInCaseOfErrorsOrWarnings(context);
+            ((ReconfigurableLoggerFactory) loggerFactory).reconfigure(logbackConfiguration);
 
         }
         catch (JoranException e) {
-            logger.error("Initialization of logback failed: {}", e.getMessage());
-            logger.debug("Unable to load logback configuration.", e);
+            logger.error("Initialization of logback failed: {}", e.getMessage(), e);
         }
         catch (IOException e) {
-            logger.warn("Logback configuration file could not be cleanly closed: {}", e.getMessage());
-            logger.debug("Failed to close logback configuration file.", e);
+            logger.warn("Logback configuration file could not be cleanly closed: {}", e.getMessage(), e);
         }
 
     }

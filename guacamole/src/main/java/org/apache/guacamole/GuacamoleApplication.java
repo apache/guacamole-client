@@ -26,6 +26,7 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.ServerProperties;
 import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
 import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -67,6 +68,10 @@ public class GuacamoleApplication extends ResourceConfig {
 
         // Automatically scan for REST resources
         packages("org.apache.guacamole.rest");
+
+        // Explicitly disable WADL generation (we don't use it and Jersey warns
+        // of the fact that it won't generate a WADL otherwise)
+        property(ServerProperties.WADL_FEATURE_DISABLE, true);
 
         // Use Jackson for JSON
         register(JacksonFeature.class);

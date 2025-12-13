@@ -128,8 +128,7 @@ public class UserVerificationService {
         // If key is not valid base32, warn but otherwise pretend the key does
         // not exist
         catch (IllegalArgumentException e) {
-            logger.warn("TOTP key of user \"{}\" is not valid base32.", self.getIdentifier());
-            logger.debug("TOTP key is not valid base32.", e);
+            logger.warn("TOTP key of user \"{}\" is not valid base32.", self.getIdentifier(), e);
             return null;
         }
 
@@ -218,9 +217,7 @@ public class UserVerificationService {
                     + "lack permission to update their own account and the "
                     + "TOTP extension was unable to obtain privileged access. "
                     + "TOTP will be disabled for this user.",
-                    self.getIdentifier());
-            logger.debug("Permission denied to set TOTP key of user "
-                    + "account.", e);
+                    self.getIdentifier(), e);
             return false;
         }
         catch (GuacamoleUnsupportedException e) {
@@ -422,8 +419,7 @@ public class UserVerificationService {
 
         }
         catch (InvalidKeyException e) {
-            logger.warn("User \"{}\" is associated with an invalid TOTP key.", username);
-            logger.debug("TOTP key is not valid.", e);
+            logger.warn("User \"{}\" is associated with an invalid TOTP key.", username, e);
         }
 
         // Provided code is not valid
