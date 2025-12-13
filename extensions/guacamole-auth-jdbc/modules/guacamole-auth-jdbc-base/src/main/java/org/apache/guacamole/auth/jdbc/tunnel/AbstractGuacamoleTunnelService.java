@@ -778,8 +778,9 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             // If connection failed due to an upstream error, retry other
             // connections
             catch (GuacamoleUpstreamException e) {
-                logger.info("Upstream error intercepted for connection \"{}\". Failing over to next connection in group...", connection.getIdentifier());
-                logger.debug("Upstream remote desktop reported an error during connection.", e);
+                logger.info("Upstream error intercepted for connection \"{}\". "
+                        + "Failing over to next connection in group...",
+                        connection.getIdentifier(), e);
                 connections.remove(connection);
                 upstreamHasFailed = true;
             }

@@ -75,7 +75,7 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
         if (t instanceof GuacamoleUnauthorizedException) {
             String token = authenticationService.getAuthenticationToken(request);
             if (authenticationService.destroyGuacamoleSession(token))
-                logger.debug("Implicitly invalidated session for token \"{}\"", token);
+                logger.debug("Implicitly invalidated session for token \"{}\"", token, t);
         }
         
         // Translate GuacamoleException subclasses to HTTP error codes 
@@ -84,11 +84,9 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
             // Always log the human-readable details of GuacacamoleExceptions
             // for the benefit of the administrator
             if (t instanceof GuacamoleClientException)
-                logger.debug("Client request rejected: {}", t.getMessage());
-            else {
-                logger.error("Request could not be processed: {}", t.getMessage());
-                logger.debug("Processing of request aborted by extension.", t);
-            }
+                logger.debug("Client request rejected: {}", t.getMessage(), t);
+            else
+                logger.error("Request could not be processed: {}", t.getMessage(), t);
 
             return Response
                     .status(((GuacamoleException) t).getHttpStatusCode())
@@ -100,13 +98,11 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
         // Wrap unchecked exceptions
         String message = t.getMessage();
         if (message != null)
-            logger.error("Unexpected internal error: {}", message);
+            logger.error("Unexpected internal error: {}", message, t);
         else
             logger.error("An internal error occurred, but did not contain "
                     + "an error message. Enable debug-level logging for "
-                    + "details.");
-            
-        logger.debug("Unexpected error in REST endpoint.", t);
+                    + "details.", t);
             
         return Response
                 .status(Response.Status.INTERNAL_SERVER_ERROR)

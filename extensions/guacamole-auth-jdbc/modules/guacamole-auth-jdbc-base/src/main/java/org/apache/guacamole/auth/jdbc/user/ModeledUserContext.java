@@ -325,13 +325,9 @@ public class ModeledUserContext extends RestrictedObject
         }
 
         catch (GuacamoleException e) {
-
-            logger.warn(
-                    "Unable to determine if access window enforcement is"
-                    + " enabled for active sessions; enforcing by default: {}"
-                    , e.getMessage());
-            logger.debug("Unable to determine access window enforcement policy.", e);
-
+            logger.warn("Unable to determine if access window enforcement is"
+                    + " enabled for active sessions; enforcing by default: {}",
+                    e.getMessage(), e);
         }
 
         // A user context is valid if the associated user's account is valid
