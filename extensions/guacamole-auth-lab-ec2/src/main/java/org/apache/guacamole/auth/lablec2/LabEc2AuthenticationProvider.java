@@ -18,22 +18,13 @@
  */
 package org.apache.guacamole.auth.lablec2;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
-import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.Connection;
-import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.auth.DelegatingUserContext;
-import org.apache.guacamole.net.auth.Directory;
-import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.*;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
@@ -164,14 +155,31 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         SimpleConnection labConnection = buildLabConnection(
                 authenticatedUser.getIdentifier(), hostname);
 
+        final String rootId = context.getRootConnectionGroup().getIdentifier();
+        labConnection.setParentIdentifier(rootId);
+
         Directory<Connection> mergedDir = new LabMergingConnectionDirectory(
                 baseDir, labConnection);
+        logger.debug("Merged directory identifiers: {}", mergedDir.getIdentifiers());
 
+        final ConnectionGroup mergedRoot = new DelegatingConnectionGroup(context.getRootConnectionGroup()) {
+            @Override
+            public Set<String> getConnectionIdentifiers() throws GuacamoleException {
+                Set<String> ids = new HashSet<>(super.getConnectionIdentifiers());
+                ids.add(labConnection.getIdentifier());
+                return Collections.unmodifiableSet(ids);
+            }
+        };
+
+        logger.debug("Merged ROOT connections: {}", mergedRoot.getConnectionIdentifiers());
         return new DelegatingUserContext(context) {
             @Override
-            public Directory<Connection> getConnectionDirectory()
-                    throws GuacamoleException {
+            public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
                 return mergedDir;
+            }
+            @Override
+            public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
+                return mergedRoot;
             }
         };
     }
@@ -380,11 +388,8 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         if (vmPassword != null && !vmPassword.isEmpty())
             config.setParameter("password", vmPassword);
 
-        SimpleConnection connection = new SimpleConnection("My Lab VM",
+        return new SimpleConnection("My Lab VM",
                 connectionId, config);
-        connection.setParentIdentifier("ROOT");
-
-        return connection;
     }
 
     /**
