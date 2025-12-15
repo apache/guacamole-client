@@ -26,6 +26,8 @@ import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
 import org.apache.guacamole.net.auth.*;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
+import org.apache.guacamole.net.auth.permission.ObjectPermission;
+import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +57,30 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
     private static final Logger logger = LoggerFactory.getLogger(
             LabEc2AuthenticationProvider.class);
 
+    /**
+     * If the user has multiple data sources, this extension can inject the lab
+     * connection into more than one data source, resulting in duplicate
+     * "My Lab VM" entries. To mitigate this without requiring configuration,
+     * we temporarily "pin" each user to a single underlying data source.
+     */
+    private static final long DECORATION_TARGET_TTL_MS = 10L * 60L * 1000L;
+
+    private static final class DecorationTarget {
+
+        private final String authProviderIdentifier;
+        private final long chosenAtMs;
+
+        private DecorationTarget(String authProviderIdentifier, long chosenAtMs) {
+            this.authProviderIdentifier = authProviderIdentifier;
+            this.chosenAtMs = chosenAtMs;
+        }
+
+        private boolean isExpired(long nowMs) {
+            return nowMs - chosenAtMs > DECORATION_TARGET_TTL_MS;
+        }
+
+    }
+
     /** EC2 client used to orchestrate lab instances. */
     private final Ec2Client ec2;
 
@@ -69,13 +95,17 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
     private final String vmUsername;
     private final String vmPassword;
     private final String labGroupName;
+    private final String decorateOnlyAuthProvider;
+
+    private final java.util.concurrent.ConcurrentHashMap<String, DecorationTarget>
+            decorationTargetsByUser = new java.util.concurrent.ConcurrentHashMap<>();
 
     /**
      * Creates the authentication provider, reading configuration from the
      * local environment.
      *
      * @throws GuacamoleException
-     *     if configuration cannot be read.
+     *                            if configuration cannot be read.
      */
     @SuppressWarnings("deprecation")
     public LabEc2AuthenticationProvider() throws GuacamoleException {
@@ -92,6 +122,19 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         vmUsername = env.getProperty(LabEc2Properties.LAB_EC2_USERNAME, "labuser");
         vmPassword = env.getProperty(LabEc2Properties.LAB_EC2_PASSWORD);
         labGroupName = env.getProperty(LabEc2Properties.LAB_EC2_LAB_GROUP, "lab_user");
+        decorateOnlyAuthProvider = env.getProperty(LabEc2Properties.LAB_EC2_DECORATE_ONLY_AUTH_PROVIDER);
+
+        logger.info(
+                "Initializing lab-ec2 extension: region='{}' protocol='{}' port='{}' labGroup='{}' launchTemplateIdSet={} amiIdSet={} subnetIdSet={} securityGroups={}",
+                region, protocol, port, labGroupName,
+                launchTemplateId != null && !launchTemplateId.isEmpty(),
+                labAmiId != null && !labAmiId.isEmpty(),
+                subnetId != null && !subnetId.isEmpty(),
+                securityGroupIds.size());
+        if (decorateOnlyAuthProvider != null && !decorateOnlyAuthProvider.trim().isEmpty()) {
+            logger.info("lab-ec2 will only decorate user contexts from auth provider '{}'.",
+                    decorateOnlyAuthProvider.trim());
+        }
 
         ec2 = Ec2Client.builder()
                 .httpClientBuilder(UrlConnectionHttpClient.builder())
@@ -124,15 +167,49 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             return context;
         }
 
+        String baseAuthProvider = context.getAuthenticationProvider() != null
+                ? context.getAuthenticationProvider().getIdentifier()
+                : null;
+
+        if (decorateOnlyAuthProvider != null && !decorateOnlyAuthProvider.trim().isEmpty()) {
+            String requiredProvider = decorateOnlyAuthProvider.trim();
+            if (baseAuthProvider == null || !requiredProvider.equals(baseAuthProvider)) {
+                logger.debug("Skipping lab-ec2 decoration for user '{}' because base auth provider is '{}' (required '{}').",
+                        authenticatedUser.getIdentifier(), baseAuthProvider, requiredProvider);
+                return context;
+            }
+        }
+        else if (baseAuthProvider != null) {
+            long nowMs = System.currentTimeMillis();
+            DecorationTarget target = decorationTargetsByUser.compute(authenticatedUser.getIdentifier(),
+                    (key, existing) -> (existing == null || existing.isExpired(nowMs))
+                            ? new DecorationTarget(baseAuthProvider, nowMs)
+                            : existing);
+
+            if (!baseAuthProvider.equals(target.authProviderIdentifier)) {
+                logger.debug("Skipping lab-ec2 decoration for user '{}' in auth provider '{}' (already decorating via '{}' chosen {} ms ago).",
+                        authenticatedUser.getIdentifier(), baseAuthProvider,
+                        target.authProviderIdentifier, nowMs - target.chosenAtMs);
+                return context;
+            }
+        }
+
+        String owner = authenticatedUser.getIdentifier().toLowerCase(Locale.ROOT);
+
         logger.info("Ensuring lab EC2 instance for user '{}'.",
                 authenticatedUser.getIdentifier());
-        Instance instance = ensureLabInstance(authenticatedUser.getIdentifier());
+        Instance instance = ensureLabInstance(owner);
 
         // Use Private IP as requested
         String hostname = instance.privateIpAddress();
+        if (hostname == null || hostname.isEmpty()) {
+            logger.warn("EC2 instance '{}' for user '{}' has no private IP address yet (state='{}').",
+                    instance.instanceId(), authenticatedUser.getIdentifier(),
+                    instance.state() != null ? instance.state().name() : "unknown");
+        }
 
         // Determine connection ID
-        String connectionId = "lab-" + authenticatedUser.getIdentifier();
+        String connectionId = "lab-" + owner;
 
         // Check if connection already exists
         Directory<Connection> baseDir = context.getConnectionDirectory();
@@ -153,14 +230,16 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                 instance.instanceId(), hostname, authenticatedUser.getIdentifier());
 
         SimpleConnection labConnection = buildLabConnection(
-                authenticatedUser.getIdentifier(), hostname);
+                owner, hostname);
+        logger.debug("Prepared lab connection '{}' (name='{}') for user '{}' using protocol='{}' port='{}'.",
+                labConnection.getIdentifier(), labConnection.getName(),
+                authenticatedUser.getIdentifier(), protocol, port);
 
         final String rootId = context.getRootConnectionGroup().getIdentifier();
         labConnection.setParentIdentifier(rootId);
 
         Directory<Connection> mergedDir = new LabMergingConnectionDirectory(
                 baseDir, labConnection);
-        logger.debug("Merged directory identifiers: {}", mergedDir.getIdentifiers());
 
         final ConnectionGroup mergedRoot = new DelegatingConnectionGroup(context.getRootConnectionGroup()) {
             @Override
@@ -171,30 +250,193 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             }
         };
 
-        logger.debug("Merged ROOT connections: {}", mergedRoot.getConnectionIdentifiers());
+        final User mergedSelf = new DelegatingUser(context.self()) {
+
+            @Override
+            public Permissions getEffectivePermissions() throws GuacamoleException {
+                Permissions effective = super.getEffectivePermissions();
+                return new LabPermissions(effective, labConnection.getIdentifier());
+            }
+
+            @Override
+            public ObjectPermissionSet getConnectionPermissions() throws GuacamoleException {
+                return new LabObjectPermissionSet(super.getConnectionPermissions(),
+                        labConnection.getIdentifier());
+            }
+
+        };
+
+        try {
+            Permissions effective = mergedSelf.getEffectivePermissions();
+            boolean hasRead = effective.getConnectionPermissions().hasPermission(
+                    ObjectPermission.Type.READ, labConnection.getIdentifier());
+            logger.debug("Effective permissions for user '{}' include READ on injected connection '{}': {}",
+                    authenticatedUser.getIdentifier(), labConnection.getIdentifier(), hasRead);
+        } catch (GuacamoleException e) {
+            logger.warn("Unable to verify effective permissions for injected connection '{}' for user '{}': {}",
+                    labConnection.getIdentifier(), authenticatedUser.getIdentifier(), e.getMessage());
+        }
+
+        try {
+            logger.debug("Merged root connection identifiers for user '{}': {}",
+                    authenticatedUser.getIdentifier(), mergedRoot.getConnectionIdentifiers());
+        } catch (GuacamoleException e) {
+            logger.debug("Unable to enumerate merged root connections for user '{}': {}",
+                    authenticatedUser.getIdentifier(), e.getMessage());
+        }
+
         return new DelegatingUserContext(context) {
             @Override
             public Directory<Connection> getConnectionDirectory() throws GuacamoleException {
                 return mergedDir;
             }
+
             @Override
             public ConnectionGroup getRootConnectionGroup() throws GuacamoleException {
                 return mergedRoot;
             }
+
+            @Override
+            public User self() {
+                return mergedSelf;
+            }
         };
+    }
+
+    /**
+     * Permissions wrapper that ensures the injected lab connection is actually
+     * visible/usable (READ permission) within the decorated user context.
+     */
+    private static final class LabPermissions implements Permissions {
+
+        private final Permissions delegate;
+        private final String labConnectionId;
+
+        private LabPermissions(Permissions delegate, String labConnectionId) {
+            this.delegate = delegate;
+            this.labConnectionId = labConnectionId;
+        }
+
+        @Override
+        public ObjectPermissionSet getConnectionPermissions() throws GuacamoleException {
+            return new LabObjectPermissionSet(delegate.getConnectionPermissions(), labConnectionId);
+        }
+
+        @Override
+        public ObjectPermissionSet getActiveConnectionPermissions() throws GuacamoleException {
+            return delegate.getActiveConnectionPermissions();
+        }
+
+        @Override
+        public ObjectPermissionSet getConnectionGroupPermissions() throws GuacamoleException {
+            return delegate.getConnectionGroupPermissions();
+        }
+
+        @Override
+        public ObjectPermissionSet getSharingProfilePermissions() throws GuacamoleException {
+            return delegate.getSharingProfilePermissions();
+        }
+
+        @Override
+        public org.apache.guacamole.net.auth.permission.SystemPermissionSet getSystemPermissions()
+                throws GuacamoleException {
+            return delegate.getSystemPermissions();
+        }
+
+        @Override
+        public ObjectPermissionSet getUserPermissions() throws GuacamoleException {
+            return delegate.getUserPermissions();
+        }
+
+        @Override
+        public ObjectPermissionSet getUserGroupPermissions() throws GuacamoleException {
+            return delegate.getUserGroupPermissions();
+        }
+
+    }
+
+    /**
+     * ObjectPermissionSet wrapper that grants READ permission for the injected
+     * lab connection identifier.
+     */
+    private static final class LabObjectPermissionSet implements ObjectPermissionSet {
+
+        private final ObjectPermissionSet delegate;
+        private final String labConnectionId;
+
+        private LabObjectPermissionSet(ObjectPermissionSet delegate, String labConnectionId) {
+            this.delegate = delegate;
+            this.labConnectionId = labConnectionId;
+        }
+
+        @Override
+        public boolean hasPermission(ObjectPermission.Type permission, String identifier)
+                throws GuacamoleException {
+
+            if (labConnectionId.equals(identifier) && permission == ObjectPermission.Type.READ)
+                return true;
+
+            return delegate.hasPermission(permission, identifier);
+        }
+
+        @Override
+        public void addPermission(ObjectPermission.Type permission, String identifier)
+                throws GuacamoleException {
+            delegate.addPermission(permission, identifier);
+        }
+
+        @Override
+        public void removePermission(ObjectPermission.Type permission, String identifier)
+                throws GuacamoleException {
+            delegate.removePermission(permission, identifier);
+        }
+
+        @Override
+        public Collection<String> getAccessibleObjects(
+                Collection<ObjectPermission.Type> permissions,
+                Collection<String> identifiers) throws GuacamoleException {
+
+            Collection<String> accessible = new ArrayList<>(
+                    delegate.getAccessibleObjects(permissions, identifiers));
+
+            if (identifiers.contains(labConnectionId)
+                    && permissions.contains(ObjectPermission.Type.READ)
+                    && !accessible.contains(labConnectionId))
+                accessible.add(labConnectionId);
+
+            return accessible;
+        }
+
+        @Override
+        public Set<ObjectPermission> getPermissions() throws GuacamoleException {
+            Set<ObjectPermission> merged = new HashSet<>(delegate.getPermissions());
+            merged.add(new ObjectPermission(ObjectPermission.Type.READ, labConnectionId));
+            return merged;
+        }
+
+        @Override
+        public void addPermissions(Set<ObjectPermission> permissions) throws GuacamoleException {
+            delegate.addPermissions(permissions);
+        }
+
+        @Override
+        public void removePermissions(Set<ObjectPermission> permissions) throws GuacamoleException {
+            delegate.removePermissions(permissions);
+        }
+
     }
 
     /**
      * Ensures a per-user EC2 instance exists and is running.
      *
      * @param username
-     *     The username to tag on the instance.
+     *                 The username to tag on the instance.
      *
      * @return
-     *     The running EC2 instance.
+     *         The running EC2 instance.
      *
      * @throws GuacamoleException
-     *     If EC2 operations fail.
+     *                            If EC2 operations fail.
      */
     private Instance ensureLabInstance(String username) throws GuacamoleException {
         String owner = username.toLowerCase(Locale.ROOT);
@@ -224,14 +466,12 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             logger.info("No existing lab instance found for owner '{}'; launching new instance.",
                     owner);
             instance = runLabInstance(owner);
-        }
-        else if (InstanceStateName.STOPPED.equals(instance.state().name())
+        } else if (InstanceStateName.STOPPED.equals(instance.state().name())
                 || InstanceStateName.STOPPING.equals(instance.state().name())) {
             logger.info("Found stopped lab instance '{}' for owner '{}'; starting it.",
                     instance.instanceId(), owner);
             instance = startInstance(instance.instanceId());
-        }
-        else {
+        } else {
             logger.info("Using existing lab instance '{}' in state '{}' for owner '{}'.",
                     instance.instanceId(), instance.state().name(), owner);
         }
@@ -243,29 +483,29 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
      * Starts an existing instance and waits for it to become available.
      *
      * @param instanceId
-     *     The ID of the instance to start.
+     *                   The ID of the instance to start.
      *
      * @return
-     *     The updated instance details.
+     *         The updated instance details.
      *
      * @throws GuacamoleException
-     *     If the instance cannot be started.
+     *                            If the instance cannot be started.
      */
     private Instance startInstance(String instanceId) throws GuacamoleException {
         try {
             logger.debug("Starting EC2 instance '{}'.", instanceId);
-            StartInstancesResponse startResponse = ec2.startInstances(builder ->
-                    builder.instanceIds(instanceId));
+            StartInstancesResponse startResponse = ec2.startInstances(builder -> builder.instanceIds(instanceId));
             if (startResponse.startingInstances().isEmpty())
                 throw new GuacamoleServerException("Failed to start lab instance " + instanceId);
 
-            ec2.waiter().waitUntilInstanceRunning(waiter ->
-                    waiter.instanceIds(instanceId));
+            long waitStart = System.currentTimeMillis();
+            ec2.waiter().waitUntilInstanceRunning(waiter -> waiter.instanceIds(instanceId));
+            logger.info("Waited {} ms for instance '{}' to report running.",
+                    System.currentTimeMillis() - waitStart, instanceId);
 
             logger.debug("Instance '{}' reported as running; fetching details.", instanceId);
             return getInstanceById(instanceId);
-        }
-        catch (SdkException e) {
+        } catch (SdkException e) {
             throw new GuacamoleServerException("Unable to start lab EC2 instance.", e);
         }
     }
@@ -274,13 +514,13 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
      * Launches a new EC2 instance for the given owner.
      *
      * @param owner
-     *     The owner tag value to assign.
+     *              The owner tag value to assign.
      *
      * @return
-     *     The new EC2 instance.
+     *         The new EC2 instance.
      *
      * @throws GuacamoleException
-     *     If the instance cannot be created.
+     *                            If the instance cannot be created.
      */
     private Instance runLabInstance(String owner) throws GuacamoleException {
         try {
@@ -290,12 +530,11 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                     .maxCount(1);
 
             if (launchTemplateId != null && !launchTemplateId.isEmpty()) {
-                builder = builder.launchTemplate(template ->
-                        template.launchTemplateId(launchTemplateId));
-            }
-            else {
+                builder = builder.launchTemplate(template -> template.launchTemplateId(launchTemplateId));
+            } else {
                 if (labAmiId == null || labAmiId.isEmpty())
-                    throw new GuacamoleServerException("lab-ec2-ami-id must be set when no launch template is provided.");
+                    throw new GuacamoleServerException(
+                            "lab-ec2-ami-id must be set when no launch template is provided.");
 
                 builder = builder.imageId(labAmiId)
                         .instanceType(InstanceType.fromValue(instanceType));
@@ -312,21 +551,22 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                     .tags(
                             Tag.builder().key("Name").value("guac-lab-" + owner).build(),
                             Tag.builder().key("LabOwner").value(owner).build(),
-                            Tag.builder().key("LabEnv").value("guac").build()
-                    )
+                            Tag.builder().key("LabEnv").value("guac").build())
                     .build());
 
             RunInstancesResponse runResponse = ec2.runInstances(builder.build());
             Instance instance = runResponse.instances().get(0);
 
-            ec2.waiter().waitUntilInstanceRunning(waiter ->
-                    waiter.instanceIds(instance.instanceId()));
+            long waitStart = System.currentTimeMillis();
+            ec2.waiter().waitUntilInstanceRunning(waiter -> waiter.instanceIds(instance.instanceId()));
+            logger.info("Waited {} ms for newly-launched instance '{}' (owner='{}') to report running.",
+                    System.currentTimeMillis() - waitStart,
+                    instance.instanceId(), owner);
 
             logger.info("Launched lab instance '{}' for owner '{}'; waiting until running.",
                     instance.instanceId(), owner);
             return getInstanceById(instance.instanceId());
-        }
-        catch (SdkException e) {
+        } catch (SdkException e) {
             throw new GuacamoleServerException("Unable to create lab EC2 instance.", e);
         }
     }
@@ -335,27 +575,25 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
      * Retrieves details for a specific instance ID.
      *
      * @param instanceId
-     *     The instance ID to query.
+     *                   The instance ID to query.
      *
      * @return
-     *     The instance details.
+     *         The instance details.
      *
      * @throws GuacamoleException
-     *     If the instance cannot be described.
+     *                            If the instance cannot be described.
      */
     private Instance getInstanceById(String instanceId) throws GuacamoleException {
         try {
             logger.debug("Describing EC2 instance '{}'.", instanceId);
-            DescribeInstancesResponse response = ec2.describeInstances(builder ->
-                    builder.instanceIds(instanceId));
+            DescribeInstancesResponse response = ec2.describeInstances(builder -> builder.instanceIds(instanceId));
 
             return response.reservations().stream()
                     .flatMap(reservation -> reservation.instances().stream())
                     .findFirst()
                     .orElseThrow(() -> new GuacamoleServerException(
                             "Unable to load lab instance " + instanceId));
-        }
-        catch (SdkException e) {
+        } catch (SdkException e) {
             throw new GuacamoleServerException("Unable to describe lab EC2 instance.", e);
         }
     }
@@ -367,8 +605,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             throws GuacamoleException {
         try {
             return ec2.describeInstances(builder -> builder.filters(filters));
-        }
-        catch (SdkException e) {
+        } catch (SdkException e) {
             throw new GuacamoleServerException("Unable to describe EC2 instances.", e);
         }
     }
@@ -384,9 +621,15 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         config.setParameter("hostname", hostname);
         config.setParameter("port", port);
         config.setParameter("username", vmUsername);
+        config.setParameter("ignore-cert", "true");
 
         if (vmPassword != null && !vmPassword.isEmpty())
             config.setParameter("password", vmPassword);
+
+        logger.debug(
+                "Building lab connection config for '{}' -> hostname='{}' port='{}' vmUsername='{}' passwordSet={}",
+                connectionId, hostname, port, vmUsername,
+                vmPassword != null && !vmPassword.isEmpty());
 
         return new SimpleConnection("My Lab VM",
                 connectionId, config);

@@ -148,6 +148,21 @@ public final class LabEc2Properties {
             };
 
     /**
+     * Optional identifier of the authentication provider / data source that
+     * should receive the injected lab connection (ex: "mysql", "postgresql").
+     *
+     * If unset, the extension may decorate more than one data source for users
+     * that have access to multiple data sources.
+     */
+    public static final GuacamoleProperty<String> LAB_EC2_DECORATE_ONLY_AUTH_PROVIDER =
+            new StringGuacamoleProperty() {
+                @Override
+                public String getName() {
+                    return "lab-ec2-decorate-only-auth-provider";
+                }
+            };
+
+    /**
      * Utility class; do not instantiate.
      */
     private LabEc2Properties() {
