@@ -7,6 +7,14 @@
 
     "authProviders" : [
         "org.apache.guacamole.auth.lablec2.LabEc2AuthenticationProvider"
+    ],
+
+    "js" : [
+        "lab-ec2-ui.js"
+    ],
+
+    "css" : [
+        "lab-ec2-ui.css"
     ]
 
 }

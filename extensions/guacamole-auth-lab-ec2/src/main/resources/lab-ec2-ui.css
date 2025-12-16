@@ -1,0 +1,146 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#lab-ec2-wait-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 12, 16, 0.80);
+    backdrop-filter: blur(2px);
+}
+
+#lab-ec2-wait-overlay.lab-ec2-wait-overlay--visible {
+    display: flex;
+}
+
+.lab-ec2-wait-overlay__content {
+    max-width: 520px;
+    padding: 24px 28px;
+    border-radius: 14px;
+    color: #fff;
+    text-align: center;
+    background: rgba(20, 24, 32, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.40);
+}
+
+.lab-ec2-wait-overlay__coffee {
+    position: relative;
+    width: 86px;
+    height: 86px;
+    margin: 0 auto 10px;
+}
+
+.lab-ec2-wait-overlay__cup {
+    position: absolute;
+    left: 50%;
+    bottom: 6px;
+    width: 62px;
+    height: 40px;
+    transform: translateX(-50%);
+    border-radius: 0 0 12px 12px;
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.08);
+}
+
+.lab-ec2-wait-overlay__cup::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 9px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.98);
+}
+
+.lab-ec2-wait-overlay__cup::after {
+    content: "";
+    position: absolute;
+    right: -14px;
+    top: 10px;
+    width: 20px;
+    height: 20px;
+    border: 5px solid rgba(255, 255, 255, 0.92);
+    border-left: 5px solid transparent;
+    border-radius: 50%;
+    transform: rotate(-10deg);
+}
+
+.lab-ec2-wait-overlay__steam {
+    position: absolute;
+    left: 50%;
+    bottom: 46px;
+    width: 16px;
+    height: 36px;
+    margin-left: -8px;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.55);
+    border-color: rgba(255, 255, 255, 0.55) transparent transparent transparent;
+    filter: blur(0.2px);
+    opacity: 0;
+    animation: lab-ec2-steam 1.6s ease-in-out infinite;
+}
+
+.lab-ec2-wait-overlay__steam--1 {
+    --steam-x: -18px;
+    animation-delay: 0s;
+}
+
+.lab-ec2-wait-overlay__steam--2 {
+    --steam-x: 0px;
+    animation-delay: 0.35s;
+}
+
+.lab-ec2-wait-overlay__steam--3 {
+    --steam-x: 18px;
+    animation-delay: 0.7s;
+}
+
+@keyframes lab-ec2-steam {
+    0% {
+        opacity: 0;
+        transform: translate(var(--steam-x, 0), 8px) scale(0.9);
+    }
+    20% {
+        opacity: 0.85;
+    }
+    60% {
+        opacity: 0.55;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--steam-x, 0), -18px) scale(1.05);
+    }
+}
+
+.lab-ec2-wait-overlay__title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.lab-ec2-wait-overlay__subtitle {
+    font-size: 13px;
+    opacity: 0.85;
+    line-height: 1.4;
+}

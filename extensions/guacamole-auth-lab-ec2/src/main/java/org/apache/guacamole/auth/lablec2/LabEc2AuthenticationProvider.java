@@ -229,8 +229,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         logger.info("Using lab instance '{}' at host '{}' for user '{}'.",
                 instance.instanceId(), hostname, authenticatedUser.getIdentifier());
 
-        SimpleConnection labConnection = buildLabConnection(
-                owner, hostname);
+        SimpleConnection labConnection = buildLabConnection(owner, hostname);
         logger.debug("Prepared lab connection '{}' (name='{}') for user '{}' using protocol='{}' port='{}'.",
                 labConnection.getIdentifier(), labConnection.getName(),
                 authenticatedUser.getIdentifier(), protocol, port);
@@ -505,7 +504,8 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
             logger.debug("Instance '{}' reported as running; fetching details.", instanceId);
             return getInstanceById(instanceId);
-        } catch (SdkException e) {
+        }
+        catch (SdkException e) {
             throw new GuacamoleServerException("Unable to start lab EC2 instance.", e);
         }
     }
@@ -566,7 +566,8 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             logger.info("Launched lab instance '{}' for owner '{}'; waiting until running.",
                     instance.instanceId(), owner);
             return getInstanceById(instance.instanceId());
-        } catch (SdkException e) {
+        }
+        catch (SdkException e) {
             throw new GuacamoleServerException("Unable to create lab EC2 instance.", e);
         }
     }
@@ -631,8 +632,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                 connectionId, hostname, port, vmUsername,
                 vmPassword != null && !vmPassword.isEmpty());
 
-        return new SimpleConnection("My Lab VM",
-                connectionId, config);
+        return new SimpleConnection("My Lab VM", connectionId, config);
     }
 
     /**
