@@ -28,13 +28,23 @@
 
     var MODULE_NAME = 'labEc2Ui';
     var OVERLAY_ID = 'lab-ec2-wait-overlay';
-    var SHOW_DELAY_MS = 600;
+    var SHOW_DELAY_MS = 150;
+    var DEBUG = true;
+
+    var log = function log() {
+        if (!DEBUG || !window || !window.console)
+            return;
+        try { window.console.log.apply(window.console, arguments); }
+        catch (e) {}
+    };
 
     var ensureOverlay = function ensureOverlay() {
 
         var overlay = document.getElementById(OVERLAY_ID);
         if (overlay)
             return overlay;
+
+        log('[lab-ec2-ui] creating overlay');
 
         overlay = document.createElement('div');
         overlay.id = OVERLAY_ID;
@@ -53,12 +63,17 @@
             '</div>';
 
         document.body.appendChild(overlay);
+        log('[lab-ec2-ui] overlay appended');
         return overlay;
     };
+
+    log('[lab-ec2-ui] script loaded');
 
     angular.module(MODULE_NAME, [])
 
     .config(['$httpProvider', function labEc2UiConfig($httpProvider) {
+
+        log('[lab-ec2-ui] module config start');
 
         var pendingRequests = 0;
         var showTimer = null;
@@ -67,6 +82,7 @@
             var overlay = ensureOverlay();
             overlay.classList.add('lab-ec2-wait-overlay--visible');
             overlay.setAttribute('aria-hidden', 'false');
+            log('[lab-ec2-ui] show (pendingRequests=' + pendingRequests + ')');
         };
 
         var hide = function hide() {
@@ -75,6 +91,7 @@
                 return;
             overlay.classList.remove('lab-ec2-wait-overlay--visible');
             overlay.setAttribute('aria-hidden', 'true');
+            log('[lab-ec2-ui] hide');
         };
 
         var scheduleShow = function scheduleShow() {
@@ -85,6 +102,7 @@
                 if (pendingRequests > 0)
                     show();
             }, SHOW_DELAY_MS);
+            log('[lab-ec2-ui] schedule show in ' + SHOW_DELAY_MS + 'ms');
         };
 
         var cancelShow = function cancelShow() {
@@ -109,33 +127,48 @@
         };
 
         var isApiRequest = function isApiRequest(url) {
-            return typeof url === 'string' && url.indexOf('/api/') !== -1;
+            if (typeof url !== 'string')
+                return false;
+
+            // Guacamole authentication/token refresh uses "api/tokens". This
+            // is where lab-ec2 can block while waiting for EC2 to start.
+            return url.indexOf('api/tokens') === 0 || url.indexOf('/api/tokens') !== -1;
         };
 
         $httpProvider.interceptors.push(['$q', function ($q) {
             return {
                 request: function (config) {
-                    if (isApiRequest(config.url))
+                    if (isApiRequest(config.url)) {
+                        log('[lab-ec2-ui] intercept request:', config.method, config.url);
                         requestStarted();
+                    }
                     return config;
                 },
                 response: function (response) {
-                    if (isApiRequest(response.config && response.config.url))
+                    if (isApiRequest(response.config && response.config.url)) {
+                        log('[lab-ec2-ui] intercept response:', response.status, response.config.url);
                         requestFinished();
+                    }
                     return response;
                 },
                 responseError: function (rejection) {
-                    if (isApiRequest(rejection.config && rejection.config.url))
+                    if (isApiRequest(rejection.config && rejection.config.url)) {
+                        log('[lab-ec2-ui] intercept responseError:', rejection.status, rejection.config.url);
                         requestFinished();
+                    }
                     return $q.reject(rejection);
                 }
             };
         }]);
+
+        log('[lab-ec2-ui] interceptor registered');
 
     }]);
 
     // Ensure module is loaded in both login and post-login apps
     try { angular.module('login').requires.push(MODULE_NAME); } catch (e) {}
     try { angular.module('index').requires.push(MODULE_NAME); } catch (e) {}
+
+    log('[lab-ec2-ui] module injected into angular apps (if present)');
 
 })();
