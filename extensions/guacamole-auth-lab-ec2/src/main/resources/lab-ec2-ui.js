@@ -30,6 +30,7 @@
     var OVERLAY_ID = 'lab-ec2-wait-overlay';
     var SHOW_DELAY_MS = 150;
     var DEBUG = true;
+    var overlayElement = null;
 
     var log = function log() {
         if (!DEBUG || !window || !window.console)
@@ -43,6 +44,9 @@
         var overlay = document.getElementById(OVERLAY_ID);
         if (overlay)
             return overlay;
+
+        if (overlayElement)
+            return overlayElement;
 
         log('[lab-ec2-ui] creating overlay');
 
@@ -58,16 +62,41 @@
             '    <div class="lab-ec2-wait-overlay__steam lab-ec2-wait-overlay__steam--3"></div>' +
             '    <div class="lab-ec2-wait-overlay__cup"></div>' +
             '  </div>' +
-            '  <div class="lab-ec2-wait-overlay__title">Brewing your coffee…</div>' +
+            '  <div class="lab-ec2-wait-overlay__title">Brewing your coffee...</div>' +
             '  <div class="lab-ec2-wait-overlay__subtitle">Starting your lab VM. This can take a minute.</div>' +
             '</div>';
 
-        document.body.appendChild(overlay);
-        log('[lab-ec2-ui] overlay appended');
+        overlayElement = overlay;
+
+        var parent = document.body || document.documentElement;
+        if (!parent) {
+            log('[lab-ec2-ui] overlay parent not ready yet (document.readyState=' + document.readyState + ')');
+
+            try {
+                document.addEventListener('DOMContentLoaded', function () {
+                    try {
+                        var readyParent = document.body || document.documentElement;
+                        if (readyParent && !document.getElementById(OVERLAY_ID)) {
+                            readyParent.appendChild(overlay);
+                            log('[lab-ec2-ui] overlay appended after DOMContentLoaded');
+                        }
+                    }
+                    catch (e) {}
+                }, { once: true });
+            }
+            catch (e) {}
+
+            return overlay;
+        }
+
+        parent.appendChild(overlay);
+        log('[lab-ec2-ui] overlay appended to', parent === document.body ? 'body' : 'documentElement');
         return overlay;
     };
 
-    log('[lab-ec2-ui] script loaded');
+    log('[lab-ec2-ui] script loaded (readyState=' + document.readyState + ')');
+    if (!window.angular)
+        log('[lab-ec2-ui] WARNING: angular not found on window yet');
 
     angular.module(MODULE_NAME, [])
 
@@ -130,9 +159,10 @@
             if (typeof url !== 'string')
                 return false;
 
-            // Guacamole authentication/token refresh uses "api/tokens". This
-            // is where lab-ec2 can block while waiting for EC2 to start.
-            return url.indexOf('api/tokens') === 0 || url.indexOf('/api/tokens') !== -1;
+            // Guacamole uses relative URLs like "api/tokens" and
+            // "api/session/data/...". lab-ec2 can block these while waiting
+            // for EC2 instances to start.
+            return url.indexOf('api/') === 0 || url.indexOf('/api/') !== -1;
         };
 
         $httpProvider.interceptors.push(['$q', function ($q) {

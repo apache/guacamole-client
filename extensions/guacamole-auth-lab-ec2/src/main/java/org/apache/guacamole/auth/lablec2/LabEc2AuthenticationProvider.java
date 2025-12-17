@@ -24,10 +24,12 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.environment.LocalEnvironment;
+import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.*;
 import org.apache.guacamole.net.auth.simple.SimpleConnection;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -229,7 +231,13 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         logger.info("Using lab instance '{}' at host '{}' for user '{}'.",
                 instance.instanceId(), hostname, authenticatedUser.getIdentifier());
 
-        SimpleConnection labConnection = buildLabConnection(owner, hostname);
+        LabActiveConnectionDirectory mergedActiveConnections =
+                new LabActiveConnectionDirectory(context.getActiveConnectionDirectory());
+
+        Connection labConnection = buildLabConnection(owner, hostname,
+                authenticatedUser.getIdentifier(),
+                credentials != null ? credentials.getRemoteHostname() : null,
+                mergedActiveConnections);
         logger.debug("Prepared lab connection '{}' (name='{}') for user '{}' using protocol='{}' port='{}'.",
                 labConnection.getIdentifier(), labConnection.getName(),
                 authenticatedUser.getIdentifier(), protocol, port);
@@ -298,6 +306,11 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             @Override
             public User self() {
                 return mergedSelf;
+            }
+
+            @Override
+            public Directory<ActiveConnection> getActiveConnectionDirectory() throws GuacamoleException {
+                return mergedActiveConnections;
             }
         };
     }
@@ -421,6 +434,218 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         @Override
         public void removePermissions(Set<ObjectPermission> permissions) throws GuacamoleException {
             delegate.removePermissions(permissions);
+        }
+
+    }
+
+    /**
+     * Directory wrapper that merges the active connections tracked by the
+     * underlying UserContext with active connections created through the lab
+     * connection. This is required because {@link SimpleConnection} does not
+     * provide active connection tracking, and Guacamole expects active
+     * connection metadata to be available for an active tunnel.
+     */
+    private static final class LabActiveConnectionDirectory implements Directory<ActiveConnection> {
+
+        private final Directory<ActiveConnection> base;
+        private final java.util.concurrent.ConcurrentHashMap<String, ActiveConnection> labActiveConnections =
+                new java.util.concurrent.ConcurrentHashMap<>();
+
+        private LabActiveConnectionDirectory(Directory<ActiveConnection> base) {
+            this.base = base;
+        }
+
+        private void register(ActiveConnection activeConnection) {
+            if (activeConnection != null && activeConnection.getIdentifier() != null)
+                labActiveConnections.put(activeConnection.getIdentifier(), activeConnection);
+        }
+
+        private void unregister(String identifier) {
+            if (identifier != null)
+                labActiveConnections.remove(identifier);
+        }
+
+        @Override
+        public ActiveConnection get(String identifier) throws GuacamoleException {
+            ActiveConnection local = labActiveConnections.get(identifier);
+            if (local != null)
+                return local;
+            return base.get(identifier);
+        }
+
+        @Override
+        public Collection<ActiveConnection> getAll(Collection<String> identifiers) throws GuacamoleException {
+
+            Set<String> baseIdentifiers = new HashSet<>(identifiers);
+            List<ActiveConnection> all = new ArrayList<>();
+
+            // Add local (lab) active connections first
+            for (String identifier : identifiers) {
+                ActiveConnection local = labActiveConnections.get(identifier);
+                if (local != null) {
+                    all.add(local);
+                    baseIdentifiers.remove(identifier);
+                }
+            }
+
+            // Add remaining from base directory
+            if (!baseIdentifiers.isEmpty())
+                all.addAll(base.getAll(baseIdentifiers));
+
+            return all;
+        }
+
+        @Override
+        public Set<String> getIdentifiers() throws GuacamoleException {
+            Set<String> ids = new HashSet<>(base.getIdentifiers());
+            ids.addAll(labActiveConnections.keySet());
+            return ids;
+        }
+
+        @Override
+        public void add(ActiveConnection object) throws GuacamoleException {
+            base.add(object);
+        }
+
+        @Override
+        public void update(ActiveConnection object) throws GuacamoleException {
+            base.update(object);
+        }
+
+        @Override
+        public void remove(String identifier) throws GuacamoleException {
+            if (labActiveConnections.containsKey(identifier)) {
+                labActiveConnections.remove(identifier);
+                return;
+            }
+            base.remove(identifier);
+        }
+
+    }
+
+    /**
+     * Tunnel wrapper that unregisters its active connection entry when closed.
+     */
+    private static final class LabTrackingTunnel implements GuacamoleTunnel {
+
+        private final GuacamoleTunnel delegate;
+        private final Runnable onClose;
+
+        private LabTrackingTunnel(GuacamoleTunnel delegate, Runnable onClose) {
+            this.delegate = delegate;
+            this.onClose = onClose;
+        }
+
+        @Override
+        public org.apache.guacamole.io.GuacamoleReader acquireReader() {
+            return delegate.acquireReader();
+        }
+
+        @Override
+        public void releaseReader() {
+            delegate.releaseReader();
+        }
+
+        @Override
+        public boolean hasQueuedReaderThreads() {
+            return delegate.hasQueuedReaderThreads();
+        }
+
+        @Override
+        public org.apache.guacamole.io.GuacamoleWriter acquireWriter() {
+            return delegate.acquireWriter();
+        }
+
+        @Override
+        public void releaseWriter() {
+            delegate.releaseWriter();
+        }
+
+        @Override
+        public boolean hasQueuedWriterThreads() {
+            return delegate.hasQueuedWriterThreads();
+        }
+
+        @Override
+        public java.util.UUID getUUID() {
+            return delegate.getUUID();
+        }
+
+        @Override
+        public org.apache.guacamole.net.GuacamoleSocket getSocket() {
+            return delegate.getSocket();
+        }
+
+        @Override
+        public void close() throws GuacamoleException {
+            try {
+                delegate.close();
+            }
+            finally {
+                try {
+                    onClose.run();
+                }
+                catch (RuntimeException ignored) {
+                }
+            }
+        }
+
+        @Override
+        public boolean isOpen() {
+            return delegate.isOpen();
+        }
+
+    }
+
+    /**
+     * Connection that behaves like {@link SimpleConnection} but registers an
+     * {@link ActiveConnection} entry so Guacamole can resolve active tunnel
+     * metadata (ex: /activeConnection/connection/sharingProfiles).
+     */
+    private static final class LabTrackedConnection extends SimpleConnection {
+
+        private final String username;
+        private final String remoteHost;
+        private final LabActiveConnectionDirectory activeConnections;
+
+        private LabTrackedConnection(String name, String identifier, GuacamoleConfiguration config,
+                String username, String remoteHost, LabActiveConnectionDirectory activeConnections) {
+            super(name, identifier, config);
+            this.username = username;
+            this.remoteHost = remoteHost;
+            this.activeConnections = activeConnections;
+        }
+
+        @Override
+        public GuacamoleTunnel connect(GuacamoleClientInformation info, Map<String, String> tokens)
+                throws GuacamoleException {
+
+            GuacamoleTunnel tunnel = super.connect(info, tokens);
+
+            // Track this tunnel as an active connection using the tunnel UUID
+            String activeConnectionId = tunnel.getUUID().toString();
+
+            ActiveConnection activeConnection = new AbstractActiveConnection() {
+                @Override
+                public org.apache.guacamole.net.auth.credentials.UserCredentials getSharingCredentials(String identifier)
+                        throws GuacamoleException {
+                    throw new org.apache.guacamole.GuacamoleSecurityException("Permission denied.");
+                }
+            };
+
+            activeConnection.setIdentifier(activeConnectionId);
+            activeConnection.setConnectionIdentifier(getIdentifier());
+            activeConnection.setUsername(username);
+            activeConnection.setRemoteHost(remoteHost);
+            activeConnection.setStartDate(new Date());
+
+            LabTrackingTunnel trackingTunnel = new LabTrackingTunnel(tunnel,
+                    () -> activeConnections.unregister(activeConnectionId));
+            activeConnection.setTunnel(trackingTunnel);
+
+            activeConnections.register(activeConnection);
+
+            return trackingTunnel;
         }
 
     }
@@ -614,8 +839,10 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
     /**
      * Builds a connection targeting the given host for the specified user.
      */
-    private SimpleConnection buildLabConnection(String username, String hostname) {
-        String connectionId = "lab-" + username;
+    private Connection buildLabConnection(String owner, String hostname, String username,
+            String remoteHost, LabActiveConnectionDirectory activeConnections) {
+
+        String connectionId = "lab-" + owner;
 
         GuacamoleConfiguration config = new GuacamoleConfiguration();
         config.setProtocol(protocol);
@@ -632,7 +859,8 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                 connectionId, hostname, port, vmUsername,
                 vmPassword != null && !vmPassword.isEmpty());
 
-        return new SimpleConnection("My Lab VM", connectionId, config);
+        return new LabTrackedConnection("My Lab VM", connectionId, config,
+                username, remoteHost, activeConnections);
     }
 
     /**
