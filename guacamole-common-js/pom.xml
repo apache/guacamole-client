@@ -40,6 +40,11 @@
     <properties>
 
         <!--
+        The directory receiving the result of filtering applied to all files beneath src/main/webapp-templates.
+        -->
+        <generated.webapp.dir>${project.build.directory}/generated-resources/webapp-templates</generated.webapp.dir>
+
+        <!--
         The location where temporary files should be stored for communicating
         between karma and firefox. The default location, /tmp, does not work
         if firefox is installed via snap.
@@ -73,11 +78,54 @@
     <scm>
         <url>https://github.com/apache/guacamole-client</url>
         <connection>scm:git:https://git.wip-us.apache.org/repos/asf/guacamole-client.git</connection>
-
     </scm>
 
     <build>
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+
+                    <!-- Filter any resources beneath src/main/webapp-templates -->
+                    <execution>
+                        <id>filter-webapp-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${generated.webapp.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/webapp-templates</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                    <!-- Include all other resources verbatim -->
+                    <execution>
+                        <id>copy-webapp-resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${generated.webapp.dir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/webapp</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
 
             <!-- Assemble JS files into single .zip -->
             <plugin>
@@ -110,6 +158,8 @@
 
                             <charset>UTF-8</charset>
                             <jsEngine>CLOSURE</jsEngine>
+
+                            <webappSourceDir>${generated.webapp.dir}</webappSourceDir>
 
                             <jsSourceDir>/</jsSourceDir>
                             <jsTargetDir>/</jsTargetDir>
