@@ -1,27 +1,28 @@
 {
 
-    "guacamoleVersion" : "1.6.0",
+    "guacamoleVersion" : "${project.version}",
 
-    "name"      : "CAS Authentication Extension",
-    "namespace" : "cas",
+    "name"      : "SQLServer Authentication",
+    "namespace" : "sqlserver",
 
     "authProviders" : [
-        "org.apache.guacamole.auth.cas.CASAuthenticationProvider"
+        "org.apache.guacamole.auth.sqlserver.SQLServerAuthenticationProvider",
+        "org.apache.guacamole.auth.sqlserver.SQLServerSharedAuthenticationProvider"
     ],
 
     "css" : [
-        "styles/sso-providers.css"
+        "styles/jdbc.css"
     ],
 
     "html" : [
-        "html/sso-providers.html",
-        "html/sso-provider-cas.html"
+        "html/shared-connection.html"
     ],
 
     "translations" : [
         "translations/ca.json",
         "translations/de.json",
         "translations/en.json",
+        "translations/es.json",
         "translations/fr.json",
         "translations/ja.json",
         "translations/ko.json",
@@ -31,4 +32,6 @@
         "translations/tr.json",
         "translations/zh.json"
     ]
+
 }
+

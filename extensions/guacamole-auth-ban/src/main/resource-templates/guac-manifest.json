@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.6.0",
+    "guacamoleVersion" : "${project.version}",
 
     "name"      : "Brute-force Authentication Detection/Prevention",
     "namespace" : "ban",

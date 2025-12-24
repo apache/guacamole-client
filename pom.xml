@@ -490,6 +490,22 @@
             </build>
         </profile>
 
+        <!-- Automatically filter resources if located within src/main/resource-templates -->
+        <profile>
+            <id>filter-resources</id>
+            <activation>
+                <file><exists>src/main/resource-templates</exists></file>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resource-templates</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
+            </build>
+        </profile>
+
         <!-- Perform automated dependency checks if "checkDependencies" is set to "true" -->
         <profile>
             <id>check-dependencies</id>

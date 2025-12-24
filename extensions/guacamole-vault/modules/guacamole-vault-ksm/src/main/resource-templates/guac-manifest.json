@@ -1,6 +1,6 @@
 {
 
-    "guacamoleVersion" : "1.6.0",
+    "guacamoleVersion" : "${project.version}",
 
     "name"      : "Keeper Secrets Manager",
     "namespace" : "keeper-secrets-manager",

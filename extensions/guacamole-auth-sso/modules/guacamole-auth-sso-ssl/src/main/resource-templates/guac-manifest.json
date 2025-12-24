@@ -1,32 +1,36 @@
 {
 
-    "guacamoleVersion" : "1.6.0",
+    "guacamoleVersion" : "${project.version}",
 
-    "name"      : "PostgreSQL Authentication",
-    "namespace" : "postgresql",
+    "name"      : "SSL Authentication Extension",
+    "namespace" : "ssl",
 
     "authProviders" : [
-        "org.apache.guacamole.auth.postgresql.PostgreSQLAuthenticationProvider",
-        "org.apache.guacamole.auth.postgresql.PostgreSQLSharedAuthenticationProvider"
+        "org.apache.guacamole.auth.ssl.SSLAuthenticationProvider"
+    ],
+
+    "listeners" : [
+        "org.apache.guacamole.auth.ssl.SSLAuthenticationEventListener"
     ],
 
     "css" : [
-        "styles/jdbc.css"
+        "styles/sso-providers.css"
     ],
 
+    "js" : [ "ssl.min.js" ],
+
     "html" : [
-        "html/shared-connection.html"
+        "html/sso-providers.html",
+        "html/sso-provider-ssl.html"
     ],
 
     "translations" : [
         "translations/ca.json",
         "translations/de.json",
         "translations/en.json",
-        "translations/es.json",
         "translations/fr.json",
         "translations/ja.json",
         "translations/ko.json",
-        "translations/pl.json",
         "translations/pt.json",
         "translations/ru.json",
         "translations/tr.json",
@@ -34,4 +38,3 @@
     ]
 
 }
-

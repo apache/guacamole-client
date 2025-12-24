@@ -1,16 +1,12 @@
 {
 
-    "guacamoleVersion" : "1.6.0",
+    "guacamoleVersion" : "${project.version}",
 
-    "name"      : "SAML Authentication Extension",
-    "namespace" : "saml",
+    "name"      : "CAS Authentication Extension",
+    "namespace" : "cas",
 
     "authProviders" : [
-        "org.apache.guacamole.auth.saml.SAMLAuthenticationProvider"
-    ],
-
-    "listeners" : [
-        "org.apache.guacamole.auth.saml.SAMLAuthenticationEventListener"
+        "org.apache.guacamole.auth.cas.CASAuthenticationProvider"
     ],
 
     "css" : [
@@ -19,7 +15,7 @@
 
     "html" : [
         "html/sso-providers.html",
-        "html/sso-provider-saml.html"
+        "html/sso-provider-cas.html"
     ],
 
     "translations" : [
@@ -35,5 +31,4 @@
         "translations/tr.json",
         "translations/zh.json"
     ]
-
 }

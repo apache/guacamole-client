@@ -1,28 +1,18 @@
 {
 
-    "guacamoleVersion" : "1.6.0",
+    "guacamoleVersion" : "${project.version}",
 
-    "name"      : "MySQL Authentication",
-    "namespace" : "mysql",
+    "name"      : "TOTP TFA Authentication Backend",
+    "namespace" : "totp",
 
     "authProviders" : [
-        "org.apache.guacamole.auth.mysql.MySQLAuthenticationProvider",
-        "org.apache.guacamole.auth.mysql.MySQLSharedAuthenticationProvider"
-    ],
-
-    "css" : [
-        "styles/jdbc.css"
-    ],
-
-    "html" : [
-        "html/shared-connection.html"
+        "org.apache.guacamole.auth.totp.TOTPAuthenticationProvider"
     ],
 
     "translations" : [
         "translations/ca.json",
         "translations/de.json",
         "translations/en.json",
-        "translations/es.json",
         "translations/fr.json",
         "translations/ja.json",
         "translations/ko.json",
@@ -31,7 +21,18 @@
         "translations/ru.json",
         "translations/tr.json",
         "translations/zh.json"
-    ]
+    ],
+
+    "js" : [
+        "totp.min.js"
+    ],
+
+    "css" : [
+        "totp.min.css"
+    ],
+
+    "resources" : {
+        "templates/authenticationCodeField.html" : "text/html"
+    }
 
 }
-

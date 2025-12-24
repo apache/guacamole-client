@@ -1,13 +1,13 @@
 {
 
-    "guacamoleVersion" : "1.6.0",
+    "guacamoleVersion" : "${project.version}",
 
-    "name"      : "SQLServer Authentication",
-    "namespace" : "sqlserver",
+    "name"      : "PostgreSQL Authentication",
+    "namespace" : "postgresql",
 
     "authProviders" : [
-        "org.apache.guacamole.auth.sqlserver.SQLServerAuthenticationProvider",
-        "org.apache.guacamole.auth.sqlserver.SQLServerSharedAuthenticationProvider"
+        "org.apache.guacamole.auth.postgresql.PostgreSQLAuthenticationProvider",
+        "org.apache.guacamole.auth.postgresql.PostgreSQLSharedAuthenticationProvider"
     ],
 
     "css" : [
