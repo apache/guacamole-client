@@ -490,6 +490,31 @@
             </build>
         </profile>
 
+        <!-- Automatically filter Java source if located within src/main/java-templates -->
+        <profile>
+            <id>filter-java-source</id>
+            <activation>
+                <file><exists>src/main/java-templates</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>templating-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>filter-java-source</id>
+                                <goals>
+                                    <goal>filter-sources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <!-- Automatically filter resources if located within src/main/resource-templates -->
         <profile>
             <id>filter-resources</id>
