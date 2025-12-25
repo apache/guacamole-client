@@ -26,14 +26,13 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-sso-ssl</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.1</version>
     <name>guacamole-auth-sso-ssl</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-auth-sso</artifactId>
-        <version>1.6.1</version>
+        <version>${revision}</version>
         <relativePath>../../</relativePath>
     </parent>
 

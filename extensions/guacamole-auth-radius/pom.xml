@@ -26,15 +26,13 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-radius</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.1</version>
     <name>guacamole-auth-radius</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>extensions</artifactId>
-        <version>1.6.1</version>
-        <relativePath>../</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <build>
@@ -115,8 +113,6 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>1.6.1</version>
-            <scope>provided</scope>
         </dependency>
         
         <!-- Guava - Utility Library -->

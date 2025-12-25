@@ -26,15 +26,13 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-ext</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.1</version>
     <name>guacamole-ext</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-client</artifactId>
-        <version>1.6.1</version>
-        <relativePath>../</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <description>
@@ -87,8 +85,7 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common</artifactId>
-            <version>1.6.1</version>
-            <scope>compile</scope>
+            <version>${revision}</version>
         </dependency>
 
         <!-- JUnit -->
