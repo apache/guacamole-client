@@ -26,15 +26,13 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>extensions</artifactId>
     <packaging>pom</packaging>
-    <version>1.6.0</version>
     <name>extensions</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-client</artifactId>
-        <version>1.6.0</version>
-        <relativePath>../</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <modules>
@@ -133,6 +131,20 @@
         </dependency>
         
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Guacamole Extension API -->
+            <dependency>
+                <groupId>org.apache.guacamole</groupId>
+                <artifactId>guacamole-ext</artifactId>
+                <version>${revision}</version>
+                <scope>provided</scope>
+            </dependency>
+        
+        </dependencies>
+    </dependencyManagement>
 
     <profiles>
 

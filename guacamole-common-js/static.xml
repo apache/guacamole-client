@@ -25,7 +25,7 @@
     </formats>
     <fileSets>
         <fileSet>
-            <directory>src/main/webapp/modules/</directory>
+            <directory>${generated.webapp.dir}/modules/</directory>
             <includes>
                 <include>*.js</include>
             </includes>

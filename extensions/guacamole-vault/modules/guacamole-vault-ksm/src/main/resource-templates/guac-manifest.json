@@ -1,0 +1,17 @@
+{
+
+    "guacamoleVersion" : "${project.version}",
+
+    "name"      : "Keeper Secrets Manager",
+    "namespace" : "keeper-secrets-manager",
+
+    "authProviders" : [
+        "org.apache.guacamole.vault.ksm.KsmAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json",
+        "translations/tr.json"
+    ]
+
+}
