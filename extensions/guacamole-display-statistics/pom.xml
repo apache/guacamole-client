@@ -26,15 +26,13 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-display-statistics</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.0</version>
     <name>guacamole-display-statistics</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>extensions</artifactId>
-        <version>1.6.0</version>
-        <relativePath>../</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <build>
