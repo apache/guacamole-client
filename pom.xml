@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-client</artifactId>
     <packaging>pom</packaging>
-    <version>1.6.0</version>
+    <version>${revision}</version>
     <name>guacamole-client</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -34,6 +34,12 @@
 
         <!-- Core properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- The Guacamole version for the entirety of guacamole-client (this is
+        referenced by this and all other pom.xml files within guacamole-client,
+        and is a special case within Maven as one of the few properties allowed
+        within the pom.xml version and intended for this purpose) -->
+        <revision>1.6.1</revision>
 
         <!-- Dependency versions -->
         <guava.version>32.1.3-jre</guava.version>
@@ -196,6 +202,36 @@
                         </configuration>
                         <goals>
                             <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Bake-in properties like ${revision} so that downstream users of
+            libraries can freely use these properties for their own purposes.
+            This also removes the need to publish the guacamole-client parent
+            pom.xml to Maven Central. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.7.3</version>
+                <configuration>
+                    <flattenMode>oss</flattenMode>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -487,6 +523,47 @@
                         </executions>
                     </plugin>
                 </plugins>
+            </build>
+        </profile>
+
+        <!-- Automatically filter Java source if located within src/main/java-templates -->
+        <profile>
+            <id>filter-java-source</id>
+            <activation>
+                <file><exists>src/main/java-templates</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>templating-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>filter-java-source</id>
+                                <goals>
+                                    <goal>filter-sources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Automatically filter resources if located within src/main/resource-templates -->
+        <profile>
+            <id>filter-resources</id>
+            <activation>
+                <file><exists>src/main/resource-templates</exists></file>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resource-templates</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
             </build>
         </profile>
 

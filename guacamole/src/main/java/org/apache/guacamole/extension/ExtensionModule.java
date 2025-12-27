@@ -24,7 +24,6 @@ import com.google.inject.servlet.ServletModule;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,27 +55,6 @@ public class ExtensionModule extends ServletModule {
      * Logger for this class.
      */
     private final Logger logger = LoggerFactory.getLogger(ExtensionModule.class);
-
-    /**
-     * The version strings of all Guacamole versions whose extensions are
-     * compatible with this release.
-     */
-    private static final List<String> ALLOWED_GUACAMOLE_VERSIONS =
-        Collections.unmodifiableList(Arrays.asList(
-            "*",
-            "1.0.0",
-            "1.1.0",
-            "1.2.0",
-            "1.3.0",
-            "1.4.0",
-            "1.5.0",
-            "1.5.1",
-            "1.5.2",
-            "1.5.3",
-            "1.5.4",
-            "1.5.5",
-            "1.6.0"
-        ));
 
     /**
      * The name of the directory within GUACAMOLE_HOME containing any .jars
@@ -395,21 +373,6 @@ public class ExtensionModule extends ServletModule {
     }
 
     /**
-     * Returns whether the given version of Guacamole is compatible with this
-     * version of Guacamole as far as extensions are concerned.
-     *
-     * @param guacamoleVersion
-     *     The version of Guacamole the extension was built for.
-     *
-     * @return
-     *     true if the given version of Guacamole is compatible with this
-     *     version of Guacamole, false otherwise.
-     */
-    private boolean isCompatible(String guacamoleVersion) {
-        return ALLOWED_GUACAMOLE_VERSIONS.contains(guacamoleVersion);
-    }
-
-    /**
      * Returns the set of identifiers of all authentication providers whose
      * internal failures should be tolerated during the authentication process.
      * If the identifier of an authentication provider is within this set,
@@ -513,7 +476,8 @@ public class ExtensionModule extends ServletModule {
                 Extension extension = new Extension(getParentClassLoader(), extensionFile, temporaryFiles);
 
                 // Validate Guacamole version of extension
-                if (!isCompatible(extension.getGuacamoleVersion())) {
+                GuacamoleVersion requiredVersion = new GuacamoleVersion(extension.getGuacamoleVersion());
+                if (!GuacamoleVersion.RUNNING_VERSION.provides(requiredVersion)) {
                     logger.debug("Declared Guacamole version \"{}\" of extension \"{}\" is not compatible with this version of Guacamole.",
                             extension.getGuacamoleVersion(), extensionFile.getName());
                     throw new GuacamoleServerException("Extension \"" + extension.getName() + "\" is not "
@@ -523,7 +487,7 @@ public class ExtensionModule extends ServletModule {
                 extensions.add(extension);
 
             }
-            catch (GuacamoleException e) {
+            catch (GuacamoleException | IllegalArgumentException e) {
                 logger.error("Extension \"{}\" could not be loaded: {}",
                         extensionFile.getName(), e.getMessage(), e);
             }
