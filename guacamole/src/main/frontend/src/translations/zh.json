@@ -654,6 +654,7 @@
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "私钥：",
         "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "公钥：",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "文件浏览器根目录：",
+		"FIELD_HEADER_SFTP_TIMEOUT"               : "SFTP 连接超时：",
         "FIELD_HEADER_SFTP_USERNAME"              : "用户名：",
         "FIELD_HEADER_STATIC_CHANNELS" : "静态通道名：",
         "FIELD_HEADER_TIMEOUT"         : "连接超时",
