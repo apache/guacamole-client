@@ -485,7 +485,7 @@
     "PLAYER" : {
 
         "ACTION_CANCEL" : "@:APP.ACTION_CANCEL",
-        "ACTION_CLOSE"        : "关闭",
+        "ACTION_CLOSE"  : "关闭",
         "ACTION_PAUSE"  : "@:APP.ACTION_PAUSE",
         "ACTION_PLAY"   : "@:APP.ACTION_PLAY",
         "ACTION_SHOW_KEY_LOG" : "按键记录",
