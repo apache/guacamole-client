@@ -44,7 +44,7 @@
 
         "FIELD_HEADER_PASSWORD"       : "密码：",
         "FIELD_HEADER_PASSWORD_AGAIN" : "重输密码：",
-        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "允许写入现有录制文件:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "允许写入现有录制文件：",
         "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "允许写入现有 Typescript 文件：",
 
         "FIELD_PLACEHOLDER_FILTER" : "过滤",
