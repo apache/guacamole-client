@@ -44,7 +44,7 @@
 
         "FIELD_HEADER_PASSWORD"       : "密码：",
         "FIELD_HEADER_PASSWORD_AGAIN" : "重输密码：",
-        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "允许写入现有录制文件：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING"  : "允许写入现有录制文件：",
         "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "允许写入现有 Typescript 文件：",
 
         "FIELD_PLACEHOLDER_FILTER" : "过滤",
@@ -213,8 +213,8 @@
         "ERROR_INVALID_MIME_TYPE"            : "不支持的文件类型： \"{TYPE}\"",
         "ERROR_INVALID_GROUP"                : "未找到名称为： \"{GROUP}\" 的连接组",
         "ERROR_INVALID_GROUP_IDENTIFIER"     : "未找到能识别为： \"{IDENTIFIER}\" 的连接组",
+        "ERROR_INVALID_GROUP_TYPE": "无效的组 - 必须为字符串。",
         "ERROR_INVALID_PROTOCOL"             : "无效的协议 \"{PROTOCOL}\"",
-        "ERROR_INVALID_GROUP_TYPE"           : "无效的组 - 必须为字符串。",
         "ERROR_INVALID_USER_GROUPS_TYPE"     : "无效的用户组 - 必须为用户组标识符数组。",
         "ERROR_INVALID_USERS_TYPE"           : "无效的用户 - 必须为用户标识符数组。",
         "ERROR_NO_FILE_SUPPLIED"             : "请选择一个文件",
@@ -223,8 +223,8 @@
         "ERROR_PARSE_FAILURE_YAML"           : "请确保您上传的是合法的 YAML 文件。解析错误： \"{ERROR}\" 。",
         "ERROR_REJECT_UPDATE_CONNECTION"     : "连接 \"{NAME}\" 已存在于 \"{PATH}\"",
         "ERROR_REQUIRED_NAME_CONNECTION"     : "未填写连接名称",
+        "ERROR_REQUIRED_NAME_FILE": "在提供的文件中未找到连接名称",
         "ERROR_REQUIRED_PROTOCOL_CONNECTION" : "未填写连接协议",
-        "ERROR_REQUIRED_NAME_FILE"           : "在提供的文件中未找到连接名称",
         "ERROR_REQUIRED_PROTOCOL_FILE"       : "在提供的文件中未找到协议",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
@@ -490,14 +490,15 @@
         "ACTION_PLAY"   : "@:APP.ACTION_PLAY",
         "ACTION_SHOW_KEY_LOG" : "按键记录",
 
+        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER": "@:APP.FIELD_PLACEHOLDER_FILTER",
+
         "INFO_FRAME_EVENTS_LEGEND" : "屏幕活动",
         "INFO_KEY_EVENTS_LEGEND"   : "键盘活动",
         "INFO_LOADING_RECORDING" : "录像已载入。请稍候...",
         "INFO_NO_KEY_LOG"          : "按键记录不可用",
-        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} 个匹配项"
+        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} 个匹配项",
         "INFO_SEEK_IN_PROGRESS"  : "正在跳转到指定位置。请稍候..."
 
-        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
     },
     
     "PROTOCOL_KUBERNETES" : {
@@ -523,12 +524,12 @@
         "FIELD_HEADER_POD"             : "Pod 名称：",
         "FIELD_HEADER_PORT"           : "端口：",
         "FIELD_HEADER_READ_ONLY"      : "只读：",
-        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图像/数据流：",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按键事件：",
-        "FIELD_HEADER_RECORDING_NAME" : "录像名：",
+        "FIELD_HEADER_RECORDING_NAME" : "录像名称：",
         "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_SCROLLBACK"      : "最大回滚尺寸：",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript 名称：",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript 路径：",
@@ -576,21 +577,21 @@
     
     "PROTOCOL_RDP" : {
 
-        "FIELD_HEADER_CERT_TOFU"             : "首次使用时信任主机证书：",
         "FIELD_HEADER_CERT_FINGERPRINTS"     : "可信主机证书的指纹：",
+        "FIELD_HEADER_CERT_TOFU"             : "首次使用时信任主机证书：",
         "FIELD_HEADER_CLIENT_NAME"     : "客户端：",
         "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "粘贴板数据大小限制：",
         "FIELD_HEADER_COLOR_DEPTH"     : "色彩深度：",
         "FIELD_HEADER_CONSOLE"         : "管理员控制台：",
         "FIELD_HEADER_CONSOLE_AUDIO"   : "在控制台内支持音频：",
-        "FIELD_HEADER_CREATE_DRIVE_PATH" : "自动建立虚拟盘：",
+        "FIELD_HEADER_CREATE_DRIVE_PATH"     : "自动建立虚拟盘：",
         "FIELD_HEADER_CREATE_RECORDING_PATH" : "自动建立录像目录：",
         "FIELD_HEADER_DISABLE_AUDIO"   : "禁用音频：",
         "FIELD_HEADER_DISABLE_AUTH"    : "禁用认证：",
         "FIELD_HEADER_DISABLE_COPY"    : "禁用从远程桌面复制：",
         "FIELD_HEADER_DISABLE_DOWNLOAD" : "禁用文件下载：",
         "FIELD_HEADER_DISABLE_PASTE"   : "禁用从客户端粘贴：",
-        "FIELD_HEADER_DISABLE_UPLOAD"   : "禁用文件上传：",
+        "FIELD_HEADER_DISABLE_UPLOAD"  : "禁用文件上传：",
         "FIELD_HEADER_DOMAIN"          : "域：",
         "FIELD_HEADER_DPI"             : "分辨率（DPI）：",
         "FIELD_HEADER_DRIVE_NAME"      : "驱动器名称：",
@@ -628,13 +629,13 @@
         "FIELD_HEADER_PRECONNECTION_BLOB" : "预连接 BLOB（VM 标识）：",
         "FIELD_HEADER_PRECONNECTION_ID"   : "RDP 源标识：",
         "FIELD_HEADER_READ_ONLY"      : "只读：",
-        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图像/数据流：",
         "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "排除触摸事件：",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按键事件：",
-        "FIELD_HEADER_RECORDING_NAME" : "录像名：",
+        "FIELD_HEADER_RECORDING_NAME" : "录像名称：",
         "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RESIZE_METHOD" : "缩放方法：",
         "FIELD_HEADER_REMOTE_APP_ARGS" : "参数：",
         "FIELD_HEADER_REMOTE_APP_DIR"  : "工作目录：",
@@ -653,7 +654,6 @@
         "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "私钥：",
         "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "公钥：",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "文件浏览器根目录：",
-        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "禁用文件上传：",
         "FIELD_HEADER_SFTP_USERNAME"              : "用户名：",
         "FIELD_HEADER_STATIC_CHANNELS" : "静态通道名：",
         "FIELD_HEADER_TIMEOUT"         : "连接超时",
@@ -757,12 +757,12 @@
         "FIELD_HEADER_PUBLIC_KEY"    : "公钥：",
         "FIELD_HEADER_SCROLLBACK"    : "最大回滚尺寸：",
         "FIELD_HEADER_READ_ONLY"   : "只读：",
-        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图像/数据流：",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按键事件：",
-        "FIELD_HEADER_RECORDING_NAME" : "录像名：",
+        "FIELD_HEADER_RECORDING_NAME" : "录像名称：",
         "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "服务器 keepalive 时间间隔：",
         "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "禁用文件下载：",
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "文件浏览器根目录：",
@@ -849,12 +849,12 @@
         "FIELD_HEADER_PASSWORD_REGEX" : "密码正则表达式：",
         "FIELD_HEADER_PORT"           : "端口：",
         "FIELD_HEADER_READ_ONLY"      : "只读：",
-        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图形/流：",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含关键事件：",
-        "FIELD_HEADER_RECORDING_NAME" : "记录名称：",
-        "FIELD_HEADER_RECORDING_PATH" : "记录路径：",
+        "FIELD_HEADER_RECORDING_NAME" : "录像名称：",
+        "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_SCROLLBACK"     : "最大回滚尺寸：",
         "FIELD_HEADER_TERMINAL_TYPE"   : "终端类型：",
         "FIELD_HEADER_TIMEOUT"         : "连接超时：",
@@ -939,12 +939,12 @@
         "FIELD_HEADER_PORT"             : "端口：",
         "FIELD_HEADER_QUALITY_LEVEL"    : "显示质量：",
         "FIELD_HEADER_READ_ONLY"        : "只读：",
-        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除鼠标：",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除图像/数据流：",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按键事件：",
-        "FIELD_HEADER_RECORDING_NAME" : "录像名：",
+        "FIELD_HEADER_RECORDING_NAME" : "录像名称：",
         "FIELD_HEADER_RECORDING_PATH" : "录像路径：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING"   : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "缺省文件上传目录：",
         "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "禁用文件下载：",
         "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "禁用文件上传：",
@@ -1097,6 +1097,24 @@
 
     },
 
+    "SETTINGS_SESSIONS": {
+        "ACTION_ACKNOWLEDGE": "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL": "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE": "终止会话",
+        "DIALOG_HEADER_CONFIRM_DELETE": "终止会话",
+        "DIALOG_HEADER_ERROR": "@:APP.DIALOG_HEADER_ERROR",
+        "FIELD_PLACEHOLDER_FILTER": "@:APP.FIELD_PLACEHOLDER_FILTER",
+        "FORMAT_STARTDATE": "@:APP.FORMAT_DATE_TIME_PRECISE",
+        "HELP_SESSIONS": "该页面将填充当前活动的连接。 列出的连接和终止连接的能力取决于您的访问级别。如需终止一个或多个会话，勾选目标会话并点击“终止会话”。终止会话会立即断开对应用户的连接。",
+        "INFO_NO_SESSIONS": "无活动会话",
+        "SECTION_HEADER_SESSIONS": "活动会话",
+        "TABLE_HEADER_SESSION_CONNECTION_NAME": "连接名",
+        "TABLE_HEADER_SESSION_REMOTEHOST": "远程主机",
+        "TABLE_HEADER_SESSION_STARTDATE": "开始时间",
+        "TABLE_HEADER_SESSION_USERNAME": "用户名",
+        "TEXT_CONFIRM_DELETE": "确定要终止所选定的会话？对应的用户会被立即断开连接。"
+    },
+
     "SETTINGS_USERS" : {
 
         "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
@@ -1138,34 +1156,6 @@
 
     },
     
-    "SETTINGS_SESSIONS" : {
-        
-        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
-        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_DELETE"      : "终止会话",
-        
-        "DIALOG_HEADER_CONFIRM_DELETE" : "终止会话",
-        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
-        
-        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-        
-        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
-
-        "HELP_SESSIONS" : "该页面将填充当前活动的连接。 列出的连接和终止连接的能力取决于您的访问级别。如需终止一个或多个会话，勾选目标会话并点击“终止会话”。终止会话会立即断开对应用户的连接。",
-        
-        "INFO_NO_SESSIONS" : "无活动会话",
-
-        "SECTION_HEADER_SESSIONS" : "活动会话",
-        
-        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "连接名",
-        "TABLE_HEADER_SESSION_REMOTEHOST"      : "远程主机",
-        "TABLE_HEADER_SESSION_STARTDATE"       : "开始时间",
-        "TABLE_HEADER_SESSION_USERNAME"        : "用户名",
-        
-        "TEXT_CONFIRM_DELETE" : "确定要终止所选定的会话？对应的用户会被立即断开连接。"
-
-    },
-
     "USER_ATTRIBUTES" : {
 
         "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "邮箱地址：",
