@@ -213,7 +213,7 @@
         "ERROR_INVALID_MIME_TYPE"            : "不支持的文件类型： \"{TYPE}\"",
         "ERROR_INVALID_GROUP"                : "未找到名称为： \"{GROUP}\" 的连接组",
         "ERROR_INVALID_GROUP_IDENTIFIER"     : "未找到能识别为： \"{IDENTIFIER}\" 的连接组",
-        "ERROR_INVALID_GROUP_TYPE": "无效的组 - 必须为字符串。",
+        "ERROR_INVALID_GROUP_TYPE"           : "无效的组 - 必须为字符串。",
         "ERROR_INVALID_PROTOCOL"             : "无效的协议 \"{PROTOCOL}\"",
         "ERROR_INVALID_USER_GROUPS_TYPE"     : "无效的用户组 - 必须为用户组标识符数组。",
         "ERROR_INVALID_USERS_TYPE"           : "无效的用户 - 必须为用户标识符数组。",
@@ -223,7 +223,7 @@
         "ERROR_PARSE_FAILURE_YAML"           : "请确保您上传的是合法的 YAML 文件。解析错误： \"{ERROR}\" 。",
         "ERROR_REJECT_UPDATE_CONNECTION"     : "连接 \"{NAME}\" 已存在于 \"{PATH}\"",
         "ERROR_REQUIRED_NAME_CONNECTION"     : "未填写连接名称",
-        "ERROR_REQUIRED_NAME_FILE": "在提供的文件中未找到连接名称",
+        "ERROR_REQUIRED_NAME_FILE"           : "在提供的文件中未找到连接名称",
         "ERROR_REQUIRED_PROTOCOL_CONNECTION" : "未填写连接协议",
         "ERROR_REQUIRED_PROTOCOL_FILE"       : "在提供的文件中未找到协议",
 
