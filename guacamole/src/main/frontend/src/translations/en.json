@@ -626,6 +626,7 @@
         "FIELD_HEADER_GATEWAY_HOSTNAME" : "Hostname:",
         "FIELD_HEADER_GATEWAY_PASSWORD" : "Password:",
         "FIELD_HEADER_GATEWAY_PORT"     : "Port:",
+        "FIELD_HEADER_GATEWAY_TYPE"     : "Type:",
         "FIELD_HEADER_GATEWAY_USERNAME" : "Username:",
         "FIELD_HEADER_HEIGHT"          : "Height:",
         "FIELD_HEADER_HOSTNAME"        : "Hostname:",
@@ -694,6 +695,11 @@
         "FIELD_OPTION_COLOR_DEPTH_8"     : "256 color",
         "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
 
+        "FIELD_OPTION_GATEWAY_TYPE_AUTO"  : "Auto-select type",
+        "FIELD_OPTION_GATEWAY_TYPE_HTTP"  : "HTTP gateway",
+        "FIELD_OPTION_GATEWAY_TYPE_EMPTY" : "",
+        "FIELD_OPTION_GATEWAY_TYPE_RPC"   : "RPC gateway",
+            
         "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "\"Display Update\" virtual channel (RDP 8.1+)",
         "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
         "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Reconnect",
