@@ -29,7 +29,7 @@ The OpenBao vault extension allows Guacamole to retrieve credentials from an Ope
 Before using this extension, you need:
 
 1. An OpenBao server running and accessible from the Guacamole server
-2. A KV v2 secrets engine mounted (default path: `rdp-creds`)
+2. A KV v2 secrets engine mounted (eg path: `guacamole-credentails`)
 3. An OpenBao authentication token with read access to the secrets
 4. Secrets stored with a `password` field in the data
 
@@ -56,8 +56,8 @@ openbao-server-url: http://openbao.example.com:8200
 # OpenBao authentication token (required)
 openbao-token: s.YourTokenHere
 
-# KV mount path (optional, default: rdp-creds)
-openbao-mount-path: rdp-creds
+# KV mount path (optional, default: guacamole-credentails)
+openbao-mount-path: guacamole-credentails
 ```
 
 **Note**: The extension uses hardcoded defaults for:
@@ -83,7 +83,7 @@ The extension maps Guacamole usernames directly to OpenBao secret paths:
 
 ```
 Guacamole username: "john"
-OpenBao secret path: /v1/rdp-creds/data/john
+OpenBao secret path: /v1/guacamole-credentails/data/john
 ```
 
 For each user, create a corresponding secret in OpenBao at the path matching their Guacamole username.
@@ -175,17 +175,17 @@ Solutions:
    bao server -dev
 
    # Enable KV v2 engine
-   bao secrets enable -path=rdp-creds kv-v2
+   bao secrets enable -path=guacamole-credentails kv-v2
 
    # Create a secret
-   bao kv put rdp-creds/john password=SecretPass123
+   bao kv put guacamole-credentails/john password=SecretPass123
    ```
 
 2. **Configure Guacamole**:
    ```properties
-   openbao-server-url: http://localhost:8200
-   openbao-token: s.RbDBgA3pQoeleFH9EyiEcCLM
-   openbao-mount-path: rdp-creds
+   openbao-server-url: http://openbao.example.com:8200
+   openbao-token: s.yourtokenhere
+   openbao-mount-path: guacamole-credentails
    ```
 
 3. **Create Connection**:
