@@ -1,0 +1,16 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "Hashicorp Vault",
+    "namespace" : "hashicorp-vault",
+
+    "authProviders" : [
+        "org.apache.guacamole.vault.hv.HvAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ]
+
+}
