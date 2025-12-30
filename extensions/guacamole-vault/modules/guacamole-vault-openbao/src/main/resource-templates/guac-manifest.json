@@ -1,0 +1,12 @@
+{
+
+    "guacamoleVersion" : "${project.version}",
+
+    "name"      : "OpenBao Vault",
+    "namespace" : "openbao",
+
+    "authProviders" : [
+        "org.apache.guacamole.vault.openbao.OpenBaoAuthenticationProvider"
+    ]
+
+}
