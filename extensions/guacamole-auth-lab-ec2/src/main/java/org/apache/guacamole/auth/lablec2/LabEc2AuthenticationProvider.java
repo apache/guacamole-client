@@ -40,6 +40,7 @@ import software.amazon.awssdk.services.ec2.Ec2Client;
 import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
 import software.amazon.awssdk.services.ec2.model.Filter;
 import software.amazon.awssdk.services.ec2.model.Instance;
+import software.amazon.awssdk.services.ec2.model.InstanceNetworkInterfaceSpecification;
 import software.amazon.awssdk.services.ec2.model.InstanceStateName;
 import software.amazon.awssdk.services.ec2.model.InstanceType;
 import software.amazon.awssdk.services.ec2.model.ResourceType;
@@ -91,6 +92,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
     private final String instanceType;
     private final String subnetId;
     private final List<String> securityGroupIds;
+    private final boolean assignPublicIp;
     private final String launchTemplateId;
     private final String protocol;
     private final String port;
@@ -118,6 +120,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         instanceType = env.getProperty(LabEc2Properties.LAB_EC2_INSTANCE_TYPE, "t3.medium");
         subnetId = env.getProperty(LabEc2Properties.LAB_EC2_SUBNET_ID);
         securityGroupIds = parseCsv(env.getProperty(LabEc2Properties.LAB_EC2_SECURITY_GROUP_IDS));
+        assignPublicIp = env.getProperty(LabEc2Properties.LAB_EC2_ASSIGN_PUBLIC_IP, false);
         launchTemplateId = env.getProperty(LabEc2Properties.LAB_EC2_LAUNCH_TEMPLATE_ID);
         protocol = env.getProperty(LabEc2Properties.LAB_EC2_PROTOCOL, "rdp");
         port = env.getProperty(LabEc2Properties.LAB_EC2_PORT, "3389");
@@ -764,11 +767,17 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                 builder = builder.imageId(labAmiId)
                         .instanceType(InstanceType.fromValue(instanceType));
 
+                InstanceNetworkInterfaceSpecification.Builder netBuilder = InstanceNetworkInterfaceSpecification.builder()
+                        .deviceIndex(0)
+                        .associatePublicIpAddress(assignPublicIp);
+
                 if (subnetId != null && !subnetId.isEmpty())
-                    builder = builder.subnetId(subnetId);
+                    netBuilder.subnetId(subnetId);
 
                 if (!securityGroupIds.isEmpty())
-                    builder = builder.securityGroupIds(securityGroupIds);
+                    netBuilder.groups(securityGroupIds);
+
+                builder.networkInterfaces(netBuilder.build());
             }
 
             builder = builder.tagSpecifications(TagSpecification.builder()

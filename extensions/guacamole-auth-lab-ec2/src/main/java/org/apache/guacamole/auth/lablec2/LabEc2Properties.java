@@ -18,6 +18,7 @@
  */
 package org.apache.guacamole.auth.lablec2;
 
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.GuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 
@@ -25,6 +26,17 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
  * Properties used to configure the lab EC2 decorator extension.
  */
 public final class LabEc2Properties {
+
+    /**
+     * Whether to assign a public IP address to the launched instance.
+     */
+    public static final GuacamoleProperty<Boolean> LAB_EC2_ASSIGN_PUBLIC_IP =
+            new BooleanGuacamoleProperty() {
+                @Override
+                public String getName() {
+                    return "lab-ec2-assign-public-ip";
+                }
+            };
 
     /**
      * Region to use for EC2 operations.
