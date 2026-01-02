@@ -160,6 +160,17 @@ public final class LabEc2Properties {
             };
 
     /**
+     * Name of the lab admin group used for build instances.
+     */
+    public static final GuacamoleProperty<String> LAB_EC2_LAB_ADMIN_GROUP =
+            new StringGuacamoleProperty() {
+                @Override
+                public String getName() {
+                    return "lab-ec2-lab-admin-group";
+                }
+            };
+
+    /**
      * Optional identifier of the authentication provider / data source that
      * should receive the injected lab connection (ex: "mysql", "postgresql").
      *

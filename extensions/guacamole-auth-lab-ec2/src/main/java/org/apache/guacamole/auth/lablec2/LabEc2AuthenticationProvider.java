@@ -99,6 +99,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
     private final String vmUsername;
     private final String vmPassword;
     private final String labGroupName;
+    private final String labAdminGroupName;
     private final String decorateOnlyAuthProvider;
 
     private final java.util.concurrent.ConcurrentHashMap<String, DecorationTarget>
@@ -127,11 +128,13 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         vmUsername = env.getProperty(LabEc2Properties.LAB_EC2_USERNAME, "labuser");
         vmPassword = env.getProperty(LabEc2Properties.LAB_EC2_PASSWORD);
         labGroupName = env.getProperty(LabEc2Properties.LAB_EC2_LAB_GROUP, "lab_user");
+        labAdminGroupName = env.getProperty(LabEc2Properties.LAB_EC2_LAB_ADMIN_GROUP, "lab_admin");
         decorateOnlyAuthProvider = env.getProperty(LabEc2Properties.LAB_EC2_DECORATE_ONLY_AUTH_PROVIDER);
 
         logger.info(
-                "Initializing lab-ec2 extension: region='{}' protocol='{}' port='{}' labGroup='{}' launchTemplateIdSet={} amiIdSet={} subnetIdSet={} securityGroups={}",
+                "Initializing lab-ec2 extension: region='{}' protocol='{}' port='{}' labGroup='{}' adminGroup='{}' launchTemplateIdSet={} amiIdSet={} subnetIdSet={} securityGroups={}",
                 region, protocol, port, labGroupName,
+                labAdminGroupName,
                 launchTemplateId != null && !launchTemplateId.isEmpty(),
                 labAmiId != null && !labAmiId.isEmpty(),
                 subnetId != null && !subnetId.isEmpty(),
@@ -166,9 +169,12 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         logger.debug("Evaluating lab EC2 decoration for user '{}' with groups {}.",
                 authenticatedUser.getIdentifier(), groups);
 
-        if (groups == null || !groups.contains(labGroupName)) {
-            logger.debug("User '{}' is not in the lab group '{}'; leaving context unchanged.",
-                    authenticatedUser.getIdentifier(), labGroupName);
+        boolean isAdmin = groups != null && groups.contains(labAdminGroupName);
+        boolean isLabUser = groups != null && groups.contains(labGroupName);
+
+        if (!isAdmin && !isLabUser) {
+            logger.debug("User '{}' is not in lab admin '{}' or lab user '{}' groups; leaving context unchanged.",
+                    authenticatedUser.getIdentifier(), labAdminGroupName, labGroupName);
             return context;
         }
 
@@ -203,7 +209,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
         logger.info("Ensuring lab EC2 instance for user '{}'.",
                 authenticatedUser.getIdentifier());
-        Instance instance = ensureLabInstance(owner);
+        Instance instance = isAdmin ? ensureBuildInstance(owner) : ensureLabInstance(owner);
 
         // Use Private IP as requested
         String hostname = instance.privateIpAddress();
@@ -214,7 +220,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         }
 
         // Determine connection ID
-        String connectionId = "lab-" + owner;
+        String connectionId = (isAdmin ? "lab-build-" : "lab-") + owner;
 
         // Check if connection already exists
         Directory<Connection> baseDir = context.getConnectionDirectory();
@@ -237,7 +243,8 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         LabActiveConnectionDirectory mergedActiveConnections =
                 new LabActiveConnectionDirectory(context.getActiveConnectionDirectory());
 
-        Connection labConnection = buildLabConnection(owner, hostname,
+        String connectionName = isAdmin ? "Lab Build VM" : "My Lab VM";
+        Connection labConnection = buildLabConnection(connectionId, connectionName, owner, hostname,
                 authenticatedUser.getIdentifier(),
                 credentials != null ? credentials.getRemoteHostname() : null,
                 mergedActiveConnections);
@@ -707,6 +714,54 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
     }
 
     /**
+     * Ensures a build EC2 instance exists for a lab admin. Unlike lab user
+     * instances, build instances are not created automatically.
+     */
+    private Instance ensureBuildInstance(String username) throws GuacamoleException {
+        String owner = username.toLowerCase(Locale.ROOT);
+
+        Filter ownerFilter = Filter.builder()
+                .name("tag:LabOwner")
+                .values(owner)
+                .build();
+
+        Filter purposeFilter = Filter.builder()
+                .name("tag:LabPurpose")
+                .values("build")
+                .build();
+
+        Filter stateFilter = Filter.builder()
+                .name("instance-state-name")
+                .values("pending", "running", "stopping", "stopped")
+                .build();
+
+        DescribeInstancesResponse describeResponse = describeInstances(ownerFilter,
+                purposeFilter, stateFilter);
+
+        Instance instance = describeResponse.reservations().stream()
+                .flatMap(reservation -> reservation.instances().stream())
+                .findFirst()
+                .orElse(null);
+
+        if (instance == null) {
+            throw new GuacamoleServerException(
+                    "No build instance found for lab admin '" + owner + "'. Launch from the console first.");
+        }
+
+        if (InstanceStateName.STOPPED.equals(instance.state().name())
+                || InstanceStateName.STOPPING.equals(instance.state().name())) {
+            logger.info("Found stopped build instance '{}' for owner '{}'; starting it.",
+                    instance.instanceId(), owner);
+            instance = startInstance(instance.instanceId());
+        } else {
+            logger.info("Using existing build instance '{}' in state '{}' for owner '{}'.",
+                    instance.instanceId(), instance.state().name(), owner);
+        }
+
+        return instance;
+    }
+
+    /**
      * Starts an existing instance and waits for it to become available.
      *
      * @param instanceId
@@ -785,6 +840,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                     .tags(
                             Tag.builder().key("Name").value("guac-lab-" + owner).build(),
                             Tag.builder().key("LabOwner").value(owner).build(),
+                            Tag.builder().key("LabPurpose").value("training").build(),
                             Tag.builder().key("LabEnv").value("guac").build())
                     .build());
 
@@ -848,10 +904,9 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
     /**
      * Builds a connection targeting the given host for the specified user.
      */
-    private Connection buildLabConnection(String owner, String hostname, String username,
+    private Connection buildLabConnection(String connectionId, String connectionName, String owner,
+            String hostname, String username,
             String remoteHost, LabActiveConnectionDirectory activeConnections) {
-
-        String connectionId = "lab-" + owner;
 
         GuacamoleConfiguration config = new GuacamoleConfiguration();
         config.setProtocol(protocol);
@@ -868,7 +923,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                 connectionId, hostname, port, vmUsername,
                 vmPassword != null && !vmPassword.isEmpty());
 
-        return new LabTrackedConnection("My Lab VM", connectionId, config,
+        return new LabTrackedConnection(connectionName, connectionId, config,
                 username, remoteHost, activeConnections);
     }
 
