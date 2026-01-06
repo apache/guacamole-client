@@ -22,9 +22,16 @@ var Guacamole = Guacamole || {};
 /**
  * Integer pool which returns consistently increasing integers while integers
  * are in use, and previously-used integers when possible.
- * @constructor 
+ *
+ * When a minimum pool size is specified, new integers are preferred over reused
+ * integers until the minimum size is reached.
+ *
+ * @constructor
+ * @param {number} [min_size]
+ *     The minimum number of integers which must have been returned before
+ *     previously-used and freed integers are allowed to be returned.
  */
-Guacamole.IntegerPool = function() {
+Guacamole.IntegerPool = function(min_size) {
 
     /**
      * Reference to this integer pool.
@@ -51,14 +58,14 @@ Guacamole.IntegerPool = function() {
     /**
      * Returns the next available integer in the pool. If possible, a previously
      * used integer will be returned.
-     * 
+     *
      * @return {!number}
      *     The next available integer.
      */
     this.next = function() {
 
-        // If free'd integers exist, return one of those
-        if (pool.length > 0)
+        // If free'd integers exist and we've allocated the minimum, reuse it
+        if (pool.length > 0 && (!min_size || guac_pool.next_int >= min_size))
             return pool.shift();
 
         // Otherwise, return a new integer
