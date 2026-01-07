@@ -139,8 +139,25 @@ Guacamole.Client = function(tunnel) {
      */
     var objects = [];
 
-    // Pool of available stream indices
-    var stream_indices = new Guacamole.IntegerPool();
+    /**
+     * The maximum number of streams supported by any one guac_user. This must
+     * match GUAC_USER_MAX_STREAMS defined in guacamole-server's user.h to
+     * ensure we stay within the server's stream index limits.
+     *
+     * @private
+     * @constant
+     * @type {!number}
+     */
+    var GUAC_USER_MAX_STREAMS = 512;
+
+    /**
+     * Pool of available stream indices. Initialized with min_size set to
+     * GUAC_USER_MAX_STREAMS to delay index reuse.
+     *
+     * @private
+     * @type {!Guacamole.IntegerPool}
+     */
+    var stream_indices = new Guacamole.IntegerPool(GUAC_USER_MAX_STREAMS);
 
     // Array of allocated output streams by index
     var output_streams = [];
