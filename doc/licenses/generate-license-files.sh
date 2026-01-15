@@ -17,12 +17,6 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# NOTE: Parts of this file (Makefile.am) are automatically transcluded verbatim
-# into Makefile.in. Though the build system (GNU Autotools) automatically adds
-# its own license boilerplate to the generated Makefile.in, that boilerplate
-# does not apply to the transcluded portions of Makefile.am which are licensed
-# to you by the ASF under the Apache License, Version 2.0, as described above.
-#
 
 #
 # generate-license-files.sh
@@ -84,9 +78,9 @@
 #
 # Regardless of whether a dependency is documented within the top-level
 # guacamole-client project or within the relevant subproject, the subdirectory
-# for each dependency must contain a "README" file describing the dependency,
-# the version used, the copyright holder(s), and the license. Examples of the
-# formatting expected for these README files can be found within the existing
+# for each dependency must contain at least one file containing headers describing
+# the dependency, the copyright holder(s), and the license. Examples of the
+# formatting expected for these files can be found within the existing
 # dependency license directories.
 #
 # Files that contain the word "notice", regardless of case, are considered by
@@ -151,14 +145,19 @@ list_dependency_license_info() {
 
     # List the license directories of all runtime dependencies, as dictated by
     # the "dep-coordinates.txt" files included within those directories
-    sed 's/^[[:space:]]\+//' | grep -o '^[^: ]\+\(:[^: ]*\)\{1,3\}' | while read DEPENDENCY; do
+    sed 's/^[[:space:]]\+//' | grep -o '^[^: ]\+\(:[^: ]*\)\{1,3\}' \
+        | while read DEPENDENCY; do
 
-        if ! grep -l "$DEPENDENCY[[:space:]]*$" "$LICENSES_DIR"/*/dep-coordinates.txt; then
+        local DEPENDENCY_REGEX="`echo "$DEPENDENCY" | sed 's/[^:]*/\\\\(&\\\\|\*\\\\)/g'`"
+        local VERSION="`echo "$DEPENDENCY" | sed 's/.*://'`"
+
+        if ! grep -l "^$DEPENDENCY_REGEX[[:space:]]*$" "$LICENSES_DIR"/*/dep-coordinates.txt \
+            | sed "s/$/ $VERSION/g"; then
             error "License information missing for $DEPENDENCY"
         fi
 
-    done | sort -u | while read LICENSE_INFO_COORDS_FILE; do
-        dirname "$LICENSE_INFO_COORDS_FILE"
+    done | sort -u -k 1,1 | while read LICENSE_INFO_COORDS_FILE VERSION; do
+        printf '%s %s\n' "`dirname "$LICENSE_INFO_COORDS_FILE"`" "$VERSION"
     done
 
     # Include license directories for all dependencies not pulled in automatically
@@ -175,15 +174,16 @@ list_dependency_license_info() {
 ## written to STDOUT. Each directory must be on its own line.
 ##
 sort_dependency_license_info() {
-    while read LICENSE_INFO; do
+    while read LICENSE_INFO VERSION; do
 
-        if [ ! -e "$LICENSE_INFO/README" ]; then
-            error "Missing license README in $LICENSE_INFO"
-            continue
-        fi
+        local PRIMARY_FILE="`primary_file "$LICENSE_INFO"`"
 
-        NAME="`grep . < "$LICENSE_INFO/README" | head -n1`"
-        printf "%s\t%s\n" "$NAME" "$LICENSE_INFO"
+        # Skip if primary file missing (error will be logged by primary_file
+        # function call above)
+        [ -n "$PRIMARY_FILE" ] || continue
+
+        local NAME="`get_header_value "$PRIMARY_FILE" Name`"
+        printf "%s\t%s %s\n" "$NAME" "$LICENSE_INFO" "$VERSION"
 
     done | sort -f | cut -f2
 }
@@ -236,7 +236,6 @@ license_file() {
     find "$DIR" -mindepth 1 \
             -a \! -iname "*notice*" \
             -a \! -name "dep-coordinates.txt" \
-            -a \! -name "README" \
         | if ! single_result; then
            error "Multiple license files found within $DIR"
         fi 
@@ -259,6 +258,23 @@ notice_file() {
 }
 
 ##
+## TODO
+##
+primary_file() {
+
+    DIR="$1"
+    for FILENAME in "$DIR"/*; do
+        if [ ! -d "$FILENAME" ] && [ -n "`get_header_value "$FILENAME" License`" ]; then
+            echo "$FILENAME"
+            return
+        fi
+    done
+
+    error "No file containing \"License\" field found within $DIR"
+
+}
+
+##
 ## Prints the contents of the given file, excluding any blank lines at the
 ## beginning and end of the file.
 ##
@@ -275,6 +291,102 @@ trim_file() {
 
     # Print the contents of the file between those lines, inclusive
     awk "NR==$FIRST_LINE,NR==$LAST_LINE" "$FILENAME"
+
+}
+
+##
+## TODO
+##
+format_multiline() {
+
+    local INDENT="$1"
+    local LINE
+
+    read FIRST_LINE
+
+    if read NEXT_LINE; then
+        printf '\n'
+        printf "%s%s\n" "$INDENT" "$FIRST_LINE"
+        printf "%s%s\n" "$INDENT" "$NEXT_LINE"
+        while read NEXT_LINE; do
+            printf "%s%s\n" "$INDENT" "$NEXT_LINE"
+        done
+    else
+        printf '  %s\n' "$FIRST_LINE"
+    fi
+    
+}
+
+##
+## TODO
+##
+subst_version() {
+
+    local VERSION="$1"
+    local _VERSION_="`echo "$VERSION" | sed 's/\./_/g'`"
+
+    local MAJOR MINOR PATCH REV
+    read -r MAJOR MINOR PATCH REV <<EOF
+`echo "$VERSION" | sed 's/[^0-9]\+/ /g'`
+EOF
+
+    env "VERSION=$VERSION" \
+        "_VERSION_=$_VERSION_" \
+        "MAJOR=$MAJOR" \
+        "MINOR=$MINOR" \
+        "PATCH=$PATCH" \
+        "REV=$REV" \
+        envsubst '$VERSION $_VERSION_ $MAJOR $MINOR $PATCH $REV'
+
+}
+
+##
+## TODO
+##
+get_header() {
+
+    local FILENAME="$1"
+
+    sed -n \
+        -e '/^# --- BEGIN LICENSE FILE \(\[[^]]*\] \)\?---$/q' \
+        -e 's/^#[[:space:]]*//p' \
+        "$FILENAME" | grep .
+
+}
+
+##
+## TODO
+##
+get_header_value() {
+
+    local FILENAME="$1"
+    local FIELD="$2"
+
+    get_header "$FILENAME" | grep "^$FIELD:" \
+        | sed 's/^[^:]*:[[:space:]]*//' \
+        | sed 's/[[:space:]]\+$//' \
+        | grep .
+
+}
+
+##
+## TODO
+##
+get_license() {
+
+    local FILENAME="$1"
+    local VERSION="$2"
+    local VERSION_MATCH='[^]]*'
+    
+    if [ -n "$VERSION" ]; then
+        VERSION_MATCH="$(echo "$VERSION" | sed 's:[/$.*\[\\^]:\\&:g')"
+    fi
+
+    sed -n \
+        -e '1,/^# --- BEGIN LICENSE FILE \(\['"$VERSION_MATCH"'\] \)\?---$/d' \
+        -e '/^# --- END LICENSE FILE \(\['"$VERSION_MATCH"'\] \)\?---$/q' \
+        -e 'p' \
+        "$FILENAME"
 
 }
 
@@ -311,7 +423,7 @@ cp "$BASEDIR/NOTICE" "$OUTPUT_DIR/"
 PREAMBLE_ADDED=0
 find "$DEPENDENCY_LIST" -type f -exec cat '{}' + | \
     list_dependency_license_info | sort_dependency_license_info | \
-    while read LICENSE_INFO_DIR; do
+    while read LICENSE_INFO_DIR VERSION; do
 
     # Add subcomponent license preamble if not already added
     if [ "$PREAMBLE_ADDED" = 0 ]; then
@@ -323,6 +435,7 @@ APACHE GUACAMOLE SUBCOMPONENTS
 Apache Guacamole includes a number of subcomponents with separate copyright
 notices and license terms. Your use of these subcomponents is subject to the
 terms and conditions of the following licenses.
+
 EOF
         PREAMBLE_ADDED=1
     fi
@@ -330,31 +443,81 @@ EOF
     # Locate LICENSE and NOTICE files
     LICENSE_FILE="`license_file "$LICENSE_INFO_DIR"`"
     NOTICE_FILE="`notice_file "$LICENSE_INFO_DIR"`"
+    PRIMARY_FILE="`primary_file "$LICENSE_INFO_DIR"`"
 
-    # Extract component name from README
-    COMPONENT_NAME="`trim_file "$LICENSE_INFO_DIR/README" | head -n1 | grep -o '^[^(]*[^([:space:]]'`"
+    # Skip if primary file missing (error will be logged by primary_file
+    # function call above)
+    [ -n "$PRIMARY_FILE" ] || continue
 
-    # Add license information to LICENSE
-    printf '\n\n' >> "$OUTPUT_DIR/LICENSE"
-    trim_file "$LICENSE_INFO_DIR/README" >> "$OUTPUT_DIR/LICENSE"
-
-    # Append verbatim copy of license if small enough
-    if [ -n "$LICENSE_FILE" ]; then
-        if [ "`wc -l < "$LICENSE_FILE"`" -le "$LICENSE_COPY_LIMIT" ]; then
-            echo >> "$OUTPUT_DIR/LICENSE"
-            trim_file "$LICENSE_FILE" >> "$OUTPUT_DIR/LICENSE"
-        fi
-    fi
-
-    # Copy NOTICE, if provided
-    if [ -n "$NOTICE_FILE" ]; then
-        printf '\n======== NOTICE for "%s" ========\n\n' "$COMPONENT_NAME" >> "$OUTPUT_DIR/NOTICE"
-        trim_file "$NOTICE_FILE" >> "$OUTPUT_DIR/NOTICE"
-    fi
+    BUNDLED_LICENSE_FILE="bundled/`basename "$LICENSE_INFO_DIR"`/`basename "$LICENSE_FILE"`"
+    BUNDLED_NOTICE_FILE="bundled/`basename "$LICENSE_INFO_DIR"`/`basename "$NOTICE_FILE"`"
 
     # Include verbatim copy of license information
     mkdir -p "$OUTPUT_DIR/bundled/"
     cp -Lr "$LICENSE_INFO_DIR" "$OUTPUT_DIR/bundled/"
+
+    TITLE="`get_header_value "$PRIMARY_FILE" Name`"
+    TITLE="$TITLE (`get_header_value "$PRIMARY_FILE" URL`)"
+
+    # Get VERSION from header field if not otherwise available (for
+    # dependencies not pulled in by Maven or NPM, like fonts)
+    if [ -z "$VERSION" ]; then
+        VERSION="`get_header_value "$PRIMARY_FILE" Version`"
+        if [ -z "$VERSION" ]; then
+            VERSION="N/A"
+        fi
+    fi
+
+    (
+
+        # Add license information to LICENSE
+        printf '\n'
+
+        cat <<EOF
+$TITLE
+`printf '%s' "$TITLE" | sed 's/./-/g'`
+
+    Version: $VERSION
+    From:`get_header_value "$PRIMARY_FILE" From | format_multiline '        '`
+    License(s):
+EOF
+
+        # Copy LICENSE, if provided (we omit the local copy of the LICENSE if the
+        # software is Apache-licensed, as we already bundle a copy ourselves)
+        printf '        '
+        if [ -n "$LICENSE_FILE" ] && get_license "$LICENSE_FILE" "$VERSION" | grep -q .; then
+
+            printf '%s (%s)\n\n' \
+                "`get_header_value "$PRIMARY_FILE" License`" \
+                "$BUNDLED_LICENSE_FILE"
+
+            get_license "$LICENSE_FILE" "$VERSION" > "$OUTPUT_DIR/$BUNDLED_LICENSE_FILE"
+            printf '\n' >> "$OUTPUT_DIR/$BUNDLED_LICENSE_FILE"
+            get_header_value "$PRIMARY_FILE" "+" >> "$OUTPUT_DIR/$BUNDLED_LICENSE_FILE"
+
+            # Append verbatim copy of license if small enough
+            LICENSE_LINE_COUNT="`get_license "$LICENSE_FILE" "$VERSION" | wc -l`"
+            if [ "$LICENSE_LINE_COUNT" -gt 0 -a "$LICENSE_LINE_COUNT" -le "$LICENSE_COPY_LIMIT" ]; then
+                printf '>\n'
+                get_license "$LICENSE_FILE" "$VERSION" | sed 's/^/> /' | sed 's/[[:space:]]\+$//'
+                printf '>\n\n'
+                get_header_value "$PRIMARY_FILE" "+" && printf '\n'
+            fi
+
+        else
+            printf '%s\n\n' "`get_header_value "$PRIMARY_FILE" License`"
+        fi
+
+    ) | subst_version "$VERSION" >> "$OUTPUT_DIR/LICENSE"
+
+
+    # Copy NOTICE, if provided
+    if [ -n "$NOTICE_FILE" ]; then
+        COMPONENT_NAME="`get_header_value "$PRIMARY_FILE" Name`"
+        printf '\n======== NOTICE for "%s" ========\n\n' "$COMPONENT_NAME" >> "$OUTPUT_DIR/NOTICE"
+        get_license "$NOTICE_FILE" "$VERSION" >> "$OUTPUT_DIR/NOTICE"
+        get_license "$NOTICE_FILE" "$VERSION" > "$OUTPUT_DIR/$BUNDLED_NOTICE_FILE"
+    fi
 
     # Add README describing nature of the "bundled/" directory
     cat > "$OUTPUT_DIR/bundled/README" <<EOF
@@ -366,9 +529,8 @@ EOF
 
 done
 
-# Do not double-bundle the information contained in the README files (it's
-# already in LICENSE), nor internal mappings like dep-coordinates.txt
-for EXCLUDED_FILE in README dep-coordinates.txt; do
+# Do not include internal dep-coordinates.txt mappings
+for EXCLUDED_FILE in dep-coordinates.txt; do
     rm -f "$OUTPUT_DIR/bundled"/*/"$EXCLUDED_FILE"
 done
 
