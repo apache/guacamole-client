@@ -1,0 +1,14 @@
+# Name:    ZXing Barcode Scanning Library
+# URL:     https://github.com/zxing/zxing/
+# From:    'ZXing authors' (https://github.com/zxing/zxing/blob/zxing-${DEP_VERSION}/AUTHORS)
+# License: Apache v2.0
+#
+# --- BEGIN LICENSE FILE ---
+Barcode4J
+Copyright 2002-2010 Jeremias Märki
+Copyright 2005-2006 Dietmar Bürkle
+
+Portions of this software were contributed under section 5 of the
+Apache License. Contributors are listed under:
+http://barcode4j.sourceforge.net/contributors.html
+# --- END LICENSE FILE ---
