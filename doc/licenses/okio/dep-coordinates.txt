@@ -1,0 +1,2 @@
+com.squareup.okio:okio:jar:*
+com.squareup.okio:okio-jvm:jar:*
