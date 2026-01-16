@@ -31,7 +31,7 @@
         "closure-webpack-plugin": "^2.6.1",
         "copy-webpack-plugin": "^5.1.2",
         "css-loader": "^5.2.7",
-        "css-minimizer-webpack-plugin": "^1.3.0",
+        "css-minimizer-webpack-plugin": "^7.0.4",
         "exports-loader": "^1.1.1",
         "find-package-json": "^1.2.0",
         "google-closure-compiler": "20240317.0.0",
