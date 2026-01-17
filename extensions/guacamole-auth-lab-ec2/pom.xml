@@ -23,8 +23,10 @@
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
+    <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-lab-ec2</artifactId>
     <packaging>jar</packaging>
+    <version>1.6.0</version>
     <name>guacamole-auth-lab-ec2</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -49,6 +51,10 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <properties>
+        <ignoreLicenseErrors>true</ignoreLicenseErrors>
+    </properties>
 
     <dependencies>
 
