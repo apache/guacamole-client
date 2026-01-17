@@ -643,12 +643,6 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         }
         String token = credentials.getParameter("access_token");
         if (token != null && !token.trim().isEmpty()) {
-            logger.debug("Access token is present. {}", token);
-            return token;
-        }
-        token = credentials.getParameter("id_token");
-        if (token != null && !token.trim().isEmpty()) {
-            logger.debug("ID token is present. {}", token);
             return token;
         }
         throw new GuacamoleServerException("Missing access token for Illustrator request.");
@@ -659,6 +653,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         HttpURLConnection connection = null;
         try {
             URL url = uri.toURL();
+            logger.debug("URI is {},      {}", uri, url);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setConnectTimeout(10000);
