@@ -18,8 +18,18 @@
  */
 package org.apache.guacamole.auth.lablec2;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
@@ -33,26 +43,10 @@ import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.core.exception.SdkException;
-import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.ec2.Ec2Client;
-import software.amazon.awssdk.services.ec2.model.DescribeInstancesResponse;
-import software.amazon.awssdk.services.ec2.model.Filter;
-import software.amazon.awssdk.services.ec2.model.Instance;
-import software.amazon.awssdk.services.ec2.model.InstanceNetworkInterfaceSpecification;
-import software.amazon.awssdk.services.ec2.model.InstanceStateName;
-import software.amazon.awssdk.services.ec2.model.InstanceType;
-import software.amazon.awssdk.services.ec2.model.ResourceType;
-import software.amazon.awssdk.services.ec2.model.RunInstancesRequest;
-import software.amazon.awssdk.services.ec2.model.RunInstancesResponse;
-import software.amazon.awssdk.services.ec2.model.StartInstancesResponse;
-import software.amazon.awssdk.services.ec2.model.Tag;
-import software.amazon.awssdk.services.ec2.model.TagSpecification;
 
 /**
  * Authentication provider which decorates existing user contexts with a
- * per-user EC2-backed lab connection.
+ * per-user Illustrator-backed lab connection.
  */
 public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider {
 
@@ -84,23 +78,10 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
     }
 
-    /** EC2 client used to orchestrate lab instances. */
-    private final Ec2Client ec2;
+    private final ObjectMapper objectMapper;
 
-    private final String region;
-    private final String labAmiId;
-    private final String instanceType;
-    private final String subnetId;
-    private final List<String> securityGroupIds;
-    private final boolean assignPublicIp;
-    private final String launchTemplateId;
-    private final String protocol;
-    private final String port;
-    private final String vmUsername;
-    private final String vmPassword;
-    private final String labGroupName;
-    private final String labAdminGroupName;
-    private final String decorateOnlyAuthProvider;
+    private final String illustratorBaseUrl;
+    private final String illustratorConnectionPath;
 
     private final java.util.concurrent.ConcurrentHashMap<String, DecorationTarget>
             decorationTargetsByUser = new java.util.concurrent.ConcurrentHashMap<>();
@@ -116,38 +97,18 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
     public LabEc2AuthenticationProvider() throws GuacamoleException {
         Environment env = new LocalEnvironment();
 
-        region = env.getRequiredProperty(LabEc2Properties.LAB_EC2_REGION);
-        labAmiId = env.getProperty(LabEc2Properties.LAB_EC2_AMI_ID);
-        instanceType = env.getProperty(LabEc2Properties.LAB_EC2_INSTANCE_TYPE, "t3.medium");
-        subnetId = env.getProperty(LabEc2Properties.LAB_EC2_SUBNET_ID);
-        securityGroupIds = parseCsv(env.getProperty(LabEc2Properties.LAB_EC2_SECURITY_GROUP_IDS));
-        assignPublicIp = env.getProperty(LabEc2Properties.LAB_EC2_ASSIGN_PUBLIC_IP, false);
-        launchTemplateId = env.getProperty(LabEc2Properties.LAB_EC2_LAUNCH_TEMPLATE_ID);
-        protocol = env.getProperty(LabEc2Properties.LAB_EC2_PROTOCOL, "rdp");
-        port = env.getProperty(LabEc2Properties.LAB_EC2_PORT, "3389");
-        vmUsername = env.getProperty(LabEc2Properties.LAB_EC2_USERNAME, "labuser");
-        vmPassword = env.getProperty(LabEc2Properties.LAB_EC2_PASSWORD);
-        labGroupName = env.getProperty(LabEc2Properties.LAB_EC2_LAB_GROUP, "lab_user");
-        labAdminGroupName = env.getProperty(LabEc2Properties.LAB_EC2_LAB_ADMIN_GROUP, "lab_admin");
-        decorateOnlyAuthProvider = env.getProperty(LabEc2Properties.LAB_EC2_DECORATE_ONLY_AUTH_PROVIDER);
+        illustratorBaseUrl = env.getRequiredProperty(LabEc2Properties.LAB_EC2_ILLUSTRATOR_BASE_URL);
+        illustratorConnectionPath = env.getProperty(
+                LabEc2Properties.LAB_EC2_ILLUSTRATOR_CONNECTION_PATH,
+                "/api/v1/guac/connection"
+        );
 
         logger.info(
-                "Initializing lab-ec2 extension: region='{}' protocol='{}' port='{}' labGroup='{}' adminGroup='{}' launchTemplateIdSet={} amiIdSet={} subnetIdSet={} securityGroups={}",
-                region, protocol, port, labGroupName,
-                labAdminGroupName,
-                launchTemplateId != null && !launchTemplateId.isEmpty(),
-                labAmiId != null && !labAmiId.isEmpty(),
-                subnetId != null && !subnetId.isEmpty(),
-                securityGroupIds.size());
-        if (decorateOnlyAuthProvider != null && !decorateOnlyAuthProvider.trim().isEmpty()) {
-            logger.info("lab-ec2 will only decorate user contexts from auth provider '{}'.",
-                    decorateOnlyAuthProvider.trim());
-        }
+                "Initializing lab-ec2 extension: illustratorBaseUrl='{}' connectionPath='{}'",
+                illustratorBaseUrl, illustratorConnectionPath);
 
-        ec2 = Ec2Client.builder()
-                .httpClientBuilder(UrlConnectionHttpClient.builder())
-                .region(Region.of(region))
-                .build();
+        objectMapper = new ObjectMapper()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
     @Override
@@ -165,32 +126,14 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             return null;
         }
 
-        Set<String> groups = authenticatedUser.getEffectiveUserGroups();
-        logger.debug("Evaluating lab EC2 decoration for user '{}' with groups {}.",
-                authenticatedUser.getIdentifier(), groups);
-
-        boolean isAdmin = groups != null && groups.contains(labAdminGroupName);
-        boolean isLabUser = groups != null && groups.contains(labGroupName);
-
-        if (!isAdmin && !isLabUser) {
-            logger.debug("User '{}' is not in lab admin '{}' or lab user '{}' groups; leaving context unchanged.",
-                    authenticatedUser.getIdentifier(), labAdminGroupName, labGroupName);
-            return context;
-        }
+        logger.debug("Evaluating lab EC2 decoration for user '{}'.",
+                authenticatedUser.getIdentifier());
 
         String baseAuthProvider = context.getAuthenticationProvider() != null
                 ? context.getAuthenticationProvider().getIdentifier()
                 : null;
 
-        if (decorateOnlyAuthProvider != null && !decorateOnlyAuthProvider.trim().isEmpty()) {
-            String requiredProvider = decorateOnlyAuthProvider.trim();
-            if (baseAuthProvider == null || !requiredProvider.equals(baseAuthProvider)) {
-                logger.debug("Skipping lab-ec2 decoration for user '{}' because base auth provider is '{}' (required '{}').",
-                        authenticatedUser.getIdentifier(), baseAuthProvider, requiredProvider);
-                return context;
-            }
-        }
-        else if (baseAuthProvider != null) {
+        if (baseAuthProvider != null) {
             long nowMs = System.currentTimeMillis();
             DecorationTarget target = decorationTargetsByUser.compute(authenticatedUser.getIdentifier(),
                     (key, existing) -> (existing == null || existing.isExpired(nowMs))
@@ -207,20 +150,38 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
         String owner = authenticatedUser.getIdentifier().toLowerCase(Locale.ROOT);
 
-        logger.info("Ensuring lab EC2 instance for user '{}'.",
+        logger.info("Resolving lab connection for user '{}'.",
                 authenticatedUser.getIdentifier());
-        Instance instance = isAdmin ? ensureBuildInstance(owner) : ensureLabInstance(owner);
 
-        // Use Private IP as requested
-        String hostname = instance.privateIpAddress();
+        String token = extractIdToken(credentials);
+        ConnectionResponse connection = resolveConnection(null, token);
+        String hostname = connection.host;
         if (hostname == null || hostname.isEmpty()) {
-            logger.warn("EC2 instance '{}' for user '{}' has no private IP address yet (state='{}').",
-                    instance.instanceId(), authenticatedUser.getIdentifier(),
-                    instance.state() != null ? instance.state().name() : "unknown");
+            throw new GuacamoleServerException("Lab VM has no reachable host yet.");
+        }
+
+        String connectionProtocol = normalizeProtocol(connection.protocol);
+        if (connectionProtocol == null) {
+            throw new GuacamoleServerException("Missing protocol from Illustrator response.");
+        }
+        String connectionPort = connection.port != null ? connection.port.toString() : null;
+        if (connectionPort == null || connectionPort.isEmpty()) {
+            throw new GuacamoleServerException("Missing port from Illustrator response.");
+        }
+        if (connection.username == null || connection.username.trim().isEmpty()) {
+            throw new GuacamoleServerException("Missing username from Illustrator response.");
+        }
+        if (connection.password == null || connection.password.trim().isEmpty()) {
+            throw new GuacamoleServerException("Missing password from Illustrator response.");
         }
 
         // Determine connection ID
-        String connectionId = (isAdmin ? "lab-build-" : "lab-") + owner;
+        String connectionId = "lab-" + owner;
+        String connectionName = "My Lab VM";
+        if ("BUILDER".equalsIgnoreCase(connection.purpose)) {
+            connectionId = "lab-build-" + owner;
+            connectionName = "Lab Build VM";
+        }
 
         // Check if connection already exists
         Directory<Connection> baseDir = context.getConnectionDirectory();
@@ -237,20 +198,20 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             return context;
         }
 
-        logger.info("Using lab instance '{}' at host '{}' for user '{}'.",
-                instance.instanceId(), hostname, authenticatedUser.getIdentifier());
+        logger.info("Using lab host '{}' for user '{}' (protocol='{}' port='{}').",
+                hostname, authenticatedUser.getIdentifier(), connectionProtocol, connectionPort);
 
         LabActiveConnectionDirectory mergedActiveConnections =
                 new LabActiveConnectionDirectory(context.getActiveConnectionDirectory());
 
-        String connectionName = isAdmin ? "Lab Build VM" : "My Lab VM";
         Connection labConnection = buildLabConnection(connectionId, connectionName, owner, hostname,
                 authenticatedUser.getIdentifier(),
-                credentials != null ? credentials.getRemoteHostname() : null,
+                credentials.getRemoteHostname(),
+                connectionProtocol, connectionPort, connection.username, connection.password,
                 mergedActiveConnections);
         logger.debug("Prepared lab connection '{}' (name='{}') for user '{}' using protocol='{}' port='{}'.",
                 labConnection.getIdentifier(), labConnection.getName(),
-                authenticatedUser.getIdentifier(), protocol, port);
+                authenticatedUser.getIdentifier(), connectionProtocol, connectionPort);
 
         final String rootId = context.getRootConnectionGroup().getIdentifier();
         labConnection.setParentIdentifier(rootId);
@@ -660,245 +621,111 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
     }
 
-    /**
-     * Ensures a per-user EC2 instance exists and is running.
-     *
-     * @param username
-     *                 The username to tag on the instance.
-     *
-     * @return
-     *         The running EC2 instance.
-     *
-     * @throws GuacamoleException
-     *                            If EC2 operations fail.
-     */
-    private Instance ensureLabInstance(String username) throws GuacamoleException {
-        String owner = username.toLowerCase(Locale.ROOT);
-
-        Filter ownerFilter = Filter.builder()
-                .name("tag:LabOwner")
-                .values(owner)
-                .build();
-
-        Filter stateFilter = Filter.builder()
-                .name("instance-state-name")
-                .values("pending", "running", "stopping", "stopped")
-                .build();
-
-        DescribeInstancesResponse describeResponse = describeInstances(ownerFilter,
-                stateFilter);
-
-        logger.debug("DescribeInstances returned {} reservations for owner '{}'.",
-                describeResponse.reservations().size(), owner);
-
-        Instance instance = describeResponse.reservations().stream()
-                .flatMap(reservation -> reservation.instances().stream())
-                .findFirst()
-                .orElse(null);
-
-        if (instance == null) {
-            logger.info("No existing lab instance found for owner '{}'; launching new instance.",
-                    owner);
-            instance = runLabInstance(owner);
-        } else if (InstanceStateName.STOPPED.equals(instance.state().name())
-                || InstanceStateName.STOPPING.equals(instance.state().name())) {
-            logger.info("Found stopped lab instance '{}' for owner '{}'; starting it.",
-                    instance.instanceId(), owner);
-            instance = startInstance(instance.instanceId());
-        } else {
-            logger.info("Using existing lab instance '{}' in state '{}' for owner '{}'.",
-                    instance.instanceId(), instance.state().name(), owner);
-        }
-
-        return instance;
+    private static final class ConnectionResponse {
+        public String purpose;
+        public String protocol;
+        public String host;
+        public Integer port;
+        public String username;
+        public String password;
+        public String vmStatus;
+        public String note;
     }
 
-    /**
-     * Ensures a build EC2 instance exists for a lab admin. Unlike lab user
-     * instances, build instances are not created automatically.
-     */
-    private Instance ensureBuildInstance(String username) throws GuacamoleException {
-        String owner = username.toLowerCase(Locale.ROOT);
-
-        Filter ownerFilter = Filter.builder()
-                .name("tag:LabOwner")
-                .values(owner)
-                .build();
-
-        Filter purposeFilter = Filter.builder()
-                .name("tag:LabPurpose")
-                .values("build")
-                .build();
-
-        Filter stateFilter = Filter.builder()
-                .name("instance-state-name")
-                .values("pending", "running", "stopping", "stopped")
-                .build();
-
-        DescribeInstancesResponse describeResponse = describeInstances(ownerFilter,
-                purposeFilter, stateFilter);
-
-        Instance instance = describeResponse.reservations().stream()
-                .flatMap(reservation -> reservation.instances().stream())
-                .findFirst()
-                .orElse(null);
-
-        if (instance == null) {
-            throw new GuacamoleServerException(
-                    "No build instance found for lab admin '" + owner + "'. Launch from the console first.");
+    private String extractIdToken(Credentials credentials) throws GuacamoleException {
+        if (credentials == null) {
+            throw new GuacamoleServerException("Missing credentials for Illustrator request.");
         }
-
-        if (InstanceStateName.STOPPED.equals(instance.state().name())
-                || InstanceStateName.STOPPING.equals(instance.state().name())) {
-            logger.info("Found stopped build instance '{}' for owner '{}'; starting it.",
-                    instance.instanceId(), owner);
-            instance = startInstance(instance.instanceId());
-        } else {
-            logger.info("Using existing build instance '{}' in state '{}' for owner '{}'.",
-                    instance.instanceId(), instance.state().name(), owner);
+        String token = credentials.getParameter("access_token");
+        if (token != null && !token.trim().isEmpty()) {
+            return token;
         }
-
-        return instance;
+        token = credentials.getParameter("id_token");
+        if (token != null && !token.trim().isEmpty()) {
+            return token;
+        }
+        throw new GuacamoleServerException("Missing access token for Illustrator request.");
     }
 
-    /**
-     * Starts an existing instance and waits for it to become available.
-     *
-     * @param instanceId
-     *                   The ID of the instance to start.
-     *
-     * @return
-     *         The updated instance details.
-     *
-     * @throws GuacamoleException
-     *                            If the instance cannot be started.
-     */
-    private Instance startInstance(String instanceId) throws GuacamoleException {
+    private ConnectionResponse resolveConnection(String purpose, String token) throws GuacamoleException {
+        URI uri = buildConnectionUri(purpose);
+        HttpURLConnection connection = null;
         try {
-            logger.debug("Starting EC2 instance '{}'.", instanceId);
-            StartInstancesResponse startResponse = ec2.startInstances(builder -> builder.instanceIds(instanceId));
-            if (startResponse.startingInstances().isEmpty())
-                throw new GuacamoleServerException("Failed to start lab instance " + instanceId);
+            URL url = uri.toURL();
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setConnectTimeout(10000);
+            connection.setReadTimeout(600000);
+            connection.setRequestProperty("Authorization", "Bearer " + token);
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setDoOutput(false);
 
-            long waitStart = System.currentTimeMillis();
-            ec2.waiter().waitUntilInstanceRunning(waiter -> waiter.instanceIds(instanceId));
-            logger.info("Waited {} ms for instance '{}' to report running.",
-                    System.currentTimeMillis() - waitStart, instanceId);
+            int status = connection.getResponseCode();
+            String body = readResponseBody(connection, status >= 200 && status < 300);
 
-            logger.debug("Instance '{}' reported as running; fetching details.", instanceId);
-            return getInstanceById(instanceId);
-        }
-        catch (SdkException e) {
-            throw new GuacamoleServerException("Unable to start lab EC2 instance.", e);
-        }
-    }
-
-    /**
-     * Launches a new EC2 instance for the given owner.
-     *
-     * @param owner
-     *              The owner tag value to assign.
-     *
-     * @return
-     *         The new EC2 instance.
-     *
-     * @throws GuacamoleException
-     *                            If the instance cannot be created.
-     */
-    private Instance runLabInstance(String owner) throws GuacamoleException {
-        try {
-            logger.debug("Preparing to run new lab instance for owner '{}'.", owner);
-            RunInstancesRequest.Builder builder = RunInstancesRequest.builder()
-                    .minCount(1)
-                    .maxCount(1);
-
-            if (launchTemplateId != null && !launchTemplateId.isEmpty()) {
-                builder = builder.launchTemplate(template -> template.launchTemplateId(launchTemplateId));
-            } else {
-                if (labAmiId == null || labAmiId.isEmpty())
-                    throw new GuacamoleServerException(
-                            "lab-ec2-ami-id must be set when no launch template is provided.");
-
-                builder = builder.imageId(labAmiId)
-                        .instanceType(InstanceType.fromValue(instanceType));
-
-                InstanceNetworkInterfaceSpecification.Builder netBuilder = InstanceNetworkInterfaceSpecification.builder()
-                        .deviceIndex(0)
-                        .associatePublicIpAddress(assignPublicIp);
-
-                if (subnetId != null && !subnetId.isEmpty())
-                    netBuilder.subnetId(subnetId);
-
-                if (!securityGroupIds.isEmpty())
-                    netBuilder.groups(securityGroupIds);
-
-                builder.networkInterfaces(netBuilder.build());
+            if (status >= 200 && status < 300) {
+                if (body == null || body.trim().isEmpty()) {
+                    throw new GuacamoleServerException("Illustrator returned an empty connection response.");
+                }
+                try {
+                    ConnectionResponse resolved = objectMapper.readValue(body, ConnectionResponse.class);
+                    if (resolved.vmStatus != null && !"RUNNING".equalsIgnoreCase(resolved.vmStatus)) {
+                        throw new GuacamoleServerException("Lab VM is still starting. Please retry shortly.");
+                    }
+                    return resolved;
+                } catch (IOException e) {
+                    throw new GuacamoleServerException("Unable to parse Illustrator response.", e);
+                }
             }
 
-            builder = builder.tagSpecifications(TagSpecification.builder()
-                    .resourceType(ResourceType.INSTANCE)
-                    .tags(
-                            Tag.builder().key("Name").value("guac-lab-" + owner).build(),
-                            Tag.builder().key("LabOwner").value(owner).build(),
-                            Tag.builder().key("LabPurpose").value("training").build(),
-                            Tag.builder().key("LabEnv").value("guac").build())
-                    .build());
+            if (status == 404) {
+                throw new GuacamoleServerException("No active lab VM mapping found for this user.");
+            }
 
-            RunInstancesResponse runResponse = ec2.runInstances(builder.build());
-            Instance instance = runResponse.instances().get(0);
+            if (status == 401 || status == 403) {
+                throw new GuacamoleServerException("Not authorized to access the lab VM.");
+            }
 
-            long waitStart = System.currentTimeMillis();
-            ec2.waiter().waitUntilInstanceRunning(waiter -> waiter.instanceIds(instance.instanceId()));
-            logger.info("Waited {} ms for newly-launched instance '{}' (owner='{}') to report running.",
-                    System.currentTimeMillis() - waitStart,
-                    instance.instanceId(), owner);
-
-            logger.info("Launched lab instance '{}' for owner '{}'; waiting until running.",
-                    instance.instanceId(), owner);
-            return getInstanceById(instance.instanceId());
-        }
-        catch (SdkException e) {
-            throw new GuacamoleServerException("Unable to create lab EC2 instance.", e);
+            throw new GuacamoleServerException("Illustrator returned HTTP " + status + ".");
+        } catch (IOException e) {
+            throw new GuacamoleServerException("Unable to contact Illustrator API.", e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
 
-    /**
-     * Retrieves details for a specific instance ID.
-     *
-     * @param instanceId
-     *                   The instance ID to query.
-     *
-     * @return
-     *         The instance details.
-     *
-     * @throws GuacamoleException
-     *                            If the instance cannot be described.
-     */
-    private Instance getInstanceById(String instanceId) throws GuacamoleException {
-        try {
-            logger.debug("Describing EC2 instance '{}'.", instanceId);
-            DescribeInstancesResponse response = ec2.describeInstances(builder -> builder.instanceIds(instanceId));
-
-            return response.reservations().stream()
-                    .flatMap(reservation -> reservation.instances().stream())
-                    .findFirst()
-                    .orElseThrow(() -> new GuacamoleServerException(
-                            "Unable to load lab instance " + instanceId));
-        } catch (SdkException e) {
-            throw new GuacamoleServerException("Unable to describe lab EC2 instance.", e);
+    private URI buildConnectionUri(String purpose) throws GuacamoleException {
+        String base = illustratorBaseUrl != null ? illustratorBaseUrl.trim() : "";
+        if (base.isEmpty()) {
+            throw new GuacamoleServerException("Illustrator base URL is not configured.");
         }
+        if (base.endsWith("/")) {
+            base = base.substring(0, base.length() - 1);
+        }
+
+        String path = illustratorConnectionPath != null ? illustratorConnectionPath.trim() : "";
+        if (path.isEmpty()) {
+            path = "/api/v1/guac/connection";
+        }
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+
+        StringBuilder url = new StringBuilder(base).append(path);
+        if (purpose != null && !purpose.trim().isEmpty()) {
+            url.append("?purpose=").append(urlEncode(purpose));
+        }
+
+        return URI.create(url.toString());
     }
 
-    /**
-     * Executes an EC2 describe-instances call with the provided filters.
-     */
-    private DescribeInstancesResponse describeInstances(Filter... filters)
-            throws GuacamoleException {
-        try {
-            return ec2.describeInstances(builder -> builder.filters(filters));
-        } catch (SdkException e) {
-            throw new GuacamoleServerException("Unable to describe EC2 instances.", e);
+    private String normalizeProtocol(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
         }
+        return value.trim().toLowerCase(Locale.ROOT);
     }
 
     /**
@@ -906,38 +733,52 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
      */
     private Connection buildLabConnection(String connectionId, String connectionName, String owner,
             String hostname, String username,
-            String remoteHost, LabActiveConnectionDirectory activeConnections) {
+            String remoteHost, String connectionProtocol, String connectionPort,
+            String connectionUsername, String connectionPassword,
+            LabActiveConnectionDirectory activeConnections) {
 
         GuacamoleConfiguration config = new GuacamoleConfiguration();
-        config.setProtocol(protocol);
+        config.setProtocol(connectionProtocol);
         config.setParameter("hostname", hostname);
-        config.setParameter("port", port);
-        config.setParameter("username", vmUsername);
+        config.setParameter("port", connectionPort);
+        String resolvedUsername = connectionUsername != null ? connectionUsername.trim() : "";
+        config.setParameter("username", resolvedUsername);
         config.setParameter("ignore-cert", "true");
 
-        if (vmPassword != null && !vmPassword.isEmpty())
-            config.setParameter("password", vmPassword);
+        String resolvedPassword = connectionPassword != null ? connectionPassword.trim() : "";
+        if (!resolvedPassword.isEmpty())
+            config.setParameter("password", resolvedPassword);
 
         logger.debug(
                 "Building lab connection config for '{}' -> hostname='{}' port='{}' vmUsername='{}' passwordSet={}",
-                connectionId, hostname, port, vmUsername,
-                vmPassword != null && !vmPassword.isEmpty());
+                connectionId, hostname, connectionPort, resolvedUsername,
+                !resolvedPassword.isEmpty());
 
         return new LabTrackedConnection(connectionName, connectionId, config,
                 username, remoteHost, activeConnections);
     }
 
-    /**
-     * Parses a comma-delimited list into a collection of trimmed values.
-     */
-    private List<String> parseCsv(String csv) {
-        if (csv == null || csv.trim().isEmpty())
-            return Collections.emptyList();
+    private String readResponseBody(HttpURLConnection connection, boolean success) throws IOException {
+        InputStream stream = success ? connection.getInputStream() : connection.getErrorStream();
+        if (stream == null) {
+            return null;
+        }
+        try (InputStream input = stream; ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            byte[] data = new byte[4096];
+            int read;
+            while ((read = input.read(data)) != -1) {
+                buffer.write(data, 0, read);
+            }
+            return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+        }
+    }
 
-        return java.util.Arrays.stream(csv.split(","))
-                .map(String::trim)
-                .filter(value -> !value.isEmpty())
-                .collect(Collectors.toList());
+    private String urlEncode(String value) throws GuacamoleException {
+        try {
+            return URLEncoder.encode(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new GuacamoleServerException("UTF-8 encoding not supported.", e);
+        }
     }
 
 }

@@ -23,10 +23,8 @@
                         http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-lab-ec2</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.0</version>
     <name>guacamole-auth-lab-ec2</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -52,15 +50,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <properties>
-        <!--
-            The AWS SDK dependency tree lacks the metadata that the build's license
-            tooling expects. Allow license generation to proceed so the module can
-            be packaged locally without manual environment variables.
-        -->
-        <ignoreLicenseErrors>true</ignoreLicenseErrors>
-    </properties>
-
     <dependencies>
 
         <!-- Guacamole Extension API -->
@@ -71,47 +60,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- AWS EC2 SDK (shaded to avoid conflicts) -->
         <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>ec2</artifactId>
-            <version>2.39.6</version>
-        </dependency>
-
-        <!-- AWS SDK URL Connection Client -->
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>url-connection-client</artifactId>
-            <version>2.39.6</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
         </dependency>
 
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <createDependencyReducedPom>false</createDependencyReducedPom>
-                            <relocations>
-                                <relocation>
-                                    <pattern>software.amazon.awssdk</pattern>
-                                    <shadedPattern>org.apache.guacamole.auth.lablec2.shaded.awssdk</shadedPattern>
-                                </relocation>
-                            </relocations>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
