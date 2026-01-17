@@ -155,6 +155,11 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
         String token = extractIdToken(credentials);
         ConnectionResponse connection = resolveConnection(null, token);
+        if (connection == null) {
+            logger.info("No active lab mapping found for user '{}'; skipping lab-ec2 decoration.",
+                    authenticatedUser.getIdentifier());
+            return context;
+        }
         String hostname = connection.host;
         if (hostname == null || hostname.isEmpty()) {
             throw new GuacamoleServerException("Lab VM has no reachable host yet.");
@@ -638,10 +643,12 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         }
         String token = credentials.getParameter("access_token");
         if (token != null && !token.trim().isEmpty()) {
+            logger.debug("Access token is present. {}", token);
             return token;
         }
         token = credentials.getParameter("id_token");
         if (token != null && !token.trim().isEmpty()) {
+            logger.debug("ID token is present. {}", token);
             return token;
         }
         throw new GuacamoleServerException("Missing access token for Illustrator request.");
@@ -662,7 +669,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
             int status = connection.getResponseCode();
             String body = readResponseBody(connection, status >= 200 && status < 300);
-
+            logger.debug(body);
             if (status >= 200 && status < 300) {
                 if (body == null || body.trim().isEmpty()) {
                     throw new GuacamoleServerException("Illustrator returned an empty connection response.");
