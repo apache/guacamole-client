@@ -64,11 +64,33 @@ public interface SSOAuthenticationProviderService {
     URI getLoginURI() throws GuacamoleException;
 
     /**
+     * Returns the full URI of the logout endpoint to which a user should be
+     * redirected when they log out from Guacamole. This allows the user to
+     * also log out from the SSO identity provider. If no logout endpoint is
+     * configured, null is returned.
+     *
+     * @param idToken
+     *     The ID token or authentication token from the user's session, if
+     *     available. This may be used as an id_token_hint parameter in the
+     *     logout request. May be null if not available.
+     *
+     * @return
+     *     The full URI of the SSO logout endpoint, or null if not configured.
+     *
+     * @throws GuacamoleException
+     *     If configuration information required for generating the logout URI
+     *     cannot be read.
+     */
+    default URI getLogoutURI(String idToken) throws GuacamoleException {
+        return null;
+    }
+
+    /**
      * Frees all resources associated with the relevant
      * SSOAuthenticationProvider implementation. This function is automatically
      * invoked when an implementation of SSOAuthenticationProvider is shut
      * down.
      */
     void shutdown();
-    
+
 }
