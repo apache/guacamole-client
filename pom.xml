@@ -39,7 +39,7 @@
         referenced by this and all other pom.xml files within guacamole-client,
         and is a special case within Maven as one of the few properties allowed
         within the pom.xml version and intended for this purpose) -->
-        <revision>1.6.1</revision>
+        <revision>1.6.0</revision>
 
         <!-- Dependency versions -->
         <guava.version>32.1.3-jre</guava.version>

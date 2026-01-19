@@ -31,7 +31,7 @@ angular.module('guacSsoOpenid').run(['$rootScope', '$window',
 
     // Redirect to SSO logout endpoint when user logs out
     $rootScope.$on('guacLogout', function handleLogout() {
-        $window.location.href = 'api/ext/sso/logout';
+        $window.location.href = 'api/ext/openid/logout';
     });
 
 }]);
