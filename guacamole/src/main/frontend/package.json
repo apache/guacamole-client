@@ -20,7 +20,7 @@
         "fuzzysort": "^3.0.2",
         "jquery": "^3.7.1",
         "jstz": "^2.1.1",
-        "lodash": "^4.17.21",
+        "lodash": "^4.17.23",
         "yaml": "^2.5.0"
     },
     "devDependencies": {
