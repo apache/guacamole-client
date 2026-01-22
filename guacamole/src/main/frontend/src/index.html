@@ -103,21 +103,21 @@
         </div>
 
         <!-- Polyfills -->
-        <script type="text/javascript" src="Blob.js"></script>
-        <script type="text/javascript" src="datalist-polyfill.min.js"></script>
+        <script type="text/javascript" src="Blob.js?b=${guacamole.build.identifier}"></script>
+        <script type="text/javascript" src="datalist-polyfill.min.js?b=${guacamole.build.identifier}"></script>
 
         <!-- Core libraries that MUST be available at the global level (for use
         by extensions) -->
-        <script type="text/javascript" src="guacamole-common-js/all.min.js"></script>
-        <script type="text/javascript" src="jquery.min.js"></script>
-        <script type="text/javascript" src="lodash.min.js"></script>
-        <script type="text/javascript" src="angular.min.js"></script>
+        <script type="text/javascript" src="guacamole-common-js/all.min.js?b=${guacamole.build.identifier}"></script>
+        <script type="text/javascript" src="jquery.min.js?b=${guacamole.build.identifier}"></script>
+        <script type="text/javascript" src="lodash.min.js?b=${guacamole.build.identifier}"></script>
+        <script type="text/javascript" src="angular.min.js?b=${guacamole.build.identifier}"></script>
 
         <!-- Web application (bundled by Webpack) -->
         <% for (var index in htmlWebpackPlugin.files.js) { %>
         <script type="text/javascript" src="<%= htmlWebpackPlugin.files.js[index] %>"></script>
         <% } %>
-        <script type="text/javascript" src="templates.js"></script>
+        <script type="text/javascript" src="templates.js?b=${guacamole.build.identifier}"></script>
 
         <!-- Extension JavaScript -->
         <script type="text/javascript" src="app.js?b=${guacamole.build.identifier}"></script>
