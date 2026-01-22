@@ -71,6 +71,21 @@ public class UserData {
         private String id;
 
         /**
+         * Allows to override the guacd-hostname setting on a 'per connection' basis
+         */
+        private String guacdHostname;
+
+        /**
+         * Allows to override the guacd-port setting on a 'per connection' basis
+         */
+        private Integer guacdPort;
+
+        /**
+         * Allows to override the guacd-ssl setting on a 'per connection' basis
+         */
+        private Boolean guacdSsl;
+
+        /**
          * The protocol that this connection should use, such as "vnc" or "rdp".
          */
         private String protocol;
@@ -123,6 +138,66 @@ public class UserData {
         public void setId(String id) {
             this.id = id;
         }
+
+        /**
+         * Returns the override for the guacd-hostname setting
+         *
+         * @return
+         *     The hostname to use when connecting guacd
+         */
+        public String getGuacdHostname() {
+			return guacdHostname;
+		}
+
+        /**
+         * Sets the guacd-hostname override for this connection
+         *
+         * @param guacdHostname
+         *     The hostname to use when connecting guacd
+         */
+        public void setGuacdHostname(String guacdHostname) {
+			this.guacdHostname = guacdHostname;
+		}
+
+        /**
+         * Returns the override for the guacd-port setting
+         *
+         * @return
+         *     The port to use when connecting guacd
+         */
+        public Integer getGuacdPort() {
+			return guacdPort;
+		}
+
+        /**
+         * Sets the guacd-port override for this connection
+         *
+         * @param guacdPort
+         *     The port to use when connecting guacd
+         */
+        public void setGuacdPort(Integer guacdPort) {
+			this.guacdPort = guacdPort;
+		}
+
+        /**
+         * Returns the override for the guacd-ssl setting
+         *
+         * @return
+         *     The flag if SSL should be enabled when connecting guacd
+         */
+        public Boolean getGuacdSsl() {
+			return guacdSsl;
+		}
+
+        /**
+         * Sets the guacd-ssl override for this connection
+         *
+         * @param guacdPort
+         *     The flag if SSL should be enabled when connecting guacd
+         */
+        public void setGuacdSsl(Boolean guacdSsl) {
+			this.guacdSsl = guacdSsl;
+		}
 
         /**
          * Returns the protocol that this connection should use, such as "vnc"
