@@ -18,18 +18,6 @@
  */
 
 /**
- * The module for code used to connect to a connection or balancing group.
+ * The module for code used to manage USB devices through WebUSB.
  */
-angular.module('client', [
-    'auth',
-    'clipboard',
-    'element',
-    'history',
-    'navigation',
-    'notification',
-    'osk',
-    'rest',
-    'textInput',
-    'touch',
-    "usb"
-]);
+angular.module('usb', []);

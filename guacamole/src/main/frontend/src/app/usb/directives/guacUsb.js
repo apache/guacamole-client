@@ -17,19 +17,14 @@
  * under the License.
  */
 
-/**
- * The module for code used to connect to a connection or balancing group.
- */
-angular.module('client', [
-    'auth',
-    'clipboard',
-    'element',
-    'history',
-    'navigation',
-    'notification',
-    'osk',
-    'rest',
-    'textInput',
-    'touch',
-    "usb"
-]);
+angular.module('usb').directive('guacUsb', [function guacUsb() {
+    return {
+        restrict: 'E',
+        replace: true,
+        scope: {
+            client: '='
+        },
+        templateUrl: 'app/usb/templates/guacUsb.html',
+        controller: 'usbController'
+    };
+}]);
