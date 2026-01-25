@@ -1,0 +1,1241 @@
+{
+    
+    "NAME" : "繁體中文",
+    
+    "APP" : {
+
+        "NAME"    : "Apache Guacamole",
+        "VERSION" : "${project.version}",
+
+        "ACTION_ACKNOWLEDGE"        : "確定",
+        "ACTION_CANCEL"             : "取消",
+        "ACTION_CLEAR"              : "清除",
+        "ACTION_CLONE"              : "複製",
+        "ACTION_CONTINUE"           : "繼續",
+        "ACTION_DELETE"             : "刪除",
+        "ACTION_DELETE_SESSIONS"    : "中斷連線",
+        "ACTION_DOWNLOAD"           : "下載",
+        "ACTION_IMPORT"             : "匯入",
+        "ACTION_LOGIN"              : "登入",
+        "ACTION_LOGIN_AGAIN"        : "重新登入",
+        "ACTION_LOGOUT"             : "登出",
+        "ACTION_MANAGE_CONNECTIONS" : "連線管理",
+        "ACTION_MANAGE_PREFERENCES" : "偏好設定",
+        "ACTION_MANAGE_SETTINGS"    : "設定",
+        "ACTION_MANAGE_SESSIONS"    : "使用中連線",
+        "ACTION_MANAGE_USERS"       : "使用者",
+        "ACTION_MANAGE_USER_GROUPS" : "群組",
+        "ACTION_NAVIGATE_BACK"      : "返回",
+        "ACTION_NAVIGATE_HOME"      : "首頁",
+        "ACTION_PAUSE"              : "暫停",
+        "ACTION_PLAY"               : "播放",
+        "ACTION_SAVE"               : "儲存",
+        "ACTION_SEARCH"             : "搜尋",
+        "ACTION_SHARE"              : "分享",
+        "ACTION_UPDATE_PASSWORD"    : "更新密碼",
+        "ACTION_VIEW_HISTORY"       : "歷史記錄",
+        "ACTION_VIEW_RECORDING"     : "檢視",
+
+        "DIALOG_HEADER_ERROR" : "錯誤",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "發生錯誤，無法完成此操作。若問題持續存在，請通知您的系統管理員或檢查系統記錄。",
+        "ERROR_PASSWORD_BLANK"    : "密碼不可為空白。",
+        "ERROR_PASSWORD_MISMATCH" : "提供的密碼不相符。",
+        "ERROR_SINGLE_FILE_ONLY"  : "請一次只上傳一個檔案",
+        
+        "FIELD_HEADER_PASSWORD"       : "密碼：",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "再次輸入密碼：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "允許寫入已存在的錄影檔案：",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "允許寫入已存在的文字記錄檔案：",
+
+        "FIELD_PLACEHOLDER_FILTER" : "篩選",
+
+        "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "目前有 {USERS} 位{USERS, plural, one{使用者} other{使用者}}正在使用。",
+        "INFO_LOGGED_OUT"        : "您已經登出。",
+
+        "TEXT_ANONYMOUS_USER"   : "匿名使用者",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{秒} other{秒}}} minute{{VALUE, plural, one{分鐘} other{分鐘}}} hour{{VALUE, plural, one{小時} other{小時}}} day{{VALUE, plural, one{天} other{天}}} other{}}",
+        "TEXT_UNTRANSLATED" : "{MESSAGE}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "@:APP.ACTION_CLEAR",
+        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
+        "ACTION_DISCONNECT"                : "中斷連線",
+        "ACTION_FULLSCREEN"                : "全螢幕",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "重新連線",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SHOW_CLIPBOARD"            : "按一下以檢視剪貼簿內容。",
+        "ACTION_UPLOAD_FILES"              : "上傳檔案",
+
+        "DIALOG_HEADER_CONNECTING"       : "連線中",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "連線錯誤",
+        "DIALOG_HEADER_DISCONNECTED"     : "已中斷連線",
+
+        "ERROR_CLIENT_201"     : "伺服器忙碌中，連線已關閉。請稍候幾分鐘後再試。",
+        "ERROR_CLIENT_202"     : "Guacamole 伺服器已關閉連線，因為遠端桌面回應時間過長。請重試或聯絡您的系統管理員。",
+        "ERROR_CLIENT_203"     : "遠端桌面伺服器發生錯誤並已關閉連線。請重試或聯絡您的系統管理員。",
+        "ERROR_CLIENT_207"     : "目前無法連線到遠端桌面伺服器。若問題持續，請通知您的系統管理員，或檢查系統記錄。",
+        "ERROR_CLIENT_208"     : "遠端桌面伺服器目前無法使用。若問題持續，請通知您的系統管理員，或檢查系統記錄。",
+        "ERROR_CLIENT_209"     : "遠端桌面伺服器已關閉連線，因為與其他連線發生衝突。請稍後再試。",
+        "ERROR_CLIENT_20A"     : "遠端桌面伺服器已關閉連線，因為它似乎處於閒置狀態。若這不是預期行為，請通知您的系統管理員，或檢查系統設定。",
+        "ERROR_CLIENT_20B"     : "遠端桌面伺服器已強制關閉連線。若這不是預期行為，請通知您的系統管理員，或檢查系統記錄。",
+        "ERROR_CLIENT_301"     : "登入失敗。請重新連線並再試一次。",
+        "ERROR_CLIENT_303"     : "遠端桌面伺服器已拒絕存取此連線。若您需要存取權限，請要求系統管理員授予您的帳號存取權限，或檢查系統設定。",
+        "ERROR_CLIENT_308"     : "Guacamole 伺服器已關閉連線，因為您的瀏覽器長時間沒有回應，似乎已經斷線。這通常是由網路問題造成的，例如無線訊號不穩定，或網路速度過慢。請檢查您的網路並重試。",
+        "ERROR_CLIENT_31D"     : "Guacamole 伺服器拒絕存取此連線，因為您已達到單一使用者同時連線的上限。請關閉一個或多個連線後再試。",
+        "ERROR_CLIENT_DEFAULT" : "Guacamole 伺服器發生內部錯誤，連線已終止。若問題持續，請通知您的系統管理員，或檢查系統記錄。",
+
+        "ERROR_TUNNEL_201"     : "Guacamole 伺服器已拒絕此連線嘗試，因為有太多使用中的連線。請稍候幾分鐘後再試。",
+        "ERROR_TUNNEL_202"     : "連線已關閉，因為伺服器回應時間過長。這通常是由網路問題造成的，例如無線訊號不穩定，或網路速度過慢。請檢查您的網路連線並重試，或聯絡您的系統管理員。",
+        "ERROR_TUNNEL_203"     : "伺服器發生錯誤並已關閉連線。請重試或聯絡您的系統管理員。",
+        "ERROR_TUNNEL_204"     : "要求的連線不存在。請檢查連線名稱並重試。",
+        "ERROR_TUNNEL_205"     : "此連線目前正在使用中，且不允許同時存取此連線。請稍後再試。",
+        "ERROR_TUNNEL_207"     : "目前無法連線到 Guacamole 伺服器。請檢查您的網路並重試。",
+        "ERROR_TUNNEL_208"     : "Guacamole 伺服器目前不接受連線。請檢查您的網路並重試。",
+        "ERROR_TUNNEL_301"     : "您沒有存取此連線的權限，因為您尚未登入。請登入並重試。",
+        "ERROR_TUNNEL_303"     : "您沒有存取此連線的權限。若您需要存取權限，請要求系統管理員將您加入允許使用者清單，或檢查系統設定。",
+        "ERROR_TUNNEL_308"     : "Guacamole 伺服器已關閉連線，因為您的瀏覽器長時間沒有回應，似乎已經斷線。這通常是由網路問題造成的，例如無線訊號不穩定，或網路速度過慢。請檢查您的網路並重試。",
+        "ERROR_TUNNEL_31D"     : "Guacamole 伺服器拒絕存取此連線，因為您已達到單一使用者同時連線的上限。請關閉一個或多個連線後再試。",
+        "ERROR_TUNNEL_DEFAULT" : "Guacamole 伺服器發生內部錯誤，連線已終止。若問題持續，請通知您的系統管理員，或檢查系統記錄。",
+
+        "ERROR_UPLOAD_100"     : "檔案傳輸不支援或未啟用。請聯絡您的系統管理員，或檢查系統記錄。",
+        "ERROR_UPLOAD_201"     : "目前有太多檔案正在傳輸。請等待現有傳輸完成後再試。",
+        "ERROR_UPLOAD_202"     : "無法傳輸檔案，因為遠端桌面伺服器回應時間過長。請重試或聯絡您的系統管理員。",
+        "ERROR_UPLOAD_203"     : "遠端桌面伺服器在傳輸過程中發生錯誤。請重試或聯絡您的系統管理員。",
+        "ERROR_UPLOAD_204"     : "檔案傳輸的目的地不存在。請檢查目的地是否存在並重試。",
+        "ERROR_UPLOAD_205"     : "檔案傳輸的目的地目前被鎖定。請等待進行中的工作完成後再試。",
+        "ERROR_UPLOAD_301"     : "您沒有上傳此檔案的權限，因為您尚未登入。請登入並重試。",
+        "ERROR_UPLOAD_303"     : "您沒有上傳此檔案的權限。若您需要存取權限，請檢查系統設定，或洽詢系統管理員。",
+        "ERROR_UPLOAD_308"     : "檔案傳輸已停滯。這通常是由網路問題造成的，例如無線訊號不穩定，或網路速度過慢。請檢查您的網路並重試。",
+        "ERROR_UPLOAD_31D"     : "目前有太多檔案正在傳輸。請等待現有傳輸完成後再試。",
+        "ERROR_UPLOAD_DEFAULT" : "Guacamole 伺服器發生內部錯誤，連線已終止。若問題持續，請通知您的系統管理員，或檢查系統記錄。",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CLIPBOARD"           : "在 Guacamole 中複製/剪下的文字會顯示在這裡。修改下方的文字會影響遠端剪貼簿。",
+        "HELP_INPUT_METHOD_NONE"   : "不使用輸入法。鍵盤輸入來自連接的實體鍵盤。",
+        "HELP_INPUT_METHOD_OSK"    : "顯示並接受來自內建 Guacamole 螢幕鍵盤的輸入。螢幕鍵盤允許輸入可能無法使用的組合鍵（如 Ctrl-Alt-Del）。",
+        "HELP_INPUT_METHOD_TEXT"   : "允許輸入文字，並根據輸入的文字模擬鍵盤事件。這對於缺少實體鍵盤的裝置（如手機）是必要的。",
+        "HELP_MOUSE_MODE"          : "決定遠端滑鼠對觸控的反應方式。",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "點選即按一下。按一下發生在觸控的位置。",
+        "HELP_MOUSE_MODE_RELATIVE" : "拖曳以移動滑鼠指標，點選即按一下。按一下發生在指標的位置。",
+        "HELP_SHARE_LINK"          : "目前連線正在分享中，任何人都可以透過以下{LINKS, plural, one{連結} other{連結}}存取：",
+
+        "INFO_ANONYMOUS_USER_COUNT" : "匿名使用者{COUNT, plural, one{} other{ (#)}}",
+        "INFO_CONNECTION_SHARED"    : "此連線現在已分享。",
+        "INFO_NO_FILE_TRANSFERS"    : "沒有檔案傳輸。",
+        "INFO_USER_COUNT"           : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
+
+        "NAME_INPUT_METHOD_NONE"   : "無",
+        "NAME_INPUT_METHOD_OSK"    : "螢幕鍵盤",
+        "NAME_INPUT_METHOD_TEXT"   : "文字輸入",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "觸控螢幕",
+        "NAME_MOUSE_MODE_RELATIVE" : "觸控板",
+
+        "SECTION_HEADER_CLIENT_MESSAGES" : "訊息",
+        "SECTION_HEADER_CLIPBOARD"       : "剪貼簿",
+        "SECTION_HEADER_DEVICES"         : "裝置",
+        "SECTION_HEADER_DISPLAY"         : "顯示",
+        "SECTION_HEADER_FILE_TRANSFERS"  : "檔案傳輸",
+        "SECTION_HEADER_INPUT_METHOD"    : "輸入法",
+        
+        "SECTION_HEADER_MOUSE_MODE"     : "滑鼠模擬模式",
+
+        "TEXT_ANONYMOUS_USER_JOINED"      : "匿名使用者已加入連線。",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "匿名使用者已離開連線。",
+        "TEXT_ZOOM_AUTO_FIT"              : "自動調整至瀏覽器視窗",
+        "TEXT_CLIENT_STATUS_IDLE"         : "閒置。",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "正在連線到 Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "您已中斷連線。",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "連線到 Guacamole 伺服器的網路連線似乎不穩定。",
+        "TEXT_CLIENT_STATUS_WAITING"      : "已連線到 Guacamole。等待回應中...",
+        "TEXT_USER_JOINED"                : "{USERNAME} 已加入連線。",
+        "TEXT_USER_LEFT"                  : "{USERNAME} 已離開連線。",
+        "TEXT_RECONNECT_COUNTDOWN"        : "將在 {REMAINING} {REMAINING, plural, one{秒} other{秒}}後重新連線...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
+
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "隱藏",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "顯示",
+
+        "FIELD_HEADER_BACKGROUND" : "背景",
+        "FIELD_HEADER_FOREGROUND" : "前景",
+
+        "FIELD_OPTION_CUSTOM" : "自訂...",
+
+        "SECTION_HEADER_DETAILS" : "詳細資訊："
+
+    },
+
+    "IMPORT": {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_BROWSE"             : "瀏覽檔案",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR"              : "@:APP.ACTION_CLEAR",
+        "ACTION_VIEW_FORMAT_HELP"   : "檢視格式提示",
+        "ACTION_IMPORT"             : "@:APP.ACTION_IMPORT",
+        "ACTION_IMPORT_CONNECTIONS" : "匯入連線",
+
+        "DIALOG_HEADER_ERROR"   : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_SUCCESS" : "成功",
+
+        "ERROR_AMBIGUOUS_CSV_HEADER"         : "不明確的 CSV 標頭 \"{HEADER}\" 可能是連線屬性或參數",
+        "ERROR_AMBIGUOUS_PARENT_GROUP"       : "不可同時指定群組和 parentIdentifier",
+        "ERROR_ARRAY_REQUIRED"               : "提供的檔案必須包含連線清單",
+        "ERROR_DETECTED_INVALID_TYPE"        : "不支援的檔案類型。請確認檔案為有效的 CSV、JSON 或 YAML。",
+        "ERROR_DUPLICATE_CONNECTION_IN_FILE" : "匯入檔案中有重複的連線 \"{NAME}\" 位於 \"{PATH}\"",
+        "ERROR_DUPLICATE_CSV_HEADER"         : "重複的 CSV 標頭：{HEADER}",
+        "ERROR_EMPTY_FILE"                   : "提供的檔案是空的",
+        "ERROR_INVALID_CSV_HEADER"           : "無效的 CSV 標頭 \"{HEADER}\" 既不是屬性也不是參數",
+        "ERROR_INVALID_MIME_TYPE"            : "不支援的檔案類型：\"{TYPE}\"",
+        "ERROR_INVALID_GROUP"                : "找不到符合 \"{GROUP}\" 的群組",
+        "ERROR_INVALID_GROUP_IDENTIFIER"     : "找不到識別碼為 \"{IDENTIFIER}\" 的連線群組",
+        "ERROR_INVALID_GROUP_TYPE"           : "無效的群組 - 必須是字串。",
+        "ERROR_INVALID_PROTOCOL"             : "無效的通訊協定 \"{PROTOCOL}\"",
+        "ERROR_INVALID_USER_GROUPS_TYPE"     : "無效的使用者群組 - 必須是使用者群組識別碼的陣列。",
+        "ERROR_INVALID_USERS_TYPE"           : "無效的使用者 - 必須是使用者識別碼的陣列。",
+        "ERROR_NO_FILE_SUPPLIED"             : "請選擇要匯入的檔案",
+        "ERROR_PARSE_FAILURE_CSV"            : "請確認您的檔案為有效的 CSV。解析失敗，錯誤訊息：\"{ERROR}\"。",
+        "ERROR_PARSE_FAILURE_JSON"           : "請確認您的檔案為有效的 JSON。解析失敗，錯誤訊息：\"{ERROR}\"。",
+        "ERROR_PARSE_FAILURE_YAML"           : "請確認您的檔案為有效的 YAML。解析失敗，錯誤訊息：\"{ERROR}\"。",
+        "ERROR_REJECT_UPDATE_CONNECTION"     : "連線 \"{NAME}\" 已存在於 \"{PATH}\"",
+        "ERROR_REQUIRED_NAME_CONNECTION"     : "連線名稱為必填",
+        "ERROR_REQUIRED_PROTOCOL_CONNECTION" : "連線通訊協定為必填",
+        "ERROR_REQUIRED_NAME_FILE"           : "提供的檔案中找不到連線名稱",
+        "ERROR_REQUIRED_PROTOCOL_FILE"       : "提供的檔案中找不到連線通訊協定",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "取代/更新現有連線",
+        "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "重設權限",
+
+        "HELP_CSV_DESCRIPTION"              : "連線匯入 CSV 檔案每一列代表一個連線記錄。每一欄指定一個連線欄位。至少必須指定連線名稱和通訊協定。",
+        "HELP_CSV_EXAMPLE"                  : "name,protocol,username,password,hostname,group,users,groups,guacd-encryption (attribute)\nconn1,vnc,alice,pass1,conn1.web.com,ROOT,guac user 1;guac user 2,Connection 1 Users,none\nconn2,rdp,bob,pass2,conn2.web.com,ROOT/Parent Group,guac user 1,,ssl\nconn3,ssh,carol,pass3,conn3.web.com,ROOT/Parent Group/Child Group,guac user 2;guac user 3,,\nconn4,kubernetes,,,,,,,",
+        "HELP_CSV_MORE_DETAILS"             : "每列的 CSV 標頭指定連線欄位。連線應匯入到的連線群組 ID 可以直接使用 \"parentIdentifier\" 指定，或使用 \"group\" 指定父群組的路徑，如下所示。在大多數情況下，欄位之間不應有衝突，但如有需要，可以加上 \" (attribute)\" 或 \" (parameter)\" 後綴來消除歧義。使用者或使用者群組識別碼清單必須以分號分隔。¹",
+        "HELP_FILE_TYPE_DESCRIPTION"        : "連線匯入支援三種檔案類型：CSV、JSON 和 YAML。每種檔案類型可以指定相同的資料。這必須包括連線名稱和通訊協定。可選地，還可以指定連線群組位置、授予存取權限的使用者和/或使用者群組清單、連線參數或連線通訊協定。任何不存在於目前資料來源的使用者或使用者群組將自動建立。請注意，除非勾選「重設權限」，否則更新連線時不會移除任何現有的連線權限。",
+        "HELP_FILE_TYPE_HEADER"             : "檔案類型",
+        "HELP_JSON_DESCRIPTION"             : "連線匯入 JSON 檔案是連線物件的清單。每個連線物件至少必須指定連線名稱和通訊協定。",
+        "HELP_JSON_EXAMPLE"                 : "[\n  \\{\n    \"name\": \"conn1\",\n    \"protocol\": \"vnc\",\n    \"parameters\": \\{ \"username\": \"alice\", \"password\": \"pass1\", \"hostname\": \"conn1.web.com\" \\},\n    \"parentIdentifier\": \"ROOT\",\n    \"users\": [ \"guac user 1\", \"guac user 2\" ],\n    \"groups\": [ \"Connection 1 Users\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn2\",\n    \"protocol\": \"rdp\",\n    \"parameters\": \\{ \"username\": \"bob\", \"password\": \"pass2\", \"hostname\": \"conn2.web.com\" \\},\n    \"group\": \"ROOT/Parent Group\",\n    \"users\": [ \"guac user 1\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn3\",\n    \"protocol\": \"ssh\",\n    \"parameters\": \\{ \"username\": \"carol\", \"password\": \"pass3\", \"hostname\": \"conn3.web.com\" \\},\n    \"group\": \"ROOT/Parent Group/Child Group\",\n    \"users\": [ \"guac user 2\", \"guac user 3\" ]\n  \\},\n  \\{\n    \"name\": \"conn4\",\n    \"protocol\": \"kubernetes\"\n  \\}\n]",
+        "HELP_JSON_MORE_DETAILS"            : "連線應匯入到的連線群組 ID 可以直接使用 \"parentIdentifier\" 欄位指定，或使用 \"group\" 欄位指定父群組的路徑，如下所示。每個連線可以指定授予存取權限的使用者和使用者群組識別碼陣列。",
+        "HELP_EXISTING_CONNECTION_MODE"     : "如果連線的名稱和父連線群組與提供檔案中的值相符，則完全取代/更新現有連線。如果未勾選，嘗試匯入與現有連線具有相同名稱和父連線群組的連線將被視為錯誤。",
+        "HELP_EXISTING_PERMISSION_MODE"     : "完全重設提供檔案中所有連線的授權權限為檔案中指定的權限。如果未指定權限，所有相關的連線權限將被撤銷。如果未勾選，將保留現有權限，並新增檔案中指定的任何權限。",
+        "HELP_SEMICOLON_FOOTNOTE"           : "如果存在分號，可以使用反斜線轉義，例如 \"first\\\\;last\"",
+        "HELP_UPLOAD_DROP_TITLE"            : "將檔案拖放到這裡",
+        "HELP_UPLOAD_FILE_TYPES"            : "CSV、JSON 或 YAML",
+        "HELP_YAML_DESCRIPTION"             : "連線匯入 YAML 檔案是連線物件的清單，結構與 JSON 格式完全相同。",
+        "HELP_YAML_EXAMPLE"                 : "---\n  - name: conn1\n    protocol: vnc\n    parameters:\n      username: alice\n      password: pass1\n      hostname: conn1.web.com\n    group: ROOT\n    users:\n      - guac user 1\n      - guac user 2\n    groups:\n    - Connection 1 Users\n    attributes:\n      guacd-encryption: none\n  - name: conn2\n    protocol: rdp\n    parameters:\n      username: bob\n      password: pass2\n      hostname: conn2.web.com\n    group: ROOT/Parent Group\n    users:\n      - guac user 1\n    attributes:\n      guacd-encryption: none\n  - name: conn3\n    protocol: ssh\n    parameters:\n      username: carol\n      password: pass3\n      hostname: conn3.web.com\n    group: ROOT/Parent Group/Child Group\n    users:\n      - guac user 2\n      - guac user 3\n  - name: conn4\n    protocol: kubernetes",
+
+        "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "成功匯入 {NUMBER} 個{NUMBER, plural, one{連線} other{連線}}。",
+        
+        "SECTION_HEADER_CONNECTION_IMPORT"           : "連線匯入",
+        "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "連線匯入檔案格式",
+        "SECTION_HEADER_CSV"                         : "CSV 格式",
+        "SECTION_HEADER_JSON"                        : "JSON 格式",
+        "SECTION_HEADER_YAML"                        : "YAML 格式",
+
+        "TABLE_HEADER_ERRORS"     : "錯誤",
+        "TABLE_HEADER_GROUP"      : "群組",
+        "TABLE_HEADER_NAME"       : "名稱",
+        "TABLE_HEADER_PROTOCOL"   : "通訊協定",
+        "TABLE_HEADER_ROW_NUMBER" : "列號"
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "預設 (XML)"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "YYYY-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "按一下以顯示密碼",
+        "HELP_HIDE_PASSWORD" : "按一下以隱藏密碼"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "沒有最近的連線。",
+        
+        "PASSWORD_CHANGED" : "密碼已變更。",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "所有連線",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "最近的連線"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "匿名使用者"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "登入無效",
+
+        "FIELD_HEADER_USERNAME" : "使用者名稱",
+        "FIELD_HEADER_PASSWORD" : "密碼"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "刪除連線",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "位置：",
+        "FIELD_HEADER_NAME"     : "名稱：",
+        "FIELD_HEADER_PROTOCOL" : "通訊協定：",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "目前使用中",
+        "INFO_CONNECTION_NOT_USED"         : "此連線尚未使用過。",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "編輯連線",
+        "SECTION_HEADER_HISTORY"         : "使用記錄",
+        "SECTION_HEADER_PARAMETERS"      : "參數",
+
+        "TABLE_HEADER_HISTORY_USERNAME"   : "使用者名稱",
+        "TABLE_HEADER_HISTORY_START"      : "開始時間",
+        "TABLE_HEADER_HISTORY_DURATION"   : "持續時間",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "遠端主機",
+
+        "TEXT_CONFIRM_DELETE"   : "連線刪除後無法復原。您確定要刪除此連線嗎？",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "刪除連線群組",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "位置：",
+        "FIELD_HEADER_NAME"     : "名稱：",
+        "FIELD_HEADER_TYPE"     : "類型：",
+
+        "NAME_TYPE_BALANCING"       : "負載平衡",
+        "NAME_TYPE_ORGANIZATIONAL"  : "組織",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "編輯連線群組",
+
+        "TEXT_CONFIRM_DELETE" : "連線群組刪除後無法復原。您確定要刪除此連線群組嗎？"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "刪除分享設定檔",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME"               : "名稱：",
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "主要連線：",
+
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "編輯分享設定檔",
+        "SECTION_HEADER_PARAMETERS"           : "參數",
+
+        "TEXT_CONFIRM_DELETE" : "分享設定檔刪除後無法復原。您確定要刪除此分享設定檔嗎？"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "刪除使用者",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "管理系統：",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "稽核系統：",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "變更自己的密碼：",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "建立新使用者：",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "建立新使用者群組：",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "建立新連線：",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "建立新連線群組：",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "建立新分享設定檔：",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "停用登入：",
+        "FIELD_HEADER_USERNAME"                      : "使用者名稱：",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS" : "此使用者目前不屬於任何群組。展開此區塊以新增群組。",
+
+        "INFO_READ_ONLY"                : "抱歉，此使用者帳號無法編輯。",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "沒有可用的群組。",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "所有連線",
+        "SECTION_HEADER_CONNECTIONS"         : "連線",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "目前連線",
+        "SECTION_HEADER_EDIT_USER"           : "編輯使用者",
+        "SECTION_HEADER_PERMISSIONS"         : "權限",
+        "SECTION_HEADER_USER_GROUPS"         : "群組",
+
+        "TEXT_CONFIRM_DELETE" : "使用者刪除後無法復原。您確定要刪除此使用者嗎？"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "刪除群組",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "@:MANAGE_USER.FIELD_HEADER_AUDIT_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "停用：",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "群組名稱：",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "此群組目前不屬於任何群組。展開此區塊以新增群組。",
+        "HELP_NO_MEMBER_USER_GROUPS" : "此群組目前不包含任何群組。展開此區塊以新增群組。",
+        "HELP_NO_MEMBER_USERS"       : "此群組目前不包含任何使用者。展開此區塊以新增使用者。",
+
+        "INFO_READ_ONLY"                : "抱歉，此群組無法編輯。",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "沒有可用的使用者。",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "編輯群組",
+        "SECTION_HEADER_MEMBER_USERS"        : "成員使用者",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "成員群組",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "父群組",
+
+        "TEXT_CONFIRM_DELETE" : "群組刪除後無法復原。您確定要刪除此群組嗎？"
+
+    },
+
+    "PLAYER" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
+        "ACTION_SHOW_KEY_LOG" : "按鍵記錄",
+
+        "INFO_FRAME_EVENTS_LEGEND" : "螢幕活動",
+        "INFO_KEY_EVENTS_LEGEND"   : "鍵盤活動",
+        "INFO_LOADING_RECORDING"   : "正在載入您的錄影。請稍候...",
+        "INFO_NO_KEY_LOG"          : "按鍵記錄不可用",
+        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} {RESULTS, plural, one{個符合} other{個符合}}",
+        "INFO_SEEK_IN_PROGRESS"    : "正在移至要求的位置。請稍候...",
+
+        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+
+    },
+
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"       : "Backspace 鍵傳送：",
+        "FIELD_HEADER_CA_CERT"         : "憑證授權單位 (CA) 憑證：",
+        "FIELD_HEADER_CLIENT_CERT"     : "用戶端憑證：",
+        "FIELD_HEADER_CLIENT_KEY"      : "用戶端金鑰：",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "剪貼簿資料大小限制：",
+        "FIELD_HEADER_COLOR_SCHEME"    : "色彩設定：",
+        "FIELD_HEADER_CONTAINER"       : "容器名稱：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "自動建立錄影路徑：",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "自動建立文字記錄路徑：",
+        "FIELD_HEADER_DISABLE_COPY"    : "停用從終端機複製：",
+        "FIELD_HEADER_DISABLE_PASTE"   : "停用從用戶端貼上：",
+        "FIELD_HEADER_EXEC_COMMAND"    : "指令 (exec)：",
+        "FIELD_HEADER_FONT_NAME"       : "字型名稱：",
+        "FIELD_HEADER_FONT_SIZE"       : "字型大小：",
+        "FIELD_HEADER_HOSTNAME"        : "主機名稱：",
+        "FIELD_HEADER_IGNORE_CERT"     : "忽略伺服器憑證：",
+        "FIELD_HEADER_NAMESPACE"       : "命名空間：",
+        "FIELD_HEADER_POD"             : "Pod 名稱：",
+        "FIELD_HEADER_PORT"            : "連接埠：",
+        "FIELD_HEADER_READ_ONLY"       : "唯讀：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除滑鼠：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除圖形/串流：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按鍵事件：",
+        "FIELD_HEADER_RECORDING_NAME"  : "錄影名稱：",
+        "FIELD_HEADER_RECORDING_PATH"  : "錄影路徑：",
+        "FIELD_HEADER_SCROLLBACK"      : "最大捲動緩衝大小：",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "文字記錄名稱：",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "文字記錄路徑：",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
+        "FIELD_HEADER_USE_SSL"         : "使用 SSL/TLS",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "白底黑字",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "黑底灰字",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "黑底綠字",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "黑底白字",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "NAME" : "Kubernetes",
+
+        "SECTION_HEADER_AUTHENTICATION" : "身分驗證",
+        "SECTION_HEADER_BEHAVIOR"       : "終端機行為",
+        "SECTION_HEADER_CLIPBOARD"      : "剪貼簿",
+        "SECTION_HEADER_CONTAINER"      : "容器",
+        "SECTION_HEADER_DISPLAY"        : "顯示",
+        "SECTION_HEADER_RECORDING"      : "螢幕錄影",
+        "SECTION_HEADER_TYPESCRIPT"     : "文字記錄（文字工作階段錄影）",
+        "SECTION_HEADER_NETWORK"        : "網路"
+
+    },
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CERT_TOFU"             : "首次使用時信任主機憑證：",
+        "FIELD_HEADER_CERT_FINGERPRINTS"     : "信任的主機憑證指紋：",
+        "FIELD_HEADER_CLIENT_NAME"           : "用戶端名稱：",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "剪貼簿資料大小限制：",
+        "FIELD_HEADER_COLOR_DEPTH"           : "色彩深度：",
+        "FIELD_HEADER_CONSOLE"               : "管理員主控台：",
+        "FIELD_HEADER_CONSOLE_AUDIO"         : "支援主控台音訊：",
+        "FIELD_HEADER_CREATE_DRIVE_PATH"     : "自動建立磁碟：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "自動建立錄影路徑：",
+        "FIELD_HEADER_DISABLE_AUDIO"    : "停用音訊：",
+        "FIELD_HEADER_DISABLE_AUTH"     : "停用身分驗證：",
+        "FIELD_HEADER_DISABLE_COPY"     : "停用從遠端桌面複製：",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "停用檔案下載：",
+        "FIELD_HEADER_DISABLE_PASTE"    : "停用從用戶端貼上：",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "停用檔案上傳：",
+        "FIELD_HEADER_DOMAIN"           : "網域：",
+        "FIELD_HEADER_DPI"              : "解析度 (DPI)：",
+        "FIELD_HEADER_DRIVE_NAME"       : "磁碟名稱：",
+        "FIELD_HEADER_DRIVE_PATH"       : "磁碟路徑：",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "啟用音訊輸入（麥克風）：",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "啟用桌面組合 (Aero)：",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "啟用磁碟：",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "啟用字型平滑化 (ClearType)：",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "啟用全視窗拖曳：",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "啟用選單動畫：",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "停用點陣圖快取：",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "停用螢幕外快取：",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "停用字形快取：",
+        "FIELD_HEADER_DISABLE_GFX"                : "停用圖形管線擴充：",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "啟用列印：",
+        "FIELD_HEADER_ENABLE_SFTP"     : "啟用 SFTP：",
+        "FIELD_HEADER_ENABLE_THEMING"             : "啟用主題：",
+        "FIELD_HEADER_ENABLE_TOUCH"               : "啟用多點觸控：",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "啟用桌布：",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "強制無損壓縮：",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "網域：",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "主機名稱：",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "密碼：",
+        "FIELD_HEADER_GATEWAY_PORT"     : "連接埠：",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "使用者名稱：",
+        "FIELD_HEADER_HEIGHT"          : "高度：",
+        "FIELD_HEADER_HOSTNAME"        : "主機名稱：",
+        "FIELD_HEADER_IGNORE_CERT"     : "忽略伺服器憑證：",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "初始程式：",
+        "FIELD_HEADER_LOAD_BALANCE_INFO" : "負載平衡資訊/cookie：",
+        "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "行尾：",
+        "FIELD_HEADER_PASSWORD"        : "密碼：",
+        "FIELD_HEADER_PORT"            : "連接埠：",
+        "FIELD_HEADER_PRINTER_NAME"    : "重新導向的印表機名稱：",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "預連線 BLOB (VM ID)：",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDP 來源 ID：",
+        "FIELD_HEADER_READ_ONLY"      : "唯讀：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除滑鼠：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除圖形/串流：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "排除觸控事件：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按鍵事件：",
+        "FIELD_HEADER_RECORDING_NAME" : "錄影名稱：",
+        "FIELD_HEADER_RECORDING_PATH" : "錄影路徑：",
+        "FIELD_HEADER_RESIZE_METHOD" : "調整大小方法：",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "參數：",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "工作目錄：",
+        "FIELD_HEADER_REMOTE_APP"      : "程式：",
+        "FIELD_HEADER_SECURITY"        : "安全模式：",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "鍵盤設定：",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "預設上傳目錄：",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "停用檔案下載：",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "停用檔案上傳：",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "公開主機金鑰 (Base64)：",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "主機名稱：",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP 保持連線間隔：",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "密碼片語：",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "密碼：",
+        "FIELD_HEADER_SFTP_PORT"                  : "連接埠：",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "私密金鑰：",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "公開金鑰：",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "檔案瀏覽器根目錄：",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "SFTP 連線逾時：",
+        "FIELD_HEADER_SFTP_USERNAME"              : "使用者名稱：",
+        "FIELD_HEADER_STATIC_CHANNELS" : "靜態通道名稱：",
+        "FIELD_HEADER_TIMEOUT"         : "連線逾時：",
+        "FIELD_HEADER_TIMEZONE"        : "時區：",
+        "FIELD_HEADER_USERNAME"        : "使用者名稱：",
+        "FIELD_HEADER_WIDTH"           : "寬度：",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 封包廣播位址：",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "遠端主機的 MAC 位址：",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "傳送 WoL 封包：",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL 封包的 UDP 連接埠：",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "主機開機等待時間：",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
+
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "保持原樣",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_UNIX"     : "Linux/Mac/Unix (LF)",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_WINDOWS"  : "Windows (CRLF)",
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "低彩 (16 位元)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "全彩 (24 位元)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "全彩 (32 位元)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 色",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "「顯示更新」虛擬通道 (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "重新連線",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "任何",
+        "FIELD_OPTION_SECURITY_EMPTY" : "",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (網路層級驗證)",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP 加密",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS 加密",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
+
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "捷克文 (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "丹麥文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "瑞士德文 (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "德文 (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "英國英文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "美國英文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "西班牙文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "拉丁美洲 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "比利時法文 (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CA_QWERTY" : "加拿大法文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "瑞士法文 (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "法文 (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "匈牙利文 (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "義大利文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "日文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "挪威文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "波蘭文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "巴西葡萄牙文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "葡萄牙文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "羅馬尼亞文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "瑞典文 (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "土耳其文-Q (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "身分驗證",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "基本設定",
+        "SECTION_HEADER_CLIPBOARD"          : "剪貼簿",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "裝置重新導向",
+        "SECTION_HEADER_DISPLAY"            : "顯示",
+        "SECTION_HEADER_GATEWAY"            : "遠端桌面閘道",
+        "SECTION_HEADER_LOAD_BALANCING"     : "負載平衡",
+        "SECTION_HEADER_NETWORK"            : "網路",
+        "SECTION_HEADER_PERFORMANCE"        : "效能",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "預連線 PDU / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "螢幕錄影",
+        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "網路喚醒 (WoL)"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_BACKSPACE"    : "Backspace 鍵傳送：",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "剪貼簿資料大小限制：",
+        "FIELD_HEADER_COLOR_SCHEME" : "色彩設定：",
+        "FIELD_HEADER_COMMAND"      : "執行指令：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "自動建立錄影路徑：",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "自動建立文字記錄路徑：",
+        "FIELD_HEADER_DISABLE_COPY"  : "停用從終端機複製：",
+        "FIELD_HEADER_DISABLE_PASTE" : "停用從用戶端貼上：",
+        "FIELD_HEADER_FONT_NAME"     : "字型名稱：",
+        "FIELD_HEADER_FONT_SIZE"     : "字型大小：",
+        "FIELD_HEADER_ENABLE_SFTP"   : "啟用 SFTP：",
+        "FIELD_HEADER_HOST_KEY"      : "公開主機金鑰 (Base64)：",
+        "FIELD_HEADER_HOSTNAME"      : "主機名稱：",
+        "FIELD_HEADER_LOCALE"        : "語言/地區設定 ($LANG)：",
+        "FIELD_HEADER_USERNAME"      : "使用者名稱：",
+        "FIELD_HEADER_PASSWORD"      : "密碼：",
+        "FIELD_HEADER_PASSPHRASE"    : "密碼片語：",
+        "FIELD_HEADER_PORT"          : "連接埠：",
+        "FIELD_HEADER_PRIVATE_KEY"   : "私密金鑰：",
+        "FIELD_HEADER_PUBLIC_KEY"    : "公開金鑰：",
+        "FIELD_HEADER_SCROLLBACK"    : "最大捲動緩衝大小：",
+        "FIELD_HEADER_READ_ONLY"     : "唯讀：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除滑鼠：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除圖形/串流：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按鍵事件：",
+        "FIELD_HEADER_RECORDING_NAME" : "錄影名稱：",
+        "FIELD_HEADER_RECORDING_PATH" : "錄影路徑：",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "伺服器保持連線間隔：",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "停用檔案下載：",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "檔案瀏覽器根目錄：",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "停用檔案上傳：",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "終端機類型：",
+        "FIELD_HEADER_TIMEOUT"         : "連線逾時：",
+        "FIELD_HEADER_TIMEZONE"        : "時區 ($TZ)：",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "文字記錄名稱：",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "文字記錄路徑：",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 封包廣播位址：",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "遠端主機的 MAC 位址：",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "傳送 WoL 封包：",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL 封包的 UDP 連接埠：",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "主機開機等待時間：",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "白底黑字",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "黑底灰字",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "黑底綠字",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "黑底白字",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "身分驗證",
+        "SECTION_HEADER_BEHAVIOR"       : "終端機行為",
+        "SECTION_HEADER_CLIPBOARD"      : "剪貼簿",
+        "SECTION_HEADER_DISPLAY"        : "顯示",
+        "SECTION_HEADER_NETWORK"        : "網路",
+        "SECTION_HEADER_RECORDING"      : "螢幕錄影",
+        "SECTION_HEADER_SESSION"        : "工作階段 / 環境",
+        "SECTION_HEADER_TYPESCRIPT"     : "文字記錄（文字工作階段錄影）",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "網路喚醒 (WoL)"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_BACKSPACE"      : "Backspace 鍵傳送：",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "剪貼簿資料大小限制：",
+        "FIELD_HEADER_COLOR_SCHEME"   : "色彩設定：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "自動建立錄影路徑：",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "自動建立文字記錄路徑：",
+        "FIELD_HEADER_DISABLE_COPY"   : "停用從終端機複製：",
+        "FIELD_HEADER_DISABLE_PASTE"  : "停用從用戶端貼上：",
+        "FIELD_HEADER_FONT_NAME"      : "字型名稱：",
+        "FIELD_HEADER_FONT_SIZE"      : "字型大小：",
+        "FIELD_HEADER_HOSTNAME"       : "主機名稱：",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "登入失敗規則運算式：",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "登入成功規則運算式：",
+        "FIELD_HEADER_USERNAME"       : "使用者名稱：",
+        "FIELD_HEADER_USERNAME_REGEX" : "使用者名稱規則運算式：",
+        "FIELD_HEADER_PASSWORD"       : "密碼：",
+        "FIELD_HEADER_PASSWORD_REGEX" : "密碼規則運算式：",
+        "FIELD_HEADER_PORT"           : "連接埠：",
+        "FIELD_HEADER_READ_ONLY"      : "唯讀：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除滑鼠：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除圖形/串流：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按鍵事件：",
+        "FIELD_HEADER_RECORDING_NAME" : "錄影名稱：",
+        "FIELD_HEADER_RECORDING_PATH" : "錄影路徑：",
+        "FIELD_HEADER_SCROLLBACK"     : "最大捲動緩衝大小：",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "終端機類型：",
+        "FIELD_HEADER_TIMEOUT"         : "連線逾時：",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "文字記錄名稱：",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "文字記錄路徑：",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 封包廣播位址：",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "遠端主機的 MAC 位址：",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "傳送 WoL 封包：",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL 封包的 UDP 連接埠：",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "主機開機等待時間：",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backspace (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "白底黑字",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "黑底灰字",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "黑底綠字",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "黑底白字",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "身分驗證",
+        "SECTION_HEADER_BEHAVIOR"       : "終端機行為",
+        "SECTION_HEADER_CLIPBOARD"      : "剪貼簿",
+        "SECTION_HEADER_DISPLAY"        : "顯示",
+        "SECTION_HEADER_RECORDING"      : "螢幕錄影",
+        "SECTION_HEADER_TYPESCRIPT"     : "文字記錄（文字工作階段錄影）",
+        "SECTION_HEADER_NETWORK"        : "網路",
+        "SECTION_HEADER_WOL"            : "網路喚醒 (WoL)"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "音訊伺服器名稱：",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE"  : "剪貼簿資料大小限制：",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "編碼：",
+        "FIELD_HEADER_COLOR_DEPTH"      : "色彩深度：",
+        "FIELD_HEADER_COMPRESS_LEVEL"   : "壓縮層級：",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "自動建立錄影路徑：",
+        "FIELD_HEADER_CURSOR"           : "游標：",
+        "FIELD_HEADER_DEST_HOST"        : "目的主機：",
+        "FIELD_HEADER_DEST_PORT"        : "目的連接埠：",
+        "FIELD_HEADER_DISABLE_COPY"           : "停用從遠端桌面複製：",
+        "FIELD_HEADER_DISABLE_DISPLAY_RESIZE" : "停用調整遠端顯示大小：",
+        "FIELD_HEADER_DISABLE_PASTE"          : "停用從用戶端貼上：",
+        "FIELD_HEADER_DISABLE_SERVER_INPUT"   : "用戶端連線時停用伺服器輸入：",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "啟用音訊：",
+        "FIELD_HEADER_ENABLE_SFTP"      : "啟用 SFTP：",
+        "FIELD_HEADER_ENCODINGS"        : "顯示編碼：",
+        "FIELD_HEADER_FORCE_LOSSLESS"   : "強制無損壓縮：",
+        "FIELD_HEADER_HOSTNAME"         : "主機名稱：",
+        "FIELD_HEADER_USERNAME"         : "使用者名稱：",
+        "FIELD_HEADER_PASSWORD"         : "密碼：",
+        "FIELD_HEADER_PORT"             : "連接埠：",
+        "FIELD_HEADER_QUALITY_LEVEL"    : "顯示品質：",
+        "FIELD_HEADER_READ_ONLY"        : "唯讀：",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "排除滑鼠：",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "排除圖形/串流：",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "包含按鍵事件：",
+        "FIELD_HEADER_RECORDING_NAME" : "錄影名稱：",
+        "FIELD_HEADER_RECORDING_PATH" : "錄影路徑：",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "預設上傳目錄：",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "停用檔案下載：",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "停用檔案上傳：",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "公開主機金鑰 (Base64)：",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "主機名稱：",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "SFTP 保持連線間隔：",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "密碼片語：",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "密碼：",
+        "FIELD_HEADER_SFTP_PORT"                  : "連接埠：",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "私密金鑰：",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "公開金鑰：",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "檔案瀏覽器根目錄：",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "SFTP 連線逾時：",
+        "FIELD_HEADER_SFTP_USERNAME"              : "使用者名稱：",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "交換紅/藍元件：",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "WoL 封包廣播位址：",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "遠端主機的 MAC 位址：",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "傳送 WoL 封包：",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "WoL 封包的 UDP 連接埠：",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "主機開機等待時間：",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 色",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "低彩 (16 位元)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "全彩 (24 位元)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "全彩 (32 位元)",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_COMPRESS_LEVEL_0"     : "0",
+        "FIELD_OPTION_COMPRESS_LEVEL_1"     : "1",
+        "FIELD_OPTION_COMPRESS_LEVEL_2"     : "2",
+        "FIELD_OPTION_COMPRESS_LEVEL_3"     : "3",
+        "FIELD_OPTION_COMPRESS_LEVEL_4"     : "4",
+        "FIELD_OPTION_COMPRESS_LEVEL_5"     : "5",
+        "FIELD_OPTION_COMPRESS_LEVEL_6"     : "6",
+        "FIELD_OPTION_COMPRESS_LEVEL_7"     : "7",
+        "FIELD_OPTION_COMPRESS_LEVEL_8"     : "8",
+        "FIELD_OPTION_COMPRESS_LEVEL_9"     : "9",
+        "FIELD_OPTION_COMPRESS_LEVEL_EMPTY" : "",
+
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
+        "FIELD_OPTION_CURSOR_LOCAL"  : "本機",
+        "FIELD_OPTION_CURSOR_REMOTE" : "遠端",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "FIELD_OPTION_QUALITY_LEVEL_0"     : "0",
+        "FIELD_OPTION_QUALITY_LEVEL_1"     : "1",
+        "FIELD_OPTION_QUALITY_LEVEL_2"     : "2",
+        "FIELD_OPTION_QUALITY_LEVEL_3"     : "3",
+        "FIELD_OPTION_QUALITY_LEVEL_4"     : "4",
+        "FIELD_OPTION_QUALITY_LEVEL_5"     : "5",
+        "FIELD_OPTION_QUALITY_LEVEL_6"     : "6",
+        "FIELD_OPTION_QUALITY_LEVEL_7"     : "7",
+        "FIELD_OPTION_QUALITY_LEVEL_8"     : "8",
+        "FIELD_OPTION_QUALITY_LEVEL_9"     : "9",
+        "FIELD_OPTION_QUALITY_LEVEL_EMPTY" : "",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "音訊",
+        "SECTION_HEADER_AUTHENTICATION" : "身分驗證",
+        "SECTION_HEADER_CLIPBOARD"      : "剪貼簿",
+        "SECTION_HEADER_DISPLAY"        : "顯示",
+        "SECTION_HEADER_NETWORK"        : "網路",
+        "SECTION_HEADER_RECORDING"      : "螢幕錄影",
+        "SECTION_HEADER_REPEATER"       : "VNC 中繼器",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "網路喚醒 (WoL)"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "設定"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_DOWNLOAD"       : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"         : "@:APP.ACTION_SEARCH",
+        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FILENAME_HISTORY_CSV" : "history.csv",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "過去連線的歷史記錄會列在這裡，可以透過按一下欄位標題來排序。要搜尋特定記錄，請輸入篩選字串並按一下「搜尋」。只有符合提供的篩選字串的記錄會被列出。",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "沒有符合的記錄",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "連線名稱",
+        "TABLE_HEADER_SESSION_DURATION"        : "持續時間",
+        "TABLE_HEADER_SESSION_LOGS"            : "記錄",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "遠端主機",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "開始時間",
+        "TABLE_HEADER_SESSION_USERNAME"        : "使用者名稱",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_IMPORT"               : "@:APP.ACTION_IMPORT",
+        "ACTION_NEW_CONNECTION"       : "新增連線",
+        "ACTION_NEW_CONNECTION_GROUP" : "新增群組",
+        "ACTION_NEW_SHARING_PROFILE"  : "新增分享設定檔",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "按一下下方的連線以管理該連線。根據您的存取層級，可以新增和刪除連線，並變更其屬性（通訊協定、主機名稱、連接埠等）。",
+        
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "連線"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"                  : "顯示語言：",
+        "FIELD_HEADER_NUMBER_RECENT_CONNECTIONS" : "顯示最近連線數量：",
+        "FIELD_HEADER_PASSWORD"                  : "密碼：",
+        "FIELD_HEADER_PASSWORD_OLD"              : "目前密碼：",
+        "FIELD_HEADER_PASSWORD_NEW"              : "新密碼：",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN"        : "確認新密碼：",
+        "FIELD_HEADER_SHOW_RECENT_CONNECTIONS"   : "顯示最近的連線：",
+        "FIELD_HEADER_TIMEZONE"                  : "時區：",
+        "FIELD_HEADER_USERNAME"                  : "使用者名稱：",
+        
+        "HELP_APPEARANCE"           : "您可以在這裡啟用或停用是否在首頁顯示「最近的連線」區塊，並調整包含的最近連線數量。",
+        "HELP_DEFAULT_INPUT_METHOD" : "預設輸入法決定 Guacamole 如何接收鍵盤事件。使用行動裝置或透過輸入法輸入時，可能需要變更此設定。此設定可以在 Guacamole 選單中針對每個連線個別覆寫。",
+        "HELP_DEFAULT_MOUSE_MODE"   : "預設滑鼠模擬模式決定在新連線中遠端滑鼠對觸控的反應方式。此設定可以在 Guacamole 選單中針對每個連線個別覆寫。",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LOCALE"               : "下列選項與使用者的地區設定相關，會影響介面各部分的顯示方式。",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "如果您想變更密碼，請在下方輸入您目前的密碼和想要的新密碼，然後按一下「更新密碼」。變更將立即生效。",
+
+        "INFO_PASSWORD_CHANGED" : "密碼已變更。",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "使用者設定已儲存。",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_APPEARANCE"           : "外觀",
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "預設輸入法",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "預設滑鼠模擬模式",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "變更密碼"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "新增使用者",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "按一下下方的使用者以管理該使用者。根據您的存取層級，可以新增和刪除使用者，並變更其密碼。",
+
+        "SECTION_HEADER_USERS"       : "使用者",
+
+        "TABLE_HEADER_FULL_NAME"   : "全名",
+        "TABLE_HEADER_LAST_ACTIVE" : "最後活動",
+        "TABLE_HEADER_ORGANIZATION" : "組織",
+        "TABLE_HEADER_USERNAME"    : "使用者名稱"
+
+    },
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "新增群組",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "按一下下方的群組以管理該群組。根據您的存取層級，可以新增和刪除群組，並變更其成員使用者和群組。",
+
+        "SECTION_HEADER_USER_GROUPS" : "群組",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "群組名稱"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+        
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "中斷連線",
+        
+        "DIALOG_HEADER_CONFIRM_DELETE" : "中斷連線",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+        
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+        
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "此頁面會顯示目前使用中的連線。列出的連線和中斷這些連線的能力取決於您的存取層級。如果您想中斷一個或多個工作階段，請勾選這些工作階段旁的方塊並按一下「中斷連線」。中斷工作階段會立即中斷使用者與相關連線的連接。",
+        
+        "INFO_NO_SESSIONS" : "沒有使用中的工作階段",
+
+        "SECTION_HEADER_SESSIONS" : "使用中的工作階段",
+        
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "連線名稱",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "遠端主機",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "開始時間",
+        "TABLE_HEADER_SESSION_USERNAME"        : "使用者名稱",
+        
+        "TEXT_CONFIRM_DELETE" : "您確定要中斷所有選定的工作階段嗎？使用這些工作階段的使用者將立即中斷連線。"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "電子郵件位址：",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "全名：",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "組織：",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "角色："
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}
