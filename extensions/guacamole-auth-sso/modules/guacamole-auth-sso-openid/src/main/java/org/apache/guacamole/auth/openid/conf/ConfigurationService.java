@@ -483,10 +483,7 @@ public class ConfigurationService {
      *     If guacamole.properties cannot be parsed.
      */
     public URI getPostLogoutRedirectURI() throws GuacamoleException {
-        URI postLogoutRedirectURI = environment.getProperty(OPENID_POST_LOGOUT_REDIRECT_URI);
-        if (postLogoutRedirectURI != null)
-            return postLogoutRedirectURI;
-        return getRedirectURI();
+        return environment.getProperty(OPENID_POST_LOGOUT_REDIRECT_URI, getRedirectURI());
     }
 
 }
