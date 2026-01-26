@@ -217,7 +217,32 @@ public class ConfigurationService {
 
         @Override
         public String getName() { return "openid-redirect-uri"; }
-        
+
+    };
+
+    /**
+     * The logout endpoint (URI) of the OpenID service. If specified, users
+     * will be redirected to this endpoint when they log out, allowing them
+     * to log out from the OpenID provider as well.
+     */
+    private static final URIGuacamoleProperty OPENID_LOGOUT_ENDPOINT =
+            new URIGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-logout-endpoint"; }
+
+    };
+
+    /**
+     * The URI that the OpenID service should redirect to after logout is
+     * complete. If not specified, the main redirect URI will be used.
+     */
+    private static final URIGuacamoleProperty OPENID_POST_LOGOUT_REDIRECT_URI =
+            new URIGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-post-logout-redirect-uri"; }
+
     };
 
     /**
@@ -427,6 +452,38 @@ public class ConfigurationService {
      */
     public int getMaxNonceValidity() throws GuacamoleException {
         return environment.getProperty(OPENID_MAX_NONCE_VALIDITY, DEFAULT_MAX_NONCE_VALIDITY);
+    }
+
+    /**
+     * Returns the logout endpoint (URI) of the OpenID service, as configured
+     * with guacamole.properties. If configured, users will be redirected to
+     * this endpoint when they log out from Guacamole.
+     *
+     * @return
+     *     The logout endpoint of the OpenID service, as configured with
+     *     guacamole.properties, or null if not configured.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public URI getLogoutEndpoint() throws GuacamoleException {
+        return environment.getProperty(OPENID_LOGOUT_ENDPOINT);
+    }
+
+    /**
+     * Returns the URI that the OpenID service should redirect to after logout
+     * is complete, as configured with guacamole.properties. If not configured,
+     * the main redirect URI will be used.
+     *
+     * @return
+     *     The post-logout redirect URI, as configured with
+     *     guacamole.properties, or the main redirect URI if not specified.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public URI getPostLogoutRedirectURI() throws GuacamoleException {
+        return environment.getProperty(OPENID_POST_LOGOUT_REDIRECT_URI, getRedirectURI());
     }
 
 }
