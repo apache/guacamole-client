@@ -45,6 +45,7 @@
 
         <!-- Provider-specific implementations -->
         <module>modules/guacamole-vault-ksm</module>
+        <module>modules/guacamole-vault-hv</module>
 
     </modules>
 
