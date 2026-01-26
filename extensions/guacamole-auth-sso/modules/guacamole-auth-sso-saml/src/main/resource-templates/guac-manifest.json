@@ -34,6 +34,10 @@
         "translations/ru.json",
         "translations/tr.json",
         "translations/zh.json"
+    ],
+
+    "js" : [
+        "saml.min.js"
     ]
 
 }
