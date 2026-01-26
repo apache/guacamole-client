@@ -96,10 +96,12 @@ RUN useradd --system --create-home --shell /usr/sbin/nologin --uid $UID --gid $G
 # Run with user guacamole
 USER guacamole
 
-# Environment variable defaults
+# Environment variable defaults (JAVA_KEYSTORE_FILE is relative to guacamole home )
 ENV BAN_ENABLED=true \
     ENABLE_FILE_ENVIRONMENT_PROPERTIES=true \
-    GUACAMOLE_HOME=/etc/guacamole
+    GUACAMOLE_HOME=/etc/guacamole \
+    JAVA_KEYSTORE_FILE=cacert \
+    JAVA_KEYSTORE_PASS=changeit
 
 # Start Guacamole under Tomcat, listening on 0.0.0.0:8080
 EXPOSE 8080
