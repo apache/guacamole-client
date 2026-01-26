@@ -86,6 +86,7 @@
         "ERROR_CLIENT_201"     : "This connection has been closed because the server is busy. Please wait a few minutes and try again.",
         "ERROR_CLIENT_202"     : "The Guacamole server has closed the connection because the remote desktop is taking too long to respond. Please try again or contact your system administrator.",
         "ERROR_CLIENT_203"     : "The remote desktop server encountered an error and has closed the connection. Please try again or contact your system administrator.",
+        "ERROR_CLIENT_205"     : "This connection requires a resource that is currently in use, but shared access to that resource is either not possible or not permitted. Please try again later.",
         "ERROR_CLIENT_207"     : "The remote desktop server is currently unreachable. If the problem persists, please notify your system administrator, or check your system logs.",
         "ERROR_CLIENT_208"     : "The remote desktop server is currently unavailable. If the problem persists, please notify your system administrator, or check your system logs.",
         "ERROR_CLIENT_209"     : "The remote desktop server has closed the connection because it conflicts with another connection. Please try again later.",
