@@ -63,11 +63,6 @@
                             <jsSourceIncludes>
                                 <jsSourceInclude>**/*.js</jsSourceInclude>
                             </jsSourceIncludes>
-
-                            <!-- Do not minify and include tests -->
-                            <jsSourceExcludes>
-                                <jsSourceExclude>**/*.test.js</jsSourceExclude>
-                            </jsSourceExcludes>
                             <jsEngine>CLOSURE</jsEngine>
 
                             <!-- Disable warnings for JSDoc annotations -->
