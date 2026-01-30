@@ -285,8 +285,10 @@ Guacamole.Keyboard = function Keyboard(element) {
             this.keysym = keysym_from_key_identifier(this.keyIdentifier, this.location, this.modifiers.shift);
 
         // If a key is pressed while meta is held down, the keyup will
-        // never be sent in Chrome (bug #108404)
-        if (this.modifiers.meta && this.keysym !== 0xFFE7 && this.keysym !== 0xFFE8)
+        // never be sent in Chrome (bug #108404). Modifier keys are excluded
+        // from this workaround as they have reliable keyup events and need
+        // to be held down simultaneously with Meta.
+        if (this.modifiers.meta && !isModifierKey(this.keysym))
             this.keyupReliable = false;
 
         // We cannot rely on receiving keyup for Caps Lock on certain platforms
@@ -579,6 +581,37 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
+     * All modifier key keysyms, grouped by modifier type.
+     *
+     * @private
+     * @type {!Object.<string, number[]>}
+     */
+    var modifierKeysymsByType = {
+        shift: [0xFFE1, 0xFFE2],           // Left shift, Right shift
+        ctrl:  [0xFFE3, 0xFFE4],           // Left ctrl, Right ctrl
+        alt:   [0xFFE9, 0xFFEA, 0xFE03],   // Left alt, Right alt, AltGr
+        meta:  [0xFFE7, 0xFFE8],           // Left meta, Right meta
+        hyper: [0xFFEB, 0xFFEC]            // Left super/hyper, Right super/hyper
+    };
+
+    /**
+     * All modifier key keysyms for quick lookup.
+     *
+     * @private
+     * @type {!Object.<number, boolean>}
+     */
+    var modifierKeysyms = (function() {
+        var lookup = {};
+        for (var modifier in modifierKeysymsByType) {
+            var keysyms = modifierKeysymsByType[modifier];
+            for (var i = 0; i < keysyms.length; i++) {
+                lookup[keysyms[i]] = true;
+            }
+        }
+        return lookup;
+    })();
+
+    /**
      * All keysyms which should not repeat when held down.
      *
      * @private
@@ -704,6 +737,34 @@ Guacamole.Keyboard = function Keyboard(element) {
         return (keysym >= 0x00 && keysym <= 0xFF)
             || (keysym & 0xFFFF0000) === 0x01000000;
 
+    };
+
+    /**
+     * Returns true if the given keysym corresponds to a Meta key (left or
+     * right Meta/Command/Windows key).
+     *
+     * @param {!number} keysym
+     *     The keysym to check.
+     *
+     * @returns {!boolean}
+     *     true if the given keysym corresponds to a Meta key, false otherwise.
+     */
+    var isMetaKey = function isMetaKey(keysym) {
+        return modifierKeysymsByType.meta.indexOf(keysym) !== -1;
+    };
+
+    /**
+     * Returns true if the given keysym corresponds to a modifier key
+     * (Shift, Ctrl, Alt, Meta, Hyper, AltGr).
+     *
+     * @param {!number} keysym
+     *     The keysym to check.
+     *
+     * @returns {!boolean}
+     *     true if the given keysym corresponds to a modifier key, false otherwise.
+     */
+    var isModifierKey = function isModifierKey(keysym) {
+        return modifierKeysyms[keysym] === true;
     };
 
     function keysym_from_key_identifier(identifier, location, shifted) {
@@ -927,6 +988,39 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
+     * Handles a mouse event to resolve deferred Meta key events. When a Meta
+     * key is pressed, it is deferred to determine if it's being used as a
+     * modifier or as a standalone key. A mouse click with Meta held provides
+     * the context needed to resolve this, enabling Cmd+Click functionality.
+     *
+     * @param {Guacamole.Mouse.Event} mouseEvent
+     *     The mouse event that occurred.
+     */
+    this.handleMouseEvent = function(mouseEvent) {
+
+        // Only process mouse events that have meta modifier pressed
+        if (!mouseEvent.modifiers.meta)
+            return;
+
+        // Check if there's a pending Meta key waiting for context
+        var hasPendingMeta = eventLog.length > 0 &&
+                             eventLog[0] instanceof KeydownEvent &&
+                             isMetaKey(eventLog[0].keysym);
+
+        // Only add mouse event if there's a pending Meta key
+        if (hasPendingMeta) {
+            // Push mouse event onto the event log to provide context for the
+            // deferred Meta key. The mouse event will be silently dropped when
+            // processed as it's not a KeyEvent type.
+            eventLog.push(mouseEvent);
+
+            // Process the event log, which will now resolve the deferred Meta
+            // key using the mouse event's modifier state as context
+            interpret_events();
+        }
+    };
+
+    /**
      * Resynchronizes the remote state of the given modifier with its
      * corresponding local modifier state, as dictated by
      * {@link KeyEvent#modifiers} within the given key event, by pressing or
@@ -1004,36 +1098,12 @@ Guacamole.Keyboard = function Keyboard(element) {
      */
     var syncModifierStates = function syncModifierStates(keyEvent) {
 
-        // Resync state of alt
-        updateModifierState('alt', [
-            0xFFE9, // Left alt
-            0xFFEA, // Right alt
-            0xFE03  // AltGr
-        ], keyEvent);
-
-        // Resync state of shift
-        updateModifierState('shift', [
-            0xFFE1, // Left shift
-            0xFFE2  // Right shift
-        ], keyEvent);
-
-        // Resync state of ctrl
-        updateModifierState('ctrl', [
-            0xFFE3, // Left ctrl
-            0xFFE4  // Right ctrl
-        ], keyEvent);
-
-        // Resync state of meta
-        updateModifierState('meta', [
-            0xFFE7, // Left meta
-            0xFFE8  // Right meta
-        ], keyEvent);
-
-        // Resync state of hyper
-        updateModifierState('hyper', [
-            0xFFEB, // Left super/hyper
-            0xFFEC  // Right super/hyper
-        ], keyEvent);
+        // Resync state of all modifiers
+        updateModifierState('alt', modifierKeysymsByType.alt, keyEvent);
+        updateModifierState('shift', modifierKeysymsByType.shift, keyEvent);
+        updateModifierState('ctrl', modifierKeysymsByType.ctrl, keyEvent);
+        updateModifierState('meta', modifierKeysymsByType.meta, keyEvent);
+        updateModifierState('hyper', modifierKeysymsByType.hyper, keyEvent);
 
         // Update state
         guac_keyboard.modifiers = keyEvent.modifiers;
@@ -1152,7 +1222,7 @@ Guacamole.Keyboard = function Keyboard(element) {
             // Defer handling of Meta until it is known to be functioning as a
             // modifier (it may otherwise actually be an alternative method for
             // pressing a single key, such as Meta+Left for Home on ChromeOS)
-            if (first.keysym === 0xFFE7 || first.keysym === 0xFFE8) {
+            if (isMetaKey(first.keysym)) {
 
                 // Defer handling until further events exist to provide context
                 if (eventLog.length === 1)
