@@ -294,8 +294,10 @@ Guacamole.Keyboard = function Keyboard(element) {
             this.keysym = keysym_from_key_identifier(this.keyIdentifier, this.location, this.modifiers.shift);
 
         // If a key is pressed while meta is held down, the keyup will
-        // never be sent in Chrome (bug #108404)
-        if (this.modifiers.meta && this.keysym !== 0xFFE7 && this.keysym !== 0xFFE8)
+        // never be sent in Chrome (bug #108404). Modifier keys are excluded
+        // from this workaround as they have reliable keyup events and need
+        // to be held down simultaneously with Meta.
+        if (this.modifiers.meta && !isModifierKey(this.keysym))
             this.keyupReliable = false;
 
         // We cannot rely on receiving keyup for lock keys on certain platforms
@@ -594,6 +596,23 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
+     * All modifier key keysyms for easy lookup.
+     *
+     * @private
+     * @type {!Object.<number, boolean>}
+     */
+    var modifierKeysyms = (function() {
+        var lookup = {};
+        for (var modifier in modifierKeysymsByType) {
+            var keysyms = modifierKeysymsByType[modifier];
+            for (var i = 0; i < keysyms.length; i++) {
+                lookup[keysyms[i]] = true;
+            }
+        }
+        return lookup;
+    })();
+
+    /**
      * All keysyms that represent each supported toggle modifier
      * type.
      *
@@ -799,6 +818,36 @@ Guacamole.Keyboard = function Keyboard(element) {
         return isCapsLockKey(keysym)
             || isNumLockKey(keysym)
             || isScrollLockKey(keysym);
+    };
+
+    /**
+     * Returns true if the given keysym corresponds to a Meta key (left or
+     * right Meta/Command/Windows key).
+     *
+     * @private
+     * @param {!number} keysym
+     *     The keysym to check.
+     *
+     * @returns {!boolean}
+     *     true if the given keysym corresponds to a Meta key, false otherwise.
+     */
+    var isMetaKey = function isMetaKey(keysym) {
+        return modifierKeysymsByType.meta.indexOf(keysym) !== -1;
+    };
+
+    /**
+     * Returns true if the given keysym corresponds to a modifier key
+     * (Shift, Ctrl, Alt, Meta, Hyper, AltGr).
+     *
+     * @private
+     * @param {!number} keysym
+     *     The keysym to check.
+     *
+     * @returns {!boolean}
+     *     true if the given keysym corresponds to a modifier key, false otherwise.
+     */
+    var isModifierKey = function isModifierKey(keysym) {
+        return modifierKeysyms[keysym] === true;
     };
 
     function keysym_from_key_identifier(identifier, location, shifted) {
@@ -1059,6 +1108,23 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         // Keep lock modifiers synchronized using mouse event modifier flags
         syncToggleModifierStates(mouseEvent.modifiers);
+
+        // Check if there's a pending Meta key waiting for context
+        var hasPendingMeta = eventLog.length > 0 &&
+                             eventLog[0] instanceof KeydownEvent &&
+                             isMetaKey(eventLog[0].keysym);
+
+        // Only add mouse event if it has meta modifier and there's a pending Meta key
+        if (mouseEvent.modifiers.meta && hasPendingMeta) {
+            // Push mouse event onto the event log to provide context for the
+            // deferred Meta key. The mouse event will be silently dropped when
+            // processed as it's not a KeyEvent type.
+            eventLog.push(mouseEvent);
+
+            // Process the event log, which will now resolve the deferred Meta
+            // key using the mouse event's modifier state as context
+            interpret_events();
+        }
 
     };
 
@@ -1384,7 +1450,7 @@ Guacamole.Keyboard = function Keyboard(element) {
             // Defer handling of Meta until it is known to be functioning as a
             // modifier (it may otherwise actually be an alternative method for
             // pressing a single key, such as Meta+Left for Home on ChromeOS)
-            if (first.keysym === 0xFFE7 || first.keysym === 0xFFE8) {
+            if (isMetaKey(first.keysym)) {
 
                 // Defer handling until further events exist to provide context
                 if (eventLog.length === 1)
