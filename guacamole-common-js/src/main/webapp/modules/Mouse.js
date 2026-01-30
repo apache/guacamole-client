@@ -548,6 +548,16 @@ Guacamole.Mouse.Event = function MouseEvent(type, state, events) {
     this.state = state;
 
     /**
+     * The state of all modifier keys at the time this event was received.
+     * If the original DOM event is not a MouseEvent or modifier state is
+     * otherwise unavailable, the state of all modifiers will be false.
+     *
+     * @type {!Guacamole.Keyboard.ModifierState}
+     */
+    var firstEvent = Array.isArray(events) ? events[0] : events;
+    this.modifiers = firstEvent ? Guacamole.Keyboard.ModifierState.fromMouseEvent(firstEvent) : new Guacamole.Keyboard.ModifierState();
+
+    /**
      * @inheritdoc
      */
     this.invokeLegacyHandler = function invokeLegacyHandler(target) {
