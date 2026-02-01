@@ -17,6 +17,10 @@
         "styles/sso-providers.css"
     ],
 
+    "js" : [
+        "saml.min.js"
+    ],
+
     "html" : [
         "html/sso-providers.html",
         "html/sso-provider-saml.html"
@@ -34,10 +38,6 @@
         "translations/ru.json",
         "translations/tr.json",
         "translations/zh.json"
-    ],
-
-    "js" : [
-        "saml.min.js"
     ]
 
 }

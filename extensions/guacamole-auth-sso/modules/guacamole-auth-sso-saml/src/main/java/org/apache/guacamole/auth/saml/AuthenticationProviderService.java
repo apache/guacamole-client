@@ -24,11 +24,11 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
-import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.saml.acs.SAMLAuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
@@ -145,5 +145,5 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     public void shutdown() {
         sessionManager.shutdown();
     }
-    
+
 }
