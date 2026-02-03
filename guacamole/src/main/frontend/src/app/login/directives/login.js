@@ -69,6 +69,7 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
         var $location             = $injector.get('$location');
         var $rootScope            = $injector.get('$rootScope');
         var $route                = $injector.get('$route');
+        var $translate            = $injector.get('$translate');
         var authenticationService = $injector.get('authenticationService');
         var requestService        = $injector.get('requestService');
 
@@ -223,8 +224,10 @@ angular.module('login').directive('guacLogin', [function guacLogin() {
 
         // Retry route upon success (entered values will be cleared only
         // after route change has succeeded as this can take time)
+        // and refresh the translation
         $rootScope.$on('guacLogin', function loginSuccessful() {
             $route.reload();
+            $translate.refresh();
         });
 
         // Reset upon failure
