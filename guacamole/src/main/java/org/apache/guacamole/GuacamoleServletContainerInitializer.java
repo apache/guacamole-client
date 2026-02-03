@@ -20,12 +20,12 @@
 package org.apache.guacamole;
 
 import ch.qos.logback.core.joran.spi.JoranException;
+import jakarta.servlet.ServletContainerInitializer;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
-import javax.servlet.ServletContainerInitializer;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import org.apache.guacamole.log.GuacamoleLogbackServiceProvider;
 import org.apache.guacamole.log.LogLevel;
 import org.apache.guacamole.log.ReconfigurableLoggerFactory;

@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.event;
 
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;

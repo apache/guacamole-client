@@ -1,0 +1,1 @@
+jakarta.inject:jakarta.inject-api:jar:2.0.1

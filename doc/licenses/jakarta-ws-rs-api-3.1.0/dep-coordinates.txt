@@ -1,0 +1,1 @@
+jakarta.ws.rs:jakarta.ws.rs-api:jar:3.1.0

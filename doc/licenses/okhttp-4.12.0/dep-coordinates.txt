@@ -1,2 +1,5 @@
 com.squareup.okhttp3:okhttp:jar:4.12.0
+<<<<<<< HEAD
 com.squareup.okhttp3:logging-interceptor:jar:4.12.0
+=======
+>>>>>>> 2e4fba16b (GUACAMOLE-1325: Migrate from javax to jakarta namespace.)

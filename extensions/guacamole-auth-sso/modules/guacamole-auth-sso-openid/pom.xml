@@ -114,16 +114,19 @@
             <artifactId>guice</artifactId>
         </dependency>
 
-        <!-- Java servlet API -->
+        <!-- JJakarta EE servlet API -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
+            <groupId>jakarta.platform</groupId>
+            <artifactId>jakarta.jakartaee-api</artifactId>
+            <version>10.0.0</version>
+            <scope>provided</scope>
         </dependency>
 
-        <!-- JAX-RS Annotations -->
+        <!-- Jakarta-RS Annotations -->
         <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>3.1.0</version>
         </dependency>
 
     </dependencies>

@@ -19,11 +19,11 @@
 package org.apache.guacamole.auth.sso;
 
 import com.google.inject.Inject;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.QueryParam;
 import java.net.URI;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 import org.apache.guacamole.GuacamoleException;
 
 /**

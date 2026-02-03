@@ -21,10 +21,10 @@ package org.apache.guacamole.tunnel.websocket;
 
 import com.google.inject.Provider;
 import com.google.inject.servlet.ServletModule;
+import jakarta.websocket.DeploymentException;
+import jakarta.websocket.server.ServerContainer;
+import jakarta.websocket.server.ServerEndpointConfig;
 import java.util.Arrays;
-import javax.websocket.DeploymentException;
-import javax.websocket.server.ServerContainer;
-import javax.websocket.server.ServerEndpointConfig;
 import org.apache.guacamole.tunnel.TunnelLoader;
 import org.apache.guacamole.tunnel.TunnelRequestService;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public class WebSocketTunnelModule extends ServletModule implements TunnelLoader
         try {
 
             // Attempt to find WebSocket servlet
-            Class.forName("javax.websocket.Endpoint");
+            Class.forName("jakarta.websocket.Endpoint");
 
             // Support found
             return true;
@@ -69,7 +69,7 @@ public class WebSocketTunnelModule extends ServletModule implements TunnelLoader
         logger.info("Loading JSR-356 WebSocket support...");
 
         // Get container
-        ServerContainer container = (ServerContainer) getServletContext().getAttribute("javax.websocket.server.ServerContainer"); 
+        ServerContainer container = (ServerContainer) getServletContext().getAttribute("jakarta.websocket.server.ServerContainer"); 
         if (container == null) {
             logger.warn("ServerContainer attribute required by JSR-356 is missing. Cannot load JSR-356 WebSocket support.");
             return;
