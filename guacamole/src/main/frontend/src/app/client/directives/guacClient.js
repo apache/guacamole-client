@@ -243,6 +243,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
             if (!client || !display)
                 return;
 
+            // Broadcast mousedown event before sending to allow keyboard to resolve
+            // deferred modifier keys (especially CMD+click)
+            if (event.type === 'mousedown')
+                $rootScope.$broadcast('guacBeforeClientMouseDown', event, client);
+
             event.stopPropagation();
             event.preventDefault();
 
@@ -302,6 +307,11 @@ angular.module('client').directive('guacClient', [function guacClient() {
             // or display are not yet available
             if (!client || !display)
                 return;
+
+            // Broadcast mousedown event before sending to allow keyboard to resolve
+            // deferred modifier keys (especially CMD+click)
+            if (event.type === 'mousedown')
+                $rootScope.$broadcast('guacBeforeClientMouseDown', event, client);
 
             event.stopPropagation();
             event.preventDefault();
