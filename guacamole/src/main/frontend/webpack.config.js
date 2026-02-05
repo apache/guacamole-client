@@ -17,14 +17,13 @@
  * under the License.
  */
 
-const AngularTemplateCacheWebpackPlugin = require('angular-templatecache-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const ClosureWebpackPlugin = require('closure-webpack-plugin');
+const AngularTemplateCachePlugin = require('angular-templatecache-webpack5-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const DependencyListPlugin = require('./plugins/dependency-list-plugin');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const webpack = require('webpack');
 
 module.exports = {
@@ -36,6 +35,8 @@ module.exports = {
     output: {
         path: __dirname + '/dist',
         filename: 'guacamole.[contenthash].js',
+        hashFunction: 'xxhash64',
+        clean: true
     },
 
     // Generate source maps
@@ -46,22 +47,6 @@ module.exports = {
 
     module: {
         rules: [
-
-            // NOTE: This is required in order to parse ES2020 language features,
-            // like the optional chaining and nullish coalescing operators. It
-            // specifically needs to operate on the node-modules directory since
-            // Webpack 4 cannot handle such language features.
-            {
-                test: /\.js$/i,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                      presets: [
-                        ['@babel/preset-env']
-                      ]
-                    }
-                }
-            },
 
             // Automatically extract imported CSS for later reference within separate CSS file
             {
@@ -95,11 +80,20 @@ module.exports = {
     optimization: {
         minimizer: [
 
-            // Minify using Google Closure Compiler
-            new ClosureWebpackPlugin({ mode: 'STANDARD' }, {
-                languageIn: 'ECMASCRIPT_2020',
-                languageOut: 'ECMASCRIPT5',
-                compilationLevel: 'SIMPLE'
+            // Minify using Terser
+            new TerserPlugin({
+                terserOptions: {
+                    ecma: 5,
+                    compress: {
+                        drop_console: false,
+                        passes: 2
+                    },
+                    mangle: true,
+                    format: {
+                        comments: false
+                    }
+                },
+                extractComments: false
             }),
 
             new CssMinimizerPlugin()
@@ -121,41 +115,39 @@ module.exports = {
     },
     plugins: [
 
-        new AngularTemplateCacheWebpackPlugin({
+        new AngularTemplateCachePlugin({
             module: 'templates-main',
+            outputFilename: 'templates.js',
             root: 'app/',
             source: 'src/app/**/*.html',
             standalone: true
         }),
 
-        // Automatically clean out dist/ directory
-        new CleanWebpackPlugin(),
-
         // Copy static files to dist/
-        new CopyPlugin([
-            { from: 'app/**/*' },
-            { from: 'fonts/**/*' },
-            { from: 'images/**/*' },
-            { from: 'layouts/**/*' },
-            { from: 'translations/**/*' },
-            { from: 'verifyCachedVersion.js' }
-        ], {
-            context: 'src/'
+        new CopyPlugin({
+            patterns: [
+                { from: 'app/**/*', context: 'src/' },
+                { from: 'fonts/**/*', context: 'src/' },
+                { from: 'images/**/*', context: 'src/' },
+                { from: 'layouts/**/*', context: 'src/' },
+                { from: 'translations/**/*', context: 'src/' },
+                { from: 'verifyCachedVersion.js', context: 'src/' }
+            ]
         }),
 
         // Copy core libraries for global inclusion
-        new CopyPlugin([
-            { from: 'angular/angular.min.js' },
-            { from: 'blob-polyfill/Blob.js' },
-            { from: 'datalist-polyfill/datalist-polyfill.min.js' },
-            { from: 'jquery/dist/jquery.min.js' },
-            { from: 'lodash/lodash.min.js' }
-        ], {
-            context: 'node_modules/'
+        new CopyPlugin({
+            patterns: [
+                { from: 'angular/angular.min.js', context: 'node_modules/' },
+                { from: 'blob-polyfill/Blob.js', context: 'node_modules/' },
+                { from: 'datalist-polyfill/datalist-polyfill.min.js', context: 'node_modules/' },
+                { from: 'jquery/dist/jquery.min.js', context: 'node_modules/' },
+                { from: 'lodash/lodash.min.js', context: 'node_modules/' }
+            ]
         }),
 
         // Generate index.html from template
-        new HtmlWebpackPlugin({
+        new HtmlPlugin({
             inject: false,
             template: 'src/index.html'
         }),
@@ -174,11 +166,18 @@ module.exports = {
         new webpack.ProvidePlugin({
             jstz: 'jstz',
             Pickr: '@simonwep/pickr',
-            saveAs: 'file-saver'
+            saveAs: 'file-saver',
+            'assert': 'assert',
+            'process': 'process/browser'
         })
 
     ],
     resolve: {
+
+        fallback: {
+            'assert': 'assert/',
+            'process': 'process/browser'
+        },
 
         // Include Node modules and base source tree within search path for
         // import/resolve
