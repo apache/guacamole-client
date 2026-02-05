@@ -2,8 +2,9 @@
 # URL:     https://github.com/javaee/activation
 # From:    'Oracle and/or its affiliates'
 # License: CDDL v1.1 
+# Source:  https://raw.githubusercontent.com/javaee/activation/refs/tags/JAF-${_VERSION_}/LICENSE.txt
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [1.2.0] ---
 COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.1
 
 1. Definitions.
@@ -763,4 +764,4 @@ based on this library.  If you modify this library, you may extend this
 exception to your version of the library, but you are not obligated to
 do so.  If you do not wish to do so, delete this exception statement
 from your version.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [1.2.0] ---

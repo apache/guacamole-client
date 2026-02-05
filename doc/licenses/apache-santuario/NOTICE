@@ -1,9 +1,10 @@
-# Name:    Apache Santuario
+# Name:    Apache Santuario - XML Security for Java
 # URL:     https://santuario.apache.org/
 # From:    'Apache Software Foundation' (https://www.apache.org/)
 # License: Apache v2.0
+# Source:  https://raw.githubusercontent.com/apache/santuario-xml-security-java/refs/tags/xmlsec-${VERSION}/NOTICE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [2.2.6] ---
 Apache Santuario - XML Security for Java
 Copyright 1999-2022 The Apache Software Foundation
 
@@ -18,4 +19,4 @@ Commission in the <WebSig> project in the ISIS Programme.
 
 This product contains software that is
 copyright (c) 2021, Oracle and/or its affiliates.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [2.2.6] ---

@@ -2,8 +2,9 @@
 # URL:     https://github.com/coova/jradius
 # From:    'Coova Technologies, LLC' (https://coova.github.io)
 # License: LGPL v2.1 
+# Source:  https://raw.githubusercontent.com/coova/jradius/refs/tags/jradius-${VERSION}/LICENSE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [1.1.5] ---
 ==========================================================================
 
 Coova JRadius License:
@@ -549,4 +550,4 @@ necessary.  Here is a sample; alter the names:
   Ty Coon, President of Vice
 
 That's all there is to it!
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [1.1.5] ---

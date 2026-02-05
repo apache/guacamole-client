@@ -2,8 +2,9 @@
 # URL:     https://dom4j.github.io/
 # From:    'MetaStuff, Ltd. and DOM4J contributors'
 # License: DOM4J License 
+# Source:  https://raw.githubusercontent.com/dom4j/dom4j/refs/tags/version-${MAJOR}.${MINOR}.${PATCH}/LICENSE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [2.1.4_1] ---
 Copyright 2001-2023 © MetaStuff, Ltd. and DOM4J contributors. All Rights Reserved.
 
 Redistribution and use of this software and associated documentation
@@ -43,4 +44,4 @@ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
 STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
 OF THE POSSIBILITY OF SUCH DAMAGE.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [2.1.4_1] ---

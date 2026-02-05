@@ -2,8 +2,9 @@
 # URL:     https://github.com/d3/d3-path
 # From:    'Mike Bostock'
 # License: BSD 0-clause 
+# Source:  https://raw.githubusercontent.com/d3/d3-path/refs/tags/v${VERSION}/LICENSE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [3.1.0] ---
 Copyright 2015-2022 Mike Bostock
 
 Permission to use, copy, modify, and/or distribute this software for any purpose
@@ -17,4 +18,4 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
 OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
 THIS SOFTWARE.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [3.1.0] ---

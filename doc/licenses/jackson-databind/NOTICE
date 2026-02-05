@@ -2,10 +2,23 @@
 # URL:     https://github.com/FasterXML/jackson-databind
 # From:    'FasterXML, LLC' (https://github.com/FasterXML)
 # License: Apache v2.0
+# Source:  https://raw.githubusercontent.com/FasterXML/jackson-databind/refs/tags/jackson-databind-${VERSION}/src/main/resources/META-INF/NOTICE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [2.19.0] ---
+# Jackson JSON processor
+
 Jackson is a high-performance, Free/Open Source JSON processing library.
 It was originally written by Tatu Saloranta (tatu.saloranta@iki.fi), and has
 been in development since 2007.
 It is currently developed by a community of developers.
-# --- END LICENSE FILE ---
+
+## Copyright
+
+Copyright 2007-, Tatu Saloranta (tatu.saloranta@iki.fi)
+
+## Credits
+
+A list of contributors may be found from CREDITS(-2.x) file, which is included
+in some artifacts (usually source distributions); but is always available
+from the source code management (SCM) system project uses.
+# --- END LICENSE FILE [2.19.0] ---

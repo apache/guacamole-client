@@ -2,8 +2,9 @@
 # URL:     https://github.com/defunctzombie/node-process/
 # From:    'Roman Shtylman' (https://github.com/defunctzombie)
 # License: MIT
+# Source:  https://raw.githubusercontent.com/defunctzombie/node-process/refs/tags/v${VERSION}/LICENSE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [0.11.10] ---
 (The MIT License)
 
 Copyright (c) 2013 Roman Shtylman <shtylman@gmail.com>
@@ -26,4 +27,4 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [0.11.10] ---

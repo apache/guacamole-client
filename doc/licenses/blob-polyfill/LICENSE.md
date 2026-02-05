@@ -1,9 +1,10 @@
-# Name:    Blob.js
-# URL:     https://github.com/eligrey/Blob.js/
+# Name:    Blob Polyfill
+# URL:     https://github.com/bjornstar/blob-polyfill
 # From:    'Eli Grey' (https://github.com/eligrey)
 # License: MIT
+# Source:  https://raw.githubusercontent.com/bjornstar/blob-polyfill/refs/tags/v${VERSION}/LICENSE.md
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [9.0.20240710] ---
 Copyright © 2014 [Eli Grey][1].
 
 Permission is hereby granted, free of charge, to any person
@@ -28,5 +29,5 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 
 
-  [1]: http://eligrey.com
-# --- END LICENSE FILE ---
+  [1]: https://eligrey.com
+# --- END LICENSE FILE [9.0.20240710] ---

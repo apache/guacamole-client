@@ -1,4 +1,6 @@
-# --- BEGIN LICENSE FILE ---
+# Source: https://raw.githubusercontent.com/zxing/zxing/refs/tags/zxing-${VERSION}/AUTHORS
+#
+# --- BEGIN LICENSE FILE [3.5.3] ---
 This project consists of contributions from several people, recognized here for convenience,
 in alphabetical order.
 
@@ -134,4 +136,4 @@ Yakov Okshtein (Google)
 Yao Wei
 Younes CHTIOUI
 Yunhao Tian
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [3.5.3] ---

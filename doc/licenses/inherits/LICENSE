@@ -2,8 +2,9 @@
 # URL:     https://github.com/isaacs/inherits
 # From:    'Isaac Z. Schlueter' (https://github.com/isaacs)
 # License: ISC 
+# Source:  https://raw.githubusercontent.com/isaacs/inherits/refs/tags/v${VERSION}/LICENSE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [2.0.3] ---
 The ISC License
 
 Copyright (c) Isaac Z. Schlueter
@@ -19,4 +20,4 @@ INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
 LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
 OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [2.0.3] ---

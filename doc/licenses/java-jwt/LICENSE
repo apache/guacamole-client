@@ -2,8 +2,10 @@
 # URL:     https://github.com/auth0/java-jwt
 # From:    'Auth0 by Okta' (https://www.auth0.com)
 # License: MIT
+# Source:  https://raw.githubusercontent.com/auth0/java-jwt/refs/tags/${VERSION}/LICENSE
+# Source:  https://raw.githubusercontent.com/auth0/java-jwt/refs/tags/java-jwt-${VERSION}/LICENSE.txt
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [4.0.0] ---
 The MIT License (MIT)
  
 Copyright (c) 2015 Auth0, Inc. <support@auth0.com> (http://auth0.com)
@@ -25,4 +27,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [4.0.0] ---

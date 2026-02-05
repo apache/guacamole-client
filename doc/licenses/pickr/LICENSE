@@ -2,8 +2,9 @@
 # URL:     https://simonwep.github.io/pickr/
 # From:    'Simon Reinisch' (https://github.com/Simonwep/)
 # License: MIT
+# Source:  https://raw.githubusercontent.com/simonwep/pickr/refs/tags/${VERSION}/LICENSE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [1.8.2] ---
 MIT License
 
 Copyright (c) 2018 - 2021 Simon Reinisch
@@ -25,4 +26,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [1.8.2] ---
