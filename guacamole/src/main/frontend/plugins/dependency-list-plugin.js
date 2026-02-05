@@ -20,7 +20,7 @@
 const finder = require('find-package-json');
 const fs = require('fs');
 const path = require('path');
-const validateOptions = require('schema-utils');
+const validate = require('schema-utils');
 
 /**
  * The name of this plugin.
@@ -71,7 +71,8 @@ class DependencyListPlugin {
      *     The configuration options to apply to the plugin.
      */
     constructor(options = {}) {
-        validateOptions(PLUGIN_OPTIONS_SCHEMA, options, 'DependencyListPlugin');
+        validate(PLUGIN_OPTIONS_SCHEMA, options, {
+            name: 'DependencyListPlugin', baseDataPath: 'options' });
         this.options = options;
     }
 
@@ -128,7 +129,7 @@ class DependencyListPlugin {
                 // root of compilation process
                 const relativePath = path.relative(compiler.options.context, file);
 
-                if (npmPackage.name) {
+                if (npmPackage && npmPackage.name) {
                     moduleCoords[npmPackage.name + ':' + npmPackage.version] = true;
                     logger.info('File dependency "%s" mapped to NPM package "%s" (v%s)',
                         relativePath, npmPackage.name, npmPackage.version);
