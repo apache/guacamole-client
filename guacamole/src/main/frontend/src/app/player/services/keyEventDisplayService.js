@@ -190,32 +190,47 @@ angular.module('player').factory('keyEventDisplayService',
     };
 
     /**
-     * Accepts key events in the format produced by KeyEventInterpreter and returns
-     * human readable text batches, seperated by at least `batchSeperation` milliseconds
-     * if provided.
+     * Accepts key events and clipboard events, merging them chronologically
+     * into human readable text batches, separated by at least `batchSeparation`
+     * milliseconds if provided.
      *
      * NOTE: The event processing logic and output format is based on the `guaclog`
-     * tool, with the addition of batching support.
+     * tool, with the addition of batching and clipboard support.
      *
-     * @param {Guacamole.KeyEventInterpreter.KeyEvent[]} [rawEvents]
+     * @param {Guacamole.KeyEventInterpreter.KeyEvent[]} [rawKeyEvents]
      *     The raw key events to prepare for display.
      *
-     * @param {number} [batchSeperation=5000]
+     * @param {Guacamole.ClipboardEventInterpreter.ClipboardEvent[]} [clipboardEvents]
+     *     The clipboard events to merge inline with key events.
+     *
+     * @param {number} [batchSeparation=5000]
      *     The minimum number of milliseconds that must elapse between subsequent
      *     batches of key-event-generated text. If 0 or negative, no splitting will
-     *     occur, resulting in a single batch for all provided key events.
+     *     occur, resulting in a single batch for all provided events.
      *
      * @param {boolean} [consolidateEvents=false]
      *     Whether consecutive sequences of events with similar properties
      *     should be consolidated into a single ConsolidatedKeyEvent object for
      *     display performance reasons.
      */
-    service.parseEvents = function parseEvents(
-            rawEvents, batchSeperation, consolidateEvents) {
+    service.parseEventsWithClipboard = function parseEventsWithClipboard(
+            rawKeyEvents, clipboardEvents, batchSeparation, consolidateEvents) {
 
-        // Default to 5 seconds if the batch seperation was not provided
-        if (batchSeperation === undefined || batchSeperation === null)
-            batchSeperation = 5000;
+        // Default to 5 seconds if the batch separation was not provided
+        if (batchSeparation === undefined || batchSeparation === null)
+            batchSeparation = 5000;
+
+        // Convert clipboard events to unified format
+        const clipboardAsEvents = (clipboardEvents || []).map(event => ({
+            isClipboard: true,
+            timestamp: event.timestamp,
+            data: event.data
+        }));
+
+        // Merge and sort all events by timestamp
+        const allEvents = [...(rawKeyEvents || []), ...clipboardAsEvents]
+            .sort((a, b) => a.timestamp - b.timestamp);
+
         /**
          * A map of X11 keysyms to a KeyDefinition object, if the corresponding
          * key is currently pressed. If a keysym has no entry in this map at all
@@ -225,24 +240,22 @@ angular.module('player').factory('keyEventDisplayService',
          */
         const pressedKeys = {};
 
-        // The timestamp of the most recent key event processed
-        let lastKeyEvent = 0;
+        // The timestamp of the most recent event processed
+        let lastEventTime = 0;
 
-        // All text batches produced from the provided raw key events
+        // All text batches produced from the provided events
         const batches = [new service.TextBatch()];
 
-        // Process every provided raw
-        _.forEach(rawEvents, event => {
+        // Process every provided event
+        allEvents.forEach(event => {
 
-            // Extract all fields from the raw event
-            const { definition, pressed, timestamp } = event;
-            const { keysym, name, value } = definition;
+            const { timestamp } = event;
 
             // Only switch to a new batch of text if sufficient time has passed
-            // since the last key event
-            const newBatch = (batchSeperation >= 0
-                && (timestamp - lastKeyEvent) >= batchSeperation);
-            lastKeyEvent = timestamp;
+            // since the last event
+            const newBatch = (batchSeparation >= 0
+                && (timestamp - lastEventTime) >= batchSeparation);
+            lastEventTime = timestamp;
 
             if (newBatch)
                 batches.push(new service.TextBatch());
@@ -250,7 +263,7 @@ angular.module('player').factory('keyEventDisplayService',
             const currentBatch = _.last(batches);
 
             /**
-             * Either push the a new event constructed using the provided fields
+             * Either push a new event constructed using the provided fields
              * into the latest batch, or consolidate into the latest event as
              * appropriate given the consolidation configuration and event type.
              *
@@ -274,94 +287,109 @@ angular.module('player').factory('keyEventDisplayService',
                 // Otherwise, push a new event
                 else {
                     currentBatch.events.push(new service.ConsolidatedKeyEvent({
-                        text, typed, timestamp}));
+                        text, typed, timestamp
+                    }));
                     currentBatch.simpleValue += text;
                 }
+            };
+
+            // Handle clipboard events
+            if (event.isClipboard) {
+                const preview = (event.data || '').substring(0, 50);
+                pushEvent('[Clipboard: ' + preview + ']', false);
             }
 
-            // Track modifier state
-            if (MODIFIER_KEYS[keysym]) {
-                if (pressed)
-                    pressedKeys[keysym] = definition;
-                else
-                    delete pressedKeys[keysym];
-            }
+            // Handle key events
+            else {
 
-            // Append to the current typed value when a printable
-            // (non-modifier) key is pressed
-            else if (pressed) {
+                const { definition, pressed } = event;
+                const { keysym, name, value } = definition;
 
-                // If any shorcut keys are currently pressed
-                if (_.some(pressedKeys, (def, key) => SHORTCUT_KEYS[key])) {
+                // Track modifier state
+                if (MODIFIER_KEYS[keysym]) {
+                    if (pressed)
+                        pressedKeys[keysym] = definition;
+                    else
+                        delete pressedKeys[keysym];
+                }
 
-                    var shortcutText = '<';
+                // Append to the current typed value when a printable
+                // (non-modifier) key is pressed
+                else if (pressed) {
 
-                    var firstKey = true;
+                    // If any shortcut keys are currently pressed
+                    if (_.some(pressedKeys, (def, key) => SHORTCUT_KEYS[key])) {
 
-                    // Compose entry by inspecting the state of each tracked key.
-                    // At least one key must be pressed when in a shortcut.
-                    for (let pressedKeysym in pressedKeys) {
+                        var shortcutText = '<';
 
-                        var pressedKeyDefinition = pressedKeys[pressedKeysym];
+                        var firstKey = true;
 
-                        // Print name of key
-                        if (firstKey) {
-                            shortcutText += pressedKeyDefinition.name;
-                            firstKey = false;
+                        // Compose entry by inspecting the state of each tracked key.
+                        // At least one key must be pressed when in a shortcut.
+                        for (let pressedKeysym in pressedKeys) {
+
+                            var pressedKeyDefinition = pressedKeys[pressedKeysym];
+
+                            // Print name of key
+                            if (firstKey) {
+                                shortcutText += pressedKeyDefinition.name;
+                                firstKey = false;
+                            }
+
+                            else
+                                shortcutText += ('+' + pressedKeyDefinition.name);
+
                         }
 
-                        else
-                            shortcutText += ('+' + pressedKeyDefinition.name);
+                        // Finally, append the printable key to close the shortcut
+                        shortcutText += ('+' + name + '>');
 
+                        // Add the shortcut to the current batch
+                        pushEvent(shortcutText, false);
                     }
 
-                    // Finally, append the printable key to close the shortcut
-                    shortcutText += ('+' + name + '>')
-
-                    // Add the shortcut to the current batch
-                    pushEvent(shortcutText, false);
-                }
-
-                // Print the key itself
-                else {
-
-                    var keyText;
-                    var typed;
-    
-                    // Print the value if explicitly defined
-                    if (value !== undefined) {
-    
-                        keyText = value;
-                        typed = true;
-    
-                        // If the name should be printed in addition, add it as a
-                        // seperate event before the actual character value
-                        if (PRINT_NAME_TOO_KEYS[keysym])
-                            pushEvent(formatKeyName(name), false);
-    
-                    }
-    
-                    // Otherwise print the name
+                    // Print the key itself
                     else {
-    
-                        keyText = formatKeyName(name);
-    
-                        // While this is a representation for a single character,
-                        // the key text is the name of the key, not the actual
-                        // character itself
-                        typed = false;
-    
+
+                        var keyText;
+                        var typed;
+
+                        // Print the value if explicitly defined
+                        if (value !== undefined) {
+
+                            keyText = value;
+                            typed = true;
+
+                            // If the name should be printed in addition, add it as a
+                            // separate event before the actual character value
+                            if (PRINT_NAME_TOO_KEYS[keysym])
+                                pushEvent(formatKeyName(name), false);
+
+                        }
+
+                        // Otherwise print the name
+                        else {
+
+                            keyText = formatKeyName(name);
+
+                            // While this is a representation for a single character,
+                            // the key text is the name of the key, not the actual
+                            // character itself
+                            typed = false;
+
+                        }
+
+                        // Add the key to the current batch
+                        pushEvent(keyText, typed);
+
                     }
-    
-                    // Add the key to the current batch
-                    pushEvent(keyText, typed);
-
                 }
-            }
 
-            // We ignore key release events here because in practice characters
-            // are printed when you press keys not release them. The release order
-            // can be different and lead to wrong character printing order in the log.
+                // We ignore key release events here because in practice characters
+                // are printed when you press keys not release them. The release order
+                // can be different and lead to wrong character printing order in the log.
+
+            }
 
         });
 
