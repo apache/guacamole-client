@@ -1,9 +1,10 @@
-# Name:    Jakarta Bean Validation API
+# Name:    Jakarta Validation API
 # URL:     https://beanvalidation.org/
-# From:    'Red Hat Inc.' (https://www.redhat.com/)
+# From:    'Red Hat Inc. and respective authors or employers'
 # License: Apache v2.0
+# Source:  https://raw.githubusercontent.com/jakartaee/validation/refs/tags/${VERSION}/NOTICE.md
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [2.0.2] ---
 # Notices for Eclipse Jakarta Bean Validation
 
 This content is produced and maintained by the Eclipse Jakarta Bean Validation
@@ -14,4 +15,4 @@ project.
 ## Trademarks
 
  Jakarta Bean Validation is a trademark of the Eclipse Foundation.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [2.0.2] ---

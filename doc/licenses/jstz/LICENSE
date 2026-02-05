@@ -2,8 +2,9 @@
 # URL:     https://github.com/iansinnott/jstz
 # From:    'Jon Nylander' (https://github.com/pellepim)
 # License: MIT
+# Source:  https://raw.githubusercontent.com/iansinnott/jstz/refs/tags/v${VERSION}/LICENCE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [2.1.1] ---
 MIT License 
 
 Copyright (c) 2012 Jon Nylander, project maintained at 
@@ -26,4 +27,4 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, 
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN 
 THE SOFTWARE.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [2.1.1] ---

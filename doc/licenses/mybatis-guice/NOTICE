@@ -2,8 +2,9 @@
 # URL:     http://www.mybatis.org/guice/
 # From:    'MyBatis' (http://www.mybatis.org/)
 # License: Apache v2.0
+# Source:  https://raw.githubusercontent.com/mybatis/guice/refs/tags/mybatis-guice-${VERSION}/NOTICE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [3.18] ---
 MyBatis-Guice
 Copyright 2010-2013
 
@@ -18,4 +19,4 @@ iBATIS
 
 Google Guice
    Copyright 2010 The Apache Software Foundation
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [3.18] ---

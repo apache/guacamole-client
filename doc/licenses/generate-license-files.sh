@@ -464,6 +464,45 @@ get_license() {
 
 }
 
+##
+## Downloads and appends the given version of the license file stored within
+## the source tree at the given location. The source URL is determined by the
+## value of any "Source" headers in the file. If multiple "Source" headers are
+## present, each are tried in order until the download succeeds. If all
+## download attempts fail, a license error is flagged.
+##
+## @param FILENAME
+##     The file within the source tree to update. This file must contain at
+##     least one "Source" header.
+##
+## @param VERSION
+##     The version of the file to download.
+##
+append_license() {
+
+    local FILENAME="$1"
+    local VERSION="$2"
+
+    get_header_value "$FILENAME" Source \
+        | subst_version "$VERSION" \
+        | while read -r LICENSE_URL; do
+
+        local LICENSE="`curl -SsfL "$LICENSE_URL" | sed 's:\r$::g'`"
+        if [ -n "$LICENSE" ]; then
+            info "Successfully downloaded from URL \"$LICENSE_URL\"."
+            printf '# --- BEGIN LICENSE FILE [%s] ---\n' "$VERSION"
+            printf '%s\n' "$LICENSE"
+            printf '# --- END LICENSE FILE [%s] ---\n' "$VERSION"
+            exit 1
+        fi
+
+        info "Failed to download from URL \"$LICENSE_URL\"."
+
+    done >> "$FILENAME" \
+        && error "All download attempts failed for `basename "$FILENAME"` ($VERSION)."
+
+}
+
 # Verify that an output directory was provided
 if [ -z "$DEPENDENCY_LIST" -o -z "$OUTPUT_DIR" ]; then
     error "USAGE: $0 DEPENDENCY_LIST OUTPUT_DIRECTORY"
@@ -513,6 +552,15 @@ terms and conditions of the following licenses.
 EOF
         PREAMBLE_ADDED=1
     fi
+
+    # Refresh any outstanding licenses from defined download link
+    find "$LICENSE_INFO_DIR" -type f | xargs grep -l '^#[[:space:]]*Source:' \
+        | while read FILENAME; do
+        if [ -z "`get_license "$FILENAME" "$VERSION"`" ]; then
+            info "Downloading updated `basename "$FILENAME"` for `basename "$LICENSE_INFO_DIR"` ($VERSION)..."
+            append_license "$FILENAME" "$VERSION"
+        fi
+    done
 
     # Locate LICENSE and NOTICE files
     LICENSE_FILE="`license_file "$LICENSE_INFO_DIR"`"

@@ -5,8 +5,9 @@
 # From:    'Stian Soiland-Reyes' (https://github.com/stain)
 # From:    'Peter Hull'
 # License: BSD 3-clause 
+# Source:  https://raw.githubusercontent.com/jai-imageio/jai-imageio-core/refs/tags/jai-imageio-core-${VERSION}/LICENSE.txt
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [1.4.0] ---
 Copyright (c) 2005 Sun Microsystems, Inc. 
 Copyright © 2010-2014 University of Manchester
 Copyright © 2010-2015 Stian Soiland-Reyes
@@ -46,4 +47,4 @@ POSSIBILITY OF SUCH DAMAGES.
 You acknowledge that this software is not designed or intended for 
 use in the design, construction, operation or maintenance of any 
 nuclear facility. 
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [1.4.0] ---

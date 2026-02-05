@@ -1,9 +1,10 @@
 # Name:    make-plural
 # URL:     https://github.com/eemeli/make-plural
 # From:    'Eemeli Aro' (https://github.com/eemeli)
-# License: ISC 
+# License: ISC
+# Source:  https://raw.githubusercontent.com/eemeli/make-plural/refs/tags/v${VERSION}/LICENSE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [3.0.6] ---
 Copyright (c) 2014-2016 by Eemeli Aro <eemeli@gmail.com>
 
 Permission to use, copy, modify, and/or distribute this software for any
@@ -17,4 +18,4 @@ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [3.0.6] ---

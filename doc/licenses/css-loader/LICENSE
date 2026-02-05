@@ -2,8 +2,9 @@
 # URL:     https://github.com/webpack-contrib/css-loader
 # From:    'JS Foundation and other contributors'
 # License: MIT
+# Source:  https://raw.githubusercontent.com/webpack/css-loader/refs/tags/v${VERSION}/LICENSE
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [5.2.7] ---
 Copyright JS Foundation and other contributors
 
 Permission is hereby granted, free of charge, to any person obtaining
@@ -24,4 +25,4 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [5.2.7] ---

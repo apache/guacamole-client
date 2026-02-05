@@ -2,8 +2,9 @@
 # URL:     https://eclipse-ee4j.github.io/glassfish-hk2/
 # From:    'Eclipse Foundation' (https://www.eclipse.org/)
 # License: EPL v2.0 
+# Source:  https://raw.githubusercontent.com/eclipse-ee4j/glassfish-hk2/refs/tags/${VERSION}/LICENSE.md
 #
-# --- BEGIN LICENSE FILE ---
+# --- BEGIN LICENSE FILE [2.6.1] ---
 # Eclipse Public License - v 2.0
 
         THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE
@@ -641,4 +642,4 @@
     exception to your version of the library, but you are not obligated to
     do so.  If you do not wish to do so, delete this exception statement
     from your version.
-# --- END LICENSE FILE ---
+# --- END LICENSE FILE [2.6.1] ---

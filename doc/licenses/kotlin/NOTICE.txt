@@ -2,8 +2,9 @@
 # URL:     https://kotlinlang.org/
 # From:    'JetBrains s.r.o and respective authors and developers'
 # License: Apache v2.0
+# Source:  https://raw.githubusercontent.com/JetBrains/kotlin/refs/tags/v${VERSION}/license/NOTICE.txt
 #
-# --- BEGIN LICENSE FILE ---
-Kotlin Compiler
-Copyright 2010-2023 JetBrains s.r.o and respective authors and developers
-# --- END LICENSE FILE ---
+# --- BEGIN LICENSE FILE [1.9.25] ---
+   Kotlin Compiler
+   Copyright 2010-2023 JetBrains s.r.o and respective authors and developers
+# --- END LICENSE FILE [1.9.25] ---
