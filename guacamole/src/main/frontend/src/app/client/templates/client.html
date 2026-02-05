@@ -44,7 +44,12 @@
     <div id="connection-warning" ng-show="isConnectionUnstable()">
         {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
     </div>
-    
+
+    <!-- Video delay notification -->
+    <div id="video-delay-notification" ng-show="videoDelayNotification.message">
+        {{ videoDelayNotification.message }}
+    </div>
+
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
         <div class="menu-content" ng-if="menu.shown" guac-touch-drag="menuDrag">
@@ -116,6 +121,56 @@
                         <div class="device filesystem" ng-repeat="filesystem in focusedClient.filesystems" ng-click="showFilesystemMenu(filesystem)">
                             {{filesystem.name}}
                         </div>
+                    </div>
+                </div>
+
+                <!-- Camera settings -->
+                <div class="menu-section" id="camera-settings" ng-if="cameraSupported">
+                    <h3>Cameras</h3>
+                    <div class="content">
+                        <!-- Camera devices list -->
+                        <div class="camera-devices" ng-if="cameraDevices.length > 0">
+                            <p class="caption">
+                                Select which cameras to redirect to the remote session.
+                            </p>
+                            <div class="camera-device-list">
+                                <div class="camera-device-item" ng-repeat="camera in cameraDevices">
+                                    <label>
+                                        <input type="checkbox"
+                                               ng-model="camera.enabled"
+                                               ng-change="onCameraToggle(camera.deviceId, camera.enabled)">
+                                        <span class="camera-label">{{ camera.label }}</span>
+                                        <span class="active-indicator" ng-if="camera.isActive">In Use</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Video delay (only shown when camera is actively streaming) -->
+                        <div ng-if="cameraActive">
+                            
+                            <p class="caption">
+                                Adjust video delay to synchronize video and audio during calls.
+                            </p>
+                            <div class="description">
+                               Delay: +{{ videoDelay }}ms
+                            </div>
+                            <div class="video-delay-slider">
+                                <input type="range"
+                                       min="0"
+                                       max="1000"
+                                       step="100"
+                                       ng-model="videoDelay"
+                                       ng-change="updateVideoDelay()"
+                                       id="video-delay-range">
+                                <div class="delay-labels">
+                                    <span>0ms</span>
+                                    <span>500ms</span>
+                                    <span>1000ms</span>
+                                </div>
+                            </div>
+                        </div>
+
+
                     </div>
                 </div>
 
@@ -191,7 +246,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
 
         </div>
