@@ -53,7 +53,7 @@ public class UserData {
 
     /**
      * All connections accessible by this user. The key of each entry is both
-     * the connection identifier and the connection name.
+     * the connection identifier.
      */
     private ConcurrentMap<String, Connection> connections;
 
@@ -62,6 +62,12 @@ public class UserData {
      * object.
      */
     public static class Connection {
+
+        /**
+         * The human-readable name of this connection. If unset, the connection
+         * key is used as the display name.
+         */
+        private String name;
 
         /**
          * An arbitrary, opaque, unique ID for this connection. If specified
@@ -97,6 +103,26 @@ public class UserData {
          * immediately upon use.
          */
         private boolean singleUse = false;
+
+        /**
+         * Returns the human-readable name of this connection, if any.
+         *
+         * @return
+         *     The human-readable name of this connection, or null if unset.
+         */
+        public String getName() {
+            return name;
+        }
+
+        /**
+         * Sets the human-readable name of this connection.
+         *
+         * @param name
+         *     The human-readable name of this connection.
+         */
+        public void setName(String name) {
+            this.name = name;
+        }
 
         /**
          * Returns an arbitrary, opaque, unique ID for this connection. If
@@ -319,7 +345,7 @@ public class UserData {
      * Returns all connections stored within this UserData object as an
      * unmodifiable map. Each of these connections is accessible by the user
      * specified by getUsername(). The key of each entry within the map is the
-     * identifier and human-readable name of the corresponding connection.
+     * identifier of the corresponding connection.
      *
      * @return
      *     An unmodifiable map of all connections stored within this
@@ -334,7 +360,7 @@ public class UserData {
      * Replaces all connections stored within this UserData object with the
      * given connections. Each of these connections will be accessible by the
      * user specified by getUsername(). The key of each entry within the map is
-     * the identifier and human-readable name of the corresponding connection.
+     * the identifier of the corresponding connection.
      *
      * @param connections
      *     A map of all connections to be stored within this UserData object,
