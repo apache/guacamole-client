@@ -325,12 +325,16 @@ public class UserDataService {
             // Pull connection and associated identifier
             String identifier = entry.getKey();
             UserData.Connection connection = entry.getValue();
+            String name = connection.getName();
+            if (name == null || name.isEmpty())
+                name = identifier;
 
             // Create Guacamole connection containing the defined identifier
             // and parameters
             Connection guacConnection = userDataConnectionProvider.get().init(
                 userData,
                 identifier,
+                name,
                 connection
             );
 
