@@ -1,0 +1,3 @@
+com.google.guava:failureaccess:jar:*
+com.google.guava:guava:jar:*
+com.google.guava:listenablefuture:jar:*

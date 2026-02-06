@@ -1,1 +1,0 @@
-commons-digester:commons-digester:jar:1.8

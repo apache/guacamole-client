@@ -1,0 +1,2 @@
+com.onelogin:java-saml-core:jar:*
+com.onelogin:java-saml:jar:*

@@ -1,0 +1,3 @@
+com.google.inject:guice:jar:*
+com.google.inject.extensions:guice-assistedinject:jar:*
+com.google.inject.extensions:guice-servlet:jar:*

@@ -1,0 +1,7 @@
+org.glassfish.jersey.containers:jersey-container-servlet-core:jar:*
+org.glassfish.jersey.core:jersey-common:jar:*
+org.glassfish.jersey.core:jersey-server:jar:*
+org.glassfish.jersey.core:jersey-client:jar:*
+org.glassfish.jersey.inject:jersey-hk2:jar:*
+org.glassfish.jersey.media:jersey-media-json-jackson:jar:*
+org.glassfish.jersey.ext:jersey-entity-filtering:jar:*
