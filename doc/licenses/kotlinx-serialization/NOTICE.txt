@@ -1,0 +1,10 @@
+# Name:    Kotlin Serialization
+# URL:     https://github.com/Kotlin/kotlinx.serialization
+# From:    'JetBrains s.r.o and respective authors and developers'
+# License: Apache v2.0
+# Source:  https://raw.githubusercontent.com/Kotlin/kotlinx.serialization/refs/tags/v${VERSION}/license/NOTICE.txt
+#
+# --- BEGIN LICENSE FILE [1.9.0] ---
+   kotlinx.serialization library.
+   Copyright 2017-2019 JetBrains s.r.o and respective authors and developers
+# --- END LICENSE FILE [1.9.0] ---

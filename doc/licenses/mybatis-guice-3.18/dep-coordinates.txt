@@ -1,1 +1,0 @@
-org.mybatis:mybatis-guice:jar:3.18
