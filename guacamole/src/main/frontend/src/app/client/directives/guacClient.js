@@ -51,11 +51,12 @@ angular.module('client').directive('guacClient', [function guacClient() {
         function guacClientController($scope, $injector, $element) {
 
         // Required types
-        const ManagedClient = $injector.get('ManagedClient');
+        const ManagedClient     = $injector.get('ManagedClient');
             
         // Required services
-        const $rootScope = $injector.get('$rootScope');
-        const $window = $injector.get('$window');
+        const $rootScope        = $injector.get('$rootScope');
+        const $window           = $injector.get('$window');
+        const guacManageMonitor = $injector.get('guacManageMonitor');
             
         /**
          * Whether the local, hardware mouse cursor is in use.
@@ -498,11 +499,20 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 ManagedClient.connect($scope.client, main.offsetWidth, main.offsetHeight);
 
                 const pixelDensity = $window.devicePixelRatio || 1;
-                const width  = main.offsetWidth  * pixelDensity;
-                const height = main.offsetHeight * pixelDensity;
+                const width    = main.offsetWidth  * pixelDensity;
+                const height   = main.offsetHeight * pixelDensity;
+                const top      = window.screenY;
+                const left     = window.screenX;
 
+                // Window resized
                 if (display.getWidth() !== width || display.getHeight() !== height)
-                    client.sendSize(width, height);
+                    guacManageMonitor.sendSize(client, {
+                        width: width,
+                        height: height,
+                        monitorId: 0,
+                        top: top,
+                        left: left,
+                    });
 
             }
 
