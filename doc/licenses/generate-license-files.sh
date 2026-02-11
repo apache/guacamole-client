@@ -49,7 +49,17 @@
 # errors are encountered, failing the build. If this is undesirable (dependency
 # changes are being tested, a full list of all license errors across all
 # projects is needed, etc.), set the IGNORE_LICENSE_ERRORS environment variable
-# to "true".
+# to "true" (by building with "-DignoreLicenseErrors" specified).
+#
+# Downloading licenses automatically
+# ----------------------------------
+#
+# By default, this script will flag a license error if license information is
+# missing for any dependency. If license information can be downloaded from a
+# declared source (any of the "Source" URLs in the license information files),
+# this script can be instructed to automatically update license information
+# files by setting the DOWNLOAD_MISSING_LICENSES environment variable to
+# "true" (by building with "-DdownloadMissingLicenses" specified).
 #
 # Structure of license information
 # --------------------------------
@@ -557,8 +567,12 @@ EOF
     find "$LICENSE_INFO_DIR" -type f | xargs grep -l '^#[[:space:]]*Source:' \
         | while read FILENAME; do
         if [ -z "`get_license "$FILENAME" "$VERSION"`" ]; then
-            info "Downloading updated `basename "$FILENAME"` for `basename "$LICENSE_INFO_DIR"` ($VERSION)..."
-            append_license "$FILENAME" "$VERSION"
+            if [ "$DOWNLOAD_MISSING_LICENSES" = "true" ]; then
+                info "Downloading updated `basename "$FILENAME"` for `basename "$LICENSE_INFO_DIR"` ($VERSION)..."
+                append_license "$FILENAME" "$VERSION"
+            else
+                error "Missing license information in `basename "$FILENAME"` for `basename "$LICENSE_INFO_DIR"` ($VERSION). Rebuild with \"-DdownloadMissingLicenses\" to automatically download."
+            fi
         fi
     done
 
