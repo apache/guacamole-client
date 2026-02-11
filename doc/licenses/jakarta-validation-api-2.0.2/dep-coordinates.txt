@@ -1,1 +1,0 @@
-jakarta.validation:jakarta.validation-api:jar:2.0.2

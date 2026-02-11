@@ -1,0 +1,4 @@
+org.bouncycastle:bcprov-jdk15:jar:*
+org.bouncycastle:bcpkix-jdk15to18:jar:*
+org.bouncycastle:bcprov-jdk15to18:jar:*
+org.bouncycastle:bcutil-jdk15to18:jar:*

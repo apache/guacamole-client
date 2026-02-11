@@ -1,0 +1,5 @@
+org.jetbrains.kotlin:kotlin-reflect:jar:*
+org.jetbrains.kotlin:kotlin-stdlib:jar:*
+org.jetbrains.kotlin:kotlin-stdlib-common:jar:*
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:jar:*
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:jar:*

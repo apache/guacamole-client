@@ -1,1 +1,0 @@
-org.jasig.cas.client:cas-client-core:jar:3.6.4
