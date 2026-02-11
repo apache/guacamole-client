@@ -183,6 +183,24 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     var keyboard = new Guacamole.Keyboard($document[0]);
     keyboard.listenTo(sink.getElement());
 
+    // Update keyboard modifiers based mouse click events
+    $scope.$on('guacClientMouseDown', function mouseDownModifierSync(event, mouseEvent) {
+        keyboard.updateModifiersFromMouse(mouseEvent);
+    });
+
+    $scope.$on('guacClientMouseUp', function mouseUpModifierSync(event, mouseEvent) {
+        keyboard.updateModifiersFromMouse(mouseEvent);
+    });
+
+    // Update keyboard modifiers based on touch contact events
+    $scope.$on('guacClientTouchStart', function touchStartModifierSync(event, touchEvent) {
+        keyboard.updateModifiersFromTouch(touchEvent);
+    });
+
+    $scope.$on('guacClientTouchEnd', function touchEndModifierSync(event, touchEvent) {
+        keyboard.updateModifiersFromTouch(touchEvent);
+    });
+
     // Broadcast keydown events
     keyboard.onkeydown = function onkeydown(keysym) {
 
