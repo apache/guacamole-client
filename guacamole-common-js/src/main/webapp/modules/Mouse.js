@@ -515,6 +515,81 @@ Guacamole.Mouse.State.Buttons = {
 };
 
 /**
+ * The state of all supported keyboard modifiers. This is the same structure
+ * used for keyboard modifier state tracking.
+ * @constructor
+ */
+Guacamole.Mouse.ModifierState = function() {
+
+    /**
+     * Whether shift is currently pressed.
+     *
+     * @type {!boolean}
+     */
+    this.shift = false;
+
+    /**
+     * Whether ctrl is currently pressed.
+     *
+     * @type {!boolean}
+     */
+    this.ctrl = false;
+
+    /**
+     * Whether alt is currently pressed.
+     *
+     * @type {!boolean}
+     */
+    this.alt = false;
+
+    /**
+     * Whether meta (apple key) is currently pressed.
+     *
+     * @type {!boolean}
+     */
+    this.meta = false;
+
+    /**
+     * Whether hyper (windows key) is currently pressed.
+     *
+     * @type {!boolean}
+     */
+    this.hyper = false;
+
+};
+
+/**
+ * Returns the modifier state applicable to the mouse event given.
+ *
+ * @param {!MouseEvent} e
+ *     The mouse event to read.
+ *
+ * @returns {!Guacamole.Mouse.ModifierState}
+ *     The current state of keyboard modifiers.
+ */
+Guacamole.Mouse.ModifierState.fromMouseEvent = function(e) {
+
+    var state = new Guacamole.Mouse.ModifierState();
+
+    // Assign states from old flags
+    state.shift = e.shiftKey;
+    state.ctrl  = e.ctrlKey;
+    state.alt   = e.altKey;
+    state.meta  = e.metaKey;
+
+    // Use DOM3 getModifierState() for others
+    if (e.getModifierState) {
+        state.hyper = e.getModifierState("OS")
+                   || e.getModifierState("Super")
+                   || e.getModifierState("Hyper")
+                   || e.getModifierState("Win");
+    }
+
+    return state;
+
+};
+
+/**
  * Base event type for all mouse events. The mouse producing the event may be
  * the user's local mouse (as with {@link Guacamole.Mouse}) or an emulated
  * mouse (as with {@link Guacamole.Mouse.Touchpad}).
@@ -550,6 +625,16 @@ Guacamole.Mouse.Event = function MouseEvent(type, state, events) {
      * @type {!Guacamole.Mouse.State}
      */
     this.state = state;
+
+    /**
+     * The state of all modifier keys at the time this event was received.
+     * If the original DOM event is not a MouseEvent or modifier state is
+     * otherwise unavailable, the state of all modifiers will be false.
+     *
+     * @type {!Guacamole.Mouse.ModifierState}
+     */
+    var firstEvent = Array.isArray(events) ? events[0] : events;
+    this.modifiers = firstEvent ? Guacamole.Mouse.ModifierState.fromMouseEvent(firstEvent) : new Guacamole.Mouse.ModifierState();
 
     /**
      * @inheritdoc
