@@ -1,0 +1,2 @@
+com.google.zxing:core:jar:*
+com.google.zxing:javase:jar:*
