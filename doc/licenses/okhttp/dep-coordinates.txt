@@ -1,0 +1,2 @@
+com.squareup.okhttp3:okhttp:jar:*
+com.squareup.okhttp3:logging-interceptor:jar:*

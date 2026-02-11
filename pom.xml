@@ -64,6 +64,11 @@
             or missing license headers). -->
         <ignoreLicenseErrors>false</ignoreLicenseErrors>
 
+        <!-- Set to "true" to automatically download license information
+            for any files that have "Source" headers but lack specific
+            information for the current version of that dependency. -->
+        <downloadMissingLicenses>false</downloadMissingLicenses>
+
         <!-- Set to "true" to perform automated checks for available dependency
             updates, including whether the declared versions of any
             dependencies have associated CVEs in NVD. Beware that both checks
@@ -278,6 +283,7 @@
                                 </arguments>
                                 <environmentVariables>
                                     <IGNORE_LICENSE_ERRORS>${ignoreLicenseErrors}</IGNORE_LICENSE_ERRORS>
+                                    <DOWNLOAD_MISSING_LICENSES>${downloadMissingLicenses}</DOWNLOAD_MISSING_LICENSES>
                                 </environmentVariables>
                             </configuration>
                             <goals>
