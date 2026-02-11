@@ -145,8 +145,10 @@ Guacamole.Mouse = function Mouse(element) {
         }
 
         var button = MOUSE_BUTTONS[e.button];
-        if (button)
+        if (button) {
+            guac_mouse.move(Guacamole.Position.fromClientPosition(element, e.clientX, e.clientY), e);
             guac_mouse.press(button, e);
+        }
 
     }, false);
 
@@ -159,8 +161,10 @@ Guacamole.Mouse = function Mouse(element) {
         }
 
         var button = MOUSE_BUTTONS[e.button];
-        if (button)
+        if (button) {
+            guac_mouse.move(Guacamole.Position.fromClientPosition(element, e.clientX, e.clientY), e);
             guac_mouse.release(button, e);
+        }
 
     }, false);
 
