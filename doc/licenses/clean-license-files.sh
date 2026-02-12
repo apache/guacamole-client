@@ -45,7 +45,7 @@ LICENSES_DIR="`dirname "$0"`"
 find "$LICENSES_DIR" -type f \
     | xargs grep -l '^# --- BEGIN LICENSE FILE \(\[[^]]*\] \)\?---$' \
     | xargs grep -l '^#[[:space:]]*Source:' \
-    | while read FILENAME; do
+    | while IFS='' read -r FILENAME; do
 
     sed -i -n \
         -e '/^# --- BEGIN LICENSE FILE \(\[[^]]*\] \)\?---$/q' \
