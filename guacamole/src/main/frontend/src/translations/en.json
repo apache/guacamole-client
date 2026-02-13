@@ -588,6 +588,7 @@
 
     "PROTOCOL_RDP" : {
 
+        "FIELD_HEADER_AUTH_PKG"              : "Authentication package:",
         "FIELD_HEADER_CERT_TOFU"             : "Trust host certificate on first use:",
         "FIELD_HEADER_CERT_FINGERPRINTS"     : "Fingerprints of trusted host certificates:",
         "FIELD_HEADER_CLIENT_NAME"           : "Client name:",
@@ -632,7 +633,9 @@
         "FIELD_HEADER_HOSTNAME"        : "Hostname:",
         "FIELD_HEADER_IGNORE_CERT"     : "Ignore server certificate:",
         "FIELD_HEADER_INITIAL_PROGRAM" : "Initial program:",
-        "FIELD_HEADER_LOAD_BALANCE_INFO" : "Load balance info/cookie:",
+        "FIELD_HEADER_KDC_URL"         : "Kerberos KDC URL:",
+        "FIELD_HEADER_KERBEROS_CACHE"  : "Kerberos cache:",
+        "FIELD_HEADER_LOAD_BALANCE_INFO"   : "Load balance info/cookie:",
         "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "Line endings:",
         "FIELD_HEADER_PASSWORD"        : "Password:",
         "FIELD_HEADER_PORT"            : "Port:",
@@ -677,6 +680,10 @@
         "FIELD_HEADER_WOL_SEND_PACKET"    : "Send WoL packet:",
         "FIELD_HEADER_WOL_UDP_PORT"       : "UDP port for WoL packet: ",
         "FIELD_HEADER_WOL_WAIT_TIME"      : "Host boot wait time:",
+
+        "FIELD_OPTION_AUTH_PKG_EMPTY"                   : "",
+        "FIELD_OPTION_AUTH_PKG_KERBEROS"                : "Kerberos",
+        "FIELD_OPTION_AUTH_PKG_NTLM"                    : "NTLM",
 
         "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
         "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",

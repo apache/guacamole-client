@@ -41,6 +41,19 @@
                     "options" : [ "", "any", "nla", "rdp", "tls", "vmconnect" ]
                 },
                 {
+                    "name"    : "auth-pkg",
+                    "type"    : "ENUM",
+                    "options" : [ "", "ntlm", "kerberos"]
+                },
+                {
+                    "name"    : "kdc-url",
+                    "type"    : "TEXT"
+                },
+                {
+                    "name"    : "kerberos-cache",
+                    "type"    : "TEXT"
+                },
+                {
                     "name"    : "disable-auth",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
