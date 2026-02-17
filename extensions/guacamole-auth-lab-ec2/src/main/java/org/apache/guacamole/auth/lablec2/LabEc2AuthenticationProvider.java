@@ -61,6 +61,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
      * we temporarily "pin" each user to a single underlying data source.
      */
     private static final long DECORATION_TARGET_TTL_MS = 10L * 60L * 1000L;
+    private static final long BEARER_TOKEN_TTL_MS = 2L * 60L * 60L * 1000L;
 
     private static final class DecorationTarget {
 
@@ -78,6 +79,22 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
     }
 
+    private static final class CachedBearerToken {
+
+        private final String token;
+        private final long cachedAtMs;
+
+        private CachedBearerToken(String token, long cachedAtMs) {
+            this.token = token;
+            this.cachedAtMs = cachedAtMs;
+        }
+
+        private boolean isExpired(long nowMs) {
+            return nowMs - cachedAtMs > BEARER_TOKEN_TTL_MS;
+        }
+
+    }
+
     private final ObjectMapper objectMapper;
 
     private final String illustratorBaseUrl;
@@ -85,6 +102,8 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
     private final java.util.concurrent.ConcurrentHashMap<String, DecorationTarget>
             decorationTargetsByUser = new java.util.concurrent.ConcurrentHashMap<>();
+    private final java.util.concurrent.ConcurrentHashMap<String, CachedBearerToken>
+            bearerTokenByUser = new java.util.concurrent.ConcurrentHashMap<>();
 
     /**
      * Creates the authentication provider, reading configuration from the
@@ -153,7 +172,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         logger.info("Resolving lab connection for user '{}'.",
                 authenticatedUser.getIdentifier());
 
-        String token = extractIdToken(credentials);
+        String token = extractBearerToken(authenticatedUser, credentials);
         ConnectionResponse connection = resolveConnection(null, token);
         if (connection == null) {
             logger.info("No active lab mapping found for user '{}'; skipping lab-ec2 decoration.",
@@ -637,15 +656,78 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         public String note;
     }
 
-    private String extractIdToken(Credentials credentials) throws GuacamoleException {
-        if (credentials == null) {
-            throw new GuacamoleServerException("Missing credentials for Illustrator request.");
-        }
-        String token = credentials.getParameter("access_token");
-        if (token != null && !token.trim().isEmpty()) {
+    private String extractBearerToken(AuthenticatedUser authenticatedUser, Credentials requestCredentials)
+            throws GuacamoleException {
+
+        String userId = authenticatedUser != null ? authenticatedUser.getIdentifier() : null;
+        long nowMs = System.currentTimeMillis();
+
+        String token = firstNonBlank(
+                tokenFromCredentials(requestCredentials),
+                tokenFromCredentials(authenticatedUser != null ? authenticatedUser.getCredentials() : null)
+        );
+
+        if (token != null) {
+            if (userId != null && !userId.isEmpty()) {
+                bearerTokenByUser.put(userId, new CachedBearerToken(token, nowMs));
+            }
             return token;
         }
+
+        if (userId != null && !userId.isEmpty()) {
+            CachedBearerToken cached = bearerTokenByUser.get(userId);
+            if (cached != null) {
+                if (!cached.isExpired(nowMs)) {
+                    return cached.token;
+                }
+                bearerTokenByUser.remove(userId);
+            }
+        }
+
         throw new GuacamoleServerException("Missing access token for Illustrator request.");
+    }
+
+    private String tokenFromCredentials(Credentials credentials) {
+        if (credentials == null) {
+            return null;
+        }
+
+        String token = firstNonBlank(
+                credentials.getParameter("access_token"),
+                credentials.getParameter("id_token"),
+                credentials.getParameter("token")
+        );
+        if (token != null) {
+            return token;
+        }
+
+        String authorization = credentials.getHeader("Authorization");
+        if (authorization != null) {
+            String value = authorization.trim();
+            if (value.regionMatches(true, 0, "Bearer ", 0, 7) && value.length() > 7) {
+                String bearer = value.substring(7).trim();
+                if (!bearer.isEmpty()) {
+                    return bearer;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private String firstNonBlank(String... values) {
+        if (values == null) {
+            return null;
+        }
+        for (String value : values) {
+            if (value != null) {
+                String trimmed = value.trim();
+                if (!trimmed.isEmpty()) {
+                    return trimmed;
+                }
+            }
+        }
+        return null;
     }
 
     private ConnectionResponse resolveConnection(String purpose, String token) throws GuacamoleException {
