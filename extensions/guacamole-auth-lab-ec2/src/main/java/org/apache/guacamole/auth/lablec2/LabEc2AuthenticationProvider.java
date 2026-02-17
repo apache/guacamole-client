@@ -696,7 +696,6 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                 credentials.getParameter("access_token"),
                 credentials.getParameter("id_token")
         );
-        logger.debug(token);
         if (isLikelyJwt(token)) {
             return token;
         }
