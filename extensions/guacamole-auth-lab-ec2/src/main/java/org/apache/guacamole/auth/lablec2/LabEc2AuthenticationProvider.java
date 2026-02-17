@@ -694,10 +694,10 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
         String token = firstNonBlank(
                 credentials.getParameter("access_token"),
-                credentials.getParameter("id_token"),
-                credentials.getParameter("token")
+                credentials.getParameter("id_token")
         );
-        if (token != null) {
+        logger.debug(token);
+        if (isLikelyJwt(token)) {
             return token;
         }
 
@@ -706,10 +706,15 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
             String value = authorization.trim();
             if (value.regionMatches(true, 0, "Bearer ", 0, 7) && value.length() > 7) {
                 String bearer = value.substring(7).trim();
-                if (!bearer.isEmpty()) {
+                if (isLikelyJwt(bearer)) {
                     return bearer;
                 }
             }
+        }
+
+        String tokenParam = credentials.getParameter("token");
+        if (isLikelyJwt(tokenParam)) {
+            return tokenParam;
         }
 
         return null;
@@ -730,12 +735,27 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         return null;
     }
 
+    private boolean isLikelyJwt(String value) {
+        if (value == null) {
+            return false;
+        }
+
+        String token = value.trim();
+        if (token.isEmpty()) {
+            return false;
+        }
+
+        int firstDot = token.indexOf('.');
+        int secondDot = firstDot >= 0 ? token.indexOf('.', firstDot + 1) : -1;
+        return firstDot > 0 && secondDot > firstDot + 1 && secondDot < token.length() - 1;
+    }
+
     private ConnectionResponse resolveConnection(String purpose, String token) throws GuacamoleException {
         URI uri = buildConnectionUri(purpose);
         HttpURLConnection connection = null;
         try {
             URL url = uri.toURL();
-            logger.debug("URI is {},      {}", uri, url);
+            logger.debug("Calling Illustrator connection API at '{}'.", uri);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("POST");
             connection.setConnectTimeout(10000);
