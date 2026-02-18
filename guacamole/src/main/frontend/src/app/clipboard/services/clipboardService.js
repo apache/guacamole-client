@@ -619,7 +619,11 @@ angular.module('clipboard').factory('clipboardService', ['$injector',
         $rootScope.$broadcast('clipboardSyncInProgress', true);
         getLocalClipboard().then(function clipboardRead(data) {
             return service.setClipboard(data);
-        }, angular.noop);
+        }, function clipboardReadFailed() {
+            // Clipboard sync state must be cleared on failure so that
+            // handleMouseEvents(e) won't be blocked.
+            $rootScope.$broadcast('clipboardSyncInProgress', false);
+        });
     };
 
     return service;
