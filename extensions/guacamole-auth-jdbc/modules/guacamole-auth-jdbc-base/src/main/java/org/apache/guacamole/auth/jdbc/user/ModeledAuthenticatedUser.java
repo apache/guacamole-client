@@ -19,7 +19,6 @@
 
 package org.apache.guacamole.auth.jdbc.user;
 
-import com.google.common.collect.Sets;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -170,11 +169,21 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
     public void setIdentifier(String identifier) {
         user.setIdentifier(identifier);
     }
-    
+
+
+    /**
+     * Expands a users groups through the parents in database group hierarchy
+     * so that parent groups of external groups (e.g. SAML/SSO group claims)
+     * are included. This also covers the user's own direct
+     * DB memberships (via entity_id) and skeleton users with null entity_id.
+     *
+     * @return
+     *     The set of effective groups for this user, whether inherited or
+     *     direct.
+     */
     @Override
     public Set<String> getEffectiveUserGroups() {
-        return Sets.union(user.getEffectiveUserGroups(),
-                super.getEffectiveUserGroups());
+        return user.expandEffectiveGroups(super.getEffectiveUserGroups());
     }
 
     /**
