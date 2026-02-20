@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.base;
 
 import com.google.inject.Inject;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import org.apache.guacamole.auth.jdbc.permission.SystemPermissionService;
@@ -210,6 +211,26 @@ public abstract class ModeledPermissions<ModelType extends EntityModel>
     public Set<String> getEffectiveUserGroups() {
         return entityService.retrieveEffectiveGroups(this,
                 Collections.<String>emptySet());
+    }
+
+    /**
+     * Returns the identifiers of all user groups that apply to this entity,
+     * including groups defined within the database (inherited through
+     * membership) and any additional groups provided externally (such as from
+     * an SSO provider like SAML or LDAP). The external groups are used as
+     * additional seeds for recursive DB group expansion, so any parent groups
+     * of external groups in the database are also included in the result.
+     *
+     * @param externalEffectiveGroups
+     *     The identifiers of any externally-asserted group memberships (e.g.
+     *     SAML claims) that should be used as seeds for DB group expansion.
+     *
+     * @return
+     *     The identifiers of all user groups that apply to this entity,
+     *     including DB-inherited parent groups of the external groups.
+     */
+    public Set<String> expandEffectiveGroups(Collection<String> externalEffectiveGroups) {
+        return entityService.retrieveEffectiveGroups(this, externalEffectiveGroups);
     }
 
     /**
