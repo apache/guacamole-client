@@ -172,7 +172,7 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
 
 
     /**
-     * Expands a users groups through the parents in database group hierarchy
+     * Expands a user's groups through the parents in database group hierarchy
      * so that parent groups of external groups (e.g. SAML/SSO group claims)
      * are included. This also covers the user's own direct
      * DB memberships (via entity_id) and skeleton users with null entity_id.
