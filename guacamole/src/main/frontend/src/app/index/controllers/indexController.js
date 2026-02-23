@@ -182,6 +182,12 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     // Create event listeners at the global level
     var keyboard = new Guacamole.Keyboard($document[0]);
     keyboard.listenTo(sink.getElement());
+    keyboard.metaToCtrl = false;
+
+    // Track whether Meta should be treated as Ctrl for the active connection
+    $scope.$on('guacMetaToCtrlChanged', function metaToCtrlChanged(event, enabled) {
+        keyboard.metaToCtrl = !!enabled;
+    });
 
     // Broadcast keydown events
     keyboard.onkeydown = function onkeydown(keysym) {

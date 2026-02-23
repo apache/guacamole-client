@@ -75,6 +75,11 @@
                     "name"    : "read-only",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"    : "meta-to-ctrl",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
