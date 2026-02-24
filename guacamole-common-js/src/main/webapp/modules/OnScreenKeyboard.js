@@ -59,6 +59,23 @@ Guacamole.OnScreenKeyboard = function(layout) {
     var pressed = {};
 
     /**
+     * Returns if the given keysym is a lock key (Caps Lock,
+     * Num Lock, or Scroll Lock).
+     *
+     * @private
+     * @param {!number} keysym
+     *     The keysym to test.
+     *
+     * @returns {!boolean}
+     *     true if the keysym is a lock key, false otherwise.
+     */
+    var isToggleLockKeysym = function isToggleLockKeysym(keysym) {
+        return keysym === 0xFFE5  // Caps Lock
+            || keysym === 0xFF7F  // Num Lock
+            || keysym === 0xFF14; // Scroll Lock
+    };
+
+    /**
      * All scalable elements which are part of the on-screen keyboard. Each
      * scalable element is carefully controlled to ensure the interface layout
      * and sizing remains constant, even on browsers that would otherwise
@@ -312,8 +329,18 @@ Guacamole.OnScreenKeyboard = function(layout) {
                     addClass(keyboard, modifierClass);
                     modifierKeysyms[key.modifier] = key.keysym;
                     
-                    // Send key event only if keysym is meaningful
-                    if (key.keysym && osk.onkeydown)
+                    // Lock keys are toggle modifiers: send keydown & keyup
+                    // so each OSK press performs one toggle.
+                    if (isToggleLockKeysym(key.keysym)) {
+                        if (key.keysym && osk.onkeydown)
+                            osk.onkeydown(key.keysym);
+                        if (key.keysym && osk.onkeyup)
+                            osk.onkeyup(key.keysym);
+                    }
+
+                    // Other modifiers remain sticky and are released by a
+                    // subsequent press.
+                    else if (key.keysym && osk.onkeydown)
                         osk.onkeydown(key.keysym);
 
                 }
@@ -324,8 +351,18 @@ Guacamole.OnScreenKeyboard = function(layout) {
                     removeClass(keyboard, modifierClass);
                     delete modifierKeysyms[key.modifier];
                     
-                    // Send key event only if original keysym is meaningful
-                    if (originalKeysym && osk.onkeyup)
+                    // Lock keys are toggle modifiers: send keydown & keyup
+                    // so each OSK press performs one toggle.
+                    if (isToggleLockKeysym(originalKeysym)) {
+                        if (originalKeysym && osk.onkeydown)
+                            osk.onkeydown(originalKeysym);
+                        if (originalKeysym && osk.onkeyup)
+                            osk.onkeyup(originalKeysym);
+                    }
+
+                    // Other modifiers remain sticky and are released by a
+                    // subsequent press.
+                    else if (originalKeysym && osk.onkeyup)
                         osk.onkeyup(originalKeysym);
 
                 }
