@@ -21,6 +21,7 @@ package org.apache.guacamole.auth.lablec2;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -29,7 +30,12 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.*;
+import javax.crypto.Cipher;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
@@ -99,6 +105,8 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
     private final String illustratorBaseUrl;
     private final String illustratorConnectionPath;
+    private final String illustratorPasswordKeyId;
+    private final PrivateKey illustratorPrivateKey;
 
     private final java.util.concurrent.ConcurrentHashMap<String, DecorationTarget>
             decorationTargetsByUser = new java.util.concurrent.ConcurrentHashMap<>();
@@ -121,10 +129,18 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
                 LabEc2Properties.LAB_EC2_ILLUSTRATOR_CONNECTION_PATH,
                 "/api/v1/guac/connection"
         );
+        illustratorPasswordKeyId = env.getProperty(
+                LabEc2Properties.LAB_EC2_ILLUSTRATOR_PASSWORD_KEY_ID
+        );
+        String privateKeyPath = env.getRequiredProperty(
+                LabEc2Properties.LAB_EC2_ILLUSTRATOR_PRIVATE_KEY_PATH
+        );
+        illustratorPrivateKey = loadPrivateKey(privateKeyPath);
 
         logger.info(
-                "Initializing lab-ec2 extension: illustratorBaseUrl='{}' connectionPath='{}'",
-                illustratorBaseUrl, illustratorConnectionPath);
+                "Initializing lab-ec2 extension: illustratorBaseUrl='{}' connectionPath='{}' passwordKeyId='{}' privateKeyPathConfigured={}",
+                illustratorBaseUrl, illustratorConnectionPath,
+                illustratorPasswordKeyId, privateKeyPath != null && !privateKeyPath.trim().isEmpty());
 
         objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -195,8 +211,22 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         if (connection.username == null || connection.username.trim().isEmpty()) {
             throw new GuacamoleServerException("Missing username from Illustrator response.");
         }
-        if (connection.password == null || connection.password.trim().isEmpty()) {
-            throw new GuacamoleServerException("Missing password from Illustrator response.");
+        if (connection.encryptedPassword == null || connection.encryptedPassword.trim().isEmpty()) {
+            throw new GuacamoleServerException("Missing encrypted password from Illustrator response.");
+        }
+        if (connection.passwordEncryptionAlgo == null || connection.passwordEncryptionAlgo.trim().isEmpty()) {
+            throw new GuacamoleServerException("Missing password encryption algorithm from Illustrator response.");
+        }
+
+        if (illustratorPasswordKeyId != null && !illustratorPasswordKeyId.trim().isEmpty()
+                && connection.passwordKeyId != null && !connection.passwordKeyId.trim().isEmpty()
+                && !illustratorPasswordKeyId.trim().equals(connection.passwordKeyId.trim())) {
+            throw new GuacamoleServerException("Unexpected password key identifier from Illustrator response.");
+        }
+
+        String decryptedPassword = decryptPassword(connection);
+        if (decryptedPassword == null || decryptedPassword.trim().isEmpty()) {
+            throw new GuacamoleServerException("Decrypted password is empty.");
         }
 
         // Determine connection ID
@@ -231,7 +261,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         Connection labConnection = buildLabConnection(connectionId, connectionName, owner, hostname,
                 authenticatedUser.getIdentifier(),
                 credentials.getRemoteHostname(),
-                connectionProtocol, connectionPort, connection.username, connection.password,
+                connectionProtocol, connectionPort, connection.username, decryptedPassword,
                 mergedActiveConnections);
         logger.debug("Prepared lab connection '{}' (name='{}') for user '{}' using protocol='{}' port='{}'.",
                 labConnection.getIdentifier(), labConnection.getName(),
@@ -651,7 +681,9 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         public String host;
         public Integer port;
         public String username;
-        public String password;
+        public String encryptedPassword;
+        public String passwordEncryptionAlgo;
+        public String passwordKeyId;
         public String vmStatus;
         public String note;
     }
@@ -749,6 +781,90 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
         return firstDot > 0 && secondDot > firstDot + 1 && secondDot < token.length() - 1;
     }
 
+    private String decryptPassword(ConnectionResponse response) throws GuacamoleException {
+        try {
+            byte[] encrypted = Base64.getDecoder().decode(response.encryptedPassword.trim());
+            String algorithm = response.passwordEncryptionAlgo.trim();
+            byte[] clear = decryptWithAlgorithm(encrypted, algorithm);
+            return new String(clear, StandardCharsets.UTF_8);
+        } catch (IllegalArgumentException e) {
+            throw new GuacamoleServerException("Encrypted password is not valid Base64.", e);
+        }
+    }
+
+    private byte[] decryptWithAlgorithm(byte[] encrypted, String algorithm) throws GuacamoleException {
+        try {
+            Cipher cipher = Cipher.getInstance(algorithm);
+            cipher.init(Cipher.DECRYPT_MODE, illustratorPrivateKey);
+            return cipher.doFinal(encrypted);
+        } catch (GeneralSecurityException e) {
+            throw new GuacamoleServerException("Failed to decrypt Illustrator password payload.", e);
+        }
+    }
+
+    private PrivateKey loadPrivateKey(String keyPath) throws GuacamoleException {
+        if (keyPath == null || keyPath.trim().isEmpty()) {
+            throw new GuacamoleServerException("Missing configuration: lab-ec2-illustrator-private-key-path");
+        }
+
+        String pem = readTextResource(keyPath.trim());
+        String normalized = pem
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s+", "");
+
+        if (normalized.isEmpty()) {
+            throw new GuacamoleServerException("Private key content is empty at: " + keyPath);
+        }
+
+        try {
+            byte[] der = Base64.getDecoder().decode(normalized);
+            PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(der);
+            return KeyFactory.getInstance("RSA").generatePrivate(spec);
+        } catch (GeneralSecurityException | IllegalArgumentException e) {
+            throw new GuacamoleServerException(
+                    "Unable to load RSA private key. Ensure PKCS#8 PEM format for: " + keyPath, e);
+        }
+    }
+
+    private String readTextResource(String resourcePath) throws GuacamoleException {
+        InputStream input = null;
+        try {
+            if (resourcePath.startsWith("classpath:")) {
+                String location = resourcePath.substring("classpath:".length());
+                if (location.startsWith("/")) {
+                    location = location.substring(1);
+                }
+                input = getClass().getClassLoader().getResourceAsStream(location);
+                if (input == null) {
+                    throw new GuacamoleServerException("Classpath resource not found: " + resourcePath);
+                }
+            } else if (resourcePath.startsWith("file:")) {
+                String filePath = resourcePath.substring("file:".length());
+                input = new FileInputStream(filePath);
+            } else {
+                input = new FileInputStream(resourcePath);
+            }
+
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] chunk = new byte[4096];
+            int read;
+            while ((read = input.read(chunk)) != -1) {
+                buffer.write(chunk, 0, read);
+            }
+            return new String(buffer.toByteArray(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new GuacamoleServerException("Unable to read private key from: " + resourcePath, e);
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException ignored) {
+                }
+            }
+        }
+    }
+
     private ConnectionResponse resolveConnection(String purpose, String token) throws GuacamoleException {
         URI uri = buildConnectionUri(purpose);
         HttpURLConnection connection = null;
@@ -765,7 +881,7 @@ public class LabEc2AuthenticationProvider extends AbstractAuthenticationProvider
 
             int status = connection.getResponseCode();
             String body = readResponseBody(connection, status >= 200 && status < 300);
-            logger.debug(body);
+            logger.debug("Illustrator /connection responded with HTTP {}.", status);
             if (status >= 200 && status < 300) {
                 if (body == null || body.trim().isEmpty()) {
                     throw new GuacamoleServerException("Illustrator returned an empty connection response.");

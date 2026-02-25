@@ -49,6 +49,29 @@ public final class LabEc2Properties {
             };
 
     /**
+     * Path (file: or classpath:) to PKCS#8 PEM private key used to decrypt
+     * password returned by Illustrator /guac/connection.
+     */
+    public static final GuacamoleProperty<String> LAB_EC2_ILLUSTRATOR_PRIVATE_KEY_PATH =
+            new StringGuacamoleProperty() {
+                @Override
+                public String getName() {
+                    return "lab-ec2-illustrator-private-key-path";
+                }
+            };
+
+    /**
+     * Optional key identifier expected from Illustrator password envelope.
+     */
+    public static final GuacamoleProperty<String> LAB_EC2_ILLUSTRATOR_PASSWORD_KEY_ID =
+            new StringGuacamoleProperty() {
+                @Override
+                public String getName() {
+                    return "lab-ec2-illustrator-password-key-id";
+                }
+            };
+
+    /**
      * Utility class; do not instantiate.
      */
     private LabEc2Properties() {
