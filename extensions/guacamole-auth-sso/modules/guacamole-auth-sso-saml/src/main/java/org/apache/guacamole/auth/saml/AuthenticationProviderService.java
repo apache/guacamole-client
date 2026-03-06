@@ -24,9 +24,11 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
+import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 import org.apache.guacamole.auth.saml.acs.SAMLAuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
@@ -67,6 +69,12 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
      */
     @Inject
     private SAMLService saml;
+
+    /**
+     * Service for retrieving SAML configuration information.
+     */
+    @Inject
+    private ConfigurationService confService;
 
     /**
      * Return the value of the session identifier associated with the given
@@ -118,8 +126,24 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     }
 
     @Override
+    public URI getLogoutURI(String idToken) throws GuacamoleException {
+
+        // If no logout endpoint is configured, return null
+        URI logoutEndpoint = confService.getLogoutEndpoint();
+        if (logoutEndpoint == null)
+            return null;
+
+        // Build the logout URI with post-logout redirect
+        UriBuilder logoutUriBuilder = UriBuilder.fromUri(logoutEndpoint);
+        logoutUriBuilder.queryParam("RelayState",
+                confService.getPostLogoutRedirectURI());
+
+        return logoutUriBuilder.build();
+    }
+
+    @Override
     public void shutdown() {
         sessionManager.shutdown();
     }
-    
+
 }

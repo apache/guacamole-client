@@ -302,5 +302,28 @@ public class MySQLGuacamoleProperties {
         public String getName() { return "mysql-batch-size"; }
 
     };
-    
+
+    /**
+     * The absolute path to the public key for the server being connected to, if any.
+     */
+    public static final StringGuacamoleProperty MYSQL_SERVER_RSA_PUBLIC_KEY_FILE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-server-rsa-public-key-file"; }
+
+    };
+
+    /**
+     * Whether or not the server public key should be automatically retreived from
+     * the MySQL server.
+     */
+    public static final BooleanGuacamoleProperty MYSQL_ALLOW_PUBLIC_KEY_RETRIEVAL =
+            new BooleanGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-allow-public-key-retrieval"; }
+
+    };
+
 }

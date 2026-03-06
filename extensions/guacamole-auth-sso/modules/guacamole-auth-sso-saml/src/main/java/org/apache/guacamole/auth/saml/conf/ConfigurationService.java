@@ -191,6 +191,30 @@ public class ConfigurationService {
     };
 
     /**
+     * The logout endpoint (URI) of the SAML IdP. When configured, users will
+     * be redirected to this endpoint when they log out of Guacamole.
+     */
+    private static final URIGuacamoleProperty SAML_LOGOUT_ENDPOINT =
+            new URIGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "saml-logout-endpoint"; }
+
+    };
+
+    /**
+     * The URI to redirect to after logout is complete. Defaults to the
+     * callback URL if not specified.
+     */
+    private static final URIGuacamoleProperty SAML_POST_LOGOUT_REDIRECT_URI =
+            new URIGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "saml-post-logout-redirect-uri"; }
+
+    };
+
+    /**
      * The Guacamole server environment.
      */
     @Inject
@@ -388,6 +412,37 @@ public class ConfigurationService {
      */
     public File getPrivateKeyFile() throws GuacamoleException {
         return environment.getProperty(SAML_PRIVATE_KEY_PATH);
+    }
+
+    /**
+     * Returns the logout endpoint (URI) of the SAML IdP. If not configured,
+     * null will be returned and logout will only end the Guacamole session.
+     *
+     * @return
+     *     The logout endpoint of the SAML IdP, or null if not configured.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public URI getLogoutEndpoint() throws GuacamoleException {
+        return environment.getProperty(SAML_LOGOUT_ENDPOINT);
+    }
+
+    /**
+     * Returns the URI to redirect to after logout is complete. If not
+     * configured, the callback URL will be used.
+     *
+     * @return
+     *     The post-logout redirect URI.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public URI getPostLogoutRedirectURI() throws GuacamoleException {
+        URI postLogoutUri = environment.getProperty(SAML_POST_LOGOUT_REDIRECT_URI);
+        if (postLogoutUri != null)
+            return postLogoutUri;
+        return getCallbackUrl();
     }
 
     /**
