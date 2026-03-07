@@ -38,7 +38,7 @@
                 {
                     "name"    : "security",
                     "type"    : "ENUM",
-                    "options" : [ "", "any", "nla", "rdp", "tls", "vmconnect" ]
+                    "options" : [ "", "any", "nla", "rdp", "tls", "vmconnect", "aad" ]
                 },
                 {
                     "name"    : "disable-auth",
