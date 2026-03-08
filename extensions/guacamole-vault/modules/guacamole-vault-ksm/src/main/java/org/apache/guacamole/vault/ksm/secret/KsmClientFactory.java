@@ -19,9 +19,8 @@
 
 package org.apache.guacamole.vault.ksm.secret;
 
-import javax.annotation.Nonnull;
-
 import com.keepersecurity.secretsManager.core.SecretsManagerOptions;
+import jakarta.annotation.Nonnull;
 
 /**
  * Factory for creating KsmClient instances.

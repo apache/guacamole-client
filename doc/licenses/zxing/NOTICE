@@ -5,6 +5,10 @@
 # Source:  https://raw.githubusercontent.com/zxing/zxing/refs/tags/zxing-${VERSION}/NOTICE
 #
 # --- BEGIN LICENSE FILE [3.5.3] ---
+--------------------------------------------------------------------------------
+NOTICES FOR BARCODE4J
+--------------------------------------------------------------------------------
+
 Barcode4J
 Copyright 2002-2010 Jeremias Märki
 Copyright 2005-2006 Dietmar Bürkle
@@ -12,4 +16,10 @@ Copyright 2005-2006 Dietmar Bürkle
 Portions of this software were contributed under section 5 of the
 Apache License. Contributors are listed under:
 http://barcode4j.sourceforge.net/contributors.html
+
+--------------------------------------------------------------------------------
+NOTICES FOR JCOMMANDER
+--------------------------------------------------------------------------------
+
+Copyright 2010 Cedric Beust cedric@beust.com
 # --- END LICENSE FILE [3.5.3] ---

@@ -4,7 +4,7 @@
 # License: BSD 3-clause 
 # Source:  https://raw.githubusercontent.com/jakartaee/jaf-api/refs/tags/${VERSION}/LICENSE.md
 #
-# --- BEGIN LICENSE FILE [1.2.2] ---
+# --- BEGIN LICENSE FILE [2.1.0] ---
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
    
@@ -34,8 +34,8 @@
     LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
     NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# --- END LICENSE FILE [1.2.2] ---
-# --- BEGIN LICENSE FILE [1.2.1] ---
+# --- END LICENSE FILE [2.1.0] ---
+# --- BEGIN LICENSE FILE [2.1.3] ---
 
     Copyright (c) 2018 Oracle and/or its affiliates. All rights reserved.
    
@@ -65,4 +65,4 @@
     LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
     NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-# --- END LICENSE FILE [1.2.1] ---
+# --- END LICENSE FILE [2.1.3] ---

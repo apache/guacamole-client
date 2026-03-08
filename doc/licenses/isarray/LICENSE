@@ -6,6 +6,45 @@
 # Source:  https://raw.githubusercontent.com/juliangruber/isarray/refs/tags/v${VERSION}/README.md
 #
 # --- BEGIN LICENSE FILE [1.0.0] ---
+
+# isarray
+
+`Array#isArray` for older browsers.
+
+[![build status](https://secure.travis-ci.org/juliangruber/isarray.svg)](http://travis-ci.org/juliangruber/isarray)
+[![downloads](https://img.shields.io/npm/dm/isarray.svg)](https://www.npmjs.org/package/isarray)
+
+[![browser support](https://ci.testling.com/juliangruber/isarray.png)
+](https://ci.testling.com/juliangruber/isarray)
+
+## Usage
+
+```js
+var isArray = require('isarray');
+
+console.log(isArray([])); // => true
+console.log(isArray({})); // => false
+```
+
+## Installation
+
+With [npm](http://npmjs.org) do
+
+```bash
+$ npm install isarray
+```
+
+Then bundle for the browser with
+[browserify](https://github.com/substack/browserify).
+
+With [component](http://component.io) do
+
+```bash
+$ component install juliangruber/isarray
+```
+
+## License
+
 (MIT)
 
 Copyright (c) 2013 Julian Gruber &lt;julian@juliangruber.com&gt;

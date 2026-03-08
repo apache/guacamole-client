@@ -20,11 +20,11 @@
 package org.apache.guacamole.auth.ssl.conf;
 
 import com.google.inject.Inject;
+import jakarta.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import javax.naming.ldap.LdapName;
-import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;

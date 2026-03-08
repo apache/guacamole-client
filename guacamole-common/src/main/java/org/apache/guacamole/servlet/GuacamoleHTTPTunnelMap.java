@@ -62,7 +62,7 @@ class GuacamoleHTTPTunnelMap {
      * session tokens.
      */
     private final ConcurrentMap<String, GuacamoleHTTPTunnel> tunnelMap =
-            new ConcurrentHashMap<String, GuacamoleHTTPTunnel>();
+            new ConcurrentHashMap<>();
 
     /**
      * Creates a new GuacamoleHTTPTunnelMap which automatically closes and
