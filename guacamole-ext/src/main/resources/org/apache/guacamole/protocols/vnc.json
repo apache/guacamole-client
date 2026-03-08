@@ -39,6 +39,11 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "meta-to-ctrl",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "disable-server-input",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]

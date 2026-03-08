@@ -38,6 +38,31 @@ import org.apache.guacamole.rest.sharingprofile.APISharingProfile;
 public class APIConnection {
 
     /**
+     * The name of the connection parameter that controls whether Meta should
+     * be treated as Ctrl by the web client.
+     */
+    private static final String META_TO_CTRL_PARAMETER_NAME = "meta-to-ctrl";
+
+    /**
+     * Returns whether the given boolean-like connection parameter is enabled.
+     *
+     * @param configuration
+     *     The configuration containing the parameter.
+     *
+     * @param parameterName
+     *     The name of the parameter to evaluate.
+     *
+     * @return
+     *     true if the parameter value parses as true, false otherwise.
+     */
+    private static boolean isEnabledParameter(GuacamoleConfiguration configuration,
+            String parameterName) {
+        if (configuration == null)
+            return false;
+        return Boolean.parseBoolean(configuration.getParameter(parameterName));
+    }
+
+    /**
      * The name of this connection.
      */
     private String name;
@@ -85,6 +110,11 @@ public class APIConnection {
     private Date lastActive;
 
     /**
+     * Whether Meta should be treated as Ctrl by the web client.
+     */
+    private boolean metaToCtrl;
+
+    /**
      * Create an empty APIConnection.
      */
     public APIConnection() {}
@@ -110,6 +140,9 @@ public class APIConnection {
         // Set protocol from configuration
         GuacamoleConfiguration configuration = connection.getConfiguration();
         this.protocol = configuration.getProtocol();
+ 
+        // Set client behavior options from configuration
+        this.metaToCtrl = isEnabledParameter(configuration, META_TO_CTRL_PARAMETER_NAME);
 
         // Associate any attributes
         this.attributes = connection.getAttributes();
@@ -287,6 +320,26 @@ public class APIConnection {
      */
     public void setLastActive(Date lastActive) {
         this.lastActive = lastActive;
+    }
+
+    /**
+     * Returns whether Meta should be treated as Ctrl by the web client.
+     *
+     * @return
+     *     true if Meta should be treated as Ctrl, false otherwise.
+     */
+    public boolean isMetaToCtrl() {
+        return metaToCtrl;
+    }
+
+    /**
+     * Sets whether Meta should be treated as Ctrl by the web client.
+     *
+     * @param metaToCtrl
+     *     true if Meta should be treated as Ctrl, false otherwise.
+     */
+    public void setMetaToCtrl(boolean metaToCtrl) {
+        this.metaToCtrl = metaToCtrl;
     }
 
 }
