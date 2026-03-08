@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.auth.json;
 
+import com.google.common.io.BaseEncoding;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -73,7 +74,7 @@ public class CryptoService {
      * HMAC signature itself as the IV. For our purposes, where the encrypted
      * value becomes an authentication token, this is OK.
      */
-    private static final IvParameterSpec NULL_IV = new IvParameterSpec(new byte[] {
+    public static final IvParameterSpec NULL_IV = new IvParameterSpec(new byte[] {
         0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0
     });
@@ -125,6 +126,9 @@ public class CryptoService {
      *
      * @param cipherText
      *     The ciphertext to decrypt.
+     * 
+     * @param ivStr
+     *     The IV to use for decrypting the ciphertext.
      *
      * @return
      *     The plaintext which results from decrypting the ciphertext with the
@@ -133,13 +137,25 @@ public class CryptoService {
      * @throws GuacamoleException
      *     If any error at all occurs during decryption.
      */
-    public byte[] decrypt(Key key, byte[] cipherText) throws GuacamoleException {
+    public byte[] decrypt(Key key, byte[] cipherText, String ivStr)
+            throws GuacamoleException {
 
         try {
 
+            // Use NULL_IV by default, but, if an IV has been provided as
+            // part of the request, use that, instead.
+            IvParameterSpec iv = NULL_IV;
+            if (ivStr != null && !ivStr.isEmpty()) {
+                byte[] ivBytes = BaseEncoding.base64().decode(ivStr);
+                if (ivBytes.length == 16)
+                    iv = new IvParameterSpec(ivBytes);
+                else
+                    throw new GuacamoleServerException("Invalid IV provided.");
+            }
+            
             // Init cipher for descryption using secret key
             Cipher cipher = Cipher.getInstance(DECRYPTION_CIPHER_NAME);
-            cipher.init(Cipher.DECRYPT_MODE, key, NULL_IV);
+            cipher.init(Cipher.DECRYPT_MODE, key, iv);
 
             // Perform decryption
             return cipher.doFinal(cipherText);
