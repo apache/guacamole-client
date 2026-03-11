@@ -701,6 +701,84 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
+     * Notifies the server that a USB device has been connected and is 
+     * available for use.
+     *
+     * @param {!string} deviceId
+     *     The unique identifier for the USB device.
+     * 
+     * @param {!number} vendorId
+     *     The vendor ID of the USB device.
+     * 
+     * @param {!number} productId  
+     *     The product ID of the USB device.
+     *
+     * @param {!string} deviceName
+     *     The human-readable name of the device.
+     *
+     * @param {!string} serialNumber
+     *     The serial number of the device.
+     *
+     * @param {!number} deviceClass
+     *     The USB device class.
+     *
+     * @param {!number} deviceSubclass
+     *     The USB device subclass.
+     *
+     * @param {!number} deviceProtocol
+     *     The USB device protocol.
+     *
+     * @param {!string} interfaceData
+     *     Encoded string containing interface and endpoint information.
+     */
+    this.sendUSBConnect = function(deviceId, vendorId, productId, deviceName, 
+            serialNumber, deviceClass, deviceSubclass, deviceProtocol, 
+            interfaceData) {
+        if (!isConnected())
+            return;
+        
+        tunnel.sendMessage("usbconnect", deviceId, vendorId, productId, 
+                deviceName, serialNumber, deviceClass, deviceSubclass, 
+                deviceProtocol, interfaceData);
+    };
+
+    /**
+     * Sends USB data from a Web USB connected device to the server.
+     *
+     * @param {!string} deviceId
+     *     The unique identifier for the USB device.
+     * 
+     * @param {!number} endpoint
+     *     The endpoint number this data originated from on the USB device.
+     *
+     * @param {!string} data
+     *     The base64-encoded data received from the USB device.
+     *
+     * @param {!string} type
+     *     The transfer type (bulk, interrupt, isochronous, control).
+     */
+    this.sendUSBData = function(deviceId, endpoint, data, type) {
+        if (!isConnected())
+            return;
+        
+        tunnel.sendMessage("usbdata", deviceId, endpoint, data, type);
+    };
+
+    /**
+     * Notifies the server that a USB device has been disconnected and is
+     * no longer available.
+     *
+     * @param {!string} deviceId
+     *     The unique identifier for the USB device that was disconnected.
+     */
+    this.sendUSBDisconnect = function(deviceId) {
+        if (!isConnected())
+            return;
+            
+        tunnel.sendMessage("usbdisconnect", deviceId);
+    };
+
+    /**
      * Fired whenever the state of this Guacamole.Client changes.
      * 
      * @event
@@ -946,6 +1024,30 @@ Guacamole.Client = function(tunnel) {
      *     frames.
      */
     this.onsync = null;
+
+    /**
+     * Fired when the server requests USB device disconnection.
+     *
+     * @event
+     * @param {!string} deviceId
+     *     The unique identifier of the USB device to disconnect.
+     */
+    this.onusbdisconnect = null;
+
+    /**
+     * Fired when the server sends USB data to a specific device endpoint.
+     *
+     * @event
+     * @param {!string} deviceId
+     *     The unique identifier of the USB device.
+     *
+     * @param {!number} endpointNumber
+     *     The endpoint number the data is intended for.
+     *
+     * @param {!string} data
+     *     The base64-encoded USB data.
+     */
+    this.onusbdata = null;
 
     /**
      * Returns the layer with the given index, creating it if necessary.
@@ -1750,6 +1852,24 @@ Guacamole.Client = function(tunnel) {
             if (object && object.onundefine)
                 object.onundefine();
 
+        },
+
+        "usbdata": function(parameters) {
+            var deviceId = parameters[0];
+            var endpointNumber = parseInt(parameters[1]);
+            var data = parameters[2];
+            
+            // Forward to the right USB device with endpoint information
+            if (guac_client.onusbdata)
+                guac_client.onusbdata(deviceId, endpointNumber, data);
+        },
+
+        "usbdisconnect": function(parameters) {
+            var deviceId = parameters[0];
+            
+            // Notify client of USB disconnection
+            if (guac_client.onusbdisconnect)
+                guac_client.onusbdisconnect(deviceId);
         },
 
         "video": function(parameters) {
