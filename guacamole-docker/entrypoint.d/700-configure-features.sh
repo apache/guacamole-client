@@ -75,6 +75,11 @@ for VAR_BASE in /opt/guacamole/environment/*; do
     # Execute any associated configuration script
     [ ! -e "$VAR_BASE/configure.sh" ] || source "$VAR_BASE/configure.sh"
 
+    if [[ ! -z "$SKIP_GUACAMOLE_HOME" && "$SKIP_GUACAMOLE_HOME" == 1 ]]; then
+        echo "Required links for feature $(basename $VAR_BASE) are already assumed to be in the pre-configured GUACAMOLE_HOME."
+        continue
+    fi
+
     # Add any required links for extensions/libraries associated with the
     # configured extension
     for SUBDIR in lib extensions; do
