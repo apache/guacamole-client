@@ -1,0 +1,28 @@
+{
+
+    "guacamoleVersion" : "1.6.0",
+
+    "name"      : "Login Disclaimer Banner",
+    "namespace" : "disclaimer",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.disclaimer.DisclaimerAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ],
+    
+    "js" : [
+        "disclaimer.min.js"
+    ],
+
+    "css" : [
+        "disclaimer.min.css"
+    ],
+
+    "resources" : {
+        "templates/disclaimerField.html" : "text/html"
+    }
+
+}
