@@ -123,7 +123,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     public URI getLoginURI() throws GuacamoleException {
         return UriBuilder.fromUri(confService.getAuthorizationEndpoint())
                 .queryParam("scope", confService.getScope())
-                .queryParam("response_type", "id_token")
+                .queryParam("response_type", "token")
                 .queryParam("client_id", confService.getClientID())
                 .queryParam("redirect_uri", confService.getRedirectURI())
                 .queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L))

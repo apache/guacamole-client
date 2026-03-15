@@ -95,12 +95,12 @@ module.exports = {
     optimization: {
         minimizer: [
 
-            // Minify using Google Closure Compiler
-            new ClosureWebpackPlugin({ mode: 'STANDARD' }, {
-                languageIn: 'ECMASCRIPT_2020',
-                languageOut: 'ECMASCRIPT5',
-                compilationLevel: 'SIMPLE'
-            }),
+            // // Minify using Google Closure Compiler
+            // new ClosureWebpackPlugin({ mode: 'STANDARD' }, {
+            //     languageIn: 'ECMASCRIPT_2020',
+            //     languageOut: 'ECMASCRIPT5',
+            //     compilationLevel: 'SIMPLE'
+            // }),
 
             new CssMinimizerPlugin()
 
