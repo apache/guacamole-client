@@ -113,6 +113,14 @@ angular.module('rest').factory('Connection', [function defineConnection() {
          */
         this.lastActive = template.lastActive;
 
+        /**
+         * Whether the web client should treat Meta as Ctrl for this
+         * connection.
+         *
+         * @type Boolean
+         */
+        this.metaToCtrl = !!template.metaToCtrl;
+
     };
 
     return Connection;

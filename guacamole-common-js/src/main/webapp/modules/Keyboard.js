@@ -84,6 +84,14 @@ Guacamole.Keyboard = function Keyboard(element) {
     this.onkeyup = null;
 
     /**
+     * Whether pressed Meta keys should be treated as Ctrl keys. When true,
+     * shortcuts using Meta will behave as if Ctrl were pressed.
+     *
+     * @type {!boolean}
+     */
+    this.metaToCtrl = false;
+
+    /**
      * Set of known platform-specific or browser-specific quirks which must be
      * accounted for to properly interpret key events, even if the only way to
      * reliably detect that quirk is to platform/browser-sniff.
@@ -144,6 +152,33 @@ Guacamole.Keyboard = function Keyboard(element) {
         }
 
     }
+
+    /**
+     * Translates Meta keysyms to their Ctrl equivalents if configured.
+     *
+     * @private
+     * @param {!number} keysym
+     *     The keysym to potentially translate.
+     *
+     * @returns {!number}
+     *     The translated keysym.
+     */
+    var mapMetaToCtrlKeysym = function mapMetaToCtrlKeysym(keysym) {
+
+        // Preserve original keysyms unless Meta-to-Ctrl translation is enabled
+        if (!guac_keyboard.metaToCtrl)
+            return keysym;
+
+        // Translate left/right Meta to left/right Ctrl
+        if (keysym === 0xFFE7)
+            return 0xFFE3;
+
+        if (keysym === 0xFFE8)
+            return 0xFFE4;
+
+        return keysym;
+
+    };
 
     /**
      * A key event having a corresponding timestamp. This event is non-specific.
@@ -208,6 +243,21 @@ Guacamole.Keyboard = function Keyboard(element) {
          * @type {!Guacamole.Keyboard.ModifierState}
          */
         this.modifiers = orig ? Guacamole.Keyboard.ModifierState.fromKeyboardEvent(orig) : new Guacamole.Keyboard.ModifierState();
+
+        /**
+         * Whether Meta is currently physically pressed, prior to any
+         * metaToCtrl translation.
+         *
+         * @type {!boolean}
+         */
+        this.physicalMeta = this.modifiers.meta;
+
+        // Treat Meta as Ctrl when configured, while preserving the physical
+        // Meta state separately for browser-quirk handling.
+        if (guac_keyboard.metaToCtrl && this.modifiers.meta) {
+            this.modifiers.ctrl = true;
+            this.modifiers.meta = false;
+        }
 
         /**
          * An arbitrary timestamp in milliseconds, indicating this event's
@@ -295,7 +345,7 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         // If a key is pressed while meta is held down, the keyup will
         // never be sent in Chrome (bug #108404)
-        if (this.modifiers.meta && this.keysym !== 0xFFE7 && this.keysym !== 0xFFE8)
+        if (this.physicalMeta && this.keysym !== 0xFFE7 && this.keysym !== 0xFFE8)
             this.keyupReliable = false;
 
         // We cannot rely on receiving keyup for lock keys on certain platforms
@@ -319,6 +369,9 @@ Guacamole.Keyboard = function Keyboard(element) {
          || this.modifiers.meta
          || this.modifiers.hyper)
             this.reliable = true;
+
+        // Translate Meta keys to Ctrl keys if requested.
+        this.keysym = mapMetaToCtrlKeysym(this.keysym);
 
         // Record most recently known keysym by associated key code
         recentKeysym[this.keyCode] = this.keysym;
@@ -373,6 +426,9 @@ Guacamole.Keyboard = function Keyboard(element) {
         // still more reliable for keyup when dead keys are in use)
         this.keysym =  keysym_from_keycode(this.keyCode, this.location)
                     || keysym_from_key_identifier(this.key, this.location);
+
+        // Translate Meta keys to Ctrl keys if requested.
+        this.keysym = mapMetaToCtrlKeysym(this.keysym);
 
         // Fall back to the most recently pressed keysym associated with the
         // keyCode if the inferred key doesn't seem to actually be pressed

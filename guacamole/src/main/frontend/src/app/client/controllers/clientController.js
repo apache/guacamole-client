@@ -25,6 +25,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
 
     // Required types
     const ConnectionGroup    = $injector.get('ConnectionGroup');
+    const ClientIdentifier   = $injector.get('ClientIdentifier');
     const ManagedClient      = $injector.get('ManagedClient');
     const ManagedClientGroup = $injector.get('ManagedClientGroup');
     const ManagedClientState = $injector.get('ManagedClientState');
@@ -37,6 +38,7 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     const authenticationService  = $injector.get('authenticationService');
     const connectionGroupService = $injector.get('connectionGroupService');
     const clipboardService       = $injector.get('clipboardService');
+    const connectionService      = $injector.get('connectionService');
     const dataSourceService      = $injector.get('dataSourceService');
     const guacClientManager      = $injector.get('guacClientManager');
     const guacFullscreen         = $injector.get('guacFullscreen');
@@ -483,6 +485,75 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     // Hide the menu when the guacClientHideMenu event is received
     $scope.$on('guacHideMenu', () => $scope.menu.shown = false);
 
+    /**
+     * Connection options that affect browser client behavior.
+     *
+     * @type {!Array.<{event: string, defaultValue: *, getValue: function(*): *}>}
+     */
+    const connectionClientBehaviorDefinitions = [{
+        event : 'guacMetaToCtrlChanged',
+        defaultValue : false,
+        getValue : function getValue(connection) {
+            return connection.metaToCtrl === true;
+        }
+    }];
+
+    /**
+     * Emits all connection client behavior options.
+     *
+     * @param {*} [connection]
+     *     Connection object returned by connectionService.
+     */
+    const applyConnectionClientBehavior = function applyConnectionClientBehavior(connection) {
+        connectionClientBehaviorDefinitions.forEach(function applyDefinition(definition) {
+            const value = connection ?
+                definition.getValue(connection) : definition.defaultValue;
+
+            $scope.$emit(definition.event, value);
+        });
+    };
+
+    /**
+     * Refreshes connection-derived client behavior for the currently-focused
+     * client.
+     *
+     * @param {ManagedClient} focusedClient
+     *     The currently-focused client, if any.
+     */
+    const updateConnectionClientBehavior = function updateConnectionClientBehavior(focusedClient) {
+
+        // Immediately clear previous connection behavior to defaults.
+        applyConnectionClientBehavior();
+
+        if (!focusedClient)
+            return;
+
+        const identifier = ClientIdentifier.fromString(focusedClient.id);
+        if (identifier.type !== ClientIdentifier.Types.CONNECTION)
+            return;
+
+        // Guard async callbacks: only apply behavior if this client is still focused.
+        const focusedClientId = focusedClient.id;
+
+        connectionService.getConnection(identifier.dataSource, identifier.id)
+        .then(function connectionRetrieved(connection) {
+
+            if (!$scope.focusedClient || $scope.focusedClient.id !== focusedClientId)
+                return;
+
+            applyConnectionClientBehavior(connection);
+
+        }, function connectionRetrievalFailed() {
+
+            if (!$scope.focusedClient || $scope.focusedClient.id !== focusedClientId)
+                return;
+
+            applyConnectionClientBehavior();
+
+        });
+
+    };
+
     // Automatically track and cache the currently-focused client
     $scope.$on('guacClientFocused', function focusedClientChanged(event, newFocusedClient) {
 
@@ -497,6 +568,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
         // client
         $scope.menu.connectionParameters = newFocusedClient ?
             ManagedClient.getArgumentModel(newFocusedClient) : {};
+
+        // Keep client behavior synced with focused connection configuration
+        updateConnectionClientBehavior(newFocusedClient);
 
     });
 
