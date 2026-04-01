@@ -644,6 +644,18 @@ Guacamole.Keyboard = function Keyboard(element) {
     var lastToggleKeydownState = {};
 
     /**
+     * Map of non-modifier keys pressed while Shift is held, keyed by keyCode,
+     * storing the keysym used at press time. When Shift is released before the
+     * character key, the keyup event resolves to the unshifted keysym, creating
+     * a mismatched press/release pair. This map allows force-releasing tracked
+     * keys with their original (shifted) keysym on Shift keyup.
+     *
+     * @private
+     * @type {!Object.<number, number>}
+     */
+    var shiftedKeys = {};
+
+    /**
      * The state of every key, indexed by keysym. If a particular key is
      * pressed, the value of pressed for that keysym will be true. If a key
      * is not currently pressed, it will not be defined. 
@@ -1033,6 +1045,9 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         // Clear event log
         eventLog = [];
+
+        // Discard Shift-tracking state
+        shiftedKeys = {};
 
     };
 
@@ -1436,6 +1451,12 @@ Guacamole.Keyboard = function Keyboard(element) {
                     var defaultPrevented = !guac_keyboard.press(keysym);
                     recentKeysym[first.keyCode] = keysym;
 
+                    // Track non-modifier keys pressed while Shift is held so
+                    // they can be force-released with their original keysym if
+                    // Shift is released first
+                    if (first.modifiers.shift && !no_repeat[keysym])
+                        shiftedKeys[first.keyCode] = keysym;
+
                     // Release the key now if we cannot rely on the associated
                     // keyup event
                     if (!first.keyupReliable)
@@ -1459,8 +1480,22 @@ Guacamole.Keyboard = function Keyboard(element) {
             // Release specific key if known
             var keysym = first.keysym;
             if (keysym) {
+
+                // When Shift is released, force-release all keys that were
+                // pressed while Shift was held, using their original (shifted)
+                // keysym. This prevents mismatched press/release pairs when
+                // Shift keyup arrives before the character keyup.
+                if (keysym === 0xFFE1 || keysym === 0xFFE2) {
+                    for (var keyCode in shiftedKeys) {
+                        guac_keyboard.release(shiftedKeys[keyCode]);
+                        delete recentKeysym[keyCode];
+                    }
+                    shiftedKeys = {};
+                }
+
                 guac_keyboard.release(keysym);
                 delete recentKeysym[first.keyCode];
+                delete shiftedKeys[first.keyCode];
                 first.defaultPrevented = true;
             }
 
