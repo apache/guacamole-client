@@ -1339,6 +1339,13 @@ Guacamole.Keyboard = function Keyboard(element) {
         if (!guac_keyboard.modifiers.ctrl || !guac_keyboard.modifiers.alt)
             return;
 
+        // Do not release Ctrl+Alt when AltGr is genuinely held. On Windows,
+        // the browser sends a synthetic Left Ctrl before AltGraph. RDP
+        // targets require both Ctrl and Alt scancodes to remain active for
+        // AltGr character resolution.
+        if (guac_keyboard.pressed[0xFE03] || guac_keyboard.pressed[0xFFEA])
+            return;
+
         // Assume [A-Z] never require AltGr
         if (keysym >= 0x0041 && keysym <= 0x005A)
             return;
