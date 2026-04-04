@@ -105,10 +105,10 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
      * form.
      */
     public static final Form PROFILE = new Form("profile", Arrays.<Field>asList(
-        new TextField(User.Attribute.FULL_NAME),
+        new TextField(User.Attribute.FULL_NAME, Field.Autocomplete.NAME),
         new EmailField(User.Attribute.EMAIL_ADDRESS),
-        new TextField(User.Attribute.ORGANIZATION),
-        new TextField(User.Attribute.ORGANIZATIONAL_ROLE)
+        new TextField(User.Attribute.ORGANIZATION, Field.Autocomplete.ORGANIZATION),
+        new TextField(User.Attribute.ORGANIZATIONAL_ROLE, Field.Autocomplete.ORGANIZATION_TITLE)
     ));
 
     /**

@@ -32,7 +32,7 @@ public class UsernameField extends Field {
      *     The unique name to associate with this field.
      */
     public UsernameField(String name) {
-        super(name, Field.Type.USERNAME);
+        super(name, Field.Type.USERNAME, Field.Autocomplete.USERNAME);
     }
 
 }
