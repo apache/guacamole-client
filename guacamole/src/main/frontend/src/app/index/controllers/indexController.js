@@ -183,8 +183,9 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     var keyboard = new Guacamole.Keyboard($document[0]);
     keyboard.listenTo(sink.getElement());
 
-    // Update keyboard modifiers based mouse click events
-    $scope.$on('guacClientMouseDown', function mouseDownModifierSync(event, mouseEvent) {
+    // Update keyboard modifiers based mouse click events. Note we need to run
+    // before mousedown to resolve deferred Meta key events to enable Cmd+Click.
+    $scope.$on('guacBeforeClientMouseDown', function mouseDownModifierSync(event, mouseEvent) {
         keyboard.updateModifiersFromMouse(mouseEvent);
     });
 
