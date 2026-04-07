@@ -20,6 +20,14 @@
 package org.apache.guacamole.auth.openid.token;
 
 import com.google.inject.Inject;
+import java.io.BufferedReader;
+import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,10 +35,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
+import org.apache.guacamole.auth.openid.OpenIDAuthenticationSession;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.token.TokenName;
+import org.jose4j.json.JsonUtil;
 import org.jose4j.jwk.HttpsJwks;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
@@ -70,8 +82,8 @@ public class TokenValidationService {
     private NonceService nonceService;
 
     /**
-     * Validates the given ID token, returning the JwtClaims contained therein.
-     * If the ID token is invalid, null is returned.
+     * Validates the given ID token, using implicit flow, returning the JwtClaims
+     * contained therein. If the ID token is invalid, null is returned.
      *
      * @param token
      *     The ID token to validate.
@@ -83,7 +95,7 @@ public class TokenValidationService {
      * @throws GuacamoleException
      *     If guacamole.properties could not be parsed.
      */
-    public JwtClaims validateToken(String token) throws GuacamoleException {
+    public JwtClaims validateTokenImplicit(String token) throws GuacamoleException {
         // Validating the token requires a JWKS key resolver
         HttpsJwks jwks = new HttpsJwks(confService.getJWKSEndpoint().toString());
         HttpsJwksVerificationKeyResolver resolver = new HttpsJwksVerificationKeyResolver(jwks);
@@ -129,6 +141,156 @@ public class TokenValidationService {
         }
 
         return null;
+    }
+
+    /**
+     * Validates the given ID token, using code flow, returning the JwtClaims
+     * contained therein. If the ID token is invalid, null is returned.
+     *
+     * @param code
+     *     The code to validate and receive the id_token.
+     *
+     * @param session
+     *     A OpenIDAuthenicationSession storing the in progress authentication parameters
+     *
+     * @return
+     *     The JWT claims contained within the given ID token if it passes tests,
+     *     or null if the token is not valid.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties could not be parsed.
+     */
+    public JwtClaims validateTokenCode(String code, OpenIDAuthenticationSession session) throws GuacamoleException {
+        // Validating the token requires a JWKS key resolver
+        HttpsJwks jwks = new HttpsJwks(confService.getJWKSEndpoint().toString());
+        HttpsJwksVerificationKeyResolver resolver = new HttpsJwksVerificationKeyResolver(jwks);
+
+        /* Exchange code → token */
+        String token = exchangeCode(code, session);
+
+        // Create JWT consumer for validating received token
+        JwtConsumer jwtConsumer = new JwtConsumerBuilder()
+                .setRequireExpirationTime()
+                .setMaxFutureValidityInMinutes(confService.getMaxTokenValidity())
+                .setAllowedClockSkewInSeconds(confService.getAllowedClockSkew())
+                .setRequireSubject()
+                .setExpectedIssuer(confService.getIssuer())
+                .setExpectedAudience(confService.getClientID())
+                .setVerificationKeyResolver(resolver)
+                .build();
+
+        try {
+            // Validate JWT
+            return jwtConsumer.processToClaims(token);
+        }
+        // Log any failures to validate/parse the JWT
+        catch (InvalidJwtException e) {
+            logger.info("Rejected invalid OpenID token: {}", e.getMessage(), e);
+        }
+
+        return null;
+    }
+    
+    /**
+     * URLEncodes a key/value pair
+     *
+     * @param key
+     *     The key to encode
+     *
+     * @param value
+     *     The value to encode
+     *
+     * @return
+     *     The urlencoded kay/value pair
+     */
+     private String urlencode(String key, String value) {
+         StringBuilder builder = new StringBuilder();
+         return builder.append(URLEncoder.encode(key, StandardCharsets.UTF_8))
+                       .append("=")
+                       .append(URLEncoder.encode(value, StandardCharsets.UTF_8))
+                       .toString();
+     }
+
+    /**
+     * Exchanges the authorization code for tokens.
+     *
+     * @param code
+     *     The authorization code received from the IdP.
+     * @param codeVerifier
+     *     The PKCE verifier (or null if PKCE is disabled).
+     *
+     * @return
+     *     The token string returned.
+     *
+     * @throws GuacamoleException
+     *     If a valid token is not returned.
+     */
+    private String exchangeCode(String code, OpenIDAuthenticationSession session) throws GuacamoleException {
+
+        try {
+            StringBuilder bodyBuilder = new StringBuilder();
+            bodyBuilder.append(urlencode("grant_type", "authorization_code")).append("&");
+            bodyBuilder.append(urlencode("code", code)).append("&");
+            bodyBuilder.append(urlencode("redirect_uri", session.getRedirectURI())).append("&");
+            bodyBuilder.append(urlencode("scope", confService.getScope())).append("&");
+            bodyBuilder.append(urlencode("client_id", confService.getClientID()));
+ 
+            String clientSecret = confService.getClientSecret();
+            if (clientSecret != null && !clientSecret.trim().isEmpty()) {
+                bodyBuilder.append("&").append(urlencode("client_secret", clientSecret));
+            }
+
+            if (confService.isPKCERequired()) {
+                String codeVerifier = session.getVerifier();
+                bodyBuilder.append("&").append(urlencode("code_verifier", codeVerifier));
+            }
+            
+            // Build the final URI and convert to a URL
+            URL url = confService.getTokenEndpoint().toURL();
+
+            // Open connection, using HttpURLConnection
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"
+            );
+
+            try (OutputStream out = conn.getOutputStream()) {
+                byte [] body = bodyBuilder.toString().getBytes(StandardCharsets.UTF_8);
+                out.write(body, 0, body.length);
+            }
+
+            // Read response
+            int status = conn.getResponseCode();
+
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(
+                            status >= 200 && status < 300
+                                    ? conn.getInputStream()
+                                    : conn.getErrorStream(),
+                            StandardCharsets.UTF_8
+                    )
+            );
+
+            StringBuilder responseBody = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                responseBody.append(line);
+            }
+            reader.close();
+
+            Map<String,Object> json = JsonUtil.parseJson(responseBody.toString());
+
+            if (status < 200 || status >= 300) {
+                throw new GuacamoleException("Token endpoint error (" + status + "): " + json.toString());
+            }
+
+            return (String) json.get("id_token");
+
+        } catch (Exception e) {
+            throw new GuacamoleException("Token exchange failed.", e);
+        }
     }
 
     /**
