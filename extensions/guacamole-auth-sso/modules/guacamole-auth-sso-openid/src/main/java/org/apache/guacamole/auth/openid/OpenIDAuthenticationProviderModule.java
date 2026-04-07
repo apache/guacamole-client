@@ -23,6 +23,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Scopes;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.auth.openid.conf.OpenIDEnvironment;
+import org.apache.guacamole.auth.openid.OpenIDAuthenticationSessionManager;
+import org.apache.guacamole.auth.openid.OpenIDRedirectResource;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
 import org.apache.guacamole.environment.Environment;
@@ -42,7 +44,7 @@ public class OpenIDAuthenticationProviderModule extends AbstractModule {
         bind(ConfigurationService.class);
         bind(NonceService.class).in(Scopes.SINGLETON);
         bind(TokenValidationService.class);
-        
+        bind(OpenIDAuthenticationSessionManager.class);
         bind(Environment.class).toInstance(environment);
     }
 

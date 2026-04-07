@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.List;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
@@ -35,6 +36,11 @@ import org.apache.guacamole.properties.URIGuacamoleProperty;
  * service.
  */
 public class ConfigurationService {
+
+    /**
+     * The default OICD flow type
+     */
+    private static final String DEFAULT_FLOW_TYPE = "implicit";
 
     /**
      * The default claim type to use to retrieve an authenticated user's
@@ -109,6 +115,66 @@ public class ConfigurationService {
         public String getName() { return "openid-issuer"; }
 
     };
+
+    /**
+     * The token endpoint (URI) of the OIDC service.
+     */
+    private static final URIGuacamoleProperty OPENID_TOKEN_ENDPOINT =
+            new URIGuacamoleProperty() {
+        @Override
+        public String getName() {
+            return "openid-token-endpoint";
+        }
+    };
+
+    /**
+     * The flow type of the OpenID service.
+     */
+    private static final StringGuacamoleProperty OPENID_FLOW_TYPE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "openid-flow-type"; }
+
+    };
+
+    /**
+     * OIDC client secret which should be submitted to the OIDC service when
+     * validating tokens with code flow
+     */
+    private static final StringGuacamoleProperty OPENID_CLIENT_SECRET =
+            new StringGuacamoleProperty() {
+        @Override
+        public String getName() {
+            return "openid-client-secret";
+        }
+    };
+
+    /**
+     * True if "Proof Key for Code Exchange" (PKCE) must be used.
+     */
+    private static final BooleanGuacamoleProperty OPENID_PKCE_REQUIRED =
+            new BooleanGuacamoleProperty() {
+        @Override
+        public String getName() {
+            return "openid-pkce-required";
+        }
+    };
+
+    /**
+     * The maximum amount of time to allow for an in-progress OpenID
+     * authentication attempt to be completed, in minutes. A user that takes
+     * longer than this amount of time to complete authentication with their
+     * identity provider will be redirected back to the identity provider to
+     * try again.
+     */
+    private static final IntegerGuacamoleProperty OPENID_AUTH_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+        @Override
+        public String getName() { return "openid-auth-timeout"; }
+                
+    };
+
 
     /**
      * The claim type which contains the authenticated user's username within
@@ -336,6 +402,90 @@ public class ConfigurationService {
     public URI getJWKSEndpoint() throws GuacamoleException {
         return environment.getRequiredProperty(OPENID_JWKS_ENDPOINT);
     }
+
+    /**
+     * Returns the token endpoint (URI) of the OIDC service as
+     * configured with guacamole.properties.
+     *
+     * @return
+     *     The token endpoint of the OIDC service, as configured with
+     *     guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed, or if the authorization
+     *     endpoint property is missing.
+     */
+    public URI getTokenEndpoint() throws GuacamoleException {
+        return environment.getRequiredProperty(OPENID_TOKEN_ENDPOINT);
+    }
+
+    /**
+     * Returns the flow type of the OpenID service as configured with guacamole.properties.
+     *
+     * @return
+     *     The flow type of the OpenID service, as configured with guacamole.properties. Can
+     *     be either 'implicit' or 'code'.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public String getFlowType() throws GuacamoleException {
+        return environment.getProperty(OPENID_FLOW_TYPE, DEFAULT_FLOW_TYPE);
+    }
+
+    /**
+     * Returns the OIDC client secret used for toen validation, as configured
+     * with guacamole.properties. This value is typically provided by the OIDC
+     * service when OIDC credentials are generated for your application, and
+     * may be null.
+     *
+     * @return
+     *     The client secret to use when communicating with the OIDC service,
+     *     as configured with guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed, or if the client ID
+     *     property is missing.
+     */
+    public String getClientSecret() throws GuacamoleException {
+       return environment.getProperty(OPENID_CLIENT_SECRET);
+    }
+
+    /**
+     * Returns  a boolean value of whether "Proof Key for Code Exchange (PKCE)"
+     * will be used, as configured with guacamole.properties. The choice of
+     * whether to use PKCE is up to you, but the OIDC service must support
+     * it. By default will be false.
+     *
+     * @return
+     *     The whether to use PKCE or not, as configured with guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public boolean isPKCERequired() throws GuacamoleException {
+        Boolean enabled = environment.getProperty(OPENID_PKCE_REQUIRED);
+        return enabled != null && enabled;
+    }
+
+    /**
+     * Returns the maximum amount of time to allow for an in-progress OpenID
+     * authentication attempt to be completed, in minutes. A user that takes
+     * longer than this amount of time to complete authentication with their
+     * identity provider will be redirected back to the identity provider to
+     * try again.
+     *
+     * @return
+     *     The maximum amount of time to allow for an in-progress SAML
+     *     authentication attempt to be completed, in minutes.
+     *
+     * @throws GuacamoleException
+     *     If the authentication timeout cannot be parsed.
+     */
+    public int getAuthenticationTimeout() throws GuacamoleException {
+        return environment.getProperty(OPENID_AUTH_TIMEOUT, 5);
+    }
+
 
     /**
      * Returns the claim type which contains the authenticated user's username
