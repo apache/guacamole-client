@@ -58,6 +58,14 @@
                 </label>
                 <span ng-attr-title="{{'IMPORT.HELP_EXISTING_PERMISSION_MODE' | translate}}" class="help"></span>
             </li>
+            <li>
+                <input type="checkbox"
+                    id="create-missing-groups" ng-model="importConfig.createMissingGroups" />
+                <label for="create-missing-groups">
+                    {{'IMPORT.FIELD_HEADER_CREATE_MISSING_GROUPS' | translate}}
+                </label>
+                <span ng-attr-title="{{'IMPORT.HELP_CREATE_MISSING_GROUPS' | translate}}" class="help"></span>
+            </li>
         </ul>
 
     </div>
@@ -76,7 +84,7 @@
     <div ng-show="isLoading()" class="loading"></div>
 
     <!-- Connection specific errors, if there are any -->
-    <connection-import-errors parse-result="parseResult" patch-failure="patchFailure" />
+    <connection-import-errors parse-result="parseResult" patch-failure="patchFailure" patches="patches" />
 
 
 </div>
