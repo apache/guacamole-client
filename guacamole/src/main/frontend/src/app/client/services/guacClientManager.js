@@ -320,8 +320,27 @@ angular.module('client').factory('guacClientManager', ['$injector',
 
     };
 
+    /**
+     * Handles the beforeunload event. If any managed clients are active, the
+     * user is prompted to confirm leaving the page.
+     *
+     * @param {event} e
+     *      The beforeunload event.
+     */
+    service.beforeUnload = function beforeUnload(e) {
+        const managedClients = storedManagedClients();
+
+        if (Object.keys(managedClients).length > 0) {
+            e.preventDefault();
+
+            // For older browsers
+            e.returnValue = true;
+        }
+    };
+
     // Disconnect all clients when window is unloaded
     $window.addEventListener('unload', service.clear);
+    $window.addEventListener('beforeunload', service.beforeUnload);
 
     return service;
 
