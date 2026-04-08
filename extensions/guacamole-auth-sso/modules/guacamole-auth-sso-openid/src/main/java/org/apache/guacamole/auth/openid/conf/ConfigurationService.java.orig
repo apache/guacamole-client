@@ -486,6 +486,7 @@ public class ConfigurationService {
         return environment.getProperty(OPENID_AUTH_TIMEOUT, 5);
     }
 
+
     /**
      * Returns the claim type which contains the authenticated user's username
      * within any valid JWT, as configured with guacamole.properties. By

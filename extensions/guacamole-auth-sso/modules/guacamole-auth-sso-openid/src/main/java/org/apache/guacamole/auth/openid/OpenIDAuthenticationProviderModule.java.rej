@@ -1,0 +1,11 @@
+--- extensions/guacamole-auth-sso/modules/guacamole-auth-sso-openid/src/main/java/org/apache/guacamole/auth/openid/OpenIDAuthenticationProviderModule.java	2026-04-08 19:37:41.518619970 +0200
++++ extensions/guacamole-auth-sso/modules/guacamole-auth-sso-openid/src/main/java/org/apache/guacamole/auth/openid/OpenIDAuthenticationProviderModule.java	2026-04-08 16:43:54.617087120 +0200
+@@ -37,7 +37,7 @@
+      * The configuration environment for this server and extension.
+      */
+     private final Environment environment = new OpenIDEnvironment();
+-
++    
+     @Override
+     protected void configure() {
+         bind(ConfigurationService.class);

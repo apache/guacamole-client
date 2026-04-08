@@ -35,7 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
@@ -189,7 +189,7 @@ public class TokenValidationService {
 
         return null;
     }
-    
+
     /**
      * URLEncodes a key/value pair
      *
@@ -295,7 +295,7 @@ public class TokenValidationService {
     /**
      * Parses the given JwtClaims, returning the username contained
      * therein, as defined by the username claim type given in
-     * guacamole.properties. If the username claim type is missing or 
+     * guacamole.properties. If the username claim type is missing or
      * is invalid, null is returned.
      *
      * @param claims
@@ -359,7 +359,7 @@ public class TokenValidationService {
                 List<String> oidcGroups = claims.getStringListClaimValue(groupsClaim);
                 if (oidcGroups != null && !oidcGroups.isEmpty())
                     return Collections.unmodifiableSet(new HashSet<>(oidcGroups));
-            }   
+            }
             catch (MalformedClaimException e) {
                 logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage(), e);
             }
