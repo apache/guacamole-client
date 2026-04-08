@@ -28,17 +28,7 @@ public class OpenIDAuthenticationSession extends AuthenticationSession {
     /**
      * The PKCE challenge verifier.
      */
-    private String verifier = null;
-
-    /**
-     * The redirect URI used by the identity provide.
-     */
-    private String redirect_uri = null;
-    
-    /**
-     * The code returned by the identity provider use to exchange for a token
-     */
-    private String code = null;
+    private final String verifier;
 
     /**
      * Creates a new AuthenticationSession representing an in-progress OpenID
@@ -48,17 +38,8 @@ public class OpenIDAuthenticationSession extends AuthenticationSession {
      *     The number of milliseconds that may elapse before this session must
      *     be considered invalid.
      */
-    public OpenIDAuthenticationSession(long expires) {
+    public OpenIDAuthenticationSession(String verifier, long expires) {
         super(expires);
-    }
-
-    /**
-     * Set the pkce_verifier
-     *
-     * @param verifier
-     *     The verifier to be stored
-     */
-    public void setVerifier(String verifier) {
         this.verifier = verifier;
     }
 
@@ -71,46 +52,5 @@ public class OpenIDAuthenticationSession extends AuthenticationSession {
     public String getVerifier() {
         return verifier;
     }
-
-    /**
-     * Set the redirect URI sent to the identity provider
-     *
-     * @param redirect_uri
-     *     The redirect UTI to be stored
-     */
-    public void setRedirectURI(String redirect_uri) {
-        this.redirect_uri = redirect_uri;
-    }
-
-    /**
-     * Returns the stored redirect URI sent to the identity provider
-     *
-     * @return
-     *     The redirect URI
-     */
-    public String getRedirectURI() {
-        return redirect_uri;
-    }
-
-    /**
-     * Set the code returned by the identity provider to exchange for a token
-     *
-     * @param code
-     *     The code to be stored
-     */
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    /**
-     * Returns the stored code returned by the identity provider to exchange for a token
-     *
-     * @return
-     *     The stored code
-     */
-    public String getCode() {
-        return code;
-    }
-    
 }
 

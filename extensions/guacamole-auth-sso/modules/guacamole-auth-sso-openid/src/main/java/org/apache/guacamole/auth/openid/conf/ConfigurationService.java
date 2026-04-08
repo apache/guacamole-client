@@ -172,7 +172,7 @@ public class ConfigurationService {
             new IntegerGuacamoleProperty() {
         @Override
         public String getName() { return "openid-auth-timeout"; }
-                
+
     };
 
 
