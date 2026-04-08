@@ -45,9 +45,11 @@ import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.net.auth.IdentifierGenerator;
 import org.jose4j.jwt.JwtClaims;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.apache.guacamole.net.auth.IdentifierGenerator;
 
 /**
  * Service that authenticates Guacamole users by processing OpenID tokens.
@@ -80,13 +82,19 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     public static final String AUTH_SESSION_QUERY_PARAM = "state";
 
     /**
+     * The REST API used for a local rediect and callback for the IdP to
+     * return a code and access stored PKCE verifiers
+     */
+    public static final String CODE_REDIRECT_API = "/api/ext/openid/redirect";
+
+    /**
      * Service for retrieving OpenID configuration information.
      */
     @Inject
     private ConfigurationService confService;
 
     /**
-     * Manager of active OpenID authentication attempts.
+     * Manager of active SAML authentication attempts.
      */
     @Inject
     private OpenIDAuthenticationSessionManager sessionManager;
@@ -189,7 +197,6 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
                         new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
             }))
         );
-
     }
 
     @Override
