@@ -27,7 +27,7 @@ import org.apache.guacamole.environment.LocalEnvironment;
  * configuration.
  */
 public class OpenIDEnvironment extends DelegatingEnvironment {
-
+    
     /**
      * Create a new instance of the configuration environment for the
      * OpenID SSO module, pulling the default instance of the LocalEnvironment.
@@ -35,5 +35,5 @@ public class OpenIDEnvironment extends DelegatingEnvironment {
     public OpenIDEnvironment() {
         super(LocalEnvironment.getInstance());
     }
-
+    
 }
