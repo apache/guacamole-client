@@ -29,22 +29,6 @@ import org.apache.guacamole.net.auth.AuthenticationSessionManager;
 @Singleton
 public class OpenIDAuthenticationSessionManager
         extends AuthenticationSessionManager<OpenIDAuthenticationSession> {
-   /**
-     * Returns the stored code returned by the identity provider to exchange for a token
-     *
-     * @param identifier
-     *     The unique string returned by the call to defer(). For convenience,
-     *     this value may safely be null.
-     *
-     * @return
-     *     The code returned by the identity provider
-     */
-    public String getCode(String identifier) {
-        OpenIDAuthenticationSession session = resume(identifier);
-        if (session != null)
-            return session.getCode();
-        return null;
-    }
 
    /**
      * Returns the stored PKCE verifier used with the identity provider
@@ -60,23 +44,6 @@ public class OpenIDAuthenticationSessionManager
         OpenIDAuthenticationSession session = resume(identifier);
         if (session != null)
             return session.getVerifier();
-        return null;
-    }
-    
-   /**
-     * Returns the stored redirect URI used with the identity provider
-     *
-     * @param identifier
-     *     The unique string returned by the call to defer(). For convenience,
-     *     this value may safely be null.
-     *
-     * @return
-     *     The redirect URIused with the identity provider
-     */
-    public String getRedirectURI(String identifier) {
-        OpenIDAuthenticationSession session = resume(identifier);
-        if (session != null)
-            return session.getRedirectURI();
         return null;
     }
 }

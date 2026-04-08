@@ -39,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
-import org.apache.guacamole.auth.openid.OpenIDAuthenticationSession;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.token.TokenName;
 import org.jose4j.json.JsonUtil;
@@ -95,7 +94,7 @@ public class TokenValidationService {
      * @throws GuacamoleException
      *     If guacamole.properties could not be parsed.
      */
-    public JwtClaims validateTokenImplicit(String token) throws GuacamoleException {
+    public JwtClaims validateToken(String token) throws GuacamoleException {
         // Validating the token requires a JWKS key resolver
         HttpsJwks jwks = new HttpsJwks(confService.getJWKSEndpoint().toString());
         HttpsJwksVerificationKeyResolver resolver = new HttpsJwksVerificationKeyResolver(jwks);
@@ -150,8 +149,8 @@ public class TokenValidationService {
      * @param code
      *     The code to validate and receive the id_token.
      *
-     * @param session
-     *     A OpenIDAuthenicationSession storing the in progress authentication parameters
+     * @param verifier
+     *     A PKCE verifier or null if not used.
      *
      * @return
      *     The JWT claims contained within the given ID token if it passes tests,
@@ -160,13 +159,13 @@ public class TokenValidationService {
      * @throws GuacamoleException
      *     If guacamole.properties could not be parsed.
      */
-    public JwtClaims validateTokenCode(String code, OpenIDAuthenticationSession session) throws GuacamoleException {
+    public JwtClaims validateCode(String code, String verifier) throws GuacamoleException {
         // Validating the token requires a JWKS key resolver
         HttpsJwks jwks = new HttpsJwks(confService.getJWKSEndpoint().toString());
         HttpsJwksVerificationKeyResolver resolver = new HttpsJwksVerificationKeyResolver(jwks);
 
         /* Exchange code → token */
-        String token = exchangeCode(code, session);
+        String token = exchangeCode(code, verifier);
 
         // Create JWT consumer for validating received token
         JwtConsumer jwtConsumer = new JwtConsumerBuilder()
@@ -190,7 +189,7 @@ public class TokenValidationService {
 
         return null;
     }
-    
+
     /**
      * URLEncodes a key/value pair
      *
@@ -225,26 +224,25 @@ public class TokenValidationService {
      * @throws GuacamoleException
      *     If a valid token is not returned.
      */
-    private String exchangeCode(String code, OpenIDAuthenticationSession session) throws GuacamoleException {
+    private String exchangeCode(String code, String verifier) throws GuacamoleException {
 
         try {
             StringBuilder bodyBuilder = new StringBuilder();
             bodyBuilder.append(urlencode("grant_type", "authorization_code")).append("&");
             bodyBuilder.append(urlencode("code", code)).append("&");
-            bodyBuilder.append(urlencode("redirect_uri", session.getRedirectURI())).append("&");
+            bodyBuilder.append(urlencode("redirect_uri", confService.getRedirectURI().toString())).append("&");
             bodyBuilder.append(urlencode("scope", confService.getScope())).append("&");
             bodyBuilder.append(urlencode("client_id", confService.getClientID()));
- 
+
             String clientSecret = confService.getClientSecret();
             if (clientSecret != null && !clientSecret.trim().isEmpty()) {
                 bodyBuilder.append("&").append(urlencode("client_secret", clientSecret));
             }
 
             if (confService.isPKCERequired()) {
-                String codeVerifier = session.getVerifier();
-                bodyBuilder.append("&").append(urlencode("code_verifier", codeVerifier));
+                bodyBuilder.append("&").append(urlencode("code_verifier", verifier));
             }
-            
+
             // Build the final URI and convert to a URL
             URL url = confService.getTokenEndpoint().toURL();
 
@@ -289,14 +287,15 @@ public class TokenValidationService {
             return (String) json.get("id_token");
 
         } catch (Exception e) {
-            throw new GuacamoleException("Token exchange failed.", e);
+            logger.info("Rejected invalid OpenID code exchange: {}", e.getMessage(), e);
         }
+        return null;
     }
 
     /**
      * Parses the given JwtClaims, returning the username contained
      * therein, as defined by the username claim type given in
-     * guacamole.properties. If the username claim type is missing or 
+     * guacamole.properties. If the username claim type is missing or
      * is invalid, null is returned.
      *
      * @param claims
@@ -360,7 +359,7 @@ public class TokenValidationService {
                 List<String> oidcGroups = claims.getStringListClaimValue(groupsClaim);
                 if (oidcGroups != null && !oidcGroups.isEmpty())
                     return Collections.unmodifiableSet(new HashSet<>(oidcGroups));
-            }   
+            }
             catch (MalformedClaimException e) {
                 logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage(), e);
             }

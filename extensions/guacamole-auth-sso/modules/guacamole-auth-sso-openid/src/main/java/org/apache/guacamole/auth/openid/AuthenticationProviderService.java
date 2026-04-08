@@ -31,8 +31,8 @@ import java.util.Set;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.auth.openid.OpenIDAuthenticationSessionManager;
-import org.apache.guacamole.auth.openid.OpenIDRedirectResource;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
+import org.apache.guacamole.auth.openid.util.PKCEUtil;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
@@ -43,13 +43,24 @@ import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
+import org.apache.guacamole.net.auth.IdentifierGenerator;
 import org.jose4j.jwt.JwtClaims;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import org.apache.guacamole.net.auth.IdentifierGenerator;
 
 /**
  * Service that authenticates Guacamole users by processing OpenID tokens.
  */
 @Singleton
 public class AuthenticationProviderService implements SSOAuthenticationProviderService {
+
+    /**
+     * Logger for this class.
+     */
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
 
     /**
      * The standard HTTP parameter which will be included within the URL by all
@@ -63,7 +74,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
      * the stored user state.
      */
     public static final String CODE_TOKEN_PARAMETER_NAME = "code";
-    
+
     /**
      * The name of the query parameter that identifies an active authentication
      * session (in-progress OpenID authentication attempt).
@@ -106,56 +117,6 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     @Inject
     private Provider<SSOAuthenticatedUser> authenticatedUserProvider;
 
-    @Override
-    public SSOAuthenticatedUser authenticateUser(Credentials credentials)
-            throws GuacamoleException {
-        if (isImplicit()) {
-            return authenticateUserImplicit(credentials);
-        } else {
-            return authenticateUserCode(credentials);
-        }
-    }
-
-    private SSOAuthenticatedUser authenticateUserImplicit(Credentials credentials)
-            throws GuacamoleException {
-
-        String username = null;
-        Set<String> groups = null;
-        Map<String,String> tokens = Collections.emptyMap();
-
-        // Validate OpenID token in request, if present, and derive username
-        String token = credentials.getParameter(IMPLICIT_TOKEN_PARAMETER_NAME);
-        if (token != null) {
-            JwtClaims claims = tokenService.validateTokenImplicit(token);
-            if (claims != null) {
-                username = tokenService.processUsername(claims);
-                groups = tokenService.processGroups(claims);
-                tokens = tokenService.processAttributes(claims);
-            }
-        }
-
-        // If the username was successfully retrieved from the token, produce
-        // authenticated user
-        if (username != null) {
-
-            // Create corresponding authenticated user
-            SSOAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
-            authenticatedUser.init(username, credentials, groups, tokens);
-            return authenticatedUser;
-
-        }
-
-        // Request OpenID token (will automatically redirect the user to the
-        // OpenID authorization page via JavaScript)
-        throw new GuacamoleInvalidCredentialsException("Invalid login.",
-            new CredentialsInfo(Arrays.asList(new Field[] {
-                new RedirectField(IMPLICIT_TOKEN_PARAMETER_NAME, getLoginURI(),
-                        new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
-            }))
-        );
-
-    }
-
     /**
      * Return the value of the session identifier associated with the given
      * credentials, or null if no session identifier is found in the
@@ -175,22 +136,40 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         return credentials != null ? credentials.getParameter(AUTH_SESSION_QUERY_PARAM) : null;
     }
 
-    private SSOAuthenticatedUser authenticateUserCode(Credentials credentials)
+    @Override
+    public SSOAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
         String username = null;
         Set<String> groups = null;
         Map<String,String> tokens = Collections.emptyMap();
 
-        // Recover session
-        String identifier = getSessionIdentifier(credentials);
-        OpenIDAuthenticationSession session = sessionManager.resume(identifier);
-        
-        // Validate OIDC token in request, if present, and derive username
-        if (session != null) {
-            String code = (String) session.getCode();
-            if (code != null) {
-                JwtClaims claims = tokenService.validateTokenCode(code, session);
+        logger.debug("OpenID authentication with {} flow (ID: {}, Secret: {}, PKCE: {})",
+                  confService.getFlowType(),
+                  confService.getClientID(),
+                  confService.getClientSecret(),
+                  confService.isPKCERequired());
+
+        if (confService.getFlowType().equals("implicit")) {
+            String token = credentials.getParameter(IMPLICIT_TOKEN_PARAMETER_NAME);
+            JwtClaims claims = tokenService.validateToken(token);
+            if (claims != null) {
+                username = tokenService.processUsername(claims);
+                groups = tokenService.processGroups(claims);
+                tokens = tokenService.processAttributes(claims);
+            }
+        } else {
+            String verifier = null;
+            if (confService.isPKCERequired()) {
+                // Recover session
+                String identifier = getSessionIdentifier(credentials);
+                if (identifier != null) {
+                    verifier = sessionManager.getVerifier(identifier);
+                }
+            }
+            String code = credentials.getParameter("code");
+            if (code != null && (confService.isPKCERequired() == false || verifier != null)) {
+                JwtClaims claims = tokenService.validateCode(code, verifier);
                 if (claims != null) {
                     username = tokenService.processUsername(claims);
                     groups = tokenService.processGroups(claims);
@@ -206,7 +185,6 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
             SSOAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(username, credentials, groups, tokens);
             return authenticatedUser;
-
         }
 
         // Request OpenID token (will automatically redirect the user to the
@@ -219,14 +197,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         );
     }
 
-    private Boolean isImplicit() throws GuacamoleException {
-        String flowType = confService.getFlowType();
-        return flowType.equals("implicit");
-    }
-
     @Override
     public URI getLoginURI() throws GuacamoleException {
-        if (isImplicit()) {
+        if (confService.getFlowType().equals("implicit")) {
             return UriBuilder.fromUri(confService.getAuthorizationEndpoint())
                     .queryParam("scope", confService.getScope())
                     .queryParam("response_type", IMPLICIT_TOKEN_PARAMETER_NAME)
@@ -234,23 +207,36 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
                     .queryParam("redirect_uri", confService.getRedirectURI())
                     .queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L))
                     .build();
-        } else {
-           /**
-            * For Code flow and PKCE support we need access to the users session to
-            * store the PKCE verifier and be able to pass the returned code form the
-            * IdP to authenticateUser. Guacamole doesn't expose the user session here.
-            * We get around that by creating a redirect to a local REST api that then
-            * does the redirection/callback and stores the code and verifier in the
-            * user session.
-            */
-            URI redirect = UriBuilder.fromUri(confService.getRedirectURI())
-                         .path(CODE_REDIRECT_API).build();
-            return UriBuilder.fromUri(redirect)
+        } else  {
+            UriBuilder builder = UriBuilder.fromUri(confService.getAuthorizationEndpoint())
                     .queryParam("scope", confService.getScope())
                     .queryParam("response_type", CODE_TOKEN_PARAMETER_NAME)
                     .queryParam("client_id", confService.getClientID())
-                    .queryParam("redirect_uri", redirect)
-                    .build();
+                    .queryParam("redirect_uri", confService.getRedirectURI());
+
+            if (confService.isPKCERequired()) {
+                String codeVerifier = PKCEUtil.generateCodeVerifier();
+                String codeChallenge;
+
+                try {
+                    codeChallenge = PKCEUtil.generateCodeChallenge(codeVerifier);
+                }
+                catch (Exception e) {
+                    throw new GuacamoleException("Unable to compute PKCE challenge", e);
+                }
+
+                // Store verifier for authenticateUser
+                OpenIDAuthenticationSession session = new OpenIDAuthenticationSession(codeVerifier,
+                            confService.getAuthenticationTimeout() * 60000L);
+                String identifier = IdentifierGenerator.generateIdentifier();
+                sessionManager.defer(session, identifier);
+
+                builder.queryParam("code_challenge", codeChallenge)
+                       .queryParam("code_challenge_method", "S256")
+                       .queryParam(AUTH_SESSION_QUERY_PARAM, identifier);
+            }
+
+            return builder.build();
         }
     }
 
