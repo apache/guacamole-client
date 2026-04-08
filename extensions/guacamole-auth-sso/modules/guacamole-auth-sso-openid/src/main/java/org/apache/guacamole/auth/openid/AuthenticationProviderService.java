@@ -152,11 +152,13 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
         if (confService.getFlowType().equals("implicit")) {
             String token = credentials.getParameter(IMPLICIT_TOKEN_PARAMETER_NAME);
-            JwtClaims claims = tokenService.validateToken(token);
-            if (claims != null) {
-                username = tokenService.processUsername(claims);
-                groups = tokenService.processGroups(claims);
-                tokens = tokenService.processAttributes(claims);
+            if (token != null) {
+                JwtClaims claims = tokenService.validateToken(token);
+                if (claims != null) {
+                    username = tokenService.processUsername(claims);
+                    groups = tokenService.processGroups(claims);
+                    tokens = tokenService.processAttributes(claims);
+                }
             }
         } else {
             String verifier = null;
