@@ -1071,6 +1071,19 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
+     * Releases any modifier keys that are currently held, so that synthesized
+     * text input is not treated as modified or shortcut input on the remote
+     * side. Lock keys are excluded because they toggle state rather than being
+     * held.
+     */
+    this.releaseModifiersForSyntheticInput = function releaseModifiersForSyntheticInput() {
+        Guacamole.Keyboard.MODIFIER_KEYSYMS.forEach(function(keysym) {
+            if (guac_keyboard.pressed[keysym])
+                guac_keyboard.release(keysym);
+        });
+    };
+
+    /**
      * Resets the state of this keyboard, releasing all keys, and firing keyup
      * events for each released key.
      */
@@ -1737,10 +1750,55 @@ Guacamole.Keyboard = function Keyboard(element) {
 
         };
 
+        /**
+         * Handles the given "paste" event, normalizing clipboard text before
+         * typing it into the remote session.
+         *
+         * @private
+         * @param {!ClipboardEvent} e
+         *     The "paste" event to handle.
+         */
+        var handlePaste = function handlePaste(e) {
+
+            // Only intercept if handler set
+            if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
+
+            // Ignore events which have already been handled
+            if (!markEvent(e)) return;
+
+            // Only handle paste for the target element to avoid replaying
+            // clipboard data from unrelated UI into the remote session.
+            if (e.target !== element)
+                return;
+
+            var content = e.clipboardData && e.clipboardData.getData('text/plain');
+            if (!content)
+                return;
+
+            // This paste path replays clipboard content as synthetic keyboard
+            // input. Normalize to CR here because the typing path treats CR as
+            // Enter.
+            content = Guacamole.Paste.normalizeToCR(content);
+
+            // Release held modifiers so pasted text isn't treated as modified
+            // input or shortcuts on the remote side.
+            guac_keyboard.releaseModifiersForSyntheticInput();
+
+            guac_keyboard.type(content);
+
+            e.preventDefault();
+
+            // Stop propagation defensively in case paste handling is added
+            // on parent elements.
+            e.stopPropagation();
+
+        };
+
         // Automatically type text entered into the wrapped field
         element.addEventListener("input", handleInput, false);
         element.addEventListener("compositionend", handleCompositionEnd, false);
         element.addEventListener("compositionstart", handleCompositionStart, false);
+        element.addEventListener("paste", handlePaste, false);
 
     };
 
@@ -1758,6 +1816,41 @@ Guacamole.Keyboard = function Keyboard(element) {
  * @type {!number}
  */
 Guacamole.Keyboard._nextID = 0;
+
+/**
+ * The keysyms of all modifier keys that can be held, excluding lock keys
+ * (Caps Lock, Num Lock, etc.) which toggle state rather than being held.
+ * Used to release held modifiers before synthesizing text input.
+ *
+ * @type {!number[]}
+ */
+Guacamole.Keyboard.MODIFIER_KEYSYMS = [
+    0xFE03, // AltGr
+    0xFFE1, // Left shift
+    0xFFE2, // Right shift
+    0xFFE3, // Left ctrl
+    0xFFE4, // Right ctrl
+    0xFFE7, // Left meta
+    0xFFE8, // Right meta
+    0xFFE9, // Left alt
+    0xFFEA, // Right alt
+    0xFFEB, // Left super/hyper
+    0xFFEC  // Right super/hyper
+];
+
+/**
+ * Invokes the given release function for every modifier keysym, regardless of
+ * whether the key is currently held. Intended for callers that lack access to
+ * a Guacamole.Keyboard instance and therefore cannot filter by pressed state.
+ * Callers with a keyboard instance should use
+ * {@link Guacamole.Keyboard#releaseModifiersForSyntheticInput} instead.
+ *
+ * @param {!function(number)} release
+ *     Function that releases the given modifier keysym.
+ */
+Guacamole.Keyboard.releaseModifiersForSyntheticInput = function releaseModifiersForSyntheticInput(release) {
+    Guacamole.Keyboard.MODIFIER_KEYSYMS.forEach(release);
+};
 
 /**
  * The state of all supported keyboard modifiers.
