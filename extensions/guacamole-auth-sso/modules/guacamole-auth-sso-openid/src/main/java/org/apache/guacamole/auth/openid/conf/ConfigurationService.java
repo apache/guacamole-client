@@ -20,13 +20,17 @@
 package org.apache.guacamole.auth.openid.conf;
 
 import com.google.inject.Inject;
+
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.apache.guacamole.auth.openid.conf.OpenIDResponseType;
+import org.apache.guacamole.auth.openid.conf.OpenIDWellKnown;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.EnumGuacamoleProperty;
 import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
@@ -38,9 +42,9 @@ import org.apache.guacamole.properties.URIGuacamoleProperty;
 public class ConfigurationService {
 
     /**
-     * The default OICD flow type
+     * The default OICD reponse type
      */
-    private static final String DEFAULT_FLOW_TYPE = "implicit";
+    private static final OpenIDResponseType DEFAULT_RESPONSE_TYPE = OpenIDResponseType.ID_TOKEN;
 
     /**
      * The default claim type to use to retrieve an authenticated user's
@@ -128,13 +132,13 @@ public class ConfigurationService {
     };
 
     /**
-     * The flow type of the OpenID service.
+     * The reponse type of the OpenID service.
      */
-    private static final StringGuacamoleProperty OPENID_FLOW_TYPE =
-            new StringGuacamoleProperty() {
+    private static final EnumGuacamoleProperty<OpenIDResponseType> OPENID_RESPONSE_TYPE =
+            new EnumGuacamoleProperty<OpenIDResponseType>(OpenIDResponseType.class) {
 
         @Override
-        public String getName() { return "openid-flow-type"; }
+        public String getName() { return "openid-response-type"; }
 
     };
 
@@ -316,6 +320,12 @@ public class ConfigurationService {
      */
     @Inject
     private Environment environment;
+    
+    /**
+     * Service for retrieving OpenID well-known data.
+     */
+    @Inject
+    private OpenIDWellKnown confWellKnown;
 
     /**
      * Returns the authorization endpoint (URI) of the OpenID service as
@@ -326,11 +336,15 @@ public class ConfigurationService {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the authorization
      *     endpoint property is missing.
      */
     public URI getAuthorizationEndpoint() throws GuacamoleException {
-        return environment.getRequiredProperty(OPENID_AUTHORIZATION_ENDPOINT);
+        URI authorization_endpoint = environment.getProperty(OPENID_AUTHORIZATION_ENDPOINT);
+        authorization_endpoint = authorization_endpoint == null ? confWellKnown.getAuthorizationEndpoint() : authorization_endpoint;
+        if (authorization_endpoint == null) {
+            throw new GuacamoleException("Property openid-authorization-endpoint or openid-well-known-endpoint is required");
+        }
+        return authorization_endpoint;
     }
 
     /**
@@ -382,7 +396,12 @@ public class ConfigurationService {
      *     is missing.
      */
     public String getIssuer() throws GuacamoleException {
-        return environment.getRequiredProperty(OPENID_ISSUER);
+        String issuer = environment.getProperty(OPENID_ISSUER);
+        issuer = issuer == null ? confWellKnown.getIssuer() : issuer;
+        if (issuer == null) {
+            throw new GuacamoleException("Property openid-issuer or openid-well-known-endpoint is required");
+        }
+        return issuer;
     }
 
     /**
@@ -400,7 +419,12 @@ public class ConfigurationService {
      *     property is missing.
      */
     public URI getJWKSEndpoint() throws GuacamoleException {
-        return environment.getRequiredProperty(OPENID_JWKS_ENDPOINT);
+        URI jwks_uri =  environment.getProperty(OPENID_JWKS_ENDPOINT);
+        jwks_uri = jwks_uri == null ? confWellKnown.getJWKSEndpoint() : jwks_uri;
+        if (jwks_uri == null) {
+            throw new GuacamoleException("Property openid-jwks-endpoint or openid-well-known-endpoint is required");
+        }
+        return jwks_uri;
     }
 
     /**
@@ -412,25 +436,60 @@ public class ConfigurationService {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the authorization
+     *     If guacamole.properties cannot be parsed, or if the token
      *     endpoint property is missing.
      */
     public URI getTokenEndpoint() throws GuacamoleException {
-        return environment.getRequiredProperty(OPENID_TOKEN_ENDPOINT);
+        URI token_endpoint = environment.getProperty(OPENID_TOKEN_ENDPOINT);
+        token_endpoint = token_endpoint == null ? confWellKnown.getTokenEndpoint() : token_endpoint;
+        if (token_endpoint == null) {
+            throw new GuacamoleException("Property openid-token-endpoint or openid-well-known-endpoint is required");
+        }
+        return token_endpoint;
     }
-
+    
     /**
-     * Returns the flow type of the OpenID service as configured with guacamole.properties.
+     * Returns the well-known endpoint (URI) of the OIDC service as
+     * configured with guacamole.properties.
      *
      * @return
-     *     The flow type of the OpenID service, as configured with guacamole.properties. Can
-     *     be either 'implicit' or 'code'.
+     *     The well-known endpoint of the OIDC service, as configured with
+     *     guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed, or if the well-known
+     *     endpoint property is missing.
+     */
+    public URI getWellKnownEndpoint() throws GuacamoleException {
+        return confWellKnown.getWellKnownEndpoint();
+    }    
+
+    /**
+     * Returns the reponse type of the OpenID service as configured with guacamole.properties.
+     *
+     * @return
+     *     The reponse type of the OpenID service, as configured with guacamole.properties. Can
+     *     be either 'id_token', 'token' or 'code'.
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed.
      */
-    public String getFlowType() throws GuacamoleException {
-        return environment.getProperty(OPENID_FLOW_TYPE, DEFAULT_FLOW_TYPE);
+    public OpenIDResponseType getResponseType() throws GuacamoleException {
+        return environment.getProperty(OPENID_RESPONSE_TYPE, DEFAULT_RESPONSE_TYPE);
+    }
+
+    /**
+     * Returns true if the response type defines an implict flow
+     *
+     * @return
+     *     The whether implicit flow is used or not, as configured with guacamole.properties.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public boolean isImplicitFlow() throws GuacamoleException {
+        OpenIDResponseType response_type = environment.getProperty(OPENID_RESPONSE_TYPE, DEFAULT_RESPONSE_TYPE);
+        return response_type != OpenIDResponseType.CODE;
     }
 
     /**
