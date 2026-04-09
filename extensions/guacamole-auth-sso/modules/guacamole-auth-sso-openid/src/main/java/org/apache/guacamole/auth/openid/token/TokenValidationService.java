@@ -20,11 +20,6 @@
 package org.apache.guacamole.auth.openid.token;
 
 import com.google.inject.Inject;
-import java.io.BufferedReader;
-import java.io.OutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -39,6 +34,7 @@ import java.util.Set;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
+import org.apache.guacamole.auth.openid.util.JsonUrlReader;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.token.TokenName;
 import org.jose4j.json.JsonUtil;
@@ -243,46 +239,9 @@ public class TokenValidationService {
                 bodyBuilder.append("&").append(urlencode("code_verifier", verifier));
             }
 
-            // Build the final URI and convert to a URL
-            URL url = confService.getTokenEndpoint().toURL();
-
-            // Open connection, using HttpURLConnection
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8"
-            );
-
-            try (OutputStream out = conn.getOutputStream()) {
-                byte [] body = bodyBuilder.toString().getBytes(StandardCharsets.UTF_8);
-                out.write(body, 0, body.length);
-            }
-
-            // Read response
-            int status = conn.getResponseCode();
-
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(
-                            status >= 200 && status < 300
-                                    ? conn.getInputStream()
-                                    : conn.getErrorStream(),
-                            StandardCharsets.UTF_8
-                    )
-            );
-
-            StringBuilder responseBody = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                responseBody.append(line);
-            }
-            reader.close();
-
-            Map<String,Object> json = JsonUtil.parseJson(responseBody.toString());
-
-            if (status < 200 || status >= 300) {
-                throw new GuacamoleException("Token endpoint error (" + status + "): " + json.toString());
-            }
+            Map<String,Object> json = 
+                    JsonUrlReader.fetch("POST", confService.getTokenEndpoint().toURL(),
+                                        bodyBuilder.toString());
 
             return (String) json.get("id_token");
 

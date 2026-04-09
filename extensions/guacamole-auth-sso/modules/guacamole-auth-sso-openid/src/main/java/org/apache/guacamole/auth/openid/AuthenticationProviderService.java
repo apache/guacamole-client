@@ -63,6 +63,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     /**
      * The standard HTTP parameter which will be included within the URL by all
      * OpenID services upon successful implicit flow authentication.
+     *
      */
     public static final String IMPLICIT_TOKEN_PARAMETER_NAME = "id_token";
 
@@ -136,13 +137,13 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         Set<String> groups = null;
         Map<String,String> tokens = Collections.emptyMap();
 
-        logger.debug("OpenID authentication with {} flow (ID: {}, Secret: {}, PKCE: {})",
-                  confService.getFlowType(),
+        logger.debug("OpenID authentication with '{}' reponse type (ID: {}, Secret: {}, PKCE: {})",
+                  confService.getResponseType(),
                   confService.getClientID(),
                   confService.getClientSecret(),
                   confService.isPKCERequired());
 
-        if (confService.getFlowType().equals("implicit")) {
+        if (confService.isImplicitFlow()) {
             String token = credentials.getParameter(IMPLICIT_TOKEN_PARAMETER_NAME);
             if (token != null) {
                 JwtClaims claims = tokenService.validateToken(token);
@@ -194,21 +195,15 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
     @Override
     public URI getLoginURI() throws GuacamoleException {
-        if (confService.getFlowType().equals("implicit")) {
-            return UriBuilder.fromUri(confService.getAuthorizationEndpoint())
-                    .queryParam("scope", confService.getScope())
-                    .queryParam("response_type", IMPLICIT_TOKEN_PARAMETER_NAME)
-                    .queryParam("client_id", confService.getClientID())
-                    .queryParam("redirect_uri", confService.getRedirectURI())
-                    .queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L))
-                    .build();
-        } else  {
-            UriBuilder builder = UriBuilder.fromUri(confService.getAuthorizationEndpoint())
-                    .queryParam("scope", confService.getScope())
-                    .queryParam("response_type", CODE_TOKEN_PARAMETER_NAME)
-                    .queryParam("client_id", confService.getClientID())
-                    .queryParam("redirect_uri", confService.getRedirectURI());
+        UriBuilder builder = UriBuilder.fromUri(confService.getAuthorizationEndpoint())
+                .queryParam("scope", confService.getScope())
+                .queryParam("response_type", confService.getResponseType().toString())
+                .queryParam("client_id", confService.getClientID())
+                .queryParam("redirect_uri", confService.getRedirectURI());
 
+        if (confService.isImplicitFlow()) {
+            builder.queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L));
+        } else  {
             if (confService.isPKCERequired()) {
                 String codeVerifier = PKCEUtil.generateCodeVerifier();
                 String codeChallenge;
@@ -230,9 +225,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
                        .queryParam("code_challenge_method", "S256")
                        .queryParam(AUTH_SESSION_QUERY_PARAM, identifier);
             }
-
-            return builder.build();
         }
+
+        return builder.build();
     }
 
     @Override
