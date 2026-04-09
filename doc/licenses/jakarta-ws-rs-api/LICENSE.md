@@ -5,7 +5,7 @@
 # Source:  https://raw.githubusercontent.com/jakartaee/rest/refs/tags/${VERSION}/LICENSE.md
 # Source:  https://raw.githubusercontent.com/jakartaee/rest/refs/tags/${VERSION}-RELEASE/LICENSE.md
 #
-# --- BEGIN LICENSE FILE [2.1.6] ---
+# --- BEGIN LICENSE FILE [3.1.0] ---
 # Eclipse Public License - v 2.0
 
         THE ACCOMPANYING PROGRAM IS PROVIDED UNDER THE TERMS OF THIS ECLIPSE
@@ -643,4 +643,4 @@
     exception to your version of the library, but you are not obligated to
     do so.  If you do not wish to do so, delete this exception statement
     from your version.
-# --- END LICENSE FILE [2.1.6] ---
+# --- END LICENSE FILE [3.1.0] ---

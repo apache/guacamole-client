@@ -19,11 +19,9 @@
 
 package org.apache.guacamole.rest.auth;
 
+import jakarta.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.inject.Inject;
-
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnauthorizedException;

@@ -19,18 +19,18 @@
 
 package org.apache.guacamole.websocket;
 
+import jakarta.websocket.CloseReason;
+import jakarta.websocket.CloseReason.CloseCode;
+import jakarta.websocket.Endpoint;
+import jakarta.websocket.EndpointConfig;
+import jakarta.websocket.MessageHandler;
+import jakarta.websocket.OnClose;
+import jakarta.websocket.OnMessage;
+import jakarta.websocket.OnOpen;
+import jakarta.websocket.RemoteEndpoint;
+import jakarta.websocket.Session;
 import java.io.IOException;
 import java.util.List;
-import javax.websocket.CloseReason;
-import javax.websocket.CloseReason.CloseCode;
-import javax.websocket.Endpoint;
-import javax.websocket.EndpointConfig;
-import javax.websocket.MessageHandler;
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.RemoteEndpoint;
-import javax.websocket.Session;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.io.GuacamoleReader;
 import org.apache.guacamole.io.GuacamoleWriter;

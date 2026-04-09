@@ -20,9 +20,9 @@
 package org.apache.guacamole.net.auth;
 
 import org.apache.guacamole.net.RequestDetails;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.io.Serializable;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 /**
  * Simple arbitrary set of credentials, including a username/password pair and
