@@ -205,7 +205,7 @@ public class TokenValidationService {
             }
 
             Map<String,Object> json = 
-                    JsonUrlReader.fetch("POST", confService.getTokenEndpoint().toURL(),
+                    JsonUrlReader.fetch("POST", confService.getTokenEndpoint(),
                                         bodyBuilder.toString());
 
             return (String) json.get("id_token");
