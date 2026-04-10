@@ -201,12 +201,12 @@ public class OpenIDWellKnown {
                     token_endpoint = UriBuilder.fromUri((String) json.get("token_endpoint")).build();
                     jwks_uri = UriBuilder.fromUri((String) json.get("jwks_uri")).build();
 
-                    logger.debug("OIDC well-known\n" +
-                                 "  issuer                 : {}\n" +
-                                 "  authorization_endpoint : {}\n" +
-                                 "  token_endpoint         : {}\n" +
-                                 "  jwks_uri               : {}\n",
-                                 issuer, authorization_endpoint, token_endpoint, jwks_uri);
+                    logger.info("OIDC well-known\n" +
+                                "  issuer                 : {}\n" +
+                                "  authorization_endpoint : {}\n" +
+                                "  token_endpoint         : {}\n" +
+                                "  jwks_uri               : {}\n",
+                                issuer, authorization_endpoint, token_endpoint, jwks_uri);
 
                     scheduler.shutdown();
                     return;
