@@ -195,7 +195,7 @@ public class OpenIDWellKnown {
                 attempts++;
 
                 try {
-                    Map<String,Object> json = JsonUrlReader.fetch("GET", getWellKnownEndpoint().toURL(), "");
+                    Map<String,Object> json = JsonUrlReader.fetch("GET", getWellKnownEndpoint(), "");
                     issuer = (String) json.get("issuer");
                     authorization_endpoint = UriBuilder.fromUri((String) json.get("authorization_endpoint")).build();
                     token_endpoint = UriBuilder.fromUri((String) json.get("token_endpoint")).build();

@@ -19,17 +19,18 @@
 
 package org.apache.guacamole.auth.openid.util;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import org.jose4j.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 /*
  * Utility class to open a http connection to a URL, send a body
@@ -54,8 +55,8 @@ public final class JsonUrlReader {
      * @param String method
      *      The htpp method to use. Should be "GET", "POST" or "PATCH".
      *
-     * @param URL url
-     *      A URL value giving the address where to recover the JSON
+     * @param URI uri
+     *      A URI value giving the address where to recover the JSON
      *
      * @param String body
      *      A pre-encoded body string to be sent to the address if the method is
@@ -64,48 +65,28 @@ public final class JsonUrlReader {
      * @return
      *      A Map<String,Object> containing the decoded json values.
      */
-    public static Map<String,Object> fetch(String method, URL url, String body) throws IOException {
-        if (url == null || url.toString() == "") {
-            throw new IOException("JsonUrlReader : Missing URL");
+    public static Map<String, Object> fetch(String method, URI uri, String body) throws IOException {
+        if (uri == null || uri.toString().isEmpty()) {
+            throw new IOException("JsonUrlReader: Missing URL");
         }
-        
+
         try {
-            // Open connection, using HttpURLConnection
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                    .method(method,
+                            HttpRequest.BodyPublishers.ofString(body == null ? "" : body, StandardCharsets.UTF_8))
+                    .build();
 
-            conn.setRequestMethod(method);
-            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            // Asynchronous, non-blocking send, so that java servlet not blocked by outbound connection
+            CompletableFuture<HttpResponse<String>> future =
+                    client.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
 
-            if (! method.equals("GET")) {
-                conn.setDoOutput(true);
-                try (OutputStream out = conn.getOutputStream()) {
-                    byte [] bodyBytes = body.getBytes(StandardCharsets.UTF_8);
-                    out.write(bodyBytes, 0, bodyBytes.length);
-                }
-            }
-
-            // Read response
-            int status = conn.getResponseCode();
-
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(
-                            status >= 200 && status < 300
-                                    ? conn.getInputStream()
-                                    : conn.getErrorStream(),
-                            StandardCharsets.UTF_8
-                    )
-            );
-
-            StringBuilder responseBody = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                responseBody.append(line);
-            }
-            reader.close();
-
-            logger.debug("Response body : {}", responseBody.toString());
-
-            Map<String,Object> json = JsonUtil.parseJson(responseBody.toString());
+            HttpResponse<String> response = future.join();
+            int status = response.statusCode();
+            logger.debug("Response body: {}", response.body());
+            Map<String, Object> json = JsonUtil.parseJson(response.body());
 
             if (status < 200 || status >= 300) {
                 throw new IOException("(status: " + status + "): " + json.toString());
@@ -114,7 +95,7 @@ public final class JsonUrlReader {
             return json;
         }
         catch (Exception e) {
-            throw new IOException("JsonUrlreader error : " + e.getMessage());
+            throw new IOException("JsonUrlReader error: " + e.getMessage());
         }
     }
 }
