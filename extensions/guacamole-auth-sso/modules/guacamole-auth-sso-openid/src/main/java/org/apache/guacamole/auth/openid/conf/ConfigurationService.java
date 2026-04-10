@@ -20,7 +20,6 @@
 package org.apache.guacamole.auth.openid.conf;
 
 import com.google.inject.Inject;
-
 import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
@@ -125,10 +124,9 @@ public class ConfigurationService {
      */
     private static final URIGuacamoleProperty OPENID_TOKEN_ENDPOINT =
             new URIGuacamoleProperty() {
+
         @Override
-        public String getName() {
-            return "openid-token-endpoint";
-        }
+        public String getName() { return "openid-token-endpoint"; }
     };
 
     /**
@@ -148,10 +146,9 @@ public class ConfigurationService {
      */
     private static final StringGuacamoleProperty OPENID_CLIENT_SECRET =
             new StringGuacamoleProperty() {
+
         @Override
-        public String getName() {
-            return "openid-client-secret";
-        }
+        public String getName() { return "openid-client-secret"; }
     };
 
     /**
@@ -159,10 +156,9 @@ public class ConfigurationService {
      */
     private static final BooleanGuacamoleProperty OPENID_PKCE_REQUIRED =
             new BooleanGuacamoleProperty() {
+
         @Override
-        public String getName() {
-            return "openid-pkce-required";
-        }
+        public String getName() { return "openid-pkce-required"; }
     };
 
     /**
@@ -174,9 +170,9 @@ public class ConfigurationService {
      */
     private static final IntegerGuacamoleProperty OPENID_AUTH_TIMEOUT =
             new IntegerGuacamoleProperty() {
+
         @Override
         public String getName() { return "openid-auth-timeout"; }
-
     };
 
 
@@ -447,22 +443,6 @@ public class ConfigurationService {
         }
         return token_endpoint;
     }
-    
-    /**
-     * Returns the well-known endpoint (URI) of the OIDC service as
-     * configured with guacamole.properties.
-     *
-     * @return
-     *     The well-known endpoint of the OIDC service, as configured with
-     *     guacamole.properties.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the well-known
-     *     endpoint property is missing.
-     */
-    public URI getWellKnownEndpoint() throws GuacamoleException {
-        return confWellKnown.getWellKnownEndpoint();
-    }    
 
     /**
      * Returns the reponse type of the OpenID service as configured with guacamole.properties.

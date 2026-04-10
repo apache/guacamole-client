@@ -30,7 +30,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
@@ -77,20 +76,26 @@ public class TokenValidationService {
     private NonceService nonceService;
 
     /**
-     * Validates the given ID token, using implicit flow, returning the JwtClaims
-     * contained therein. If the ID token is invalid, null is returned.
+     * Validates the given ID token, using implicit flow. Also validates codes,
+     * exchanging them for id_tokens before validation. If the id_token or
+     * code is invalid, null is returned, otherwise the JwtClaims in the
+     * id_token are returned.
      *
      * @param token
-     *     The ID token to validate.
+     *     The ID token to validate if implicit flow or the code to exchange for
+     *     an id_token and then validate.
+     *
+     * @param verifier
+     *     A PKCE verifier or null if not used. Only used with code flow
      *
      * @return
-     *     The JWT claims contained within the given ID token if it passes tests,
-     *     or null if the token is not valid.
+     *     The JWT claims contained within the id_token if it passes tests,
+     *     or null if the id_token is not valid.
      *
      * @throws GuacamoleException
      *     If guacamole.properties could not be parsed.
      */
-    public JwtClaims validateToken(String token) throws GuacamoleException {
+    public JwtClaims validateTokenOrCode(String token, String verifier) throws GuacamoleException {
         // Validating the token requires a JWKS key resolver
         HttpsJwks jwks = new HttpsJwks(confService.getJWKSEndpoint().toString());
         HttpsJwksVerificationKeyResolver resolver = new HttpsJwksVerificationKeyResolver(jwks);
@@ -105,26 +110,36 @@ public class TokenValidationService {
                 .setExpectedAudience(confService.getClientID())
                 .setVerificationKeyResolver(resolver)
                 .build();
-
+                
+        /* Exchange code → token */
+        if (! confService.isImplicitFlow()) {
+            token = exchangeCode(token, verifier);                
+        }
+        
         try {
             // Validate JWT
             JwtClaims claims = jwtConsumer.processToClaims(token);
 
-            // Verify a nonce is present
-            String nonce = claims.getStringClaimValue("nonce");
-            if (nonce != null) {
-                // Verify that we actually generated the nonce, and that it has not
-                // already been used
-                if (nonceService.isValid(nonce)) {
-                    // nonce is valid, consider claims valid
-                    return claims;
+            if (confService.isImplicitFlow()) {
+                // Verify a nonce is present
+                String nonce = claims.getStringClaimValue("nonce");
+                if (nonce != null) {
+                    // Verify that we actually generated the nonce, and that it has not
+                    // already been used
+                    if (nonceService.isValid(nonce)) {
+                        // nonce is valid, consider claims valid
+                        return claims;
+                    }
+                    else {
+                        logger.info("Rejected OpenID token with invalid/old nonce.");
+                    }
                 }
                 else {
-                    logger.info("Rejected OpenID token with invalid/old nonce.");
+                    logger.info("Rejected OpenID token without nonce.");
                 }
             }
             else {
-                logger.info("Rejected OpenID token without nonce.");
+                return claims;
             }
         }
         // Log any failures to validate/parse the JWT
@@ -138,54 +153,6 @@ public class TokenValidationService {
         return null;
     }
 
-    /**
-     * Validates the given ID token, using code flow, returning the JwtClaims
-     * contained therein. If the ID token is invalid, null is returned.
-     *
-     * @param code
-     *     The code to validate and receive the id_token.
-     *
-     * @param verifier
-     *     A PKCE verifier or null if not used.
-     *
-     * @return
-     *     The JWT claims contained within the given ID token if it passes tests,
-     *     or null if the token is not valid.
-     *
-     * @throws GuacamoleException
-     *     If guacamole.properties could not be parsed.
-     */
-    public JwtClaims validateCode(String code, String verifier) throws GuacamoleException {
-        // Validating the token requires a JWKS key resolver
-        HttpsJwks jwks = new HttpsJwks(confService.getJWKSEndpoint().toString());
-        HttpsJwksVerificationKeyResolver resolver = new HttpsJwksVerificationKeyResolver(jwks);
-
-        /* Exchange code → token */
-        String token = exchangeCode(code, verifier);
-
-        // Create JWT consumer for validating received token
-        JwtConsumer jwtConsumer = new JwtConsumerBuilder()
-                .setRequireExpirationTime()
-                .setMaxFutureValidityInMinutes(confService.getMaxTokenValidity())
-                .setAllowedClockSkewInSeconds(confService.getAllowedClockSkew())
-                .setRequireSubject()
-                .setExpectedIssuer(confService.getIssuer())
-                .setExpectedAudience(confService.getClientID())
-                .setVerificationKeyResolver(resolver)
-                .build();
-
-        try {
-            // Validate JWT
-            return jwtConsumer.processToClaims(token);
-        }
-        // Log any failures to validate/parse the JWT
-        catch (InvalidJwtException e) {
-            logger.info("Rejected invalid OpenID token: {}", e.getMessage(), e);
-        }
-
-        return null;
-    }
-    
     /**
      * URLEncodes a key/value pair
      *
@@ -211,6 +178,7 @@ public class TokenValidationService {
      *
      * @param code
      *     The authorization code received from the IdP.
+     *
      * @param codeVerifier
      *     The PKCE verifier (or null if PKCE is disabled).
      *
@@ -245,7 +213,8 @@ public class TokenValidationService {
 
             return (String) json.get("id_token");
 
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.info("Rejected invalid OpenID code exchange: {}", e.getMessage(), e);
         }
         return null;
@@ -318,7 +287,7 @@ public class TokenValidationService {
                 List<String> oidcGroups = claims.getStringListClaimValue(groupsClaim);
                 if (oidcGroups != null && !oidcGroups.isEmpty())
                     return Collections.unmodifiableSet(new HashSet<>(oidcGroups));
-            }   
+            }
             catch (MalformedClaimException e) {
                 logger.info("Rejected OpenID token with malformed claim: {}", e.getMessage(), e);
             }

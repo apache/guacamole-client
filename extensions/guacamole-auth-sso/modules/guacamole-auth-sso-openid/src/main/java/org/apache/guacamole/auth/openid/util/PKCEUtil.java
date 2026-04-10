@@ -30,13 +30,21 @@ import java.security.SecureRandom;
  *   - code_challenge (S256)
  */
 public final class PKCEUtil {
-
+    /**
+     * Get the verifier data from a secure random source
+     */
     private static final SecureRandom RANDOM = new SecureRandom();
 
+    /*
+     * Class to create PKCE challenges and verifiers. This class should not be instantiated
+     */
     private PKCEUtil() {}
 
     /**
      * Generates a high-entropy PKCE code_verifier.
+     *
+     * @return
+     *      A 256bit or 64 byte random Base64 URL encode string
      */
     public static String generateCodeVerifier() {
         byte[] bytes = new byte[64];
@@ -46,6 +54,13 @@ public final class PKCEUtil {
 
     /**
      * Computes the PKCE code_challenge = BASE64URL(SHA256(code_verifier)).
+     *
+     * @param String verifier
+     *      A string containing the S56 verifier calculated bu generateCodeVerifier
+     *
+     * @return
+     *      The generated S256 code challenge used for the PKCE request encoded 
+     *      in Base64 URL format.
      */
     public static String generateCodeChallenge(String verifier) throws Exception {
         MessageDigest sha = MessageDigest.getInstance("SHA-256");
@@ -55,6 +70,12 @@ public final class PKCEUtil {
 
     /**
      * Base64URL encoding without padding.
+     *
+     * @param bytes
+     *      The bytes to be Base54 URL encoded
+     *
+     * @return
+     *      The Base64 URL encoded string value corresponding to the bytes 
      */
     public static String base64Url(byte[] bytes) {
         return java.util.Base64.getUrlEncoder()

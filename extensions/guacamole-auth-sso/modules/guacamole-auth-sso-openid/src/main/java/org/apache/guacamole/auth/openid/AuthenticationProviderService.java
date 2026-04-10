@@ -146,14 +146,15 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         if (confService.isImplicitFlow()) {
             String token = credentials.getParameter(IMPLICIT_TOKEN_PARAMETER_NAME);
             if (token != null) {
-                JwtClaims claims = tokenService.validateToken(token);
+                JwtClaims claims = tokenService.validateTokenOrCode(token, "");
                 if (claims != null) {
                     username = tokenService.processUsername(claims);
                     groups = tokenService.processGroups(claims);
                     tokens = tokenService.processAttributes(claims);
                 }
             }
-        } else {
+        }
+        else {
             String verifier = null;
             if (confService.isPKCERequired()) {
                 // Recover session
@@ -164,7 +165,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
             }
             String code = credentials.getParameter("code");
             if (code != null && (confService.isPKCERequired() == false || verifier != null)) {
-                JwtClaims claims = tokenService.validateCode(code, verifier);
+                JwtClaims claims = tokenService.validateTokenOrCode(code, verifier);
                 if (claims != null) {
                     username = tokenService.processUsername(claims);
                     groups = tokenService.processGroups(claims);
@@ -203,7 +204,8 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
         if (confService.isImplicitFlow()) {
             builder.queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L));
-        } else  {
+        }
+        else  {
             if (confService.isPKCERequired()) {
                 String codeVerifier = PKCEUtil.generateCodeVerifier();
                 String codeChallenge;
