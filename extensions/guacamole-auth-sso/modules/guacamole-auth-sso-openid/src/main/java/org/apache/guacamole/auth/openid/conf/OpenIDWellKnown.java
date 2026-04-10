@@ -46,7 +46,7 @@ public class OpenIDWellKnown {
     /**
      * Logger for this class.
      */
-    private final Logger logger = LoggerFactory.getLogger(OpenIDWellKnown.class);
+    private static final Logger logger = LoggerFactory.getLogger(OpenIDWellKnown.class);
 
 
     /**
@@ -62,32 +62,37 @@ public class OpenIDWellKnown {
     /**
      * The detected issuer
      */
-     private static String issuer = null;
+    private static String issuer = null;
 
     /**
      * The detected authorization edpoint
      */
-     private static URI authorization_endpoint = null;
+    private static URI authorization_endpoint = null;
 
     /**
      * The detected token edpoint
      */
-     private static URI token_endpoint = null;
+    private static URI token_endpoint = null;
 
     /**
      * The detected jwks_uri
      */
-     private static URI jwks_uri = null;
+    private static URI jwks_uri = null;
+    
+    /**
+     * Empty constructor of the class to populate data recovered from a OIDC
+     * well-known URL. The class will be populated on injection by Guice
+     */
+    public OpenIDWellKnown() { }
 
     /**
      * The well-known endpoint (URI) of the OIDC service.
      */
     private static final URIGuacamoleProperty OPENID_WELL_KNOWN_ENDPOINT =
             new URIGuacamoleProperty() {
+
         @Override
-        public String getName() {
-            return "openid-well-known-endpoint";
-        }
+        public String getName() { return "openid-well-known-endpoint"; }
     };
 
     /**
@@ -102,7 +107,7 @@ public class OpenIDWellKnown {
      *     If guacamole.properties cannot be parsed, or if the authorization
      *     endpoint property is missing.
      */
-    public URI getWellKnownEndpoint() throws GuacamoleException {
+    private URI getWellKnownEndpoint() throws GuacamoleException {
         return environment.getProperty(OPENID_WELL_KNOWN_ENDPOINT);
     }
 
@@ -163,15 +168,22 @@ public class OpenIDWellKnown {
     private Environment environment;
 
     /*
-     * Creates an OpenIDWellKnown class that reads the json from an OIDC
-     * well-known endpoint and saves these values for later use. Use Guice
-     * to ensure environment exists before initializing.
+     * On injection, when the environment is non null, populates the OpenIDWellKnown 
+     * class by reading the json from an OIDC well-known endpoint and saves these values
+     * for later use. Use Guice to ensure environment exists before initializing.
      */
-    public OpenIDWellKnown() {
-    }
-
     @Inject
     public void init() {
+        // Fast return if there is no well-known endpoint or its unreadable
+        try {
+            if (getWellKnownEndpoint() == null) {
+                return;
+            }
+        }
+        catch (Exception e) {
+            return;
+        }
+    
         // Call to well-known endpoint might fail, so allow several tries before giving up
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         
@@ -198,7 +210,8 @@ public class OpenIDWellKnown {
 
                     scheduler.shutdown();
                     return;
-                } catch (Exception e) {
+                }
+                catch (Exception e) {
                     logger.debug("Rejecting well-known endpoint : {}", e.getMessage());
                 }
 

@@ -24,6 +24,7 @@ import org.apache.guacamole.net.auth.AuthenticationSession;
 /**
  * Representation of an in-progress OpenID authentication attempt.
  */
+
 public class OpenIDAuthenticationSession extends AuthenticationSession {
     /**
      * The PKCE challenge verifier.
