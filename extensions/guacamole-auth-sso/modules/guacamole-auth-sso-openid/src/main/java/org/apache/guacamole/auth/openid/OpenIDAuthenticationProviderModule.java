@@ -46,6 +46,7 @@ public class OpenIDAuthenticationProviderModule extends AbstractModule {
         bind(NonceService.class).in(Scopes.SINGLETON);
         bind(TokenValidationService.class);
         bind(OpenIDAuthenticationSessionManager.class);
+
         bind(Environment.class).toInstance(environment);
     }
 
