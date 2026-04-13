@@ -219,7 +219,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
                 // Store verifier for authenticateUser
                 OpenIDAuthenticationSession session = new OpenIDAuthenticationSession(codeVerifier,
-                            confService.getAuthenticationTimeout() * 60000L);
+                            confService.getMaxPKCEVerifierValidity() * 60000L);
                 String identifier = IdentifierGenerator.generateIdentifier();
                 sessionManager.defer(session, identifier);
 
