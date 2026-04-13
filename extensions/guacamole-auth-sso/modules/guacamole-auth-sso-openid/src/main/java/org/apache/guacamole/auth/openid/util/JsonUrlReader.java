@@ -72,16 +72,21 @@ public final class JsonUrlReader {
 
         try {
             HttpClient client = HttpClient.newHttpClient();
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(uri)
-                    .header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-                    .method(method,
-                            HttpRequest.BodyPublishers.ofString(body == null ? "" : body, StandardCharsets.UTF_8))
-                    .build();
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder().uri(uri);
+            if (method != "GET") {
+                // FIXME: If this function is ever used to post json bodies this header
+                // will need to be configurable
+                requestBuilder.header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+                .method(method, HttpRequest.BodyPublishers.ofString(body == null ? "" : body,
+                                                                    StandardCharsets.UTF_8));
+            }
+            else {
+                requestBuilder.GET();
+            }
 
-            // Asynchronous, non-blocking send, so that java servlet not blocked by outbound connection
-            CompletableFuture<HttpResponse<String>> future =
-                    client.sendAsync(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+            // Asynchronous, non-blocking send, so that tomcat servlets are not blocked by outbound connection
+            CompletableFuture<HttpResponse<String>> future = client.sendAsync(requestBuilder.build(),
+                    HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
 
             HttpResponse<String> response = future.join();
             int status = response.statusCode();
