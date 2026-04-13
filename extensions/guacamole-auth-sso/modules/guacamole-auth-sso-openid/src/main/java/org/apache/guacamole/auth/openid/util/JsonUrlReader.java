@@ -53,7 +53,7 @@ public final class JsonUrlReader {
      * Method to POST or GET to a URL and recover the JSON in the form of a Map
      *
      * @param String method
-     *      The htpp method to use. Should be "GET", "POST" or "PATCH".
+     *      The http method to use. Should be "GET", "POST" or "PATCH".
      *
      * @param URI uri
      *      A URI value giving the address where to recover the JSON

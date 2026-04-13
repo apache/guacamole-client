@@ -65,12 +65,12 @@ public class OpenIDWellKnown {
     private static String issuer = null;
 
     /**
-     * The detected authorization edpoint
+     * The detected authorization endpoint
      */
     private static URI authorization_endpoint = null;
 
     /**
-     * The detected token edpoint
+     * The detected token endpoint
      */
     private static URI token_endpoint = null;
 
@@ -104,7 +104,7 @@ public class OpenIDWellKnown {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the authorization
+     *     If guacamole.properties cannot be parsed, or if the well-known
      *     endpoint property is missing.
      */
     private URI getWellKnownEndpoint() throws GuacamoleException {
