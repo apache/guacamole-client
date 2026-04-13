@@ -339,7 +339,8 @@ public class ConfigurationService {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     endpoint property is missing.
+     *     If guacamole.properties cannot be parsed, or it authorization and
+     *     well-known endpoints are property is missing.
      */
     public URI getAuthorizationEndpoint() throws GuacamoleException {
         URI authorization_endpoint = environment.getProperty(OPENID_AUTHORIZATION_ENDPOINT);
@@ -396,7 +397,7 @@ public class ConfigurationService {
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed, or if the issuer property
-     *     is missing.
+     *     and well-known endpoints are property is missing.
      */
     public String getIssuer() throws GuacamoleException {
         String issuer = environment.getProperty(OPENID_ISSUER);
@@ -418,8 +419,8 @@ public class ConfigurationService {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the JWKS endpoint
-     *     property is missing.
+     *     If guacamole.properties cannot be parsed, or if the JWKS and
+     *     well-known endpoints are property is missing.
      */
     public URI getJWKSEndpoint() throws GuacamoleException {
         URI jwks_uri =  environment.getProperty(OPENID_JWKS_ENDPOINT);
@@ -439,8 +440,8 @@ public class ConfigurationService {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the token
-     *     endpoint property is missing.
+     *     If guacamole.properties cannot be parsed, or if the token and
+     *     well-known endpoints are property is missing.
      */
     public URI getTokenEndpoint() throws GuacamoleException {
         URI token_endpoint = environment.getProperty(OPENID_TOKEN_ENDPOINT);
@@ -490,8 +491,7 @@ public class ConfigurationService {
      *     as configured with guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the client ID
-     *     property is missing.
+     *     If guacamole.properties cannot be parsed.
      */
     public String getClientSecret() throws GuacamoleException {
        return environment.getProperty(OPENID_CLIENT_SECRET);
