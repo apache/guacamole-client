@@ -232,6 +232,49 @@
         },
         
         {
+            "name"   : "ssh-tunnel",
+            "fields" : [
+                {
+                    "name"    : "ssh-tunnel",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "ssh-tunnel-host",
+                    "type"    : "TEXT"
+                },
+                {
+                    "name" : "ssh-tunnel-port",
+                    "type" : "NUMERIC"
+                },
+                {
+                    "name" : "ssh-tunnel-host-key",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "ssh-tunnel-username",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "ssh-tunnel-password",
+                    "type" : "PASSWORD"
+                },
+                {
+                    "name" : "ssh-tunnel-private-key",
+                    "type" : "MULTILINE"
+                },
+                {
+                    "name" : "ssh-tunnel-passphrase",
+                    "type" : "PASSWORD"
+                },
+                {
+                    "name" : "ssh-tunnel-alive-interval",
+                    "type" : "NUMERIC"
+                }
+            ]
+        },
+        
+        {
             "name"   : "wol",
             "fields" : [
                 {
