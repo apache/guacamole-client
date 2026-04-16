@@ -92,6 +92,8 @@
 .guac-keyboard .guac-keyboard-key-alt-gr,
 .guac-keyboard .guac-keyboard-key-lctrl,
 .guac-keyboard .guac-keyboard-key-rctrl,
+.guac-keyboard .guac-keyboard-key-meta,
+.guac-keyboard .guac-keyboard-key-super,
 .guac-keyboard .guac-keyboard-key-lshift,
 .guac-keyboard .guac-keyboard-key-rshift {
     text-align: left;
@@ -116,7 +118,8 @@
 /* Active caps */
 .guac-keyboard.guac-keyboard-modifier-caps .guac-keyboard-key-caps,
 
-/* Active super */
+/* Active meta */
+.guac-keyboard.guac-keyboard-modifier-meta .guac-keyboard-key-meta,
 .guac-keyboard.guac-keyboard-modifier-super .guac-keyboard-key-super,
 
 /* Active latin */
