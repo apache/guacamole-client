@@ -20,6 +20,7 @@
 package org.apache.guacamole.vault.openbao.conf;
 
 import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.URIGuacamoleProperty;
 
 /**
  * Configuration properties for OpenBao vault integration.
@@ -30,8 +31,8 @@ public class OpenBaoConfig {
      * OpenBao server URL (e.g., "http://localhost:8200").
      * This property is REQUIRED and must be configured in guacamole.properties.
      */
-    public static final StringGuacamoleProperty OPENBAO_SERVER_URL =
-            new StringGuacamoleProperty() {
+    public static final URIGuacamoleProperty OPENBAO_SERVER_URL =
+            new URIGuacamoleProperty() {
                 @Override
                 public String getName() {
                     return "openbao-server-url";
@@ -39,14 +40,51 @@ public class OpenBaoConfig {
             };
 
     /**
-     * OpenBao authentication token.
-     * This property is REQUIRED for authenticating with OpenBao.
+     * OpenBao authentication token. Required unless AppRole
+     * authentication is configured via {@link #OPENBAO_ROLE_ID} and
+     * {@link #OPENBAO_SECRET_ID}.
      */
     public static final StringGuacamoleProperty OPENBAO_TOKEN =
             new StringGuacamoleProperty() {
                 @Override
                 public String getName() {
                     return "openbao-token";
+                }
+            };
+
+    /**
+     * OpenBao AppRole role ID. Optional. When both this property and
+     * {@link #OPENBAO_SECRET_ID} are set, AppRole authentication is used
+     * instead of a static token.
+     */
+    public static final StringGuacamoleProperty OPENBAO_ROLE_ID =
+            new StringGuacamoleProperty() {
+                @Override
+                public String getName() {
+                    return "openbao-role-id";
+                }
+            };
+
+    /**
+     * OpenBao AppRole secret ID. Optional. See {@link #OPENBAO_ROLE_ID}.
+     */
+    public static final StringGuacamoleProperty OPENBAO_SECRET_ID =
+            new StringGuacamoleProperty() {
+                @Override
+                public String getName() {
+                    return "openbao-secret-id";
+                }
+            };
+
+    /**
+     * OpenBao AppRole auth mount path (default: "approle"). Only relevant
+     * when {@link #OPENBAO_ROLE_ID} / {@link #OPENBAO_SECRET_ID} are set.
+     */
+    public static final StringGuacamoleProperty OPENBAO_APPROLE_PATH =
+            new StringGuacamoleProperty() {
+                @Override
+                public String getName() {
+                    return "openbao-approle-path";
                 }
             };
 
