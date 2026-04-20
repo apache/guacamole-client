@@ -1470,6 +1470,11 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             }
 
+            // On AltGr hold, ControlLeft is sent without Ctrl modifier and
+            // could be misinterpreted as Ctrl press.
+            if (first.keysym == 0xFFE3 && !first.modifiers.ctrl)
+                return eventLog.shift();
+
             // If event itself is reliable, no need to wait for other events
             if (first.reliable) {
                 keysym = first.keysym;
@@ -1837,11 +1842,9 @@ Guacamole.Keyboard.ModifierState._fromEvent = function(e) {
 
     var state = new Guacamole.Keyboard.ModifierState();
 
-    // Assign states from old flags. AltGraph is treated as Ctrl+Alt.
-    var altGraph = e.getModifierState && e.getModifierState("AltGraph");
     state.shift = e.shiftKey;
-    state.ctrl  = altGraph || e.ctrlKey;
-    state.alt   = altGraph || e.altKey;
+    state.ctrl  = e.ctrlKey;
+    state.alt   = e.altKey;
     state.meta  = e.metaKey;
 
     // Use DOM3 getModifierState() for others

@@ -546,10 +546,12 @@ Guacamole.Mouse.Event = function MouseEvent(type, state, events) {
 
     /**
      * The current mouse state at the time this event was fired.
+     * The state object is cloned so as not to be affected by subsequent events
+     * that will have their own dedicated Guacamole.Mouse.Event instance.
      *
      * @type {!Guacamole.Mouse.State}
      */
-    this.state = state;
+    this.state = { ...state };
 
     /**
      * The state of all modifier keys at the time this event was received.
