@@ -20,6 +20,7 @@
 package org.apache.guacamole.vault.openbao.conf;
 
 import com.google.inject.Inject;
+import java.net.URI;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
@@ -43,25 +44,79 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     }
 
     /**
-     * Returns the OpenBao server URL.
+     * Returns the OpenBao server URL as a parsed URI.
      *
-     * @return The OpenBao server URL (e.g., "http://localhost:8200").
+     * @return The OpenBao server URI (e.g., "http://localhost:8200").
      * @throws GuacamoleException
-     *     If the property is not defined in guacamole.properties.
+     *     If the property is not defined in guacamole.properties or is
+     *     not a valid URI.
      */
-    public String getServerUrl() throws GuacamoleException {
+    public URI getServerUrl() throws GuacamoleException {
         return environment.getRequiredProperty(OpenBaoConfig.OPENBAO_SERVER_URL);
     }
 
     /**
-     * Returns the OpenBao authentication token.
+     * Returns the OpenBao authentication token, or null if AppRole
+     * authentication is configured instead (see {@link #getRoleId()} and
+     * {@link #getSecretId()}).
      *
-     * @return The OpenBao authentication token.
+     * @return The OpenBao authentication token, or null.
      * @throws GuacamoleException
-     *     If the property is not defined in guacamole.properties.
+     *     If an error occurs reading the property.
      */
     public String getToken() throws GuacamoleException {
-        return environment.getRequiredProperty(OpenBaoConfig.OPENBAO_TOKEN);
+        return environment.getProperty(OpenBaoConfig.OPENBAO_TOKEN);
+    }
+
+    /**
+     * Returns the OpenBao AppRole role ID, or null if not configured.
+     *
+     * @return The configured AppRole role ID, or null.
+     * @throws GuacamoleException
+     *     If an error occurs reading the property.
+     */
+    public String getRoleId() throws GuacamoleException {
+        return environment.getProperty(OpenBaoConfig.OPENBAO_ROLE_ID);
+    }
+
+    /**
+     * Returns the OpenBao AppRole secret ID, or null if not configured.
+     *
+     * @return The configured AppRole secret ID, or null.
+     * @throws GuacamoleException
+     *     If an error occurs reading the property.
+     */
+    public String getSecretId() throws GuacamoleException {
+        return environment.getProperty(OpenBaoConfig.OPENBAO_SECRET_ID);
+    }
+
+    /**
+     * Returns the OpenBao AppRole auth backend mount path (default: "approle").
+     *
+     * @return The AppRole auth mount path.
+     * @throws GuacamoleException
+     *     If an error occurs reading the property.
+     */
+    public String getAppRolePath() throws GuacamoleException {
+        return environment.getProperty(
+            OpenBaoConfig.OPENBAO_APPROLE_PATH,
+            "approle"
+        );
+    }
+
+    /**
+     * Returns true if AppRole authentication has been configured (both
+     * role ID and secret ID are present).
+     *
+     * @return true if AppRole should be used, false to use a static token.
+     * @throws GuacamoleException
+     *     If an error occurs reading the properties.
+     */
+    public boolean isAppRoleConfigured() throws GuacamoleException {
+        String roleId = getRoleId();
+        String secretId = getSecretId();
+        return roleId != null && !roleId.isEmpty()
+            && secretId != null && !secretId.isEmpty();
     }
 
     /**
