@@ -24,46 +24,69 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-vault-dist</artifactId>
-    <packaging>pom</packaging>
-    <name>guacamole-vault-dist</name>
+    <artifactId>guacamole-vault-hv</artifactId>
+    <packaging>jar</packaging>
+    <version>1.6.0</version>
+    <name>guacamole-vault-hv</name>
     <url>http://guacamole.apache.org/</url>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-vault</artifactId>
-        <version>${revision}</version>
+        <version>1.6.0</version>
         <relativePath>../../</relativePath>
     </parent>
 
+    <properties>
+        <kotlin.version>1.9.25</kotlin.version>
+    </properties>
+
     <dependencies>
 
-        <!-- Keeper Secrets Manager Extension -->
+        <!-- Guacamole Extension API -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-vault-ksm</artifactId>
-            <version>${revision}</version>
+            <artifactId>guacamole-ext</artifactId>
+            <scope>provided</scope>
         </dependency>
 
-        <!-- Hashicorp Vault Extension -->
+        <!-- Guacamole base key vault support -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
-            <artifactId>guacamole-vault-hv</artifactId>
+            <artifactId>guacamole-vault-base</artifactId>
             <version>1.6.0</version>
         </dependency>
 
-   </dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.19.0</version>
+        </dependency>
 
-    <build>
+        <!-- Use same version of Kotlin across all dependencies -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib-jdk8</artifactId>
+            <version>${kotlin.version}</version>
+        </dependency>
 
-        <!-- Dist .tar.gz for guacamole-vault should be named after the parent
-            guacamole-vault project, not after guacamole-vault-dist -->
-        <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
+        <!-- Use FIPS variant of Bouncy Castle crypto library -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bc-fips</artifactId>
+            <version>2.1.0</version>
+        </dependency>
 
-    </build>
+    </dependencies>
 
 </project>
