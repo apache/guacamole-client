@@ -20,7 +20,8 @@
 /**
  * A directive which allows elements to be manually focused / blurred.
  */
-angular.module('element').directive('guacFocus', ['$injector', function guacFocus($injector) {
+angular.module('element').directive('guacFocus', ['$injector', '$rootScope',
+        function guacFocus($injector, $rootScope) {
 
     // Required services
     var $parse   = $injector.get('$parse');
@@ -54,6 +55,28 @@ angular.module('element').directive('guacFocus', ['$injector', function guacFocu
                     else
                         element.blur();
                 });
+            });
+
+            // Runs when translations are loaded and sets focus again if necessary
+            const deregisterTranslationsReady = $rootScope.$watch('translationsReady',
+                    function onTranslationsReady(newVal, oldVal) {
+
+                if (newVal !== true || oldVal === true)
+                    return;
+
+                if (!guacFocus($scope))
+                    return;
+
+                $timeout(function focusAfterTranslations() {
+                    if (!guacFocus($scope))
+                        return;
+                    element.focus();
+                }, 0);
+            });
+
+            // Cleanup
+            $scope.$on('$destroy', function guacFocusDestroyed() {
+                deregisterTranslationsReady();
             });
 
         } // end guacFocus link function
