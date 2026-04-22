@@ -306,28 +306,35 @@ Guacamole.OnScreenKeyboard = function(layout) {
                 // Retrieve originally-pressed keysym, if modifier was already pressed
                 var originalKeysym = modifierKeysyms[key.modifier];
 
-                // Activate modifier if not pressed
                 if (originalKeysym === undefined) {
-                    
+                    // Activate modifier if not pressed
                     addClass(keyboard, modifierClass);
                     modifierKeysyms[key.modifier] = key.keysym;
-                    
-                    // Send key event only if keysym is meaningful
-                    if (key.keysym && osk.onkeydown)
-                        osk.onkeydown(key.keysym);
-
                 }
-
-                // Deactivate if not pressed
                 else {
-
+                    // Deactivate if not pressed
                     removeClass(keyboard, modifierClass);
                     delete modifierKeysyms[key.modifier];
-                    
-                    // Send key event only if original keysym is meaningful
-                    if (originalKeysym && osk.onkeyup)
-                        osk.onkeyup(originalKeysym);
+                }
 
+                // Toggle modifiers send both keydown and keyup on each press
+                if (key.toggle) {
+                    if (key.keysym && osk.onkeydown)
+                        osk.onkeydown(key.keysym);
+                    if (key.keysym && osk.onkeyup)
+                        osk.onkeyup(key.keysym);
+                }
+
+                // Sticky modifiers send keydown on activate, keyup on deactivate
+                else {
+                    if (originalKeysym === undefined) {
+                        if (key.keysym && osk.onkeydown)
+                            osk.onkeydown(key.keysym);
+                    }// Deactivate if not pressed
+                    else {
+                        if (originalKeysym && osk.onkeyup)
+                            osk.onkeyup(originalKeysym);
+                    }
                 }
 
             }
@@ -375,7 +382,7 @@ Guacamole.OnScreenKeyboard = function(layout) {
         }
 
     };
-
+// Deactivate if not pressed
     // Create keyboard
     var keyboard = document.createElement("div");
     keyboard.className = "guac-keyboard";
@@ -928,10 +935,21 @@ Guacamole.OnScreenKeyboard.Key = function(template, name) {
      * the names of keys; both the "RightShift" and "LeftShift" keys may set
      * the "shift" modifier, for example. By default, the key will affect no
      * modifiers.
-     * 
+     *
      * @type {string}
      */
     this.modifier = template.modifier;
+
+    /**
+     * Whether this key is a toggle modifier. Toggle modifiers send both
+     * keydown and keyup events when pressed, so each press performs one
+     * toggle of the modifier state (e.g., Caps Lock, Num Lock, Scroll Lock).
+     * Non-toggle modifiers remain sticky and are released by a subsequent
+     * press. By default, modifiers are not toggles.
+     *
+     * @type {boolean}
+     */
+    this.toggle = template.toggle || false;
 
     /**
      * An array containing the names of each modifier required for this key to
