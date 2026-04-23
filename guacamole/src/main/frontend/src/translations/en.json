@@ -610,6 +610,7 @@
         "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Enable audio input (microphone):",
         "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Enable desktop composition (Aero):",
         "FIELD_HEADER_ENABLE_DRIVE"               : "Enable drive:",
+        "FIELD_HEADER_ENABLE_USB"                 : "Enable USB Redirection:",
         "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Enable font smoothing (ClearType):",
         "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Enable full-window drag:",
         "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Enable menu animations:",
@@ -1253,6 +1254,14 @@
         "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
 
+    },
+
+    "USB" : {
+        "ACTION_CONNECT_DEVICE"      : "Connect USB Device",
+        "ACTION_DISCONNECT_DEVICE"   : "Disconnect",
+        "INFO_WEBUSB_NOT_SUPPORTED"  : "WebUSB is not supported in this browser.",
+        "INFO_NO_DEVICES"            : "No USB devices connected.",
+        "SECTION_HEADER_USB_DEVICES" : "USB Devices"
     }
 
 }
