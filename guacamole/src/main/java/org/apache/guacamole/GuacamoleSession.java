@@ -19,15 +19,20 @@
 
 package org.apache.guacamole;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import org.apache.guacamole.io.GuacamoleWriter;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.event.UserSessionInvalidatedEvent;
+import org.apache.guacamole.protocol.GuacamoleInstruction;
+import org.apache.guacamole.protocol.GuacamoleStatus;
 import org.apache.guacamole.rest.auth.DecoratedUserContext;
 import org.apache.guacamole.rest.event.ListenerService;
 import org.apache.guacamole.tunnel.UserTunnel;
@@ -246,7 +251,8 @@ public class GuacamoleSession {
      */
     public void addTunnel(UserTunnel tunnel) {
         this.access();
-        tunnels.put(tunnel.getUUID().toString(), tunnel);
+        String tunnelId = tunnel.getUUID().toString();
+        tunnels.put(tunnelId, tunnel);
     }
 
     /**
@@ -282,6 +288,130 @@ public class GuacamoleSession {
      */
     public long getLastAccessedTime() {
         return lastAccessedTime;
+    }
+
+
+    /**
+     * Returns the age of the oldest tunnel in this session, in milliseconds.
+     * If no tunnels exist, returns 0. Invoking this function does not affect 
+     * the last access time of this session.
+     *
+     * @return 
+     *     The age of the oldest tunnel in milliseconds, or 0 if no tunnels exist.
+     */
+    public long getOldestTunnelAge() {
+        if (tunnels.isEmpty()) {
+            return 0;
+        }
+        
+        long currentTime = System.currentTimeMillis();
+        long oldestCreationTime = tunnels.values().stream()
+                .mapToLong(tunnel -> tunnel.getCreationTime())
+                .min()
+                .orElse(currentTime);
+
+        return currentTime - oldestCreationTime;
+    }
+
+    /**
+     * Sends an error instruction to notify the client and guacd that the
+     * connection is being closed due to exceeding the maximum connection duration.
+     *
+     * @param tunnel
+     *     The tunnel to send the error instruction to.
+     *
+     * @param maxAge
+     *     The maximum connection duration in milliseconds.
+     */
+    private void sendConnectionTimeout(UserTunnel tunnel, long maxAge) {
+        GuacamoleWriter writer = null;
+        try {
+            // Acquire writer to send error instruction
+            writer = tunnel.acquireWriter();
+            
+            // Format duration for user-friendly message
+            long minutes = TimeUnit.MILLISECONDS.toMinutes(maxAge);
+            String message = String.format(
+                "Connection closed: Maximum connection duration of %d minutes exceeded.", 
+                minutes
+            );
+            // Create and send error instruction with appropriate status code for session timeout 
+            GuacamoleInstruction errorInstruction = new GuacamoleInstruction(
+                "error",
+                message,
+                String.valueOf(GuacamoleStatus.SESSION_TIMEOUT.getGuacamoleStatusCode())
+            );
+            writer.writeInstruction(errorInstruction);
+            logger.debug("Sent connection timeout error for tunnel \"{}\".", tunnel.getUUID());
+        }
+        catch (GuacamoleException e) {
+            logger.debug("Unable to send connection timeout error instruction.", e);
+        }
+        finally {
+            // Always release writer
+            if (writer != null) {
+                try {
+                    tunnel.releaseWriter();
+                }
+                catch (Exception e) {
+                    logger.trace("Error releasing writer after sending timeout notification.", e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Closes and removes any tunnels in this session that exceed the specified
+     * age limit. Invoking this function does not affect the last access time
+     * of this session.
+     *
+     * @param maxAge
+     *     The maximum allowed age of tunnels in milliseconds. Tunnels older
+     *     than this will be closed and removed.
+     *
+     * @return 
+     *     The number of tunnels that were closed and removed.
+     */
+    public int closeExpiredTunnels(long maxAge) {
+        if (maxAge <= 0 || tunnels.isEmpty()) {
+            return 0;
+        }
+        
+        long currentTime = System.currentTimeMillis();
+        int closedCount = 0;
+        
+        // Find tunnels that exceed the age limit
+        List<String> expiredTunnelIds = new ArrayList<>();
+        for (Map.Entry<String, UserTunnel> entry : tunnels.entrySet()) {
+            long tunnelAge = currentTime - entry.getValue().getCreationTime();
+            if (tunnelAge >= maxAge) {
+                expiredTunnelIds.add(entry.getKey());
+            }
+        }
+        
+        // Close and remove expired tunnels WITH NOTIFICATION
+        for (String tunnelId : expiredTunnelIds) {
+            UserTunnel tunnel = tunnels.get(tunnelId);
+            if (tunnel != null) {
+                try {
+                    // Send error instruction before closing
+                    sendConnectionTimeout(tunnel, maxAge);
+                    
+                    // Then close the tunnel
+                    tunnel.close();
+                    logger.info("Closed tunnel \"{}\" due to exceeding maximum connection duration of {} ms.", 
+                            tunnelId, maxAge);
+                }
+                catch (GuacamoleException e) {
+                    logger.error("Unable to close expired tunnel \"" + tunnelId + "\".", e);
+                }
+                // Remove from the tunnels map regardless of whether close succeeded
+                removeTunnel(tunnelId);
+                closedCount++;
+            }
+        }
+        
+        return closedCount;
     }
 
     /**
