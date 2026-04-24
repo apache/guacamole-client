@@ -53,34 +53,12 @@ Add the following properties to `guacamole.properties`:
 # OpenBao server URL (required)
 openbao-server-url: http://openbao.example.com:8200
 
-# OpenBao authentication token (required unless AppRole is configured)
+# OpenBao authentication token (required)
 openbao-token: s.YourTokenHere
 
 # KV mount path (optional, default: guacamole-credentails)
 openbao-mount-path: guacamole-credentails
 ```
-
-#### AppRole Authentication (optional)
-
-As an alternative to a static `openbao-token`, the extension can
-authenticate via the AppRole auth method, which typically issues
-shorter-lived tokens:
-
-```properties
-# Required for AppRole
-openbao-role-id:   <role-id>
-openbao-secret-id: <secret-id>
-
-# Optional; defaults to "approle"
-openbao-approle-path: approle
-```
-
-When both `openbao-role-id` and `openbao-secret-id` are set, the
-extension performs an AppRole login at
-`/v1/auth/<openbao-approle-path>/login` and uses the returned
-`client_token` for all subsequent requests. The token is cached and
-refreshed automatically on a 403 response. If AppRole is configured,
-`openbao-token` is ignored.
 
 **Note**: The extension uses hardcoded defaults for:
 - KV version: `2` (KV v2 secrets engine)
@@ -91,40 +69,13 @@ refreshed automatically on a 403 response. If AppRole is configured,
 
 When creating connections in Guacamole, use these token patterns:
 
-- **`${OPENBAO_SECRET}`**: Replaced with the `password` field of the
-  secret stored at `<mount>/data/<guac-username>`.
-- **`${GUAC_USERNAME}`**: Replaced with the logged-in Guacamole username.
+- **`${OPENBAO_SECRET}`**: Replaced with the password from OpenBao
+- **`${GUAC_USERNAME}`**: Replaced with the logged-in Guacamole username
 
 Example RDP connection:
 - Username: `${GUAC_USERNAME}`
 - Password: `${OPENBAO_SECRET}`
 - Hostname: `192.168.1.100`
-
-#### Arbitrary Secret Paths (via token mapping)
-
-For secrets that are not stored at the per-user path, an additional
-name format can be used in the vault token mapping YAML
-(`openbao-token-mapping.yml`):
-
-```
-openbao:<path>[:<field>]
-```
-
-- `<path>` is the path under the configured mount, without the
-  `/data/` prefix (KV v2 is handled automatically).
-- `<field>` selects which field to return from the secret's data;
-  defaults to `password` if omitted.
-
-Example `openbao-token-mapping.yml`:
-
-```yaml
-DB_PASSWORD: "openbao:db/prod-ro:password"
-SSH_KEY:     "openbao:ssh-keys/${GUAC_USERNAME}:private_key"
-JUMPBOX_PW:  "openbao:shared/jumpbox"
-```
-
-This mechanism is additive. Existing configurations that use only
-`${OPENBAO_SECRET}` continue to work unchanged.
 
 ## Secret Path Mapping
 

@@ -1,0 +1,6 @@
+# The URI of the OpenBao or Hashicorp Vault server to use.
+vault-uri: http://localhost:8200
+
+# The authentication token to use to access the vault
+vault-token: s.IPzVb3b5dThhjIrBX245szisjTQcylwSjMEeyJqcidaH8Hf
+

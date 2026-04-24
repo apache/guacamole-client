@@ -19,409 +19,723 @@
 
 package org.apache.guacamole.vault.openbao.secret;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSyntaxException;
-import com.google.inject.Inject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.function.Supplier;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
-import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.classic.methods.HttpPost;
-import org.apache.hc.client5.http.config.RequestConfig;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.HttpClients;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.ParseException;
-import org.apache.hc.core5.http.io.entity.EntityUtils;
-import org.apache.hc.core5.http.io.entity.StringEntity;
-import org.apache.hc.core5.util.Timeout;
+import org.apache.guacamole.vault.openbao.secret.FileTokenAuthentication;
+import org.apache.guacamole.vault.openbao.secret.UsernamePasswordAuthentication;
+import org.apache.guacamole.vault.openbao.secret.UsernamePasswordAuthenticationOptions;
+import org.apache.guacamole.vault.openbao.secret.TimeoutVaultTemplate;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.vault.authentication.ClientAuthentication;
+import org.springframework.vault.authentication.SimpleSessionManager;
+import org.springframework.vault.authentication.TokenAuthentication;
+import org.springframework.vault.client.VaultEndpoint;
+import org.springframework.vault.core.lease.event.SecretLeaseErrorEvent;
+import org.springframework.vault.core.lease.event.SecretLeaseExpiredEvent;
+import org.springframework.vault.core.lease.SecretLeaseContainer;
+import org.springframework.vault.core.VaultKeyValueOperations;
+import org.springframework.vault.VaultException;
+import org.springframework.vault.support.VaultResponse;
+import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Client for communicating with OpenBao REST API.
- */
-public class OpenBaoClient {
 
+public class OpenBaoClient {
     /**
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(OpenBaoClient.class);
 
     /**
-     * Gson instance for JSON parsing. Gson is thread-safe, so a single
-     * static instance is reused across all calls.
-     */
-    private static final Gson GSON = new Gson();
-
-    /**
      * Service for retrieving OpenBao configuration.
      */
     @Inject
     private OpenBaoConfigurationService configService;
+    
+    /**
+     * A singleton ObjectMapper for converting a Map to a JSON string when
+     * returning a complex token.
+     */
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+    
+    /**
+     * The prefix of the Guacamole token to resolve on the vault server.
+     */
+    static final String VAULT_TOKEN_PREFIX = "vault://";
 
     /**
-     * Shared HTTP client. Lazily created on first use and reused for the
-     * lifetime of this instance; Apache HttpClient 5 is thread-safe and
-     * designed to be reused across requests.
+     * Cache of secrets recently fetched
      */
-    private volatile CloseableHttpClient httpClient;
+    private  Cache<String, Map<String, Object>> cache;
 
     /**
-     * Cached AppRole token. Populated on first successful AppRole login
-     * and re-used until invalidated (e.g. on a 403 response).
+     * A cache of the valid mount paths and their type
      */
-    private volatile String cachedAppRoleToken;
+    private Map<String, String> mountpaths;
 
     /**
-     * Returns the shared {@link CloseableHttpClient}, creating it on first
-     * access. Thread-safe double-checked initialization.
-     *
-     * @return
-     *     The shared HTTP client instance.
+     * Vault template that will be used with all of the mount paths
      */
-    private CloseableHttpClient getHttpClient() {
-        CloseableHttpClient client = httpClient;
-        if (client == null) {
-            synchronized (this) {
-                client = httpClient;
-                if (client == null) {
-                    client = HttpClients.createDefault();
-                    httpClient = client;
+    private TimeoutVaultTemplate vaultTemplate;
+    
+    /**
+     * Vault client authentication object
+     */
+    private ClientAuthentication authentication;
+
+    /**
+     * A Vault lease container used to automatically renew AppRole
+     * authenication tokens.
+     */
+    private SecretLeaseContainer leaseContainer;
+
+    /**
+     * Complete the instantiation of the class after injection of confService
+     */
+    @Inject
+    public void init() {
+        try {
+            VaultEndpoint endpoint = VaultEndpoint.from(configService.getVaultUri());
+            
+              
+            if (configService.getVaultToken() != null) {
+                if (isTokenReadableFile(configService.getVaultToken())) {
+                    this.authentication = new FileTokenAuthentication(configService.getVaultToken());
+                }
+                else {
+                    this.authentication = new TokenAuthentication(configService.getVaultToken());
                 }
             }
+            else if (configService.getVaultUsername() != null && configService.getVaultPassword() != null) {
+                UsernamePasswordAuthenticationOptions options =
+                    UsernamePasswordAuthenticationOptions.builder()
+                        .username(configService.getVaultUsername())
+                        .password(configService.getVaultPassword())
+                        .build();
+
+                this.authentication =
+                    new UsernamePasswordAuthentication(options, endpoint, new RestTemplate());
+            }
+            else {
+                logger.error("Either a vault token or Username/Password must be supplied");
+            }
+
+            this.vaultTemplate = new TimeoutVaultTemplate(endpoint,
+                    new SimpleClientHttpRequestFactory(),
+                    new SimpleSessionManager(this.authentication));
         }
-        return client;
-    }
-
-    /**
-     * Builds a {@link RequestConfig} from the configured connection and
-     * request timeouts.
-     *
-     * @return
-     *     A request configuration reflecting current timeouts.
-     */
-    private RequestConfig buildRequestConfig() {
-        return RequestConfig.custom()
-                .setConnectionRequestTimeout(
-                        Timeout.ofMilliseconds(configService.getConnectionTimeout()))
-                .setResponseTimeout(
-                        Timeout.ofMilliseconds(configService.getRequestTimeout()))
-                .build();
-    }
-
-    /**
-     * Validates that the configured server URL, mount path, and auth
-     * credentials are present and non-empty, throwing a
-     * {@link GuacamoleServerException} with a clear message otherwise.
-     *
-     * @return
-     *     The validated server URL as a string (without trailing slash).
-     *
-     * @throws GuacamoleException
-     *     If a required property is missing, empty, or invalid.
-     */
-    private String validatedServerUrl() throws GuacamoleException {
-
-        URI serverUri = configService.getServerUrl();
-        if (serverUri == null || serverUri.toString().trim().isEmpty()) {
-            throw new GuacamoleServerException(
-                    "OpenBao server URL (\"openbao-server-url\") is not configured.");
+        catch (Exception e) {
+            logger.error("Error initiatizing Vault client: ", e);
         }
 
-        String mountPath = configService.getMountPath();
-        if (mountPath == null || mountPath.trim().isEmpty()) {
-            throw new GuacamoleServerException(
-                    "OpenBao mount path (\"openbao-mount-path\") must not be empty.");
+        // The access token generated above might have a limited
+        // lifetime. Setup automatic renewal.
+        this.leaseContainer =
+            new SecretLeaseContainer(vaultTemplate);
+        this.leaseContainer.addLeaseListener(event -> {
+            if (event instanceof SecretLeaseErrorEvent) {
+                Throwable cause = ((SecretLeaseErrorEvent) event).getException();
+                logger.error("Vault lease error", cause);
+            }
+            else if (event instanceof SecretLeaseExpiredEvent) {
+                SecretLeaseExpiredEvent expired = (SecretLeaseExpiredEvent) event;
+                logger.warn("Vault lease expired: {}", expired.getSource().getPath());
+            }
+            else {
+                logger.debug("Vault access token renewed");
+            }
+        });
+        this.leaseContainer.start();
+
+        // Initialize the cache with maximum size of 1MB, and cache expiry with
+        // forced cleanup
+        // FIXME I'd really like to do something like "Array.fill(v, '\0');" in
+        // the removal listener to ensure that passwords are no longer in memory.
+        // However, both spring-core-vault and Guacamole store these values
+        // elsewhere as immutable String values, So even if I stored them in the
+        // cache as char[] copies of the password would be elesewhere as String
+        // values in memory.. A VaultConverter function could deal with the 
+        // spring-vault-core part of the problem, but not Gaucamole. For now just
+        // ensure that the values are really deleted and let the garbage collector
+        // do want it can for the passwords in memory.
+        try {
+            cache = Caffeine.newBuilder()
+                    .expireAfterWrite(Duration.ofMillis(configService.getVaultCacheLifetime()))
+                    .maximumSize(1_000_000)
+                    .removalListener((String k, Map<String, Object> v, RemovalCause cause) -> { 
+                        if (v != null) {
+                            v.clear();
+                        }})
+                    .build();
+        }
+        catch (GuacamoleException e) {
+            logger.error("Can read the cache lifetime value");
         }
 
-        // Strip trailing slash to keep path concatenation predictable
-        String url = serverUri.toString();
-        if (url.endsWith("/"))
-            url = url.substring(0, url.length() - 1);
-
-        return url;
+        // Cache the valid mount paths on start up
+        // FIXME a change to the mount paths of the vault server will require a restart
+        // of Guacamole
+        mountpaths = listMountPaths();
     }
 
-    /**
-     * Resolves a usable OpenBao auth token, either from the configured
-     * static {@code openbao-token} or, if AppRole is configured, by
-     * performing an AppRole login. AppRole tokens are cached for the
-     * lifetime of this client and refreshed only when explicitly
-     * invalidated via {@link #invalidateCachedToken()}.
+    /*
+     * Function to detect is the the tokenis in fact a readable file
+     * rather than a token string
      *
-     * @return
-     *     A non-empty OpenBao auth token.
+     * @param String token
+     *     The string with the token returned from configService
      *
-     * @throws GuacamoleException
-     *     If no valid authentication credentials are configured or if
-     *     AppRole login fails.
+     * @return boolean
+     *      True is the token is a readable file
      */
-    private String resolveAuthToken() throws GuacamoleException {
+     private static boolean isTokenReadableFile(String token) {
+         try {
+             Path path = Paths.get(token);
+             return Files.isRegularFile(path) && Files.isReadable(path);
+        }
+        catch (Exception e) {
+            return false;
+        }
+     }
 
-        if (configService.isAppRoleConfigured()) {
-            String token = cachedAppRoleToken;
-            if (token == null || token.isEmpty()) {
-                synchronized (this) {
-                    token = cachedAppRoleToken;
-                    if (token == null || token.isEmpty()) {
-                        token = loginWithAppRole();
-                        cachedAppRoleToken = token;
+    /**
+     * Lists the valid mount paths and their type
+     *
+     * @return Map<String, String>
+     *      The key of the map is the mount path and the value the type.
+     *      The type can be ssh, database, kv_1 or kv_2
+     */
+    public Map<String, String> listMountPaths() {
+        VaultResponse response = vaultTemplate.read("sys/mounts");
+
+        if (response == null || response.getData() == null) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, Object> mounts = response.getData();
+        Map<String, String> result = new HashMap<>();
+
+        mounts.forEach((mountPath, mountInfoObj) -> {
+            if (mountInfoObj instanceof Map<?, ?>) {
+                Map<?,?> mountInfo = (Map<?,?>) mountInfoObj;
+                Object type = mountInfo.get("type");
+                if (type instanceof String) {
+                    if (type == "ssh"  || type == "database") {
+                        result.put(mountPath, (String) type);
+                    }
+                    else if (type == "kv") {
+                        // Need to detect if type 1 or type 2 Key/Value engine
+                        if (mountInfo.get("options")  instanceof Map<?, ?>) {
+                            Map<?,?> options = (Map<?,?>) mountInfo.get("options");
+                            Object version = options.get("vesion");
+                            if (version instanceof String) {
+                                if (version == "2") {
+                                    result.put(mountPath, "kv_2");
+                                }
+                                else {
+                                    result.put(mountPath, "kv_1");
+                                }
+                            }
+                        }
+                        else {
+                            // No options, assume kv_1
+                            result.put(mountPath, "kv_1");
+                        }
                     }
                 }
             }
-            return token;
-        }
+        });
 
-        String token = configService.getToken();
-        if (token == null || token.trim().isEmpty()) {
-            throw new GuacamoleServerException(
-                    "OpenBao authentication is not configured. Set "
-                    + "\"openbao-token\", or both \"openbao-role-id\" and "
-                    + "\"openbao-secret-id\".");
-        }
-
-        return token;
+        return result;
     }
 
     /**
-     * Invalidates any cached AppRole token, forcing a fresh login on the
-     * next request. Called when a 403 indicates the token has expired or
-     * been revoked.
-     */
-    private synchronized void invalidateCachedToken() {
-        cachedAppRoleToken = null;
-    }
-
-    /**
-     * Performs an AppRole login against OpenBao and returns the issued
-     * client token.
+     * Retrieves a value from a vault by its path. It first parses the
+     * leading mount path from the token, ensures it is valid and uses
+     * a supported secret engine and then passes of the rest of the
+     * processing to a method dedicaed to each secret engine.
+     *
+     * @param token
+     *     The Guacamole token to look up in OpenBao.
+     *
+     * @param paramaters
+     *     The connection parameters of the connection.
      *
      * @return
-     *     The client token returned by OpenBao.
-     *
-     * @throws GuacamoleException
-     *     If the login fails or the response cannot be parsed.
-     */
-    private String loginWithAppRole() throws GuacamoleException {
-
-        String serverUrl = validatedServerUrl();
-        String roleId = configService.getRoleId();
-        String secretId = configService.getSecretId();
-        String approlePath = configService.getAppRolePath();
-
-        String loginUrl = serverUrl + "/v1/auth/" + approlePath + "/login";
-
-        JsonObject payload = new JsonObject();
-        payload.addProperty("role_id", roleId);
-        payload.addProperty("secret_id", secretId);
-
-        HttpPost httpPost = new HttpPost(loginUrl);
-        httpPost.setHeader("Accept", "application/json");
-        httpPost.setEntity(new StringEntity(payload.toString(), ContentType.APPLICATION_JSON));
-        httpPost.setConfig(buildRequestConfig());
-
-        logger.info("Authenticating to OpenBao using AppRole at {}", loginUrl);
-
-        try (ClassicHttpResponse response = getHttpClient().executeOpen(null, httpPost, null)) {
-            int statusCode = response.getCode();
-            String responseBody = EntityUtils.toString(response.getEntity());
-
-            if (statusCode != 200) {
-                throw new GuacamoleServerException(
-                        "OpenBao AppRole login failed (HTTP " + statusCode + "): "
-                        + responseBody);
-            }
-
-            JsonObject json = GSON.fromJson(responseBody, JsonObject.class);
-            if (json == null || !json.has("auth"))
-                throw new GuacamoleServerException(
-                        "OpenBao AppRole login response missing \"auth\" object.");
-
-            JsonObject auth = json.getAsJsonObject("auth");
-            if (!auth.has("client_token"))
-                throw new GuacamoleServerException(
-                        "OpenBao AppRole login response missing \"auth.client_token\".");
-
-            return auth.get("client_token").getAsString();
-        }
-        catch (IOException | ParseException | JsonSyntaxException e) {
-            throw new GuacamoleServerException(
-                    "Failed to communicate with OpenBao during AppRole login", e);
-        }
-    }
-
-    /**
-     * Retrieves the secret at the given path, relative to the configured
-     * mount. For a KV v2 engine this resolves to
-     * {@code /v1/<mount>/data/<path>}; for KV v1 it resolves to
-     * {@code /v1/<mount>/<path>}.
-     *
-     * @param secretPath
-     *     The path (relative to the mount) of the secret to retrieve.
-     *
-     * @return
-     *     The parsed JSON response from OpenBao.
+     *     The value associated with the key.
      *
      * @throws GuacamoleException
      *     If the secret cannot be retrieved from OpenBao.
      */
-    public JsonObject getSecret(String secretPath) throws GuacamoleException {
+    public String getValue(String token, Map<String, String> parameters) throws GuacamoleException {
+        try {
+            logger.info("Fetching secret from OpenBao: {}", token);
 
-        if (secretPath == null || secretPath.trim().isEmpty()) {
-            throw new GuacamoleServerException(
-                    "OpenBao secret path must not be empty.");
+            if (! token.startsWith(VAULT_TOKEN_PREFIX)) {
+                throw new GuacamoleException("Invalid token Vault token: " + token);
+            }
+
+            // Before going further replace the arguments "{USERNAME}", "{HOSTNAME}",
+            // "{GATEWAY_USERNAME}" and "{GATEWAY_HOSTNAME}" in the token with their
+            // with values supplied in the parameters
+            // FIXME Could this be done with the TokenFilter in OpenBaoSecretService ?
+            // FIXME There is an edge case for tokens like "vault://ldap/$${USER}/{USER}/password"
+            // both here and below. This seems a pretty unlikely case, so don't treat.
+            String username = parameters.get("username");
+            if (username != null && !username.isEmpty()
+                    && token.contains("{USER}") && ! token.contains("$${USER}")) {
+                token.replace("{USER}", username);
+
+            }
+            String hostname = parameters.get("hostname");
+            if (hostname != null && !hostname.isEmpty()
+                    && token.contains("{SERVER}") && ! token.contains("$${SERVER}")) {
+                token.replace("{SERVER}", hostname);
+
+            }
+            String gatewayHostname = parameters.get("gateway-hostname");
+            if (gatewayHostname != null && !gatewayHostname.isEmpty()
+                    && token.contains("{GATEWAY}") && ! token.contains("$${GATEWAY}")) {
+                token.replace("{GATEWAY}", gatewayHostname);
+
+            }
+            String gatewayUsername = parameters.get("gateway-username");
+            if (gatewayUsername != null && !gatewayUsername.isEmpty()
+                    && token.contains("{GATEWAY_USER}") && ! token.contains("$${GATEWAY_USER}")) {
+                token.replace("{GATEWAY_USER}", gatewayUsername);
+
+            }
+
+            // Detect and validate the mount path
+            String mountPath = null;
+            String type = null;
+            for (String _path : mountpaths.keySet()) {
+                if (token.startsWith(_path) && _path.length() > mountPath.length()) {
+                    mountPath = _path;
+                    type = mountpaths.get(_path);
+                }
+            }
+            if (mountPath == null || mountPath.isEmpty()) {
+                throw new GuacamoleException("The Vault mount path of the token is invalid: " + token);
+            }
+
+            // Find last slash to isolate the secret value in the record
+            int lastSlashIndex = token.lastIndexOf('/');
+            if (lastSlashIndex == -1)
+                lastSlashIndex = VAULT_TOKEN_PREFIX.length();
+
+            String path = token.substring(VAULT_TOKEN_PREFIX.length() + mountPath.length(), lastSlashIndex);
+            String secret = token.substring(lastSlashIndex + 1);
+
+            switch (type) {
+               case "ssh":
+                   return getValueSSH(mountPath, path, secret, parameters);
+               case "ldap":
+                   return getValueLDAP(mountPath, path, secret);
+               case "database":
+                   return getValueDB(mountPath, path, secret);
+               case "kv_1":
+               case "kv_2":
+                   return getValueKV(mountPath, path, secret, type);
+               default:
+                  throw new GuacamoleException("Unknown secret engine for the token: " + token);
+            }
         }
-
-        String serverUrl = validatedServerUrl();
-        String mountPath = configService.getMountPath();
-        String kvVersion = configService.getKvVersion();
-
-        // Strip any leading slash so URL concatenation stays predictable
-        String normalizedPath = secretPath.startsWith("/")
-                ? secretPath.substring(1) : secretPath;
-
-        String apiPath;
-        if ("2".equals(kvVersion))
-            apiPath = String.format("/v1/%s/data/%s", mountPath, normalizedPath);
-        else
-            apiPath = String.format("/v1/%s/%s", mountPath, normalizedPath);
-
-        String fullUrl = serverUrl + apiPath;
-        logger.debug("Fetching secret from OpenBao: {}", fullUrl);
-
-        JsonObject result = executeGet(fullUrl, resolveAuthToken());
-        if (result != null)
-            return result;
-
-        // A null result from executeGet means we got a 403 with an
-        // AppRole token; retry once with a freshly-issued token.
-        if (configService.isAppRoleConfigured()) {
-            invalidateCachedToken();
-            logger.info("OpenBao AppRole token may have expired; retrying with a fresh token.");
-            JsonObject retry = executeGet(fullUrl, resolveAuthToken());
-            if (retry != null)
-                return retry;
+        catch (VaultException e) {
+            throw new GuacamoleServerException("Failed to retrieve secret from Vault Server", e);
         }
-
-        throw new GuacamoleServerException(
-                "Permission denied accessing OpenBao. Check token permissions.");
     }
 
     /**
-     * Issues a GET against {@code fullUrl} authenticated with the given
-     * token. Returns the parsed JSON response on success, or {@code null}
-     * if the response was a 403 (caller may choose to refresh credentials
-     * and retry).
+     * Retrieves a value from a key-value secret engine of a vault.
      *
-     * @param fullUrl
-     *     The fully-qualified URL to GET.
+     * @param mountPath
+     *     The mountPath of teh key-value secret engine on teh vaut server.
      *
-     * @param token
-     *     The OpenBao auth token to present via {@code X-Vault-Token}.
+     * @param path
+     *     The path of the secret record
+     *
+     * @param secret
+     *     The secret value to return
+     *
+     * @param type
+     *     The type of key-value store.  Either "kv_1" or "kv_2"
      *
      * @return
-     *     The parsed JSON response, or {@code null} on 403.
+     *     The value associated with the secret.
      *
      * @throws GuacamoleException
-     *     On non-200, non-403 responses or communication failures.
+     *     If the secret cannot be retrieved from OpenBao.
      */
-    private JsonObject executeGet(String fullUrl, String token)
-            throws GuacamoleException {
+    private String getValueKV(String mountPath, String path, String secret, String type) throws GuacamoleException {
+        // Is the key-value already in the cache
+        Map<String, Object> cacheResponse =  cache.getIfPresent(mountPath + "/" + path);
 
-        HttpGet httpGet = new HttpGet(fullUrl);
-        httpGet.setHeader("X-Vault-Token", token);
-        httpGet.setHeader("Accept", "application/json");
-        httpGet.setConfig(buildRequestConfig());
-
-        try (ClassicHttpResponse response = getHttpClient().executeOpen(null, httpGet, null)) {
-            int statusCode = response.getCode();
-            String responseBody = EntityUtils.toString(response.getEntity());
-
-            if (statusCode == 200) {
-                logger.debug("OpenBao response 200 for {}", fullUrl);
-                return GSON.fromJson(responseBody, JsonObject.class);
+        if (cacheResponse != null) {
+            // The path is already cached?. Use it
+            if (cacheResponse.get(secret) instanceof String) {
+                return (String) cacheResponse.get(secret);
             }
-
-            if (statusCode == 404) {
-                throw new GuacamoleServerException(
-                        "Secret not found in OpenBao at: " + fullUrl);
+            else {
+                try {
+                    // Stored JSON value.. Probably not usable, but return as a string
+                    return objectMapper.writeValueAsString(cacheResponse.get(secret));
+                }
+                catch (JsonProcessingException e) {
+                    throw new GuacamoleException("Error json parsing returned secret: ", e);
+                }
             }
-
-            if (statusCode == 403) {
-                // Signal to caller so it can retry after refreshing auth.
-                return null;
-            }
-
-            throw new GuacamoleServerException(
-                    "OpenBao error (HTTP " + statusCode + "): " + responseBody);
         }
-        catch (IOException | ParseException | JsonSyntaxException e) {
-            logger.error("Failed to communicate with OpenBao at {}: {}",
-                    fullUrl, e.getMessage());
+
+        VaultKeyValueOperations kvOperations;
+        if ("kv_2".equals(type)) {
+            kvOperations = vaultTemplate.opsForKeyValue(
+                        mountPath,
+                        VaultKeyValueOperations.KeyValueBackend.KV_2);
+        }
+        else {
+            kvOperations = vaultTemplate.opsForKeyValue(
+                        mountPath,
+                        VaultKeyValueOperations.KeyValueBackend.KV_1);
+        }
+
+        // Get the values on the path and cache them
+        VaultResponse response = kvOperations.get(path);
+        cache.put(mountPath + "/" + path, response.getData());
+
+        if (response == null) {
             throw new GuacamoleServerException(
-                    "Failed to communicate with OpenBao", e);
+                    "Value not found in OpenBao for path: " + mountPath + "/" + path);
+        }
+
+        if (response.getData().get(secret) instanceof String) {
+            return (String) response.getData().get(secret);
+        }
+        else {
+            try {
+                // Stored JSON value.. Probably not usable, but return as a string
+                return objectMapper.writeValueAsString(response.getData().get(secret));
+            }
+            catch (JsonProcessingException e) {
+                throw new GuacamoleException("Error json parsing returned secret: ", e);
+            }
         }
     }
 
     /**
-     * Extracts the {@code password} field from an OpenBao secret response.
+     * Retrieves a an ssh one-time password or signed SSH certificate
      *
-     * @param response
-     *     The JSON response previously returned by {@link #getSecret(String)}.
+     * @param mountPath
+     *     The mountPath of the SSH secret engine on the vault server.
+     *
+     * @param path
+     *     The path of the secret record representing the SSH role
+     *
+     * @param secret
+     *     The secret value to return
+     *
+     * @param parameters
+     *     The connection parameters of the connection
      *
      * @return
-     *     The password string, or null if not present.
+     *     The value associated with the secret.
+     *
+     * @throws GuacamoleException
+     *     If the secret cannot be retrieved from OpenBao.
      */
-    public String extractPassword(JsonObject response) {
-        return extractField(response, "password");
+    private String getValueSSH(String mountPath, String path, String secret, Map<String, String> parameters) throws GuacamoleException {
+        // Is the key-value already in the cache
+        Map<String, Object> cacheResponse = (Map<String, Object>) cache.getIfPresent(mountPath + "/" + path);
+
+        if (cacheResponse != null) {
+            String retval;
+            // The path is already cached?. Use it
+            if (cacheResponse.get(secret) instanceof String) {
+                retval = (String) cacheResponse.get(secret);
+            }
+            else {
+                try {
+                    // Stored JSON value.. Probably not usable, but return as a string
+                    return objectMapper.writeValueAsString(cacheResponse.get(secret));
+                }
+                catch (JsonProcessingException e) {
+                    throw new GuacamoleException("Error json parsing returned secret: ", e);
+                }
+            }
+
+            if (retval != null || retval == "") {
+                throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
+            }
+            return retval;
+        }
+
+        String username = parameters.get("username");
+        if (username == null || username.isEmpty()) {
+            throw new GuacamoleException("The username can not be empty for SSH connections");
+        }
+
+        // Detect to wanting one-time password or sigend certificate
+        if (path.startsWith("otp/")) {
+            String hostname = parameters.get("hostname");
+            if (hostname == null || hostname.isEmpty()) {
+                throw new GuacamoleException("The hostname can not be empty for SSH connections with one-time passwords");
+            }
+
+             Map<String, Object> request = Map.of(
+                "username", username,
+                "ip", hostname
+            );
+
+            VaultResponse response =
+                vaultTemplate.write(mountPath + "/creds/" + path.substring(4), request);
+
+            if (response == null || response.getData() == null) {
+                throw new GuacamoleException("No response from Vault SSH engine");
+            }
+
+            String password = (String) response.getData().get("key");
+            String user = (String) response.getData().get("username");
+
+            if (password == null || user == null) {
+                throw new GuacamoleException("Invalid SSH OTP response");
+            }
+
+            // Cache the retrieved user and otp
+            cache.put(mountPath + "/" + path, Map.of("username", user, "password", password));
+
+            if (secret == "username") {
+                return user;
+            }
+            else if (secret == "password") {
+                return password;
+            }
+        }
+        else if (path.startsWith("cert/")) {
+            OpenBaoSshKeys sshKeys = new OpenBaoSshKeys(configService.getSshType());
+
+            Map<String, Object> request = Map.of(
+                    "public_key", sshKeys.publicSsh,
+                    "valid_principals", username,
+                    "extensions", Map.of(
+                        "permit-port-forwarding", false,
+                        "permit-agent-forwarding", false,
+                        "permit-x11-forwarding", false
+                    ),
+                    "ttl", configService.getSshConnectionTimeout()
+            );
+
+            VaultResponse vaultResponse =
+                    vaultTemplate.write(mountPath + "/sign/" + path.substring(5), request);
+
+            if (vaultResponse == null || vaultResponse.getData() == null) {
+                throw new GuacamoleException("No response from Vault SSH engine");
+            }
+
+            String signedCert = (String) vaultResponse.getData().get("signed_key");
+
+            if (signedCert == null) {
+                throw new GuacamoleException("Vault did not return a signed SSH certificate");
+            }
+
+            cache.put(mountPath + "/" + path, Map.of(
+                    "private", sshKeys.privateSshPem,
+                    "public", signedCert));
+
+            if (secret == "private") {
+                return sshKeys.privateSshPem;
+            }
+            else if (secret == "public") {
+                return signedCert;
+            }
+        }
+        else {
+           throw new GuacamoleException("Unknown SSH type on path: " + mountPath +"/" + path);
+        }
+        throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
     }
 
     /**
-     * Extracts an arbitrary string field from an OpenBao secret response.
-     * Supports both KV v2 ({@code data.data.<field>}) and KV v1
-     * ({@code data.<field>}) layouts.
+     * Retrieves a username or password from an LDAP secret engine. The type of
+     * account supported might be static, dynamic or service accounts
      *
-     * @param response
-     *     The JSON response previously returned by {@link #getSecret(String)}.
+     * @param mountPath
+     *     The mountPath of the LDAP secret engine on the vault server.
      *
-     * @param fieldName
-     *     The name of the field to extract from the secret's data object.
+     * @param path
+     *     The path of the secret record representing the LDAP role
+     *
+     * @param secret
+     *     The secret value to return
      *
      * @return
-     *     The field value, or null if not present or not a string.
+     *     The value associated with the secret.
+     *
+     * @throws GuacamoleException
+     *     If the secret cannot be retrieved from OpenBao.
      */
-    public String extractField(JsonObject response, String fieldName) {
-
-        if (response == null || fieldName == null)
-            return null;
-
-        if (!response.has("data"))
-            return null;
-
-        JsonObject data = response.getAsJsonObject("data");
-
-        // KV v2 nests the user-supplied data under an inner "data" object.
-        JsonObject values;
-        if (data.has("data") && data.get("data").isJsonObject())
-            values = data.getAsJsonObject("data");
-        else
-            values = data;
-
-        if (!values.has(fieldName)) {
-            logger.debug("Field \"{}\" not found in OpenBao secret", fieldName);
-            return null;
+    private String getValueLDAP(String mountPath, String path, String secret) throws GuacamoleException {
+        if (secret != "username" && secret != "password") {
+            throw new GuacamoleException("LDAP secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
         }
 
-        if (!values.get(fieldName).isJsonPrimitive()) {
-            logger.debug("Field \"{}\" in OpenBao secret is not a primitive", fieldName);
-            return null;
+        // Is the key-value already in the cache
+        Map<String, Object> cacheResponse =  (Map<String, Object>) cache.getIfPresent(mountPath + "/" + path);
+
+        if (cacheResponse != null) {
+            String retval;
+            // The path is already cached?. Use it
+            if (cacheResponse.get(secret) instanceof String) {
+                retval = (String) cacheResponse.get(secret);
+            }
+            else {
+                try {
+                    // Stored JSON value.. Probably not usable, but return as a string
+                    return objectMapper.writeValueAsString(cacheResponse.get(secret));
+                }
+                catch (JsonProcessingException e) {
+                    throw new GuacamoleException("Error json parsing returned secret: ", e);
+                }
+            }
+
+            if (retval == null || retval == "") {
+                throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
+            }
+            return retval;
         }
 
-        return values.get(fieldName).getAsString();
+        VaultResponse response;
+        if (path.startsWith("static/")) {
+            response = vaultTemplate.read(mountPath + "/static-creds/" + path.substring(7));
+        }
+        else if (path.startsWith("dynamic/")) {
+            response = vaultTemplate.read(mountPath + "/creds/" + path.substring(8));
+        }
+        else if (path.startsWith("service/")) {
+            response = vaultTemplate.read(mountPath + "/" + path.substring(8) + "/check-out");
+        }
+        else {
+           throw new GuacamoleException("Unknown LDAP type on path: " + mountPath +"/" + path);
+        }
+
+        if (response == null || response.getData() == null) {
+            throw new GuacamoleException("No response from LDAP secrets engine");
+        }
+
+        String username;
+        String password = (String) response.getData().get("password");
+        if (path.startsWith("service/")) {
+            username = (String) response.getData().get("service_account_name");
+        }
+        else {
+            username = (String) response.getData().get("username");
+        }
+
+        if (username == null || password == null) {
+            throw new IllegalStateException("Invalid LDAP static credential response");
+        }
+
+        // Cache the retrieved user and password
+        cache.put(mountPath + "/" + path, Map.of("username", username, "password", password));
+
+        if (secret == "username") {
+            return username;
+        }
+        return password;
+    }
+
+    /**
+     * Retrieves a username or password from a Databse secret engine.
+     *
+     * @param mountPath
+     *     The mountPath of the database secret engine on the vault server.
+     *
+     * @param path
+     *     The path of the secret record representing the LDAP role
+     *
+     * @param secret
+     *     The secret value to return
+     *
+     * @return
+     *     The value associated with the secret.
+     *
+     * @throws GuacamoleException
+     *     If the secret cannot be retrieved from OpenBao.
+     */
+    private String getValueDB(String mountPath, String path, String secret) throws GuacamoleException {
+        if (secret != "username" && secret != "password") {
+            throw new GuacamoleException("Database secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
+        }
+
+        // Is the key-value already in the cache
+        Map<String, Object> cacheResponse = (Map<String, Object>) cache.getIfPresent(mountPath + "/" + path);
+
+        if (cacheResponse != null) {
+            String retval;
+            // The path is already cached?. Use it
+            if (cacheResponse.get(secret) instanceof String) {
+                retval = (String) cacheResponse.get(secret);
+            }
+            else {
+                try {
+                    // Stored JSON value.. Probably not usable, but return as a string
+                    return objectMapper.writeValueAsString(cacheResponse.get(secret));
+                }
+                catch (JsonProcessingException e) {
+                    throw new GuacamoleException("Error json parsing returned secret: ", e);
+                }
+            }
+
+            if (retval == null || retval.isEmpty()) {
+                throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
+            }
+            return retval;
+        }
+
+        VaultResponse response = vaultTemplate.read(mountPath + "/creds/" + path);
+
+        if (response == null || response.getData() == null) {
+            throw new GuacamoleException("No response from Databse secrets engine");
+        }
+
+        String username = (String) response.getData().get("username");
+        String password = (String) response.getData().get("password");
+
+        if (username == null || password == null) {
+            throw new IllegalStateException("Invalid LDAP static credential response");
+        }
+
+        // Cache the retrieved user and password
+        cache.put(mountPath + "/" + path, Map.of("username", username, "password", password));
+
+        if (secret == "username") {
+            return username;
+        }
+        return password;
+    }
+
+    /**
+     * Release the automatic renewal of the AppRole token on shutown
+     */
+    public void shutdown() {
+        leaseContainer.stop();
     }
 }

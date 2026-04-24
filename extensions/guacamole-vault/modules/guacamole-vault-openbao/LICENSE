@@ -1,0 +1,48 @@
+Apache Guacamole Vault Extension
+================================
+
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+---
+
+Apache License, Version 2.0
+===========================
+
+[ FULL Apache 2.0 license text here ]
+
+---
+
+This product includes the following third‑party software:
+
+Spring Framework
+----------------
+Copyright © 2002‑2025 VMware, Inc.
+License: Apache License, Version 2.0
+
+[ Apache 2.0 license text OR reference if already included above ]
+
+Spring Vault
+------------
+Copyright © 2014‑2025 VMware, Inc.
+License: Apache License, Version 2.0
+
+Micrometer
+----------
+Copyright © 2018‑2025 VMware, Inc.
+License: Apache License, Version 2.0
+
+Apache Commons Logging
+----------------------
+Copyright © The Apache Software Foundation
+License: Apache License, Version 2.0
+
+Bouncy Castle
+-------------
+Copyright © The Legion of the Bouncy Castle
+License: MIT License
+
+[ FULL MIT license text here ]

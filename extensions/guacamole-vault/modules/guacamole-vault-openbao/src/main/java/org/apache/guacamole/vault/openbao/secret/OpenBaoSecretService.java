@@ -19,28 +19,28 @@
 
 package org.apache.guacamole.vault.openbao.secret;
 
-import com.google.gson.JsonObject;
 import com.google.inject.Inject;
-import java.util.HashMap;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.Connectable;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
+import org.apache.guacamole.vault.openbao.secret.OpenBaoClient;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * OpenBao implementation of VaultSecretService. Resolves the legacy
- * {@code ${OPENBAO_SECRET}} and {@code ${GUAC_USERNAME}} tokens as well
- * as an arbitrary-path syntax of the form
- * {@code openbao:<path>[:<field>]}, which, when supplied as a secret
- * name via the YAML token mapping, retrieves the given field from the
- * named secret under the configured mount.
+ * OpenBao implementation of VaultSecretService.
+ * Retrieves secrets from OpenBao based on parameters of the logged-in user.
  */
 public class OpenBaoSecretService implements VaultSecretService {
 
@@ -48,28 +48,6 @@ public class OpenBaoSecretService implements VaultSecretService {
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(OpenBaoSecretService.class);
-
-    /**
-     * Prefix identifying the arbitrary-path secret name syntax:
-     * {@code openbao:<path>[:<field>]}.
-     */
-    private static final String OPENBAO_PREFIX = "openbao:";
-
-    /**
-     * The secret name used for the legacy per-user password lookup.
-     */
-    private static final String OPENBAO_SECRET_NAME = "OPENBAO_SECRET";
-
-    /**
-     * The secret name used to resolve to the logged-in Guacamole username.
-     */
-    private static final String GUAC_USERNAME_NAME = "GUAC_USERNAME";
-
-    /**
-     * The default field fetched from an OpenBao secret when no explicit
-     * {@code :field} suffix is supplied.
-     */
-    private static final String DEFAULT_FIELD = "password";
 
     /**
      * Client for communicating with OpenBao.
@@ -85,148 +63,114 @@ public class OpenBaoSecretService implements VaultSecretService {
     }
 
     @Override
-    public String canonicalize(String token) {
+    public String canonicalize(String nameComponent) {
+        try {
 
-        if (token == null)
-            return null;
+            // As HV notation is essentially a URL, encode all components
+            // using standard URL escaping
+            return URLEncoder.encode(nameComponent, "UTF-8");
 
-        // Existing names (including their ${...} form) are passed through.
-        if (OPENBAO_SECRET_NAME.equals(token) || ("${" + OPENBAO_SECRET_NAME + "}").equals(token))
-            return OPENBAO_SECRET_NAME;
-
-        if (GUAC_USERNAME_NAME.equals(token) || ("${" + GUAC_USERNAME_NAME + "}").equals(token))
-            return GUAC_USERNAME_NAME;
-
-        // Arbitrary-path form: let it flow through unchanged so getValue()
-        // can parse it.
-        if (token.startsWith(OPENBAO_PREFIX))
-            return token;
-
-        return null;
+        }
+        catch (UnsupportedEncodingException e) {
+            throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
+        }
     }
 
+    /**
+     * Returns a Future which eventually completes with the value of the secret
+     * having the given name. If no such secret exists, the Future will be
+     * completed with null. The secrets retrieved from this method are independent
+     * of the context of the particular connection being established, or any
+     * associated user context.
+     *
+     * @param name
+     *     The name of the secret to retrieve.
+     *
+     * @return
+     *     A Future which completes with value of the secret having the given
+     *     name. If no such secret exists, the Future will be completed with
+     *     null. If an error occurs asynchronously which prevents retrieval of
+     *     the secret, that error will be exposed through an ExecutionException
+     *     when an attempt is made to retrieve the value from the Future.
+     *
+     * @throws GuacamoleException
+     *     If the secret cannot be retrieved due to an error.
+     */
     @Override
     public Future<String> getValue(String token) throws GuacamoleException {
-        // Without user context we cannot resolve per-user lookups.
-        logger.warn("getValue(String) called without user context - cannot determine username");
-        return CompletableFuture.completedFuture(null);
+        // Empty parameters in this context
+        Map<String, String> parameters = Map.of("username", "",
+                "hostname", "",
+                "gateway-username", "",
+                "gateway-hostname", "");
+        String value = openBaoClient.getValue(token, parameters);
+        return CompletableFuture.completedFuture(value);                
     }
 
     @Override
     public Future<String> getValue(UserContext userContext, Connectable connectable, String token)
             throws GuacamoleException {
-
-        if (token == null)
-            return CompletableFuture.completedFuture(null);
-
-        String username = userContext.self().getIdentifier();
-
-        // Legacy: ${GUAC_USERNAME} → username
-        if (GUAC_USERNAME_NAME.equals(token))
-            return CompletableFuture.completedFuture(username);
-
-        // Legacy: ${OPENBAO_SECRET} → password from <mount>/data/<username>
-        if (OPENBAO_SECRET_NAME.equals(token))
-            return CompletableFuture.completedFuture(
-                    fetchField(username, DEFAULT_FIELD, username));
-
-        // Additive: openbao:<path>[:<field>]
-        if (token.startsWith(OPENBAO_PREFIX)) {
-            String spec = token.substring(OPENBAO_PREFIX.length());
-            int sep = spec.lastIndexOf(':');
-
-            String path;
-            String field;
-            if (sep > 0 && sep < spec.length() - 1) {
-                path  = spec.substring(0, sep);
-                field = spec.substring(sep + 1);
-            }
-            else {
-                path  = spec;
-                field = DEFAULT_FIELD;
-            }
-
-            if (path.isEmpty()) {
-                logger.warn("Empty path supplied for token: {}", token);
-                return CompletableFuture.completedFuture(null);
-            }
-
-            return CompletableFuture.completedFuture(fetchField(path, field, username));
-        }
-
-        logger.debug("Token \"{}\" not recognized by OpenBao secret service", token);
-        return CompletableFuture.completedFuture(null);
+        // Empty parameters in this context
+        Map<String, String> parameters = Map.of("username", "",
+                "hostname", "",
+                "gateway-username", "",
+                "gateway-hostname", "");
+        String value = openBaoClient.getValue(token, parameters);
+        return CompletableFuture.completedFuture(value);
     }
 
-    /**
-     * Retrieves {@code field} from the OpenBao secret at {@code path},
-     * logging the supplied {@code contextLabel} for diagnostics. Returns
-     * null rather than throwing when retrieval fails, to preserve the
-     * existing behavior of allowing Guacamole to proceed (possibly with
-     * an empty credential).
+    /*
+     * Returns a map of token names to corresponding Futures which eventually
+     * complete with the value of that token, where each token is dynamically
+     * defined based on connection parameters. If a vault implementation allows
+     * for predictable secrets based on the parameters of a connection, this
+     * function should be implemented to provide automatic tokens for those
+     * secrets and remove the need for manual mapping via YAML.
      *
-     * @param path
-     *     Path of the secret to fetch, relative to the configured mount.
+     * @param userContext
+     *     The user context from which the connectable originated.
      *
-     * @param field
-     *     Name of the field to extract.
+     * @param connectable
+     *     The connection or connection group for which the tokens are being replaced.
      *
-     * @param contextLabel
-     *     Identifier used only for log messages.
+     * @param config
+     *     The configuration of the Guacamole connection for which tokens are
+     *     being generated. This configuration may be empty or partial,
+     *     depending on the underlying implementation.
+     *
+     * @param filter
+     *     A TokenFilter instance that applies any tokens already available to
+     *     be applied to the configuration of the Guacamole connection. These
+     *     tokens will consist of tokens already supplied to connect().
      *
      * @return
-     *     The field value, or null on failure or if the field is absent.
+     *     A map of token names to their corresponding future values, where
+     *     each token and value may be dynamically determined based on the
+     *     connection configuration.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs producing the tokens and values required for the
+     *     given configuration.
      */
-    private String fetchField(String path, String field, String contextLabel) {
-        try {
-            JsonObject response = openBaoClient.getSecret(path);
-            String value = openBaoClient.extractField(response, field);
-
-            if (value == null)
-                logger.warn("Field \"{}\" not found in OpenBao secret at \"{}\" (context: {})",
-                        field, path, contextLabel);
-
-            return value;
-        }
-        catch (GuacamoleException e) {
-            logger.error("Failed to retrieve secret \"{}\" from OpenBao (context: {}): {}",
-                    path, contextLabel, e.getMessage());
-            logger.debug("Underlying exception:", e);
-            return null;
-        }
-    }
-
     @Override
     public Map<String, Future<String>> getTokens(UserContext userContext,
-            Connectable connectable,
-            GuacamoleConfiguration config,
-            TokenFilter tokenFilter) throws GuacamoleException {
+            Connectable connectable, GuacamoleConfiguration config,
+            TokenFilter filter) throws GuacamoleException {
 
         Map<String, Future<String>> tokens = new HashMap<>();
-        String username = userContext.self().getIdentifier();
+        Map<String, String> parameters = config.getParameters();
 
-        // GUAC_USERNAME is always available.
-        tokens.put(GUAC_USERNAME_NAME, CompletableFuture.completedFuture(username));
+        Pattern tokenPattern = Pattern.compile("\\$\\{(" + OpenBaoClient.VAULT_TOKEN_PREFIX + ".+)\\}");
 
-        // Best-effort pre-population of OPENBAO_SECRET from the per-user
-        // secret at <mount>/data/<username>. Missing/unreachable secrets
-        // are logged but do not abort token resolution.
-        try {
-            JsonObject response = openBaoClient.getSecret(username);
-            String password = openBaoClient.extractPassword(response);
-            if (password != null)
-                tokens.put(OPENBAO_SECRET_NAME,
-                        CompletableFuture.completedFuture(password));
-            else
-                logger.warn("Password not found in OpenBao for user: {}", username);
-        }
-        catch (GuacamoleException e) {
-            logger.warn("Failed to pre-populate OPENBAO_SECRET for user {}: {}",
-                    username, e.getMessage());
-            logger.debug("Underlying exception:", e);
+        for (Map.Entry<String, String> entry : parameters.entrySet()) {
+            Matcher tokenMatcher = tokenPattern.matcher(entry.getValue());
+            while (tokenMatcher.find()) {
+                String token = tokenMatcher.group(1);
+                String value = openBaoClient.getValue(token, parameters);
+                tokens.put(token, CompletableFuture.completedFuture(value));
+            }
         }
 
-        logger.debug("Returning {} OpenBao tokens: {}", tokens.size(), tokens.keySet());
         return tokens;
     }
 }

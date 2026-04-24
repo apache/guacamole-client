@@ -19,16 +19,146 @@
 
 package org.apache.guacamole.vault.openbao.conf;
 
-import com.google.inject.Inject;
 import java.net.URI;
+import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
+import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.IntegerGuacamoleProperty;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.URIGuacamoleProperty;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
 
 /**
- * Service for retrieving OpenBao configuration from guacamole.properties.
+ * Service for retrieving Hashicorp/OpenBao configuration from guacamole.properties.
  */
 public class OpenBaoConfigurationService extends VaultConfigurationService {
+    /**
+     * The default cache lifetime in milliseconds.
+     */
+    public static final int DEFAULT_CACHE_LIFETIME = 5000;
+
+    /**
+     * The default request timeout in milliseconds.
+     */
+    public static final int DEFAULT_REQUEST_TIMEOUT = 5000;
+
+    /**
+     * The default connection tiemout in milliseconds.
+     */
+    public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
+
+    /**
+     * The default ssh connection tiemout in milliseconds.
+     */
+    private static final int DEFAULT_SSH_CONNECTION_TIMEOUT = 10000;
+
+    /**
+     * The default ssh certificate type
+     */
+    private static final String DEFAULT_SSH_TYPE = "ed25519";
+    
+    /**
+     * The name of the file which contains the YAML mapping of connection
+     * parameter token to secrets within Hashicorp/OpenBao Vault.
+     */
+    private static final String TOKEN_MAPPING_FILENAME = "vault-token-mapping.yml";
+
+    /**
+     * The name of the properties file containing Guacamole configuration
+     * properties whose values are the names of corresponding secrets within
+     * Hashicorp/OpenBao Vault.
+     */
+    private static final String PROPERTIES_FILENAME = "guacamole.properties.vlt";
+
+    /**
+     * The URI of the hashicorp or OpenBao vault to use.
+     */
+    private static final URIGuacamoleProperty VAULT_URI =
+            new URIGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-uri"; }
+    };
+
+    /**
+     * The authentication token to use to access the vault.
+     */
+    private static final StringGuacamoleProperty VAULT_TOKEN =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-token"; }
+    };
+
+    /**
+     * The authentication username to use to access the vault in place of the token
+     */
+    private static final StringGuacamoleProperty VAULT_USERNAME =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-username"; }
+    };
+
+    /**
+     * The authentication password to use to access the vault in place of the token
+     */
+    private static final StringGuacamoleProperty VAULT_PASSWORD =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-password"; }
+    };
+    /**
+     * The maximum time that the cached data is considered valid in ms.
+     */
+    private static final IntegerGuacamoleProperty VAULT_CACHE_LIFETIME =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-cache-lifetime"; }
+    };
+
+    /**
+     * The maximum time that a request to the vault server can take in ms.
+     */
+    private static final IntegerGuacamoleProperty VAULT_REQUEST_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-request-timeout"; }
+    };
+
+    /**
+     * The maximum time that a connection to the vault server can take in ms.
+     */
+    private static final IntegerGuacamoleProperty VAULT_CONNECTION_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-connection-timeout"; }
+    };
+
+    /**
+     * The maximum time that a connection to the vault server can take in ms.
+     */
+    private static final IntegerGuacamoleProperty VAULT_SSH_CONNECTION_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-ssh-connection-timeout"; }
+    };
+    
+    /**
+     * The type of ssh certificates that will be generated
+     */
+    private static final StringGuacamoleProperty VAULT_SSH_TYPE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-ssh-type"; }
+    };
 
     /**
      * The Guacamole server environment.
@@ -39,139 +169,160 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     /**
      * Creates a new OpenBaoConfigurationService.
      */
+
+    /**
+     * Creates a new OpenBaoConfigurationService which reads the configuration
+     * from "vault-token-mapping.yml" and properties from
+     * "guacamole.properties.vlt". The token mapping is a YAML file which lists
+     * each connection parameter token and the name of the secret from which
+     * the value for that token should be read, while the properties file is an
+     * alternative to guacamole.properties where each property value is the
+     * name of a secret containing the actual value.
+     */
+
     public OpenBaoConfigurationService() {
-        super("openbao-token-mapping.yml", "guacamole.properties.openbao");
+        super(TOKEN_MAPPING_FILENAME, PROPERTIES_FILENAME);
     }
 
     /**
-     * Returns the OpenBao server URL as a parsed URI.
+     * The URI of the hashicorp or OpenBao vault to use.
      *
-     * @return The OpenBao server URI (e.g., "http://localhost:8200").
+     * @return URI
+     *      The Hashicorp or OpenBao server URI (e.g., "http://localhost:8200").
+     *
      * @throws GuacamoleException
-     *     If the property is not defined in guacamole.properties or is
-     *     not a valid URI.
+     *     If the property is not defined in guacamole.properties or
+     *     guacamole.properties can not be parsed.
      */
-    public URI getServerUrl() throws GuacamoleException {
-        return environment.getRequiredProperty(OpenBaoConfig.OPENBAO_SERVER_URL);
+    public URI getVaultUri() throws GuacamoleException {
+        return environment.getRequiredProperty(VAULT_URI);
     }
 
     /**
-     * Returns the OpenBao authentication token, or null if AppRole
-     * authentication is configured instead (see {@link #getRoleId()} and
-     * {@link #getSecretId()}).
+     * The authentication token to use to access the vault.
      *
-     * @return The OpenBao authentication token, or null.
+     * @return String
+     *      The Hashicorp or OpenBao authentication token.
+     *
      * @throws GuacamoleException
-     *     If an error occurs reading the property.
+     *     If the property is not defined in guacamole.properties or
+     *     guacamole.properties can not be parsed.
      */
-    public String getToken() throws GuacamoleException {
-        return environment.getProperty(OpenBaoConfig.OPENBAO_TOKEN);
+    public String getVaultToken() throws GuacamoleException {
+        return environment.getProperty(VAULT_TOKEN);
     }
 
     /**
-     * Returns the OpenBao AppRole role ID, or null if not configured.
+     * The authentication Username to use to access the vault.
      *
-     * @return The configured AppRole role ID, or null.
+     * @return String
+     *      The Hashicorp or OpenBao authentication Username
+     *
      * @throws GuacamoleException
-     *     If an error occurs reading the property.
+     *     If the property is not defined in guacamole.properties or
+     *     guacamole.properties can not be parsed.
      */
-    public String getRoleId() throws GuacamoleException {
-        return environment.getProperty(OpenBaoConfig.OPENBAO_ROLE_ID);
+    public String getVaultUsername() throws GuacamoleException {
+        return environment.getProperty(VAULT_USERNAME);
     }
 
     /**
-     * Returns the OpenBao AppRole secret ID, or null if not configured.
+     * The authentication Password to use to access the vault.
      *
-     * @return The configured AppRole secret ID, or null.
+     * @return String
+     *      The Hashicorp or OpenBao authentication Password
+     *
      * @throws GuacamoleException
-     *     If an error occurs reading the property.
+     *     If the property is not defined in guacamole.properties or
+     *     guacamole.properties can not be parsed.
      */
-    public String getSecretId() throws GuacamoleException {
-        return environment.getProperty(OpenBaoConfig.OPENBAO_SECRET_ID);
+    public String getVaultPassword() throws GuacamoleException {
+        return environment.getProperty(VAULT_PASSWORD);
     }
-
     /**
-     * Returns the OpenBao AppRole auth backend mount path (default: "approle").
+     * The maximum time that the cached data is considered valid in
+     * milliseconds.
      *
-     * @return The AppRole auth mount path.
+     * @return int
+     *      The cache lifetime in milliseconds.
+     *
      * @throws GuacamoleException
-     *     If an error occurs reading the property.
+     *     If guacamole.properties can not be parsed.
      */
-    public String getAppRolePath() throws GuacamoleException {
-        return environment.getProperty(
-            OpenBaoConfig.OPENBAO_APPROLE_PATH,
-            "approle"
-        );
+    public int getVaultCacheLifetime() throws GuacamoleException {
+        return environment.getProperty(VAULT_CACHE_LIFETIME, DEFAULT_CACHE_LIFETIME);
     }
 
     /**
-     * Returns true if AppRole authentication has been configured (both
-     * role ID and secret ID are present).
+     * The maximum time that a request to the vault server can take in
+     * milliseconds.
      *
-     * @return true if AppRole should be used, false to use a static token.
+     * @return int
+     *      The request timeout in milliseconds.
+     *
      * @throws GuacamoleException
-     *     If an error occurs reading the properties.
+     *     If guacamole.properties can not be parsed.
      */
-    public boolean isAppRoleConfigured() throws GuacamoleException {
-        String roleId = getRoleId();
-        String secretId = getSecretId();
-        return roleId != null && !roleId.isEmpty()
-            && secretId != null && !secretId.isEmpty();
+    public int getRequestTimeout() throws GuacamoleException {
+        return environment.getProperty(VAULT_REQUEST_TIMEOUT, DEFAULT_REQUEST_TIMEOUT);
     }
 
     /**
-     * Returns the OpenBao KV secrets engine mount path.
+     * The maximum time that a connection to the vault server can take in
+     * milliseconds.
      *
-     * @return The mount path (default: "rdp-creds").
+     * @return int
+     *      The conenction timeout in milliseconds.
+     *
      * @throws GuacamoleException
-     *     If an error occurs reading the property.
+     *     If guacamole.properties can not be parsed.
      */
-    public String getMountPath() throws GuacamoleException {
-        return environment.getProperty(
-            OpenBaoConfig.OPENBAO_MOUNT_PATH,
-            "rdp-creds"
-        );
+    public int getConnectionTimeout() throws GuacamoleException {
+        return environment.getProperty(VAULT_CONNECTION_TIMEOUT, DEFAULT_CONNECTION_TIMEOUT);
     }
 
-    /**
-     * Returns the OpenBao KV version.
-     * Hardcoded to "2" for KV v2 secrets engine.
-     *
-     * @return The KV version "2".
-     */
-    public String getKvVersion() {
-        return "2";
-    }
 
     /**
-     * Returns the connection timeout in milliseconds.
-     * Hardcoded to 5000ms (5 seconds).
+     * The type of SSH certificates are will be generated. Must be either
+     * 'rsa' of 4096-bit RSA keys or 'ed25519'.
      *
-     * @return The connection timeout of 5000ms.
+     * @return String
+     *      The ssh type to use.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties can not be parsed.
      */
-    public int getConnectionTimeout() {
-        return 5000;
+    public String getSshType() throws GuacamoleException {
+        String type = environment.getProperty(VAULT_SSH_TYPE, DEFAULT_SSH_TYPE);
+        if (! type.equals("rsa") & ! type.equals("ed25519")) {
+            throw new GuacamoleException("Only ssh certicate types 'rsa' (4096-bit) and 'ed25519' are supported");
+        }
+        return type;
     }
-
+    
     /**
-     * Returns the request timeout in milliseconds.
-     * Hardcoded to 10000ms (10 seconds).
+     * The maximum time that a connection to a ssh server can take in
+     * milliseconds.
      *
-     * @return The request timeout of 10000ms.
+     * @return int
+     *      The ssh conenction timeout in milliseconds.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties can not be parsed.
      */
-    public int getRequestTimeout() {
-        return 10000;
+    public int getSshConnectionTimeout() throws GuacamoleException {
+        return environment.getProperty(VAULT_SSH_CONNECTION_TIMEOUT, DEFAULT_SSH_CONNECTION_TIMEOUT);
     }
 
     @Override
     public boolean getSplitWindowsUsernames() throws GuacamoleException {
-        // Not needed for OpenBao - return false
+        // Not needed for Hashicorp/OpenBao - return false
         return false;
     }
 
     @Override
     public boolean getMatchUserRecordsByDomain() throws GuacamoleException {
-        // Not needed for OpenBao - return false
+        // Not needed for Hashicorp/OpenBao - return false
         return false;
     }
 }
