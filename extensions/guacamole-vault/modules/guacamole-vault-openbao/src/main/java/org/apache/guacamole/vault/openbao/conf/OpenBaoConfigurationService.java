@@ -51,12 +51,12 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     /**
      * The default ssh connection tiemout in milliseconds.
      */
-    private static final int DEFAULT_SSH_CONNECTION_TIMEOUT = 10000;
+    public static final int DEFAULT_SSH_CONNECTION_TIMEOUT = 10000;
 
     /**
      * The default ssh certificate type
      */
-    private static final String DEFAULT_SSH_TYPE = "ed25519";
+    public static final String DEFAULT_SSH_TYPE = "ed25519";
     
     /**
      * The name of the file which contains the YAML mapping of connection
@@ -141,7 +141,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     };
 
     /**
-     * The maximum time that a connection to the vault server can take in ms.
+     * The maximum time that an ssh signed certificate is considered to be valid.
      */
     private static final IntegerGuacamoleProperty VAULT_SSH_CONNECTION_TIMEOUT =
             new IntegerGuacamoleProperty() {
@@ -301,7 +301,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     }
     
     /**
-     * The maximum time that a connection to a ssh server can take in
+     * The maximum time that a signed SSH certificate is considered valid in
      * milliseconds.
      *
      * @return int

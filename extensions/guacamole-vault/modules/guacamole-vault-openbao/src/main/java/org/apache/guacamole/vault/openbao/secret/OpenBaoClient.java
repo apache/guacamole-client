@@ -103,8 +103,8 @@ public class OpenBaoClient {
     private ClientAuthentication authentication;
 
     /**
-     * A Vault lease container used to automatically renew AppRole
-     * authenication tokens.
+     * A Vault lease container used to automatically renew tokens
+     * or username/password access.
      */
     private SecretLeaseContainer leaseContainer;
 
@@ -172,7 +172,7 @@ public class OpenBaoClient {
         // the removal listener to ensure that passwords are no longer in memory.
         // However, both spring-core-vault and Guacamole store these values
         // elsewhere as immutable String values, So even if I stored them in the
-        // cache as char[] copies of the password would be elesewhere as String
+        // cache as char[] copies of the password would be eleswhere as String
         // values in memory.. A VaultConverter function could deal with the 
         // spring-vault-core part of the problem, but not Gaucamole. For now just
         // ensure that the values are really deleted and let the garbage collector
@@ -198,7 +198,7 @@ public class OpenBaoClient {
     }
 
     /*
-     * Function to detect is the the tokenis in fact a readable file
+     * Function to detect if the the token is in fact a readable file
      * rather than a token string
      *
      * @param String token
@@ -221,7 +221,7 @@ public class OpenBaoClient {
      * Lists the valid mount paths and their type
      *
      * @return Map<String, String>
-     *      The key of the map is the mount path and the value the type.
+     *      The map of the mount path and with the value being the type.
      *      The type can be ssh, database, kv_1 or kv_2
      */
     public Map<String, String> listMountPaths() {
@@ -271,8 +271,8 @@ public class OpenBaoClient {
     /**
      * Retrieves a value from a vault by its path. It first parses the
      * leading mount path from the token, ensures it is valid and uses
-     * a supported secret engine and then passes of the rest of the
-     * processing to a method dedicaed to each secret engine.
+     * a supported secret engine. It then passes off the rest of the
+     * processing to a method dedicated to each secret engine.
      *
      * @param token
      *     The Guacamole token to look up in OpenBao.
@@ -294,7 +294,7 @@ public class OpenBaoClient {
                 throw new GuacamoleException("Invalid token Vault token: " + token);
             }
 
-            // Before going further replace the arguments "{USERNAME}", "{HOSTNAME}",
+            // Before going further replace the arguments "{USERNAME}", "{SERVER}",
             // "{GATEWAY_USERNAME}" and "{GATEWAY_HOSTNAME}" in the token with their
             // with values supplied in the parameters
             // FIXME Could this be done with the TokenFilter in OpenBaoSecretService ?
@@ -369,7 +369,7 @@ public class OpenBaoClient {
      * Retrieves a value from a key-value secret engine of a vault.
      *
      * @param mountPath
-     *     The mountPath of teh key-value secret engine on teh vaut server.
+     *     The mountPath of the key-value secret engine on the vault server.
      *
      * @param path
      *     The path of the secret record
@@ -597,7 +597,7 @@ public class OpenBaoClient {
             throw new GuacamoleException("LDAP secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
         }
 
-        // Is the key-value already in the cache
+        // Is the value already in the cache
         Map<String, Object> cacheResponse =  (Map<String, Object>) cache.getIfPresent(mountPath + "/" + path);
 
         if (cacheResponse != null) {
@@ -705,7 +705,7 @@ public class OpenBaoClient {
             }
 
             if (retval == null || retval.isEmpty()) {
-                throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
+                throw new GuacamoleException("Data secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
             }
             return retval;
         }
@@ -720,7 +720,7 @@ public class OpenBaoClient {
         String password = (String) response.getData().get("password");
 
         if (username == null || password == null) {
-            throw new IllegalStateException("Invalid LDAP static credential response");
+            throw new IllegalStateException("Invalid Database credential response");
         }
 
         // Cache the retrieved user and password

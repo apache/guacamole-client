@@ -66,7 +66,7 @@ public class OpenBaoSecretService implements VaultSecretService {
     public String canonicalize(String nameComponent) {
         try {
 
-            // As HV notation is essentially a URL, encode all components
+            // As vault notation is essentially a URL, encode all components
             // using standard URL escaping
             return URLEncoder.encode(nameComponent, "UTF-8");
 
