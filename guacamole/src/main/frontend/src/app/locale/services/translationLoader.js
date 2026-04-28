@@ -26,10 +26,19 @@
 angular.module('locale').factory('translationLoader', ['$injector', function translationLoader($injector) {
 
     // Required services
+    var $document       = $injector.get('$document');
     var $http           = $injector.get('$http');
     var $q              = $injector.get('$q');
     var cacheService    = $injector.get('cacheService');
     var languageService = $injector.get('languageService');
+
+    /**
+     * The current build identifier, if available. This is used for
+     * cache-busting translation file requests between deployments.
+     *
+     * @type {String}
+     */
+    const buildMeta = $document[0].querySelector('meta[name="build"]');
 
     /**
      * Satisfies a translation request for the given key by searching for the
@@ -82,11 +91,17 @@ angular.module('locale').factory('translationLoader', ['$injector', function tra
                 return;
             }
 
+            // Construct translation URL; append ?b=<build>
+            // when meta is present to avoid stale cached JSON after deploy.
+            const translationURL = 'translations/' + encodeURIComponent(currentKey) + '.json'
+                    + ((buildMeta && buildMeta.content) ? ('?b='
+                    + encodeURIComponent(buildMeta.content)) : '');
+
             // Attempt to retrieve language
             $http({
                 cache   : cacheService.languages,
                 method  : 'GET',
-                url     : 'translations/' + encodeURIComponent(currentKey) + '.json'
+                url     : translationURL
             })
 
             // Resolve promise if translation retrieved successfully
