@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.vault.openbao.user;
 
+import com.google.inject.Singleton;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.Connection;
@@ -34,6 +35,7 @@ import org.apache.guacamole.vault.user.VaultDirectoryService;
  * Since OpenBao only provides secrets (not user/group/connection management),
  * all directory methods simply pass through the underlying directories unchanged.
  */
+ @Singleton
 public class OpenBaoDirectoryService extends VaultDirectoryService {
 
     @Override

@@ -134,6 +134,27 @@ public class TokenFilter {
     }
 
     /**
+     * Returns the value of the token with the given name, or null if no such
+     * token has been set.
+     *
+     * @param name
+     *     The name of the token to return.
+     *
+     * @param modifier
+     *      A modifier that might or not be part of the token
+     * 
+     * @return
+     *     The value of the token with the given name, or null if no such
+     *     token exists.
+     */
+    public String getToken(String name, String modifier) {
+        if (modifier != null && tokenValues.containsKey(name + ":" + modifier))
+            return tokenValues.get(name + ":" + modifier);
+        else
+            return tokenValues.get(name);
+    }
+
+    /**
      * Removes the value of the token with the given name. If no such token
      * exists, this function has no effect.
      *
@@ -226,7 +247,7 @@ public class TokenFilter {
 
                 // Pull token value
                 String tokenName = tokenMatcher.group(TOKEN_NAME_GROUP);
-                String tokenValue = getToken(tokenName);
+                String tokenValue = getToken(tokenName, modifier);
 
                 // If token is unknown, interpretation depends on whether
                 // strict mode is enabled

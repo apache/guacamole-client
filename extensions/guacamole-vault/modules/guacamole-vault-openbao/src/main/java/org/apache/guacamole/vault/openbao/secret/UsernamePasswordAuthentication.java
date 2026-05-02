@@ -16,21 +16,23 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
+
 // This is a minimal backport of this class to version 2.3.4 of spring-vault-core
 // It is compatible with lease renewal using SecretLeaseContainer
 
 package org.apache.guacamole.vault.openbao.secret;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.vault.authentication.ClientAuthentication;
+import org.springframework.vault.authentication.LoginToken;
 import org.springframework.vault.VaultException;
 import org.springframework.vault.client.VaultEndpoint;
-import org.springframework.vault.support.VaultToken;
 import org.springframework.vault.support.VaultResponse;
+import org.springframework.vault.support.VaultToken;
 import org.springframework.web.client.RestTemplate;
 
 public class UsernamePasswordAuthentication implements ClientAuthentication {
@@ -77,11 +79,20 @@ public class UsernamePasswordAuthentication implements ClientAuthentication {
         }
 
         String token = (String) vaultResponse.getAuth().get("client_token");
+        Boolean renewable = (Boolean) vaultResponse.getAuth().get("renewable");
+        Duration leaseDuration = Duration.ofSeconds((long) vaultResponse.getAuth().get("lease_duration"));
+        String accessor = (String) vaultResponse.getAuth().get("accessor");
+        String type = (String) vaultResponse.getAuth().get("type");
 
         if (token == null) {
             throw new VaultException("No client_token in Vault auth response");
         }
 
-        return VaultToken.of(token);
+        return  LoginToken.builder().token(token)
+                .leaseDuration(leaseDuration)
+                .renewable(renewable)
+                .accessor(accessor)
+                .type(type)
+                .build();
     }
 }

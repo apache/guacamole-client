@@ -25,19 +25,21 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.vault.authentication.AuthenticationSteps;
 import org.springframework.vault.authentication.AuthenticationStepsFactory;
 import org.springframework.vault.authentication.AuthenticationSteps.HttpRequest;
-import static org.springframework.vault.authentication.AuthenticationSteps.HttpRequestBuilder.get;
 import org.springframework.vault.authentication.ClientAuthentication;
 import org.springframework.vault.authentication.LoginToken;
-import org.springframework.vault.client.VaultHttpHeaders;
+import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.support.VaultResponse;
 import org.springframework.vault.support.VaultToken;
+import org.springframework.vault.VaultException;
+import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class FileTokenAuthentication implements ClientAuthentication, AuthenticationStepsFactory {
+public final class FileTokenAuthentication implements ClientAuthentication {
     /**
      * Logger for this class.
      */
@@ -49,15 +51,30 @@ public final class FileTokenAuthentication implements ClientAuthentication, Auth
     private final Path tokenPath;
 
     /**
+     * The vault endpoint to lookup token metadata
+     */
+    private final VaultEndpoint endpoint;
+
+    /**
+     * A reusable restTemplate
+     */
+    private final RestTemplate restTemplate;
+
+    /**
      * An instantiator for a Token Authentication class where the token
      * is reread from a file on renewal requests. This allows integration
      * with a VaultAgent for complex authentication methods
      *
      * @param String tokenPath
      *     A path to a readable file containing the token
+     *
+     * @param VaultEndpoint endpoint
+     *     The Vault endpoint used for token metadata lookup
      */
-    public FileTokenAuthentication(String tokenPath) {
+    public FileTokenAuthentication(String tokenPath, VaultEndpoint endpoint, RestTemplate restTemplate) {
         this.tokenPath = Path.of(tokenPath);
+        this.endpoint = endpoint;
+        this.restTemplate = restTemplate;
     }
 
     /*
@@ -68,101 +85,40 @@ public final class FileTokenAuthentication implements ClientAuthentication, Auth
      */
     @Override
     public VaultToken login() {
+       String token;
         try {
-            String token = Files.readString(tokenPath).trim();
-            return VaultToken.of(token);
+            token = Files.readString(tokenPath).trim();
         }
         catch (IOException e) {
             throw new IllegalStateException(
                     "Cannot read Vault token sink: " + tokenPath, e);
         }
+
+        String lookupPath = String.format(
+                "%s://%s:%d/v1/auth/token/lookup-self",
+                endpoint.getScheme(),
+                endpoint.getHost(),
+                endpoint.getPort());
+
+        ResponseEntity<VaultResponse> response =
+                restTemplate.postForEntity(lookupPath, null, VaultResponse.class);
+
+        VaultResponse vaultResponse = response.getBody();
+
+        Boolean renewable = (Boolean) vaultResponse.getAuth().get("renewable");
+        Duration leaseDuration = Duration.ofSeconds((long) vaultResponse.getAuth().get("lease_duration"));
+        String accessor = (String) vaultResponse.getAuth().get("accessor");
+        String type = (String) vaultResponse.getAuth().get("type");
+
+        if (token == null) {
+            throw new VaultException("No client_token in Vault auth response");
+        }
+
+        return  LoginToken.builder().token(token)
+                .leaseDuration(leaseDuration)
+                .renewable(renewable)
+                .accessor(accessor)
+                .type(type)
+                .build();
     }
-    
-	  /**
-	   * Create 'AuthenticationSteps' for token authentication given a VaultToken
-	   *
-	   * @param VaultToken token
-	   *     token must not be null.
-	   *
-	   * @param boolean selfLookup 
-	   *     Set true to perform a self-lookup using the given VaultToken.
-	   *     Self-lookup will create a LoginToken and provide renewability
-	   *     and TTL
-	   * 
-	   * @return AuthenticationSteps
-	   *     The AuthenticationSteps for token authentication.
-	   */
-	  public static AuthenticationSteps createAuthenticationSteps(VaultToken token, boolean selfLookup) {
-	      if (token == null) {
-	          throw new IllegalStateException("VaultToken must not be null");
-	      }
-
-        if (selfLookup) {
-            HttpRequest<VaultResponse> httpRequest = get("auth/token/lookup-self").with(VaultHttpHeaders.from(token))
-                .as(VaultResponse.class);
-
-            return AuthenticationSteps.fromHttpRequest(httpRequest)
-                .login(response -> LoginTokenFrom(token.toCharArray(), response.getRequiredData()));
-        }
-
-        return AuthenticationSteps.just(token);
-	  }
-    
-    /**
-     * Reimplementation of LoginTokenUtil.from as it is private
-     *
-     * @param char[] token
-     *      The token converted to a char[]
-     *
-     * @param Map<String, ?> auth
-     *     A map of the authentication response.
-     *
-     * @return LoginToken
-     */
-    private static LoginToken LoginTokenFrom(char[] token, Map<String, ?> auth ) {
-	      if (auth == null) {
-	          throw new IllegalStateException("VaultToken must not be null");
-	      }    
-
-        Boolean renewable = (Boolean) auth.get("renewable");
-        Number leaseDuration = (Number) auth.get("lease_duration");
-        String accessor = (String) auth.get("accessor");
-        String type = (String) auth.get("type");
-
-        if (leaseDuration == null) {
-	          leaseDuration = (Number) auth.get("ttl");
-        }
-
-        if (type == null) {
-	          type = (String) auth.get("token_type");
-        }
-
-        LoginToken.LoginTokenBuilder builder = LoginToken.builder();
-        builder.token(token);
-
-        if (accessor != null && !accessor.trim().isEmpty()) {
-	          builder.accessor(accessor);
-        }
-
-        if (leaseDuration != null) {
-	          builder.leaseDuration(Duration.ofSeconds(leaseDuration.longValue()));
-        }
-
-        if (renewable != null) {
-	          builder.renewable(renewable);
-        }
-
-        if (type != null && !type.trim().isEmpty()) {
-	          builder.type(type);
-        }
-
-        return builder.build();
-    }
-    
-    
-	  @Override
-	  public AuthenticationSteps getAuthenticationSteps() {
-	      VaultToken token = login();
-		    return createAuthenticationSteps(token, false);
-	  }
 }

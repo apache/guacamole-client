@@ -66,23 +66,47 @@
 
         <!-- For SSH key generation -->
         <dependency>
-          <groupId>org.bouncycastle</groupId>
-          <artifactId>bcprov-jdk15to18</artifactId>
-          <version>1.80</version>
+          <groupId>org.apache.sshd</groupId>
+          <artifactId>sshd-common</artifactId>
+          <version>2.12.1</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>jcl-over-slf4j</artifactId>
+              </exclusion>
+          </exclusions>
         </dependency>
 
-        <!-- For SSH key generation -->
+        <!-- Pin the versions of checker and errorprone to the versions
+             used by Guice 5.1.0 so the  Caffeine 2.9.3 version doesn't
+             pull in older versions -->
         <dependency>
-          <groupId>org.bouncycastle</groupId>
-          <artifactId>bcpkix-jdk15to18</artifactId>
-          <version>1.80</version>
+          <groupId>org.checkerframework</groupId>
+          <artifactId>checker-qual</artifactId>
+          <version>3.37.0</version>
+        </dependency>
+
+        <dependency>
+          <groupId>com.google.errorprone</groupId>
+          <artifactId>error_prone_annotations</artifactId>
+          <version>2.21.1</version>
         </dependency>
 
         <!-- For Caching support -->
         <dependency>
           <groupId>com.github.ben-manes.caffeine</groupId>
           <artifactId>caffeine</artifactId>
-          <version>3.1.8</version>
-        </dependency> 
+          <version>2.9.3</version>
+          <exclusions>
+            <exclusion>
+              <groupId>org.checkerframework</groupId>
+              <artifactId>checker-qual</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>com.google.errorprone</groupId>
+              <artifactId>error_prone_annotations</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>      
     </dependencies>
 </project>

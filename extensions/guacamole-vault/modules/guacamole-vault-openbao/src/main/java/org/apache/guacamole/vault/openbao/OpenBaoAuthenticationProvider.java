@@ -25,7 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * OpenBao authentication provider that retrieves RDP passwords from OpenBao.
+ * OpenBao authentication provider that retrieves passwords from OpenBao.
  * This provider integrates with the Guacamole vault framework to automatically
  * fetch passwords from OpenBao based on the logged-in username.
  */

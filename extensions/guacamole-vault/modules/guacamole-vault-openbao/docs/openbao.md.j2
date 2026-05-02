@@ -26,28 +26,38 @@ Installing/Enabling the vault extension
 
 ### Adding Guacamole to Hashicorp or OpenBao
 
-Allowing an application like Guacamole to access secrets via and OpenBao
+Allowing an application like Guacamole to access secrets via an OpenBao
 or Hashicorp Vault involves creating appropriate mount paths for the 
-secret engines needed and the needed authentication parameters. It is
-not the objective of this document to discuss the creation and maintenance
-of Vault mount paths and the user is refered to the [OpenBao](https://openbao.org/docs)
+secret engines and the needed authentication parameters. It is not the 
+objective of this document to discuss the creation and maintenance of 
+Vault mount paths and the user is refered to the [OpenBao](https://openbao.org/docs)
 or [Hashicorp Vault](https://developer.hashicorp.com/vault/docs) for this
-information. 
+information.
+
+This document will discuss examples of setting up the supported
+secret engines of the Vault for Guacamole with concrete examples. To remain
+independant of both OpenBao and Hashicorp Vault, the configuration below 
+will be done exclusively with `curl`.
+
+#### Vault connection information
 
 The minimum information needed by Guacamole to be setup are in address of the
 Vault server, including its associated port, and the means of authentication to the
 server. The Vault server uses a standard HTTP REST API and a typical URI might
 look like `https://vault.example.com:8200`.
 
-There are two means of authenticating to the Vault server supported by Guacamole.
-However, before discussing these two means of authentication, it is important to
-setup an access policy for the use of Guacamole
+#### Setup up a Guacamole Access Policy
 
 Guacamole only needs read access to the secret engine mount path and only to the 
 paths that are actually used in Guacamole. It therefore makes sense to limit 
 Guacamole's access to the Vault secrets by a specific policy. It should also be
 noted that Guacamole uses the special mount path `sys/mounts` to list the available
 mount paths and detect the type of the secret engine used on this mount path.
+
+To allow proper auditing of the access to the Vault, the created policy should be
+dedicated to Guacamole. In case of a breach of Guacamole's Vault authentication, this
+means that the Vault secrets accessed by the attacker might be known and the number
+of remedial actions needed, controlled. 
 
 So, imagine that Guacamole needs access to the 4 mount paths representing the 4 
 secret engines supported by Gaucamole, but only to a subset of the roles on the
@@ -83,9 +93,7 @@ path "kv/guacamole/*" {
 EOT
 ```
 
-We then need to upload this policy to the vault. This can be done with specific
-OpenBao or Hashicorp Vault commands, but here we propose to use `curl` so that the
-syntax is the same for both Vault suppliers
+We then need to upload this policy to the vault.
 
 ```
 $ export VAULT_TOKEN=...
@@ -97,18 +105,215 @@ $ curl -sS \
 ```
 
 where `VAULT_TOKEN` is a valid Vault token allowing administrative access. It
-also assumes that the vault server is running locally and on http.This 
+also assumes that the vault server is running locally and on http. This 
 creates a policy called `guacamole` in the vault for our use.
 
-#### Authentication using Tokens
+The mount paths above are examples and should be adapted the paths you actually
+use.
 
-Guacamole authenticates to OpenBao using a token. This token might be supplied
-directly Guacamole in the form of a string. Alternatively, Guacamole might be 
-supplied with a file where to read the token. This file could be managed by a
-[Vault agent](https://openbao.org/docs/agent-and-proxy/agent) allowing more 
-complex Vault authentication to be delegated to the Vault agent.
+#### Creating a key-values store for guacamole
 
-To create a static token for use with Guacamole, the command is 
+The simplest means of storing and accessing secrets in a Vault is using the key-values
+secret engine. This secret engine can store arbitrary values associated with a key.
+Appropriate uses of this secret engine are for unmanaged accounted of the client machines,
+certificates, etc. The secret rotation features of the Vault can not be used with this
+secret engine, so the use of this secret engine for password storage means that the user
+is entirely responsable for the adherance to any corporate password policies.
+
+The key-values secret engine, comes in two varieties. The older version 1, where only 
+the latest values are stored, or the newer version 2 that also stores metadata about the
+stored values ,including the last time the values were changed.
+
+The first step is to enable to secret engine. To enable the version 1 secret engine of a
+mount path  `kv1`, the command might be
+
+```
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"type": "kv", "options": {"version": "1"}}' \
+    http://127.0.0.1:8200/v1/sys/mounts/kv1
+```
+
+and for a version 2 secret engine mounted on the path `kv2` the command might be
+
+```
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"type": "kv", "options": {"version": "2"}}' \
+    http://127.0.0.1:8200/v1/sys/mounts/kv2
+```
+
+At this point the secret engines are mounted, but they contain no secrets. To add a secret
+to the version 1 secret engine the command is
+
+```
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"username": "bruce", "password": "wayne"}' \
+    http://127.0.0.1:8200/v1/kv1/users/batman
+```
+
+Here the path of the key is `users/batman`. Complex paths are allowed to seperate groups
+of users. The stored secrets are `username` and `password`. However, any string could be
+used for these.
+
+The command for a version 2 key-value store is slightly different. with the equivalent
+command to the above being
+
+```
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"data": {"username": "bruce", "password": "wayne"}}' \
+    http://127.0.0.1:8200/v1/kv2/data/users/batman
+```
+
+#### Creating an SSH secret engine for Guacamole
+
+The SSH secret engine allows two means of operation: signed SSH certificates or one-time 
+passwords. The better more modern of these is signed SSH certificates, though Guacamole
+supports both SSH methods.
+
+We first need to enable the ssh secret engine with a command like
+
+```
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"type": "ssh"}' http://127.0.0.1:8200/v1/sys/mounts/ssh
+```
+
+which mounts the secret engine on the mount path `ssh`. For certificate signing, the Vault
+needs a valid CA certificate and its private key. These might be uploaded to the Vault, but
+for this example we let the Vault create these value itself. The command for this is
+
+```
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"generate_signing_key": true}' \
+    http://127.0.0.1:8200/v1/ssh/config/ca
+```
+
+The returned value of `public_key` must be stored on the target machines, for example in the
+file `/etc/ssh/trusted_user_ca.pem`. SSH of these target machines must then be changed to allow
+certificates signed with this public key. For OpenSSH this could then be achieved by adding
+
+```
+TrustedUserCAKeys /etc/ssh/trusted_user_ca.pem
+```
+
+to the file `/etc/ssh/sshd_config`.
+
+The next step to allow signed SSH certificates is setting up a role in the SSH secret
+engine for Guacamole. Guacamole needs the `permit-pty` option of ssh, and so the creation
+of a signing role `signer` might be done with the command
+
+```
+$ curl -sS \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+     "algorithm_signer": "rsa-sha2-256", 
+     "allow_user_certificates": true, 
+     "allowed_users": "*", 
+     "key_type": "ca", 
+     "max_ttl": "30m", 
+     "allowed_extensions": "permit-tty"}' \
+  http://127.0.0.1:8200/v1/ssh/roles/signer 
+```
+
+The `max_ttl` value limits the life of the certificates signed by Guacamole to 
+30 minutes. Small values here ensure that the risk of abuse of the signed certificates
+is limited, but the value must taken into account both the latence of the ssh conection 
+times and the clock drift between the Vault and the SSH client machines. So there is
+a limit to how small this value might be without causing problems.
+
+The Vault is now ready for Guacamole to use to signed SSH certificates. To allow the use of
+one-time passwords, a specific role needs to be created. The command to create a role
+`generate_otp` for a default user `testuser` is 
+
+```
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"key_type": "otp", "default_user": "testuser"}' \
+    http://127.0.0.1:8200/v1/ssh/roles/generate_otp 
+```
+
+The created role can only be used to create one-time passwords for the account `testuser`
+as Guacamole will only request the default user.
+
+Note that the `cidr_list` option is ommitted here. The problem is that the SSH connections
+from Guacamole will appear to come from the `guacd` deamon, and within Guacamole's Vault
+secret driver we do not have access to the IP address of `guacd`. So Guacamole requests 
+one-time passwords without specifying and IP address. This needs an additional change in
+the Vault. To allow the role `generate_otp` to be used without IP addresses, the additional
+command is
+
+```
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"roles": "generate_otp"}' \
+    http://127.0.0.1:8200/v1/ssh/config/zeroaddress 
+```
+
+The target machine needs to be setup for the Vault one-time password. Firstly SSH must be
+configured to use PAM. As an example of the modification needed to test the one-time
+passwords the following line might be added to the top of `/etc/pam.d/sshd`.
+
+```
+auth sufficent pam_exec.so expose_authtok /usr/local/bin/verify_otp.sh
+```
+
+This is only an example that is guarenteed to work the one-time passwords without 
+preventing the existing methods from failing. The user will surely need to adapt 
+this to their installation.
+
+The final piece needed on the client machine is the script `/usr/local/sbin/verify_otp.sh`.
+A possible script that tests that the user corresponds to the user allowed by the one-time
+password and that the one-time password is correct in 
+
+
+```
+#!/bin/sh
+set -u
+
+IFS= read -r OTP
+
+USERNAME="${PAM_USER}"
+
+[ -z "${OTP}" ] && exit 1
+[ -z "${USERNAME}" ] && exit 2
+
+RESPONSE=$(curl -s \
+  --fail \
+  --request POST \
+  --header "Content-Type: application/json" \
+  --data '{"otp": "'${OTP}'"}' \
+  http://127.0.0.1:8200/v1/ssh/verify)
+[ "$?" -eq 0 ] || exit 4
+
+[ "$(echo $RESPONSE | jq -r .data.username)" = "$USERNAME" ] || exit 5
+```
+
+that should be saved at `/usr/local/sbin/verify_otp.sh` and made executable with the 
+command
+
+```
+chmod 755 /usr/local/sbin/verify_otp.sh
+```
+
+:::warning
+Using a shell script for a login is not the best security practice, and the user is
+encouraged to look at the [Hashicorp Vault SSH Helper](https://github.com/hashicorp/vault-ssh-helper)
+:::
+
+#### Creating an LDAP secret engine for Guacamole
+
+ #TODO
+ 
+#### Creating a Database secret engine for Guacamole
+
+ #TODO
+
+#### Authentication using a Token
+
+Guacamole can authenticate to OpenBao using a token. This token must use a role
+as previously discussed above and it must not expire. Guacamole can not be guarenteed
+to be able to renew a static expiring token, especially after a reboot. 
+
+To create a static token for use with Guacamole, a command like 
+
 
 ```
 $ curl -sS \
@@ -122,25 +327,41 @@ $ curl -sS \
     "display_name": "service-guacamole",
     "no_parent": true
   }'
-``` 
+```
 
-This creates a non expiring static token for Guacamole's use. There are security 
-concerning of using non expiring tokens, and they might not be in conformance 
-with local password policies. For this reason, AppRole tokens with an provisionning
-Agent for Guacamole are preferred.
+where the `ttl` or zero ensures that the token will not expire. The token to use 
+is stored in the value of `.auth.client_token`.
 
-If you'd prefer to use an agent to manage AppRole authentication using a sink
-file to exchange the token with Guacamole, see the discussion of creating
-[OpenBao AppRole](https://openbao.org/docs/auth/approle) or
+#### Authentication use a Token sink file
+
+Guacamole does not implement complex authentication methods, such as AppRole. But these
+can still be used with the help of a [Vault agent](https://openbao.org/https://openbao.org/docs/agent-and-proxy/agent).
+The Vault Agent manages the authentication and renewal of the authentication and just
+writes a standard Vault service token to a sink file. Guacamole can read this file
+at startup or in case of an expiring token and always have a valid token.
+
+The configuration of the Vault Agent is beyond the scope of this document and the user is
+encouraged to read the [OpenBao Vault Agent](https://openbao.org/docs/agent-and-proxy/agent)
+or [Hashicorp Vault Agent](https://developer.hashicorp.com/vault/docs/agent-and-proxy/agent)
+documentation. These vault agents can be used with AppRole authentication as discussed
+for [OpenBao AppRole](https://openbao.org/docs/auth/approle) or
 [Hashicorp AppRole](https://developr.hashicorp/vault/docs/auth/approle)
-secretsa, and [Vault agent](https://openbao.org/docs/agent-and-proxy/agent) 
-for the discussion of the setup of the Agent.
+secrets.
 
 #### Authentication using Username and Password
 
-If the authentication to Vault is via a username and password, we need to create
-a dediciated account for Guacamole in the vaul. This can be done with a command
-like
+If the authentication to Vault is via a username and password, we first need to have
+the `userpass` authentication method mounted which it isn't be default. Assuming
+a auth mount path of `auth/userpass` this can be done with the command
+
+```
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"type": "userpass"}' \
+    http://127.0.0.1:8200/v1/sys/auth/userpass
+```
+
+We can then create a dediciated account for Guacamole in the Vault. This can be done
+with a command like
 
 ```
 curl \
@@ -154,7 +375,7 @@ curl \
 ```
 
 This creates a user `guacmaole` using the same policy as previously and sets the
-password assuming the userpass engine is mount on the default path `auth/userpass`.
+password assuming the userpass engine is mounted on the default path `auth/userpass`.
 
 It should be noted that the Vault can not rotate the passwords of these user
 accounts. So the maintenance and update of the password needs to be done manually,
@@ -224,21 +445,20 @@ If automatic injection of secrets cannot work for your use case, consider using
 [manually-specified secrets via `openbao-token-mapping.yml`](vault-static-secrets).
 :::
 
-Parameter tokens injected from KSM records usually take the form
-{samp}`$\{VAULT:{MOUNT_PATH}/{PATH}/{SECRET}\}`, where `MOUNT_PATH` is the
+Parameter tokens injected from Vault records usually take the form
+{samp}`$\{VAULT:\{MOUNT_PATH\}/\{PATH\}/\{SECRET\}\}`, where `MOUNT_PATH` is the
 mount path of the Vault secret engine used, `PATH` is the path to the secret
 record and `SECRET` determines what value is retrieved from that record.
 
 #### Mount path detection
 
-Guacamole automatically detecting all of the available mount patch on the vault server
+Guacamole automatically detecting all of the available mount paths on the vault server
 and detects their type. The selection of which secret engine that Guacamole used is
 therefore based the value of `MOUNT_PATH`.
 
 It is possible to have a value of the mount path like `subpath1` and a second mount path
 `subpath1/subpath2`. Guacamole therefore chooses the secret engine with the longest 
 match to the start of the token.
-
 
 #### Secret Engines and paths supported
 
@@ -260,13 +480,13 @@ ${vault://{MOUNT_PATH}/{static|dynamic|service}/{ROLE}/{username/password}}
   An example of a valid token might then be `${vault://ldap/static/myaccount/username}`,
   where the value of `ROLE` here is `myaccount`.
   
-  Please not that Guacamole does not touch the lease times associated with these accounts
-  in the vault and it does not check in the service accounts after use. 
+  Please note that Guacamole does not touch the lease times associated with these accounts
+  in the vault and it does not check in the service accounts after use.
 
 `SSH`
-: The Vault secret engine support both one-time password and signed certificate modes of 
+: The Vault secret engine support both one-time passwords and signed certificate modes of 
   the secret engine. This secret engine required a helper command on the client machines
-  and is defined by its role. Token for one-time passwords are of the form
+  and is defined by its role. Tokens for one-time passwords are of the form
   
 ```
 ${vault://{MOUNT_PATH}/otp/{ROLE}/{username/password}}
@@ -284,9 +504,9 @@ ${vault://{MOUNT_PATH}/cert/{ROLE}/{public/private}}
 
   An example of a valid token might then be `${vault://ssh/cert/myaccount/public}`,
   where the value of `ROLE` here is `myaccount`, and the public certificate for use with
-  Guacamole is recovered. For SSH signed certificates le principal name used is determined
+  Guacamole is recovered. For SSH signed certificates the principal name used is determined
   by the `username` of the connection and the certificate will be limited for the use of
-  only this user. Also as Guacamole does not need port forwarding the certicate is created
+  only this user. Also as Guacamole does not need port forwarding the certificate is created
   in a manner that refuses all use of port forwarding.
   
 `DATABASE`
@@ -298,12 +518,12 @@ ${vault://{MOUNT_PATH}/{ROLE}/{username/password}}
 ```
 
 `Key-Values`
-: The Vault key-values secret engine as a generic secret engine to store arbitrary
+: The Vault key-values secret engine is a generic secret engine to store arbitrary
   secrets. This means that it is adapted to clients that are not managed by one of 
   the other three secret engines supported by Guacamole. For example, this engine
   might be used for a password on an unmanaged account of a firewall.
   
-  Both the path and secret values of key-value tokens are completemy arbitrary and
+  Both the path and secret values of key-value tokens are completely arbitrary and
   a valid token might be of the form
   
 ```
@@ -318,7 +538,7 @@ ${vault://{MOUNT_PATH}/{PATH}/{SECRET}
 In addition, the following sub-tokens can be used with the vault token to modify
 its value when it is referenced. These sub-tokens are of the form `{SUB_TOKEN}` 
 within the vault token itself. If `{SUB_TOKEN}` is valid literal with the vault
-token, you can yse `$${SUB_TOKEN}` to ensure it is interpreted as `{SUB_TOKEN}`.
+token, you can use `$${SUB_TOKEN}` to ensure it is interpreted as `{SUB_TOKEN}`.
 The allowed sub-token values are:
 
 `{USER}`
@@ -391,5 +611,5 @@ mysql-username: vault://db/guacamole/username
 mysql-password: vault://db/guacamole/password
 ```
 
-The secrate engine in this case is mounted on the path `db/` and this secret
+The secret engine in this case is mounted on the path `db/` and this secret
 engine defines a role `guacamole`.

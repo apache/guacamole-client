@@ -19,16 +19,17 @@
 
 package org.apache.guacamole.vault.openbao.user;
 
-import org.apache.guacamole.form.Form;
-import org.apache.guacamole.vault.conf.VaultAttributeService;
-
+import com.google.inject.Singleton;
 import java.util.Collection;
 import java.util.Collections;
+import org.apache.guacamole.form.Form;
+import org.apache.guacamole.vault.conf.VaultAttributeService;
 
 /**
  * OpenBao implementation of VaultAttributeService.
  * Defines attributes that trigger OpenBao secret lookups.
  */
+@Singleton
 public class OpenBaoAttributeService implements VaultAttributeService {
 
     @Override

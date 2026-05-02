@@ -20,6 +20,7 @@
 package org.apache.guacamole.vault.openbao.secret;
 
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * OpenBao implementation of VaultSecretService.
  * Retrieves secrets from OpenBao based on parameters of the logged-in user.
  */
+@Singleton
 public class OpenBaoSecretService implements VaultSecretService {
 
     /**
@@ -83,7 +85,7 @@ public class OpenBaoSecretService implements VaultSecretService {
      * of the context of the particular connection being established, or any
      * associated user context.
      *
-     * @param name
+     * @param token
      *     The name of the secret to retrieve.
      *
      * @return
@@ -98,24 +100,14 @@ public class OpenBaoSecretService implements VaultSecretService {
      */
     @Override
     public Future<String> getValue(String token) throws GuacamoleException {
-        // Empty parameters in this context
-        Map<String, String> parameters = Map.of("username", "",
-                "hostname", "",
-                "gateway-username", "",
-                "gateway-hostname", "");
-        String value = openBaoClient.getValue(token, parameters);
-        return CompletableFuture.completedFuture(value);                
+        String value = openBaoClient.getValue(token, new GuacamoleConfiguration());
+        return CompletableFuture.completedFuture(value);
     }
 
     @Override
     public Future<String> getValue(UserContext userContext, Connectable connectable, String token)
             throws GuacamoleException {
-        // Empty parameters in this context
-        Map<String, String> parameters = Map.of("username", "",
-                "hostname", "",
-                "gateway-username", "",
-                "gateway-hostname", "");
-        String value = openBaoClient.getValue(token, parameters);
+        String value = openBaoClient.getValue(token, new GuacamoleConfiguration());
         return CompletableFuture.completedFuture(value);
     }
 
@@ -166,11 +158,18 @@ public class OpenBaoSecretService implements VaultSecretService {
             Matcher tokenMatcher = tokenPattern.matcher(entry.getValue());
             while (tokenMatcher.find()) {
                 String token = tokenMatcher.group(1);
-                String value = openBaoClient.getValue(token, parameters);
+                String value = openBaoClient.getValue(token, config);
                 tokens.put(token, CompletableFuture.completedFuture(value));
             }
         }
 
+        logger.info("Returning {} OpenBao tokens:", tokens.size());
+        tokens.forEach((k, v) -> {
+            try {
+                logger.info("    {} : {}", k, v.get());
+            } catch (Exception e) {
+                logger.info("    {} => ERROR: {}", k, e);
+            }});
         return tokens;
     }
 }

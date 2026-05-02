@@ -19,8 +19,9 @@
 
 package org.apache.guacamole.vault.openbao.conf;
 
-import java.net.URI;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import java.net.URI;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
@@ -32,6 +33,7 @@ import org.apache.guacamole.vault.conf.VaultConfigurationService;
 /**
  * Service for retrieving Hashicorp/OpenBao configuration from guacamole.properties.
  */
+@Singleton
 public class OpenBaoConfigurationService extends VaultConfigurationService {
     /**
      * The default cache lifetime in milliseconds.
@@ -49,15 +51,16 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
 
     /**
-     * The default ssh connection tiemout in milliseconds.
+     * The default ssh connection tiemout in seconds.
      */
-    public static final int DEFAULT_SSH_CONNECTION_TIMEOUT = 10000;
+    public static final int DEFAULT_SSH_CONNECTION_TIMEOUT = 1800;
 
     /**
-     * The default ssh certificate type
+     * The default ssh certificate type.
+     * FIXME : ed25519 not supportted before java 15. Waiting for upgrade
      */
     public static final String DEFAULT_SSH_TYPE = "ed25519";
-    
+
     /**
      * The name of the file which contains the YAML mapping of connection
      * parameter token to secrets within Hashicorp/OpenBao Vault.
@@ -149,7 +152,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
         @Override
         public String getName() { return "vault-ssh-connection-timeout"; }
     };
-    
+
     /**
      * The type of ssh certificates that will be generated
      */
@@ -299,7 +302,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
         }
         return type;
     }
-    
+
     /**
      * The maximum time that a signed SSH certificate is considered valid in
      * milliseconds.

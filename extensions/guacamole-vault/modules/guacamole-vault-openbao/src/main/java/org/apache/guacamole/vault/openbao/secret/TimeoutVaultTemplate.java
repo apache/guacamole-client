@@ -19,7 +19,7 @@
 
 package org.apache.guacamole.vault.openbao.secret;
 
-import javax.inject.Inject;
+import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -34,10 +34,9 @@ import org.slf4j.LoggerFactory;
 
 /**
  * The point of this class is to override the doCreateRestTemplate method
- * when creating a VaultTemplate and allow a request and connection 
- * timeout to be added to the HttpClient. 
+ * when creating a VaultTemplate and allow a request and connection
+ * timeout to be added to the HttpClient.
  */
-
 public class TimeoutVaultTemplate extends VaultTemplate {
     /**
      * Logger for this class.
@@ -50,6 +49,15 @@ public class TimeoutVaultTemplate extends VaultTemplate {
     @Inject
     private OpenBaoConfigurationService configService;
 
+   /**
+    * The connection timeout in milliseconds
+    */
+    private int connectionTimeout = OpenBaoConfigurationService.DEFAULT_CONNECTION_TIMEOUT;
+
+   /**
+    * The request timeout in milliseconds
+    */
+    private int requestTimeout = OpenBaoConfigurationService.DEFAULT_REQUEST_TIMEOUT;
 
     public TimeoutVaultTemplate(VaultEndpoint endpoint,
             ClientHttpRequestFactory requestFactory,
@@ -57,30 +65,20 @@ public class TimeoutVaultTemplate extends VaultTemplate {
         super(endpoint, requestFactory, session);
     }
 
+    public void setRequestTimeout(int requestTimeout) { this.requestTimeout = requestTimeout; }
+    public void setConnectionTimeout(int requestTimeout) { this.connectionTimeout = connectionTimeout; }
+
     @Override
     protected RestTemplate doCreateRestTemplate(VaultEndpointProvider endpointProvider,
             ClientHttpRequestFactory requestFactory) {
-        int connectionTimeout;
-        int requestTimeout;
-        try {
-            connectionTimeout = configService.getConnectionTimeout();
-        }
-        catch (GuacamoleException e) {
-            connectionTimeout = OpenBaoConfigurationService.DEFAULT_CONNECTION_TIMEOUT;
-        }
-        try {
-            requestTimeout = configService.getRequestTimeout();
-        }
-        catch (GuacamoleException e) {
-            requestTimeout = OpenBaoConfigurationService.DEFAULT_REQUEST_TIMEOUT;
-        }        
+
         if (requestFactory instanceof SimpleClientHttpRequestFactory) {
             logger.debug("Setting http request and connection timeouts");
             ((SimpleClientHttpRequestFactory) requestFactory)
                     .setConnectTimeout(connectionTimeout);
             ((SimpleClientHttpRequestFactory) requestFactory)
                     .setReadTimeout(requestTimeout);
-        }      
+        }
 
         return super.doCreateRestTemplate(endpointProvider, requestFactory);
     }

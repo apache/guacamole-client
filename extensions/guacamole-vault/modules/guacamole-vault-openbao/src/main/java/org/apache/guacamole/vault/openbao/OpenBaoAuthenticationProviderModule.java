@@ -26,11 +26,13 @@ import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
 import org.apache.guacamole.vault.openbao.secret.OpenBaoClient;
 import org.apache.guacamole.vault.openbao.secret.OpenBaoSecretService;
+import org.apache.guacamole.vault.openbao.secret.TimeoutVaultTemplate;
 import org.apache.guacamole.vault.openbao.user.OpenBaoAttributeService;
 import org.apache.guacamole.vault.openbao.user.OpenBaoDirectoryService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.conf.VaultAttributeService;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
+
 
 /**
  * Guice module for configuring OpenBao vault integration.
@@ -52,27 +54,19 @@ public class OpenBaoAuthenticationProviderModule extends VaultAuthenticationProv
     protected void configureVault() {
 
         // Bind configuration service
-        bind(VaultConfigurationService.class)
-                .to(OpenBaoConfigurationService.class)
-                .in(Scopes.SINGLETON);
+        bind(OpenBaoConfigurationService.class);
+        bind(VaultConfigurationService.class).to(OpenBaoConfigurationService.class);
 
         // Bind secret service
-        bind(VaultSecretService.class)
-                .to(OpenBaoSecretService.class)
-                .in(Scopes.SINGLETON);
+        bind(VaultSecretService.class).to(OpenBaoSecretService.class);
 
         // Bind attribute service
-        bind(VaultAttributeService.class)
-                .to(OpenBaoAttributeService.class)
-                .in(Scopes.SINGLETON);
+        bind(VaultAttributeService.class).to(OpenBaoAttributeService.class);
 
         // Bind directory service
-        bind(VaultDirectoryService.class)
-                .to(OpenBaoDirectoryService.class)
-                .in(Scopes.SINGLETON);
+        bind(VaultDirectoryService.class).to(OpenBaoDirectoryService.class);
 
-        // Bind OpenBao client
-        bind(OpenBaoClient.class)
-                .in(Scopes.SINGLETON);
+        // bind OpenBao client
+        bind(OpenBaoClient.class);
     }
 }

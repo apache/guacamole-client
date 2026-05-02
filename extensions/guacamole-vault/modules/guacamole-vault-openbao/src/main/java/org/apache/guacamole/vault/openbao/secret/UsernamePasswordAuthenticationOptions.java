@@ -16,7 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
- 
+
  // This is a minimal backport of this class to version 2.3.4 of spring-vault-core
 
 package org.apache.guacamole.vault.openbao.secret;
