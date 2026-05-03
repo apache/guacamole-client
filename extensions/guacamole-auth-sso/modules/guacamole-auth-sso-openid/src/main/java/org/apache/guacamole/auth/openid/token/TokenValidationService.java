@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.openid.token;
 
 import com.google.inject.Inject;
+import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
