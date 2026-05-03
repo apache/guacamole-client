@@ -211,7 +211,7 @@ public class TokenValidationService {
             return (String) json.get("id_token");
 
         }
-        catch (Exception e) {
+        catch (IOException e) {
             logger.error("Rejected invalid OpenID code exchange: {}", e.getMessage(), e);
         }
         return null;

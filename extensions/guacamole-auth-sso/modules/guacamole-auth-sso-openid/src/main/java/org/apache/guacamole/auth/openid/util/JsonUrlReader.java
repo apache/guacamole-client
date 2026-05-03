@@ -31,7 +31,6 @@ import org.jose4j.json.JsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /*
  * Utility class to open a http connection to a URL, send a body
  * and receive a response in the form of a parsed JSON
