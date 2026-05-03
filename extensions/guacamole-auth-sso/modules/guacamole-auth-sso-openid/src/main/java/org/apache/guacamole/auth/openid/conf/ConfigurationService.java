@@ -133,6 +133,7 @@ public class ConfigurationService {
 
         @Override
         public String getName() { return "openid-token-endpoint"; }
+
     };
 
     /**
@@ -155,6 +156,7 @@ public class ConfigurationService {
 
         @Override
         public String getName() { return "openid-client-secret"; }
+
     };
 
     /**
@@ -165,6 +167,7 @@ public class ConfigurationService {
 
         @Override
         public String getName() { return "openid-pkce-required"; }
+
     };
 
     /**
@@ -213,9 +216,10 @@ public class ConfigurationService {
      */
     private static final StringGuacamoleProperty OPENID_ATTRIBUTES_CLAIM_TYPE =
             new StringGuacamoleProperty() {
-                @Override
-                public String getName() { return "openid-attributes-claim-type"; }
-            };
+        @Override
+        public String getName() { return "openid-attributes-claim-type"; }
+
+    };
 
     /**
      * The space-separated list of OpenID scopes to request.
@@ -339,12 +343,11 @@ public class ConfigurationService {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or it authorization and
-     *     well-known endpoints are property is missing.
+     *     If guacamole.properties cannot be parsed, or if authorization and
+     *     well-known endpoints properties are missing.
      */
     public URI getAuthorizationEndpoint() throws GuacamoleException {
-        URI authorization_endpoint = environment.getProperty(OPENID_AUTHORIZATION_ENDPOINT);
-        authorization_endpoint = authorization_endpoint == null ? confWellKnown.getAuthorizationEndpoint() : authorization_endpoint;
+        URI authorization_endpoint = environment.getProperty(OPENID_AUTHORIZATION_ENDPOINT, confWellKnown.getAuthorizationEndpoint());
         if (authorization_endpoint == null) {
             throw new GuacamoleException("Property openid-authorization-endpoint or openid-well-known-endpoint is required");
         }
@@ -396,12 +399,11 @@ public class ConfigurationService {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the issuer property
-     *     and well-known endpoints are property is missing.
+     *     If guacamole.properties cannot be parsed, or if issuer and
+     *     well-known endpoints properties are missing.
      */
     public String getIssuer() throws GuacamoleException {
-        String issuer = environment.getProperty(OPENID_ISSUER);
-        issuer = issuer == null ? confWellKnown.getIssuer() : issuer;
+        String issuer = environment.getProperty(OPENID_ISSUER, confWellKnown.getIssuer());
         if (issuer == null) {
             throw new GuacamoleException("Property openid-issuer or openid-well-known-endpoint is required");
         }
@@ -419,12 +421,11 @@ public class ConfigurationService {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the JWKS and
-     *     well-known endpoints are property is missing.
+     *     If guacamole.properties cannot be parsed, or if JWKS and
+     *     well-known endpoints properties are missing.
      */
     public URI getJWKSEndpoint() throws GuacamoleException {
-        URI jwks_uri =  environment.getProperty(OPENID_JWKS_ENDPOINT);
-        jwks_uri = jwks_uri == null ? confWellKnown.getJWKSEndpoint() : jwks_uri;
+        URI jwks_uri = environment.getProperty(OPENID_JWKS_ENDPOINT, confWellKnown.getJWKSEndpoint());
         if (jwks_uri == null) {
             throw new GuacamoleException("Property openid-jwks-endpoint or openid-well-known-endpoint is required");
         }
@@ -441,11 +442,10 @@ public class ConfigurationService {
      *
      * @throws GuacamoleException
      *     If guacamole.properties cannot be parsed, or if the token and
-     *     well-known endpoints are property is missing.
+     *     well-known endpoints properties are missing.
      */
     public URI getTokenEndpoint() throws GuacamoleException {
-        URI token_endpoint = environment.getProperty(OPENID_TOKEN_ENDPOINT);
-        token_endpoint = token_endpoint == null ? confWellKnown.getTokenEndpoint() : token_endpoint;
+        URI token_endpoint = environment.getProperty(OPENID_TOKEN_ENDPOINT, confWellKnown.getTokenEndpoint());
         if (token_endpoint == null) {
             throw new GuacamoleException("Property openid-token-endpoint or openid-well-known-endpoint is required");
         }
@@ -467,7 +467,7 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns true if the response type defines an implict flow
+     * True if implict flow should be used, otherwise false as defined in the guacamole.properties
      *
      * @return
      *     The whether implicit flow is used or not, as configured with guacamole.properties.
@@ -481,7 +481,7 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns the OIDC client secret used for toen validation, as configured
+     * Returns the OIDC client secret used for token validation, as configured
      * with guacamole.properties. This value is typically provided by the OIDC
      * service when OIDC credentials are generated for your application, and
      * may be null.
@@ -498,10 +498,10 @@ public class ConfigurationService {
     }
 
     /**
-     * Returns  a boolean value of whether "Proof Key for Code Exchange (PKCE)"
+     * Returns a boolean value of whether "Proof Key for Code Exchange (PKCE)"
      * will be used, as configured with guacamole.properties. The choice of
      * whether to use PKCE is up to you, but the OIDC service must support
-     * it. By default will be false.
+     * it. True if PKCE should be used, otherwise false.
      *
      * @return
      *     The whether to use PKCE or not, as configured with guacamole.properties.
@@ -510,8 +510,7 @@ public class ConfigurationService {
      *     If guacamole.properties cannot be parsed.
      */
     public boolean isPKCERequired() throws GuacamoleException {
-        Boolean enabled = environment.getProperty(OPENID_PKCE_REQUIRED);
-        return enabled != null && enabled;
+        return environment.getProperty(OPENID_PKCE_REQUIRED, false);
     }
 
     /**

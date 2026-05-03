@@ -24,6 +24,7 @@ import com.google.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -58,26 +59,39 @@ public class OpenIDWellKnown {
      * The delay between each attempt to well-known endpoint in seconds
      */
     private static final long DELAY_SECONDS = 5;
+    
+    /**
+     * The getters of this class, except getWellKnownEndpoint need to wait for the
+     * class to be fully initialized before returning. When this latch is zero the
+     * class is ready.
+     */
+    private final CountDownLatch initializedLatch = new CountDownLatch(1);
 
     /**
      * The detected issuer
      */
-    private static String issuer = null;
+    private String issuer = null;
 
     /**
      * The detected authorization endpoint
      */
-    private static URI authorization_endpoint = null;
+    private URI authorization_endpoint = null;
 
     /**
      * The detected token endpoint
      */
-    private static URI token_endpoint = null;
+    private URI token_endpoint = null;
 
     /**
      * The detected jwks_uri
      */
-    private static URI jwks_uri = null;
+    private URI jwks_uri = null;
+
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
     
     /**
      * Empty constructor of the class to populate data recovered from a OIDC
@@ -104,46 +118,60 @@ public class OpenIDWellKnown {
      *     guacamole.properties.
      *
      * @throws GuacamoleException
-     *     If guacamole.properties cannot be parsed, or if the well-known
-     *     endpoint property is missing.
+     *     If guacamole.properties cannot be parsed
      */
     private URI getWellKnownEndpoint() throws GuacamoleException {
         return environment.getProperty(OPENID_WELL_KNOWN_ENDPOINT);
     }
+    
+    /**
+     * A function that waits for the latch to count down to zero before continuing
+     */
+    private void awaitInitialization() {
+        try {
+            initializedLatch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("Initialization interrupted", e);
+        }
+    }
 
     /**
      * Returns the issuer to expect for all received ID tokens, as configured
-     * from the well_known endpoint.
+     * from the well-known endpoint.
      *
      * @return
      *     The issuer to expect for all received ID tokens, as returned by the
      *     well-known endpoint.
      */
     public String getIssuer() {
+        awaitInitialization();
         return issuer;
     }
 
     /**
      * Returns the authorization endpoint (URI) of the OpenID service as
-     * configured from the well_known endpoint.
+     * configured from the well-known endpoint.
      *
      * @return
      *     The authorization endpoint of the OpenID service, as returned by the
      *     well-known endpoint.
      */
     public URI getAuthorizationEndpoint() {
+        awaitInitialization();
         return authorization_endpoint;
     }
 
     /**
      * Returns the token endpoint (URI) of the OpenID service as
-     * configured from the well_known endpoint.
+     * configured from the well-known endpoint.
      *
      * @return
      *     The token endpoint of the OpenID service, as returned by the
      *     well-known endpoint.
      */
     public URI getTokenEndpoint() {
+        awaitInitialization();
         return token_endpoint;
     }
 
@@ -158,16 +186,11 @@ public class OpenIDWellKnown {
      *     well-known endpoint.
      */
     public URI getJWKSEndpoint() {
+        awaitInitialization();
         return jwks_uri;
     }
 
     /**
-     * The Guacamole server environment.
-     */
-    @Inject
-    private Environment environment;
-
-    /*
      * On injection, when the environment is non null, populates the OpenIDWellKnown 
      * class by reading the json from an OIDC well-known endpoint and saves these values
      * for later use. Use Guice to ensure environment exists before initializing.
@@ -177,10 +200,12 @@ public class OpenIDWellKnown {
         // Fast return if there is no well-known endpoint or its unreadable
         try {
             if (getWellKnownEndpoint() == null) {
+                initializedLatch.countDown();
                 return;
             }
         }
-        catch (Exception e) {
+        catch (GuacamoleException e) {
+            initializedLatch.countDown();
             return;
         }
     
@@ -209,6 +234,7 @@ public class OpenIDWellKnown {
                                 issuer, authorization_endpoint, token_endpoint, jwks_uri);
 
                     scheduler.shutdown();
+                    initializedLatch.countDown();
                     return;
                 }
                 catch (Exception e) {
@@ -218,6 +244,7 @@ public class OpenIDWellKnown {
                 if (attempts >= MAX_ATTEMPTS) {
                     logger.info("Timeout on well-known on endpoint");
                     scheduler.shutdown();
+                    initializedLatch.countDown();
                 }
             }
         };

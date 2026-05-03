@@ -69,7 +69,7 @@ public final class PKCEUtil {
     }
 
     /**
-     * Base64URL encoding without padding.
+     * A method that Base64URL-encodes a provided byte-array without padding.
      *
      * @param bytes
      *      The bytes to be Base64 URL encoded

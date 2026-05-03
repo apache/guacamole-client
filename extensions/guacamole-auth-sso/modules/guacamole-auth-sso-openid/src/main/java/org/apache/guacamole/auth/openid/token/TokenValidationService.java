@@ -109,7 +109,7 @@ public class TokenValidationService {
                 .build();
                 
         /* Exchange code → token */
-        if (! confService.isImplicitFlow()) {
+        if (!confService.isImplicitFlow()) {
             token = exchangeCode(token, verifier);                
         }
         
@@ -212,7 +212,7 @@ public class TokenValidationService {
 
         }
         catch (Exception e) {
-            logger.info("Rejected invalid OpenID code exchange: {}", e.getMessage(), e);
+            logger.error("Rejected invalid OpenID code exchange: {}", e.getMessage(), e);
         }
         return null;
     }
