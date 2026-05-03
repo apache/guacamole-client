@@ -25,13 +25,14 @@ import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
  * This enum represents the valid OIDC reponse types that can be used
  */
  public enum OpenIDResponseType {
-     /*
+     /**
       * Response type "id_token" used for implciit flow as specified in the OpenID standard
       */
      @PropertyValue("id_token")
      ID_TOKEN("id_token"),
      
-     /* Response type "token" used for implicit flow by certain Identity Providers, notably
+     /**
+      * Response type "token" used for implicit flow by certain Identity Providers, notably
       * AWS Cognito. This corresponds to the official OIDC response_type "id_token token" 
       * that returns both the "id_token" and "access_token" parameters
       */
@@ -44,7 +45,7 @@ import org.apache.guacamole.properties.EnumGuacamoleProperty.PropertyValue;
      @PropertyValue("code")
      CODE("code");
      
-     /*
+     /**
       * The string value of the response type used
       */
      public final String STRING_VALUE;
