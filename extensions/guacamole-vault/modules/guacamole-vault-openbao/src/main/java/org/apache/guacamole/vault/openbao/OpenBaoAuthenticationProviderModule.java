@@ -19,14 +19,16 @@
 
 package org.apache.guacamole.vault.openbao;
 
+import com.google.inject.Singleton;
+import com.google.inject.Provides;
 import com.google.inject.Scopes;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.VaultAuthenticationProviderModule;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
 import org.apache.guacamole.vault.openbao.secret.OpenBaoClient;
+import org.apache.guacamole.vault.openbao.secret.OpenBaoClientProvider;
 import org.apache.guacamole.vault.openbao.secret.OpenBaoSecretService;
-import org.apache.guacamole.vault.openbao.secret.TimeoutVaultTemplate;
 import org.apache.guacamole.vault.openbao.user.OpenBaoAttributeService;
 import org.apache.guacamole.vault.openbao.user.OpenBaoDirectoryService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
@@ -66,7 +68,7 @@ public class OpenBaoAuthenticationProviderModule extends VaultAuthenticationProv
         // Bind directory service
         bind(VaultDirectoryService.class).to(OpenBaoDirectoryService.class);
 
-        // bind OpenBao client
-        bind(OpenBaoClient.class);
+        // Bind client
+        bind(OpenBaoClient.class).toProvider(OpenBaoClientProvider.class).asEagerSingleton();
     }
 }

@@ -26,45 +26,34 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import java.io.IOException;
 import java.net.URI;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Collections;
-import java.util.concurrent.Executors;
-import java.util.function.Supplier;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
-import org.apache.guacamole.vault.openbao.secret.FileTokenAuthentication;
-import org.apache.guacamole.vault.openbao.secret.UsernamePasswordAuthentication;
-import org.apache.guacamole.vault.openbao.secret.UsernamePasswordAuthenticationOptions;
-import org.apache.guacamole.vault.openbao.secret.TimeoutVaultTemplate;
+import org.apache.guacamole.vault.openbao.vault.FileTokenAuthentication;
+import org.apache.guacamole.vault.openbao.vault.UsernamePasswordAuthentication;
+import org.apache.guacamole.vault.openbao.vault.UsernamePasswordAuthenticationOptions;
+import org.apache.guacamole.vault.openbao.vault.TtlAwareSessionManager;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.vault.authentication.ClientAuthentication;
-import org.springframework.vault.authentication.LifecycleAwareSessionManager;
-import org.springframework.vault.authentication.SessionManager;
-import org.springframework.vault.authentication.SimpleSessionManager;
 import org.springframework.vault.authentication.TokenAuthentication;
-import org.springframework.vault.client.VaultClients;
 import org.springframework.vault.client.VaultEndpoint;
-import org.springframework.vault.core.lease.event.SecretLeaseErrorEvent;
-import org.springframework.vault.core.lease.event.SecretLeaseExpiredEvent;
-import org.springframework.vault.core.lease.SecretLeaseContainer;
 import org.springframework.vault.core.VaultKeyValueOperations;
+import org.springframework.vault.core.VaultTemplate;
 import org.springframework.vault.VaultException;
 import org.springframework.vault.support.VaultResponse;
-import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,7 +67,6 @@ public class OpenBaoClient {
     /**
      * Service for retrieving OpenBao configuration.
      */
-    @Inject
     private OpenBaoConfigurationService configService;
 
     /**
@@ -100,7 +88,12 @@ public class OpenBaoClient {
     /**
      * Vault template that will be used with all of the mount paths
      */
-    private TimeoutVaultTemplate vaultTemplate;
+    private VaultTemplate vaultTemplate;
+
+    /*
+     * Ttl aware token manager for automatic token renewal
+     */
+    private TtlAwareSessionManager sessionManager;
 
     /**
      * Vault client authentication object
@@ -108,10 +101,12 @@ public class OpenBaoClient {
     private ClientAuthentication authentication;
 
     /**
-     * A Vault lease container used to automatically renew tokens
-     * or username/password access.
+     * Constructor allowing early injection f configuartion and initialization
+     * to start thetoken renewal process as early as possible
      */
-    private SecretLeaseContainer leaseContainer;
+    public OpenBaoClient(OpenBaoConfigurationService configService) {
+      this.configService = configService;
+    }
 
     /**
      * Complete the instantiation of the class on first use
@@ -120,14 +115,15 @@ public class OpenBaoClient {
         try {
             VaultEndpoint endpoint = VaultEndpoint.from(configService.getVaultUri().resolve("v1"));
 
-
             if (configService.getVaultToken() != null) {
                 if (isTokenReadableFile(configService.getVaultToken())) {
+                    logger.info("File Token : {}", configService.getVaultToken());
                     this.authentication =
                             new FileTokenAuthentication(configService.getVaultToken(),
                                     endpoint, new RestTemplate());
                 }
                 else {
+                    logger.info("Token : {}", configService.getVaultToken());
                     this.authentication = new TokenAuthentication(configService.getVaultToken());
                 }
             }
@@ -145,40 +141,36 @@ public class OpenBaoClient {
                 throw new GuacamoleException("Either a vault token or Username/Password must be supplied");
             }
 
-            if (configService.getVaultToken() != null &&
-                    ! isTokenReadableFile(configService.getVaultToken())) {
-                this.vaultTemplate = new TimeoutVaultTemplate(endpoint,
-                        new SimpleClientHttpRequestFactory(),
-                        new SimpleSessionManager(this.authentication));
-            }
-            else {
-                ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-                taskScheduler.setPoolSize(1);
-                taskScheduler.setThreadNamePrefix("vault-token-renewal-");
-                taskScheduler.initialize();
-                RestOperations restOperations = VaultClients.createRestTemplate(endpoint,
-                        new SimpleClientHttpRequestFactory());
-                LifecycleAwareSessionManager session =
-                        new LifecycleAwareSessionManager(this.authentication, taskScheduler, restOperations);
+            // Create a task scheduler for our token renewal
+            ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+            scheduler.setPoolSize(1);
+            scheduler.setThreadNamePrefix("vault-renewal-");
+            scheduler.initialize();
 
-                this.vaultTemplate = new TimeoutVaultTemplate(endpoint,
-                        new SimpleClientHttpRequestFactory(), session);
-            }
+            // Automatically renew tokens before expiration
+            RestTemplate restTemplate = new RestTemplate();
+            restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(
+                configService.getVaultUri().resolve("v1").toString()));
+            this.sessionManager = new TtlAwareSessionManager(this.authentication,
+                    restTemplate, scheduler, configService.getTokenRenewalDelay());
+
+            SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
             try {
-                this.vaultTemplate.setConnectionTimeout(configService.getConnectionTimeout());
+                requestFactory.setConnectTimeout(configService.getConnectionTimeout());
             }
             catch (GuacamoleException e) {
                 logger.debug("Using default vault endpoint connection timeout: " + e.getMessage());
             }
              try {
-                this.vaultTemplate.setRequestTimeout(configService.getRequestTimeout());
+                requestFactory.setReadTimeout(configService.getRequestTimeout());
             }
             catch (GuacamoleException e) {
                 logger.debug("Using default vault endpoint request timeout: " + e.getMessage());
             }
+            this.vaultTemplate = new VaultTemplate(endpoint, requestFactory, this.sessionManager);
         }
         catch (Exception e) {
-            throw new GuacamoleException("Error initializing Vault client: ", e);
+            throw new GuacamoleException("Error initializing Vault client: " + e.getMessage());
         }
 
         // Initialize the cache with maximum size of 1MB, and cache expiry with
@@ -299,7 +291,7 @@ public class OpenBaoClient {
      * @throws GuacamoleException
      *     If the secret cannot be retrieved from OpenBao.
      */
-    public String getValue(String token, GuacamoleConfiguration config) throws GuacamoleException {
+    public String getValue(String token, UserContext userContext, GuacamoleConfiguration config) throws GuacamoleException {
         try {
             if (authentication == null) {
                 logger.debug("Initializing OpenBao");
@@ -313,32 +305,33 @@ public class OpenBaoClient {
 
             // Before going further replace the arguments "{USERNAME}", "{SERVER}",
             // "{GATEWAY_USERNAME}" and "{GATEWAY_HOSTNAME}" in the token with their
-            // with values supplied in the parameters
+            // with values supplied in the parameters. The value of USER here corresponds
+            // to GUAC_USERNAME
             // FIXME Could this be done with the TokenFilter in OpenBaoSecretService ?
             // FIXME There is an edge case for tokens like "vault://ldap/$${USER}/{USER}/password"
             // both here and below. This seems a pretty unlikely case, so don't treat.
-            String username = config.getParameter("username");
+            String username = userContext == null ? "" : userContext.self().getIdentifier();
             if (username != null && !username.isEmpty()
                     && token.contains("{USER}") && ! token.contains("$${USER}")) {
-                token.replace("{USER}", username);
+                token = token.replace("{USER}", username);
 
             }
             String hostname = config.getParameter("hostname");
-            if (hostname != null && !hostname.isEmpty()
+            if (hostname != null && !hostname.isEmpty() && !hostname.contains("${")
                     && token.contains("{SERVER}") && ! token.contains("$${SERVER}")) {
-                token.replace("{SERVER}", hostname);
+                token = token.replace("{SERVER}", hostname);
 
             }
             String gatewayHostname = config.getParameter("gateway-hostname");
-            if (gatewayHostname != null && !gatewayHostname.isEmpty()
+            if (gatewayHostname != null && !gatewayHostname.isEmpty() && !gatewayHostname.contains("${")
                     && token.contains("{GATEWAY}") && ! token.contains("$${GATEWAY}")) {
-                token.replace("{GATEWAY}", gatewayHostname);
+                token = token.replace("{GATEWAY}", gatewayHostname);
 
             }
             String gatewayUsername = config.getParameter("gateway-username");
-            if (gatewayUsername != null && !gatewayUsername.isEmpty()
+            if (gatewayUsername != null && !gatewayUsername.isEmpty() && !gatewayUsername.contains("${")
                     && token.contains("{GATEWAY_USER}") && ! token.contains("$${GATEWAY_USER}")) {
-                token.replace("{GATEWAY_USER}", gatewayUsername);
+                token = token.replace("{GATEWAY_USER}", gatewayUsername);
 
             }
 
@@ -444,8 +437,7 @@ public class OpenBaoClient {
         // Get the values on the path and cache them
         VaultResponse response = kvOperations.get(path);
 
-
-        if (response.getData() == null)
+        if (response == null || response.getData() == null)
         {
             throw new GuacamoleServerException(
                     "Value not found in OpenBao for path: " + mountPath + "/" + path);
@@ -490,10 +482,26 @@ public class OpenBaoClient {
      *     If the secret cannot be retrieved from OpenBao.
      */
     private String getValueSSH(String mountPath, String path, String secret, GuacamoleConfiguration config) throws GuacamoleException {
-        // Is the key-value already in the cache
-        Map<String, Object> cacheResponse = (Map<String, Object>) cache.getIfPresent(mountPath + "/" + path);
+
+        // Is the key-value already in the cache. The SSH connection is for a specific
+        // user, so add username in the cache path
+        Map<String, Object> cacheResponse;
+        String username = config.getParameter("username");
+        if (path.startsWith("sign/")) {
+            if (username == null || username.isEmpty()) {
+                throw new GuacamoleException("The username can not be empty for SSH signed certificates");
+            }
+            cacheResponse = (Map<String, Object>) cache.getIfPresent(username + "-" + mountPath + path);
+        }
+        else if (path.startsWith("creds/")) {
+            cacheResponse = (Map<String, Object>) cache.getIfPresent(mountPath + path);
+        }
+        else {
+           throw new GuacamoleException("Unknown SSH type on path: " + mountPath + path);
+        }
 
         if (cacheResponse != null) {
+            logger.info("Cached Response");
             String retval;
             // The path is already cached?. Use it
             if (cacheResponse.get(secret) instanceof String) {
@@ -502,7 +510,7 @@ public class OpenBaoClient {
             else {
                 try {
                     // Stored JSON value.. Probably not usable, but return as a string
-                    return objectMapper.writeValueAsString(cacheResponse.get(secret));
+                    retval = objectMapper.writeValueAsString(cacheResponse.get(secret));
                 }
                 catch (JsonProcessingException e) {
                     throw new GuacamoleException("Error json parsing returned secret: ", e);
@@ -512,19 +520,18 @@ public class OpenBaoClient {
             if (retval == null || retval.isEmpty()) {
                 throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
             }
+            // One-time password so needs to be cleared after first use
+            if (path.startsWith("creds/")) {
+                cache.invalidate(mountPath + path);
+            }
+
             return retval;
         }
 
         // Detect if wanting one-time password or signed certificate
-        if (path.startsWith("otp/")) {
+        if (path.startsWith("creds/")) {
             VaultResponse response =
-                vaultTemplate.write(mountPath + "/creds/" + path.substring(4), Map.of("ip", "0.0.0.0"));
-            try {
-              logger.info("  KV Response : {}", objectMapper.writeValueAsString(response.getData()));
-            }
-            catch (Exception e) {
-              logger.info(" KV Response Error : {}", e);
-            }
+                vaultTemplate.write(mountPath +  path, Map.of("ip", "0.0.0.0"));
 
             if (response == null || response.getData() == null) {
                 throw new GuacamoleException("No response from Vault SSH engine");
@@ -538,8 +545,7 @@ public class OpenBaoClient {
             }
 
             // Cache the retrieved user and otp
-            cache.put(mountPath + "/" + path, Map.of("username", user, "password", password));
-            logger.debug("SSH OTP :  " + user + " : " + password);
+            cache.put(mountPath + path, Map.of("username", user, "password", password));
 
             if (secret.equals("username")) {
                 return user;
@@ -548,20 +554,14 @@ public class OpenBaoClient {
                 return password;
             }
         }
-        else if (path.startsWith("cert/")) {
-            String username = config.getParameter("username");
-            if (username == null || username.isEmpty()) {
-                throw new GuacamoleException("The username can not be empty for SSH signed certificates");
-            }
+        else if (path.startsWith("sign/")) {
 
             OpenBaoSshKeys sshKeys = new OpenBaoSshKeys(configService.getSshType());
-
             Map<String, Object> request = Map.of(
                     "public_key", sshKeys.publicSsh,
                     "valid_principals", username,
                     "extensions", Map.of("permit-pty", ""),
-                    "ttl", configService.getSshConnectionTimeout()
-            );
+                    "ttl", configService.getSshConnectionTimeout());
 
             VaultResponse vaultResponse =
                     vaultTemplate.write(mountPath + "/sign/" + path.substring(5), request);
@@ -571,26 +571,23 @@ public class OpenBaoClient {
             }
 
             String signedCert = (String) vaultResponse.getData().get("signed_key");
+            logger.info("SSH Cert response keys: {}", vaultResponse.getData().keySet());
 
             if (signedCert == null) {
                 throw new GuacamoleException("Vault did not return a signed SSH certificate");
             }
 
-            cache.put(mountPath + "/" + path, Map.of(
+            cache.put(username + "-" + mountPath + path, Map.of(
                     "private", sshKeys.privateSshPem,
                     "public", signedCert));
-            logger.info("SSH CERT :  " + sshKeys.privateSshPem + " : " + signedCert);
 
             if (secret.equals("private")) {
                 return sshKeys.privateSshPem;
             }
             else if (secret.equals("public")) {
-                return signedCert;
-            }
+                return signedCert;            }
         }
-        else {
-           throw new GuacamoleException("Unknown SSH type on path: " + mountPath + path);
-        }
+
         throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath + path);
     }
 
@@ -756,9 +753,9 @@ public class OpenBaoClient {
     }
 
     /**
-     * Release the automatic renewal of the AppRole token on shutown
+     * Release the automatic renewal of the tokens on shutdown
      */
     public void shutdown() {
-        leaseContainer.stop();
+        this.sessionManager.close();
     }
 }

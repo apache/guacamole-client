@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.guacamole.vault.openbao.secret;
+package org.apache.guacamole.vault.openbao.vault;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,25 +25,21 @@ import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
 import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.vault.authentication.AuthenticationSteps;
 import org.springframework.vault.authentication.AuthenticationStepsFactory;
 import org.springframework.vault.authentication.AuthenticationSteps.HttpRequest;
 import org.springframework.vault.authentication.ClientAuthentication;
-import org.springframework.vault.authentication.LoginToken;
 import org.springframework.vault.client.VaultEndpoint;
 import org.springframework.vault.support.VaultResponse;
 import org.springframework.vault.support.VaultToken;
 import org.springframework.vault.VaultException;
 import org.springframework.web.client.RestTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public final class FileTokenAuthentication implements ClientAuthentication {
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(FileTokenAuthentication.class);
 
     /**
      * The path to the file containing the token
@@ -90,35 +86,11 @@ public final class FileTokenAuthentication implements ClientAuthentication {
             token = Files.readString(tokenPath).trim();
         }
         catch (IOException e) {
-            throw new IllegalStateException(
+            // This might be recoverable. So throw a VautException
+            throw new VaultException(
                     "Cannot read Vault token sink: " + tokenPath, e);
         }
 
-        String lookupPath = String.format(
-                "%s://%s:%d/v1/auth/token/lookup-self",
-                endpoint.getScheme(),
-                endpoint.getHost(),
-                endpoint.getPort());
-
-        ResponseEntity<VaultResponse> response =
-                restTemplate.postForEntity(lookupPath, null, VaultResponse.class);
-
-        VaultResponse vaultResponse = response.getBody();
-
-        Boolean renewable = (Boolean) vaultResponse.getAuth().get("renewable");
-        Duration leaseDuration = Duration.ofSeconds((long) vaultResponse.getAuth().get("lease_duration"));
-        String accessor = (String) vaultResponse.getAuth().get("accessor");
-        String type = (String) vaultResponse.getAuth().get("type");
-
-        if (token == null) {
-            throw new VaultException("No client_token in Vault auth response");
-        }
-
-        return  LoginToken.builder().token(token)
-                .leaseDuration(leaseDuration)
-                .renewable(renewable)
-                .accessor(accessor)
-                .type(type)
-                .build();
+        return VaultToken.of(token);
     }
 }

@@ -20,6 +20,7 @@
 package org.apache.guacamole.vault.openbao.secret;
 
 import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -35,6 +36,7 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
 import org.apache.guacamole.vault.openbao.secret.OpenBaoClient;
+import org.apache.guacamole.vault.openbao.secret.OpenBaoClientProvider;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,14 +56,23 @@ public class OpenBaoSecretService implements VaultSecretService {
     /**
      * Client for communicating with OpenBao.
      */
-    @Inject
-    private OpenBaoClient openBaoClient;
+    private final Provider<OpenBaoClient> openBaoClientProvider;
 
     /**
-     * Constructor that logs when the service is created.
+     * Constructor that logs when the service is created. Inject OpenBaoClient via
+     * Provider to avoid circular Guice dependency
      */
-    public OpenBaoSecretService() {
+    @Inject
+    public OpenBaoSecretService(Provider<OpenBaoClient> openBaoClientProvider) {
+        this.openBaoClientProvider = openBaoClientProvider;
         logger.info("OpenBaoSecretService initialized");
+    }
+
+    /**
+     * Get a Guice cahced copy of the OpenBaoClient Singleton
+     */
+    private OpenBaoClient client() {
+        return openBaoClientProvider.get();
     }
 
     @Override
@@ -100,14 +111,14 @@ public class OpenBaoSecretService implements VaultSecretService {
      */
     @Override
     public Future<String> getValue(String token) throws GuacamoleException {
-        String value = openBaoClient.getValue(token, new GuacamoleConfiguration());
+        String value = client().getValue(token, null, new GuacamoleConfiguration());
         return CompletableFuture.completedFuture(value);
     }
 
     @Override
     public Future<String> getValue(UserContext userContext, Connectable connectable, String token)
             throws GuacamoleException {
-        String value = openBaoClient.getValue(token, new GuacamoleConfiguration());
+        String value = client().getValue(token, null, new GuacamoleConfiguration());
         return CompletableFuture.completedFuture(value);
     }
 
@@ -116,7 +127,7 @@ public class OpenBaoSecretService implements VaultSecretService {
      * complete with the value of that token, where each token is dynamically
      * defined based on connection parameters. If a vault implementation allows
      * for predictable secrets based on the parameters of a connection, this
-     * function should be implemented to provide automatic tokens for those
+     * function should be implementedopenBaoClient to provide automatic tokens for those
      * secrets and remove the need for manual mapping via YAML.
      *
      * @param userContext
@@ -152,13 +163,13 @@ public class OpenBaoSecretService implements VaultSecretService {
         Map<String, Future<String>> tokens = new HashMap<>();
         Map<String, String> parameters = config.getParameters();
 
-        Pattern tokenPattern = Pattern.compile("\\$\\{(" + OpenBaoClient.VAULT_TOKEN_PREFIX + ".+)\\}");
+        Pattern tokenPattern = Pattern.compile("\\$\\{(" + client().VAULT_TOKEN_PREFIX + ".+)\\}");
 
         for (Map.Entry<String, String> entry : parameters.entrySet()) {
             Matcher tokenMatcher = tokenPattern.matcher(entry.getValue());
             while (tokenMatcher.find()) {
                 String token = tokenMatcher.group(1);
-                String value = openBaoClient.getValue(token, config);
+                String value = client().getValue(token, userContext, config);
                 tokens.put(token, CompletableFuture.completedFuture(value));
             }
         }

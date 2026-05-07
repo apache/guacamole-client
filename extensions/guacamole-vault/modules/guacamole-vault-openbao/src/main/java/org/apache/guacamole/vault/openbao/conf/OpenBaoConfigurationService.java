@@ -46,7 +46,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     public static final int DEFAULT_REQUEST_TIMEOUT = 5000;
 
     /**
-     * The default connection tiemout in milliseconds.
+     * The default connection timeout in milliseconds.
      */
     public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
 
@@ -54,6 +54,12 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
      * The default ssh connection tiemout in seconds.
      */
     public static final int DEFAULT_SSH_CONNECTION_TIMEOUT = 1800;
+
+    /**
+     * The default vault token renewal delay in milliseconds. Expiring
+     * tokens will be renewed at least this delay before expiration
+     */
+    public static final int DEFAULT_TOKEN_RENEWAL_DELAY = 10000;
 
     /**
      * The default ssh certificate type.
@@ -151,6 +157,17 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
 
         @Override
         public String getName() { return "vault-ssh-connection-timeout"; }
+    };
+
+    /**
+     * The renewal delay for expiring Vault tokens in ms. Tokens will be renewed
+     * prior to expiration by this delay
+     */
+    private static final IntegerGuacamoleProperty VAULT_TOKEN_RENEWAL_DELAY =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-token-renewal-delay"; }
     };
 
     /**
@@ -275,7 +292,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
      * milliseconds.
      *
      * @return int
-     *      The conenction timeout in milliseconds.
+     *      The connection timeout in milliseconds.
      *
      * @throws GuacamoleException
      *     If guacamole.properties can not be parsed.
@@ -284,6 +301,19 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
         return environment.getProperty(VAULT_CONNECTION_TIMEOUT, DEFAULT_CONNECTION_TIMEOUT);
     }
 
+    /**
+     * The renewal delay, in milliseconds of expiring token. A token will be renewed
+     * prior to it expiration by this delay
+     *
+     * @return int
+     *      The renewl delay in milliseconds.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties can not be parsed.
+     */
+    public int getTokenRenewalDelay() throws GuacamoleException {
+        return environment.getProperty(VAULT_TOKEN_RENEWAL_DELAY, DEFAULT_TOKEN_RENEWAL_DELAY);
+    }
 
     /**
      * The type of SSH certificates are will be generated. Must be either

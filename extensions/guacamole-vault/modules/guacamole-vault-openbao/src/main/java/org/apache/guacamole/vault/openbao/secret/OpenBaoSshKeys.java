@@ -31,14 +31,6 @@ import org.apache.sshd.common.util.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-
-
-import org.apache.sshd.common.config.keys.PublicKeyEntry;
-import org.apache.sshd.common.config.keys.writer.openssh.OpenSSHKeyPairResourceWriter;
-import org.apache.sshd.common.util.security.SecurityUtils;
-
-
 public class OpenBaoSshKeys {
 
     /**
@@ -79,7 +71,7 @@ public class OpenBaoSshKeys {
                     baos.toString(StandardCharsets.UTF_8);
         }
         catch (Exception e) {
-            throw new IllegalStateException("Failed to serialize SSH keypair", e);
+            throw new IllegalStateException("Failed to serialize SSH keypair: " + e.getMessage(), e);
         }
     }
 
@@ -98,14 +90,12 @@ public class OpenBaoSshKeys {
      */
     private KeyPair generateEd25519WithFallback() {
         try {
-            // Use SSHD's EdDSA generator, not JDK "Ed25519"
             KeyPairGenerator keyPairGenerator =
                     SecurityUtils.getKeyPairGenerator("EdDSA");
-            keyPairGenerator.initialize(256); // Ed25519
             return keyPairGenerator.generateKeyPair();
         }
         catch (Exception e) {
-            logger.info("Ed25519 not available via SSHD EdDSA. Falling back to RSA : " + e.getMessage());
+            logger.info("Ed25519 not available via SSHD EdDSA. Falling back to RSA : {}", e.getMessage());
             return generateRsa();
         }
     }

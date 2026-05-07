@@ -18,9 +18,9 @@
  */
 
 // This is a minimal backport of this class to version 2.3.4 of spring-vault-core
-// It is compatible with lease renewal using SecretLeaseContainer
+// It is compatible with lease renewal using a life cycle aware session manager
 
-package org.apache.guacamole.vault.openbao.secret;
+package org.apache.guacamole.vault.openbao.vault;
 
 import java.time.Duration;
 import java.util.Collections;
@@ -36,11 +36,24 @@ import org.springframework.vault.support.VaultToken;
 import org.springframework.web.client.RestTemplate;
 
 public class UsernamePasswordAuthentication implements ClientAuthentication {
-
+    /**
+     * A class containing all of the configuration options for username/password authentication
+     */
     private final UsernamePasswordAuthenticationOptions options;
+
+    /**
+     * A spring RestTemplate used to communicate with the vault server
+     */
     private final RestTemplate restTemplate;
+
+    /**
+     * The Vault endpoint to communicate to
+     */
     private final VaultEndpoint endpoint;
 
+    /**
+     * Contructor for the Username/Password clientAuthentication
+     */
     public UsernamePasswordAuthentication(
             UsernamePasswordAuthenticationOptions options,
             VaultEndpoint endpoint,
@@ -55,6 +68,17 @@ public class UsernamePasswordAuthentication implements ClientAuthentication {
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * A login method that attempts a username/password login to the vault
+     *
+     * @return
+     *      A LoginToken for the authenticated used for use with future operations with
+     *      the vault
+     *
+     * @throws
+     *      In case of a recoverable login issue, throws a VaultExecption, so tha the
+     *      SessionManager knows to try the authtication again
+     */
     @Override
     public VaultToken login() throws VaultException {
 
@@ -79,20 +103,19 @@ public class UsernamePasswordAuthentication implements ClientAuthentication {
         }
 
         String token = (String) vaultResponse.getAuth().get("client_token");
+        Number lease = (Number) vaultResponse.getAuth().get("lease_duration");
         Boolean renewable = (Boolean) vaultResponse.getAuth().get("renewable");
-        Duration leaseDuration = Duration.ofSeconds((long) vaultResponse.getAuth().get("lease_duration"));
-        String accessor = (String) vaultResponse.getAuth().get("accessor");
-        String type = (String) vaultResponse.getAuth().get("type");
+
+        long leaseDuration = lease != null ? lease.longValue() : 0;
+        boolean isRenewable = renewable != null && renewable;
 
         if (token == null) {
             throw new VaultException("No client_token in Vault auth response");
         }
 
         return  LoginToken.builder().token(token)
-                .leaseDuration(leaseDuration)
-                .renewable(renewable)
-                .accessor(accessor)
-                .type(type)
+                .leaseDuration(Duration.ofSeconds(leaseDuration))
+                .renewable(isRenewable)
                 .build();
     }
 }

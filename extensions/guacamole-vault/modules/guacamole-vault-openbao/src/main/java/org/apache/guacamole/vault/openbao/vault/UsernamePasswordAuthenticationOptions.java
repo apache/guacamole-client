@@ -19,7 +19,7 @@
 
  // This is a minimal backport of this class to version 2.3.4 of spring-vault-core
 
-package org.apache.guacamole.vault.openbao.secret;
+package org.apache.guacamole.vault.openbao.vault;
 
 import org.springframework.util.Assert;
 

@@ -12,6 +12,35 @@ docker run --detach --name openbao --publish 8200:8200 openbao/openbao:2.5 > /de
 sleep 2
 VAULT_TOKEN=$(docker logs openbao 2> /dev/null | grep "Root Token" | cut -d: -f2 | xargs)
 UNSEAL_KEY=$(docker logs openbao 2> /dev/null | grep "Unseal" | cut -d: -f2 | xargs)
+echo "# Create Guacamole limited access policy"
+cat << EOF > guacamole.hcl
+path "sys/mounts" {
+  capabilities = ["read"]
+}
+path "kv1/*" {
+  capabilities = ["read"]
+}
+path "kv2/*" {
+  capabilities = ["read"]
+}
+path "ssh/sign/guacamole_cert" {
+  capabilities = ["update", "create"]
+}
+path "ssh/creds/guacamole_otp" {
+  capabilities = ["update"]
+}
+path "ldap/*" {
+  capabilities = ["read"]
+}
+path "db/*" {
+  capabilities = ["read"]
+}
+EOF
+
+curl -s --header "X-Vault-Token: $VAULT_TOKEN"  \
+    --request POST --data-urlencode  "policy@guacamole.hcl" \
+    http://127.0.0.1:8200/v1/sys/policy/guacamole
+/bin/rm guacamole.hcl
 
 echo "# Enable KV_1 secret engine"
 curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
@@ -53,43 +82,16 @@ USER_CA=$(curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type:
 
 echo "# Create SSH certificate signing role 'signer'"
 curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"algorithm_signer": "rsa-sha2-256", "allow_user_certificates": true, "allowed_users": "*", "key_type": "ca", "max_ttl": "30m", "allowed_extensions": "permit-tty"}' \
-    http://127.0.0.1:8200/v1/ssh/roles/signer 
+    --request POST --data '{"algorithm_signer": "rsa-sha2-256", "allow_user_certificates": true, "allowed_users": "*", "key_type": "ca", "max_ttl": "30m", "allowed_extensions": "permit-pty"}' \
+    http://127.0.0.1:8200/v1/ssh/roles/guacamole_cert
 
 echo "# Create SSH OTP for account 'testuser'"
 curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
     --request POST --data '{"key_type": "otp", "default_user": "testuser", "cidr_list": "0.0.0.0/0"}' \
-    http://127.0.0.1:8200/v1/ssh/roles/generate_otp 
+    http://127.0.0.1:8200/v1/ssh/roles/guacamole_otp
 curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"roles": "generate_otp"}' \
-    http://127.0.0.1:8200/v1/ssh/config/zeroaddress 
-
-
-echo "# Create Guacamole limited access policy"
-cat << EOF > guacamole.hcl
-path "sys/mounts" {
-  capabilities = ["read"]
-}
-path "kv1/*" {
-  capabilities = ["read"]
-}
-path "kv2/*" {
-  capabilities = ["read"]
-}
-path "ssh/*" {
-  capabilities = ["read"]
-}
-path "ldap/*" {
-  capabilities = ["read"]
-}
-path "db/*" {
-  capabilities = ["read"]
-}
-EOF
-curl -s --header "X-Vault-Token: $VAULT_TOKEN"  \
-    --request POST --data-urlencode  "policy@guacamole.hcl" \
-    http://127.0.0.1:8200/v1/sys/policy/guacamole
-/bin/rm guacamole.hcl
+    --request POST --data '{"roles": "guacamole"}' \
+    http://127.0.0.1:8200/v1/ssh/config/zeroaddress
 
 echo "# Enable userpass authentication and create guacamole user in vault"
 curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
@@ -102,8 +104,6 @@ USER_PASSWORD=$(pwgen 16)
 curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
     --request POST --data '{"password": "'$USER_PASSWORD'", "policies": "guacamole"}' \
     http://127.0.0.1:8200/v1/auth/userpass/users/guacamole | jq
-
-
 
 echo
 echo "# OpenBao root token    : $VAULT_TOKEN"
@@ -118,23 +118,36 @@ cat << EOF
 #
 #  0. Setup test kali server with a test account with username and passwrd kali/kali
 #     Add an account 'testuser' to the kali machine that will be used with SSH OTP
-#     utility. Setup xrdp on the kali machine 
+#     utility. Setup xrdp on the kali machine
 #
 #     Setup a second machine with accounts managed by LDAP, and give LDAP credentials
-#     to OpenBao 
+#     to OpenBao
 #  1. Add following to guacamole.properties and restart guacamole, to test with root token
 #        vault-uri: http://localhost:8200
 #        vault-token: $VAULT_TOKEN
-#  2. Add the tokens to my test kali server with RDP 
+#  2. Add the tokens to my test kali server with RDP
 #        \${vault://kv1/users/kali/password} and \${vault://kv1/users/kali/username}
 #     Test that connection kali server actually works
-#  3. Add the tokens to my test kali server with SSH
-#        \${vault://kv1/users/kali/password} and \${vault://kv1/users/kali/username}
-#     Test that connection kali server actually works
+
+#  3. Test Guacamole with a token with limited rights and an infinite TTL
+#     First generate the token with the short TTL and limited right
+
+curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
+    --request POST --data '{"policies": ["guacamole"], ttl: "0m", "renewable": true}' \
+    http://127.0.0.1:8200/v1/auth/token/create | jq
+
+#     Add the printed token to the 'vault-token' in gaucamole.properties and restart
+#     Guacamole.
+#
+#     Test that the previous test still works. This token will be used from on out
+#     so that the limited permissions are tested
 #  4. Add the tokens to my test kali server with SSH
+#        \${vault://kv1/users/kali/password} and \${vault://kv1/users/kali/username}
+#     Test that connection kali server actually works
+#  5. Add the tokens to my test kali server with SSH
 #        \${vault://kv2/users/kali/password} and \${vault://kv2/users/kali/username}
 #     Test that connection kali server actually works
-#  5. Add 'TrustedUserCAKeys' to test kali server, 
+#  6. Add 'TrustedUserCAKeys' to test kali server,
 #
 #     Do the following commands on test kali machine:
 
@@ -143,32 +156,32 @@ $USER_CA
 EOT
 chmod 700 /etc/ssh/trusted_user_ca.pem
 chown sshd:sshd /etc/ssh/trusted_user_ca.pem
-echo "TrustedUserCAKeys /etc/ssh/trusted_user_ca.pem" >> /etc/ssh/sshd_config 
+echo "TrustedUserCAKeys /etc/ssh/trusted_user_ca.pem" >> /etc/ssh/sshd_config
 pkill -SIGHUP sshd
 
-#     Use the username "kali" in SSH connection and add theses tokens to 
+#     Use the username "kali" in SSH connection and add theses tokens to
 #     the private and public ssh keys
 #
-#        \${vault://ssh/cert/signer/private} and \${vault://ssh/cert/signer/public}
+#        \${vault://ssh/cert/guacamole_sign/private} and \${vault://ssh/cert/guacamole_sign/public}
 #
 #     Test that the SSH connection to the kali machine works
-#  6. Use RSA SSH certiciates. The previous tested used the default "ed25519" ssh
+#  7. Use RSA SSH certiciates. The previous tested used the default "ed25519" ssh
 #     certificates. Add the following to guacamole.properties
 #          vault-ssh-type: rsa
 #     Restart guacamole. Test that the SSH connection to the kali machine
-#     works 
+#     works
 #
 #     Run the following command on the test kali server
 
 sed -i -e "/^TrustedUserCAKeys/d" /etc/ssh/sshd_config
 
-#  7. [TODO OTP SSH] Ensure the vault otp helper is on tehe test kali machine and configure
+#  8. Ensure the vault otp helper is on the test kali machine and configure
 #     Add the following tokens to the test kali connection
-#        \${vault://ssh/otp/generate_otp/username} and \${vault://ssh/otp/generate_otp/password}
+#        \${vault://ssh/otp/guacamole_otp/username} and \${vault://ssh/otp/guacamole_otp/password}
 #     Use the username 'testuser' on the SSH connection, so and this user to the test machine
 #     if needed. Now setup the test machine with the code
 
-cat << EOF >> /usr/local/bin/vault_verify_otp.sh
+cat << EOT >> /usr/local/sbin/verify_otp.sh
 #!/bin/sh
 set -u
 
@@ -188,36 +201,25 @@ RESPONSE=\$(curl -s \
 [ "\$?" -eq 0 ] || exit 3
 
 [ "\$(echo \$RESPONSE | jq -r .data.username)" = "\$USERNAME" ] || exit 4
-EOF
+EOT
 chmod 755 /usr/local/bin/vault_verify_otp.sh
-sed -i '1s:^:auth sufficent pam_exec.so expose_authtok /usr/local/bin/vault_verify_otp.sh:' /etc/pam.d/sshd
+sed -i '1s:^:auth sufficent pam_exec.so expose_authtok /usr/local/sbin/verify_otp.sh:' /etc/pam.d/sshd
 pkill -SIGHUP sshd
 
 #     Test that the connexion works. After remove the test code from the test machine like
 
-rm /usr/local/bin/vault_verify_otp.sh
+rm /usr/local/sbin/verify_otp.sh
 sed -i '1d' /etc/pam.d/sshd
 
-#  8. Add the static ldap tokens to the SSH connection
+#  9. [TODO LDAP Static] Add the static ldap tokens to the SSH connection
 #        \${vault://ldap/static/users/kali/password} and \${vault://ldap/static/users/kali/username}
 #     Test that the SSH connection to the kali machine works
-#  9. [TODO LDAP Dynamic] Add the dynamic ldaptokens to the SSH connection
+#  10. [TODO LDAP Dynamic] Add the dynamic ldaptokens to the SSH connection
 #        \${vault://ldap/dynamic/users/kali/password} and \${vault://ldap/dynamic/users/kali/username}
 #     Test that the SSH connection to the kali machine works
-#  10. [TODO LDAP Service] Add the ldap service tokens to the SSH connection
+#  11. [TODO LDAP Service] Add the ldap service tokens to the SSH connection
 #        \${vault://ldap/static/users/kali/password} and \${vault://ldap/static/users/kali/username}
 #     Test that the SSH connection to the kali machine works
-#  11. Test Guacamole with a token with limited rights and an infinite TTL
-#     First generate the token with the short TTL and limited right
-
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"policies": ["guacamole"], ttl: "0m", "renewable": true}' \
-    http://127.0.0.1:8200/v1/auth/token/create | jq
-
-#     Add the printed token to the 'vault-token' in gaucamole.properties and restart
-#     Guacamole. 
-#
-#     Test that one of the previous test still works
 #  12. A VaultAgent can be simulated by using a token sink file as follows. First create
 #     A short lived (10 minutes token) with the command
 
@@ -236,14 +238,13 @@ curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: applicati
     --request POST --data '{"policies": ["guacamole"], ttl: "0m", "renewable": true}' \
     http://127.0.0.1:8200/v1/auth/token/create | jq -r .auth.client_token > /etc/guacamole.token
 
-#    Wait 10 minutes and see if the access to the kali machine still works as the 
+#    Wait 10 minutes and see if the access to the kali machine still works as the
 #    access has beed renewed with the new token.
-#  13. Test Guacamole with username and password. Remove 'token-uri' from 
+#  13. Test Guacamole with username and password. Remove 'token-uri' from
 #     guacamole.properties and replace with
 #         vault-username: guacamole
 #         vault-password: $USER_PASSWORD
-#     Restart guacamole rapidly and (less than 10 minutes) test that one of the
-#     previous connections still works
+#     Restart guacamole and test that one of the previous connections still works
 #
 #     Wait 10 minutes, so as to test the static token renewal of the openbao driver
 #     and retest that one of the connections above works
@@ -253,7 +254,7 @@ curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: applicati
 #           mysql-password: vault://db/guacamole/password
 #      or adapt for your database engine. Restart guacamole. If it functions at all the
 #      database is accessible
-#  15. [TODO Manual tokens] Create a file `openbao-token-mapping.yml` with the tokens
+#  15. Create a file `vault-token-mapping.yml` with the tokens
 #           KALI_USERNAME: vault://kv1/users/kali/password
 #           KALI_PASSWORD: vault://kv1/users/kali/username
 #      Add to the kali ssh connection the tokens ${KALI_USERNAME} and ${KALI_PASSWORD}

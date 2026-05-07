@@ -19,6 +19,7 @@
 
 package org.apache.guacamole.vault.openbao;
 
+import com.google.inject.Inject;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.VaultAuthenticationProvider;
 import org.slf4j.Logger;
@@ -44,6 +45,7 @@ public class OpenBaoAuthenticationProvider extends VaultAuthenticationProvider {
      */
     public OpenBaoAuthenticationProvider() throws GuacamoleException {
         super(new OpenBaoAuthenticationProviderModule());
+
         logger.info("OpenBaoAuthenticationProvider initialized");
     }
 
