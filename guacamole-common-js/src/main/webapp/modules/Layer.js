@@ -314,9 +314,10 @@ Guacamole.Layer = function(width, height) {
         canvas.width = layer.width;
         canvas.height = layer.height;
 
-        // Copy image contents to new canvas
+        // Copy image contents to new canvas if layer has nonzero dimensions
         var context = canvas.getContext('2d');
-        context.drawImage(layer.getCanvas(), 0, 0);
+        if (layer.width > 0 && layer.height > 0)
+            context.drawImage(layer.getCanvas(), 0, 0);
 
         return canvas;
 

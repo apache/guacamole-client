@@ -348,7 +348,7 @@
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
-        "DIALOG_HEADER_CONFIRM_DELETE" : "Elimina Gruppo di Connesisoni",
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Elimina Gruppo di Connessioni",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_HEADER_LOCATION" : "Posizione:",
@@ -988,7 +988,7 @@
         "SECTION_HEADER_AUDIO"          : "Audio",
         "SECTION_HEADER_AUTHENTICATION" : "Autenticazione",
         "SECTION_HEADER_CLIPBOARD"      : "Appunti",
-        "SECTION_HEADER_DISPLAY"        : "Display",
+        "SECTION_HEADER_DISPLAY"        : "Schermo",
         "SECTION_HEADER_NETWORK"        : "Rete",
         "SECTION_HEADER_REPEATER"       : "Ripetitore VNC",
         "SECTION_HEADER_SFTP"           : "SFTP",

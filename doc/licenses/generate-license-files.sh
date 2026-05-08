@@ -177,6 +177,12 @@ DEPENDENCY_LIST="$1"
 OUTPUT_DIR="$2"
 
 ##
+## A single tab characer, as may be needed to split input lines by tabs using
+## the "read" command and "IFS" environment variable.
+##
+TAB_CHAR="`printf '\t'`"
+
+##
 ## Lists the license information directories (subdirectories of the
 ## "doc/licenses/" directory in the main guacamole-client source tree) that
 ## apply to the list of runtime dependencies provided via STDIN. If any runtime
@@ -191,19 +197,19 @@ list_dependency_license_info() {
 
     # List the license directories of all runtime dependencies, as dictated by
     # the "dep-coordinates.txt" files included within those directories
-    sed 's/^[[:space:]]\+//' | grep -o '^[^: ]\+\(:[^: ]*\)\{1,3\}' \
-        | while read DEPENDENCY; do
+    sed 's/^[[:space:]]\+//' | grep -o '^[^:[:space:]]\+\(:[^:[:space:]]*\)\{1,3\}' \
+        | while IFS='' read -r DEPENDENCY; do
 
         local DEPENDENCY_REGEX="`echo "$DEPENDENCY" | sed 's/[^:]*/\\\\(&\\\\|\*\\\\)/g'`"
         local VERSION="`echo "$DEPENDENCY" | sed 's/.*://'`"
 
         if ! grep -l "^$DEPENDENCY_REGEX[[:space:]]*$" "$LICENSES_DIR"/*/dep-coordinates.txt \
-            | sed "s/$/ $VERSION/g"; then
+            | sed "s/$/\\t$VERSION/g"; then
             error "License information missing for $DEPENDENCY"
         fi
 
-    done | sort -u -k 1,1 | while read LICENSE_INFO_COORDS_FILE VERSION; do
-        printf '%s %s\n' "`dirname "$LICENSE_INFO_COORDS_FILE"`" "$VERSION"
+    done | sort -u -t "$TAB_CHAR" -k 1,1 | while IFS="$TAB_CHAR" read -r LICENSE_INFO_COORDS_FILE VERSION; do
+        printf '%s\t%s\n' "`dirname "$LICENSE_INFO_COORDS_FILE"`" "$VERSION"
     done
 
     # Include license directories for all dependencies not pulled in automatically
@@ -220,7 +226,7 @@ list_dependency_license_info() {
 ## written to STDOUT. Each directory must be on its own line.
 ##
 sort_dependency_license_info() {
-    while read LICENSE_INFO VERSION; do
+    while IFS="$TAB_CHAR" read -r LICENSE_INFO VERSION; do
 
         local PRIMARY_FILE="`primary_file "$LICENSE_INFO"`"
 
@@ -229,9 +235,9 @@ sort_dependency_license_info() {
         [ -n "$PRIMARY_FILE" ] || continue
 
         local NAME="`get_header_value "$PRIMARY_FILE" Name`"
-        printf "%s\t%s %s\n" "$NAME" "$LICENSE_INFO" "$VERSION"
+        printf '%s\t%s\t%s\n' "$NAME" "$LICENSE_INFO" "$VERSION"
 
-    done | sort -f | cut -f2
+    done | sort -f | cut -f2-
 }
 
 ##
@@ -265,7 +271,7 @@ error() {
 ##     non-zero (failure) otherwise.
 ##
 single_result() {
-    read RESULT && echo "$RESULT"
+    IFS='' read -r RESULT && echo "$RESULT"
     ! read DUMMY
 }
 
@@ -357,13 +363,13 @@ format_multiline() {
     local INDENT="        "
     local NEXT_LINE
 
-    read FIRST_LINE
+    IFS='' read -r FIRST_LINE
 
-    if read NEXT_LINE; then
+    if IFS='' read -r NEXT_LINE; then
         printf '\n'
         printf "%s%s\n" "$INDENT" "$FIRST_LINE"
         printf "%s%s\n" "$INDENT" "$NEXT_LINE"
-        while read NEXT_LINE; do
+        while IFS='' read -r NEXT_LINE; do
             printf "%s%s\n" "$INDENT" "$NEXT_LINE"
         done
     else
@@ -495,7 +501,7 @@ append_license() {
 
     get_header_value "$FILENAME" Source \
         | subst_version "$VERSION" \
-        | while read -r LICENSE_URL; do
+        | while IFS='' read -r LICENSE_URL; do
 
         local LICENSE="`curl -SsfL "$LICENSE_URL" | sed 's:\r$::g'`"
         if [ -n "$LICENSE" ]; then
@@ -546,7 +552,7 @@ cp "$BASEDIR/NOTICE" "$OUTPUT_DIR/"
 PREAMBLE_ADDED=0
 find "$DEPENDENCY_LIST" -type f -exec cat '{}' + | \
     list_dependency_license_info | sort_dependency_license_info | \
-    while read LICENSE_INFO_DIR VERSION; do
+    while IFS="$TAB_CHAR" read -r LICENSE_INFO_DIR VERSION; do
 
     # Add subcomponent license preamble if not already added
     if [ "$PREAMBLE_ADDED" = 0 ]; then
@@ -564,8 +570,8 @@ EOF
     fi
 
     # Refresh any outstanding licenses from defined download link
-    find "$LICENSE_INFO_DIR" -type f | xargs grep -l '^#[[:space:]]*Source:' \
-        | while read FILENAME; do
+    find "$LICENSE_INFO_DIR" -type f -print0 | xargs -0 grep -l '^#[[:space:]]*Source:' \
+        | while IFS='' read -r FILENAME; do
         if [ -z "`get_license "$FILENAME" "$VERSION"`" ]; then
             if [ "$DOWNLOAD_MISSING_LICENSES" = "true" ]; then
                 info "Downloading updated `basename "$FILENAME"` for `basename "$LICENSE_INFO_DIR"` ($VERSION)..."

@@ -546,10 +546,36 @@ Guacamole.Mouse.Event = function MouseEvent(type, state, events) {
 
     /**
      * The current mouse state at the time this event was fired.
+     * The state object is cloned so as not to be affected by subsequent events
+     * that will have their own dedicated Guacamole.Mouse.Event instance.
      *
      * @type {!Guacamole.Mouse.State}
      */
-    this.state = state;
+    this.state = { ...state };
+
+    /**
+     * The state of all modifier keys at the time this event was received.
+     * If the original DOM event is not a MouseEvent or modifier state is
+     * otherwise unavailable, modifier flags default to false. If Keyboard.js
+     * is unavailable, this will be null.
+     *
+     * @type {?Guacamole.Keyboard.ModifierState}
+     */
+    this.modifiers = (function getMouseModifierState() {
+
+        // Support both single-event and event-array inputs from DOMEvent.
+        var firstEvent = Array.isArray(events) ? events[0] : events;
+
+        // Guard against Keyboard.js not being available/loaded yet.
+        if (!Guacamole.Keyboard || !Guacamole.Keyboard.ModifierState)
+            return null;
+
+        if (!firstEvent || !Guacamole.Keyboard.ModifierState.fromMouseEvent)
+            return new Guacamole.Keyboard.ModifierState();
+
+        return Guacamole.Keyboard.ModifierState.fromMouseEvent(firstEvent);
+
+    })();
 
     /**
      * @inheritdoc

@@ -19,7 +19,7 @@
 
 /* global _ */
 
-import { parse as parseCSVData } from 'csv-parse/lib/sync'
+import { parse as parseCSVData } from 'csv-parse/browser/esm/sync'
 import { parse as parseYAMLData } from 'yaml'
 
 /**

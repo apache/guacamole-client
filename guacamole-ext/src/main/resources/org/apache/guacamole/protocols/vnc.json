@@ -96,7 +96,7 @@
                 {
                     "name"    : "clipboard-encoding",
                     "type"    : "ENUM",
-                    "options" : [ "", "ISO8859-1", "UTF-8", "UTF-16", "CP1252" ]
+                    "options" : [ "", "ISO8859-1", "UTF-8", "UTF-16", "CP1252", "MacRoman" ]
                 },
                 {
                     "name"    : "disable-copy",
