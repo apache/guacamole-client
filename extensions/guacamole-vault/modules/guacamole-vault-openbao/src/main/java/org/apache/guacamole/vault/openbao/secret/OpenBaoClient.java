@@ -31,12 +31,18 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.event.listener.Listener;
+import org.apache.guacamole.net.event.TunnelCloseEvent;
+import org.apache.guacamole.net.event.TunnelConnectEvent;
+import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
 import org.apache.guacamole.vault.openbao.vault.FileTokenAuthentication;
@@ -58,7 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class OpenBaoClient {
+public class OpenBaoClient implements Listener {
     /**
      * Logger for this class.
      */
@@ -101,8 +107,13 @@ public class OpenBaoClient {
     private ClientAuthentication authentication;
 
     /**
-     * Constructor allowing early injection f configuartion and initialization
-     * to start thetoken renewal process as early as possible
+     * A HashMap of the checked out LDAP Sessions
+     */
+    private final Map<String, LDAPSessionInfo> ldapSessions = new HashMap<>();
+
+    /**
+     * Constructor allowing early injection of configuration and initialization
+     * to start the token renewal process as early as possible
      */
     public OpenBaoClient(OpenBaoConfigurationService configService) {
       this.configService = configService;
@@ -241,7 +252,7 @@ public class OpenBaoClient {
                 Map<?,?> mountInfo = (Map<?,?>) mountInfoObj;
                 Object type = mountInfo.get("type");
                 if (type instanceof String) {
-                    if (type.equals("ssh")  || type.equals("database")) {
+                    if (type.equals("ssh")  || type.equals("database") || type.equals("ldap")) {
                         mountPaths.put(mountPath, type);
                     }
                     else if (type.equals("kv")) {
@@ -270,6 +281,70 @@ public class OpenBaoClient {
         cache.put("sys/mounts", mountPaths);
 
         return mountPaths;
+    }
+
+    /**
+     * Contains information about the checked out LDAP sessions
+     */
+    private static class LDAPSessionInfo {
+        final String checkInPath;
+        final String username;
+        final Instant created;
+
+        LDAPSessionInfo(String checkInPath, String username, Instant created) {
+            this.checkInPath = checkInPath;
+            this.username = username;
+            this.created = created;
+        }
+    }
+
+    /**
+     * The LDAP session interface checks out session that then can not be
+     * used till they are checked in. In getTokens we have the problem that
+     * we don't have access to the tunnel ID and so can't identify it. Here
+     * we assume that the tunnel will connect soon after the call to getTokens
+     * and so we can tag the session information created in getTokens with
+     * tunnel ID. So we store the tunnel ID with the session data being created
+     * and then use it in a close event for the check-in
+     *
+     * FIXME : This is fragile, as if two connections in parallel are being
+     * created, the check-in event might be associate with the incorrect
+     * tunnel ID. Need a better solution
+     *
+     * @param event
+     *      A tunnel connect event
+     */
+    @Override
+    public void handleEvent(Object event) throws GuacamoleException {
+
+        if (event instanceof TunnelConnectEvent) {
+            GuacamoleTunnel tunnel = ((TunnelConnectEvent) event).getTunnel();
+            String uuid = tunnel.getUUID().toString();
+            LDAPSessionInfo info = ldapSessions.get("creating");
+            if (info != null) {
+                logger.info("Saving connection UUID: {}", uuid);
+                // Assume we have a service account
+                ldapSessions.put(uuid, info);
+                ldapSessions.remove("creating");
+            }
+        }
+        else if (event instanceof TunnelCloseEvent) {
+            GuacamoleTunnel tunnel = ((TunnelCloseEvent) event).getTunnel();
+            String uuid = tunnel.getUUID().toString();
+            LDAPSessionInfo session = ldapSessions.get(uuid);
+            if (session != null) {
+                logger.info("Closing connection UUID: {}", uuid);
+                vaultTemplate.write(session.checkInPath, Map.of("service_account_names", session.username));
+                ldapSessions.remove(uuid);
+            }
+        }
+
+        // Do some clean up of the active LDAP sessions. If a session hasn't been
+        // checked in after 2 hours, just drop it from the hashMap. As the TTL of
+        // the vault is already 2 hours don't need to check it in. Don't really
+        // care if the value hang around in our hashmap so don't need a dedicated
+        // task for this
+        ldapSessions.entrySet().removeIf(e -> Instant.now().isAfter(e.getValue().created.plusSeconds(7200)));
     }
 
     /**
@@ -310,16 +385,22 @@ public class OpenBaoClient {
             // FIXME Could this be done with the TokenFilter in OpenBaoSecretService ?
             // FIXME There is an edge case for tokens like "vault://ldap/$${USER}/{USER}/password"
             // both here and below. This seems a pretty unlikely case, so don't treat.
-            String username = userContext == null ? "" : userContext.self().getIdentifier();
-            if (username != null && !username.isEmpty()
-                    && token.contains("{USER}") && ! token.contains("$${USER}")) {
-                token = token.replace("{USER}", username);
+            String guac_username = userContext == null ? "" : userContext.self().getIdentifier();
+            if (guac_username != null && !guac_username.isEmpty()
+                    && token.contains("{GUAC_USERNAME}") && ! token.contains("$${GUAC_USERNAME}")) {
+                token = token.replace("{GUAC_USERNAME}", guac_username);
 
             }
             String hostname = config.getParameter("hostname");
             if (hostname != null && !hostname.isEmpty() && !hostname.contains("${")
-                    && token.contains("{SERVER}") && ! token.contains("$${SERVER}")) {
-                token = token.replace("{SERVER}", hostname);
+                    && token.contains("{HOSTNAME}") && ! token.contains("$${HOSTNAME}")) {
+                token = token.replace("{HOSTNAME}", hostname);
+
+            }
+            String username = config.getParameter("username");
+            if (username != null && !username.isEmpty() && !username.contains("${")
+                    && token.contains("{USERNAME}") && ! token.contains("$${USERNAME}")) {
+                token = token.replace("{USERNAME}", hostname);
 
             }
             String gatewayHostname = config.getParameter("gateway-hostname");
@@ -564,7 +645,7 @@ public class OpenBaoClient {
                     "ttl", configService.getSshConnectionTimeout());
 
             VaultResponse vaultResponse =
-                    vaultTemplate.write(mountPath + "/sign/" + path.substring(5), request);
+                    vaultTemplate.write(mountPath + path, request);
 
             if (vaultResponse == null || vaultResponse.getData() == null) {
                 throw new GuacamoleException("No response from Vault SSH engine");
@@ -611,14 +692,17 @@ public class OpenBaoClient {
      *     If the secret cannot be retrieved from OpenBao.
      */
     private String getValueLDAP(String mountPath, String path, String secret) throws GuacamoleException {
-        if (secret != "username" && secret != "password") {
-            throw new GuacamoleException("LDAP secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
+        if (!secret.equals("username") && ! secret.equals("password")) {
+            throw new GuacamoleException("LDAP secret '" + secret + "' not found on the path : " + mountPath + path);
         }
 
         // Is the value already in the cache
-        Map<String, Object> cacheResponse =  (Map<String, Object>) cache.getIfPresent(mountPath + "/" + path);
+        // FIXME Need a unique ConnectID while caching for dynamic at service roles as token same
+        // are the same for different credentials
+        Map<String, Object> cacheResponse =  (Map<String, Object>) cache.getIfPresent(mountPath + path);
 
         if (cacheResponse != null) {
+            logger.info("Cached Response");
             String retval;
             // The path is already cached?. Use it
             if (cacheResponse.get(secret) instanceof String) {
@@ -635,20 +719,17 @@ public class OpenBaoClient {
             }
 
             if (retval == null || retval.isEmpty()) {
-                throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
+                throw new GuacamoleException("LDAP secret '" + secret + "' not found on the path : " + mountPath + path);
             }
             return retval;
         }
 
         VaultResponse response;
-        if (path.startsWith("static/")) {
-            response = vaultTemplate.read(mountPath + "/static-creds/" + path.substring(7));
+        if (path.startsWith("static") || path.startsWith("creds/")) {
+            response = vaultTemplate.read(mountPath + path);
         }
-        else if (path.startsWith("dynamic/")) {
-            response = vaultTemplate.read(mountPath + "/creds/" + path.substring(8));
-        }
-        else if (path.startsWith("service/")) {
-            response = vaultTemplate.read(mountPath + "/" + path.substring(8) + "/check-out");
+        else if (path.startsWith("library/")) {
+            response = vaultTemplate.write(mountPath + path + "/check-out", Map.of("ttl", "2h"));
         }
         else {
            throw new GuacamoleException("Unknown LDAP type on path: " + mountPath +"/" + path);
@@ -660,7 +741,7 @@ public class OpenBaoClient {
 
         String username;
         String password = (String) response.getData().get("password");
-        if (path.startsWith("service/")) {
+        if (path.startsWith("library/")) {
             username = (String) response.getData().get("service_account_name");
         }
         else {
@@ -668,12 +749,20 @@ public class OpenBaoClient {
         }
 
         if (username == null || password == null) {
+            // Particularly for service accounts this might happen if there is
+            // no account available for checkout
             throw new IllegalStateException("Invalid LDAP static credential response");
         }
 
+        if (path.startsWith("library/")) {
+            // Register a listener to check-in the account in a TunnelCloseListener
+            LDAPSessionInfo info = new LDAPSessionInfo(mountPath + path + "/check-in", username, Instant.now());
+            ldapSessions.put("creating", info);
+        }
+
         // Cache the retrieved user and password
-        cache.put(mountPath + "/" + path, Map.of("username", username, "password", password));
-        logger.debug("LDAP :  " + username + " : " + password);
+        cache.put(mountPath + path, Map.of("username", username, "password", password));
+        logger.info("LDAP :  " + username + " : " + password);
 
         if (secret.equals("username")) {
             return username;
@@ -700,12 +789,12 @@ public class OpenBaoClient {
      *     If the secret cannot be retrieved from OpenBao.
      */
     private String getValueDB(String mountPath, String path, String secret) throws GuacamoleException {
-        if (secret != "username" && secret != "password") {
+        if (!secret.equals("username") && !secret.equals("password")) {
             throw new GuacamoleException("Database secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
         }
 
         // Is the key-value already in the cache
-        Map<String, Object> cacheResponse = (Map<String, Object>) cache.getIfPresent(mountPath + "/" + path);
+        Map<String, Object> cacheResponse = (Map<String, Object>) cache.getIfPresent(mountPath + path);
 
         if (cacheResponse != null) {
             String retval;
@@ -743,7 +832,7 @@ public class OpenBaoClient {
         }
 
         // Cache the retrieved user and password
-        cache.put(mountPath + "/" + path, Map.of("username", username, "password", password));
+        cache.put(mountPath + path, Map.of("username", username, "password", password));
         logger.debug("DB :  " + username + " : " + password);
 
         if (secret.equals("username")) {

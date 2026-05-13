@@ -118,7 +118,7 @@ public class OpenBaoSecretService implements VaultSecretService {
     @Override
     public Future<String> getValue(UserContext userContext, Connectable connectable, String token)
             throws GuacamoleException {
-        String value = client().getValue(token, null, new GuacamoleConfiguration());
+        String value = client().getValue(token, userContext, new GuacamoleConfiguration());
         return CompletableFuture.completedFuture(value);
     }
 

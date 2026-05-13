@@ -30,7 +30,7 @@ vault-connection-timeout: 5000
 # account for clock drift.
 vault-ssh-connection-timeout: 1800
 
-# The renewal delay for expiring Vault tokens in miliiseconds. Tokens
+# The renewal delay for expiring Vault tokens in milliseconds. Tokens
 # will be renewed prior to expiration by this delay
 vault-token-renewal-delay: 10000
 

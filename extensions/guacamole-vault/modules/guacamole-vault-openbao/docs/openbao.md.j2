@@ -1,355 +1,431 @@
 {# vim: set filetype=markdown.jinja : #}
 {%- import 'include/ext-macros.md.j2' as ext with context -%}
 
-Retrieving secrets from a vault
-===============================
+# Retrieving Secrets from a Vault
 
-Guacamole supports retrieving secrets—such as connection-specific passwords, private keys,
-certificates, and credentials—from a Vault. These secrets are injected automatically into
-connection configurations using parameter tokens or into Guacamole configuration properties
-via an additional Vault-specific configuration file analogous to `guacamole.properties`.
+Guacamole supports retrieving secrets—such as connection-specific passwords,
+private keys, certificates, and credentials—from a **Vault**. These secrets are
+injected automatically into connection configurations using **parameter tokens**
+or into Guacamole configuration properties via an additional Vault-specific
+configuration file analogous to `guacamole.properties`.
 
-This extension supports both [**OpenBao**](https://openbao.org) and
-[**HashiCorp Vault**](https://www.hashicorp.com/products/vault). Throughout this document,
-the generic term **Vault** is used to refer to either implementation unless a distinction
-is required.
+This extension supports both **[OpenBao](https://openbao.org)** and
+**[HashiCorp Vault](https://www.hashicorp.com/products/vault)**. Throughout this
+document, the generic term **Vault** is used to refer to either implementation
+unless a distinction is required.
 
 ```{include} include/warn-config-changes.md
 ```
 
 (vault-downloading)=
-
-Installing/Enabling the vault extension
+Installing/Enabling the Vault Extension
 ---------------------------------------
 
 {{ ext.install('openbao', 'guacamole-vault', 'openbao/guacamole-vault-openbao') }}
 
 (adding-guac-to-vlt)=
 
-### Adding Guacamole to a Vault
+## Adding Guacamole to a Vault
 
-This document will discuss examples of setting up the supported
-secret engines of the Vault for Guacamole with concrete examples.
+This section provides concrete examples for setting up the supported secret
+engines in Vault for use with Guacamole. To allow an application like Guacamole
+to access secrets stored in a Vault, the following steps are required:
 
-Allowing an application such as Guacamole to access secrets stored in a Vault requires:
+1. **Enable the required secret engines** (e.g., KV, SSH, LDAP, Database).
+2. **Create appropriate mount paths** for each secret engine.
+3. **Define access policies** to restrict Guacamole’s permissions.
+4. **Configure authentication credentials** for Guacamole to authenticate with Vault.
 
-- Enabling the required secret engines
-- Creating appropriate mount paths
-- Defining access policies
-- Configuring authentication credentials
+:::{note}
+This document **does not** cover general Vault administration. For details on
+creating and managing mount paths, authentication backends, and policies, refer
+to the official documentation:
 
-This document does **not** cover general Vault administration. For details on creating and
-managing mount paths, authentication backends, and policies, refer to the official
-documentation:
+- [OpenBao Documentation](https://openbao.org/docs)
+- [HashiCorp Vault Documentation](https://developer.hashicorp.com/vault/docs)
+:::
 
-- https://openbao.org/docs
-- https://developer.hashicorp.com/vault/docs
+All configuration examples below use `**curl**` exclusively to remain agnostic to
+the specific Vault implementation (OpenBao or HashiCorp).
 
-All configuration examples below use **`curl`** exclusively to remain agnostic to the
-specific Vault implementation.
+Unless otherwise stated, the supplied commands should work for both OpenBao and
+Hashicorp Vault.
 
-#### Vault connection information
+### Vault Connection Information
 
-Guacamole requires the network address of the Vault server and valid authentication
-credentials. Vault exposes a standard HTTP REST API, and a typical Vault URI looks like:
+Guacamole requires the following to connect to a Vault server:
+
+- The **network address** of the Vault server (e.g., `https://vault.example.com:8200`).
+- **Valid authentication credentials** (e.g., token, username/password, or file-based).
+
+Vault exposes a standard **HTTP REST API**, and a typical Vault URI looks like:
 
 ```
 https://vault.example.com:8200
 ```
 
-#### Setup up a Guacamole Access Policy
+### Setting Up a Guacamole Access Policy
 
-Guacamole requires only **read access** to the secrets it consumes, plus limited write
-access for certain secret engines (such as SSH). For security and auditability, it is
-strongly recommended to create a **dedicated Vault policy** for Guacamole.
+Guacamole requires the following permissions in Vault:
 
-Guacamole also requires read access to the special mount path `sys/mounts` to detect
-available secret engines and their types.
+- **Read access** to the secrets it consumes.
+- **Limited write access** for certain secret engines (e.g., SSH certificate signing).
+- **Read access to the `sys/mounts` path** to detect available secret engines and their types.
 
-Below is an example policy that grants Guacamole access to supported secret engines,
-restricted to `guacamole` roles in each secret engine used:
+For **security and auditability**, it is **strongly recommended** to create a
+**dedicated Vault policy** for Guacamole. Below is an example policy that grants
+Guacamole access to supported secret engines, restricted to `guacamole` roles
+in each engine.
 
-```
-$ cat << EOT >> gaucamole.hcl
-// Read system mount table
+#### Example Policy (`guacamole.hcl`)
+
+```hcl
+# Read system mount table
 path "sys/mounts" {
   capabilities = ["read"]
 }
 
-// Read from key-value secrets dedicated to Guacamole
+# Read from key-value secrets dedicated to Guacamole
 path "kv/guacamole/*" {
   capabilities = ["read"]
 }
 
-// Allow SSH certificate signing for Guacamole
+# Allow SSH certificate signing for Guacamole
 path "ssh/sign/guacamole_cert" {
   capabilities = ["create", "update"]
 }
 
-// Allow SSH one-time password generation
+# Allow SSH one-time password generation
 path "ssh/creds/guacamole_otp" {
   capabilities = ["create"]
 }
 
-// Read static LDAP credentials
+# Read static LDAP credentials
 path "ldap/static/guacamole/*" {
   capabilities = ["read"]
 }
 
-// Read database credentials
+# Read database credentials
 path "db/guacamole/*" {
   capabilities = ["read"]
 }
-EOT
 ```
 
-We then need to upload this policy to the vault.
+#### Uploading the Policy to Vault
 
-```
-$ export VAULT_TOKEN=...
-$ curl -sS \
+To upload the policy to Vault, use the following command:
+
+```bash
+export VAULT_TOKEN="your_admin_token"
+curl -sS \
   --header "X-Vault-Token: $VAULT_TOKEN" \
   --request PUT \
-  --data @gaucamole.hcl \
+  --data @guacamole.hcl \
   http://127.0.0.1:8200/v1/sys/policies/acl/guacamole
 ```
 
-where `VAULT_TOKEN` is a valid Vault token allowing administrative access. It
-also assumes that the vault server is running locally and on http. This
-creates a policy called `guacamole` in the vault for our use.
+:::{note}
+- The variable `VAULT_TOKEN`, here and below, contains a valid Vault token withhaving **administrative access**.
+- Replace `127.0.0.1:8200` with the address of your Vault server.
+- The mount paths in the policy (e.g., `kv/guacamole/*`) are **examples** and should be adapted to match your actual paths.
+:::
 
-The mount paths above are examples and should be adapted to the paths you actually
-use.
 
-#### Creating a key-values store for guacamole
+## Configuring Secret Engines for Guacamole
 
-The simplest means of storing and accessing secrets in a Vault is using the key-values
-secret engine. This secret engine can store arbitrary values associated with a key.
-Appropriate uses of this secret engine are for unmanaged accounted on client machines,
-certificates, etc. The secret rotation features of the Vault can not be used with this
-secret engine, so the use of this secret engine for password storage means that the user
-is entirely responsable for the adherance to any corporate password policies.
+Guacamole supports the following Vault secret engines:
 
-The key-values secret engine, comes in two varieties. The older version 1, where only
-the latest values are stored, or the newer version 2 that also stores metadata about the
-stored values, including the last time the values were changed.
+- **[Key-Value (KV)](https://openbao.org/docs/secrets/kv/kv-v2)**: For static secrets like passwords, certificates, and unmanaged account credentials.
+- **[SSH](https://openbao.org/docs/secrets/ssh)**: For signed SSH certificates or one-time passwords (OTP).
+- **[LDAP](https://openbao.org/docs/secrets/ldap)**: For dynamic or static LDAP credentials.
+- **[Database](https://openbao.org/docs/secrets/databases)**: For dynamic database credentials.
 
-The first step is to enable the secret engine. To enable the version 1 secret engine on a
-mount path  `kv1`, the command might be
+Below are detailed instructions for configuring each engine.
 
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"type": "kv", "options": {"version": "1"}}' \
-    http://127.0.0.1:8200/v1/sys/mounts/kv1
-```
 
-and for a version 2 secret engine mounted on the path `kv2` the command might be
+### Creating a Key-Value Store for Guacamole
 
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"type": "kv", "options": {"version": "2"}}' \
-    http://127.0.0.1:8200/v1/sys/mounts/kv2
-```
+The **Key-Value (KV) secret engine** is the simplest way to store and retrieve
+secrets in Vault. It can store arbitrary key-value pairs, such as usernames,
+passwords, or certificates. The KV engine comes in two versions:
 
-At this point the secret engines are mounted, but they contain no secrets. To add a secret
-to the version 1 secret engine the command is
+- **KV v1**: Stores only the latest values.
+- **KV v2**: Stores metadata (e.g., version history, last modified time) alongside the values.
 
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"username": "bruce", "password": "wayne"}' \
-    http://127.0.0.1:8200/v1/kv1/guacamole/batman
-```
+:::{warning}
+The KV secret engine **does not support secret rotation**. If you use it to store passwords,
+you are **entirely responsible** for adhering to corporate password policies (e.g., manual rotation).
+:::
 
-Here the path of the key is `guacamole/batman`. Complex paths are allowed to seperate groups
-of users. The stored secrets are `username` and `password`. However, any string could be
-used for these.
+#### Enabling the KV v1 Secret Engine
 
-The command for a version 2 key-value store is slightly different. with the equivalent
-command to the above being
+To enable the **KV v1** secret engine on a mount path named `kv1`, use the
+following command:
 
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"data": {"username": "bruce", "password": "wayne"}}' \
-    http://127.0.0.1:8200/v1/kv2/data/guacamole/batman
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"type": "kv", "options": {"version": "1"}}' \
+  http://127.0.0.1:8200/v1/sys/mounts/kv1
 ```
 
-#### Creating an SSH secret engine for Guacamole
+#### Enabling the KV v2 Secret Engine
 
-The SSH secret engine allows two means of operation:
+To enable the **KV v2** secret engine on a mount path named `kv2`, use the
+following command:
 
-- signed SSH certificates (Recommanded), or
-- one-time passwords.
-
-The better more modern of these is signed SSH certificates, though Guacamole
-supports both SSH methods.
-
-We first need to enable the ssh secret engine with a command like
-
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"type": "ssh"}' http://127.0.0.1:8200/v1/sys/mounts/ssh
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"type": "kv", "options": {"version": "2"}}' \
+  http://127.0.0.1:8200/v1/sys/mounts/kv2
 ```
 
-which mounts the secret engine on the mount path `ssh`. For certificate signing, the Vault
-needs a valid CA certificate and its private key. These might be uploaded to the Vault, but
-for this example we let the Vault create these values itself. The command for this is
+#### Adding a Secret to KV v1
 
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"generate_signing_key": true}' \
-    http://127.0.0.1:8200/v1/ssh/config/ca
-```
+To add a secret (e.g., username and password for a connection named `batman`)
+to the **KV v1** engine:
 
-The returned value of `public_key` must be stored on the target machines, for example in the
-file `/etc/ssh/trusted_user_ca.pem`. SSH of these target machines must then be changed to allow
-certificates signed with this public key. For OpenSSH this could then be achieved by adding
-
-```
-TrustedUserCAKeys /etc/ssh/trusted_user_ca
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"username": "bruce", "password": "wayne"}' \
+  http://127.0.0.1:8200/v1/kv1/guacamole/batman
 ```
 
-to the file `/etc/ssh/sshd_config`.
+Here:
 
-and save the generated `public_key` above in `/etc/ssh/trusted_user_ca` on the target
-machine and force openssh to reread it configuration with a command like
+- The **path** of the secret is `guacamole/batman`.
+- The stored secrets are `username` and `password`. You can use any keys you like.
 
+#### Adding a Secret to KV v2
+
+To add the same secret to the **KV v2** engine, use the following command
+(note the `/data/` prefix):
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"data": {"username": "bruce", "password": "wayne"}}' \
+  http://127.0.0.1:8200/v1/kv2/data/guacamole/batman
 ```
-pkill -SIGHUP /usr/sbin/sshd
+
+:::{note}
+Although the KV v2 requires the `/data/` prefix in API paths (e.g.
+`kv2/data/guacamole/batman`). Guacamole handles this internally, so you **do
+not** need to include `/data/` in your token paths.
+:::
+
+:::{tip}
+Use **complex paths** (e.g., `guacamole/production/batman`) to organize secrets
+by environment, team, or application.
+:::
+
+### Creating an SSH Secret Engine for Guacamole
+
+The **SSH secret engine** allows Vault to generate:
+
+1. **Signed SSH certificates** (recommended).
+2. **One-time passwords (OTP)**.
+
+Guacamole supports both methods, but **signed certificates** are the more modern and secure approach.
+
+#### Enabling the SSH Secret Engine
+
+To enable the SSH secret engine on a mount path named `ssh`:
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"type": "ssh"}' \
+  http://127.0.0.1:8200/v1/sys/mounts/ssh
 ```
 
-Send a HUP signal to the master sshd process in openssh, forces the configuration to
-be reloaded without interupting existing ssh connections.
+#### Generating a CA for Certificate Signing
 
-The next step to allow signed SSH certificates is setting up a role in the SSH secret
-engine for Guacamole. Guacamole needs the `permit-pty` option of ssh, and so the creation
-of a signing role `guacamole_cert` might be done with the command
+For **signed SSH certificates**, Vault needs a **Certificate Authority (CA)**.
+You can either:
 
+- Upload an existing CA certificate and private key.
+- Let Vault generate a new CA.
+
+To generate a new CA in Vault:
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"generate_signing_key": true}' \
+  http://127.0.0.1:8200/v1/ssh/config/ca
 ```
-$ curl -sS \
+
+The response will include a `public_key`. **Save this key** to
+`/etc/ssh/trusted_user_ca.pem` on all target machines where Guacamole will
+connect via SSH.
+
+#### Configuring SSH to Trust the CA
+
+1. On each target machine, add the following line to `/etc/ssh/sshd_config`:
+```
+ TrustedUserCAKeys /etc/ssh/trusted_user_ca.pem
+```
+2. Reload the SSH daemon to apply the changes:
+```bash
+ pkill -SIGHUP /usr/sbin/sshd
+```
+
+:::{note}
+This sends a `SIGHUP` signal to the SSH daemon, forcing it to reload its
+configuration **without interrupting existing connections**.
+:::
+
+#### Creating a Signing Role for Guacamole
+
+Guacamole requires the `permit-pty` option for SSH sessions. To create a
+signing role named `guacamole_cert`:
+
+```bash
+curl -sS \
   --header "X-Vault-Token: $VAULT_TOKEN" \
   --header "Content-Type: application/json" \
   --request POST \
   --data '{
-     "algorithm_signer": "rsa-sha2-256",
-     "allow_user_certificates": true,
-     "allowed_users": "*",
-     "key_type": "ca",
-     "max_ttl": "30m",
-     "allowed_extensions": "permit-pty"}' \
+    "algorithm_signer": "rsa-sha2-256",
+    "allow_user_certificates": true,
+    "allowed_users": "*",
+    "key_type": "ca",
+    "max_ttl": "30m",
+    "allowed_extensions": "permit-pty"
+  }' \
   http://127.0.0.1:8200/v1/ssh/roles/guacamole_cert
 ```
 
-The `max_ttl` value limits the life of the certificates signed by Guacamole to
-30 minutes. Small values here ensure that the risk of abuse of the signed certificates
-is limited, but the value must taken into account both the latence of the ssh conection
-times and the clock drift between the Vault and the SSH client machines. So there is
-a limit to how small this value might be without causing problems.
-
-The Vault is now ready for Guacamole to use to signed SSH certificates. To allow the use of
-one-time passwords, a specific role needs to be created. The command to create a role
-`guacamole_otp` for a default user `testuser` is
-
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"key_type": "otp", "default_user": "testuser"}' \
-    http://127.0.0.1:8200/v1/ssh/roles/guacamole_otp
-```
-
-The created role can only be used to create one-time passwords for the account `testuser`
-and the Vault's one-time password secret engine doesn't not support the user of the same
-role for different username. If multiple users are required, then multiple roles with
-different default users should be created.
-
-Note that the `cidr_list` option is ommitted here. The problem is that the SSH connections
-from Guacamole will appear to come from the `guacd` deamon, and within Guacamole's Vault
-secret driver we do not have access to the IP address of `guacd`. So Guacamole requests
-one-time passwords without specifying and IP address. This needs an additional change in
-the Vault. To allow the role `generate_otp` to be used without IP addresses, the additional
-command is
-
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"roles": "guacamole"}' \
-    http://127.0.0.1:8200/v1/ssh/config/zeroaddress
-```
-
-The target machine needs to be setup for the Vault one-time password. Firstly SSH must be
-configured to use PAM. As an example of the modification needed to test the one-time
-passwords the following line might be added to the top of `/etc/pam.d/sshd`.
-
-```
-auth sufficent pam_exec.so expose_authtok /usr/local/bin/verify_otp.sh
-```
-
-This is only an example that is guarenteed to work the one-time passwords without
-preventing the existing methods from failing. The user will surely need to adapt
-this to their installation.
-
-The final piece needed on the client machine is the script `/usr/local/sbin/verify_otp.sh`.
-A possible script that tests that the user corresponds to the user allowed by the one-time
-password and that the one-time password is correct in
-
-```
-#!/bin/sh
-set -u
-
-IFS= read -r OTP
-
-USERNAME="${PAM_USER}"
-
-[ -z "${OTP}" ] && exit 1
-[ -z "${USERNAME}" ] && exit 2
-
-RESPONSE=$(curl -s \
-  --fail \
-  --request POST \
-  --header "Content-Type: application/json" \
-  --data '{"otp": "'${OTP}'"}' \
-  http://127.0.0.1:8200/v1/ssh/verify)
-[ "$?" -eq 0 ] || exit 3
-
-[ "$(echo $RESPONSE | jq -r .data.username)" = "$USERNAME" ] || exit 4
-```
-
-that should be saved at `/usr/local/sbin/verify_otp.sh` and made executable with the
-command
-
-```
-chmod 755 /usr/local/sbin/verify_otp.sh
-```
-
-:::warning
-Using a shell script for a login is not the best security practice, and the user is
-encouraged to look at the [Hashicorp Vault SSH Helper](https://github.com/hashicorp/vault-ssh-helper)
+:::{note}
+- `max_ttl`: Limits the lifetime of signed certificates to **30 minutes**. Adjust this value based on:
+  - Network latency between Guacamole and the target machines.
+  - Clock drift between the Vault server and SSH clients.
+- `permit-pty`: Required for Guacamole to allocate a pseudo-terminal (PTY) for SSH sessions.
 :::
 
-#### Creating an LDAP secret engine for Guacamole
+#### Creating an OTP Role for Guacamole
 
-The LDAP secret engine allows Vault to supply credentials backed by an LDAP directory,
-such as OpenLDAP or Microsoft Active Directory. Guacamole can use these credentials for
-connections that authenticate against directory services.
+For **one-time passwords (OTP)**, create a role named `guacamole_otp` for a
+default user (e.g., `testuser`):
 
-As Vault will rotate its own LDAP password you are highly recommanded to use an LDAP account
-dedicated to Vault. This should first be created on the LDAP server. For the example below
-we assume that all user account are in the LDAP DN "ou=users,dc=example,dc=com". In real
-deployment it would probably be better to use dedicated DN of hashicorp managed accounts and
-limit the write permissions of hashicorp to these specific DN.
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"key_type": "otp", "default_user": "testuser"}' \
+  http://127.0.0.1:8200/v1/ssh/roles/guacamole_otp
+```
 
-We first need to generate an LDAP password hash for the initial password for Vault. The
-exact command for this will depend on the hash used. For example, to use a modern password
-hash like Argon2, if server uses openldap and supports it, a command to generate the password
-hash might be
+:::{warning}
+- Each OTP role is **tied to a single username**. If you need OTPs for multiple
+  users, create **separate roles** for each user.
+- Vault’s OTP engine **does not support** specifying the client IP address.
+  Since Guacamole’s SSH connections originate from the `guacd` daemon (and
+  Guacamole’s Vault extension cannot access the IP of `guacd`), you must
+  disable IP restrictions for the OTP role, by not specifying a `cidr_list`.
+:::
+
+To allow the `guacamole_otp` role to be used **without IP restrictions**, run:
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"roles": "guacamole"}' \
+  http://127.0.0.1:8200/v1/ssh/config/zeroaddress
+```
+
+#### Configuring Target Machines for OTP
+
+To use **OTP authentication**, the target machines must be configured to
+validate OTPs via **PAM (Pluggable Authentication Modules)**.
+
+1. **Modify `/etc/pam.d/sshd**` to include the following line at the **top** of the file:
+```
+ auth sufficient pam_exec.so expose_authtok /usr/local/bin/verify_otp.sh
+```
+:::{note}
+This line tells PAM to use the `verify_otp.sh` script to validate OTPs. The
+`expose_authtok` option passes the OTP to the script.
+:::
+
+2. **Create the OTP Verification Script** (`/usr/local/bin/verify_otp.sh`):
+```bash
+ #!/bin/sh
+ set -u
+ IFS= read -r OTP
+ USERNAME="${PAM_USER}"
+ [ -z "${OTP}" ] && exit 1
+ [ -z "${USERNAME}" ] && exit 2
+ RESPONSE=$(curl -s \
+   --fail \
+   --request POST \
+   --header "Content-Type: application/json" \
+   --data "{\"otp\": \"${OTP}\"}" \
+   http://127.0.0.1:8200/v1/ssh/verify)
+ [ "$?" -eq 0 ] || exit 3
+ [ "$(echo $RESPONSE | jq -r .data.username)" = "$USERNAME" ] || exit 4
+```
+
+3. **Make the Script Executable**:
+```bash
+ chmod 755 /usr/local/bin/verify_otp.sh
+```
+
+:::{warning}
+Using a **shell script for authentication is not a best practice** for
+production environments. Instead, use the **[Hashicorp Vault SSH Helper](https://github.com/hashicorp/vault-ssh-helper)**,
+which is designed for this purpose and integrates directly with OpenSSH.
+:::
+
+### Creating an LDAP Secret Engine for Guacamole
+
+The **LDAP secret engine** allows Vault to manage credentials for LDAP
+directories, such as **OpenLDAP** or **Microsoft Active Directory**.
+Guacamole can use these credentials for connections that authenticate against
+LDAP.
+
+:::{note}
+Vault **rotates its own LDAP password** automatically. For this reason, it is
+**highly recommended** to use a **dedicated LDAP account** for Vault (e.g.
+`uid=vault,ou=users,dc=example,dc=com`).
+:::
+
+#### Prerequisites for LDAP
+
+1. **Generate a Password Hash**:
+For modern LDAP servers (e.g., OpenLDAP with Argon2 support), generate a password hash like this:
 
 ```
 $ slappasswd -o module-load=argon2.so -h '{ARGON2}' -s your_secret_password_here
 {ARGON2}$argon2id$v=19$m=7168,t=5,p=1$4JbzrJjMiH8x6Qfe5WsNtA$n5tzU8dGW2lFE+KDJRCLImKK+feE+mZaBmDP7nE9fyI
 ```
 
-This password hash must then be used in an LDIF file and added to the ldap server with
-ldapadd like
+Replace `your_secret_password_here` with the actual password for the Vault LDAP account.
 
-```
-$ cat << EOLDIF > adduser.ldif
+2. **Create a Dedicated LDAP Account for Vault (file: adduser.ldif) **:
+  - This account should have permissions to:
+    - **Read** user attributes (for static roles).
+    - **Modify passwords** (for dynamic roles or static roles with rotation).
+  - Example LDIF for creating a Vault LDAP account (using the above Argon2 password hash):
+```ldif
 dn: uid=vault,ou=users,dc=example,dc=com
 objectClass: top
 objectClass: person
@@ -360,23 +436,18 @@ cn: Vault User
 sn: Vault
 displayName: Vault
 description: Account used by Vault Server
-userPassword: {{ARGON2}$argon2id$v=19$m=7168,t=5,p=1$4JbzrJjMiH8x6Qfe5WsNtA$n5tzU8dGW2lFE+KDJRCLImKK+feE+mZaBmDP7nE9fyI
-EOLDIF
-$ ldapadd -x -D "cn=admin,dc=example,dc=com" -W -f adduser.ldif
+userPassword: {ARGON2}$argon2id$v=19$m=7168,t=5,p=1$4JbzrJjMiH8x6Qfe5WsNtA$n5tzU8dGW2lFE+KDJRCLImKK+feE+mZaBmDP7nE9fyI
 ```
 
-The exact LDIF might vary depending on the configuration of your ldap server.
-For static, or existing accounts, the Vault only needs read permission and
-the permission of modify the passwords of accounts Managed DN. Most LDAP
-are configured to allow read access, except to the passwords. So only the
-permission for access to the attribute `userPassword` will need to be changed.
-
-If an `olcAcess` for the attribute `userPassword` does not exist an example
-of a change allowing access to `userPassword` of all users in the LDAP
-for Vault might be
-
+3. **Add the LDAP Account to the Directory**:
+```bash
+ldapadd -x -D "cn=admin,dc=example,dc=com" -W -f adduser.ldif
 ```
-$ cat << EOLDIF > userpassword.ldif
+4. **Grant Vault Permissions to Modify Passwords**:
+Modify the LDAP ACLs to allow the Vault account to read and modify the
+`userPassword` attribute. Example LDIF for OpenLDAP:
+
+```ldif
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 add: olcAccess
@@ -386,75 +457,58 @@ olcAccess: {0}to attrs=userPassword
   by anonymous auth
   by dn.base="cn=admin,dc=example,dc=com" manage
   by * none
-EOLDIF
-$ ldapmodify x -D "cn=admin,cn=config" -W -f userpassword.ldif
 ```
 
-if the block already exists then if will need to be modified instead, adding
-the line for the Vault server, like
-
-```
-$ cat << EOLDIF > userpassword.ldif
-dn: olcDatabase={2}mdb,cn=config
-changetype: modify
-replace: olcAccess
-olcAccess: {0}to attrs=userPassword
-  by dn.exact="uid=vault,ou=users,dc=example,dc=com" write
-  by self write
-  by anonymous auth
-  by dn.base="cn=admin,dc=example,dc=com" manage
-  by * none
-EOLDIF
-$ ldapmodify x -D "cn=admin,cn=config" -W -f userpassword.ldif
-```
-
-Be careful to keep any existing rules.
-
-:::warning
-The above change gives the Vault server the permission to change all passwords
-on the LDAP server in the DN "ou=users,dc=example,dc=com". For this reason the
-best pracitices is to isolate the Vault managed account in a seperate DN and
-only give write permission on this DN. Then the change might instead be
-
-```
-$ cat << EOLDIF > userpassword.ldif
-dn: olcDatabase={2}mdb,cn=config
-changetype: modify
-replace: olcAccess
-olcAccess: {0}to dn.subtree="ou=vault,dc=example,dc=com" attrs=userPassword
-  by dn.exact="uid=vault,ou=users,dc=example,dc=com" write
-  by anonymous auth
-  by dn.base="cn=admin,dc=example,dc=com" manage
-  by * none
-EOLDIF
-$ ldapmodify x -D "cn=admin,cn=config" -W -f userpassword.ldif
-```
-
-This rule needs to be before the generique `userPassword` rule to be effective
+:::{warning}
+Extreme care must be taken when modifying the permissions to access the LDAP.
+The risk of removing all administrative access the the LDAP server exists.
+Please respect any existing olcAccess attributes and double check any changes
+you make.
 :::
 
-If you wish to use LDAP dynamic roles with Vault, the Vault server needs to be able
-to add accounts to the LDAP server, and so permission to write to all attributes of
-the managed DN. This might be done like
-
+```bash
+ldapmodify x -D "cn=admin,cn=config" -W -f userpassword.ldif
 ```
-$ cat << EOLDIF > acl.ldif
+:::{warning}
+The above rule grants the Vault server **write access to all passwords** in
+the `ou=users,dc=example,dc=com` subtree. **This is not secure for production!**
+**Best Practice**: Isolate Vault-managed accounts in a **dedicated DN**
+(e.g., `ou=vault,dc=example,dc=com`) and restrict write permissions to this DN
+only. Example:
+
+```ldif
+dn: olcDatabase={2}mdb,cn=config
+changetype: modify
+add: olcAccess
+olcAccess: {0}to dn.subtree="ou=vault,dc=example,dc=com" attrs=userPassword
+  by dn.exact="uid=vault,ou=users,dc=example,dc=com" manage
+  by anonymous auth
+  by dn.base="cn=admin,dc=example,dc=com" manage
+  by * none
+```
+
+This rule **must appear before** any generic `userPassword` rules to take effect.
+:::
+
+5. **For Dynamic LDAP Roles**:
+If you plan to use **dynamic LDAP roles**, Vault needs permissions to **create
+and delete accounts** in the LDAP directory. Example LDIF:
+
+```ldif
 dn: olcDatabase={1}mdb,cn=config
 changetype: modify
 add: olcAccess
 olcAccess: {3}to dn.subtree="dc=example,dc=com"
   by dn.exact="uid=vault,ou=users,dc=example,dc=com" write
-EOLDIF
-$ ldapmodify -x -D "cn=admin,cn=config" -W -f acl.ldif
 ```
 
-where the values might vary with your LDAP installation. The next step is to
-setup a password policy for the LDAP server, giving the rules for the passwords
-in will generate when rotating passwords. An example policy might be created
-in the file `ldap-policy.hcl` and uploaded to the vault server like
+#### Configuring the LDAP Secret Engine in Vault
 
-```
-$ cat << EOHCL > ldap-policy.hcl
+1. **Create a Password Policy for LDAP**:
+Vault can generate random passwords for LDAP accounts based on a **password
+policy**. Example policy (`ldap-policy.hcl`):
+
+```hcl
 length = 20
 
 rule "charset" {
@@ -475,59 +529,63 @@ rule "charset" {
 rule "charset" {
   charset = "!@#%^&*"
   min_chars = 1
-}
-EOHCL
-$ curl -s --header "X-Vault-Token: $VAULT_TOKEN"  \
+```
+
+2. **Upload the policy to Vault:**
+
+``bash
+curl -s --header "X-Vault-Token: $VAULT_TOKEN"  \
     --request POST --data-urlencode  "policy@ldap-policy.hcl" \
     http://127.0.0.1:8200/v1/sys/policies/password/ldap-policy
 ```
 
-At this point you are now ready to connect your Vault server to your LDAP
-with the previously created credentials.
+3. **Configure the LDAP Connection in Vault**:
 
-```
-$ curl -s \
-  --header "X-Vault-Token: $VAULT_TOKEN" \
-  --header "Content-Type: application/json" \
-  --request PUT \
-  --data '{
-    "schema": "openldap",
-    "url": "ldaps://easyctf",
-    "binddn": "uid=vault,ou=users,dc=easyctf",
-    "bindpass": "your_secret_password_here",
-    "password_policy": "ldap-policy",
-    "insecure_tls": true
-  }' \
-  http://127.0.0.1:8200/v1/ldap/config
-```
+  ```bash
+   curl -s \
+     --header "X-Vault-Token: $VAULT_TOKEN" \
+     --header "Content-Type: application/json" \
+     --request PUT \
+     --data '{
+       "schema": "openldap",
+       "url": "ldaps://ldap.example.com",
+       "binddn": "uid=vault,ou=users,dc=example,dc=com",
+       "bindpass": "your_secret_password_here",
+       "password_policy": "ldap-policy",
+       "insecure_tls": false
+     }' \
+     http://127.0.0.1:8200/v1/ldap/config
+  ```
+:::{warning}
+The `insecure_tls: false` option is **not secure** for production. Instead:
+- Ensure your LDAP server uses **TLS with a valid certificate**.
+- Specify the CA certificate using the `tls_ca_cert` or `tls_ca_cert_file` options.
+:::
 
-The `insecure_tls` option is used here only for testing. In production you should
-ensure that the LDAP certificates ares signed by a certificate authority and the
-CA certificate is installed in the above command with either `tls_ca_cert` or
-`tls_ca_cert_file` options.
+4. **Test the LDAP Connection**:
+Before proceeding, verify that Vault can communicate with the LDAP server by
+forcing a password rotation:
 
-Before we go any further it is important at this point to ensure that the Vault
-server can actually communicate with the LDAP server, and there are no configuration
-issues either in the previous commands or the network. These can be done by forcing
-the Vault server to rotate its password with the command
-
-```
-$ curl -s \
+```bash
+curl -s \
   --header "X-Vault-Token: $VAULT_TOKEN" \
   --request POST \
   http://127.0.0.1:8200/v1/ldap/rotate-root
 ```
 
-If the command executes correctly, the Vault password has beed changed and the Vault
-server can communicate with the LDAP server
+If the command succeeds, Vault has successfully rotated its LDAP password and
+can communicate with the LDAP server.
 
-To create a static role for Guacamole, the command is slightly different for OpenBao
-and Hashicorp Vault.
+#### Creating a Static LDAP Role for Guacamole
 
-**Hashicorp Vault static ldap example:**
+Static roles use **existing LDAP accounts** and rotate their passwords
+automatically. The syntax is different here depending on whether you are
+using OpenBao or Hashicorp Vault.
 
-```
-$ curl -s \
+**For HashiCorp Vault**:
+
+```bash
+curl -s \
   --header "X-Vault-Token: $VAULT_TOKEN" \
   --header "Content-Type: application/json" \
   --request POST \
@@ -540,10 +598,10 @@ $ curl -s \
   http://127.0.0.1:8200/v1/ldap/static-role
 ```
 
-**OpenBao Vault static ldap example:**
+**For OpenBao**:
 
-```
-$ curl -s \
+```bash
+curl -s \
   --header "X-Vault-Token: $VAULT_TOKEN" \
   --header "Content-Type: application/json" \
   --request POST \
@@ -555,203 +613,425 @@ $ curl -s \
   http://127.0.0.1:8200/v1/ldap/static-role/guacamole
 ```
 
-This will manage an existing account with the username `guacamole` on the LDAP
-server, rotating its password as required.
+:::{note}
+- Guacamole **does not** manage LDAP lease revocation. Rotated credentials
+  remain valid until manually revoked or rotated again by Vault.
+- The `rotation_period` specifies how often Vault rotates the password for
+  the LDAP account (e.g., every 1 hour).
+:::
 
- #TODO Dynamic Accounts !!
+#### Creating a Dynamic LDAP Role for Guacamole
 
-Guacamole does not manage LDAP lease revocation and does not attempt to check in
-credentials after use.
+To enable **dynamic LDAP account creation** in Vault for Guacamole, you need
+to configure Vault to **automatically create, delete, and roll back LDAP
+accounts** on demand. This is useful for scenarios where you want Vault to
+**temporarily provision LDAP accounts** for Guacamole connections and
+**automatically clean them up** after use.
 
-#### Creating a Database secret engine for Guacamole
+Dynamic roles require **three LDIF files** to define how Vault interacts with
+your LDAP directory:
 
-The first step in allowing the Vault server to manage the database is to create
-a role for the vault within the database used by Guacamole. As the vault server
-can and does modify its own password in the database, it is strong recommanded
-that this created account is used only by the Vault server itself.
+`**creation.ldif**`: Defines how new accounts are created.
+`**deletion.ldif**`: Defines how accounts are deleted.
+`**rollback.ldif**`: Defines how to revert changes if account creation fails (often identical to `deletion.ldif`).
 
-In this below we assume thay Postgresql is used, and the commands might need to be
-slightly modified for other databases. A command to create a role for the Vault
-server in our database, with th enecessary permission will be something like
+:::{note}
+The exact content of these files **depends on your LDAP schema and directory
+structure**. The examples below are for **Unix-like accounts** (e.g.
+`inetOrgPerson`, `posixAccount`) and will need to be adapted to match your
+environment.
+:::
 
+1. **Create the `creation.ldif` File**
+
+The `creation.ldif` file defines the **attributes of new LDAP accounts**
+created by Vault. Below is an example for creating **Unix user accounts** in an
+OpenLDAP directory:
+
+```ldif
+dn: uid={{.Username}},ou=users,dc=example,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: {{.Username}}
+cn: {{.Username}}
+sn: {{.Username}}
+gidNumber: 50
+homeDirectory: /home/{{.Username}}
+loginShell: /bin/sh
+userPassword: {{.Password}}
 ```
-$ cat << EOSQL > psql --dbname "guacamole_db"
-CREATE ROLE vault_admin WITH
-  LOGIN
-  PASSWORD 'secure_password_here'
-  CREATEROLE
-  NOINHERIT;
+
+:::{note}
+- `**{{.Username}}**` and `**{{.Password}}**` are **placeholders** that Vault
+  replaces with dynamically generated values.
+- The `**uidNumber**` attribute is **intentionally omitted** in this example.
+  Vault **does not** automatically increment `uidNumber` values. If you need unique
+  `uidNumber` values, consider:
+  - Using the `**autonumber` overlay** in OpenLDAP to auto-assign `uidNumber`.
+  - Pre-defining a `uidNumber` value knowing all dynamic accounts will reuse it.
+:::
+
+:::{warning}
+- The `**userPassword**` field is provided in **plaintext** in this LDIF file. To
+  ensure the password is **hashed before storage**, configure your LDAP server with:
+
+```ldif
+olcPPolicyHashCleartext: TRUE
+```
+
+  This ensures the LDAP server **hashes the password** before storing it in the
+  directory.
+:::
+
+2. **Create the `deletion.ldif` and `rollback.ldif` Files**
+
+The `deletion.ldif` and `rollback.ldif` files define how Vault **removes
+accounts** from the LDAP directory. In most cases, these files are
+**identical**, as rolling back a failed creation typically involves deleting
+the account.
+
+Example `deletion.ldif` (and `rollback.ldif`):
+
+```ldif
+dn: uid={{.Username}},ou=users,dc=example,dc=com
+changetype: delete
+```
+
+:::{note}
+- The `**changetype: delete**` directive tells LDAP to **remove the entire
+  entry** matching the `dn`.
+- The `**{{.Username}}**` placeholder is replaced with the username of the
+  account to delete.
+:::
+
+3. **Configure LDAP Permissions for Dynamic Roles**
+
+For Vault to **create and delete accounts**, it needs **sufficient
+permissions** in your LDAP directory. Specifically:
+
+- **Write access** to the **DN subtree** where accounts will be created (e.g.
+  `ou=users,dc=example,dc=com`).
+- **Write access** for the `userPassword` attribute
+
+To grant Vault **full write access** to a subtree (e.g., `ou=dynamic,dc=example,dc=com`), use the following LDIF:
+
+```ldif
+dn: olcDatabase={1}mdb,cn=config
+changetype: modify
+add: olcAccess
+olcAccess: {2}to dn.subtree="ou=dynamic,dc=example,dc=com"
+  by dn.exact="uid=vault,ou=users,dc=example,dc=com" write
+  by * none
+```
+
+:::{warning}
+Granting **write access** to a broad subtree (e.g., `ou=users,dc=example,dc=com`)
+can be a **security risk**. **Best practice** is to:
+
+- **Isolate dynamic accounts** in a dedicated subtree (e.g., `ou=dynamic,dc=example,dc=com`).
+- **Restrict Vault’s permissions** to only this subtree.
+:::
+
+4. **Create the Dynamic Role in Vault**
+
+Once the LDIF files are ready, create a **dynamic role** in Vault using the
+`curl` command below. This role defines how Vault generates and manages dynamic
+LDAP accounts for Guacamole.
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+    "creation_ldif": "dn: uid={{.Username}},ou=users,dc=example,dc=com\nobjectClass: inetOrgPerson\nobjectClass: posixAccount\nobjectClass: shadowAccount\nuid: {{.Username}}\ncn: {{.Username}}\nsn: {{.Username}}\ngidNumber: 50\nhomeDirectory: /home/{{.Username}}\nloginShell: /bin/sh\nuserPassword: {{.Password}}",
+    "deletion_ldif": "dn: uid={{.Username}},ou=users,dc=example,dc=com\nchangetype: delete",
+    "rollback_ldif": "dn: uid={{.Username}},ou=users,dc=example,dc=com\nchangetype: delete",
+    "username_template": "v_{{.RoleName}}_{{random 6}}",
+    "dn": "uid=vault,ou=users,dc=example,dc=com",
+    "default_ttl": "1h",
+    "max_ttl": "24h"
+  }' \
+  http://127.0.0.1:8200/v1/ldap/roles/guacamole
+```
+
+5. Test the Dynamic Role
+
+After creating the role, test it by **requesting a dynamic LDAP credential**
+from Vault:
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  http://127.0.0.1:8200/v1/ldap/creds/guacamole
+```
+
+The response will include:
+
+- A **dynamically generated username** (e.g., `v_guacamole_abc123`).
+- A **password** for the account.
+- The **TTL** (time-to-live) of the credential.
+
+:::{note}
+- The account will be **automatically deleted** from LDAP after the `default_ttl`
+  (1 hour in the example).
+- You can **manually revoke** the credential by deleting its lease in Vault.
+:::
+
+#### Creating a LDAP Service Accounts for Guacamole
+
+ #TODO
+
+### Creating a Database Secret Engine for Guacamole
+
+The **Database secret engine** allows Vault to generate **dynamic database
+credentials** for Guacamole. This is useful for connections that require
+database access (e.g., PostgreSQL, MySQL).
+
+#### Prerequisites for Database Engine
+
+1. **Create a Dedicated Database Role for Vault**:
+  - This role should have permissions to:
+    - **Create new roles** (for dynamic credentials).
+    - **Modify passwords** (for rotation).
+  - Example for PostgreSQL:
+```sql
+CREATE ROLE vault_admin WITH LOGIN PASSWORD 'secure_password_here' CREATEROLE NOINHERIT;
 GRANT CREATE ON DATABASE guacamole_db TO vault_admin;
-GRANT USAGE ON SCHEMA public to vault_admin;
-EOSQL
+GRANT USAGE ON SCHEMA public TO vault_admin;
+    ```
+2. **Apply the SQL Commands**:
+  Save the above SQL to a file (e.g., `create_vault_role.sql`) and run it:
+
+```bash
+cat create_vault_role.sql | psql --dbname "guacamole_db"
 ```
 
-The next step is to activate the database secret engine of the Vault
+#### Enabling the Database Secret Engine
 
+To enable the database secret engine on a mount path named `db`:
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"type": "database"}' \
+  http://127.0.0.1:8200/v1/sys/mounts/db
 ```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"type": "database"}' http://127.0.0.1:8200/v1/sys/mounts/db
-```
 
-and then create a role for Guacamole needs to be created with the desired permissions
+#### Creating a Dynamic Database Role for Guacamole
 
+To create a role that generates **dynamic credentials** for Guacamole:
 
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{
-    "db-name": "guacamole_db",
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+    "db_name": "guacamole_db",
     "default_ttl": "1h",
     "max_ttl": "24h",
-    "create_statements": "CREATE ROLE \"{{name}}\"
-            WITH LOGIN PASSWORD \"{{password}}\"
-            VALID UNTIL \"{{expiration}}\";
-        GRANT SELECT,INSERT,UPDATE,DELETE
-            ON ALL TABLES IN SCHEMA public
-            TO \"{{name}}\";
-        GRANT SELECT,USAGE ON ALL SEQUENCES
-            IN SCHEMA public
-            TO \"{{name}}\";
-        GRANT ALL ON SCHEMA public TO \"{{name}}\";",
-    "rotation_statements": "ALTER ROLE \"{{name}}\"
-            WITH PASSWORD \"{{password}}\";"}' \
-    http://127.0.0.1:8200/v1/sys/mounts/db
+    "create_statements": [
+      "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD \"{{password}}\" VALID UNTIL \"{{expiration}}\";",
+      "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO \"{{name}}\";",
+      "GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA public TO \"{{name}}\";",
+      "GRANT ALL ON SCHEMA public TO \"{{name}}\";"
+    ],
+    "rotation_statements": [
+      "ALTER ROLE \"{{name}}\" WITH PASSWORD \"{{password}}\";"
+    ]
+  }' \
+  http://127.0.0.1:8200/v1/db/roles/guacamole
 ```
 
-This role assumes that Guacamole has already created all of its databases and the permissions
-needed afterwards are more limited. With this role the Vault will supply Guacamole with a new
-username and password every 24 hours, and both will be random. If you prefer to use a static
-username the `{{name}}` field should be replaced with the desired username and flags as static
-as follows
+:::{note}
+- `default_ttl`: Default time-to-live for generated credentials (e.g., 1 hour).
+- `max_ttl`: Maximum time-to-live for generated credentials (e.g., 24 hours).
+- `create_statements`: SQL commands to create a new database role with the
+  generated credentials.
+- `rotation_statements`: SQL commands to rotate the password for an existing
+  role.
+- `{{name}}` and `{{password}}`: Placeholders for the dynamically generated
+  username and password.
+:::
 
-```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" \
-    --header "Content-Type: application/json" \
-    --request POST --data '{
-    "db-name": "guacamole_db",
+#### Creating a Static Database Role for Guacamole
+
+If you prefer to use a **static username** (e.g., `guacamole_user`) instead of
+dynamic usernames, modify the role as follows:
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+    "db_name": "guacamole_db",
     "default_ttl": "1h",
     "max_ttl": "24h",
-    "create_statements": "CREATE ROLE \"guacamome_user\"
-            WITH LOGIN PASSWORD \"{{password}}\"
-            VALID UNTIL \"{{expiration}}\";
-        GRANT SELECT,INSERT,UPDATE,DELETE
-            ON ALL TABLES IN SCHEMA public
-            TO \"guacamole_user\";
-        GRANT SELECT,USAGE ON ALL SEQUENCES
-            IN SCHEMA public
-            TO \"guacamole_user\";
-        GRANT ALL ON SCHEMA public TO \"guacamole_user\";",
-    "rotation_statements": "ALTER ROLE \"guacamole_user\"
-            WITH PASSWORD \"{{password}}\";",
-    "static_username": true}' \
-    http://127.0.0.1:8200/v1/db/roles/guacamole
+    "create_statements": [
+      "CREATE ROLE \"guacamole_user\" WITH LOGIN PASSWORD \"{{password}}\" VALID UNTIL \"{{expiration}}\";",
+      "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO \"guacamole_user\";",
+      "GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA public TO \"guacamole_user\";",
+      "GRANT ALL ON SCHEMA public TO \"guacamole_user\";"
+    ],
+    "rotation_statements": [
+      "ALTER ROLE \"guacamole_user\" WITH PASSWORD \"{{password}}\";"
+    ],
+    "static_username": true
+  }' \
+  http://127.0.0.1:8200/v1/db/roles/guacamole
 ```
 
-at this point we can now configure the database plugin with the desired role as follows
+#### Configuring the Database Connection
 
+Configure Vault to connect to your database (e.g., PostgreSQL):
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+    "plugin_name": "postgresql-database-plugin",
+    "connection_url": "postgresql://{{.Username}}:{{.Password}}@127.0.0.1:5432/guacamole_db",
+    "allowed_roles": "guacamole",
+    "username": "vault_admin",
+    "password": "secure_password_here"
+  }' \
+  http://127.0.0.1:8200/v1/db/config/guacamole_db
 ```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" \
-    --header "Content-Type: application/json" \
-    --request POST --data '{"plugin_name": "postgresql-database-plugin",
-        "connection_url": "postgresql://{{username}}:{{password}}@127.0.0.1:5432/guacamole_db",
-        "allowed_roles": "guacamole",
-        "username": "vault_admin";
-        "password": "secure_password_here"}'
-    http://127.0.0.1:8200/v1/db/config/guacamole_db
-```
 
-The username and password here are for the account created for the Vault in our
-database.
+:::{note}
+- `connection_url`: The URL template for connecting to the database.
+  `{{.Username}}` and `{{.Password}}` are placeholders that Vault replaces
+   with dynamic credentials.
+- `allowed_roles`: Comma-separated list of roles that can use this connection.
+- `username` and `password`: Credentials for the Vault database account (e.g.
+  `vault_admin`).
+:::
 
-### Authenticating Guacamole to the Vault
+## Authenticating Guacamole to Vault
 
-#### Authentication using a Token String
+Guacamole supports the following authentication methods to Vault:
 
-Guacamole can authenticate to OpenBao using a token. This token must use a role
-as previously discussed above and in most cases it should not expire. Guacamole
-will attempt to renew tokens if they are marked as renewable. However, the vault
-server imposes a maximum lifetime of renewable tokens that is by default is
-32 days, and after that time Guacamole will not be able to renew the token.
+| Method                | Description                                                                                |
+| --------------------- | ------------------------------------------------------------------------------------------ |
+| **Token String**      | Static or renewable token provided directly in Guacamole’s configuration.                  |
+| **Token Sink File**   | Vault Agent writes a token to a file; Guacamole reads it. Supports complex roles.          |
+| **Username/Password** | Uses Vault’s `userpass` auth method. Tokens are short-lived and auto-renewed by Guacamole. |
 
-Also if Guacamole does not suceed in contacting the vault for a period corresponding
-to the token's TTL, the token will have expired and not be renewable. THis might
-cause problems in acse of network problems or server reboots. So if you choose to
-supply a token as a string to Guacamole you are encouraged to use a non expiring
-token (with a TTL of zero).
+### Authentication Using a Token String
 
-To create a static token for use with Guacamole, a command like
+Guacamole can authenticate to Vault using a **static token**. This token must:
 
+- Use a **role with the `guacamole` policy** (as defined earlier).
+- **Not expire** (set `ttl: 0`), or Guacamole may lose access after network issues or reboots.
 
-```
-$ curl -sS \
+If expiring tokens are used, Guacamole will renew the token on expiration.
+However, in case of network problems this renewal might not succeed in time.
+Also, there is a hard limit on the maximum TTL of renewable tokens, that is by
+default configured as 32 days in the Vault. After this period the token will fail
+to be renewed
+
+#### Creating a Non-Expiring Token for Guacamole
+
+```bash
+curl -sS \
   --header "X-Vault-Token: $VAULT_TOKEN" \
   --request POST \
-  http://127.0.0.1:8200/v1/auth/token/create \
   --data '{
     "policies": ["guacamole"],
     "ttl": "0",
     "renewable": false,
     "display_name": "service-guacamole",
     "no_parent": true
-  }'
+  }' \
+  http://127.0.0.1:8200/v1/auth/token/create
 ```
 
-where the `ttl` or zero ensures that the token will not expire. The previously created
-`guacamole` policy is used for the created token. The token to use is stored in the value
-of `.auth.client_token`.
+:::{note}
+- The `ttl: 0` ensures the token **never expires**.
+- The `no_parent: true` option prevents the token from being revoked if its
+  parent token is revoked.
+- The token value is returned in the `.auth.client_token` field of the
+  response. Use this value in Guacamole’s configuration (e.g., `vault-token`
+  in `guacamole.properties`).
+:::
 
-#### Authentication using a Token sink file
+### Authentication Using a Token Sink File
 
-Guacamole does not implement complex authentication methods, such as AppRole. But these
-can still be used with the help of a [Vault agent](https://openbao.org/https://openbao.org/docs/agent-and-proxy/agent).
-The Vault Agent manages the authentication and renewal of the authentication and just
-writes a standard Vault service token to a sink file. Guacamole can read this file
-at startup or in case of an expiring token and always have a valid token.
+Guacamole **does not** implement complex authentication methods like
+**AppRole** directly. However, you can use a **[Vault Agent](https://openbao.org/docs/agent-and-proxy/agent)**
+to manage authentication (e.g., AppRole) and write a **standard Vault token**
+to a **sink file**. Guacamole can then read this file at startup or when the
+token is about to expire.
 
-The configuration of the Vault Agent is beyond the scope of this document and the user is
-encouraged to read the [OpenBao Vault Agent](https://openbao.org/docs/agent-and-proxy/agent)
-or [Hashicorp Vault Agent](https://developer.hashicorp.com/vault/docs/agent-and-proxy/agent)
-documentation. These vault agents can be used with AppRole authentication as discussed
-for [OpenBao AppRole](https://openbao.org/docs/auth/approle) or
-[Hashicorp AppRole](https://developer.hashicorp/vault/docs/auth/approle)
-secrets.
+#### How It Works
 
-#### Authentication using Username and Password
+1. The `vault_token property of **Guacamole** is configured with a location of a file.
+2. **Vault Agent** authenticates to Vault (e.g., using AppRole) and writes a
+  token to this file (e.g., `/etc/guacamole/vault-token`).
+3. **Guacamole** reads this file at startup and whenever the token is about to expire.
+4. **Vault Agent** automatically renews the token as needed.
 
-If the authentication to Vault is via a username and password, we first need to have
-the `userpass` authentication method mounted which it isn't be default. Assuming
-an authentication mount path of `auth/userpass` this can be done with the command
+:::{note}
+The configuration of Vault Agent is **beyond the scope of this document**. Refer to:
 
+- [OpenBao Vault Agent Documentation](https://openbao.org/docs/agent-and-proxy/agent)
+- [HashiCorp Vault Agent Documentation](https://developer.hashicorp.com/vault/docs/agent-and-proxy/agent)
+:::
+
+This is the best solution for production, but it requires Vault Agent.
+
+### Authentication Using Username and Password
+
+If you prefer to authenticate Guacamole to Vault using a **username and
+password**, you must first enable the `userpass` authentication method in
+Vault.
+
+#### Enabling the `userpass` Auth Method
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"type": "userpass"}' \
+  http://127.0.0.1:8200/v1/sys/auth/userpass
 ```
-curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
-    --request POST --data '{"type": "userpass"}' \
-    http://127.0.0.1:8200/v1/sys/auth/userpass
-```
 
-We can then create a dediciated account for Guacamole in the Vault. This can be done
-with a command like
+#### Creating a Guacamole User in Vault
 
-```
-curl \
-  -H "X-Vault-Token: $VAULT_TOKEN" \
-  -X POST \
-  http://127.0.0.1:8200/v1/auth/userpass/users/guacamole \
-  -d '{
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
     "password": "strong-password-here",
     "policies": ["guacamole"],
-    "token-ttl": "10m",
-    "token-max-ttl": "60m"
-  }'
+    "token_ttl": "10m",
+    "token_max_ttl": "60m"
+  }' \
+  http://127.0.0.1:8200/v1/auth/userpass/users/guacamole
 ```
 
-This creates a user `guacmaole` using the same policy as previously and sets the
-password assuming the userpass engine is mounted on the default path `auth/userpass`.
-In the above example the TTL of the token is 10 minutes. Guacamole with renew the
-token recovered on the login upto 60 minutes or the maximum TTL for the token. After
-Guacamole will reauthenticate and recover a new token.
+:::{note}
+- The `token_ttl` (10 minutes) is the default lifetime of tokens generated
+  for this user.
+- Guacamole will **automatically renew** the token up to the `token_max_ttl`
+  (60 minutes). After this, Guacamole will reauthenticate and generate a new
+  token.
+- Vault **cannot** rotate the password for `userpass` users. If you change the
+  password in Vault, you must also update it in Guacamole’s configuration.
+:::
 
-It should be noted that the Vault can not rotate the passwords of these user
-accounts. So the maintenance and update of the password needs to be done manually,
-updating the password configured in Guacamole at the same time.
+Vault **cannot** rotate `userpass` passwords, as the user must know the value.
+Therefore, the user is responsible for the rotation of this password.
 
 (guac-vault-config)=
 
@@ -759,12 +1039,12 @@ Required configuration
 ----------------------
 
 {% call ext.config('openbao', required=True) %}
-Guacamole requires only a single configuration property to configure secret
-retrieval from a Vault, `vault-uri`, the address of the vault server. The
-option `vault-token` is not strictly necessary, but if it is absent it must
-be replaced with `vault-username` and `vault-password` as discussed below.
-All other {{ ext.properties() }} are optional.
+
+Strictly speaking, Guacamole requires only `vault-uri`, the address of the Vault
+server. The property `vault-token` can be replaced by `vault-username` and
+`vault-password`.
 {% endcall %}
+
 
 ### Additional Configuration Options
 
@@ -785,182 +1065,289 @@ Completing installation
 Retrieving connection secrets from a vault
 ------------------------------------------
 
-Secrets for connection parameters are provided using [parameter
-tokens](parameter-tokens) that can be either automatically or manually defined.
-Automatic tokens are [defined dynamically by Guacamole when the connection is
-used](vault-dynamic-secrets) based on other configuration values within the
-connection, such as the connection's `hostname` or `username`. Manual tokens
-are injected by Guacamole based on secrets that are [statically mapped using an
-additional configuration file](vault-static-secrets).
+Secrets for connection parameters provided by **[parameter tokens](parameter-tokens)**
+by Vault all take the form {samp}`${vault://{MOUNT_PATH}/{PATH}/{SECRET}}`, where
 
-(vault-dynamic-secrets)=
+- `{MOUNT_PATH}`: The mount path of the Vault secret engine used (e.g., `kv2`, `ssh`, `ldap`).
+- `{PATH}`: The path to the secret record.
+- `{SECRET}`: The key within the secret record (e.g., `username`, `password`).
 
-### Automatic injection of secrets based on connection parameters
+Guacamole generally uses the values for `{MOUNT_PATH}` and `{PATH}` as used by the
+Vault itself. For example if the OpenBao command used to recover a secret record is
 
-Parameter tokens containing the values of secrets within a record are
-automatically injected for connections whose parameter values match specific
-criteria, such as having a particular `username` or `hostname`. This happens
-whenever a connection is used and is fully dynamic, affecting only the state of
-the connection from the perspective of the user accessing it.
+```bash
+bao read kv2/guacamole/myaccount
+```
 
-:::{important}
-There are limitations to the degree that secrets can be automatically applied
-based on connection parameters:
+the **parameter token** in Guacamole will start with `vault://kv2/guacamole/myaccount`.
+The exception to this rule is for LDAP Service accounts, where OpenBao would check
+out the account with the command
 
-* Automatic injection of secrets cannot currently be used with balancing
-  connection groups, as the underlying connection that the balancing
-  implementation will choose cannot be known before token values must be made
-  available.
+```bash
+bao write -f ldap/library/guacamole/myteam/check-out
+```
 
-If automatic injection of secrets cannot work for your use case, consider using
-[manually-specified secrets via `vault-token-mapping.yml`](vault-static-secrets).
+the corresponding Guacamole token will start with `vault://ldap/library/guacamole/myteam`.
+
+The secret record recovered from the Vault is JSON with both data
+and metadata. Guacamole requires that `{SECRET}` corresponds to one of the
+parameters in a data block. For example the command
+
+```bash
+curl --header "X-Vault-Token: $VAULT_TOKEN"  http://127.0.0.1:8200/v1/kv2/secrets/my-secret | jq
+```
+will return the JSON
+
+```json
+{
+  "data": {
+    "data": {
+      "foo": "bar"
+    },
+    "metadata": {
+      "created_time": "2018-03-22T02:24:06.945319214Z",
+      "custom_metadata": {
+        "owner": "jdoe",
+        "mission_critical": "false"
+      },
+      "deletion_time": "",
+      "destroyed": false,
+      "version": 2
+    }
+  }
+}
+```
+
+and the only possible value of `{SECRET}` for this secret record is `foo`.
+So for this case the only possible **parameter token** is
+{samp}`${vault://kv2/secrets/my-secret/foo}`.
+
+#### Mount Path Detection
+
+Guacamole **automatically detects** all available mount paths on the Vault
+server and their types. The selection of which secret engine Guacamole uses is
+based on the **longest matching prefix** of the `{MOUNT_PATH}` in the token.
+
+For example, if you have two mount paths:
+
+- `subpath1`
+- `subpath1/subpath2`
+
+A token with `{MOUNT_PATH}=subpath1/subpath2` will use the secret engine
+mounted at `subpath1/subpath2`.
+
+#### Secret Engines and Paths Supported
+
+The following Vault secret engines are supported by Guacamole:
+
+##### LDAP Secret Engine
+
+The Vault LDAP secret engine supports both **open-source LDAP servers** (e.g., OpenLDAP) and **Microsoft Active Directory**. There are three types of LDAP accounts in Vault:
+
+1. **Static roles**: Use a **fixed username** (e.g., `guacamole`). Vault rotates the password automatically.
+2. **Dynamic roles**: Vault **creates and deletes** an account for each request.
+3. **Service roles**: Vault manages a **pool of accounts** that can be reused.
+
+Guacamole simplifies the token format for LDAP paths as follows:
+
+```
+${VAULT:{MOUNT_PATH}/{static-role|static-cred|creds|library}/{ROLE}/{username|password}}
+```
+
+As the paths of OpenBao and Hashicorp Vaults are different for static passwords, it
+is up to the user to use tokens that are acceptable to the Vault being used. An
+example of a static credential for OpenBao is of the form
+
+```
+${vault://{MOUNT_PATH}/static-cred/{ROLE}/{username/password}}
+```
+
+and for Hashicorp Vault is of the form
+
+```
+${vault://{MOUNT_PATH}/static-role/{ROLE}/{username/password}}
+```
+
+For dynamic credentials both OpenBao and Hashicorp use the same paths, which are
+of the form
+
+```
+${vault://{MOUNT_PATH}/creds/{ROLE}/{username/password}}
+```
+
+Guacamole simplifies the tokens for the LDAP paths in the following manner
+
+```
+${vault://{MOUNT_PATH}/library/{ROLE}/{username/password}}
+```
+
+An example of a valid token might then be `${vault://ldap/creds/guacamole/username}`,
+where the value of `ROLE` here is `guacamole`.
+
+Please note that Guacamole does not touch the lease times associated with these accounts
+in the vault and it does not check in the service accounts after use.
+
+
+:::{warning}
+Guacamole attempts to check-in the service accounts when the tunnel is closed.
+However, a maximum lease time of the service accounts of 2 hours is imposed by
+Guacamole and afterthis time the Vault will automatically assume the account is
+again available.
 :::
 
-Parameter tokens injected from Vault records usually take the form
-{samp}`$\{VAULT:\{MOUNT_PATH\}/\{PATH\}/\{SECRET\}\}`, where `MOUNT_PATH` is the
-mount path of the Vault secret engine used, `PATH` is the path to the secret
-record and `SECRET` determines what value is retrieved from that record.
+##### SSH Secret Engine
 
-#### Mount path detection
+The Vault SSH secret engine supports:
 
-Guacamole automatically detecting all of the available mount paths on the vault server
-and detects their type. The selection of which secret engine that Guacamole used is
-therefore based the value of `MOUNT_PATH`.
+1. **One-time passwords (OTP)**.
+2. **Signed certificates**.
 
-It is possible to have a value of the mount path like `subpath1` and a second mount path
-`subpath1/subpath2`. Guacamole therefore chooses the secret engine with the longest
-match to the start of the token.
+Guacamole supports both methods, but **signed certificates are recommended**
+for security and ease of use.
 
-#### Secret Engines and paths supported
+###### Tokens for One-Time Passwords (OTP)
 
-The following Vault secret engines are supported
-
-`LDAP`
-: The Vault secret engine supports both open source ldap servers and Microsoft Active
-  Directory. There are three types of LDAP accounts in the Vault. A `static` role has
-  a fixed usename, a `dynamic` role is an account created and deleted by the vault for
-  the demanded operation, and a `service` role is a pool of accounts managed by the
-  vault that can be used.
-
-  Guacamole simplifies the tokens for the LDAP paths in the following manner
+Tokens for OTP take the form:
 
 ```
-${vault://{MOUNT_PATH}/{static|dynamic|service}/{ROLE}/{username/password}}
+${VAULT:{MOUNT_PATH}/creds/{ROLE}/{username|password}}
 ```
 
-  An example of a valid token might then be `${vault://ldap/static/guacamole/username}`,
-  where the value of `ROLE` here is `guacamole`.
-
-  Please note that Guacamole does not touch the lease times associated with these accounts
-  in the vault and it does not check in the service accounts after use.
-
-`SSH`
-: The Vault secret engine support both one-time passwords and signed certificate modes of
-  the secret engine. This secret engine required a helper command on the client machines
-  and is defined by its role. Tokens for one-time passwords are of the form
+Example:
 
 ```
-${vault://{MOUNT_PATH}/otp/{ROLE}/{username/password}}
+${VAULT:ssh/otp/myaccount/username}
 ```
 
-  An example of a valid token might then be `${vault://ssh/otp/myaccount/username}`,
-  where the value of `ROLE` here is `myaccount`.
+Here, `{ROLE}` is `myaccount`.
 
-  Vault does not support the creation of certificates itself, so the role for SSH certificate
-  creation is left to Guacamole. A valid SSH token for the creation of a certificate is
+:::{note}
+OTP authentication requires **client-side configuration** (e.g., PAM and the
+`verify_otp.sh` script, as described earlier).
+:::
 
-```
-${vault://{MOUNT_PATH}/cert/{ROLE}/{public/private}}
-```
+###### Tokens for Signed Certificates
 
-  An example of a valid token might then be `${vault://ssh/cert/myaccount/public}`,
-  where the value of `ROLE` here is `myaccount`, and the public certificate for use with
-  Guacamole is recovered. For SSH signed certificates the principal name used is determined
-  by the `username` of the connection and the certificate will be limited for the use of
-  only this user. Also as Guacamole does not need port forwarding the certificate is created
-  in a manner that refuses all use of port forwarding.
-
-`DATABASE`
-: Guacamole supports all databases supported by the Vault database secret engine. The form
-  of the database tokens are
+Tokens for signed certificates take the form:
 
 ```
-${vault://{MOUNT_PATH}/{ROLE}/{username/password}}
+${VAULT:{MOUNT_PATH}/sign/{ROLE}/{public/private}}
 ```
 
-  So that Guacamole can use thes values, they must be placed the the
-  `guacamole.properties.vlt` file.
-
-`Key-Values`
-: The Vault key-values secret engine is a generic secret engine to store arbitrary
-  secrets. This means that it is adapted to clients that are not managed by one of
-  the other three secret engines supported by Guacamole. For example, this engine
-  might be used for a password on an unmanaged account of a firewall.
-
-  Both the path and secret values of key-value tokens are completely arbitrary and
-  a valid token might be of the form
+Example:
 
 ```
-${vault://{MOUNT_PATH}/{PATH}/{SECRET}
+${VAULT:ssh/sign/guacamole_cert/public}
 ```
 
-  So a token like `vault://kv/org/example/fw1/adminuser` where `kv` is the mount path,
-  `org/example/fw1` the path the the record and `adminuser` the username of associated
-  with a generic account.
+This token returns a **signed SSH public certificate** that Guacamole can
+use for authentication.
 
+:::{note}
+The SSH secret engine **does not support** generating certificates directly.
+Instead, it **signs** certificates using a CA stored in Vault. The creation
+of the temporary certificates is performed by Guacamole itself.
+:::
 
-In addition, the following sub-tokens can be used with the vault token to modify
-its value when it is referenced. These sub-tokens are of the form `{SUB_TOKEN}`
-within the vault token itself. If `{SUB_TOKEN}` is valid literal with the vault
-token, you can use `$${SUB_TOKEN}` to ensure it is interpreted as `{SUB_TOKEN}`.
-The allowed sub-token values are:
+##### Database Secret Engine
 
-`{USER}`
+The Vault database secret engine generates **dynamic database credentials** for
+Guacamole. Tokens for database credentials take the form:
+
+```
+${VAULT:{MOUNT_PATH}/creds/{ROLE}/{username|password}}
+```
+
+Example:
+
+```
+${VAULT:db/creds/guacamole/username}
+```
+
+Here, `{ROLE}` is the name of the database role (e.g., `guacamole`). So that
+Guacamole can use thes values, they must be placed the the
+`guacamole.properties.vlt` file.
+
+:::{note}
+- The credentials are **rotated automatically** by Vault based on the
+  `default_ttl` and `max_ttl` settings of the role.
+:::
+
+##### Key-Value (KV) Secret Engine
+
+The KV secret engine stores **static secrets** (e.g., passwords, certificates).
+Tokens for KV secrets take the form:
+
+```
+${VAULT:{MOUNT_PATH}/{PATH}/{SECRET}}
+```
+
+Example:
+
+```
+${VAULT:kv2/guacamole/batman/password}
+```
+
+Here:
+
+- `{MOUNT_PATH}` is the mount path of the KV engine (e.g., `kv2`).
+- `{PATH}` is the path to the secret record (e.g., `guacamole/batman`).
+- `{SECRET}` is the key within the secret record (e.g., `password`).
+
+:::{note}
+For **KV v2**, Guacamole automatically handles the `/data/` prefix in the API
+path. You **do not** need to include `/data/` in your token paths.
+:::
+
+##### sub-token replacement
+
+In addition, the following sub-tokens can be used with the **parameter token**
+to modify its value when it is referenced. These sub-tokens are of the form
+`{SUB_TOKEN}` within the **parameter token** itself. If `{SUB_TOKEN}` is valid
+literal with the **parameter token**, you can use `$${SUB_TOKEN}` to ensure it
+is interpreted as `{SUB_TOKEN}`. The allowed sub-token values are:
+
+`{GUAC_USERNAME}`
 : The value of the token ${GUAC_USERNAME}, the current logged in user, is
   substituted into the vault token before it is looked up.
 
-`{SERVER}`
+`{USERNAME}`
+: The username field of the connection is substituted into the vault token
+  before it is looked up. The username of the connection must not be empty
+  or itself include a token.
+
+`{HOSTNAME}`
 : The hostname field of the connection is substituted into the vault token
   before it is looked up. The hostname of the connection must not be empty
   or itself include a token.
 
 `{GATEWAY}`
-: Identical to `SERVER`, except that the value of the `gateway-hostname`
+: Identical to `HOSTNAME`, except that the value of the `gateway-hostname`
   parameter is used. This is only applicable to RDP connections. The
   `gateway-hostname` of the connection must not be empty or itself include a
   token.
 
 `{GATEWAY_USER}`
-: Identical to `USER`, except that the value of the `gateway-username`
+: Identical to `USERNAME`, except that the value of the `gateway-username`
   parameter is used. This is only applicable to RDP connections. The
   `gateway-username` of the connection must not be empty or itself include a
   token.
 
-For example `vault://ldap/org/example/{SERVER}/{USER}/password` is a valid vault token.
+For example {samp}`${vault://ldap/org/example/{SERVER}/{USER}/password` is a
+valid **paramater token**.
 
-(vault-static-secrets)=
+### Manual Mapping of Secrets
 
-### Manual definition of secrets
+For cases where **automatic injection** is not suitable (e.g., load-balancing
+connection groups), you can **manually map** secrets to connections using a
+`vault-token-mapping.yml` file.
 
-Parameter tokens can be manually defined by placing a YAML file within
-`GUACAMOLE_HOME` called `vault-token-mapping.yml`. This file must contain a set
-of name/value pairs where each name is the name of a token to define and each
-value is a token in the same form as the above.
-
-For example, the following `vault-token-mapping.yml` defines two parameter
-tokens, `${WINDOWS_ADMIN_PASSWORD}` and `${LINUX_SERVER_KEY}`, each pulling
-their values from different parts of different records in KSM:
+#### Example `vault-token-mapping.yml`
 
 ```yaml
 WINDOWS_ADMIN_PASSWORD: vault://ldap/static/org/host/account/password
 LINUX_SERVER_KEY: vault://kv/org/host/server_key.pem
 ```
-
-Token substitution of other parameter tokens like `${GUAC_USERNAME}` is
-performed *on the reference to the secret* to allow the reference to vary by
-values that may be relevant to the connection. The values of substituted tokens
-are URL-encoded before being placed into the reference. In addition, the
-sub-tokens as above are allowed within the secret reference.
 
 (guacamole-properties-vlt)=
 
@@ -969,8 +1356,8 @@ Retrieving configuration properties from a vault
 
 Secrets for Guacamole configuration properties are provided through [an
 additional file within `GUACAMOLE_HOME` called `guacamole.properties.vlt`](guacamole-properties-vlt).
-This file is _identical_ to `guacamole.properties` except that the values of properties
-are references to Vault secrets in the format as above.
+This file is _identical_ to `guacamole.properties` except that the values of
+properties are references to **parameter tokens** in the format as above.
 
 Secrets can be used for any Guacamole configuration property that isn't
 required to configure the Vault support.
@@ -986,3 +1373,4 @@ postgresql-password: vault://db/guacamole_db/password
 
 The secret engine in this case is mounted on the path `db/` and this secret
 engine defines a role `guacamole`.
+
