@@ -755,7 +755,7 @@ public class OpenBaoClient implements Listener {
         }
 
         if (path.startsWith("library/")) {
-            // Register a listener to check-in the account in a TunnelCloseListener
+            // Register a listener to check-in the account for a TunnelClose Event
             LDAPSessionInfo info = new LDAPSessionInfo(mountPath + path + "/check-in", username, Instant.now());
             ldapSessions.put("creating", info);
         }

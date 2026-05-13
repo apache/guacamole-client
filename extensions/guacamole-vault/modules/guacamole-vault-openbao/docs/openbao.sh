@@ -33,6 +33,9 @@ path "ssh/sign/guacamole_cert" {
 path "ssh/creds/guacamole_otp" {
   capabilities = ["update"]
 }
+path "ldap/library/*" {
+  capabilities = ["read", "create"]
+}
 path "ldap/*" {
   capabilities = ["read"]
 }
@@ -109,7 +112,7 @@ curl -s \
     "url": "'$LDAP_URI'",
     "binddn": "'$LDAP_DN'",
     "userdn": "'$USER_DN'",
-    "userattr": "cn",
+    "userattr": "uid",
     "bindpass": "your_secret_password_here",
     "password_policy": "ldap-policy",
     "password_hash": "plaintext",
@@ -157,8 +160,6 @@ curl -s \
   --header "Content-Type: application/json" \
   --request POST \
   --data '{
-    "userdn": "'$USER_DN'",
-    "userattr": "cn",
     "ttl": "1h",
     "max_ttl": "24h",
     "disable_checkin_enforcement": "true",
@@ -319,8 +320,8 @@ sed -i '1d' /etc/pam.d/sshd
 #  10. Add the dynamic ldaptokens to the SSH connection
 #        \${vault://ldap/creds/guacamole/password} and \${vault://ldap/dynamic/guacamole/username}
 #     Test that the SSH connection to the kali machine works
-#  11. [TODO LDAP Service] Add the ldap service tokens to the SSH connection
-#        \${vault://ldap/static/users/kali/password} and \${vault://ldap/static/users/kali/username}
+#  11. Add the ldap service tokens to the SSH connection
+#        \${vault://ldap/library/guacamole/password} and \${vault://ldap/library/guacamole/username}
 #     Test that the SSH connection to the kali machine works
 #  12. A VaultAgent can be simulated by using a token sink file as follows. First create
 #     A short lived (10 minutes) non renewable token with the command

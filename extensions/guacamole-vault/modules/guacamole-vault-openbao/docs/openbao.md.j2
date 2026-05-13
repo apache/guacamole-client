@@ -100,8 +100,13 @@ path "ssh/creds/guacamole_otp" {
   capabilities = ["create"]
 }
 
-# Read static LDAP credentials
-path "ldap/static/guacamole/*" {
+# Read/Create for LDAP service credentials
+path "ldap/library/guacamole/*" {
+  capabilities = ["read", "create"]
+}
+
+# Read static/dynamic LDAP credentials
+path "ldap/*/guacamole/*" {
   capabilities = ["read"]
 }
 
@@ -110,6 +115,12 @@ path "db/guacamole/*" {
   capabilities = ["read"]
 }
 ```
+
+:::{note}
+The first matching rule in the policy is used. It is therefore important to
+place the specific rules in the policy before the general more lax rules. The
+LDAP rules above are an example of this.
+:::
 
 #### Uploading the Policy to Vault
 
@@ -129,7 +140,6 @@ curl -sS \
 - Replace `127.0.0.1:8200` with the address of your Vault server.
 - The mount paths in the policy (e.g., `kv/guacamole/*`) are **examples** and should be adapted to match your actual paths.
 :::
-
 
 ## Configuring Secret Engines for Guacamole
 
