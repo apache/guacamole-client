@@ -168,6 +168,8 @@
         "TEXT_USER_JOINED"                : "{USERNAME} has joined the connection.",
         "TEXT_USER_LEFT"                  : "{USERNAME} has left the connection.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Reconnecting in {REMAINING} {REMAINING, plural, one{second} other{seconds}}...",
+        "INFO_WOL_MACHINE_OFF"            : "Machine is powered off — sending Wake-on-LAN signal",
+        "INFO_WOL_CONNECTING"             : "Automatically connecting in approximately {SECONDS} {SECONDS, plural, one{second} other{seconds}}…",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
         "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
