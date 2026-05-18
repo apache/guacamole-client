@@ -130,11 +130,16 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
                 }
             }
 
-            // Create the clipboard event
+            // Create the clipboard event. A clipboard stream may arrive
+            // before the first sync instruction has set lastTimestamp, in
+            // which case stream.timestamp - startTimestamp is negative.
+            // Clamp to 0 so pre-connection clipboard syncs land at the
+            // start of the playback timeline rather than producing a
+            // negative timestamp that breaks playerTimeService.formatTime().
             parsedEvents.push(new Guacamole.ClipboardEventInterpreter.ClipboardEvent({
                 mimetype: stream.mimetype,
                 data: decodedData,
-                timestamp: stream.timestamp - startTimestamp
+                timestamp: Math.max(0, stream.timestamp - startTimestamp)
             }));
 
             // Clean up the stream
