@@ -110,3 +110,13 @@ a.home-connection, .empty.balancer a.home-connection-group {
 .recent-connections .connection .remove-recent:hover {
     opacity: 1.0;
 }
+
+/* Colorize icon when the connection host is reachable via TCP. */
+.all-connections .icon.vm-running {
+    filter: invert(52%) sepia(65%) saturate(450%) hue-rotate(100deg) brightness(88%);
+}
+
+/* Dim icon when the connection host is not reachable. */
+.all-connections .icon.vm-stopped {
+    opacity: 0.35;
+}
