@@ -334,4 +334,16 @@ public interface LDAPConfiguration {
      */
     MemberAttributeType getMemberAttributeType() throws GuacamoleException;
 
+    /**
+     * Returns whether nested groups should be included in group membership.
+     *
+     * @return
+     *     Whether to search in nested groups.
+     *
+     * @throws GuacamoleException
+     *     If the configuration information determining whether nested
+     *     groups should be used cannot be retrieved.
+     */
+    boolean getNestedGroups() throws GuacamoleException;
+
 }
