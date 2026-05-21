@@ -553,7 +553,8 @@ public class OpenBaoClient {
             }
 
             return Map.of("private", sshKeys.privateSshPem,
-                    "public", signedCert);        
+                    "public", signedCert,
+                    "unsigned", sshKeys.publicSsh);        
         }
         else {
            throw new GuacamoleException("Unknown SSH type on path: " + mountPath + path);

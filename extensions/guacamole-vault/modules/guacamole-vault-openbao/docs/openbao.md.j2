@@ -1238,18 +1238,10 @@ Guacamole simplifies the token format for LDAP paths as follows:
 ${VAULT:{MOUNT_PATH}/{static-role|static-cred|creds|library}/{ROLE}/{username|password}}
 ```
 
-As the paths of OpenBao and Hashicorp Vaults are different for static passwords, it
-is up to the user to use tokens that are acceptable to the Vault being used. An
-example of a static credential for OpenBao is of the form
+An example of a static credential for OpenBao is of the form
 
 ```
 ${vault://{MOUNT_PATH}/static-cred/{ROLE}/{username/password}}
-```
-
-and for Hashicorp Vault is of the form
-
-```
-${vault://{MOUNT_PATH}/static-role/{ROLE}/{username/password}}
 ```
 
 For dynamic credentials both OpenBao and Hashicorp use the same paths, which are
