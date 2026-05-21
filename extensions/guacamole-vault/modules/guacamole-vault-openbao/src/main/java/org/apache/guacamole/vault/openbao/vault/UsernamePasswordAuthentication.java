@@ -53,6 +53,15 @@ public class UsernamePasswordAuthentication implements ClientAuthentication {
 
     /**
      * Contructor for the Username/Password clientAuthentication
+     *
+     * @param options
+     *     The configuration of the username/password to use for authentication
+     *
+     * @param endpoint
+     *     The endpoint of teh VAult to use
+     *
+     * @param restTemplate
+     *     The spring-framework RestTemplate used to communicate with the Vault
      */
     public UsernamePasswordAuthentication(
             UsernamePasswordAuthenticationOptions options,
@@ -69,13 +78,13 @@ public class UsernamePasswordAuthentication implements ClientAuthentication {
     }
 
     /**
-     * A login method that attempts a username/password login to the vault
+     * A login method that attempts a username/password login to the Vault
      *
      * @return
      *      A LoginToken for the authenticated used for use with future operations with
      *      the vault
      *
-     * @throws
+     * @throws VaultException
      *      In case of a recoverable login issue, throws a VaultExecption, so tha the
      *      SessionManager knows to try the authtication again
      */

@@ -9,7 +9,7 @@ pwgen() {
 }
 
 [ -z "$LDAP_URI" ] && { echo "Must supply a LDAP_URI with the address of the LDAP server" && exit 1; }
-[ -z "$LDAP_DN" ] && { echo "Must supply a LDAP_DN with the distinguished name to use with teh vault" && exit 1; }
+[ -z "$LDAP_DN" ] && { echo "Must supply a LDAP_DN with the distinguished name to use with the vault" && exit 1; }
 
 docker rm -f openbao > /dev/null 2>&1
 docker run --detach --name openbao --publish 8200:8200 openbao/openbao:2.5 > /dev/null 2>&1
@@ -34,7 +34,7 @@ path "ssh/creds/guacamole_otp" {
   capabilities = ["update"]
 }
 path "ldap/library/*" {
-  capabilities = ["read", "create"]
+  capabilities = ["read", "update"]
 }
 path "ldap/*" {
   capabilities = ["read"]
@@ -153,7 +153,6 @@ curl -s \
   }' \
   http://127.0.0.1:8200/v1/ldap/role/guacamole
 
-
 echo "# Add LDAP service accounts"
 curl -s \
   --header "X-Vault-Token: $VAULT_TOKEN" \
@@ -163,7 +162,7 @@ curl -s \
     "ttl": "1h",
     "max_ttl": "24h",
     "disable_checkin_enforcement": "true",
-    "service_account_names": "testuser"
+    "service_account_names": "testuser2"
   }' \
   http://127.0.0.1:8200/v1/ldap/library/guacamole
 
@@ -171,6 +170,47 @@ echo "# Enable Postgres database secret engine"
 curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
     --request POST --data '{"type": "database"}' \
     http://127.0.0.1:8200/v1/sys/mounts/db > /dev/null 2>&1
+
+echo "# Create Dynamic Role in database secret engine"
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+    "db_name": "guacamole_db",
+    "default_ttl": "1h",
+    "max_ttl": "24h",
+    "creation_statements": [
+      "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '\''{{password}}'\'' VALID UNTIL '\''{{expiration}}'\'';",
+      "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO \"{{name}}\";",
+      "GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA public TO \"{{name}}\";",
+      "GRANT ALL ON SCHEMA public TO \"{{name}}\";"
+    ],
+    "renew_statements": [
+      "ALTER ROLE \"{{name}}\" WITH PASSWORD '\''{{password}}'\'' VALID UNTIL '\''{{expiration}}'\'';"
+    ],
+    "revocation_statements": [
+      "REASSIGN OWNED BY \"{{name}}\" TO CURRENT_USER;",
+      "DROP OWNED BY \"{{name}}\";",
+      "DROP ROLE IF EXISTS \"{{name}}\";"
+    ]
+  }' \
+  http://127.0.0.1:8200/v1/db/roles/guacamole
+
+echo "# Add database connection information"
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+    "plugin_name": "postgresql-database-plugin",
+    "connection_url": "postgresql://{{username}}:{{password}}@10.0.2.15:5432/guacamole_db",
+    "allowed_roles": "guacamole",
+    "username": "vault_admin",
+    "password": "secure_password_here",
+    "password_authentication": "scram-sha-256"
+  }' \
+  http://127.0.0.1:8200/v1/db/config/guacamole_db
 
 echo "# Enable SSH secret engine"
 curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: application/json" \
@@ -305,8 +345,8 @@ RESPONSE=\$(curl -s \
 
 [ "\$(echo \$RESPONSE | jq -r .data.username)" = "\$USERNAME" ] || exit 4
 EOT
-chmod 755 /usr/local/bin/vault_verify_otp.sh
-sed -i '1s:^:auth sufficent pam_exec.so expose_authtok /usr/local/sbin/verify_otp.sh:' /etc/pam.d/sshd
+chmod 755 /usr/local/sbin/verify_otp.sh
+sed -i '1s:^:auth sufficient pam_exec.so expose_authtok /usr/local/sbin/verify_otp.sh:' /etc/pam.d/sshd
 pkill -SIGHUP sshd
 
 #     Test that the connexion works. After remove the test code from the test machine like
@@ -318,7 +358,7 @@ sed -i '1d' /etc/pam.d/sshd
 #        \${vault://ldap/static-cred/testuser/password} and \${vault://ldap/static-cred/testuser/username}
 #     Test that the SSH connection to the kali machine works
 #  10. Add the dynamic ldaptokens to the SSH connection
-#        \${vault://ldap/creds/guacamole/password} and \${vault://ldap/dynamic/guacamole/username}
+#        \${vault://ldap/creds/guacamole/password} and \${vault://ldap/creds/guacamole/username}
 #     Test that the SSH connection to the kali machine works
 #  11. Add the ldap service tokens to the SSH connection
 #        \${vault://ldap/library/guacamole/password} and \${vault://ldap/library/guacamole/username}
@@ -351,17 +391,20 @@ curl -s --header "X-Vault-Token: $VAULT_TOKEN" --header "Content-Type: applicati
 #
 #     Wait 10 minutes, so as to test the static token renewal of the openbao driver
 #     and retest that one of the connections above works
-#  14. [TODO Database password test] Create a "guacamole.properties.vlt"  file with
-#      entries for the database like
+#  14. Create a "guacamole.properties.vlt"  file with
+#     entries for the database like
 #           mysql-username: vault://db/guacamole/username
 #           mysql-password: vault://db/guacamole/password
-#      or adapt for your database engine. Restart guacamole. If it functions at all the
-#      database is accessible
+#     or adapt for your database engine. Restart guacamole. If it functions at all the
+#     database is accessible.
+#
+#     Wait for the duration of the credential lease time (1h or 10 minutes ?) and see
+#     if Guacamole still functions proving credentials were renewed or reauthenticated.
 #  15. Create a file "vault-token-mapping.yml" with the tokens
 #           KALI_USERNAME: vault://kv1/users/kali/password
 #           KALI_PASSWORD: vault://kv1/users/kali/username
-#      Add to the kali ssh connection the tokens \${KALI_USERNAME} and \${KALI_PASSWORD}
-#      and see if the connection still works
+#     Add to the kali ssh connection the tokens \${KALI_USERNAME} and \${KALI_PASSWORD}
+#     and see if the connection still works
 #  16. In the kali machine leave the user as "kali" but the password should use the
 #     token \${vault://kv1/users/{USERNAME}/password}. Test that the connection works
 

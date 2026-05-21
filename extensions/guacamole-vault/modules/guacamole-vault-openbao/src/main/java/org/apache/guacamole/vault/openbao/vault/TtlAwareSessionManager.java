@@ -48,10 +48,9 @@ import org.slf4j.LoggerFactory;
  * - Proactively renew renewable tokens before they expire
  * - Re-authenticate non-renewable tokens before they expire
  * - Skip renewal for tokens with TTL=0 (non-expiring tokens)
- * - Handle both LoginToken and VaultToken types
+ * - Handle both LoginToken and VaultToken types.
  */
 public class TtlAwareSessionManager implements SessionManager {
-
     /**
      * Logger for this class.
      */
@@ -94,7 +93,7 @@ public class TtlAwareSessionManager implements SessionManager {
      * spring-vault 2.3.x at the moment until migration to Tomcat10 of
      * Guacamole. The lifecycleAwareSessionManager of version 2.3 is
      * not functional. If updating to a future version of spring-vault
-     * this could extend the LifesycleAwareSessionMnagerr and delegate
+     * this could extend the LifecycleAwareSessionManager and delegate
      * most of the work to it. Expired or non renewable tokens would still
      * need to be treated here
      *
@@ -385,13 +384,17 @@ public class TtlAwareSessionManager implements SessionManager {
     /**
      * Renews a renewable token via the Vault API.
      *
-     * @param token The token to renew.
+     * @param token 
+     *     The token to renew.
      *
-     * @return A new LoginToken with updated TTL.
+     * @return
+     *      A new LoginToken with updated TTL.
      *
-     * @throws VaultException If the renewal fails.
+     * @throws VaultException
+     *      If the renewal fails, but the error is recoverable. Non 
+     *      recoverable exceptions are bubbled up.
      */
-    private LoginToken renewToken(VaultToken token) {
+    private LoginToken renewToken(VaultToken token) throws VaultException {
 
         VaultResponse response;
 
@@ -432,7 +435,7 @@ public class TtlAwareSessionManager implements SessionManager {
 
     /*
      * Attempt a login via clientAuthentication class, and reschedule
-     * in case of a recoverable failure.
+     * in case of a recoverable failure.   
      */
     private void attemptLogin() {
 
@@ -484,7 +487,7 @@ public class TtlAwareSessionManager implements SessionManager {
      *      Can be either a Null, VaultToken or a LoginToken
      */
     public void setSessionToken(VaultToken token) {
-        logger.info("Setting new token : {}", token.getToken());
+        logger.debug("Setting new token : {}", token.getToken());
         if (token != null && !token.getToken().isEmpty()) {
             this.token.set(token);
         }

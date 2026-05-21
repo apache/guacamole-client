@@ -7,6 +7,10 @@
 
     "authProviders" : [
         "org.apache.guacamole.vault.openbao.OpenBaoAuthenticationProvider"
+    ],
+
+    "listeners" : [
+        "org.apache.guacamole.vault.openbao.secret.OpenBaoTunnelEventListener"
     ]
 
 }

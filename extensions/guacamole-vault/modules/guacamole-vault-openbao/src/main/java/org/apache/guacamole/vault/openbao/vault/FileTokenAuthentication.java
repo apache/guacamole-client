@@ -47,30 +47,15 @@ public final class FileTokenAuthentication implements ClientAuthentication {
     private final Path tokenPath;
 
     /**
-     * The vault endpoint to lookup token metadata
-     */
-    private final VaultEndpoint endpoint;
-
-    /**
-     * A reusable restTemplate
-     */
-    private final RestTemplate restTemplate;
-
-    /**
      * An instantiator for a Token Authentication class where the token
      * is reread from a file on renewal requests. This allows integration
      * with a VaultAgent for complex authentication methods
      *
      * @param String tokenPath
      *     A path to a readable file containing the token
-     *
-     * @param VaultEndpoint endpoint
-     *     The Vault endpoint used for token metadata lookup
      */
-    public FileTokenAuthentication(String tokenPath, VaultEndpoint endpoint, RestTemplate restTemplate) {
+    public FileTokenAuthentication(String tokenPath) {
         this.tokenPath = Path.of(tokenPath);
-        this.endpoint = endpoint;
-        this.restTemplate = restTemplate;
     }
 
     /*

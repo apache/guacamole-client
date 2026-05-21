@@ -24,10 +24,21 @@ package org.apache.guacamole.vault.openbao.vault;
 import org.springframework.util.Assert;
 
 public final class UsernamePasswordAuthenticationOptions {
-
-    private final String username;
-    private final String password;
+    /**
+     * Path of the userpass authentication method mount.
+     */
     private final String mountPath;
+
+    /**
+    * Username of the userpass authetication method mount.
+    */
+    private final String username;
+
+    /**
+    * Password of the userpass authetication method mount.
+    */
+    private final String password;
+    
 
     private UsernamePasswordAuthenticationOptions(Builder builder) {
         this.username = builder.username;

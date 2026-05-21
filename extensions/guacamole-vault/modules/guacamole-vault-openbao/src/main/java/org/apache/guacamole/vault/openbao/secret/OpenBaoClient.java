@@ -38,12 +38,9 @@ import java.util.Map;
 import java.util.UUID;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
-import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.net.event.listener.Listener;
 import org.apache.guacamole.net.event.TunnelCloseEvent;
 import org.apache.guacamole.net.event.TunnelConnectEvent;
 import org.apache.guacamole.net.GuacamoleTunnel;
-import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
 import org.apache.guacamole.vault.openbao.vault.FileTokenAuthentication;
 import org.apache.guacamole.vault.openbao.vault.UsernamePasswordAuthentication;
@@ -64,7 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
-public class OpenBaoClient implements Listener {
+public class OpenBaoClient {
     /**
      * Logger for this class.
      */
@@ -110,60 +107,24 @@ public class OpenBaoClient implements Listener {
      * A HashMap of the checked out LDAP Sessions
      */
     private final Map<String, LDAPSessionInfo> ldapSessions = new HashMap<>();
+    
+    /**
+     * A task scheduler for remove terminated checked out LDAP Sessions
+     */
+    ThreadPoolTaskScheduler scheduler;
 
     /**
      * Constructor allowing early injection of configuration and initialization
      * to start the token renewal process as early as possible
+     *
+     * @param configService
+     *     The injected configuration service 
      */
     public OpenBaoClient(OpenBaoConfigurationService configService) {
       this.configService = configService;
-    }
 
-    /**
-     * Complete the instantiation of the class on first use
-     */
-    public void init() throws GuacamoleException {
         try {
             VaultEndpoint endpoint = VaultEndpoint.from(configService.getVaultUri().resolve("v1"));
-
-            if (configService.getVaultToken() != null) {
-                if (isTokenReadableFile(configService.getVaultToken())) {
-                    logger.info("File Token : {}", configService.getVaultToken());
-                    this.authentication =
-                            new FileTokenAuthentication(configService.getVaultToken(),
-                                    endpoint, new RestTemplate());
-                }
-                else {
-                    logger.info("Token : {}", configService.getVaultToken());
-                    this.authentication = new TokenAuthentication(configService.getVaultToken());
-                }
-            }
-            else if (configService.getVaultUsername() != null && configService.getVaultPassword() != null) {
-                UsernamePasswordAuthenticationOptions options =
-                    UsernamePasswordAuthenticationOptions.builder()
-                        .username(configService.getVaultUsername())
-                        .password(configService.getVaultPassword())
-                        .build();
-
-                this.authentication =
-                    new UsernamePasswordAuthentication(options, endpoint, new RestTemplate());
-            }
-            else {
-                throw new GuacamoleException("Either a vault token or Username/Password must be supplied");
-            }
-
-            // Create a task scheduler for our token renewal
-            ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-            scheduler.setPoolSize(1);
-            scheduler.setThreadNamePrefix("vault-renewal-");
-            scheduler.initialize();
-
-            // Automatically renew tokens before expiration
-            RestTemplate restTemplate = new RestTemplate();
-            restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(
-                configService.getVaultUri().resolve("v1").toString()));
-            this.sessionManager = new TtlAwareSessionManager(this.authentication,
-                    restTemplate, scheduler, configService.getTokenRenewalDelay());
 
             SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
             try {
@@ -178,10 +139,52 @@ public class OpenBaoClient implements Listener {
             catch (GuacamoleException e) {
                 logger.debug("Using default vault endpoint request timeout: " + e.getMessage());
             }
+
+            RestTemplate restTemplate = new RestTemplate(requestFactory);
+            restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(
+                configService.getVaultUri().resolve("v1").toString()));
+
+            if (configService.getVaultToken() != null) {
+                if (isTokenReadableFile(configService.getVaultToken())) {
+                    logger.debug("File Token : {}", configService.getVaultToken());
+                    this.authentication =
+                            new FileTokenAuthentication(configService.getVaultToken());
+                }
+                else {
+                    logger.debug("Token : {}", configService.getVaultToken());
+                    this.authentication = new TokenAuthentication(configService.getVaultToken());
+                }
+            }
+            else if (configService.getVaultUsername() != null && configService.getVaultPassword() != null) {
+                UsernamePasswordAuthenticationOptions options =
+                    UsernamePasswordAuthenticationOptions.builder()
+                        .username(configService.getVaultUsername())
+                        .password(configService.getVaultPassword())
+                        .build();
+
+                logger.debug("Username/Password : {}, {}", configService.getVaultUsername(),
+                        configService.getVaultPassword());
+                this.authentication =
+                    new UsernamePasswordAuthentication(options, endpoint, restTemplate);
+            }
+            else {
+                throw new GuacamoleException("Either a vault token or Username/Password must be supplied");
+            }
+
+            // Create a task scheduler for our token renewal
+            ThreadPoolTaskScheduler taskscheduler = new ThreadPoolTaskScheduler();
+            taskscheduler.setPoolSize(1);
+            taskscheduler.setThreadNamePrefix("vault-renewal-");
+            taskscheduler.initialize();
+
+            // Session manager to automatically renew tokens before expiration
+            this.sessionManager = new TtlAwareSessionManager(this.authentication,
+                    restTemplate, taskscheduler, configService.getTokenRenewalDelay());
+
             this.vaultTemplate = new VaultTemplate(endpoint, requestFactory, this.sessionManager);
         }
         catch (Exception e) {
-            throw new GuacamoleException("Error initializing Vault client: " + e.getMessage());
+            logger.error("Error initializing Vault client: {}",  e.getMessage());
         }
 
         // Initialize the cache with maximum size of 1MB, and cache expiry with
@@ -190,7 +193,7 @@ public class OpenBaoClient implements Listener {
         // the removal listener to ensure that passwords are no longer in memory.
         // However, both spring-core-vault and Guacamole store these values
         // elsewhere as immutable String values, So even if I stored them in the
-        // cache as char[] copies of the password would be eleswhere as String
+        // cache as char[] copies of the password would be elsewhere as String
         // values in memory.. A VaultConverter function could deal with the
         // spring-vault-core part of the problem, but not Gaucamole.
         try {
@@ -200,18 +203,18 @@ public class OpenBaoClient implements Listener {
                     .build();
         }
         catch (GuacamoleException e) {
-            throw new GuacamoleException("Can't setup OpenBao cache");
+            logger.error("Can't setup OpenBao cache");
         }
     }
 
-    /*
+    /**
      * Function to detect if the the token is in fact a readable file
      * rather than a token string
      *
-     * @param String token
+     * @param token
      *     The string with the token returned from configService
      *
-     * @return boolean
+     * @return
      *      True is the token is a readable file
      */
      private static boolean isTokenReadableFile(String token) {
@@ -227,9 +230,9 @@ public class OpenBaoClient implements Listener {
     /**
      * Lists the valid mount paths and their type
      *
-     * @return Map<String, String>
+     * @return
      *      The map of the mount path and with the value being the type.
-     *      The type can be ssh, database, kv_1 or kv_2
+     *      The type can be ssh, ldap, database, kv_1 or kv_2
      */
     public Map<String, Object> listMountPaths() {
 
@@ -289,62 +292,66 @@ public class OpenBaoClient implements Listener {
     private static class LDAPSessionInfo {
         final String checkInPath;
         final String username;
+        final Boolean initialized;
         final Instant created;
 
-        LDAPSessionInfo(String checkInPath, String username, Instant created) {
+        public LDAPSessionInfo(String checkInPath, String username) {
             this.checkInPath = checkInPath;
             this.username = username;
-            this.created = created;
+            this.initialized = false;
+            this.created = Instant.now();
+        }
+
+        public LDAPSessionInfo(String checkInPath, String username, Boolean initialized) {
+            this.checkInPath = checkInPath;
+            this.username = username;
+            this.initialized = initialized;
+            this.created = Instant.now();
         }
     }
 
     /**
      * The LDAP session interface checks out session that then can not be
      * used till they are checked in. In getTokens we have the problem that
-     * we don't have access to the tunnel ID and so can't identify it. Here
-     * we assume that the tunnel will connect soon after the call to getTokens
-     * and so we can tag the session information created in getTokens with
-     * tunnel ID. So we store the tunnel ID with the session data being created
-     * and then use it in a close event for the check-in
+     * we don't have access to the tunnel ID and so can't identify it.
+     * Guacamole is also not guarenteed to generate a TunnelCloseEvent.
      *
-     * FIXME : This is fragile, as if two connections in parallel are being
-     * created, the check-in event might be associate with the incorrect
-     * tunnel ID. Need a better solution
+     * So this function is fragile and relies on the fact that the TunnelConnectEvent
+     * will be running a few tens of milliseconds after the getTokens command to
+     * limit the risk of confusing two connection. There is still a small risk
+     * of error here.
      *
      * @param event
-     *      A tunnel connect event
+     *      A TunnelConnectEvent or TunnelCloseEvent     
      */
-    @Override
-    public void handleEvent(Object event) throws GuacamoleException {
-
+    public void connectLdapSession(Object event) {
         if (event instanceof TunnelConnectEvent) {
-            GuacamoleTunnel tunnel = ((TunnelConnectEvent) event).getTunnel();
-            String uuid = tunnel.getUUID().toString();
-            LDAPSessionInfo info = ldapSessions.get("creating");
-            if (info != null) {
-                logger.info("Saving connection UUID: {}", uuid);
-                // Assume we have a service account
-                ldapSessions.put(uuid, info);
-                ldapSessions.remove("creating");
+            LDAPSessionInfo session = ldapSessions.get("checkin");
+            if (session != null) {
+                String id = ((TunnelConnectEvent) event).getTunnel().getUUID().toString();
+                logger.debug("Storing connection ID: {}", id);
+                ldapSessions.put(id, new LDAPSessionInfo(session.checkInPath, session.username, true));
+                ldapSessions.remove("checkin");
             }
         }
-        else if (event instanceof TunnelCloseEvent) {
-            GuacamoleTunnel tunnel = ((TunnelCloseEvent) event).getTunnel();
-            String uuid = tunnel.getUUID().toString();
-            LDAPSessionInfo session = ldapSessions.get(uuid);
-            if (session != null) {
-                logger.info("Closing connection UUID: {}", uuid);
+        else {
+            String id = ((TunnelCloseEvent) event).getTunnel().getUUID().toString();
+            LDAPSessionInfo session = ldapSessions.get(id);
+            if (session != null && session.initialized) {
+                // FIXME : We don't always receive the TunnelCloseEvent
+                // So this checkin function only kinda works 
+                logger.debug("Removing stored LDAP session: {}", id);
                 vaultTemplate.write(session.checkInPath, Map.of("service_account_names", session.username));
-                ldapSessions.remove(uuid);
+                ldapSessions.remove(id);
             }
         }
 
-        // Do some clean up of the active LDAP sessions. If a session hasn't been
-        // checked in after 2 hours, just drop it from the hashMap. As the TTL of
-        // the vault is already 2 hours don't need to check it in. Don't really
-        // care if the value hang around in our hashmap so don't need a dedicated
-        // task for this
-        ldapSessions.entrySet().removeIf(e -> Instant.now().isAfter(e.getValue().created.plusSeconds(7200)));
+         // Do some clean up of the active LDAP sessions. If a session hasn't been
+         // checked in after 2 hours, just drop it from the hashMap. As the TTL of
+         // the vault is already 2 hours don't need to check it in. Don't really
+         // care if the value hang around in our hashmap so don't need a dedicated
+         // task for this
+         ldapSessions.entrySet().removeIf(e -> Instant.now().isAfter(e.getValue().created.plusSeconds(7200)));
     }
 
     /**
@@ -356,64 +363,25 @@ public class OpenBaoClient implements Listener {
      * @param token
      *     The Guacamole token to look up in OpenBao.
      *
-     * @param config
-     *     A GuacamoleConfiguration containing the connection configuration
-     *     parameters.
+     * @param username
+     *     The connection username, that must be non null for SSH certificate
+     *     generation.
+     *
+     * @param key
+     *     A pseudo-unique key to use to stored cached secrets, to keep secrets
+     *     associated with the same connection together, even if they vault token
+     *     itself is not unique.
      *
      * @return
-     *     The value associated with the key.
+     *     The value associated with the token.
      *
      * @throws GuacamoleException
-     *     If the secret cannot be retrieved from OpenBao.
+     *     If the secret cannot be retrieved from the Vault.
      */
-    public String getValue(String token, UserContext userContext, GuacamoleConfiguration config) throws GuacamoleException {
+    public String getValue(String token, String username, String key) throws GuacamoleException {
         try {
-            if (authentication == null) {
-                logger.debug("Initializing OpenBao");
-                init();
-                logger.debug("Initialized OpenBao");
-            }
-
             if (! token.startsWith(VAULT_TOKEN_PREFIX)) {
                 throw new GuacamoleException("Invalid token Vault token: " + token);
-            }
-
-            // Before going further replace the arguments "{USERNAME}", "{SERVER}",
-            // "{GATEWAY_USERNAME}" and "{GATEWAY_HOSTNAME}" in the token with their
-            // with values supplied in the parameters. The value of USER here corresponds
-            // to GUAC_USERNAME
-            // FIXME Could this be done with the TokenFilter in OpenBaoSecretService ?
-            // FIXME There is an edge case for tokens like "vault://ldap/$${USER}/{USER}/password"
-            // both here and below. This seems a pretty unlikely case, so don't treat.
-            String guac_username = userContext == null ? "" : userContext.self().getIdentifier();
-            if (guac_username != null && !guac_username.isEmpty()
-                    && token.contains("{GUAC_USERNAME}") && ! token.contains("$${GUAC_USERNAME}")) {
-                token = token.replace("{GUAC_USERNAME}", guac_username);
-
-            }
-            String hostname = config.getParameter("hostname");
-            if (hostname != null && !hostname.isEmpty() && !hostname.contains("${")
-                    && token.contains("{HOSTNAME}") && ! token.contains("$${HOSTNAME}")) {
-                token = token.replace("{HOSTNAME}", hostname);
-
-            }
-            String username = config.getParameter("username");
-            if (username != null && !username.isEmpty() && !username.contains("${")
-                    && token.contains("{USERNAME}") && ! token.contains("$${USERNAME}")) {
-                token = token.replace("{USERNAME}", hostname);
-
-            }
-            String gatewayHostname = config.getParameter("gateway-hostname");
-            if (gatewayHostname != null && !gatewayHostname.isEmpty() && !gatewayHostname.contains("${")
-                    && token.contains("{GATEWAY}") && ! token.contains("$${GATEWAY}")) {
-                token = token.replace("{GATEWAY}", gatewayHostname);
-
-            }
-            String gatewayUsername = config.getParameter("gateway-username");
-            if (gatewayUsername != null && !gatewayUsername.isEmpty() && !gatewayUsername.contains("${")
-                    && token.contains("{GATEWAY_USER}") && ! token.contains("$${GATEWAY_USER}")) {
-                token = token.replace("{GATEWAY_USER}", gatewayUsername);
-
             }
 
             // Detect and validate the mount path
@@ -439,57 +407,45 @@ public class OpenBaoClient implements Listener {
             String path = token.substring(VAULT_TOKEN_PREFIX.length() + mountPath.length(), lastSlashIndex);
             String secret = token.substring(lastSlashIndex + 1);
 
-            logger.info("MountPath {}, path {}, secret {}, type {}", mountPath, path, secret, type);
+            logger.debug("MountPath {}, path {}, secret {}, type {}", mountPath, path, secret, type);
 
-            switch (type) {
-               case "ssh":
-                   return getValueSSH(mountPath, path, secret, config);
-               case "ldap":
-                   return getValueLDAP(mountPath, path, secret);
-               case "database":
-                   return getValueDB(mountPath, path, secret);
-               case "kv_1":
-               case "kv_2":
-                   return getValueKV(mountPath, path, secret, type);
-               default:
-                  throw new GuacamoleException("Unknown secret engine for the token: " + token);
+            Map<String, Object> cacheResponse = (Map<String, Object>) cache.getIfPresent(key);
+
+            Object raw;
+            if (cacheResponse != null) {
+                raw = cacheResponse.get(secret);        
             }
-        }
-        catch (VaultException e) {
-            logger.error("ERROR : {}", e.getMessage());
-            throw new GuacamoleServerException("Failed to retrieve secret from Vault Server : " + e.getMessage());
-        }
-    }
+            else {
+                Map<String, Object> response;
+            
+                switch (type) {
+                    case "ssh":
+                        response = getValueSSH(mountPath, path, username);
+                        break;
+                    case "ldap":
+                        response = getValueLDAP(mountPath, path);
+                        break;
+                    case "database":
+                        response = getValueDB(mountPath, path);
+                        break;
+                    case "kv_1":
+                        response = getValueKV(mountPath, path, VaultKeyValueOperations.KeyValueBackend.KV_1);
+                        break;
+                    case "kv_2":
+                        response = getValueKV(mountPath, path, VaultKeyValueOperations.KeyValueBackend.KV_2);
+                        break;
+                    default:
+                       throw new GuacamoleException("Unknown secret engine for the token: " + token);
+                }
 
-    /**
-     * Retrieves a value from a key-value secret engine of a vault.
-     *
-     * @param mountPath
-     *     The mountPath of the key-value secret engine on the vault server.
-     *
-     * @param path
-     *     The path of the secret record
-     *
-     * @param secret
-     *     The secret value to return
-     *
-     * @param type
-     *     The type of key-value store.  Either "kv_1" or "kv_2"
-     *
-     * @return
-     *     The value associated with the secret.
-     *
-     * @throws GuacamoleException
-     *     If the secret cannot be retrieved from OpenBao.
-     */
-    private String getValueKV(String mountPath, String path, String secret, String type) throws GuacamoleException {
-        // Is the key-value already in the cache
-        Map<String, Object> cacheResponse =  cache.getIfPresent(mountPath + "/" + path);
-
-        if (cacheResponse != null) {
-            // The path is already cached?. Use it
-            Object raw = cacheResponse.get(secret);
-            if (raw instanceof String || raw instanceof Number || raw instanceof Boolean) {
+                cache.put(key, response);
+                raw = response.get(secret);
+            }
+          
+            if (raw == null) {
+                throw new VaultException("Secret '" + secret + "' not found on the path '" + mountPath + path + "'");
+            }
+            else if (raw instanceof String || raw instanceof Number || raw instanceof Boolean) {
                 return String.valueOf(raw);
             }
             else {
@@ -502,42 +458,43 @@ public class OpenBaoClient implements Listener {
                 }
             }
         }
+        catch (VaultException e) {
+            logger.error("Failed to retrieve secret from the vault : {}", e.getMessage());
+            throw new GuacamoleServerException("Failed to retrieve secret from Vault Server : " + e.getMessage());
+        }
+        
+    }
 
-        VaultKeyValueOperations kvOperations;
-        if ("kv_2".equals(type)) {
-            kvOperations = vaultTemplate.opsForKeyValue(
-                        mountPath,
-                        VaultKeyValueOperations.KeyValueBackend.KV_2);
-        }
-        else {
-            kvOperations = vaultTemplate.opsForKeyValue(
-                        mountPath,
-                        VaultKeyValueOperations.KeyValueBackend.KV_1);
-        }
+    /**
+     * Retrieves a value from a key-value secret engine of a vault.
+     *
+     * @param mountPath
+     *     The mountPath of the key-value secret engine on the vault server.
+     *
+     * @param path
+     *     The path of the secret record
+     *
+     * @param type
+     *     The type of key-value store. Either "kv_1" or "kv_2"
+     *
+     * @return
+     *     The values associated with the path.
+     *
+     * @throws GuacamoleException
+     *     If the secrets cannot be retrieved from the Vault.
+     */
+    private Map<String, Object> getValueKV(String mountPath, String path, VaultKeyValueOperations.KeyValueBackend type) throws GuacamoleException {
+        VaultKeyValueOperations kvOperations = vaultTemplate.opsForKeyValue(mountPath, type);
 
         // Get the values on the path and cache them
         VaultResponse response = kvOperations.get(path);
 
         if (response == null || response.getData() == null)
         {
-            throw new GuacamoleServerException(
-                    "Value not found in OpenBao for path: " + mountPath + "/" + path);
+            throw new GuacamoleServerException("Value not found in Vault for path: " + mountPath + path);
         }
-        cache.put(mountPath + "/" + path, response.getData());
-
-        Object raw = response.getData().get(secret);
-        if (raw instanceof String || raw instanceof Number || raw instanceof Boolean) {
-            return String.valueOf(raw);
-        }
-        else {
-            try {
-                // Stored JSON value.. Probably not usable, but return as a string
-                return objectMapper.writeValueAsString(raw);
-            }
-            catch (JsonProcessingException e) {
-                throw new GuacamoleException("Error json parsing returned secret: ", e);
-            }
-        }
+        
+        return response.getData();
     }
 
     /**
@@ -549,94 +506,32 @@ public class OpenBaoClient implements Listener {
      * @param path
      *     The path of the secret record representing the SSH role
      *
-     * @param secret
-     *     The secret value to return
-     *
-     * @param config
-     *     A GuacamoleConfiguration containing the connection configuration
-     *     parameters.
+     * @param username
+     *     The connection username that must be non null for SSH certificate 
+     *     generation.
      *
      * @return
-     *     The value associated with the secret.
+     *     The values associated with the path.
      *
      * @throws GuacamoleException
-     *     If the secret cannot be retrieved from OpenBao.
+     *     If the secrets cannot be retrieved from the Vault.
      */
-    private String getValueSSH(String mountPath, String path, String secret, GuacamoleConfiguration config) throws GuacamoleException {
-
-        // Is the key-value already in the cache. The SSH connection is for a specific
-        // user, so add username in the cache path
-        Map<String, Object> cacheResponse;
-        String username = config.getParameter("username");
-        if (path.startsWith("sign/")) {
+    private Map<String, Object> getValueSSH(String mountPath, String path, String username) throws GuacamoleException {
+        if (path.startsWith("creds/")) {
             if (username == null || username.isEmpty()) {
                 throw new GuacamoleException("The username can not be empty for SSH signed certificates");
             }
-            cacheResponse = (Map<String, Object>) cache.getIfPresent(username + "-" + mountPath + path);
-        }
-        else if (path.startsWith("creds/")) {
-            cacheResponse = (Map<String, Object>) cache.getIfPresent(mountPath + path);
-        }
-        else {
-           throw new GuacamoleException("Unknown SSH type on path: " + mountPath + path);
-        }
-
-        if (cacheResponse != null) {
-            logger.info("Cached Response");
-            String retval;
-            // The path is already cached?. Use it
-            if (cacheResponse.get(secret) instanceof String) {
-                retval = (String) cacheResponse.get(secret);
-            }
-            else {
-                try {
-                    // Stored JSON value.. Probably not usable, but return as a string
-                    retval = objectMapper.writeValueAsString(cacheResponse.get(secret));
-                }
-                catch (JsonProcessingException e) {
-                    throw new GuacamoleException("Error json parsing returned secret: ", e);
-                }
-            }
-
-            if (retval == null || retval.isEmpty()) {
-                throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
-            }
-            // One-time password so needs to be cleared after first use
-            if (path.startsWith("creds/")) {
-                cache.invalidate(mountPath + path);
-            }
-
-            return retval;
-        }
-
-        // Detect if wanting one-time password or signed certificate
-        if (path.startsWith("creds/")) {
+            
             VaultResponse response =
                 vaultTemplate.write(mountPath +  path, Map.of("ip", "0.0.0.0"));
 
             if (response == null || response.getData() == null) {
                 throw new GuacamoleException("No response from Vault SSH engine");
             }
-
-            String password = (String) response.getData().get("key");
-            String user = (String) response.getData().get("username");
-
-            if (password == null || user == null) {
-                throw new GuacamoleException("Invalid SSH OTP response");
-            }
-
-            // Cache the retrieved user and otp
-            cache.put(mountPath + path, Map.of("username", user, "password", password));
-
-            if (secret.equals("username")) {
-                return user;
-            }
-            else if (secret.equals("password")) {
-                return password;
-            }
+            
+            return response.getData();           
         }
         else if (path.startsWith("sign/")) {
-
             OpenBaoSshKeys sshKeys = new OpenBaoSshKeys(configService.getSshType());
             Map<String, Object> request = Map.of(
                     "public_key", sshKeys.publicSsh,
@@ -652,24 +547,17 @@ public class OpenBaoClient implements Listener {
             }
 
             String signedCert = (String) vaultResponse.getData().get("signed_key");
-            logger.info("SSH Cert response keys: {}", vaultResponse.getData().keySet());
 
             if (signedCert == null) {
                 throw new GuacamoleException("Vault did not return a signed SSH certificate");
             }
 
-            cache.put(username + "-" + mountPath + path, Map.of(
-                    "private", sshKeys.privateSshPem,
-                    "public", signedCert));
-
-            if (secret.equals("private")) {
-                return sshKeys.privateSshPem;
-            }
-            else if (secret.equals("public")) {
-                return signedCert;            }
+            return Map.of("private", sshKeys.privateSshPem,
+                    "public", signedCert);        
         }
-
-        throw new GuacamoleException("SSH secret '" + secret + "' not found on the path : " + mountPath + path);
+        else {
+           throw new GuacamoleException("Unknown SSH type on path: " + mountPath + path);
+        }
     }
 
     /**
@@ -682,48 +570,13 @@ public class OpenBaoClient implements Listener {
      * @param path
      *     The path of the secret record representing the LDAP role
      *
-     * @param secret
-     *     The secret value to return
-     *
      * @return
-     *     The value associated with the secret.
+     *     The values associated with the path.
      *
      * @throws GuacamoleException
-     *     If the secret cannot be retrieved from OpenBao.
+     *     If the secrets cannot be retrieved from the Vault.
      */
-    private String getValueLDAP(String mountPath, String path, String secret) throws GuacamoleException {
-        if (!secret.equals("username") && ! secret.equals("password")) {
-            throw new GuacamoleException("LDAP secret '" + secret + "' not found on the path : " + mountPath + path);
-        }
-
-        // Is the value already in the cache
-        // FIXME Need a unique ConnectID while caching for dynamic at service roles as token same
-        // are the same for different credentials
-        Map<String, Object> cacheResponse =  (Map<String, Object>) cache.getIfPresent(mountPath + path);
-
-        if (cacheResponse != null) {
-            logger.info("Cached Response");
-            String retval;
-            // The path is already cached?. Use it
-            if (cacheResponse.get(secret) instanceof String) {
-                retval = (String) cacheResponse.get(secret);
-            }
-            else {
-                try {
-                    // Stored JSON value.. Probably not usable, but return as a string
-                    return objectMapper.writeValueAsString(cacheResponse.get(secret));
-                }
-                catch (JsonProcessingException e) {
-                    throw new GuacamoleException("Error json parsing returned secret: ", e);
-                }
-            }
-
-            if (retval == null || retval.isEmpty()) {
-                throw new GuacamoleException("LDAP secret '" + secret + "' not found on the path : " + mountPath + path);
-            }
-            return retval;
-        }
-
+    private Map<String, Object> getValueLDAP(String mountPath, String path) throws GuacamoleException {    
         VaultResponse response;
         if (path.startsWith("static") || path.startsWith("creds/")) {
             response = vaultTemplate.read(mountPath + path);
@@ -733,45 +586,31 @@ public class OpenBaoClient implements Listener {
         }
         else {
            throw new GuacamoleException("Unknown LDAP type on path: " + mountPath +"/" + path);
-        }
+        }        
 
         if (response == null || response.getData() == null) {
             throw new GuacamoleException("No response from LDAP secrets engine");
         }
-
-        String username;
-        String password = (String) response.getData().get("password");
+        
+        Map<String, Object> retval = response.getData();
         if (path.startsWith("library/")) {
-            username = (String) response.getData().get("service_account_name");
-        }
-        else {
-            username = (String) response.getData().get("username");
-        }
-
-        if (username == null || password == null) {
-            // Particularly for service accounts this might happen if there is
-            // no account available for checkout
-            throw new IllegalStateException("Invalid LDAP static credential response");
-        }
-
-        if (path.startsWith("library/")) {
+            String username = String.valueOf(retval.get("service_account_name"));
+            retval.put("username", username);
+            
             // Register a listener to check-in the account for a TunnelClose Event
-            LDAPSessionInfo info = new LDAPSessionInfo(mountPath + path + "/check-in", username, Instant.now());
-            ldapSessions.put("creating", info);
+            logger.info("Caching session : {}", username);
+            LDAPSessionInfo info = new LDAPSessionInfo(mountPath + path + "/check-in", username);
+            ldapSessions.put("checkin", info);
         }
-
-        // Cache the retrieved user and password
-        cache.put(mountPath + path, Map.of("username", username, "password", password));
-        logger.info("LDAP :  " + username + " : " + password);
-
-        if (secret.equals("username")) {
-            return username;
-        }
-        return password;
+        
+        return retval;
     }
 
     /**
      * Retrieves a username or password from a Databse secret engine.
+     * Before version 1.10 the data could only have username/password
+     * After there can be static preconfigured fields that the vault tokens
+     * might access.
      *
      * @param mountPath
      *     The mountPath of the database secret engine on the vault server.
@@ -779,66 +618,20 @@ public class OpenBaoClient implements Listener {
      * @param path
      *     The path of the secret record representing the LDAP role
      *
-     * @param secret
-     *     The secret value to return
-     *
      * @return
-     *     The value associated with the secret.
+     *     The values associated with the path.
      *
      * @throws GuacamoleException
-     *     If the secret cannot be retrieved from OpenBao.
+     *     If the secrets cannot be retrieved from the Vault.
      */
-    private String getValueDB(String mountPath, String path, String secret) throws GuacamoleException {
-        if (!secret.equals("username") && !secret.equals("password")) {
-            throw new GuacamoleException("Database secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
-        }
-
-        // Is the key-value already in the cache
-        Map<String, Object> cacheResponse = (Map<String, Object>) cache.getIfPresent(mountPath + path);
-
-        if (cacheResponse != null) {
-            String retval;
-            // The path is already cached?. Use it
-            if (cacheResponse.get(secret) instanceof String) {
-                retval = (String) cacheResponse.get(secret);
-            }
-            else {
-                try {
-                    // Stored JSON value.. Probably not usable, but return as a string
-                    return objectMapper.writeValueAsString(cacheResponse.get(secret));
-                }
-                catch (JsonProcessingException e) {
-                    throw new GuacamoleException("Error json parsing returned secret: ", e);
-                }
-            }
-
-            if (retval == null || retval.isEmpty()) {
-                throw new GuacamoleException("Data secret '" + secret + "' not found on the path : " + mountPath +"/" + path);
-            }
-            return retval;
-        }
-
-        VaultResponse response = vaultTemplate.read(mountPath + "/creds/" + path);
-
+    private Map<String, Object> getValueDB(String mountPath, String path) throws GuacamoleException {
+        VaultResponse response = vaultTemplate.read(mountPath +  path);        
+        
         if (response == null || response.getData() == null) {
             throw new GuacamoleException("No response from Databse secrets engine");
         }
 
-        String username = (String) response.getData().get("username");
-        String password = (String) response.getData().get("password");
-
-        if (username == null || password == null) {
-            throw new IllegalStateException("Invalid Database credential response");
-        }
-
-        // Cache the retrieved user and password
-        cache.put(mountPath + path, Map.of("username", username, "password", password));
-        logger.debug("DB :  " + username + " : " + password);
-
-        if (secret.equals("username")) {
-            return username;
-        }
-        return password;
+        return response.getData();
     }
 
     /**

@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class OpenBaoSshKeys {
-
     /**
      * Logger for this class.
      */
@@ -49,7 +48,18 @@ public class OpenBaoSshKeys {
     public final String publicSsh;
 
     /**
+     * Class instantiation to return generated SSH keys. Default type
+     */
+    public OpenBaoSshKeys() {
+        this(OpenBaoConfigurationService.DEFAULT_SSH_TYPE);
+    }
+
+    /**
      * Class instantiation to return generated SSH keys
+     *
+     * @param type
+     *      The type of ssh key to generate. Can be "rsa" or "ed25519" only.
+     *      Generated RSA keys are 4096 bit only
      */
     public OpenBaoSshKeys(String type) {
         KeyPair keyPair;
@@ -57,8 +67,11 @@ public class OpenBaoSshKeys {
         if ("rsa".equals(type)) {
             keyPair = generateRsa();
         }
-        else {
+        else if ("ed25519".equals(type)) {
             keyPair = generateEd25519WithFallback();
+        }
+        else {
+            throw new IllegalArgumentException("Unrecognized SSH encryption : "+ type);
         }
 
         try {
@@ -76,13 +89,6 @@ public class OpenBaoSshKeys {
     }
 
     /**
-     * Class instantiation to return generated SSH keys. Default type
-     */
-    public OpenBaoSshKeys() {
-        this(OpenBaoConfigurationService.DEFAULT_SSH_TYPE);
-    }
-
-    /**
      * Generate a ed25519 key-pair
      *
      * @return
@@ -95,7 +101,7 @@ public class OpenBaoSshKeys {
             return keyPairGenerator.generateKeyPair();
         }
         catch (Exception e) {
-            logger.info("Ed25519 not available via SSHD EdDSA. Falling back to RSA : {}", e.getMessage());
+            logger.warn("Ed25519 not available via SSHD EdDSA. Falling back to RSA : {}", e.getMessage());
             return generateRsa();
         }
     }

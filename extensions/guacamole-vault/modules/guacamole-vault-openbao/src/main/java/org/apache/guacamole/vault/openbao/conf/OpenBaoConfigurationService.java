@@ -63,7 +63,6 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
 
     /**
      * The default ssh certificate type.
-     * FIXME : ed25519 not supportted before java 15. Waiting for upgrade
      */
     public static final String DEFAULT_SSH_TYPE = "ed25519";
 
@@ -187,10 +186,6 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     private Environment environment;
 
     /**
-     * Creates a new OpenBaoConfigurationService.
-     */
-
-    /**
      * Creates a new OpenBaoConfigurationService which reads the configuration
      * from "vault-token-mapping.yml" and properties from
      * "guacamole.properties.vlt". The token mapping is a YAML file which lists
@@ -199,7 +194,6 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
      * alternative to guacamole.properties where each property value is the
      * name of a secret containing the actual value.
      */
-
     public OpenBaoConfigurationService() {
         super(TOKEN_MAPPING_FILENAME, PROPERTIES_FILENAME);
     }
@@ -207,7 +201,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     /**
      * The URI of the hashicorp or OpenBao vault to use.
      *
-     * @return URI
+     * @return
      *      The Hashicorp or OpenBao server URI (e.g., "http://localhost:8200").
      *
      * @throws GuacamoleException
@@ -221,7 +215,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     /**
      * The authentication token to use to access the vault.
      *
-     * @return String
+     * @return
      *      The Hashicorp or OpenBao authentication token.
      *
      * @throws GuacamoleException
@@ -235,7 +229,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     /**
      * The authentication Username to use to access the vault.
      *
-     * @return String
+     * @return
      *      The Hashicorp or OpenBao authentication Username
      *
      * @throws GuacamoleException
@@ -263,7 +257,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
      * The maximum time that the cached data is considered valid in
      * milliseconds.
      *
-     * @return int
+     * @return
      *      The cache lifetime in milliseconds.
      *
      * @throws GuacamoleException
@@ -277,7 +271,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
      * The maximum time that a request to the vault server can take in
      * milliseconds.
      *
-     * @return int
+     * @return
      *      The request timeout in milliseconds.
      *
      * @throws GuacamoleException
@@ -291,7 +285,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
      * The maximum time that a connection to the vault server can take in
      * milliseconds.
      *
-     * @return int
+     * @return
      *      The connection timeout in milliseconds.
      *
      * @throws GuacamoleException
@@ -305,8 +299,8 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
      * The renewal delay, in milliseconds of expiring token. A token will be renewed
      * prior to it expiration by this delay
      *
-     * @return int
-     *      The renewl delay in milliseconds.
+     * @return
+     *      The renewal delay in milliseconds.
      *
      * @throws GuacamoleException
      *     If guacamole.properties can not be parsed.
@@ -317,9 +311,9 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
 
     /**
      * The type of SSH certificates are will be generated. Must be either
-     * 'rsa' of 4096-bit RSA keys or 'ed25519'.
+     * 'rsa' for 4096-bit RSA keys or 'ed25519'.
      *
-     * @return String
+     * @return
      *      The ssh type to use.
      *
      * @throws GuacamoleException
@@ -328,7 +322,7 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
     public String getSshType() throws GuacamoleException {
         String type = environment.getProperty(VAULT_SSH_TYPE, DEFAULT_SSH_TYPE);
         if (! type.equals("rsa") & ! type.equals("ed25519")) {
-            throw new GuacamoleException("Only ssh certicate types 'rsa' (4096-bit) and 'ed25519' are supported");
+            throw new GuacamoleException("Only ssh certificate types 'rsa' (4096-bit) and 'ed25519' are supported");
         }
         return type;
     }
@@ -337,8 +331,8 @@ public class OpenBaoConfigurationService extends VaultConfigurationService {
      * The maximum time that a signed SSH certificate is considered valid in
      * milliseconds.
      *
-     * @return int
-     *      The ssh conenction timeout in milliseconds.
+     * @return
+     *      The ssh connection timeout in milliseconds.
      *
      * @throws GuacamoleException
      *     If guacamole.properties can not be parsed.

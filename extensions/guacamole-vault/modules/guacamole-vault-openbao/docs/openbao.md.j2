@@ -100,9 +100,9 @@ path "ssh/creds/guacamole_otp" {
   capabilities = ["create"]
 }
 
-# Read/Create for LDAP service credentials
+# Read/Update for LDAP service credentials
 path "ldap/library/guacamole/*" {
-  capabilities = ["read", "create"]
+  capabilities = ["read", "update"]
 }
 
 # Read static/dynamic LDAP credentials
@@ -561,6 +561,8 @@ curl -s --header "X-Vault-Token: $VAULT_TOKEN"  \
        "url": "ldaps://ldap.example.com",
        "binddn": "uid=vault,ou=users,dc=example,dc=com",
        "bindpass": "your_secret_password_here",
+       "userdn": "ou=users,dc=example,dc=com",
+       "userattr": "uid",
        "password_policy": "ldap-policy",
        "insecure_tls": false
      }' \
@@ -791,7 +793,60 @@ The response will include:
 
 #### Creating a LDAP Service Accounts for Guacamole
 
- #TODO
+Before continuing you should confirm that the Vault LDAP configuration
+includes valid values for `userdn` and `userattr`, with a command like:
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  http://127.0.0.1:8200/v1/ldap/config | \
+  jq '.data.userdn, .data.userattr'
+```
+This should produce something like
+
+```
+"ou=users,dc=example,dc=com"
+"uid"
+```
+This means that user records in your LDAP will be of the form
+`uid=testuser,ou=users,dc=example,dc=com`. If this is not the case
+the LDAP secret engine should be reconfigured before continuing
+
+Give the returned value of `userattr`, Vault will search with the account
+`uid` values. To create a LDAP service account in the Vault we can then
+do something like
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{
+    "ttl": "2h",
+    "max_ttl": "24h",
+    "disable_checkin_enforcement": "true",
+    "service_account_names": "user1,user2"
+  }' \
+  http://127.0.0.1:8200/v1/ldap/library/guacamole
+```
+
+where `user1` and `user2` and valid existing user accounts managed by the
+Vault.
+
+:::{note}
+- Vault will change the password of these accounts on check-out and so these
+  account should be dedicated to Vault.
+- Guacamole requests a TTL of 2 hours. If the role is configured with a shorter
+  TTL, the account will be assumed to be checked in after this shorter delay.
+:::
+
+:::{warning}
+At the moment Guacamole does not guarantee that the account will be checked in 
+when the connection is terminated, though it does attempt to do so. The pool of
+service accounts available should take this into account and assume the check-in
+will happen at the end of the 2 hours TTL.
+:::
 
 ### Creating a Database Secret Engine for Guacamole
 
@@ -805,12 +860,25 @@ database access (e.g., PostgreSQL, MySQL).
   - This role should have permissions to:
     - **Create new roles** (for dynamic credentials).
     - **Modify passwords** (for rotation).
-  - Example for PostgreSQL:
+    - **Revoke roles** (to remove dynamic credentials)
+    - **Grant permission on tables** (to dynamic credentials to alter the tables)
+
+This poses a problem, of ownership on the tables in the database. Using
+Postgresql you could use
+
 ```sql
 CREATE ROLE vault_admin WITH LOGIN PASSWORD 'secure_password_here' CREATEROLE NOINHERIT;
 GRANT CREATE ON DATABASE guacamole_db TO vault_admin;
 GRANT USAGE ON SCHEMA public TO vault_admin;
-    ```
+```
+
+if and only if vault_admin is owner of the tables in the database. Otherwise the
+role needs to be a `superuser` and created like
+
+```sql
+CREATE ROLE vault_admin WITH LOGIN PASSWORD 'secure_password_here' SUPERUSER NOINHERIT;
+```
+
 2. **Apply the SQL Commands**:
   Save the above SQL to a file (e.g., `create_vault_role.sql`) and run it:
 
@@ -844,14 +912,19 @@ curl -s \
     "db_name": "guacamole_db",
     "default_ttl": "1h",
     "max_ttl": "24h",
-    "create_statements": [
-      "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD \"{{password}}\" VALID UNTIL \"{{expiration}}\";",
+    "creation_statements": [
+      "CREATE ROLE \"{{name}}\" WITH LOGIN PASSWORD '\''{{password}}'\'' VALID UNTIL '\''{{expiration}}'\'';",
       "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO \"{{name}}\";",
       "GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA public TO \"{{name}}\";",
       "GRANT ALL ON SCHEMA public TO \"{{name}}\";"
     ],
-    "rotation_statements": [
-      "ALTER ROLE \"{{name}}\" WITH PASSWORD \"{{password}}\";"
+    "renew_statements": [
+      "ALTER ROLE \"{{name}}\" WITH PASSWORD '\''{{password}}'\'' VALID UNTIL '\''{{expiration}}'\'';"
+    ],
+    "revocation_statements": [
+      "REASSIGN OWNED BY \"{{name}}\" TO CURRENT_USER;",
+      "DROP OWNED BY \"{{name}}\";",
+      "DROP ROLE IF EXISTS \"{{name}}\";"
     ]
   }' \
   http://127.0.0.1:8200/v1/db/roles/guacamole
@@ -882,14 +955,14 @@ curl -s \
     "db_name": "guacamole_db",
     "default_ttl": "1h",
     "max_ttl": "24h",
-    "create_statements": [
-      "CREATE ROLE \"guacamole_user\" WITH LOGIN PASSWORD \"{{password}}\" VALID UNTIL \"{{expiration}}\";",
+    "creation_statements": [
+      "CREATE ROLE \"guacamole_user\" WITH LOGIN PASSWORD '\''{{password}}'\'' VALID UNTIL '\''{{expiration}}'\'';",
       "GRANT SELECT,INSERT,UPDATE,DELETE ON ALL TABLES IN SCHEMA public TO \"guacamole_user\";",
       "GRANT SELECT,USAGE ON ALL SEQUENCES IN SCHEMA public TO \"guacamole_user\";",
       "GRANT ALL ON SCHEMA public TO \"guacamole_user\";"
     ],
-    "rotation_statements": [
-      "ALTER ROLE \"guacamole_user\" WITH PASSWORD \"{{password}}\";"
+    "renew_statements": [
+      "ALTER ROLE \"guacamole_user\" WITH PASSWORD '\''{{password}}'\'';"
     ],
     "static_username": true
   }' \
@@ -907,17 +980,18 @@ curl -s \
   --request POST \
   --data '{
     "plugin_name": "postgresql-database-plugin",
-    "connection_url": "postgresql://{{.Username}}:{{.Password}}@127.0.0.1:5432/guacamole_db",
+    "connection_url": "postgresql://{{username}}:{{password}}@127.0.0.1:5432/guacamole_db",
     "allowed_roles": "guacamole",
     "username": "vault_admin",
-    "password": "secure_password_here"
+    "password": "secure_password_here",
+    "password_authentication": "scram-sha-256"
   }' \
   http://127.0.0.1:8200/v1/db/config/guacamole_db
 ```
 
 :::{note}
 - `connection_url`: The URL template for connecting to the database.
-  `{{.Username}}` and `{{.Password}}` are placeholders that Vault replaces
+  `{{username}}` and `{{password}}` are placeholders that Vault replaces
    with dynamic credentials.
 - `allowed_roles`: Comma-separated list of roles that can use this connection.
 - `username` and `password`: Credentials for the Vault database account (e.g.
@@ -1257,6 +1331,10 @@ use for authentication.
 The SSH secret engine **does not support** generating certificates directly.
 Instead, it **signs** certificates using a CA stored in Vault. The creation
 of the temporary certificates is performed by Guacamole itself.
+
+The username of the connection is a necessary field for the generated
+certificate. It can be an explicit value or another token, that will be 
+resolved before inclusion in the ssh certificate.
 :::
 
 ##### Database Secret Engine
@@ -1275,7 +1353,7 @@ ${VAULT:db/creds/guacamole/username}
 ```
 
 Here, `{ROLE}` is the name of the database role (e.g., `guacamole`). So that
-Guacamole can use thes values, they must be placed the the
+Guacamole can use these values, they must be placed in the
 `guacamole.properties.vlt` file.
 
 :::{note}
@@ -1343,8 +1421,8 @@ is interpreted as `{SUB_TOKEN}`. The allowed sub-token values are:
   `gateway-username` of the connection must not be empty or itself include a
   token.
 
-For example {samp}`${vault://ldap/org/example/{SERVER}/{USER}/password` is a
-valid **paramater token**.
+For example {samp}`${vault://ldap/org/example/{SERVER}/{USERNAME}/password` is
+a valid **paramater token**.
 
 ### Manual Mapping of Secrets
 

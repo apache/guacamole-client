@@ -32,6 +32,9 @@ public class OpenBaoClientProvider implements Provider<OpenBaoClient> {
 
     private final OpenBaoConfigurationService configService;
 
+    /**
+     * Creates a new OpenBaoClientProvider.
+     */
     @Inject
     public OpenBaoClientProvider(OpenBaoConfigurationService configService) {
         this.configService = configService;
@@ -39,13 +42,6 @@ public class OpenBaoClientProvider implements Provider<OpenBaoClient> {
 
     @Override
     public OpenBaoClient get() {
-        OpenBaoClient client = new OpenBaoClient(configService);
-        try {
-            client.init();
-        }
-        catch (GuacamoleException e) {
-            throw new ProvisionException("Failed to initialize OpenBaoClient : " + e.getMessage());
-        }
-        return client;
+        return new OpenBaoClient(configService);
     }
 }

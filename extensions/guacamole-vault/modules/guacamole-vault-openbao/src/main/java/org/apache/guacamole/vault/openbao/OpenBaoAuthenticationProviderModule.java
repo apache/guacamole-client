@@ -29,12 +29,12 @@ import org.apache.guacamole.vault.openbao.conf.OpenBaoConfigurationService;
 import org.apache.guacamole.vault.openbao.secret.OpenBaoClient;
 import org.apache.guacamole.vault.openbao.secret.OpenBaoClientProvider;
 import org.apache.guacamole.vault.openbao.secret.OpenBaoSecretService;
+import org.apache.guacamole.vault.openbao.secret.OpenBaoTunnelEventListener;
 import org.apache.guacamole.vault.openbao.user.OpenBaoAttributeService;
 import org.apache.guacamole.vault.openbao.user.OpenBaoDirectoryService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.conf.VaultAttributeService;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
-
 
 /**
  * Guice module for configuring OpenBao vault integration.
@@ -70,5 +70,8 @@ public class OpenBaoAuthenticationProviderModule extends VaultAuthenticationProv
 
         // Bind client
         bind(OpenBaoClient.class).toProvider(OpenBaoClientProvider.class).asEagerSingleton();
+
+        // Static Injection of the Listener to get an OpenBaoClient instance in the listener
+        requestStaticInjection(OpenBaoTunnelEventListener.class);
     }
 }
