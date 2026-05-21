@@ -302,7 +302,7 @@
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
-        "ERROR_INVALID_LOGIN" : "Anmeldungefehler",
+        "ERROR_INVALID_LOGIN" : "Anmeldungsfehler",
 
         "FIELD_HEADER_USERNAME" : "Benutzername",
         "FIELD_HEADER_PASSWORD" : "Passwort"
