@@ -1,2 +1,0 @@
-io.micrometer:micrometer-observation:jar:1.14.7
-io.micrometer:micrometer-commons:jar:1.14.7
