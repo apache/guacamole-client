@@ -97,8 +97,6 @@ public class OpenBaoSecretService implements VaultSecretService {
     @Override
     public String canonicalize(String nameComponent) {
         try {
-
-            // 
             return URLEncoder.encode(nameComponent, "UTF-8");
 
         }
@@ -189,7 +187,7 @@ public class OpenBaoSecretService implements VaultSecretService {
         // guacamole.properties.vlt. Should probably refuse SSH and LDAP vault
         // secrets in that case, but the key can be generic without risk
         String value = client().getValue(token, "", token.substring(0, token.lastIndexOf('/')));
-        logger.debug("getValue1 {} : {}", token, value);
+
         return CompletableFuture.completedFuture(value);
     }
 
@@ -237,7 +235,7 @@ public class OpenBaoSecretService implements VaultSecretService {
         String guac_username = userContext.self().getIdentifier();
         String key = guac_username + "-" + username + "-" + token.substring(0, token.lastIndexOf('/'));
         String value = client().getValue(prepareToken(token, userContext, config, new TokenFilter()), username, key);
-        logger.debug("getValue2 {} : {}", token, value);
+
         return CompletableFuture.completedFuture(value);
     }
 
@@ -302,17 +300,19 @@ public class OpenBaoSecretService implements VaultSecretService {
             }
         }
 
-        // The get on the Future value below will cause the debug code below
-        // to wait for completion. Only run if in debug mode
-        if (logger.isDebugEnabled()) {
-            logger.debug("Returning {} Vault tokens:", tokens.size());
-            tokens.forEach((k, v) -> {
-                try {
-                    logger.debug("    {} : {}", k, v.get());
-                } catch (Exception e) {
-                    logger.debug("    {} => ERROR: {}", k, e);
-                }});
-        }
+        // Don't print secret values even at debug level. Still needed for testing
+        // so keep it in comments. Please note the v.get() will cause this code to
+        // wait for completion of the Future values.
+        //logger.debug("Returning {} Vault tokens:", tokens.size());
+        //tokens.forEach((k, v) -> {
+        //    try {
+        //        logger.debug("    {} : {}", k, v.get());
+        //    } catch (Exception e) {
+        //        logger.debug("    {} => ERROR: {}", k, e);
+        //    }});
+ 
+        // Simplier innoucous debugging message
+        logger.debug("Returning {} Vault tokens: {}", tokens.size(), tokens.keySet());
 
         return tokens;
     }

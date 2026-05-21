@@ -487,7 +487,6 @@ public class TtlAwareSessionManager implements SessionManager {
      *      Can be either a Null, VaultToken or a LoginToken
      */
     public void setSessionToken(VaultToken token) {
-        logger.debug("Setting new token : {}", token.getToken());
         if (token != null && !token.getToken().isEmpty()) {
             this.token.set(token);
         }

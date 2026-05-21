@@ -84,6 +84,11 @@ public class OpenBaoClient {
     static final String VAULT_TOKEN_PREFIX = "vault://";
 
     /**
+     * The path prefix for the path-help REST API in the Vault
+     */
+    static final String VAULT_PATH_HELP = "/sys/internal/ui/mounts/";
+
+    /**
      * Cache of secrets recently fetched
      */
     private  Cache<String, Map<String, Object>> cache;
@@ -107,7 +112,7 @@ public class OpenBaoClient {
      * A HashMap of the checked out LDAP Sessions
      */
     private final Map<String, LDAPSessionInfo> ldapSessions = new HashMap<>();
-    
+
     /**
      * A task scheduler for remove terminated checked out LDAP Sessions
      */
@@ -118,7 +123,7 @@ public class OpenBaoClient {
      * to start the token renewal process as early as possible
      *
      * @param configService
-     *     The injected configuration service 
+     *     The injected configuration service
      */
     public OpenBaoClient(OpenBaoConfigurationService configService) {
       this.configService = configService;
@@ -146,12 +151,10 @@ public class OpenBaoClient {
 
             if (configService.getVaultToken() != null) {
                 if (isTokenReadableFile(configService.getVaultToken())) {
-                    logger.debug("File Token : {}", configService.getVaultToken());
                     this.authentication =
                             new FileTokenAuthentication(configService.getVaultToken());
                 }
                 else {
-                    logger.debug("Token : {}", configService.getVaultToken());
                     this.authentication = new TokenAuthentication(configService.getVaultToken());
                 }
             }
@@ -162,8 +165,6 @@ public class OpenBaoClient {
                         .password(configService.getVaultPassword())
                         .build();
 
-                logger.debug("Username/Password : {}, {}", configService.getVaultUsername(),
-                        configService.getVaultPassword());
                 this.authentication =
                     new UsernamePasswordAuthentication(options, endpoint, restTemplate);
             }
@@ -228,62 +229,54 @@ public class OpenBaoClient {
      }
 
     /**
-     * Lists the valid mount paths and their type
+     * Return the secret engine type and mount path using the internal Vault
+     * path-help functionality, no need for access to /sys/mounts which might
+     * be a security risk
+     *
+     * @param path
+     *     The path to test for the secret engine type
      *
      * @return
-     *      The map of the mount path and with the value being the type.
-     *      The type can be ssh, ldap, database, kv_1 or kv_2
+     *     A Map with the secret engine type and its mount path
      */
-    public Map<String, Object> listMountPaths() {
-
-        Map<String, Object> cacheMountPaths =  cache.getIfPresent("sys/mounts");
-        if (cacheMountPaths != null) {
-            return cacheMountPaths;
+    public Map<String, Object> getSecretsEngine(String path) {
+        Map<String, Object> cacheResponse = cache.getIfPresent(VAULT_PATH_HELP + path);
+        if (cacheResponse != null) {
+            return cacheResponse;
         }
 
-        VaultResponse response = vaultTemplate.read("sys/mounts");
+        VaultResponse response = vaultTemplate.read(VAULT_PATH_HELP + path);
+        Map<String, Object> data = response.getData();
+        String type = String.valueOf(data.get("type"));
 
-        if (response == null || response.getData() == null) {
-            return Collections.emptyMap();
-        }
-
-        Map<String, Object> mounts = response.getData();
-        Map<String, Object> mountPaths = new HashMap<>();
-
-        mounts.forEach((mountPath, mountInfoObj) -> {
-            if (mountInfoObj instanceof Map<?, ?>) {
-                Map<?,?> mountInfo = (Map<?,?>) mountInfoObj;
-                Object type = mountInfo.get("type");
-                if (type instanceof String) {
-                    if (type.equals("ssh")  || type.equals("database") || type.equals("ldap")) {
-                        mountPaths.put(mountPath, type);
-                    }
-                    else if (type.equals("kv")) {
-                        // Need to detect if type 1 or type 2 Key/Value engine
-                        if (mountInfo.get("options") instanceof Map<?, ?>) {
-                            Map<?,?> options = (Map<?,?>) mountInfo.get("options");
-                            Object version = options.get("version");
-                            if (version instanceof String) {
-                                if (version.equals("2")) {
-                                    mountPaths.put(mountPath, "kv_2");
-                                }
-                                else {
-                                    mountPaths.put(mountPath, "kv_1");
-                                }
-                            }
-                        }
-                        else {
-                            // No options, assume kv_1
-                            mountPaths.put(mountPath, "kv_1");
-                        }
-                    }
+        if (type.equals("kv")) {
+            // Need to detect if type 1 or type 2 Key/Value engine
+            if (data.get("options") instanceof Map<?, ?>) {
+                Map<?,?> options = (Map<?,?>) data.get("options");
+                if ("2".equals(String.valueOf(options.get("version")))) {
+                    type = "kv_2";
+                }
+                else {
+                    type = "kv_1";
                 }
             }
-        });
+            else {
+                // No options, assume kv_1
+                type = "kv_1";
+            }
+        }
+        Map<String, Object> map = Map.of("type", type, "path", String.valueOf(data.get("path")));
+        cache.put(VAULT_PATH_HELP + path, map);
+        logger.debug("getSecretsEngine {} : {} : {}", VAULT_PATH_HELP + path, type, String.valueOf(data.get("path")));
 
-        cache.put("sys/mounts", mountPaths);
+        try {
+            logger.debug("getSecretsEngine {}", objectMapper.writeValueAsString(data));
+        }
+        catch (JsonProcessingException e) {
+            logger.info("Error json parsing returned secret: " + e.getMessage());
+        }
 
-        return mountPaths;
+        return map;
     }
 
     /**
@@ -322,7 +315,7 @@ public class OpenBaoClient {
      * of error here.
      *
      * @param event
-     *      A TunnelConnectEvent or TunnelCloseEvent     
+     *      A TunnelConnectEvent or TunnelCloseEvent
      */
     public void connectLdapSession(Object event) {
         if (event instanceof TunnelConnectEvent) {
@@ -339,7 +332,7 @@ public class OpenBaoClient {
             LDAPSessionInfo session = ldapSessions.get(id);
             if (session != null && session.initialized) {
                 // FIXME : We don't always receive the TunnelCloseEvent
-                // So this checkin function only kinda works 
+                // So this checkin function only kinda works
                 logger.debug("Removing stored LDAP session: {}", id);
                 vaultTemplate.write(session.checkInPath, Map.of("service_account_names", session.username));
                 ldapSessions.remove(id);
@@ -384,40 +377,26 @@ public class OpenBaoClient {
                 throw new GuacamoleException("Invalid token Vault token: " + token);
             }
 
-            // Detect and validate the mount path
-            Map<String, Object> mountpaths = listMountPaths();
-            String mountPath = null;
-            String type = null;
-            for (String _path : mountpaths.keySet()) {
-                if (token.startsWith(VAULT_TOKEN_PREFIX + _path) &&
-                        (mountPath == null || _path.length() > mountPath.length())) {
-                    mountPath = _path;
-                    type = (String) mountpaths.get(_path);
-                }
-            }
-            if (mountPath == null || mountPath.isEmpty()) {
-                throw new GuacamoleException("The Vault mount path of the token is invalid: " + token);
-            }
-
             // Find last slash to isolate the secret value in the record
             int lastSlashIndex = token.lastIndexOf('/');
             if (lastSlashIndex == -1)
                 lastSlashIndex = VAULT_TOKEN_PREFIX.length();
 
-            String path = token.substring(VAULT_TOKEN_PREFIX.length() + mountPath.length(), lastSlashIndex);
+            String path = token.substring(VAULT_TOKEN_PREFIX.length(), lastSlashIndex);
             String secret = token.substring(lastSlashIndex + 1);
-
-            logger.debug("MountPath {}, path {}, secret {}, type {}", mountPath, path, secret, type);
 
             Map<String, Object> cacheResponse = (Map<String, Object>) cache.getIfPresent(key);
 
             Object raw;
             if (cacheResponse != null) {
-                raw = cacheResponse.get(secret);        
+                raw = cacheResponse.get(secret);
             }
             else {
                 Map<String, Object> response;
-            
+                String type = String.valueOf(getSecretsEngine(path).get("type"));
+                String mountPath = String.valueOf(getSecretsEngine(path).get("path"));
+                path = path.substring(mountPath.length());
+
                 switch (type) {
                     case "ssh":
                         response = getValueSSH(mountPath, path, username);
@@ -441,9 +420,9 @@ public class OpenBaoClient {
                 cache.put(key, response);
                 raw = response.get(secret);
             }
-          
+
             if (raw == null) {
-                throw new VaultException("Secret '" + secret + "' not found on the path '" + mountPath + path + "'");
+                throw new VaultException("Secret '" + secret + "' not found from the token '" + token + "'");
             }
             else if (raw instanceof String || raw instanceof Number || raw instanceof Boolean) {
                 return String.valueOf(raw);
@@ -462,7 +441,7 @@ public class OpenBaoClient {
             logger.error("Failed to retrieve secret from the vault : {}", e.getMessage());
             throw new GuacamoleServerException("Failed to retrieve secret from Vault Server : " + e.getMessage());
         }
-        
+
     }
 
     /**
@@ -491,9 +470,9 @@ public class OpenBaoClient {
 
         if (response == null || response.getData() == null)
         {
-            throw new GuacamoleServerException("Value not found in Vault for path: " + mountPath + path);
+            throw new GuacamoleException("Value not found in Vault for path: " + path);
         }
-        
+
         return response.getData();
     }
 
@@ -507,7 +486,7 @@ public class OpenBaoClient {
      *     The path of the secret record representing the SSH role
      *
      * @param username
-     *     The connection username that must be non null for SSH certificate 
+     *     The connection username that must be non null for SSH certificate
      *     generation.
      *
      * @return
@@ -521,15 +500,17 @@ public class OpenBaoClient {
             if (username == null || username.isEmpty()) {
                 throw new GuacamoleException("The username can not be empty for SSH signed certificates");
             }
-            
+
             VaultResponse response =
-                vaultTemplate.write(mountPath +  path, Map.of("ip", "0.0.0.0"));
+                vaultTemplate.write(mountPath + path, Map.of("ip", "0.0.0.0"));
 
             if (response == null || response.getData() == null) {
                 throw new GuacamoleException("No response from Vault SSH engine");
             }
-            
-            return response.getData();           
+            Map<String, Object> retval = response.getData();
+            retval.put("username", retval.get("key"));
+
+            return retval;
         }
         else if (path.startsWith("sign/")) {
             OpenBaoSshKeys sshKeys = new OpenBaoSshKeys(configService.getSshType());
@@ -539,8 +520,7 @@ public class OpenBaoClient {
                     "extensions", Map.of("permit-pty", ""),
                     "ttl", configService.getSshConnectionTimeout());
 
-            VaultResponse vaultResponse =
-                    vaultTemplate.write(mountPath + path, request);
+            VaultResponse vaultResponse = vaultTemplate.write(mountPath + path, request);
 
             if (vaultResponse == null || vaultResponse.getData() == null) {
                 throw new GuacamoleException("No response from Vault SSH engine");
@@ -554,7 +534,7 @@ public class OpenBaoClient {
 
             return Map.of("private", sshKeys.privateSshPem,
                     "public", signedCert,
-                    "unsigned", sshKeys.publicSsh);        
+                    "unsigned", sshKeys.publicSsh);
         }
         else {
            throw new GuacamoleException("Unknown SSH type on path: " + mountPath + path);
@@ -577,7 +557,7 @@ public class OpenBaoClient {
      * @throws GuacamoleException
      *     If the secrets cannot be retrieved from the Vault.
      */
-    private Map<String, Object> getValueLDAP(String mountPath, String path) throws GuacamoleException {    
+    private Map<String, Object> getValueLDAP(String mountPath, String path) throws GuacamoleException {
         VaultResponse response;
         if (path.startsWith("static") || path.startsWith("creds/")) {
             response = vaultTemplate.read(mountPath + path);
@@ -586,29 +566,29 @@ public class OpenBaoClient {
             response = vaultTemplate.write(mountPath + path + "/check-out", Map.of("ttl", "2h"));
         }
         else {
-           throw new GuacamoleException("Unknown LDAP type on path: " + mountPath +"/" + path);
-        }        
+           throw new GuacamoleException("Unknown LDAP type on path: " + mountPath + path);
+        }
 
         if (response == null || response.getData() == null) {
             throw new GuacamoleException("No response from LDAP secrets engine");
         }
-        
+
         Map<String, Object> retval = response.getData();
         if (path.startsWith("library/")) {
             String username = String.valueOf(retval.get("service_account_name"));
             retval.put("username", username);
-            
+
             // Register a listener to check-in the account for a TunnelClose Event
             logger.info("Caching session : {}", username);
             LDAPSessionInfo info = new LDAPSessionInfo(mountPath + path + "/check-in", username);
             ldapSessions.put("checkin", info);
         }
-        
+
         return retval;
     }
 
     /**
-     * Retrieves a username or password from a Databse secret engine.
+     * Retrieves a username or password from a Database secret engine.
      * Before version 1.10 the data could only have username/password
      * After there can be static preconfigured fields that the vault tokens
      * might access.
@@ -626,10 +606,10 @@ public class OpenBaoClient {
      *     If the secrets cannot be retrieved from the Vault.
      */
     private Map<String, Object> getValueDB(String mountPath, String path) throws GuacamoleException {
-        VaultResponse response = vaultTemplate.read(mountPath +  path);        
-        
+        VaultResponse response = vaultTemplate.read(mountPath + path);
+
         if (response == null || response.getData() == null) {
-            throw new GuacamoleException("No response from Databse secrets engine");
+            throw new GuacamoleException("No response from Database secrets engine");
         }
 
         return response.getData();

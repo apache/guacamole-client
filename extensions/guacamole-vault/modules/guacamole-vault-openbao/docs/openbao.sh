@@ -18,9 +18,6 @@ VAULT_TOKEN=$(docker logs openbao 2> /dev/null | grep "Root Token" | cut -d: -f2
 UNSEAL_KEY=$(docker logs openbao 2> /dev/null | grep "Unseal" | cut -d: -f2 | xargs)
 echo "# Create Guacamole limited access policy"
 cat << EOF > guacamole.hcl
-path "sys/mounts" {
-  capabilities = ["read"]
-}
 path "kv1/*" {
   capabilities = ["read"]
 }
@@ -28,7 +25,7 @@ path "kv2/*" {
   capabilities = ["read"]
 }
 path "ssh/sign/guacamole_cert" {
-  capabilities = ["update", "create"]
+  capabilities = ["update"]
 }
 path "ssh/creds/guacamole_otp" {
   capabilities = ["update"]

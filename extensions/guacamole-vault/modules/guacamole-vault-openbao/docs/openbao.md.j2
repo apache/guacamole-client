@@ -70,7 +70,6 @@ Guacamole requires the following permissions in Vault:
 
 - **Read access** to the secrets it consumes.
 - **Limited write access** for certain secret engines (e.g., SSH certificate signing).
-- **Read access to the `sys/mounts` path** to detect available secret engines and their types.
 
 For **security and auditability**, it is **strongly recommended** to create a
 **dedicated Vault policy** for Guacamole. Below is an example policy that grants
@@ -80,11 +79,6 @@ in each engine.
 #### Example Policy (`guacamole.hcl`)
 
 ```hcl
-# Read system mount table
-path "sys/mounts" {
-  capabilities = ["read"]
-}
-
 # Read from key-value secrets dedicated to Guacamole
 path "kv/guacamole/*" {
   capabilities = ["read"]
@@ -92,12 +86,12 @@ path "kv/guacamole/*" {
 
 # Allow SSH certificate signing for Guacamole
 path "ssh/sign/guacamole_cert" {
-  capabilities = ["create", "update"]
+  capabilities = ["update"]
 }
 
 # Allow SSH one-time password generation
 path "ssh/creds/guacamole_otp" {
-  capabilities = ["create"]
+  capabilities = ["update"]
 }
 
 # Read/Update for LDAP service credentials
@@ -549,7 +543,20 @@ curl -s --header "X-Vault-Token: $VAULT_TOKEN"  \
     http://127.0.0.1:8200/v1/sys/policies/password/ldap-policy
 ```
 
-3. **Configure the LDAP Connection in Vault**:
+3. **Enable the LDAP secrets engine**:
+
+To enable the database secret engine on a mount path named `db`:
+
+```bash
+curl -s \
+  --header "X-Vault-Token: $VAULT_TOKEN" \
+  --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"type": "ldap"}' \
+  http://127.0.0.1:8200/v1/sys/mounts/ldap
+``
+
+4. **Configure the LDAP Connection in Vault**:
 
   ```bash
    curl -s \
@@ -574,7 +581,7 @@ The `insecure_tls: false` option is **not secure** for production. Instead:
 - Specify the CA certificate using the `tls_ca_cert` or `tls_ca_cert_file` options.
 :::
 
-4. **Test the LDAP Connection**:
+5. **Test the LDAP Connection**:
 Before proceeding, verify that Vault can communicate with the LDAP server by
 forcing a password rotation:
 
