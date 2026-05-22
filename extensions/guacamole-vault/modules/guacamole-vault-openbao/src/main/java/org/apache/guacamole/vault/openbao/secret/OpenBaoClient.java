@@ -267,14 +267,6 @@ public class OpenBaoClient {
         }
         Map<String, Object> map = Map.of("type", type, "path", String.valueOf(data.get("path")));
         cache.put(VAULT_PATH_HELP + path, map);
-        logger.debug("getSecretsEngine {} : {} : {}", VAULT_PATH_HELP + path, type, String.valueOf(data.get("path")));
-
-        try {
-            logger.debug("getSecretsEngine {}", objectMapper.writeValueAsString(data));
-        }
-        catch (JsonProcessingException e) {
-            logger.info("Error json parsing returned secret: " + e.getMessage());
-        }
 
         return map;
     }
