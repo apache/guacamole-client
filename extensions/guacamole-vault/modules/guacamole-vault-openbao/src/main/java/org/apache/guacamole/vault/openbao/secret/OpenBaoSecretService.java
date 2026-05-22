@@ -78,7 +78,7 @@ public class OpenBaoSecretService implements VaultSecretService {
      * Get a Guice cached copy of the OpenBaoClient Singleton
      *
      * @return
-     *     A singleton OpenBaoClient instance 
+     *     A singleton OpenBaoClient instance
      */
     private OpenBaoClient client() {
         return openBaoClientProvider.get();
@@ -104,11 +104,11 @@ public class OpenBaoSecretService implements VaultSecretService {
             throw new UnsupportedOperationException("Unexpected lack of UTF-8 support.", e);
         }
     }
-    
+
     /**
      * Before going further replace the arguments "{GUAC_USERNAME}","{USERNAME}",
      * "{HOSTNAME}", "{GATEWAY_USERNAME}" and "{GATEWAY_HOSTNAME}" in the token with
-     * values supplied in the parameters.    
+     * values supplied in the parameters.
      *
      * @param token
      *     A token that might or might not include sub-tokens to be replaced
@@ -157,7 +157,7 @@ public class OpenBaoSecretService implements VaultSecretService {
             token = token.replace("{GATEWAY_USER}", filter.filter(gatewayUsername));
 
         }
-        
+
         return token;
     }
 
@@ -186,6 +186,7 @@ public class OpenBaoSecretService implements VaultSecretService {
         // This function is only called for connection less tokens defined in
         // guacamole.properties.vlt. Should probably refuse SSH and LDAP vault
         // secrets in that case, but the key can be generic without risk
+        token = token.replaceFirst(":(LOWER|UPPER|OPTIONAL)$", "");
         String value = client().getValue(token, "", token.substring(0, token.lastIndexOf('/')));
 
         return CompletableFuture.completedFuture(value);
@@ -234,6 +235,7 @@ public class OpenBaoSecretService implements VaultSecretService {
         String username = config.getParameter("username");
         String guac_username = userContext.self().getIdentifier();
         String key = guac_username + "-" + username + "-" + token.substring(0, token.lastIndexOf('/'));
+        token = token.replaceFirst(":(LOWER|UPPER|OPTIONAL)$", "");
         String value = client().getValue(prepareToken(token, userContext, config, new TokenFilter()), username, key);
 
         return CompletableFuture.completedFuture(value);
@@ -280,8 +282,10 @@ public class OpenBaoSecretService implements VaultSecretService {
         Map<String, Future<String>> tokens = new HashMap<>();
         Map<String, String> parameters = config.getParameters();
 
-        Pattern tokenPattern = Pattern.compile("\\$\\{(" + client().VAULT_TOKEN_PREFIX + ".+)\\}");
-        
+        // Remove optional token parameter modifier
+        Pattern tokenPattern = Pattern.compile("\\$\\{(" + client().VAULT_TOKEN_PREFIX +
+                ".+?)(\\:(LOWER|UPPER|OPTIONAL))?\\}");
+
         // To keep the tokens for the same connection associated with each other in the
         // cache, for tokens that might create a confusion, we cache them with a shared
         // key
@@ -310,8 +314,8 @@ public class OpenBaoSecretService implements VaultSecretService {
         //    } catch (Exception e) {
         //        logger.debug("    {} => ERROR: {}", k, e);
         //    }});
- 
-        // Simplier innoucous debugging message
+
+        // Simpler, innocuous debugging message
         logger.debug("Returning {} Vault tokens: {}", tokens.size(), tokens.keySet());
 
         return tokens;
