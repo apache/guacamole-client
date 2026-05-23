@@ -109,6 +109,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const $location              = $injector.get('$location');
     const $q                     = $injector.get('$q');
     const $routeParams           = $injector.get('$routeParams');
+    const connectionGroupService = $injector.get('connectionGroupService');
     const connectionParseService = $injector.get('connectionParseService');
     const connectionService      = $injector.get('connectionService');
     const guacNotification       = $injector.get('guacNotification');
@@ -117,9 +118,12 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     const userGroupService       = $injector.get('userGroupService');
 
     // Required types
+    const Connection             = $injector.get('Connection');
+    const ConnectionGroup        = $injector.get('ConnectionGroup');
     const ConnectionImportConfig = $injector.get('ConnectionImportConfig');
     const DirectoryPatch         = $injector.get('DirectoryPatch');
     const Error                  = $injector.get('Error');
+    const ImportConnection       = $injector.get('ImportConnection');
     const ParseError             = $injector.get('ParseError');
     const PermissionSet          = $injector.get('PermissionSet');
     const User                   = $injector.get('User');
@@ -138,7 +142,15 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
      *
      * @type {Error}
      */
-    $scope.patchFailure = null;;
+    $scope.patchFailure = null;
+
+    /**
+     * The DirectoryPatch list last sent to patchConnections, kept so
+     * connection-import-errors can map API failures back to file rows.
+     *
+     * @type {DirectoryPatch[]|null}
+     */
+    $scope.patches = null;
 
     /**
      * True if the file is fully uploaded and ready to be processed, or false
@@ -208,6 +220,7 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         $scope.fileReader = null;
         $scope.parseResult = null;
         $scope.patchFailure = null;
+        $scope.patches = null;
         $scope.fileName = null;
 
     }
@@ -346,6 +359,170 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
     }
 
     /**
+     * When `$scope.importConfig.createMissingGroups` is true, loads the
+     * connection group tree for the data source, creates any group path
+     * segments from the import file that do not yet exist (sequentially, so
+     * parents exist before children), and sets `parentIdentifier` on each
+     * connection object that still needs it from the resolved `group` path.
+     * When the option is false, resolves immediately without modifying
+     * `parseResult`.
+     *
+     * Nothing is returned from the resolved promise; connection objects on
+     * `parseResult` are updated in place for use when building patches.
+     *
+     * @param {DataSource} dataSource
+     *     The data source in which groups should exist.
+     *
+     * @param {ParseResult} parseResult
+     *     Parsed import data; connection objects may be updated in place.
+     *
+     * @returns {Promise}
+     *     A promise that resolves with no value when finished, or rejects if
+     *     the group tree cannot be loaded or a group cannot be saved.
+     */
+    function ensureConnectionGroups(dataSource, parseResult) {
+
+        if (!$scope.importConfig.createMissingGroups)
+            return $q.resolve();
+
+        return connectionGroupService.getConnectionGroupTree(dataSource).then(rootGroup => {
+
+            const identifierByPath = {};
+            const flatten = (group, prefix = "") => {
+                // The first node is always "ROOT"
+                const currentPath = prefix ? (prefix + "/" + group.name) : "ROOT";
+                
+                // Map the path string to the REAL system identifier
+                if (group.identifier) {
+                    identifierByPath[currentPath] = group.identifier;
+                }
+
+                if (group.childConnectionGroups) {
+                    group.childConnectionGroups.forEach(c => flatten(c, currentPath));
+                }
+            };
+            
+            flatten(rootGroup);
+
+            let sequence = $q.resolve();
+
+            // Iterate through connections
+            _.forEach(parseResult.connectionObjects, (connectionObject) => {
+                const fullPath = connectionObject.group; // e.g., "ROOT/Folder/Subfolder"
+                if (!fullPath) return;
+
+                const segments = fullPath.split('/');
+                let currentPath = "ROOT"; 
+
+                segments.forEach(segment => {
+                    // Ignore empty segments and the literal "ROOT" segment in the path string
+                    if (!segment || segment === 'ROOT') return;
+
+                    const parentPath = currentPath;
+                    const nextPath = parentPath + "/" + segment;
+                    currentPath = nextPath;
+
+                    sequence = sequence.then(() => {
+                        // If this absolute path already exists, skip creation
+                        if (identifierByPath[nextPath]) return;
+
+                        // Create the new group under the parent's REAL identifier
+                        const newGroup = new ConnectionGroup({
+                            name: segment,
+                            parentIdentifier: identifierByPath[parentPath] 
+                        });
+
+                        return connectionGroupService.saveConnectionGroup(dataSource, newGroup)
+                            .then(() => {
+                                identifierByPath[nextPath] = newGroup.identifier;
+                            });
+                    });
+                });
+            });
+
+            return sequence.then(() => {
+                parseResult.connectionObjects.forEach(connectionObject => {
+                    if (!connectionObject.parentIdentifier) {
+                        connectionObject.parentIdentifier =
+                            identifierByPath[connectionObject.group] || identifierByPath['ROOT'];
+                    }
+                });
+            });
+        });
+    }
+
+    /**
+     * Converts the parsed connection data into a set of administrative 
+     * patches. Each patch represents an atomic operation to create or 
+     * update a connection, including its attributes, parameters, and 
+     * its placement within the connection group hierarchy.
+     *
+     * @param {ImportConfig} importConfig
+     *     The configuration object defining how the import should be 
+     *     processed and which fields should be prioritized.
+     *
+     * @param {ParseResult} parseResult
+     *     The result of parsing the user-supplied import file, used as 
+     *     the source data for the generated patches.
+     * 
+     * @returns {DirectoryPatch[]}
+     *     Patches to apply via the connection directory PATCH API.
+     */
+    function createConnectionPatches(importConfig, parseResult) {
+
+        const patches = [];
+
+        parseResult.connectionObjects.forEach(connectionObject => {
+
+            // The value for the patch is a full-fledged Connection
+            const value = new Connection(connectionObject);
+
+            // If a new connection is being created
+            if (connectionObject.importMode 
+                    === ImportConnection.ImportMode.CREATE) 
+
+                // Add a patch for creating the connection
+                patches.push(new DirectoryPatch({
+                    op: DirectoryPatch.Operation.ADD,
+                    path: '/',
+                    value
+                }));
+
+            // The connection is being replaced, and permissions are only being
+            // added, not replaced
+            else if (importConfig.existingPermissionMode ===
+                    ConnectionImportConfig.ExistingPermissionMode.PRESERVE)
+
+                // Add a patch for replacing the connection
+                patches.push(new DirectoryPatch({
+                    op: DirectoryPatch.Operation.REPLACE,
+                    path: '/' + connectionObject.identifier,
+                    value
+                }));
+
+            // The connection is being replaced, and permissions are also being
+            // replaced
+            else {
+
+                // Add a patch for removing the existing connection
+                patches.push(new DirectoryPatch({
+                    op: DirectoryPatch.Operation.REMOVE,
+                    path: '/' + connectionObject.identifier
+                }));
+
+                // Add a second patch for creating the replacement connection
+                patches.push(new DirectoryPatch({
+                    op: DirectoryPatch.Operation.ADD,
+                    path: '/',
+                    value
+                }));
+
+            }
+        });
+        return patches;
+    };
+
+    /**
      * Process a successfully parsed import file, creating any specified
      * connections, creating and granting permissions to any specified users
      * and user groups. If successful, the user will be shown a success message.
@@ -368,57 +545,64 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
 
         const dataSource = $routeParams.dataSource;
 
-        // First, attempt to create the connections
-        connectionService.patchConnections(dataSource, parseResult.patches)
-                .then(connectionResponse =>
+        $scope.patches = null;
+        $scope.patchFailure = null;
+        $scope.processing = true;
 
-            // If connection creation is successful, create users and groups
-            createUsersAndGroups(parseResult).then(() =>
+        // 1. Create missing groups (updates parentIdentifier on connection objects)
+        ensureConnectionGroups(dataSource, parseResult)
+                .then(() => {
 
-                // Grant any new permissions to users and groups. NOTE: Any
-                // existing permissions for updated connections will NOT be
-                // removed - only new permissions will be added.
-                grantConnectionPermissions(parseResult, connectionResponse)
-                        .then(() => {
+            // 2. Build patches from connection objects (includes resolved parent IDs)
+            $scope.patches = createConnectionPatches($scope.importConfig,
+                    parseResult);
 
-                    $scope.processing = false;
+            // 3. Import the connections
+            return connectionService.patchConnections(dataSource, $scope.patches)
+                    .then(connectionResponse => {
 
-                    // Display a success message if everything worked
-                    guacNotification.showStatus({
-                        className  : 'success',
-                        title      : 'IMPORT.DIALOG_HEADER_SUCCESS',
-                        text       : {
-                            key: 'IMPORT.INFO_CONNECTIONS_IMPORTED_SUCCESS',
-                            variables: { NUMBER: parseResult.connectionCount }
-                        },
+                // 4. Create Users/Groups and Grant Permissions
+                return createUsersAndGroups(parseResult).then(() => {
 
-                        // Add a button to acknowledge and redirect to
-                        // the connection listing page
-                        actions    : [{
-                            name      : 'IMPORT.ACTION_ACKNOWLEDGE',
-                            callback  : () => {
+                        // 5. Grant permissions
+                        return grantConnectionPermissions(parseResult, connectionResponse)
+                                .then(() => {
 
-                                // Close the notification
-                                guacNotification.showStatus(false);
-
-                                // Redirect to connection list page
-                                $location.url('/settings/' + dataSource + '/connections');
-                            }
-                        }]
+                            $scope.processing = false;
+                            guacNotification.showStatus({
+                                className: 'success',
+                                title: 'IMPORT.DIALOG_HEADER_SUCCESS',
+                                text: {
+                                    key: 'IMPORT.INFO_CONNECTIONS_IMPORTED_SUCCESS',
+                                    variables: { NUMBER: parseResult.connectionCount }
+                                },
+                                actions: [{
+                                    name: 'IMPORT.ACTION_ACKNOWLEDGE',
+                                    callback: () => {
+                                        guacNotification.showStatus(false);
+                                        $location.url('/settings/' + dataSource + '/connections');
+                                    }
+                                }]
+                            });
+                        });
+                    })
+                    // If an error occurs while trying to create users or groups, 
+                    // display the error to the user.
+                    .catch(error => {
+                        $scope.processing = false;
+                        handleError(error);
                     });
-                }))
-
-            // If an error occurs while trying to create users or groups, 
-            // display the error to the user.
-            .catch(handleError)
-        )
-
-        // If an error occurred when the call to create the connections was made,
-        // skip any further processing - the user will have a chance to fix the
-        // problems and try again
+                });
+        })
+        // Use handleError if errors before patches exist (e.g. group tree load/save),
+        // because they cannot be shown in the per-connection table. Otherwise, keep
+        // parse state and surface API errors in the table via patchFailure.
         .catch(patchFailure => {
             $scope.processing = false;
-            $scope.patchFailure = patchFailure;
+            if ($scope.patches == null)
+                handleError(patchFailure);
+            else
+                $scope.patchFailure = patchFailure;
         });
     }
 
@@ -483,8 +667,8 @@ angular.module('import').controller('importConnectionsController', ['$scope', '$
         // Data processing has begun
         $scope.processing = true;
 
-        // The function that will process all the raw data and return a list of
-        // patches to be submitted to the API
+        // The parse function for this file type; resolves with a ParseResult
+        // (connection objects and related metadata).
         let processDataCallback;
 
         // Choose the appropriate parse function based on the mimetype

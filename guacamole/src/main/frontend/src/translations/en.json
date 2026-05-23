@@ -231,6 +231,7 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "FIELD_HEADER_CREATE_MISSING_GROUPS"    : "Automatically create groups",
         "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Replace/Update existing connections",
         "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "Reset permissions",
 
@@ -242,6 +243,7 @@
         "HELP_JSON_DESCRIPTION"             : "A connection import JSON file is a list of connection objects. At minimum the connection name and protocol must be specified in each connection object.",
         "HELP_JSON_EXAMPLE"                 : "[\n  \\{\n    \"name\": \"conn1\",\n    \"protocol\": \"vnc\",\n    \"parameters\": \\{ \"username\": \"alice\", \"password\": \"pass1\", \"hostname\": \"conn1.web.com\" \\},\n    \"parentIdentifier\": \"ROOT\",\n    \"users\": [ \"guac user 1\", \"guac user 2\" ],\n    \"groups\": [ \"Connection 1 Users\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn2\",\n    \"protocol\": \"rdp\",\n    \"parameters\": \\{ \"username\": \"bob\", \"password\": \"pass2\", \"hostname\": \"conn2.web.com\" \\},\n    \"group\": \"ROOT/Parent Group\",\n    \"users\": [ \"guac user 1\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn3\",\n    \"protocol\": \"ssh\",\n    \"parameters\": \\{ \"username\": \"carol\", \"password\": \"pass3\", \"hostname\": \"conn3.web.com\" \\},\n    \"group\": \"ROOT/Parent Group/Child Group\",\n    \"users\": [ \"guac user 2\", \"guac user 3\" ]\n  \\},\n  \\{\n    \"name\": \"conn4\",\n    \"protocol\": \"kubernetes\"\n  \\}\n]",
         "HELP_JSON_MORE_DETAILS"            : "The connection group ID that the connection should be imported into may be directly specified with a \"parentIdentifier\" field, or the path to the parent group may be specified using a \"group\" field as shown below. An array of user and user group identifiers to grant access to may be specified per connection.",
+        "HELP_CREATE_MISSING_GROUPS"        : "Automatically create any connection groups specified in the import file that do not already exist. If unchecked, any connection referencing a parent group that cannot be found will be considered an error and will not be imported.",
         "HELP_EXISTING_CONNECTION_MODE"     : "Entirely replace/update existing connections if their names and parent connection groups match the values in the provided file. If unchecked, attempting to import a connection with the same name and parent connection group of an existing connection will be considered an error.",
         "HELP_EXISTING_PERMISSION_MODE"     : "Fully reset the permissions granted for all connections in the provided file to the permissions specified in that file. If no permissions are specified, all relevant connection permissions will be revoked. If unchecked, existing permissions are preserved, and any permissions specified in the file will be added.",
         "HELP_SEMICOLON_FOOTNOTE"           : "If present, semicolons can be escaped with a backslash, e.g. \"first\\\\;last\"",
