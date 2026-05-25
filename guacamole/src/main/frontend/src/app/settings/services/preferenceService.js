@@ -159,10 +159,26 @@ angular.module('settings').provider('preferenceService', ['$injector',
         /**
          * The timezone set by the user, in IANA zone key format (Olson time
          * zone database).
-         * 
+         *
          * @type String
          */
-        timezone : getDetectedTimezone()
+        timezone : getDetectedTimezone(),
+
+        /**
+         * Array of enabled camera device IDs for RDP camera redirection.
+         * Empty array means no cameras are enabled by default (user must opt-in).
+         *
+         * @type {Array.<String>}
+         */
+        rdpecamEnabledDevices : [],
+
+        /**
+         * Video delay in milliseconds for RDP camera redirection (0-1000).
+         * Used to synchronize video and audio during calls.
+         *
+         * @type {Number}
+         */
+        rdpecamVideoDelay : 0
 
     };
 
