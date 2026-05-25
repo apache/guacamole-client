@@ -131,6 +131,68 @@ public class Field {
         public static final String REDIRECT = "REDIRECT";
 
     }
+    
+    /**
+     * A class representing possible default values for the "autocomplete"
+     * property of the input field. This list of defaults is a reasonable
+     * set required for the fields implemented by Guacamole. These values
+     * are taken from the HTML5 standard.
+     */
+    public static class Autocomplete {
+        
+        /**
+         * The user's current password.
+         */
+        public static final String CURRENT_PASSWORD = "current-password";
+        
+        /**
+         * An e-mail address.
+         */
+        public static final String EMAIL = "email";
+        
+        /**
+         * A name.
+         */
+        public static final String NAME = "name";
+        
+        /**
+         * A new password for a user.
+         */
+        public static final String NEW_PASSWORD = "new-password";
+        
+        /**
+         * Indicates to the browser that autocomplete should be disabled for
+         * the field.
+         */
+        public static final String OFF = "off";
+        
+        /**
+         * Indicates to the browser that autocomplete should be generically
+         * enabled for the field.
+         */
+        public static final String ON = "on";
+        
+        /**
+         * A one-time password.
+         */
+        public static final String ONE_TIME_PASSWORD = "one-time-password";
+        
+        /**
+         * The name of a company or other organization.
+         */
+        public static final String ORGANIZATION = "organization";
+        
+        /**
+         * The title of an employee within a company/organization.
+         */
+        public static final String ORGANIZATION_TITLE = "organization-title";
+        
+        /**
+         * The username for logging the user in.
+         */
+        public static final String USERNAME = "username";
+        
+    }
 
     /**
      * The unique name that identifies this field.
@@ -141,6 +203,11 @@ public class Field {
      * The type of this field.
      */
     private String type;
+    
+    /**
+     * Whether or not this field should allow browser autocompletion.
+     */
+    private String autocomplete;
 
     /**
      * A collection of all legal values of this field.
@@ -165,6 +232,7 @@ public class Field {
     public Field(String name, String type) {
         this.name  = name;
         this.type  = type;
+        this.autocomplete = Autocomplete.OFF;
     }
 
     /**
@@ -182,6 +250,48 @@ public class Field {
     public Field(String name, String type, Collection<String> options) {
         this.name    = name;
         this.type    = type;
+        this.options = options;
+        this.autocomplete = Autocomplete.OFF;
+    }
+    
+    /**
+     * Creates a new Field with the given name, type, and autocomplete value.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     *
+     * @param type
+     *     The type of this field.
+     *
+     * @param autocomplete
+     *     A value to use for the autocomplete property of the field.
+     */
+    public Field(String name, String type, String autocomplete) {
+        this.name = name;
+        this.type = type;
+        this.autocomplete = autocomplete;
+    }
+    
+    /**
+     * Creates a new Field with the given name, type, autocomplete value, and
+     * known-good options for this field.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     *
+     * @param type
+     *     The type of this field.
+     *
+     * @param autocomplete
+     *     A value to use for the autocomplete property of the field.
+     * 
+     * @param options
+     *     A collection of all possible valid options for this field.
+     */
+    public Field(String name, String type, String autocomplete, Collection<String> options) {
+        this.name = name;
+        this.type = type;
+        this.autocomplete = autocomplete;
         this.options = options;
     }
 
@@ -223,6 +333,28 @@ public class Field {
      */
     public void setType(String type) {
         this.type = type;
+    }
+    
+    /**
+     * Return the current value of the autocomplete variable for this
+     * field.
+     * 
+     * @return 
+     *     The current value of the autocomplete variable for this field.
+     */
+    public String getAutocomplete() {
+        return autocomplete;
+    }
+    
+    /**
+     * Set the value of the autocomplete variable for this field to the
+     * provided String value.
+     * 
+     * @param autocomplete 
+     *     The String value to set the autocomplete field to.
+     */
+    public void setAutocomplete(String autocomplete) {
+        this.autocomplete = autocomplete;
     }
 
     /**
