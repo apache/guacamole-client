@@ -1,0 +1,50 @@
+<div class="menu-section webauthn">
+    <h3>{{'WEBAUTHN.SECTION_HEADER_WEBAUTHN' | translate}}</h3>
+    <div class="content">
+
+        <!-- WebAuthn unavailable in this browser -->
+        <p class="hint" ng-if="!webAuthnSupported">
+            {{'WEBAUTHN.INFO_NOT_SUPPORTED' | translate}}
+        </p>
+
+        <!-- Browser refused our origin override due to policy -->
+        <p class="hint warn"
+           ng-if="webAuthnSupported && client.managedWebAuthn.policyBlocked"
+           translate="WEBAUTHN.INFO_POLICY_BLOCKED"
+           translate-values="{ORIGIN: webAuthnOrigin}"></p>
+
+        <!-- Ceremony in progress -->
+        <p ng-if="webAuthnSupported
+                  && !client.managedWebAuthn.policyBlocked
+                  && client.managedWebAuthn.inFlight > 0">
+            {{'WEBAUTHN.STATUS_AWAITING' | translate}}
+        </p>
+
+        <!-- Last ceremony succeeded -->
+        <p class="ok"
+           ng-if="webAuthnSupported
+                  && !client.managedWebAuthn.policyBlocked
+                  && client.managedWebAuthn.inFlight === 0
+                  && client.managedWebAuthn.lastStatus === 'completed'">
+            {{'WEBAUTHN.STATUS_COMPLETED' | translate}}
+        </p>
+
+        <!-- Last ceremony failed -->
+        <p class="hint warn"
+           ng-if="webAuthnSupported
+                  && !client.managedWebAuthn.policyBlocked
+                  && client.managedWebAuthn.inFlight === 0
+                  && client.managedWebAuthn.lastStatus === 'failed'">
+            {{'WEBAUTHN.STATUS_FAILED' | translate}}
+        </p>
+
+        <!-- Idle, no ceremony has been seen yet -->
+        <p class="hint" ng-if="webAuthnSupported
+                               && !client.managedWebAuthn.policyBlocked
+                               && client.managedWebAuthn.inFlight === 0
+                               && client.managedWebAuthn.lastStatus === null">
+            {{'WEBAUTHN.INFO_NO_PENDING' | translate}}
+        </p>
+
+    </div>
+</div>
