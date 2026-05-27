@@ -46,8 +46,8 @@ public class TokenFilter {
      * escape character preceding the token, the name of the token, and the
      * entire token itself.
      */
-    private final Pattern tokenPattern = Pattern.compile("(.*?)(^|.)(\\$\\{(.*?)(\\:(LOWER|UPPER|OPTIONAL))?\\})");
-
+    private final Pattern tokenPattern = Pattern.compile("(.*?)(^|.)(\\$\\{((?:[^{}:]|:(?!(?:LOWER|UPPER|OPTIONAL)" +
+                        "(?=\\}))|\\{(?:[^{}]|\\{[^{}]*\\})*\\})+)(:(?:(LOWER|UPPER|OPTIONAL))(?=\\}))?\\})");
     /**
      * The index of the capturing group within tokenPattern which matches
      * non-token text preceding a possible token.

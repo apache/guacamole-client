@@ -283,8 +283,9 @@ public class OpenBaoSecretService implements VaultSecretService {
         Map<String, String> parameters = config.getParameters();
 
         // Remove optional token parameter modifier
-        Pattern tokenPattern = Pattern.compile("\\$\\{(" + client().VAULT_TOKEN_PREFIX +
-                ".+?)(\\:(LOWER|UPPER|OPTIONAL))?\\}");
+        Pattern tokenPattern = Pattern.compile("\\$\\{(" + client().VAULT_TOKEN_PREFIX  +
+                "(?:[^{}:]|:(?!(?:LOWER|UPPER|OPTIONAL)(?=\\}))|\\{(?:[^{}]|\\{[^{}]*\\})*\\})+" +
+                ")(:(?:(LOWER|UPPER|OPTIONAL))(?=\\}))?\\}");
 
         // To keep the tokens for the same connection associated with each other in the
         // cache, for tokens that might create a confusion, we cache them with a shared
