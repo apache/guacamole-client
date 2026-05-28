@@ -25,84 +25,194 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
+import org.apache.guacamole.properties.IntegerGuacamoleProperty;
 import org.apache.guacamole.properties.StringGuacamoleProperty;
+import org.apache.guacamole.properties.URIGuacamoleProperty;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Singleton
 public class HvConfigurationService extends VaultConfigurationService {
 
     /**
-     * Property name of the URL of the vault specified in the base64 configuration blob.
+     * Logger for this class.
      */
-    public static final String PARAM_NAME_VAULT_URL = "vault_url";
+    private static final Logger logger = LoggerFactory.getLogger(VaultConfigurationService.class);
 
     /**
-     * Property name of the authentication token for the vault specified in the
-     * base64 configuration blob.
+     * The default cache lifetime in milliseconds.
      */
-    public static final String PARAM_NAME_VAULT_TOKEN = "vault_token";
+    public static final int DEFAULT_CACHE_LIFETIME = 5000;
 
     /**
-     * Property name of the maximum time that cached data is considered valid.
+     * The default request timeout in milliseconds.
      */
-    public static final String PARAM_NAME_CACHE_LIFETIME = "cache_lifetime";
+    public static final int DEFAULT_REQUEST_TIMEOUT = 5000;
 
     /**
-     * The Guacamole server environment.
+     * The default connection timeout in milliseconds.
      */
-    @Inject
-    private Environment environment;
+    public static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
+
+    /**
+     * The default ssh connection tiemout in seconds.
+     */
+    public static final int DEFAULT_SSH_CONNECTION_TIMEOUT = 1800;
+
+    /**
+     * The default vault token renewal delay in milliseconds. Expiring
+     * tokens will be renewed at least this delay before expiration
+     */
+    public static final int DEFAULT_TOKEN_RENEWAL_DELAY = 10000;
+
+    /**
+     * The default ssh certificate type.
+     */
+    public static final String DEFAULT_SSH_TYPE = "ed25519";
+
+    /**
+     * The default of whether to accept user configurations or not.
+     */
+    public static final Boolean DEFAULT_ALLOW_USER_CONFIG = false;
 
     /**
      * The name of the file which contains the YAML mapping of connection
      * parameter token to secrets within Hashicorp Vault.
      */
-    private static final String TOKEN_MAPPING_FILENAME = "hv-token-mapping.yml";
+    private static final String TOKEN_MAPPING_FILENAME = "vault-token-mapping.yml";
 
     /**
      * The name of the properties file containing Guacamole configuration
      * properties whose values are the names of corresponding secrets within
      * Hashicorp Vault.
      */
-    private static final String PROPERTIES_FILENAME = "guacamole.properties.hv";
+    private static final String PROPERTIES_FILENAME = "guacamole.properties.vlt";
 
     /**
-     * The base64-encoded configuration information.
+     * The URI of the hashicorp or OpenBao vault to use.
      */
-    private static final StringGuacamoleProperty HV_CONFIG = new StringGuacamoleProperty() {
+    private static final URIGuacamoleProperty VAULT_URI =
+            new URIGuacamoleProperty() {
+
         @Override
-        public String getName() {
-            return "hv-config";
-        }
+        public String getName() { return "vault-uri"; }
     };
 
     /**
-     * Whether unverified server certificates should be accepted.
+     * The authentication token to use to access the vault.
      */
-    private static final BooleanGuacamoleProperty ALLOW_UNVERIFIED_CERT = new BooleanGuacamoleProperty() {
+    private static final StringGuacamoleProperty VAULT_TOKEN =
+            new StringGuacamoleProperty() {
+
         @Override
-        public String getName() {
-            return "hv-allow-unverified-cert";
-        }
+        public String getName() { return "vault-token"; }
+    };
+
+    /**
+     * The authentication username to use to access the vault in place of the token
+     */
+    private static final StringGuacamoleProperty VAULT_USERNAME =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-username"; }
+    };
+
+    /**
+     * The authentication password to use to access the vault in place of the token
+     */
+    private static final StringGuacamoleProperty VAULT_PASSWORD =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-password"; }
+    };
+    /**
+     * The maximum time that the cached data is considered valid in ms.
+     */
+    private static final IntegerGuacamoleProperty VAULT_CACHE_LIFETIME =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-cache-lifetime"; }
+    };
+
+    /**
+     * The maximum time that a request to the vault server can take in ms.
+     */
+    private static final IntegerGuacamoleProperty VAULT_REQUEST_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-request-timeout"; }
+    };
+
+    /**
+     * The maximum time that a connection to the vault server can take in ms.
+     */
+    private static final IntegerGuacamoleProperty VAULT_CONNECTION_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-connection-timeout"; }
+    };
+
+    /**
+     * The maximum time that an ssh signed certificate is considered to be valid.
+     */
+    private static final IntegerGuacamoleProperty VAULT_SSH_CONNECTION_TIMEOUT =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-ssh-connection-timeout"; }
+    };
+
+    /**
+     * The renewal delay for expiring Vault tokens in ms. Tokens will be renewed
+     * prior to expiration by this delay
+     */
+    private static final IntegerGuacamoleProperty VAULT_TOKEN_RENEWAL_DELAY =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-token-renewal-delay"; }
+    };
+
+    /**
+     * The type of ssh certificates that will be generated
+     */
+    private static final StringGuacamoleProperty VAULT_SSH_TYPE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "vault-ssh-type"; }
     };
 
     /**
      * Whether users should be able to supply their own HV configurations.
      */
-    private static final BooleanGuacamoleProperty ALLOW_USER_CONFIG = new BooleanGuacamoleProperty() {
+    private static final BooleanGuacamoleProperty VAULT_ALLOW_USER_CONFIG = new BooleanGuacamoleProperty() {
         @Override
         public String getName() {
-            return "hv-allow-user-config";
+            return "vault-allow-user-config";
         }
     };
+
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
 
     /**
      * Creates a new HvConfigurationService which reads the configuration
@@ -118,9 +228,152 @@ public class HvConfigurationService extends VaultConfigurationService {
     }
 
     /**
+     * The URI of the hashicorp or OpenBao vault to use.
+     *
+     * @return
+     *      The Hashicorp or OpenBao server URI (e.g., "http://localhost:8200").
+     *
+     * @throws GuacamoleException
+     *     If the property is not defined in guacamole.properties or
+     *     guacamole.properties can not be parsed.
+     */
+    public URI getVaultUri() throws GuacamoleException {
+        return environment.getRequiredProperty(VAULT_URI);
+    }
+
+    /**
+     * The authentication token to use to access the vault.
+     *
+     * @return
+     *      The Hashicorp or OpenBao authentication token.
+     *
+     * @throws GuacamoleException
+     *     If the property is not defined in guacamole.properties or
+     *     guacamole.properties can not be parsed.
+     */
+    public String getVaultToken() throws GuacamoleException {
+        return environment.getProperty(VAULT_TOKEN);
+    }
+
+    /**
+     * The authentication Username to use to access the vault.
+     *
+     * @return
+     *      The Hashicorp or OpenBao authentication Username
+     *
+     * @throws GuacamoleException
+     *     If the property is not defined in guacamole.properties or
+     *     guacamole.properties can not be parsed.
+     */
+    public String getVaultUsername() throws GuacamoleException {
+        return environment.getProperty(VAULT_USERNAME);
+    }
+
+    /**
+     * The authentication Password to use to access the vault.
+     *
+     * @return String
+     *      The Hashicorp or OpenBao authentication Password
+     *
+     * @throws GuacamoleException
+     *     If the property is not defined in guacamole.properties or
+     *     guacamole.properties can not be parsed.
+     */
+    public String getVaultPassword() throws GuacamoleException {
+        return environment.getProperty(VAULT_PASSWORD);
+    }
+    /**
+     * The maximum time that the cached data is considered valid in
+     * milliseconds.
+     *
+     * @return
+     *      The cache lifetime in milliseconds.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties can not be parsed.
+     */
+    public int getVaultCacheLifetime() throws GuacamoleException {
+        return environment.getProperty(VAULT_CACHE_LIFETIME, DEFAULT_CACHE_LIFETIME);
+    }
+
+    /**
+     * The maximum time that a request to the vault server can take in
+     * milliseconds.
+     *
+     * @return
+     *      The request timeout in milliseconds.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties can not be parsed.
+     */
+    public int getRequestTimeout() throws GuacamoleException {
+        return environment.getProperty(VAULT_REQUEST_TIMEOUT, DEFAULT_REQUEST_TIMEOUT);
+    }
+
+    /**
+     * The maximum time that a connection to the vault server can take in
+     * milliseconds.
+     *
+     * @return
+     *      The connection timeout in milliseconds.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties can not be parsed.
+     */
+    public int getConnectionTimeout() throws GuacamoleException {
+        return environment.getProperty(VAULT_CONNECTION_TIMEOUT, DEFAULT_CONNECTION_TIMEOUT);
+    }
+
+    /**
+     * The renewal delay, in milliseconds of expiring token. A token will be renewed
+     * prior to it expiration by this delay
+     *
+     * @return
+     *      The renewal delay in milliseconds.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties can not be parsed.
+     */
+    public int getTokenRenewalDelay() throws GuacamoleException {
+        return environment.getProperty(VAULT_TOKEN_RENEWAL_DELAY, DEFAULT_TOKEN_RENEWAL_DELAY);
+    }
+
+    /**
+     * The type of SSH certificates are will be generated. Must be either
+     * 'rsa' for 4096-bit RSA keys or 'ed25519'.
+     *
+     * @return
+     *      The ssh type to use.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties can not be parsed.
+     */
+    public String getSshType() throws GuacamoleException {
+        String type = environment.getProperty(VAULT_SSH_TYPE, DEFAULT_SSH_TYPE);
+        if (! type.equals("rsa") & ! type.equals("ed25519")) {
+            throw new GuacamoleException("Only ssh certificate types 'rsa' (4096-bit) and 'ed25519' are supported");
+        }
+        return type;
+    }
+
+    /**
+     * The maximum time that a signed SSH certificate is considered valid in
+     * milliseconds.
+     *
+     * @return
+     *      The ssh connection timeout in milliseconds.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties can not be parsed.
+     */
+    public int getSshConnectionTimeout() throws GuacamoleException {
+        return environment.getProperty(VAULT_SSH_CONNECTION_TIMEOUT, DEFAULT_SSH_CONNECTION_TIMEOUT);
+    }
+
+    /**
      * Return whether user-level HV configs should be enabled. If this
-     * flag is set to true, users can edit their own HV configs, as can
-     * admins. If set to false, no existing user-specific HV configuration
+     * flag is set to true, users vaults can be used to supply secrets.
+     * If set to false, no existing user-specific HV configuration
      * will be exposed through the UI or used when looking up secrets.
      *
      * @return
@@ -131,74 +384,121 @@ public class HvConfigurationService extends VaultConfigurationService {
      *     parsed.
      */
     public boolean getAllowUserConfig() throws GuacamoleException {
-        return environment.getProperty(ALLOW_USER_CONFIG, false);
+        return environment.getProperty(VAULT_ALLOW_USER_CONFIG, DEFAULT_ALLOW_USER_CONFIG);
     }
 
-    // Not used
     @Override
     public boolean getSplitWindowsUsernames() throws GuacamoleException {
+        // Not needed for Hashicorp/OpenBao - return false
         return false;
     }
 
-    // Not used
     @Override
     public boolean getMatchUserRecordsByDomain() throws GuacamoleException {
+        // Not needed for Hashicorp/OpenBao - return false
         return false;
     }
 
     /**
-     * Return the globally-defined base-64-encoded JSON HV configuration blob
-     * as a string.
-     *
-     * @return
-     *     The globally-defined base-64-encoded JSON HV configuration blob
-     *     as a string.
-     *
-     * @throws GuacamoleException
-     *     If the value specified within guacamole.properties cannot be
-     *     parsed or does not exist.
+     * Class containing the configuration associated with a client instance
      */
-    @Nonnull
-    @SuppressWarnings("null")
-    public String getHvConfig() throws GuacamoleException {
+    public class VaultInfo {
 
-        // This will always return a non-null value; an exception would be
-        // thrown if the required value is not set
-        return environment.getRequiredProperty(HV_CONFIG);
+        public final URI Uri;
+        public final String Token;
+        public final String Username;
+        public final String Password;
+        public final int ConnectionTimeout;
+        public final int RequestTimeout;
+        public final int TokenRenewalDelay;
+        public final int CacheLifetime;
+        public final String SshType;
+        public final int SshConnectionTimeout;
+
+        public VaultInfo(URI Uri,
+                String Token,
+                String Username,
+                String Password) {
+            this.Uri = Uri;
+            this.Token = Token;
+            this.Username = Username;
+            this.Password = Password;
+
+            int ConnectionTimeout;
+            try {
+                ConnectionTimeout = getConnectionTimeout();
+            }
+            catch (GuacamoleException e) {
+                logger.warn("Error parsing ConnectTimeout, using default: {}", e.getMessage());
+                ConnectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
+            }
+            this.ConnectionTimeout = ConnectionTimeout;
+            int RequestTimeout;
+            try {
+                RequestTimeout = getRequestTimeout();
+            }
+            catch (GuacamoleException e) {
+                logger.warn("Error parsing RequestTimeout, using default: {}", e.getMessage());
+                RequestTimeout = DEFAULT_REQUEST_TIMEOUT;
+            }
+            this.RequestTimeout = RequestTimeout;
+            int TokenRenewalDelay;
+            try {
+                TokenRenewalDelay = getTokenRenewalDelay();
+            }
+            catch (GuacamoleException e) {
+                logger.warn("Error parsing TokenRenewalDelay, using default: {}", e.getMessage());
+                TokenRenewalDelay = DEFAULT_TOKEN_RENEWAL_DELAY;
+            }
+            this.TokenRenewalDelay = TokenRenewalDelay;
+            int CacheLifetime;
+            try {
+                CacheLifetime = getVaultCacheLifetime();
+            }
+            catch (GuacamoleException e) {
+                logger.warn("Error parsing CacheLifetime, using default: {}", e.getMessage());
+                CacheLifetime = DEFAULT_CACHE_LIFETIME;
+            }
+            this.CacheLifetime = CacheLifetime;
+            String SshType;
+            try {
+                SshType = getSshType();
+            }
+            catch (GuacamoleException e) {
+                logger.warn("Error parsing SshType, using default: {}", e.getMessage());
+                SshType = DEFAULT_SSH_TYPE;
+            }
+            this.SshType = SshType;
+            int SshConnectionTimeout;
+            try {
+                SshConnectionTimeout = getSshConnectionTimeout();
+            }
+            catch (GuacamoleException e) {
+                logger.warn("Error parsing SshType, using default: {}", e.getMessage());
+                SshConnectionTimeout = DEFAULT_SSH_CONNECTION_TIMEOUT;
+            }
+            this.SshConnectionTimeout = SshConnectionTimeout;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            VaultInfo that = (VaultInfo) o;
+            // If Token non null it is used for the connection
+            if (Token == null || Token.trim().isEmpty())
+                return Objects.equals(Uri, that.Uri) &&
+                        Objects.equals(Token, that.Token);
+            else
+                return Objects.equals(Uri, that.Uri) &&
+                        Objects.equals(Username, that.Username) &&
+                        Objects.equals(Password, that.Password);
+        }
+
+        @Override
+        public int hashCode() {
+            // Only hash the values that can be different
+            return Objects.hash(Uri, Token, Username, Password);
+        }
     }
-
-    /**
-     * Given a base64-encoded JSON HV configuration, parse and return a
-     * KeyValueStorage object.
-     *
-     * @param value
-     *     The base64-encoded JSON HV configuration to parse.
-     *
-     * @return
-     *     The KeyValueStorage that is a result of the parsing operation
-     *
-     * @throws GuacamoleException
-     *     If the provided value is not valid base-64 encoded JSON HV configuration.
-     */
-    public static Map<String, String> parseHvConfig(String value) throws GuacamoleException {
-        try {
-            Map<String, String> config = new HashMap<>();
-            String valueDecoded = new String(Base64.getDecoder().decode(value), StandardCharsets.UTF_8);
-
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode jsonNode = mapper.readTree(valueDecoded);
-            jsonNode.properties().forEach(entry -> {
-                config.put(entry.getKey(), entry.getValue().asText());
-            });
-
-            return config;
-        }
-        catch (IOException e) {
-            throw new GuacamoleServerException("Invalid JSON configuration for Hashicorp Vault.", e);
-        }
-        catch (IllegalArgumentException e) {
-            throw new GuacamoleServerException("Invalid base64 configuration for Hashicorp Vault.", e);
-        }
-    }
-
 }
