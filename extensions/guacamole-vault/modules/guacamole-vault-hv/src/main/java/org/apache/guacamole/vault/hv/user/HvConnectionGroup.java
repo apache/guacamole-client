@@ -80,15 +80,22 @@ public class HvConnectionGroup extends DelegatingConnectionGroup {
         // Make a copy of the existing map
         Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
 
-        // Sanitize the HV configuration attribute, and ensure the attribute
-        // is always present
         attributes.put(
-            HvAttributeService.HV_CONFIGURATION_ATTRIBUTE,
-            HvAttributeService.sanitizeHvAttributeValue(
-                attributes.get(HvAttributeService.HV_CONFIGURATION_ATTRIBUTE)
-            )
+            HvAttributeService.HV_URI_ATTRIBUTE,
+            attributes.get(HvAttributeService.HV_URI_ATTRIBUTE)
         );
-
+        attributes.put(
+            HvAttributeService.HV_TOKEN_ATTRIBUTE,
+                attributes.get(HvAttributeService.HV_TOKEN_ATTRIBUTE)
+        );
+        attributes.put(
+            HvAttributeService.HV_USERNAME_ATTRIBUTE,
+            attributes.get(HvAttributeService.HV_USERNAME_ATTRIBUTE)
+        );
+        attributes.put(
+            HvAttributeService.HV_PASSWORD_ATTRIBUTE,
+                attributes.get(HvAttributeService.HV_PASSWORD_ATTRIBUTE)
+        );        
         return attributes;
     }
 
