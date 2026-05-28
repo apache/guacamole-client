@@ -1,23 +1,28 @@
 {
 
-    "CONNECTION_ATTRIBUTES" : {
-        "FIELD_HEADER_HV_USER_CONFIG_ENABLED" : "Allow user-provided HV configuration",
-        "SECTION_HEADER_HV_CONFIG"            : "Hashicorp Vault"
+    "CONNECTION_ATTRIBUTES": {
+        "FIELD_HEADER_HV_USER_CONFIG_ENABLED": "Allow user-provided Vault configuration",
+        "SECTION_HEADER_HV_CONFIG": "OpenBao or Hashicorp Vault"
     },
 
-    "CONNECTION_GROUP_ATTRIBUTES" : {
-        "ERROR_INVALID_HV_CONFIG_BLOB" : "The provided base64-encoded HV configuration blob is not valid.",
-        "FIELD_HEADER_HV_CONFIG"   : "HV Service Configuration",
-        "SECTION_HEADER_HV_CONFIG" : "Hashicorp Vault"
+    "CONNECTION_GROUP_ATTRIBUTES": {
+        "FIELD_HEADER_HV_URI": "Vault Server URL",
+        "FIELD_HEADER_HV_TOKEN": "Vault Access Token or Sink File",
+        "FIELD_HEADER_HV_USERNAME": "Vault Username",
+        "FIELD_HEADER_HV_PASSWORD": "Vault Password",
+        "SECTION_HEADER_HV_CONFIG": "OpenBao or Hashicorp Vault"
     },
 
-    "DATA_SOURCE_HASHICORP_VAULT" : {
-        "NAME" : "Hashicorp Vault"
+    "DATA_SOURCE_HASHICORP_VAULT": {
+        "NAME": "OpenBao or Hashicorp Vault"
     },
 
-    "USER_ATTRIBUTES" : {
-        "FIELD_HEADER_HV_CONFIG"   : "HV Service Configuration",
-        "SECTION_HEADER_HV_CONFIG" : "Hashicorp Vault"
+    "USER_ATTRIBUTES": {
+        "FIELD_HEADER_HV_URI": "Vault Server URL",
+        "FIELD_HEADER_HV_TOKEN": "Vault Access Token or Sink File",
+        "FIELD_HEADER_HV_USERNAME": "Vault Username",
+        "FIELD_HEADER_HV_PASSWORD": "Vault Password",
+        "SECTION_HEADER_HV_CONFIG": "OpenBao or Hashicorp Vault"
     }
 
 }

@@ -21,6 +21,7 @@ package org.apache.guacamole.vault.hv.secret;
 
 import java.util.Map;
 import javax.annotation.Nonnull;
+import org.apache.guacamole.vault.hv.conf.HvConfigurationService.VaultInfo;
 
 /**
  * Factory for creating HvClient instances.
@@ -39,6 +40,6 @@ public interface HvClientFactory {
      *     A new HvClient instance associated with the provided HV config
      *     options.
      */
-    HvClient create(@Nonnull Map<String, String> hvConfigOptions);
+    HvClient create(@Nonnull VaultInfo vaultInfo);
 
 }

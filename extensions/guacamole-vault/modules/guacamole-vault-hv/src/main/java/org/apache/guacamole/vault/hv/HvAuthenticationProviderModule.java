@@ -20,7 +20,6 @@
 package org.apache.guacamole.vault.hv;
 
 import com.google.inject.assistedinject.FactoryModuleBuilder;
-import java.security.Security;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.VaultAuthenticationProviderModule;
 import org.apache.guacamole.vault.conf.VaultAttributeService;
@@ -30,13 +29,13 @@ import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
 import org.apache.guacamole.vault.hv.secret.HvClient;
 import org.apache.guacamole.vault.hv.secret.HvClientFactory;
 import org.apache.guacamole.vault.hv.secret.HvSecretService;
+import org.apache.guacamole.vault.hv.secret.HvTunnelEventListener;
 import org.apache.guacamole.vault.hv.user.HvConnectionGroup;
 import org.apache.guacamole.vault.hv.user.HvDirectoryService;
 import org.apache.guacamole.vault.hv.user.HvUser;
 import org.apache.guacamole.vault.hv.user.HvUserFactory;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
-import org.bouncycastle.jcajce.provider.BouncyCastleFipsProvider;
 
 /**
  * Guice module which configures injections specific to Hashicorp Vault
@@ -53,9 +52,7 @@ public class HvAuthenticationProviderModule
      * @throws GuacamoleException
      *     If configuration details in guacamole.properties cannot be parsed.
      */
-    public HvAuthenticationProviderModule() throws GuacamoleException {
-        Security.addProvider(new BouncyCastleFipsProvider());
-    }
+    public HvAuthenticationProviderModule() throws GuacamoleException { }
 
     @Override
     protected void configureVault() {
@@ -64,7 +61,7 @@ public class HvAuthenticationProviderModule
         bind(HvAttributeService.class);
         bind(VaultAttributeService.class).to(HvAttributeService.class);
         bind(VaultConfigurationService.class).to(HvConfigurationService.class);
-        bind(VaultSecretService.class).to(HvSecretService.class);
+        bind(VaultSecretService.class).to(HvSecretService.class).asEagerSingleton();
         bind(VaultDirectoryService.class).to(HvDirectoryService.class);
 
         // Bind factory for creating HV Clients
@@ -76,6 +73,9 @@ public class HvAuthenticationProviderModule
         install(new FactoryModuleBuilder()
                 .implement(HvUser.class, HvUser.class)
                 .build(HvUserFactory.class));
+
+        // Static Injection of the Listener to get TunnelConnectEvent and TunnelCloseEvent
+        requestStaticInjection(HvTunnelEventListener.class);
     }
 
 }

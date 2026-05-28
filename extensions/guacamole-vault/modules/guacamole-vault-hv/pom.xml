@@ -26,14 +26,13 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-vault-hv</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.0</version>
     <name>guacamole-vault-hv</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-vault</artifactId>
-        <version>1.6.0</version>
+        <version>${revision}</version>
         <relativePath>../../</relativePath>
     </parent>
 
@@ -47,14 +46,13 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Guacamole base key vault support -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-vault-base</artifactId>
-            <version>1.6.0</version>
+            <version>${revision}</version>
         </dependency>
 
         <dependency>
@@ -80,13 +78,49 @@
             <version>${kotlin.version}</version>
         </dependency>
 
-        <!-- Use FIPS variant of Bouncy Castle crypto library -->
+        <!-- Use Spring to access the Vault -->
         <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bc-fips</artifactId>
-            <version>2.1.0</version>
+          <groupId>org.springframework.vault</groupId>
+          <artifactId>spring-vault-core</artifactId>
+          <version>2.3.4</version>
         </dependency>
 
+        <!-- For SSH key generation -->
+        <dependency>
+          <groupId>org.apache.sshd</groupId>
+          <artifactId>sshd-common</artifactId>
+          <version>2.17.1</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.slf4j</groupId>
+                  <artifactId>jcl-over-slf4j</artifactId>
+              </exclusion>
+          </exclusions>
+        </dependency>
+
+        <!-- For SSH key generation - ed25519 support-->
+        <dependency>
+          <groupId>net.i2p.crypto</groupId>
+          <artifactId>eddsa</artifactId>
+          <version>0.3.0</version>
+        </dependency>
+
+        <!-- For Caching support -->
+        <dependency>
+          <groupId>com.github.ben-manes.caffeine</groupId>
+          <artifactId>caffeine</artifactId>
+          <version>2.9.3</version>
+          <exclusions>
+            <exclusion>
+              <groupId>org.checkerframework</groupId>
+              <artifactId>checker-qual</artifactId>
+            </exclusion>
+            <exclusion>
+              <groupId>com.google.errorprone</groupId>
+              <artifactId>error_prone_annotations</artifactId>
+            </exclusion>
+          </exclusions>
+        </dependency>
     </dependencies>
 
 </project>
