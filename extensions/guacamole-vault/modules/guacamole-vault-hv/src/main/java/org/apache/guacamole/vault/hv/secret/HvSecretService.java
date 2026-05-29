@@ -105,10 +105,16 @@ public class HvSecretService implements VaultSecretService {
         // the per ConnectionGroup vaults, which MUST have a non expiring means of
         // authentication to avoid issues
         try {
-            HvClient client = getClient(confService.new VaultInfo(confService.getVaultUri(),
+            VaultInfo vaultInfo = confService.new VaultInfo(confService.getVaultUri(),
                     confService.getVaultToken(),
                     confService.getVaultUsername(),
-                    confService.getVaultPassword()));
+                    confService.getVaultPassword());
+            if (isVaultInfoValid(vaultInfo)) {
+                HvClient client = getClient(confService.new VaultInfo(confService.getVaultUri(),
+                        confService.getVaultToken(),
+                        confService.getVaultUsername(),
+                        confService.getVaultPassword()));
+            }
         }
         catch (GuacamoleException e) {
             logger.error("Can't initialize HvClient : {}", e.getMessage());
@@ -269,18 +275,22 @@ public class HvSecretService implements VaultSecretService {
             config = new GuacamoleConfiguration();
         }
 
-        // Create an application wide client 
+        // Create an application wide client
         VaultInfo vaultInfo = confService.new VaultInfo(confService.getVaultUri(),
                 confService.getVaultToken(),
                 confService.getVaultUsername(),
                 confService.getVaultPassword());
-        HvClient client = getClient(vaultInfo);
+        HvClient client;
+        if (isVaultInfoValid(vaultInfo))
+            client = getClient(vaultInfo);
+        else
+            client = null;
 
         // Create a connection group client
         HvClient connectionClient  = getConnectionGroupHvClient(userContext, connectable);
-        
-        // Configure per user client if configured   
-        HvClient userClient = getUserHvClient(userContext, connectable);  
+
+        // Configure per user client if configured
+        HvClient userClient = getUserHvClient(userContext, connectable);
 
         // Use a key including GUAC_USERNAME, to at least prevent a user stealing the
         // session of another due to timing issues. The ssh certificates of keys
@@ -292,40 +302,71 @@ public class HvSecretService implements VaultSecretService {
                 userContext, config, new TokenFilter());
         final String key = guac_username + "-" + username + "-" +
                 finalName.substring(0, finalName.lastIndexOf('/'));
-  
-        return client.getSecret(finalName, username, key)
-            .handle((value, ex) -> {
-                if (ex == null) {
-                    return CompletableFuture.<String>completedFuture(value);
-                }
 
-                if (connectionClient != null) {
-                    try {
-                        return connectionClient.getSecret(finalName, username, key);
-                    } catch (GuacamoleException e) {
-                        return CompletableFuture.<String>failedFuture(e);
+        if (client == null) {
+            if (connectionClient == null) {
+                if (userClient == null) {
+                    return null;
+                }
+                else {
+                    return userClient.getSecret(finalName, username, key);
+                }
+            }
+            else {
+                return connectionClient.getSecret(finalName, username, key)
+                    .handle((value, ex) -> {
+                        if (ex == null) {
+                            return CompletableFuture.<String>completedFuture(value);
+                        }
+
+                        if (userClient != null) {
+                            try {
+                                return userClient.getSecret(finalName, username, key);
+                            } catch (GuacamoleException e) {
+                                return CompletableFuture.<String>failedFuture(e);
+                            }
+                        }
+
+                        return CompletableFuture.<String>completedFuture(null);
+                    })
+                    .thenCompose(Function.identity());
+            }
+        }
+        else {
+            return client.getSecret(finalName, username, key)
+                .handle((value, ex) -> {
+                    if (ex == null) {
+                        return CompletableFuture.<String>completedFuture(value);
                     }
-                }
 
-                return CompletableFuture.<String>failedFuture(ex);
-            })
-            .thenCompose(Function.identity())
-            .handle((value, ex) -> {
-                if (ex == null) {
-                    return CompletableFuture.<String>completedFuture(value);
-                }
-
-                if (userClient != null) {
-                    try {
-                        return userClient.getSecret(finalName, username, key);
-                    } catch (GuacamoleException e) {
-                        return CompletableFuture.<String>failedFuture(e);
+                    if (connectionClient != null) {
+                        try {
+                            return connectionClient.getSecret(finalName, username, key);
+                        } catch (GuacamoleException e) {
+                            return CompletableFuture.<String>failedFuture(e);
+                        }
                     }
-                }
 
-                return CompletableFuture.<String>completedFuture(null);
-            })
-            .thenCompose(Function.identity());
+                    return CompletableFuture.<String>failedFuture(ex);
+                })
+                .thenCompose(Function.identity())
+                .handle((value, ex) -> {
+                    if (ex == null) {
+                        return CompletableFuture.<String>completedFuture(value);
+                    }
+
+                    if (userClient != null) {
+                        try {
+                            return userClient.getSecret(finalName, username, key);
+                        } catch (GuacamoleException e) {
+                            return CompletableFuture.<String>failedFuture(e);
+                        }
+                    }
+
+                    return CompletableFuture.<String>completedFuture(null);
+                })
+                .thenCompose(Function.identity());
+        }
     }
 
     /**
@@ -358,7 +399,10 @@ public class HvSecretService implements VaultSecretService {
                 confService.getVaultToken(),
                 confService.getVaultUsername(),
                 confService.getVaultPassword());
-        return getClient(vaultInfo).getSecret(name, "", name.substring(0, name.lastIndexOf('/')));
+        if (isVaultInfoValid(vaultInfo))
+            return getClient(vaultInfo).getSecret(name, "", name.substring(0, name.lastIndexOf('/')));
+        else
+            return null;
     }
 
     /**
@@ -449,7 +493,7 @@ public class HvSecretService implements VaultSecretService {
             // If the current connection group has HV configuration attributes
             // set to a non-empty value, return immediately
             Map<String, String> hvConfig = group.getAttributes();
-            
+
             if (hvConfig.get(HvAttributeService.HV_URI_ATTRIBUTE) == null)
                 break;
 
@@ -526,7 +570,7 @@ public class HvSecretService implements VaultSecretService {
      */
     private HvClient getUserHvClient(UserContext userContext,
             Connectable connectable) throws GuacamoleException {
-            
+
         // If user HV configs are enabled globally, and for the given connectable,
         // return the user-specific HV config, if one exists
         if (confService.getAllowUserConfig() && isHvUserConfigEnabled(connectable)) {
@@ -534,11 +578,11 @@ public class HvSecretService implements VaultSecretService {
             // Get the underlying user, to avoid the KSM config sanitization
             User self = (((HvDirectory<User>) userContext.getUserDirectory())
                     .getUnderlyingDirectory().get(userContext.self().getIdentifier()));
-                    
+
             // If the current user has HV configuration attributes
             // set to a non-empty value, return immediately
             Map<String, String> hvConfig = self.getAttributes();
-            
+
             if (hvConfig.get(HvAttributeService.HV_URI_ATTRIBUTE) != null) {
                 VaultInfo vaultInfo = confService.new VaultInfo(
                         URI.create(hvConfig.get(HvAttributeService.HV_URI_ATTRIBUTE)),
@@ -549,7 +593,7 @@ public class HvSecretService implements VaultSecretService {
 
                 if (isVaultInfoValid(vaultInfo)) {
                     logger.debug("Using User Vault configuration");
-                    return getClient(vaultInfo);                
+                    return getClient(vaultInfo);
                 }
             }
         }
@@ -598,7 +642,7 @@ public class HvSecretService implements VaultSecretService {
         Map<String, Future<String>> tokens = new HashMap<>();
         Map<String, String> parameters = config.getParameters();
 
-        // Create an application wide client 
+        // Create an application wide client
         VaultInfo vaultInfo = confService.new VaultInfo(confService.getVaultUri(),
                 confService.getVaultToken(),
                 confService.getVaultUsername(),
@@ -607,9 +651,9 @@ public class HvSecretService implements VaultSecretService {
 
         // Create a connection group client
         HvClient connectionClient = getConnectionGroupHvClient(userContext, connectable);
-        
-        // Configure per user client if configured   
-        HvClient userClient = getUserHvClient(userContext, connectable); 
+
+        // Configure per user client if configured
+        HvClient userClient = getUserHvClient(userContext, connectable);
 
         // Remove optional token parameter modifier and match only our own tokens
         Pattern tokenPattern = Pattern.compile("\\$\\{(" + client.VAULT_TOKEN_PREFIX  +
@@ -629,39 +673,71 @@ public class HvSecretService implements VaultSecretService {
             while (tokenMatcher.find()) {
                 String notation = tokenMatcher.group(1);
                 String finalName = prepareToken(notation, userContext, config, filter);
-                tokens.put(notation, client.getSecret(finalName, username, key)
-                    .handle((value, ex) -> {
-                        if (ex == null) {
-                            return CompletableFuture.<String>completedFuture(value);
-                        }
 
-                        if (connectionClient != null) {
-                            try {
-                                return connectionClient.getSecret(finalName, username, key);
-                            } catch (GuacamoleException e) {
-                                return CompletableFuture.<String>failedFuture(e);
+                if (client == null) {
+                    if (connectionClient == null) {
+                        if (userClient == null) {
+                            tokens.put(notation, null);
+                        }
+                        else {
+                            tokens.put(notation, userClient.getSecret(finalName, username, key));
+                        }
+                    }
+                    else {
+                        tokens.put(notation, connectionClient.getSecret(finalName, username, key)
+                            .handle((value, ex) -> {
+                                if (ex == null) {
+                                    return CompletableFuture.<String>completedFuture(value);
+                                }
+
+                                if (userClient != null) {
+                                    try {
+                                        return userClient.getSecret(finalName, username, key);
+                                    } catch (GuacamoleException e) {
+                                        return CompletableFuture.<String>failedFuture(e);
+                                    }
+                                }
+
+                                return CompletableFuture.<String>completedFuture(null);
+                            })
+                            .thenCompose(Function.identity()));
+                    }
+                }
+                else {
+                    tokens.put(notation, client.getSecret(finalName, username, key)
+                        .handle((value, ex) -> {
+                            if (ex == null) {
+                                return CompletableFuture.<String>completedFuture(value);
                             }
-                        }
 
-                        return CompletableFuture.<String>failedFuture(ex);
-                    })
-                    .thenCompose(Function.identity())
-                    .handle((value, ex) -> {
-                        if (ex == null) {
-                            return CompletableFuture.<String>completedFuture(value);
-                        }
-
-                        if (userClient != null) {
-                            try {
-                                return userClient.getSecret(finalName, username, key);
-                            } catch (GuacamoleException e) {
-                                return CompletableFuture.<String>failedFuture(e);
+                            if (connectionClient != null) {
+                                try {
+                                    return connectionClient.getSecret(finalName, username, key);
+                                } catch (GuacamoleException e) {
+                                    return CompletableFuture.<String>failedFuture(e);
+                                }
                             }
-                        }
 
-                        return CompletableFuture.<String>completedFuture(null);
-                    })
-                    .thenCompose(Function.identity()));
+                            return CompletableFuture.<String>failedFuture(ex);
+                        })
+                        .thenCompose(Function.identity())
+                        .handle((value, ex) -> {
+                            if (ex == null) {
+                                return CompletableFuture.<String>completedFuture(value);
+                            }
+
+                            if (userClient != null) {
+                                try {
+                                    return userClient.getSecret(finalName, username, key);
+                                } catch (GuacamoleException e) {
+                                    return CompletableFuture.<String>failedFuture(e);
+                                }
+                            }
+
+                            return CompletableFuture.<String>completedFuture(null);
+                        })
+                        .thenCompose(Function.identity()));
+                }
             }
         }
 

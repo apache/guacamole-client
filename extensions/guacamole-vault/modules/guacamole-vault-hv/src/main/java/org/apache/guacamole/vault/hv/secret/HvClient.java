@@ -401,7 +401,7 @@ public class HvClient {
                     String type = getSecretsEngine(path).get("type").asText();
                     String mountPath = getSecretsEngine(path).get("path").asText();
                     String newpath = path.substring(mountPath.length());
-                    logger.debug("Vault {}, {}, {}, {}", type, mountPath, path, secret);                
+                    logger.debug("Vault {}, {}, {}, {}", type, mountPath, path, secret);
                     JsonNode jsonNode;
                     switch (type) {
                         case "ssh":
@@ -425,7 +425,7 @@ public class HvClient {
 
                     return jsonNode;
                 }
-              
+
                 catch (Exception e) {
                     logger.warn("Vault query failed for {} with {}", path, e.getMessage());
                     throw new CompletionException("Vault query failed for " + path, e);
