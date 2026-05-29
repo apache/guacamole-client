@@ -309,7 +309,7 @@ public class HvSecretService implements VaultSecretService {
 
                 return CompletableFuture.<String>failedFuture(ex);
             })
-            .thenCompose(f -> f)
+            .thenCompose(Function.identity())
             .handle((value, ex) -> {
                 if (ex == null) {
                     return CompletableFuture.<String>completedFuture(value);
@@ -325,7 +325,7 @@ public class HvSecretService implements VaultSecretService {
 
                 return CompletableFuture.<String>completedFuture(null);
             })
-            .thenCompose(f -> f);
+            .thenCompose(Function.identity());
     }
 
     /**
