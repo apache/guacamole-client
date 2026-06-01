@@ -45,7 +45,6 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.vault.hv.GuacamoleExceptionSupplier;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService.VaultInfo;
 import org.apache.guacamole.vault.hv.vault.FileTokenAuthentication;
 import org.apache.guacamole.vault.hv.vault.UsernamePasswordAuthentication;
