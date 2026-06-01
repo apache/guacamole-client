@@ -488,11 +488,11 @@ public class HvConfigurationService extends VaultConfigurationService {
             // If Token non null it is used for the connection
             if (Token == null || Token.trim().isEmpty())
                 return Objects.equals(Uri, that.Uri) &&
-                        Objects.equals(Token, that.Token);
-            else
-                return Objects.equals(Uri, that.Uri) &&
                         Objects.equals(Username, that.Username) &&
                         Objects.equals(Password, that.Password);
+            else
+                return Objects.equals(Uri, that.Uri) &&
+                        Objects.equals(Token, that.Token);
         }
 
         @Override
