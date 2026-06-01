@@ -51,7 +51,6 @@ import org.apache.guacamole.net.event.TunnelCloseEvent;
 import org.apache.guacamole.net.event.TunnelConnectEvent;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
-import org.apache.guacamole.vault.hv.GuacamoleExceptionSupplier;
 import org.apache.guacamole.vault.hv.conf.HvAttributeService;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService.VaultInfo;
