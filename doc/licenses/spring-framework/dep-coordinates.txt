@@ -4,3 +4,5 @@ org.springframework:spring-beans:jar:*
 org.springframework:spring-context:jar:*
 org.springframework:spring-core:jar:*
 org.springframework:spring-expression:jar:*
+org.springframework:spring-jcl:jar:5.3.29
+org.springframework:spring-web:jar:5.3.29

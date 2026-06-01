@@ -49,6 +49,13 @@
             <version>${revision}</version>
         </dependency>
 
+        <!-- Hashicorp Vault Extension -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-vault-hv</artifactId>
+            <version>${revision}</version>
+        </dependency>
+
    </dependencies>
 
     <build>

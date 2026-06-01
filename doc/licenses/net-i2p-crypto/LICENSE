@@ -1,0 +1,6 @@
+# Name: EdDSA Java Implementation
+# Version: 0.3.0
+# From: str4d (original author)
+# Project: https://github.com/str4d/ed25519-java
+# Maven Coordinates: net.i2p.crypto:eddsa
+# License: CC0 1.0 Universal (Public Domain Dedication)
