@@ -6,10 +6,10 @@
 
     "CONNECTION_ATTRIBUTES" : {
 
-        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels vous pouvez vous connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels vous ne pouvez pas vous connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles vous êtes autorisé à vous connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles vous n'êtes pas autorisé à vous connecter : ",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels vous pouvez vous connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels vous ne pouvez pas vous connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles vous êtes autorisé à vous connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles vous n'êtes pas autorisé à vous connecter\u202F:",
 
         "SECTION_HEADER_RESTRICT_LOGIN_FORM"  : "Restrictions supplémentaires à la connexion"
 
@@ -17,10 +17,10 @@
 
     "CONNECTION_GROUP_ATTRIBUTES" : {
 
-        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels le groupe de connexion peut être consulté : ",
-        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels le groupe de connexion ne peut pas être consulté : ",
-        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles le groupe de connexion est autorisé à se connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles le groupe de connexion n'est pas autorisé à se connecter : ",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels le groupe de connexion peut être consulté\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels le groupe de connexion ne peut pas être consulté\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles le groupe de connexion est autorisé à se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles le groupe de connexion n'est pas autorisé à se connecter\u202F:",
 
         "SECTION_HEADER_RESTRICT_LOGIN_FORM"  : "Restrictions supplémentaires à la connexion"
 
@@ -44,10 +44,10 @@
 
     "USER_ATTRIBUTES" : {
 
-        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels l'utilisateur peut se connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels l'utilisateur ne peut pas se connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles l'utilisateur est autorisé à se connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles l'utilisateur n'est pas autorisé à se connecter : ",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels l'utilisateur peut se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels l'utilisateur ne peut pas se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles l'utilisateur est autorisé à se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles l'utilisateur n'est pas autorisé à se connecter\u202F:",
 
         "SECTION_HEADER_RESTRICT_LOGIN_FORM"  : "Autres restrictions de connexion"
 
@@ -55,10 +55,10 @@
 
     "USER_GROUP_ATTRIBUTES" : {
 
-        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels les membres peuvent se connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels les membres ne peuvent pas se connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles les membres sont autorisé à se connecter : ",
-        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles les membres ne sont pas autorisé à se connecter : ",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels les membres peuvent se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels les membres ne peuvent pas se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles les membres sont autorisé à se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles les membres ne sont pas autorisé à se connecter\u202F:",
 
         "SECTION_HEADER_RESTRICT_LOGIN_FORM"  : "Autres restrictions de connexion"
 
