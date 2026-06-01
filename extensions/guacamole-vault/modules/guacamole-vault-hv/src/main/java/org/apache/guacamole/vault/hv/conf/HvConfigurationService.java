@@ -498,7 +498,10 @@ public class HvConfigurationService extends VaultConfigurationService {
         @Override
         public int hashCode() {
             // Only hash the values that can be different
-            return Objects.hash(Uri, Token, Username, Password);
+            if (Token == null || Token.trim().isEmpty())
+                return Objects.hash(Uri, Username, Password);
+            else
+                return Objects.hash(Uri, Token);
         }
     }
 }
