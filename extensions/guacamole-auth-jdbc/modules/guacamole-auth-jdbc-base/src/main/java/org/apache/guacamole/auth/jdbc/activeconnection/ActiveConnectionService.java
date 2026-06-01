@@ -121,9 +121,11 @@ public class ActiveConnectionService
         
         if (hasObjectPermissions(user, identifier, ObjectPermission.Type.DELETE)) {
 
-            // Close connection if not already closed
+            // Always close, even if the peer already vanished (isOpen() may be
+            // false). close() releases the active connection record and is
+            // idempotent.
             GuacamoleTunnel tunnel = activeConnection.getTunnel();
-            if (tunnel != null && tunnel.isOpen())
+            if (tunnel != null)
                 tunnel.close();
 
         }

@@ -59,8 +59,14 @@ public class ManagedInetGuacamoleSocket extends InetGuacamoleSocket {
 
     @Override
     public void close() throws GuacamoleException {
-        super.close();
-        socketClosedTask.run();
+        // Run cleanup even if super.close() throws, or the active connection
+        // record could leak.
+        try {
+            super.close();
+        }
+        finally {
+            socketClosedTask.run();
+        }
     }
     
 }
