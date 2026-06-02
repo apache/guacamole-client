@@ -315,7 +315,7 @@ public class TtlAwareSessionManager implements SessionManager {
                 tokenInfo = getTokenInfo(currentToken);
             }
             catch (VaultException e) {
-                logger.debug("Token lookup fail, attempting re-authentication");
+                logger.debug("Token lookup fail, attempting re-authentication : " + e.getMessage());
                 attemptLogin();
                 return;
             }
@@ -359,7 +359,7 @@ public class TtlAwareSessionManager implements SessionManager {
                 tokenInfo = getTokenInfo(newToken);
             }
             catch (VaultException e) {
-                logger.debug("Token lookup fail, attempting re-authentication");
+                logger.debug("Token lookup fail, attempting re-authentication : " + e.getMessage());
                 attemptLogin();
                 return;
             }

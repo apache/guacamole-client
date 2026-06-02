@@ -22,6 +22,7 @@ package org.apache.guacamole.vault.hv.vault;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermission;
 import org.springframework.vault.VaultException;
 import org.springframework.vault.authentication.ClientAuthentication;
 import org.springframework.vault.support.VaultToken;
@@ -53,14 +54,27 @@ public final class FileTokenAuthentication implements ClientAuthentication {
      */
     @Override
     public VaultToken login() {
-       String token;
+        String token;
         try {
+            if (Files.isSymbolicLink(tokenPath)) {
+                throw new VaultException("Refusing to use symbolic link for token sink file: " + tokenPath);
+            }
+
+            if (!Files.isRegularFile(tokenPath)) {
+                throw new VaultException("Token sink path must be a regular file: " + tokenPath);
+            }
+
+            // I allow group readable but maybe I shouldn't
+            if (Files.isReadable(tokenPath) &&
+                    Files.getPosixFilePermissions(tokenPath).contains(PosixFilePermission.OTHERS_READ)) {
+                throw new VaultException("Refusing to use a world readable token sink file : " + tokenPath);
+            }
+
             token = Files.readString(tokenPath).trim();
         }
         catch (IOException e) {
             // This might be recoverable. So throw a VautException
-            throw new VaultException(
-                    "Cannot read Vault token sink: " + tokenPath, e);
+            throw new VaultException("Cannot read Vault token sink: " + tokenPath, e);
         }
 
         return VaultToken.of(token);
