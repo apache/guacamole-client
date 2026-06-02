@@ -131,8 +131,32 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     }
 
     @Override
+    public URI getLogoutURI(String idToken) throws GuacamoleException {
+
+        // If no logout endpoint is configured, return null
+        URI logoutEndpoint = confService.getLogoutEndpoint();
+        if (logoutEndpoint == null)
+            return null;
+
+        // Build the logout URI with appropriate parameters
+        UriBuilder logoutUriBuilder = UriBuilder.fromUri(logoutEndpoint);
+
+        // Add post_logout_redirect_uri parameter
+        logoutUriBuilder.queryParam("post_logout_redirect_uri",
+                confService.getPostLogoutRedirectURI());
+
+        // Add id_token_hint if available, otherwise add client_id
+        if (idToken != null && !idToken.isEmpty())
+            logoutUriBuilder.queryParam("id_token_hint", idToken);
+        else
+            logoutUriBuilder.queryParam("client_id", confService.getClientID());
+
+        return logoutUriBuilder.build();
+    }
+
+    @Override
     public void shutdown() {
         // Nothing to clean up
     }
-    
+
 }

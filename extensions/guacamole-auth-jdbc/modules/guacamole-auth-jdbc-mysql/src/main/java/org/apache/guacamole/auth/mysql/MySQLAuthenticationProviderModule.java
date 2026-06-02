@@ -84,6 +84,10 @@ public class MySQLAuthenticationProviderModule implements Module {
         myBatisProperties.setProperty("mybatis.pooled.pingEnabled", "true");
         myBatisProperties.setProperty("mybatis.pooled.pingQuery", "SELECT 1");
 
+        // Set whether public key retrieval from the server is allowed
+        driverProperties.setProperty("allowPublicKeyRetrieval",
+            environment.getMYSQLAllowPublicKeyRetrieval() ? "true" : "false");
+
         // Use UTF-8 in database
         driverProperties.setProperty("characterEncoding", "UTF-8");
 
@@ -121,9 +125,21 @@ public class MySQLAuthenticationProviderModule implements Module {
         if (clientPassword != null)
             driverProperties.setProperty("clientCertificateKeyStorePassword",
                     clientPassword);
-        
+
         // Get the MySQL-compatible driver to use.
         mysqlDriver = environment.getMySQLDriver();
+
+        // Set the path to the server public key, if any
+        // Note that the property name casing is slightly different for MySQL
+        // and MariaDB drivers. See
+        // https://dev.mysql.com/doc/connector-j/en/connector-j-connp-props-security.html#cj-conn-prop_serverRSAPublicKeyFile
+        // and https://mariadb.com/kb/en/about-mariadb-connector-j/#infrequently-used-parameters
+        String publicKeyFile = environment.getMYSQLServerRSAPublicKeyFile();
+        if (publicKeyFile != null)
+            driverProperties.setProperty(
+                mysqlDriver == MySQLDriver.MYSQL
+                    ? "serverRSAPublicKeyFile" : "serverRsaPublicKeyFile",
+                publicKeyFile);
 
         // If timezone is present, set it.
         TimeZone serverTz = environment.getServerTimeZone();

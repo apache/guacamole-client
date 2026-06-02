@@ -13,6 +13,7 @@
         "FIELD_HEADER_DIGITS"     : "Rakamlar:",
         "FIELD_HEADER_INTERVAL"   : "Aralık:",
         "FIELD_HEADER_SECRET_KEY" : "Gizli Anahtar:",
+
         "FIELD_PLACEHOLDER_CODE"  : "Kimlik Doğrulama Kodu",
 
         "HELP_ENROLL_BARCODE" : "Kayıt işlemini tamamlamak için aşağıdaki kare kodu cihazınızdaki veya telefonunuzdaki iki faktörlü kimlik doğrulama uygulamasında tarayın.",

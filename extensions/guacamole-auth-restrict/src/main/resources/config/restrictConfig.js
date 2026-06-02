@@ -36,5 +36,12 @@ angular.module('guacRestrict').config(['formServiceProvider',
         controller  : 'hostRestrictionFieldController',
         templateUrl : 'app/ext/restrict/templates/hostRestrictionField.html'
     });
+    
+    // Define the date and time restriction field
+    formServiceProvider.registerFieldType('GUAC_DATETIME_RESTRICTION', {
+        module      : 'guacRestrict',
+        controller  : 'dateTimeRestrictionFieldController',
+        templateUrl : 'app/ext/restrict/templates/dateTimeRestrictionField.html'
+    });
 
 }]);

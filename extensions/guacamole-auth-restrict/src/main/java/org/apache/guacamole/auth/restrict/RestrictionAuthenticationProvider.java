@@ -19,12 +19,19 @@
 
 package org.apache.guacamole.auth.restrict;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.restrict.conf.ConfigurationService;
 import org.apache.guacamole.auth.restrict.user.RestrictedUserContext;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.net.auth.permission.SystemPermission;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * AuthenticationProvider implementation which provides additional restrictions
@@ -32,6 +39,32 @@ import org.apache.guacamole.net.auth.UserContext;
  * administrators to further control access to Guacamole resources.
  */
 public class RestrictionAuthenticationProvider extends AbstractAuthenticationProvider {
+    
+    /**
+     * Logger for this class.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestrictionAuthenticationProvider.class);
+    
+    /**
+     * Injector which will manage the object graph of this authentication
+     * provider.
+     */
+    private final Injector injector;
+    
+    /**
+     * Create a new instance of the Restriction authentication provider,
+     * setting up the Guice injector for dependency management.
+     * 
+     * @throws GuacamoleException
+     *     If an error occurs configuring the Guice injector.
+     */
+    public RestrictionAuthenticationProvider() throws GuacamoleException {
+
+        // Set up Guice injector.
+        injector = Guice.createInjector(
+            new RestrictionAuthenticationProviderModule(this)
+        );
+    }
     
     @Override
     public String getIdentifier() {
@@ -43,11 +76,38 @@ public class RestrictionAuthenticationProvider extends AbstractAuthenticationPro
             AuthenticatedUser authenticatedUser, Credentials credentials)
             throws GuacamoleException {
 
-        String remoteAddress = credentials.getRemoteAddress();
+        ConfigurationService confService = injector.getInstance(ConfigurationService.class);
         
-        // Verify identity of user
-        RestrictionVerificationService.verifyLoginRestrictions(context,
-                authenticatedUser.getEffectiveUserGroups(), remoteAddress);
+        String remoteAddress = credentials.getRemoteAddress();
+        User currentUser = context.self();
+        boolean isAdmin = currentUser
+                    .getEffectivePermissions()
+                    .getSystemPermissions()
+                    .hasPermission(SystemPermission.Type.ADMINISTER);
+        boolean restrictAdmins = confService.getRestrictAdminAccounts();
+        
+        // User is admin and restrictions do not apply, log warning.
+        if (isAdmin && !restrictAdmins) {
+            LOGGER.warn("Bypassing restrictions for administrator \"{}\"",
+                    currentUser.getIdentifier());
+        }
+        
+        // User is not an admin, or restrictions do apply to admins
+        else {
+            if (isAdmin) {
+                LOGGER.warn("User \"{}\" is an administrator, but system is "
+                        + "configured to enforce login restrictions on "
+                        + "administrators.",
+                        currentUser.getIdentifier());
+            }
+            else {
+                LOGGER.debug("User \"{}\" is not an administrator, enforcing"
+                        + "login restrictions.", currentUser.getIdentifier());
+            }
+            RestrictionVerificationService.verifyLoginRestrictions(context,
+                    authenticatedUser.getEffectiveUserGroups(), remoteAddress);
+
+        }
 
         // User has been verified, and authentication should be allowed to
         // continue
