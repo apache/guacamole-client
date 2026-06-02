@@ -43,6 +43,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService.VaultInfo;
@@ -429,7 +430,8 @@ public class HvClient {
                     logger.warn("Vault query failed for {} with {}", path, e.getMessage());
                     throw new CompletionException("Vault query failed for " + path, e);
                 }
-            });
+            })
+            .orTimeout((long) vaultInfo.CacheLifetime, TimeUnit.MILLISECONDS);
         });
 
         return futureResponse.whenComplete((jsonNode, ex) -> {
