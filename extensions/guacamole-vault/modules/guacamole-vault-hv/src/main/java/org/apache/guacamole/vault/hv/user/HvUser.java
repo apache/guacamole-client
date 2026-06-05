@@ -61,7 +61,7 @@ public class HvUser extends DelegatingUser {
      *     The User record to wrap.
      */
     @AssistedInject
-    HvUser(@Assisted User user) {
+    public HvUser(@Assisted final User user) {
         super(user);
     }
 
@@ -71,7 +71,7 @@ public class HvUser extends DelegatingUser {
      * @return
      *     The wrapped user record.
      */
-    User getUnderlyingUser() {
+    public User getUnderlyingUser() {
         return getDelegateUser();
     }
 
@@ -79,31 +79,24 @@ public class HvUser extends DelegatingUser {
     public Map<String, String> getAttributes() {
 
         // Make a copy of the existing map
-        Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
+        final Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
 
-        // Figure out if user-level HV config is enabled
+        // Figure out if user-level HV configuration is enabled
         boolean userHvConfigEnabled = false;
         try {
-            userHvConfigEnabled = configurationService.getAllowUserConfig();
+            userHvConfigEnabled = configurationService.allowUserConfig();
         }
         catch (GuacamoleException e) {
-
             logger.warn(
                     "Disabling user HV config due to exception: {}"
                     , e.getMessage());
-            logger.debug("Error looking up if user HV config is enabled.", e);
+            logger.debug("Error looking up if user HV config is enabled. {}", e);
 
         }
 
         // If user-specific HV configuration is not enabled, do not expose the
         // attribute at all
-        if (!userHvConfigEnabled) {
-            attributes.remove(HvAttributeService.HV_URI_ATTRIBUTE);
-            attributes.remove(HvAttributeService.HV_TOKEN_ATTRIBUTE);
-            attributes.remove(HvAttributeService.HV_USERNAME_ATTRIBUTE);
-            attributes.remove(HvAttributeService.HV_PASSWORD_ATTRIBUTE);
-        }
-        else {
+        if (userHvConfigEnabled) {
             attributes.put(
                 HvAttributeService.HV_URI_ATTRIBUTE,
                 attributes.get(HvAttributeService.HV_URI_ATTRIBUTE)
@@ -120,21 +113,32 @@ public class HvUser extends DelegatingUser {
                 HvAttributeService.HV_PASSWORD_ATTRIBUTE,
                     attributes.get(HvAttributeService.HV_PASSWORD_ATTRIBUTE)
             );
-
         }
+        else {
+            attributes.remove(HvAttributeService.HV_URI_ATTRIBUTE);
+            attributes.remove(HvAttributeService.HV_TOKEN_ATTRIBUTE);
+            attributes.remove(HvAttributeService.HV_USERNAME_ATTRIBUTE);
+            attributes.remove(HvAttributeService.HV_PASSWORD_ATTRIBUTE);
+        }
+       
         return attributes;
     }
 
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        try {
-            super.setAttributes(
-                HvAttributeService.processAttributes(attributes)
-            );
-        }
-        catch (GuacamoleException e) {
-            logger.warn("HvUser setAttributes failed");
-        }
-    }
+    /**
+     * Factory for creating HV-specific users, which wrap an underlying User.
+     */
+    public interface HvUserFactory {
 
+        /**
+         * Returns a new instance of a HvUser, wrapping the provided underlying User.
+         *
+         * @param user
+         *     The underlying User that should be wrapped.
+         *
+         * @return
+         *     A new instance of a HvUser, wrapping the provided underlying User.
+         */
+        HvUser create(User user);
+
+    }
 }

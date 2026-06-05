@@ -17,12 +17,13 @@
  * under the License.
  */
 
- // This is a minimal backport of this class to version 2.3.4 of spring-vault-core
-
 package org.apache.guacamole.vault.hv.vault;
 
 import org.springframework.util.Assert;
 
+/**
+ * This is a minimal backport of this class to version 2.3.4 of spring-vault-core
+ */
 public final class UsernamePasswordAuthenticationOptions {
     /**
      * Path of the userpass authentication method mount.
@@ -30,20 +31,20 @@ public final class UsernamePasswordAuthenticationOptions {
     private final String mountPath;
 
     /**
-    * Username of the userpass authetication method mount.
-    */
+     * Username of the userpass authetication method mount.
+     */
     private final String username;
 
     /**
-    * Password of the userpass authetication method mount.
-    */
+     * Password of the userpass authetication method mount.
+     */
     private final String password;
 
 
-    private UsernamePasswordAuthenticationOptions(Builder builder) {
-        this.username = builder.username;
-        this.password = builder.password;
-        this.mountPath = builder.mountPath;
+    private UsernamePasswordAuthenticationOptions(final Builder builder) {
+        this.username = builder.usern;
+        this.password = builder.passw;
+        this.mountPath = builder.mount;
     }
 
     public String getUsername() {
@@ -58,37 +59,78 @@ public final class UsernamePasswordAuthenticationOptions {
         return mountPath;
     }
 
+    /**
+     * Returns a builder for this class
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * A Builder class for UsernamePasswordOptions
+     */
     public static final class Builder {
 
-        private String username;
-        private String password;
-        private String mountPath = "userpass";
+        /** The username */
+        private String usern;
+        /** The password */
+        private String passw;
+        /** The mount path for Vault authentication */
+        private String mount = "userpass";
 
-        public Builder username(String username) {
-            this.username = username;
+        /**
+         * Set the username for this instance of UsernamePasswordAuthenticationOptions.
+         *
+         * @param username
+         *     A username to be used. It must be set for the built class to be valid
+         *
+         * @return
+         *     The builder instance
+         */
+        public Builder username(final String usern) {
+            this.usern = usern;
             return this;
         }
 
-        public Builder password(String password) {
-            this.password = password;
+        /**
+         * Set the password for this instance of UsernamePasswordAuthenticationOptions.
+         *
+         * @param password
+         *     A password to be used. It must be set for the built class to be valid
+         *
+         * @return
+         *     The builder instance
+         */
+        public Builder password(final String passw) {
+            this.passw = passw;
+            return this;
+        }
+         
+        /**
+         * Set the mountPath for this instance of UsernamePasswordAuthenticationOptions.
+         *
+         * @param mount
+         *     A Vault mount path to use for authentication. Defaults to "userpass" if not
+         *     set.
+         */
+        public Builder mountPath(final String mount) {
+            this.mount = mount;
             return this;
         }
 
-        /** Optional – defaults to "userpass" */
-        public Builder mountPath(String mountPath) {
-            this.mountPath = mountPath;
-            return this;
-        }
-
+        /**
+         * Once arguments are finalized, return the corresponding
+         * UsernamePasswordAuthenticationOptions.
+         *
+         * @return
+         *      A  UsernamePasswordAuthenticationOptions for use with a
+         *      spring-vault ClientAuthentication class.
+         */
         public UsernamePasswordAuthenticationOptions build() {
 
-            Assert.hasText(username, "Username must not be empty");
-            Assert.hasText(password, "Password must not be empty");
-            Assert.hasText(mountPath, "Mount path must not be empty");
+            Assert.hasText(usern, "Username must not be empty");
+            Assert.hasText(passw, "Password must not be empty");
+            Assert.hasText(mount, "Mount path must not be empty");
 
             return new UsernamePasswordAuthenticationOptions(this);
         }

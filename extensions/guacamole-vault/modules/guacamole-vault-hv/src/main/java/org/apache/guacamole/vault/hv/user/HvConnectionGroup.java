@@ -20,9 +20,7 @@
 package org.apache.guacamole.vault.hv.user;
 
 import com.google.common.collect.Maps;
-import java.util.HashMap;
 import java.util.Map;
-import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DelegatingConnectionGroup;
 import org.apache.guacamole.vault.hv.conf.HvAttributeService;
@@ -50,7 +48,7 @@ public class HvConnectionGroup extends DelegatingConnectionGroup {
      * @param connectionGroup
      *     The ConnectionGroup record to wrap.
      */
-    HvConnectionGroup(ConnectionGroup connectionGroup) {
+    public HvConnectionGroup(final ConnectionGroup connectionGroup) {
         super(connectionGroup);
     }
 
@@ -60,7 +58,7 @@ public class HvConnectionGroup extends DelegatingConnectionGroup {
      * @return
      *     The wrapped connection group record.
      */
-    ConnectionGroup getUnderlyingConnectionGroup() {
+    public ConnectionGroup getUnderlyingConnectionGroup() {
         return getDelegateConnectionGroup();
     }
 
@@ -70,7 +68,7 @@ public class HvConnectionGroup extends DelegatingConnectionGroup {
      * @return
      *     The underlying ConnectionGroup that's wrapped by this HvConnectionGroup.
      */
-    ConnectionGroup getUnderlyConnectionGroup() {
+    public ConnectionGroup getUnderlyConnectionGroup() {
         return getDelegateConnectionGroup();
     }
 
@@ -78,7 +76,7 @@ public class HvConnectionGroup extends DelegatingConnectionGroup {
     public Map<String, String> getAttributes() {
 
         // Make a copy of the existing map
-        Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
+        final Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
 
         attributes.put(
             HvAttributeService.HV_URI_ATTRIBUTE,
@@ -98,17 +96,4 @@ public class HvConnectionGroup extends DelegatingConnectionGroup {
         );        
         return attributes;
     }
-
-    @Override
-    public void setAttributes(Map<String, String> attributes) {
-        try {
-            super.setAttributes(
-                HvAttributeService.processAttributes(attributes)
-            );
-        }
-        catch (GuacamoleException e) {
-            logger.warn("HvConnectionGroup setAttributes failed");
-        }
-    }
-
 }

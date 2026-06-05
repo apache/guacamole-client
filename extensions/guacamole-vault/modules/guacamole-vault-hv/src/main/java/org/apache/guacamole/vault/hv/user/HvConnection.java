@@ -40,7 +40,7 @@ public class HvConnection extends DelegatingConnection {
      * @param connection
      *     The connection record to wrap.
      */
-    HvConnection(Connection connection) {
+    public HvConnection(final Connection connection) {
         super(connection);
     }
 
@@ -50,7 +50,7 @@ public class HvConnection extends DelegatingConnection {
      * @return
      *     The wrapped connection record.
      */
-    Connection getUnderlyingConnection() {
+    public Connection getUnderlyingConnection() {
         return getDelegateConnection();
     }
 
@@ -58,7 +58,7 @@ public class HvConnection extends DelegatingConnection {
     public Map<String, String> getAttributes() {
 
         // Make a copy of the existing map
-        Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
+        final Map<String, String> attributes = Maps.newHashMap(super.getAttributes());
 
         // Add the user-config-enabled configuration attribute
         attributes.putIfAbsent(HvAttributeService.HV_USER_CONFIG_ENABLED_ATTRIBUTE, null);

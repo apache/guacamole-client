@@ -30,8 +30,8 @@ import org.apache.guacamole.net.auth.Identifiable;
  * A HV-specific version of DecoratingDirectory that exposes the underlying
  * directory for when it's needed.
  */
-public abstract class HvDirectory<ObjectType extends Identifiable>
-        extends DelegatingDirectory<ObjectType> {
+public abstract class HvDirectory<T extends Identifiable>
+        extends DelegatingDirectory<T> {
 
     /**
      * Create a new HvDirectory, delegating to the provided directory.
@@ -39,7 +39,7 @@ public abstract class HvDirectory<ObjectType extends Identifiable>
      * @param directory
      *    The directory to delegate to.
      */
-    public HvDirectory(Directory<ObjectType> directory) {
+    public HvDirectory(final Directory<T> directory) {
         super(directory);
     }
 
@@ -50,7 +50,7 @@ public abstract class HvDirectory<ObjectType extends Identifiable>
      * @return
      *    The underlying directory.
      */
-    public Directory<ObjectType> getUnderlyingDirectory() {
+    public Directory<T> getUnderlyingDirectory() {
         return getDelegateDirectory();
     }
 
@@ -65,10 +65,10 @@ public abstract class HvDirectory<ObjectType extends Identifiable>
      *     A potentially-modified version of the object with the same
      *     identifier in the wrapped directory.
      */
-    protected abstract ObjectType wrap(ObjectType object);
+    protected abstract T wrap(T object);
 
     @Override
-    public ObjectType get(String identifier) throws GuacamoleException {
+    public T get(final String identifier) throws GuacamoleException {
 
         // Process and return the object from the wrapped directory
         return wrap(super.get(identifier));
@@ -76,7 +76,7 @@ public abstract class HvDirectory<ObjectType extends Identifiable>
     }
 
     @Override
-    public Collection<ObjectType> getAll(Collection<String> identifiers)
+    public Collection<T> getAll(final Collection<String> identifiers)
             throws GuacamoleException {
 
         // Process and return each object from the wrapped directory

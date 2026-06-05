@@ -27,13 +27,11 @@ import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.hv.conf.HvAttributeService;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
 import org.apache.guacamole.vault.hv.secret.HvClient;
-import org.apache.guacamole.vault.hv.secret.HvClientFactory;
+import org.apache.guacamole.vault.hv.secret.HvClientProvider;
 import org.apache.guacamole.vault.hv.secret.HvSecretService;
 import org.apache.guacamole.vault.hv.secret.HvTunnelEventListener;
-import org.apache.guacamole.vault.hv.user.HvConnectionGroup;
 import org.apache.guacamole.vault.hv.user.HvDirectoryService;
 import org.apache.guacamole.vault.hv.user.HvUser;
-import org.apache.guacamole.vault.hv.user.HvUserFactory;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
 
@@ -52,8 +50,15 @@ public class HvAuthenticationProviderModule
      * @throws GuacamoleException
      *     If configuration details in guacamole.properties cannot be parsed.
      */
-    public HvAuthenticationProviderModule() throws GuacamoleException { }
+    public HvAuthenticationProviderModule() throws GuacamoleException {
+        // This constructor is intentionally empty
+        super();
+    }
 
+    /**
+     * Configures injections for interfaces which are implementation-specific
+     * to the vault service in use.
+     */
     @Override
     protected void configureVault() {
 
@@ -67,12 +72,12 @@ public class HvAuthenticationProviderModule
         // Bind factory for creating HV Clients
         install(new FactoryModuleBuilder()
                 .implement(HvClient.class, HvClient.class)
-                .build(HvClientFactory.class));
+                .build(HvClientProvider.HvClientFactory.class));
 
         // Bind factory for creating HvUsers
         install(new FactoryModuleBuilder()
                 .implement(HvUser.class, HvUser.class)
-                .build(HvUserFactory.class));
+                .build(HvUser.HvUserFactory.class));
 
         // Static Injection of the Listener to get TunnelConnectEvent and TunnelCloseEvent
         requestStaticInjection(HvTunnelEventListener.class);

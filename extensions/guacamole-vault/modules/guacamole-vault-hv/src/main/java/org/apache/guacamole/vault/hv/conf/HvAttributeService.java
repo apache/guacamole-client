@@ -20,21 +20,20 @@
 package org.apache.guacamole.vault.hv.conf;
 
 import com.google.inject.Singleton;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.form.BooleanField;
 import org.apache.guacamole.form.Form;
 import org.apache.guacamole.form.TextField;
 import org.apache.guacamole.form.PasswordField;
-import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.vault.conf.VaultAttributeService;
 
+/**
+ * A service that exposes attributes for the admin UI, Four attributes are
+ * exposed: hv-uri, hv-token, hv-username and hv-password
+ *
+ */
 @Singleton
 public class HvAttributeService implements VaultAttributeService {
 
@@ -61,15 +60,6 @@ public class HvAttributeService implements VaultAttributeService {
      * associated with either a connection group or user.
      */
     public static final String HV_PASSWORD_ATTRIBUTE = "hv-password";
-
-    /**
-     * The HV configuration attribute contains sensitive information, so it
-     * should not be exposed through the directory. Instead, if a value is
-     * set on the attributes of an object, the following value will be exposed
-     * in its place, and correspondingly the underlying value will not be
-     * changed if this value is provided to an update call.
-     */
-    public static final String HV_ATTRIBUTE_PLACEHOLDER_VALUE = "**********";
 
     /**
      * All attributes related to configuring the HV vault on a
@@ -132,26 +122,5 @@ public class HvAttributeService implements VaultAttributeService {
     @Override
     public Collection<Form> getConnectionGroupAttributes() {
         return HV_ATTRIBUTES;
-    }
-
-    public static Map<String, String> processAttributes(
-            Map<String, String> attributes) throws GuacamoleException {
-        attributes = new HashMap<>(attributes);
-
-        // If the placeholder value was provided, do not update the attribute
-        String hvTokenValue = attributes.get(HvAttributeService.HV_TOKEN_ATTRIBUTE);
-        if (HvAttributeService.HV_ATTRIBUTE_PLACEHOLDER_VALUE.equals(hvTokenValue)) {
-            // Remove the attribute from the map so it won't be updated
-            attributes.remove(HvAttributeService.HV_TOKEN_ATTRIBUTE);
-        }
-
-        // If the placeholder value was provided, do not update the attribute
-        String hvPasswordValue = attributes.get(HvAttributeService.HV_PASSWORD_ATTRIBUTE);
-        if (HvAttributeService.HV_ATTRIBUTE_PLACEHOLDER_VALUE.equals(hvPasswordValue)) {
-            // Remove the attribute from the map so it won't be updated
-            attributes.remove(HvAttributeService.HV_PASSWORD_ATTRIBUTE);
-        }
-
-        return attributes;
     }
 }

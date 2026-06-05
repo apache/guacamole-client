@@ -19,20 +19,24 @@
 
 package org.apache.guacamole.vault.hv.secret;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.event.listener.Listener;
 import org.apache.guacamole.net.event.TunnelCloseEvent;
 import org.apache.guacamole.net.event.TunnelConnectEvent;
-import org.apache.guacamole.vault.hv.secret.HvSecretService;
 
+/**
+ * Listen for TunnelConnectEvent and TunnelCLoseEvent and pass to
+ * HvClientProvider to see if they correspond to an active ldap
+ * service account connection
+ */
 public class HvTunnelEventListener implements Listener {
 
     /**
      * Default constructor for ProviderFactory
      */
-    public HvTunnelEventListener() { }
+    public HvTunnelEventListener() { 
+        // Constructor deliberately empty
+    }
 
     /**
      * The LDAP session interface checks out session that then can not be
@@ -43,9 +47,9 @@ public class HvTunnelEventListener implements Listener {
      *      A tunnel close event
      */
     @Override
-    public void handleEvent(Object event) throws GuacamoleException {
+    public void handleEvent(final Object event) throws GuacamoleException {
         if (event instanceof TunnelConnectEvent || event instanceof TunnelCloseEvent) {
-            HvSecretService.treatLdapSession(event);
+            HvClientProvider.treatLdapSession(event);
         }
     }
 }
