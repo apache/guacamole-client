@@ -21,28 +21,20 @@ package org.apache.guacamole.vault.hv.secret;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.Nullable;
 import org.apache.guacamole.GuacamoleException;
@@ -74,17 +66,17 @@ public class HvClient {
      * Name of the Guacamole token to resolve on a Hashicorp Vault (secret path
      * is set in the token modifier).
      */
-    static final String VAULT_TOKEN_PREFIX = "vault://";
+    public static final String VAULT_TOKEN_PREFIX = "vault://";
 
     /**
      * The path prefix for the path-help REST API in the Vault
      */
-    static final String VAULT_PATH_HELP = "/sys/internal/ui/mounts/";
+    private static final String VAULT_PATH_HELP = "/sys/internal/ui/mounts/";
 
     /**
      * Name temporary entry in the ldap sessions for session being cosntructed
      */
-    static final String VAULT_LDAP_SESSION = "checkin";
+    public static final String VAULT_LDAP_SESSION = "checkin";
 
     /**
      * Logger for this class.
@@ -115,7 +107,7 @@ public class HvClient {
     /**
      * A HashMap of the checked out LDAP Sessions
      */
-    private final Map<String, LDAPSessionInfo> ldapSessions = new HashMap<>();
+    private final Map<String, LDAPSessionInfo> ldapSessions = new ConcurrentHashMap<>();
 
     /**
      * The HV configuration associated with this client instance.
@@ -130,35 +122,35 @@ public class HvClient {
      *     The HV configuration to use when retrieving properties from HV.
      */
     @AssistedInject
-    public HvClient(@Assisted VaultInfo vaultInfo) {
+    public HvClient(@Assisted final VaultInfo vaultInfo) throws GuacamoleException {
         this.vaultInfo = vaultInfo;
         this.objectMapper = new ObjectMapper();
 
-        VaultEndpoint endpoint = VaultEndpoint.from(vaultInfo.Uri.resolve("v1"));
+        final VaultEndpoint endpoint = VaultEndpoint.from(vaultInfo.getVaultUri().resolve("v1"));
 
-        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(vaultInfo.ConnectionTimeout);
-        requestFactory.setReadTimeout(vaultInfo.RequestTimeout);
+        final SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(vaultInfo.getConnectionTimeout());
+        requestFactory.setReadTimeout(vaultInfo.getRequestTimeout());
 
-        RestTemplate restTemplate = new RestTemplate(requestFactory);
+        final RestTemplate restTemplate = new RestTemplate(requestFactory);
         restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(
-            vaultInfo.Uri.resolve("v1").toString()));
-        ClientAuthentication authentication;
+            vaultInfo.getVaultUri().resolve("v1").toString()));
+        final ClientAuthentication authentication;
 
-        if (vaultInfo.Token != null) {
-            if (isTokenReadableFile(vaultInfo.Token)) {
+        if (vaultInfo.getVaultToken() != null) {
+            if (isTokenReadableFile(vaultInfo.getVaultToken())) {
                 authentication =
-                        new FileTokenAuthentication(vaultInfo.Token);
+                        new FileTokenAuthentication(vaultInfo.getVaultToken());
             }
             else {
-                authentication = new TokenAuthentication(vaultInfo.Token);
+                authentication = new TokenAuthentication(vaultInfo.getVaultToken());
             }
         }
-        else if (vaultInfo.Username != null && vaultInfo.Password != null) {
-            UsernamePasswordAuthenticationOptions options =
+        else if (vaultInfo.getVaultUsername() != null && vaultInfo.getVaultPassword() != null) {
+            final UsernamePasswordAuthenticationOptions options =
                 UsernamePasswordAuthenticationOptions.builder()
-                    .username(vaultInfo.Username)
-                    .password(vaultInfo.Password)
+                    .username(vaultInfo.getVaultUsername())
+                    .password(vaultInfo.getVaultPassword())
                     .build();
 
             authentication =
@@ -170,14 +162,14 @@ public class HvClient {
         }
 
         // Create a task scheduler for our token renewal
-        ThreadPoolTaskScheduler taskscheduler = new ThreadPoolTaskScheduler();
+        final ThreadPoolTaskScheduler taskscheduler = new ThreadPoolTaskScheduler();
         taskscheduler.setPoolSize(1);
         taskscheduler.setThreadNamePrefix("vault-renewal-");
         taskscheduler.initialize();
 
         // Session manager to automatically renew tokens before expiration
-        TtlAwareSessionManager sessionManager = new TtlAwareSessionManager(authentication,
-                restTemplate, taskscheduler, vaultInfo.TokenRenewalDelay);
+        final TtlAwareSessionManager sessionManager = new TtlAwareSessionManager(authentication,
+                restTemplate, taskscheduler, vaultInfo.getTokenRenewalDelay());
 
         this.vaultTemplate = new VaultTemplate(endpoint, requestFactory, sessionManager);
 
@@ -192,9 +184,10 @@ public class HvClient {
         // values in memory.. A VaultConverter function could deal with the
         // spring-vault-core part of the problem, but not Gaucamole.
         logger.debug("Initialize Cache with expiry of {}, {} seconds",
-                vaultInfo.CacheLifetime, Duration.ofMillis(vaultInfo.CacheLifetime).toSeconds());
+                vaultInfo.getVaultCacheLifetime(),
+                Duration.ofMillis(vaultInfo.getVaultCacheLifetime()).toSeconds());
         this.cache = Caffeine.newBuilder()
-                .expireAfterWrite(Duration.ofMillis(vaultInfo.CacheLifetime))
+                .expireAfterWrite(Duration.ofMillis(vaultInfo.getVaultCacheLifetime()))
                 .maximumSize(1_000_000)
                 .build();
     }
@@ -209,12 +202,13 @@ public class HvClient {
      * @return
      *      True is the token is a readable file
      */
-     private static boolean isTokenReadableFile(String token) {
+     private static boolean isTokenReadableFile(final String token) {
          try {
-             Path path = Paths.get(token);
+             final Path path = Paths.get(token);
              return Files.isRegularFile(path) && Files.isReadable(path);
         }
-        catch (Exception e) {
+        catch (SecurityException e) {
+            // File not readbale, permission denied
             return false;
         }
      }
@@ -230,33 +224,29 @@ public class HvClient {
      * @return
      *     A Map with the secret engine type and its mount path
      */
-    public JsonNode getSecretsEngine(String path) {
-        JsonNode cacheResponse = cache.getIfPresent(VAULT_PATH_HELP + path);
+    public JsonNode getSecretsEngine(final String path) {
+        final JsonNode cacheResponse = cache.getIfPresent(VAULT_PATH_HELP + path);
         if (cacheResponse != null) {
             return cacheResponse;
         }
 
-        VaultResponse response = vaultTemplate.read(VAULT_PATH_HELP + path);
-        Map<String, Object> data = response.getData();
+        final VaultResponse response = vaultTemplate.read(VAULT_PATH_HELP + path);
+        final Map<String, Object> data = response.getData();
         String type = String.valueOf(data.get("type"));
 
-        if (type.equals("kv")) {
-            // Need to detect if type 1 or type 2 Key/Value engine
+        if ("kv".equals(type)) {
+            final String version;
             if (data.get("options") instanceof Map<?, ?>) {
-                Map<?,?> options = (Map<?,?>) data.get("options");
-                if ("2".equals(String.valueOf(options.get("version")))) {
-                    type = "kv_2";
-                }
-                else {
-                    type = "kv_1";
-                }
+                final Map<?,?> options = (Map<?,?>) data.get("options");        
+                version = String.valueOf(options.get("version"));
             }
             else {
-                // No options, assume kv_1
-                type = "kv_1";
+                version = null;
             }
+            type = "2".equals(version) ? "kv_2" : "kv_1"; 
         }
-        JsonNode map = objectMapper.valueToTree(Map.of("type", type,
+
+        final JsonNode map = objectMapper.valueToTree(Map.of("type", type,
                 "path", String.valueOf(data.get("path"))));
         cache.put(VAULT_PATH_HELP + path, map);
 
@@ -266,25 +256,34 @@ public class HvClient {
     /**
      * Contains information about the checked out LDAP sessions
      */
-    private static class LDAPSessionInfo {
-        final String checkInPath;
-        final String username;
-        final Boolean initialized;
-        final Instant created;
+    private static final class LDAPSessionInfo {
+        /** Stores the check-in path of an active ldap-session */
+        private final String checkInPath;
+        /** Stores the service account username of the checked out account */
+        private final String username;
+        /** Is true id the TunnelConnectEVent has been detected */
+        private final boolean initialized;
+        /** The date the account was checked-out, allowing automatic check-in after 2h */
+        private final Instant created;
 
-        public LDAPSessionInfo(String checkInPath, String username) {
+        private LDAPSessionInfo(final String checkInPath, final String username) {
             this.checkInPath = checkInPath;
             this.username = username;
             this.initialized = false;
             this.created = Instant.now();
         }
 
-        public LDAPSessionInfo(String checkInPath, String username, Boolean initialized) {
+        private LDAPSessionInfo(final String checkInPath, final String username, final boolean initialized) {
             this.checkInPath = checkInPath;
             this.username = username;
             this.initialized = initialized;
             this.created = Instant.now();
         }
+        
+        private String getCheckInPath() { return checkInPath; }
+        private String getUsername() { return username; }
+        private boolean isInitialized() { return initialized; }
+        private Instant getCreated() { return created; }
     }
 
     /**
@@ -298,36 +297,37 @@ public class HvClient {
      * limit the risk of confusing two connection. There is still a small risk
      * of error here.
      *
-     * @param id
-     *      The id of the tunnel ldap session
-     *
      * @param tunnelId
+     *      The id of the tunnel of the ldap session. In a TunnelConnectEvent
+     *      this is the temporary id used when the session was checked out
+     *
+     * @param tunnelIdNew
      *      The tunnel ID to store if we are treating a TunnelConnectEvent
      *
      * @return
      *      Returns true if our client treats this element
      */
-    public Boolean treatLdapSession(String id, @Nullable String tunnelId) {
-        LDAPSessionInfo session = ldapSessions.get(id);
+    public Boolean treatLdapSession(final String tunnelId, @Nullable final String tunnelIdNew) {
+        final LDAPSessionInfo session = ldapSessions.get(tunnelId);
         if (session != null) {
-            if (tunnelId != null) {
-                logger.debug("Storing connection ID: {}", tunnelId);
-                ldapSessions.put(tunnelId, new LDAPSessionInfo(session.checkInPath, session.username, true));
+            if (tunnelIdNew != null) {
+                logger.debug("Storing connection ID: {}", tunnelIdNew);
+                ldapSessions.put(tunnelIdNew, new LDAPSessionInfo(session.getCheckInPath(), session.getUsername(), true));
             }
-            else if (session.initialized) {
+            else if (session.isInitialized()) {
                 // FIXME : We don't always receive the TunnelCloseEvent
                 // So this checkin function only kinda works
-                logger.debug("Removing stored LDAP session: {}", id);
-                vaultTemplate.write(session.checkInPath, Map.of("service_account_names", session.username));
+                logger.debug("Removing stored LDAP session: {}", tunnelId);
+                vaultTemplate.write(session.getCheckInPath(), Map.of("service_account_names", session.getUsername()));
             }
-            ldapSessions.remove(id);
+            ldapSessions.remove(tunnelId);
 
             // Do some clean up of the active LDAP sessions. If a session hasn't been
             // checked in after 2 hours, just drop it from the hashMap. As the TTL of
             // the vault is already 2 hours don't need to check it in. Don't really
             // care if the value hang around in our hashmap so don't need a dedicated
             // task for this
-            ldapSessions.entrySet().removeIf(e -> Instant.now().isAfter(e.getValue().created.plusSeconds(7200)));
+            ldapSessions.entrySet().removeIf(e -> Instant.now().isAfter(e.getValue().getCreated().plusSeconds(7200)));
 
             return true;
         }
@@ -359,11 +359,12 @@ public class HvClient {
      *     If the requested secret cannot be retrieved or the HV notation
      *     is invalid.
      */
-    public CompletableFuture<String> getSecret(String notation, String username, String key) throws GuacamoleException {
+    public CompletableFuture<String> getSecret(final String notation, final String username, final String key) throws GuacamoleException {
 
         // If it's not an HV token, fail
-        if (!notation.startsWith(VAULT_TOKEN_PREFIX))
+        if (!notation.startsWith(VAULT_TOKEN_PREFIX)) {
             throw new GuacamoleException("Invalid token Vault notation: " + notation);
+        }
 
         /*
          * vault://path/to/secret  <-- the Guacamole token name and its modifier
@@ -371,67 +372,66 @@ public class HvClient {
          *                    ^^^^^^  <-- this is the secret (or key in HV terms)
          */
         int lastSlashIndex = notation.lastIndexOf('/');
-        if (lastSlashIndex == -1)
+        if (lastSlashIndex == -1) {
             lastSlashIndex = VAULT_TOKEN_PREFIX.length();
+        }
 
-        String path = notation.substring(VAULT_TOKEN_PREFIX.length(), lastSlashIndex);
-        String secret = notation.substring(lastSlashIndex + 1);
+        final String path = notation.substring(VAULT_TOKEN_PREFIX.length(), lastSlashIndex);
+        final String secret = notation.substring(lastSlashIndex + 1);
 
-        JsonNode cachedSecrets = cache.getIfPresent(key);
+        final JsonNode cachedSecrets = cache.getIfPresent(key);
 
         if (cachedSecrets != null) {
             logger.debug("Using cached data for token : {}", notation);
-            try {
-                JsonNode secretNode = cachedSecrets.get(secret);
-                if (secretNode == null) {
-                    logger.warn("Could not find {}/{}", path, secret);
-                    return CompletableFuture.completedFuture("");
-                }
-                return CompletableFuture.completedFuture(secretNode.asText());
+            final JsonNode secretNode = cachedSecrets.get(secret);
+            if (secretNode == null) {
+                logger.warn("Could not find {}/{}", path, secret);
+                return CompletableFuture.completedFuture("");
             }
-            catch (Exception e) {
-                throw new GuacamoleException("Failed to extract secret from cached JSON for " + notation, e);
-            }
+            return CompletableFuture.completedFuture(secretNode.asText());
         }
+        
+        long cacheLifetimeTmp;
+        try {
+            cacheLifetimeTmp = (long) vaultInfo.getVaultCacheLifetime();
+        }
+        catch (GuacamoleException e) {
+            cacheLifetimeTmp = 5000L;
+        }
+        final long cacheLifetime = cacheLifetimeTmp;
 
         // Cache miss, either get an existing in-flight request or create a new one
-        CompletableFuture<JsonNode> futureResponse = inFlightRequests.computeIfAbsent(key, k -> {
+        final CompletableFuture<JsonNode> futureResponse = inFlightRequests.computeIfAbsent(key, k -> {
             return CompletableFuture.supplyAsync(() -> {
-                try {
-                    String type = getSecretsEngine(path).get("type").asText();
-                    String mountPath = getSecretsEngine(path).get("path").asText();
-                    String newpath = path.substring(mountPath.length());
-                    logger.debug("Vault {}, {}, {}, {}", type, mountPath, path, secret);
-                    JsonNode jsonNode;
-                    switch (type) {
-                        case "ssh":
-                            jsonNode = getValueSSH(mountPath, newpath, username);
-                            break;
-                        case "ldap":
-                            jsonNode = getValueLDAP(mountPath, newpath);
-                            break;
-                        case "database":
-                            jsonNode = getValueDB(mountPath, newpath);
-                            break;
-                        case "kv_1":
-                            jsonNode = getValueKV(mountPath, newpath, VaultKeyValueOperations.KeyValueBackend.KV_1);
-                            break;
-                        case "kv_2":
-                            jsonNode = getValueKV(mountPath, newpath, VaultKeyValueOperations.KeyValueBackend.KV_2);
-                            break;
-                        default:
-                           throw new IllegalArgumentException("Unknown secret engine for the token: '" + type +"'");
-                    }
+                final String type = getSecretsEngine(path).get("type").asText();
+                final String mountPath = getSecretsEngine(path).get("path").asText();
+                final String newpath = path.substring(mountPath.length());
+                logger.debug("Vault {}, {}, {}, {}", type, mountPath, path, secret);
 
-                    return jsonNode;
+                final JsonNode jsonNode;
+                switch (type) {
+                    case "ssh":
+                        jsonNode = getValueSSH(mountPath, newpath, username);
+                        break;
+                    case "ldap":
+                        jsonNode = getValueLDAP(mountPath, newpath);
+                        break;
+                    case "database":
+                        jsonNode = getValueDB(mountPath, newpath);
+                        break;
+                    case "kv_1":
+                        jsonNode = getValueKV(mountPath, newpath, VaultKeyValueOperations.KeyValueBackend.KV_1);
+                        break;
+                    case "kv_2":
+                        jsonNode = getValueKV(mountPath, newpath, VaultKeyValueOperations.KeyValueBackend.KV_2);
+                        break;
+                    default:
+                       throw new IllegalArgumentException("Unknown secret engine for the token: '" + type +"'");
                 }
 
-                catch (Exception e) {
-                    logger.warn("Vault query failed for {} with {}", path, e.getMessage());
-                    throw new CompletionException("Vault query failed for " + path, e);
-                }
+                return jsonNode;
             })
-            .orTimeout((long) vaultInfo.CacheLifetime, TimeUnit.MILLISECONDS);
+            .orTimeout(cacheLifetime, TimeUnit.MILLISECONDS);
         });
 
         return futureResponse.whenComplete((jsonNode, ex) -> {
@@ -441,14 +441,15 @@ public class HvClient {
                 cache.put(key, jsonNode);
             }
 
-            // Now that the cache is filled, this in-flight request is obsolete and must be removed
+            // Now that the cache is filled, this in-flight request is obsolete and 
+            // must be removed
             inFlightRequests.remove(key);
 
         }).thenApply(jsonNode -> {
             /*
              * Extract and return the secret
              */
-            JsonNode secretNode = jsonNode.get(secret);
+            final JsonNode secretNode = jsonNode.get(secret);
             if (secretNode == null) {
                 logger.warn("Could not find {}/{}", path, secret);
                 return "";
@@ -456,11 +457,13 @@ public class HvClient {
             return secretNode.asText();
         }).exceptionally(e -> {
             // Make sure that the exception is a GuacamoleException
-            Throwable cause = e.getCause();
-            String errorMessage = (cause != null) ? cause.getMessage() : "Unknown error";
+            final Throwable cause = e.getCause();
+            final String errorMessage = (cause != null) ? cause.getMessage() : "Unknown error";
+            logger.warn("Vault query failed for {} with {}", path, errorMessage);
 
-            if (cause instanceof GuacamoleException)
+            if (cause instanceof GuacamoleException) {
                 throw new CompletionException(cause);
+            }
 
             throw new CompletionException(
                 new GuacamoleException("Vault query failed for " + path + ": " + errorMessage, cause));
@@ -485,11 +488,11 @@ public class HvClient {
      * @throws GuacamoleException
      *     If the secrets cannot be retrieved from the Vault.
      */
-    private JsonNode getValueKV(String mountPath, String path, VaultKeyValueOperations.KeyValueBackend type) throws VaultException {
-        VaultKeyValueOperations kvOperations = vaultTemplate.opsForKeyValue(mountPath, type);
+    private JsonNode getValueKV(final String mountPath, final String path, final VaultKeyValueOperations.KeyValueBackend type) throws VaultException {
+        final VaultKeyValueOperations kvOperations = vaultTemplate.opsForKeyValue(mountPath, type);
 
         // Get the values on the path and cache them
-        VaultResponse response = kvOperations.get(path);
+        final VaultResponse response = kvOperations.get(path);
 
         if (response == null || response.getData() == null)
         {
@@ -518,50 +521,58 @@ public class HvClient {
      * @throws GuacamoleException
      *     If the secrets cannot be retrieved from the Vault.
      */
-    private JsonNode getValueSSH(String mountPath, String path, String username) throws VaultException {
+    private JsonNode getValueSSH(final String mountPath, final String path, final String username) throws VaultException {
         if (path.startsWith("creds/")) {
             if (username == null || username.isEmpty()) {
                 throw new VaultException("The username can not be empty for SSH signed certificates");
             }
 
-            VaultResponse response =
+            final VaultResponse response =
                 vaultTemplate.write(mountPath + path, Map.of("ip", "0.0.0.0"));
 
             if (response == null || response.getData() == null) {
                 throw new VaultException("No response from Vault SSH engine");
             }
-            Map<String, Object> retval = response.getData();
+            final Map<String, Object> retval = response.getData();
             retval.put("password", retval.get("key"));
 
             return objectMapper.valueToTree(retval);
         }
-        else if (path.startsWith("sign/")) {
-            HvSshKeys sshKeys = new HvSshKeys(vaultInfo.SshType);
-            Map<String, Object> request = Map.of(
-                    "public_key", sshKeys.publicSsh,
-                    "valid_principals", username,
-                    "extensions", Map.of("permit-pty", ""),
-                    "ttl", vaultInfo.SshConnectionTimeout);
 
-            VaultResponse vaultResponse = vaultTemplate.write(mountPath + path, request);
+        if (path.startsWith("sign/")) {
+            
+            final HvSshKeys sshKeys;
+            final Map<String, Object> request;
+            try {
+                sshKeys = new HvSshKeys(vaultInfo.getSshType());
+                request = Map.of(
+                        "public_key", sshKeys.getPublic(),
+                        "valid_principals", username,
+                        "extensions", Map.of("permit-pty", ""),
+                        "ttl", vaultInfo.getSshConnectionTimeout());
+            }
+            catch (GuacamoleException e) {
+                throw new VaultException("Error reading Vault configuration : " + e.getMessage());
+            }
+
+            final VaultResponse vaultResponse = vaultTemplate.write(mountPath + path, request);
 
             if (vaultResponse == null || vaultResponse.getData() == null) {
                 throw new VaultException("No response from Vault SSH engine");
             }
-
-            String signedCert = (String) vaultResponse.getData().get("signed_key");
+            final Map<String, Object> data = vaultResponse.getData();
+            final String signedCert = (String) data.get("signed_key");
 
             if (signedCert == null) {
                 throw new VaultException("Vault did not return a signed SSH certificate");
             }
 
-            return objectMapper.valueToTree(Map.of("private", sshKeys.privateSshPem,
+            return objectMapper.valueToTree(Map.of("private", sshKeys.getPrivate(),
                     "public", signedCert,
-                    "unsigned", sshKeys.publicSsh));
+                    "unsigned", sshKeys.getPublic()));
         }
-        else {
-           throw new VaultException("Unknown SSH type on path: " + mountPath + path);
-        }
+
+        throw new VaultException("Unknown SSH type on path: " + mountPath + path);
     }
 
     /**
@@ -580,8 +591,8 @@ public class HvClient {
      * @throws GuacamoleException
      *     If the secrets cannot be retrieved from the Vault.
      */
-    private JsonNode getValueLDAP(String mountPath, String path) throws VaultException {
-        VaultResponse response;
+    private JsonNode getValueLDAP(final String mountPath, final String path) throws VaultException {
+        final VaultResponse response;
         if (path.startsWith("static") || path.startsWith("creds/")) {
             response = vaultTemplate.read(mountPath + path);
         }
@@ -596,14 +607,14 @@ public class HvClient {
             throw new VaultException("No response from LDAP secrets engine");
         }
 
-        Map<String, Object> retval = response.getData();
+        final Map<String, Object> retval = response.getData();
         if (path.startsWith("library/")) {
-            String username = String.valueOf(retval.get("service_account_name"));
+            final String username = String.valueOf(retval.get("service_account_name"));
             retval.put("username", username);
 
             // Register a listener to check-in the account for a TunnelClose Event
             logger.info("Caching session : {}", username);
-            LDAPSessionInfo info = new LDAPSessionInfo(mountPath + path + "/check-in", username);
+            final LDAPSessionInfo info = new LDAPSessionInfo(mountPath + path + "/check-in", username);
             ldapSessions.put(VAULT_LDAP_SESSION, info);
         }
 
@@ -628,8 +639,8 @@ public class HvClient {
      * @throws GuacamoleException
      *     If the secrets cannot be retrieved from the Vault.
      */
-    private JsonNode getValueDB(String mountPath, String path) throws VaultException {
-        VaultResponse response = vaultTemplate.read(mountPath + path);
+    private JsonNode getValueDB(final String mountPath, final String path) throws VaultException {
+        final VaultResponse response = vaultTemplate.read(mountPath + path);
 
         if (response == null || response.getData() == null) {
             throw new VaultException("No response from Database secrets engine");

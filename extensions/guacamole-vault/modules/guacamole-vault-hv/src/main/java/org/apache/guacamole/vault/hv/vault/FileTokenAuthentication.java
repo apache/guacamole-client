@@ -27,6 +27,10 @@ import org.springframework.vault.VaultException;
 import org.springframework.vault.authentication.ClientAuthentication;
 import org.springframework.vault.support.VaultToken;
 
+/**
+ * A spring-vault ClientAuthentication class for VaultAgent sink 
+ * files
+ */
 public final class FileTokenAuthentication implements ClientAuthentication {
 
     /**
@@ -42,7 +46,7 @@ public final class FileTokenAuthentication implements ClientAuthentication {
      * @param String tokenPath
      *     A path to a readable file containing the token
      */
-    public FileTokenAuthentication(String tokenPath) {
+    public FileTokenAuthentication(final String tokenPath) {
         this.tokenPath = Path.of(tokenPath);
     }
 
@@ -54,29 +58,21 @@ public final class FileTokenAuthentication implements ClientAuthentication {
      */
     @Override
     public VaultToken login() {
-        String token;
+        if (Files.isSymbolicLink(tokenPath)) {
+            throw new VaultException("Refusing to use symbolic link for token sink file: " + tokenPath);
+        }
+
+        if (!Files.isRegularFile(tokenPath)) {
+            throw new VaultException("Token sink path must be a regular file: " + tokenPath);
+        }
+
         try {
-            if (Files.isSymbolicLink(tokenPath)) {
-                throw new VaultException("Refusing to use symbolic link for token sink file: " + tokenPath);
+            if (! Files.getPosixFilePermissions(tokenPath).contains(PosixFilePermission.OTHERS_READ)) {
+                return VaultToken.of(Files.readString(tokenPath).trim());
             }
-
-            if (!Files.isRegularFile(tokenPath)) {
-                throw new VaultException("Token sink path must be a regular file: " + tokenPath);
-            }
-
-            // I allow group readable but maybe I shouldn't
-            if (Files.isReadable(tokenPath) &&
-                    Files.getPosixFilePermissions(tokenPath).contains(PosixFilePermission.OTHERS_READ)) {
-                throw new VaultException("Refusing to use a world readable token sink file : " + tokenPath);
-            }
-
-            token = Files.readString(tokenPath).trim();
+        } catch (IOException e) {
+            throw new VaultException("Cannot read or inspect Vault token sink: " + tokenPath, e);
         }
-        catch (IOException e) {
-            // This might be recoverable. So throw a VautException
-            throw new VaultException("Cannot read Vault token sink: " + tokenPath, e);
-        }
-
-        return VaultToken.of(token);
+        throw new VaultException("Refusing to use a world readable token sink file: " + tokenPath);
     }
 }

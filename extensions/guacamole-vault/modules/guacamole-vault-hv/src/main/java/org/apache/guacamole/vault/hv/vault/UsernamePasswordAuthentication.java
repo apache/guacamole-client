@@ -17,9 +17,6 @@
  * under the License.
  */
 
-// This is a minimal backport of this class to version 2.3.4 of spring-vault-core
-// It is compatible with lease renewal using a life cycle aware session manager
-
 package org.apache.guacamole.vault.hv.vault;
 
 import java.time.Duration;
@@ -35,9 +32,14 @@ import org.springframework.vault.support.VaultResponse;
 import org.springframework.vault.support.VaultToken;
 import org.springframework.web.client.RestTemplate;
 
+/**
+ * This is a minimal backport of this class to version 2.3.4 of spring-vault-core
+ * It is compatible with lease renewal using a life cycle aware session manager
+ */
 public class UsernamePasswordAuthentication implements ClientAuthentication {
     /**
-     * A class containing all of the configuration options for username/password authentication
+     * A class containing all of the configuration options for 
+     * username/password authentication
      */
     private final UsernamePasswordAuthenticationOptions options;
 
@@ -64,9 +66,9 @@ public class UsernamePasswordAuthentication implements ClientAuthentication {
      *     The spring-framework RestTemplate used to communicate with the Vault
      */
     public UsernamePasswordAuthentication(
-            UsernamePasswordAuthenticationOptions options,
-            VaultEndpoint endpoint,
-            RestTemplate restTemplate) {
+            final UsernamePasswordAuthenticationOptions options,
+            final VaultEndpoint endpoint,
+            final RestTemplate restTemplate) {
 
         Assert.notNull(options, "Options must not be null");
         Assert.notNull(endpoint, "VaultEndpoint must not be null");
@@ -91,7 +93,7 @@ public class UsernamePasswordAuthentication implements ClientAuthentication {
     @Override
     public VaultToken login() throws VaultException {
 
-        String loginPath = String.format(
+        final String loginPath = String.format(
                 "%s://%s:%d/v1/auth/%s/login/%s",
                 endpoint.getScheme(),
                 endpoint.getHost(),
@@ -99,29 +101,27 @@ public class UsernamePasswordAuthentication implements ClientAuthentication {
                 options.getMountPath(),
                 options.getUsername());
 
-        Map<String, Object> body =
+        final Map<String, Object> body =
                 Collections.singletonMap("password", options.getPassword());
 
-        ResponseEntity<VaultResponse> response =
+        final ResponseEntity<VaultResponse> response =
                 restTemplate.postForEntity(loginPath, body, VaultResponse.class);
 
-        VaultResponse vaultResponse = response.getBody();
+        final VaultResponse vaultResponse = response.getBody();
 
         if (vaultResponse == null || vaultResponse.getAuth() == null) {
             throw new VaultException("No auth section returned from Vault");
         }
 
-        String token = (String) vaultResponse.getAuth().get("client_token");
-        Number lease = (Number) vaultResponse.getAuth().get("lease_duration");
-        Boolean renewable = (Boolean) vaultResponse.getAuth().get("renewable");
-
-        long leaseDuration = lease != null ? lease.longValue() : 0;
-        boolean isRenewable = renewable != null && renewable;
-
+        final String token = (String) vaultResponse.getAuth().get("client_token");
         if (token == null) {
             throw new VaultException("No client_token in Vault auth response");
         }
 
+        final Number lease = (Number) vaultResponse.getAuth().get("lease_duration");
+        final Boolean renewable = (Boolean) vaultResponse.getAuth().get("renewable");
+        final long leaseDuration = lease != null ? lease.longValue() : 0;
+        final boolean isRenewable = renewable != null && renewable;
         return  LoginToken.builder().token(token)
                 .leaseDuration(Duration.ofSeconds(leaseDuration))
                 .renewable(isRenewable)

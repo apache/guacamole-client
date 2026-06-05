@@ -22,6 +22,7 @@ package org.apache.guacamole.vault.hv.vault;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import org.springframework.http.HttpEntity;
@@ -33,6 +34,7 @@ import org.springframework.vault.VaultException;
 import org.springframework.vault.authentication.ClientAuthentication;
 import org.springframework.vault.authentication.LoginToken;
 import org.springframework.vault.authentication.SessionManager;
+import org.springframework.vault.authentication.VaultLoginException;
 import org.springframework.vault.client.VaultHttpHeaders;
 import org.springframework.vault.support.VaultResponse;
 import org.springframework.vault.support.VaultToken;
@@ -50,7 +52,12 @@ import org.slf4j.LoggerFactory;
  * - Skip renewal for tokens with TTL=0 (non-expiring tokens)
  * - Handle both LoginToken and VaultToken types.
  */
-public class TtlAwareSessionManager implements SessionManager {
+public final class TtlAwareSessionManager implements SessionManager {
+    /**
+     * The outcome of the renew token process
+     */
+    private enum Outcome { CONTINUE, REAUTH, STOP }
+
     /**
      * Logger for this class.
      */
@@ -111,10 +118,10 @@ public class TtlAwareSessionManager implements SessionManager {
      *     should occur.
      */
     public TtlAwareSessionManager(
-            ClientAuthentication clientAuthentication,
-            RestOperations restOperations,
-            TaskScheduler scheduler,
-            long renewalDelayMillis) {
+            final ClientAuthentication clientAuthentication,
+            final RestOperations restOperations,
+            final TaskScheduler scheduler,
+            final long renewalDelayMillis) {
 
         this.clientAuthentication = clientAuthentication;
         this.restOperations = restOperations;
@@ -123,16 +130,18 @@ public class TtlAwareSessionManager implements SessionManager {
 
         // Obtain the initial token and schedule its renewal
         try {
-            VaultToken token = clientAuthentication.login();
-            setSessionToken(token);
+            final VaultToken token = clientAuthentication.login();
             if (token != null && !token.getToken().isEmpty()) {
+                this.token.set(token);
+                scheduleRenewal(token);
                 logger.info("TtlAwareSessionManager initialized with renewal delay of {} ms", renewalDelayMillis);
             }
         }
-        catch (RuntimeException e) {
-            logger.error("Non recoverable error initializing TtlAwareSessionManager : {}", e.getMessage(), e);
+        catch (VaultLoginException e) {
+            // An Authentication exception at this point is non recoverable
+            logger.error("Non recoverable error initializing TtlAwareSessionManager : {}", e.getMessage());
         }
-        catch (Exception e) {
+        catch (VaultException e) {
             // Recoverable error: reschedule authentication
             scheduleRenewal(null);
         }
@@ -154,7 +163,7 @@ public class TtlAwareSessionManager implements SessionManager {
      * or in case of unrecoverable errors or non-expiring tokens.
      */
     private void stopScheduling() {
-        ScheduledFuture<?> future = scheduledRenewal.getAndSet(null);
+        final ScheduledFuture<?> future = scheduledRenewal.getAndSet(null);
         if (future != null) {
             future.cancel(false);
         }
@@ -168,7 +177,7 @@ public class TtlAwareSessionManager implements SessionManager {
      * @param token
     *       The token to schedule renewal for.
      */
-    private void scheduleRenewal(VaultToken token) {
+    private void scheduleRenewal(final VaultToken token) {
 
         // Cancel any existing scheduled renewal
         stopScheduling();
@@ -176,45 +185,56 @@ public class TtlAwareSessionManager implements SessionManager {
         if (token == null || token.getToken().isEmpty()) {
             // Vault not ready or available ? Try again in 10 seconds
             logger.debug("Null token detected. Vault not ready ? Rescheduling authentication");
-            scheduledRenewal.set(scheduler.schedule(this::renewTokenAsync, Instant.now().plusMillis(10000)));
-            return;
+            scheduledRenewal.set(scheduler.schedule(this::renewTokenAsync, Instant.now().plusMillis(10_000)));
         }
+        else { 
+            try {
+                final TokenInfo tokenInfo = getTokenInfo(token);
 
-        try {
-            TokenInfo tokenInfo = getTokenInfo(token);
+                // Skip scheduling if TTL is 0 (non-expiring token)
+                if (tokenInfo.ttlSeconds == 0) {
+                    logger.info("Skipping renewal scheduling for non-expiring token");
+                    return;
+                }
 
-            // Skip scheduling if TTL is 0 (non-expiring token)
-            if (tokenInfo.ttlSeconds == 0) {
-                logger.info("Skipping renewal scheduling for non-expiring token");
-                return;
+                final long delay = calculateDelayUntilRenewal(tokenInfo.ttlSeconds);
+
+                if (delay <= 0) {
+                    // Token is already past renewal threshold; renew immediately
+                    logger.debug("Token is past renewal threshold, renewing immediately");
+                    renewTokenAsync();
+                }
+                else {
+                    logger.debug("Scheduling token renewal in {} ms", delay);
+                    scheduledRenewal.set(scheduler.schedule(this::renewTokenAsync, Instant.now().plusMillis(delay)));
+                }
             }
-
-            long delay = calculateDelayUntilRenewal(tokenInfo.ttlSeconds);
-
-            if (delay <= 0) {
-                // Token is already past renewal threshold; renew immediately
-                logger.debug("Token is past renewal threshold, renewing immediately");
+            catch (VaultException e) {
+                logger.warn("Failed to get token information, attempting immediate renewal: {}", e.getMessage());
                 renewTokenAsync();
             }
-            else {
-                logger.debug("Scheduling token renewal in {} ms", delay);
-                scheduledRenewal.set(scheduler.schedule(this::renewTokenAsync, Instant.now().plusMillis(delay)));
-            }
-        }
-        catch (VaultException e) {
-            logger.warn("Failed to get token information, attempting immediate renewal: {}", e.getMessage());
-            renewTokenAsync();
         }
     }
 
     /**
      * Contains token information extracted from Vault responses.
      */
-    private static class TokenInfo {
-        final long ttlSeconds;
-        final boolean renewable;
+    public static class TokenInfo {
+        /** The time-to-live of a token*/
+        public final long ttlSeconds;
+        /** Whether the token is renewable or not */
+        public final boolean renewable;
 
-        TokenInfo(long ttlSeconds, boolean renewable) {
+        /**
+         * Constructor for token information extrcted from Vault responses
+         *
+         * @param ttlSeconds
+         *     The number of second till the token expires, or zero is non expirying
+         *
+         * @param renewable
+         *     Boolean flag of whether the token is renewable
+         */
+        public TokenInfo(final long ttlSeconds, final boolean renewable) {
             this.ttlSeconds = ttlSeconds;
             this.renewable = renewable;
         }
@@ -231,51 +251,58 @@ public class TtlAwareSessionManager implements SessionManager {
      *
      * @throws VaultException If the token lookup fails.
      */
-    private TokenInfo getTokenInfo(VaultToken token) {
+    private TokenInfo getTokenInfo(final VaultToken token) {
+        final long ttlSeconds;
+        final boolean isRenewable;
 
         if (token instanceof LoginToken) {
-            LoginToken loginToken = (LoginToken) token;
-            Duration leaseDuration = loginToken.getLeaseDuration();
-            long ttlSeconds = leaseDuration != null ? leaseDuration.getSeconds() : 0;
-            boolean renewable = loginToken.isRenewable();
+            final LoginToken loginToken = (LoginToken) token;
+            final Duration leaseDuration = loginToken.getLeaseDuration();
+            ttlSeconds = leaseDuration != null ? leaseDuration.getSeconds() : 0;
+            isRenewable = loginToken.isRenewable();
 
-            logger.debug("Token is already a LoginToken. TTL: {}, Renewable: {}", ttlSeconds, renewable);
-            return new TokenInfo(ttlSeconds, renewable);
+            logger.debug("Token is already a LoginToken. TTL: {}, Renewable: {}", ttlSeconds, isRenewable);
         }
-
-        ResponseEntity<Map> response;
-
-        try {
+        else {
             logger.debug("Looking up token information");
 
-            HttpHeaders headers = new HttpHeaders();
+            final HttpHeaders headers = new HttpHeaders();
             headers.set("X-Vault-Token", token.getToken());
-            HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+            final HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-            response = restOperations.exchange("/auth/token/lookup-self",
-                HttpMethod.GET, requestEntity, Map.class);
+            final ResponseEntity<Map> response;
+            try {
+                response = restOperations.exchange(
+                        "/auth/token/lookup-self",
+                        HttpMethod.GET,
+                        requestEntity,
+                        Map.class
+                );
+            }
+            catch (RestClientException e) {
+                throw new VaultException("Vault request failed: " + e.getMessage(), e);
+            }
+
+            @SuppressWarnings("unchecked")
+            final Map<String, Object> data =
+                    Optional.ofNullable(response)
+                            .map(ResponseEntity::getBody)
+                            .map(body -> body.get("data"))
+                            .filter(Map.class::isInstance)
+                            .map(Map.class::cast)
+                            .orElseThrow(() ->
+                                    new VaultException("Failed to lookup token: no response data")
+                            );
+
+            final Object val = data.get("ttl");
+            isRenewable = Boolean.TRUE.equals(data.get("renewable"));
+            ttlSeconds = val instanceof Number ? ((Number) val).longValue() : 0L;
+
+            logger.debug("Token lookup successful. TTL: {}, Renewable: {}", ttlSeconds, isRenewable);
         }
-        catch (RestClientException e) {
-            throw new VaultException("Vault request failed: " + e.getMessage());
-        }
-
-        if (response == null || response.getBody() == null
-                || !(response.getBody().get("data") instanceof Map)) {
-            throw new VaultException("Failed to lookup token: no response data");
-        }
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> data = (Map<String, Object>) response.getBody().get("data");
-        Number ttl = (Number) data.get("ttl");
-        Boolean renewable = (Boolean) data.get("renewable");
-
-        long ttlSeconds = ttl != null ? ttl.longValue() : 0;
-        boolean isRenewable = renewable != null && renewable;
-
-        logger.debug("Token lookup successful. TTL: {}, Renewable: {}", ttlSeconds, isRenewable);
 
         return new TokenInfo(ttlSeconds, isRenewable);
-    }
+    }     
 
     /**
      * Calculates the delay until the token should be renewed.
@@ -284,9 +311,9 @@ public class TtlAwareSessionManager implements SessionManager {
      *
      * @return The delay in milliseconds until renewal should occur.
      */
-    private long calculateDelayUntilRenewal(long ttlSeconds) {
-        long expiryTime = System.currentTimeMillis() + (ttlSeconds * 1000);
-        long delay = (expiryTime - renewalDelayMillis) - System.currentTimeMillis();
+    private long calculateDelayUntilRenewal(final long ttlSeconds) {
+        final long expiryTime = System.currentTimeMillis() + (ttlSeconds * 1000);
+        final long delay = expiryTime - renewalDelayMillis - System.currentTimeMillis();
 
         logger.debug("Calculated renewal delay: {} ms for token with TTL: {} seconds", delay, ttlSeconds);
 
@@ -299,86 +326,84 @@ public class TtlAwareSessionManager implements SessionManager {
      * re-authenticates to get a new token.
      */
     private void renewTokenAsync() {
+        final VaultToken currentToken = getSessionToken();
+
+        if (currentToken == null || currentToken.getToken().isEmpty()) {
+            logger.debug("No current token to renew, attempting re-authentication");
+            attemptLogin();
+            return;
+        }
+
+        TokenInfo tokenInfo;
 
         try {
-            VaultToken currentToken = getSessionToken();
-
-            if (currentToken == null || currentToken.getToken().isEmpty()) {
-                logger.debug("No current token to renew, attempting re-authentication");
-                attemptLogin();
-                return;
-            }
-
-            TokenInfo tokenInfo;
-
-            try {
-                tokenInfo = getTokenInfo(currentToken);
-            }
-            catch (VaultException e) {
-                logger.debug("Token lookup fail, attempting re-authentication : " + e.getMessage());
-                attemptLogin();
-                return;
-            }
-            catch (Exception e) {
-                logger.error("Non-recoverable error during token lookup: {}", e.getMessage(), e);
-                stopScheduling();
-                return;
-            }
-
-            if (tokenInfo.ttlSeconds == 0) {
-                logger.info("Token TTL is zero. Stop renewal for non-expiring tokens");
-                stopScheduling();
-                return;
-            }
-
-            VaultToken newToken;
-
-            if (tokenInfo.renewable) {
-                try {
-                    logger.debug("Renewing token");
-                    newToken = renewToken(currentToken);
-                }
-                catch (VaultException e) {
-                    logger.warn("Token renewal failed, re-authenticating: {}", e.getMessage());
-                    attemptLogin();
-                    return;
-                }
-                catch (Exception e) {
-                    logger.error("Non-recoverable error during token renewal: {}", e.getMessage(), e);
-                    stopScheduling();
-                    return;
-                }
-            }
-            else {
-                logger.debug("Re-authenticating for non-renewable token");
-                attemptLogin();
-                return;
-            }
-
-            try {
-                tokenInfo = getTokenInfo(newToken);
-            }
-            catch (VaultException e) {
-                logger.debug("Token lookup fail, attempting re-authentication : " + e.getMessage());
-                attemptLogin();
-                return;
-            }
-
-            long delay = calculateDelayUntilRenewal(tokenInfo.ttlSeconds);
-            if (delay <= 0) {
-                // Token is already past renewal threshold; renew immediately
-                logger.info("Token is past renewal threshold during renewal, re-authenticating");
-                attemptLogin();
-                return;
-            }
-
-            logger.debug("Successfully renewed the token");
-            setSessionToken(newToken);
+            tokenInfo = getTokenInfo(currentToken);
         }
-        catch (Exception e) {
-            logger.error("Unexplained failure to renew token : {}", e.getMessage(), e);
+        catch (VaultException e) {
+            logger.debug("Token lookup fail, attempting re-authentication : " + e.getMessage());
+            attemptLogin();
+            return;
+        }
+        catch (ClassCastException | IllegalArgumentException e) {
+            logger.error("Non-recoverable error during token lookup: {}", e.getMessage());
             stopScheduling();
+            return;
         }
+
+        if (tokenInfo.ttlSeconds == 0) {
+            logger.info("Token TTL is zero. Stop renewal for non-expiring tokens");
+            stopScheduling();
+            return;
+        }
+
+        final VaultToken newToken;
+
+        if (tokenInfo.renewable) {
+            try {
+                logger.debug("Renewing token");
+                newToken = renewToken(currentToken);
+            }
+            catch (VaultException e) {
+                logger.warn("Token renewal failed, re-authenticating: {}", e.getMessage());
+                attemptLogin();
+                return;
+            }
+            catch (ClassCastException | IllegalArgumentException e) {
+                logger.error("Non-recoverable error during token renewal: {}", e.getMessage());
+                stopScheduling();
+                return;
+            }
+        }
+        else {
+            logger.debug("Re-authenticating for non-renewable token");
+            attemptLogin();
+            return;
+        }
+
+        try {
+            tokenInfo = getTokenInfo(newToken);
+        }
+        catch (VaultException e) {
+            logger.debug("Token lookup fail, attempting re-authentication : " + e.getMessage());
+            attemptLogin();
+            return;
+        }
+        catch (ClassCastException | IllegalArgumentException e) {
+            logger.error("Non-recoverable error during token renewal: {}", e.getMessage());
+            stopScheduling();
+            return;
+        }            
+
+        final long delay = calculateDelayUntilRenewal(tokenInfo.ttlSeconds);
+        if (delay <= 0) {
+            // Token is already past renewal threshold; renew immediately
+            logger.info("Token is past renewal threshold during renewal, re-authenticating");
+            attemptLogin();
+            return;
+        }
+
+        logger.debug("Successfully renewed the token");
+        setSessionToken(newToken);
     }
 
     /**
@@ -394,35 +419,34 @@ public class TtlAwareSessionManager implements SessionManager {
      *      If the renewal fails, but the error is recoverable. Non
      *      recoverable exceptions are bubbled up.
      */
-    private LoginToken renewToken(VaultToken token) throws VaultException {
-
-        VaultResponse response;
-
+    private LoginToken renewToken(final VaultToken token) throws VaultException {
+        final VaultResponse response;
+        
         try {
             response = restOperations.postForObject("/auth/token/renew-self",
-                new HttpEntity<>(VaultHttpHeaders.from(token)), VaultResponse.class);
+                    new HttpEntity<>(VaultHttpHeaders.from(token)), VaultResponse.class);
         }
         catch (RestClientException e) {
-            throw new VaultException("Vault request failed: " + e.getMessage());
+            throw new VaultException("Vault request failed: " + e.getMessage(), e);
         }
-
+    
         if (response == null || response.getAuth() == null) {
             throw new VaultException("Token renewal failed: no response data");
         }
 
-        String renewedToken = (String) response.getAuth().get("client_token");
+        final String renewedToken = (String) response.getAuth().get("client_token");
 
         if (renewedToken == null) {
             throw new VaultException("Token renewal failed: missing token in response");
         }
 
-        Number ttl = (Number) response.getAuth().get("lease_duration");
-        Boolean renewable = (Boolean) response.getAuth().get("renewable");
+        final Number ttl = (Number) response.getAuth().get("lease_duration");
+        final Boolean renewable = (Boolean) response.getAuth().get("renewable");
 
-        long ttlSeconds = ttl != null ? ttl.longValue() : 0;
-        boolean isRenewable = renewable != null && renewable;
+        final long ttlSeconds = ttl != null ? ttl.longValue() : 0;
+        final boolean isRenewable = renewable != null && renewable;
 
-        LoginToken newToken = LoginToken.builder()
+        final LoginToken newToken = LoginToken.builder()
                 .token(renewedToken)
                 .leaseDuration(Duration.ofSeconds(ttlSeconds))
                 .renewable(isRenewable)
@@ -447,7 +471,7 @@ public class TtlAwareSessionManager implements SessionManager {
             // to force a VaultExpception for an invalid token, and avoid
             // an infinite loop. Since we have the token info, might as
             // well promote it to a LoginToken directly
-            TokenInfo tokenInfo = getTokenInfo(newToken);
+            final TokenInfo tokenInfo = getTokenInfo(newToken);
             if (!(newToken instanceof LoginToken)) {
                 newToken = LoginToken.builder()
                         .token(newToken.getToken())
@@ -464,10 +488,10 @@ public class TtlAwareSessionManager implements SessionManager {
             logger.warn("Recoverable authentication failure, rescheduling renewal : {}", e.getMessage());
             stopScheduling();
             scheduledRenewal.set(scheduler.schedule(this::renewTokenAsync,
-                    Instant.now().plusMillis(10000)));
+                    Instant.now().plusMillis(10_000)));
         }
-        catch (Exception e) {
-            logger.error("Non-recoverable authentication failure: {}", e.getMessage(), e);
+        catch (ClassCastException | IllegalArgumentException e) {
+            logger.error("Non-recoverable authentication failure: {}", e.getMessage());
             stopScheduling();
         }
     }
@@ -486,7 +510,7 @@ public class TtlAwareSessionManager implements SessionManager {
      * @param token
      *      Can be either a Null, VaultToken or a LoginToken
      */
-    public void setSessionToken(VaultToken token) {
+    public void setSessionToken(final VaultToken token) {
         if (token != null && !token.getToken().isEmpty()) {
             this.token.set(token);
         }

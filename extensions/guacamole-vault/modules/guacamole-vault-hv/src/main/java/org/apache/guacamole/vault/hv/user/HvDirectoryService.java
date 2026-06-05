@@ -27,10 +27,7 @@ import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.vault.hv.conf.HvAttributeService;
-import org.apache.guacamole.vault.hv.user.HvConnectionGroup;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A HV-specific vault directory service that wraps the connection group directory
@@ -39,15 +36,10 @@ import org.slf4j.LoggerFactory;
 public class HvDirectoryService extends VaultDirectoryService {
 
     /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(HvDirectoryService.class);
-
-    /**
      * A factory for constructing new HvUser instances.
      */
     @Inject
-    private HvUserFactory hvUserFactory;
+    private HvUser.HvUserFactory hvUserFactory;
 
     /**
      * Service for retrieving any custom attributes defined for the
@@ -57,17 +49,17 @@ public class HvDirectoryService extends VaultDirectoryService {
     private HvAttributeService attributeService;
 
     @Override
-    public Directory<Connection> getConnectionDirectory(Directory<Connection> underlyingDirectory) throws GuacamoleException {
+    public Directory<Connection> getConnectionDirectory(final Directory<Connection> underlyingDirectory) throws GuacamoleException {
 
         return new DecoratingDirectory<Connection>(underlyingDirectory) {
 
             @Override
-            protected Connection decorate(Connection connection) throws GuacamoleException {
+            protected Connection decorate(final Connection connection) throws GuacamoleException {
                 return new HvConnection(connection);
             }
 
             @Override
-            protected Connection undecorate(Connection connection) throws GuacamoleException {
+            protected Connection undecorate(final Connection connection) throws GuacamoleException {
                 return ((HvConnection) connection).getUnderlyingConnection();
             }
 
@@ -75,7 +67,7 @@ public class HvDirectoryService extends VaultDirectoryService {
     }
 
     @Override
-    public Directory<ConnectionGroup> getConnectionGroupDirectory(Directory<ConnectionGroup> underlyingDirectory) throws GuacamoleException {
+    public Directory<ConnectionGroup> getConnectionGroupDirectory(final Directory<ConnectionGroup> underlyingDirectory) throws GuacamoleException {
         // A ConnectionGroup directory that will intercept add and update calls to
         // validate HV configurations, and translate one-time-tokens, if possible,
         // as well as ensuring that all ConnectionGroups returned include the
@@ -84,7 +76,7 @@ public class HvDirectoryService extends VaultDirectoryService {
         return new HvDirectory<ConnectionGroup>(underlyingDirectory) {
 
             @Override
-            public void add(ConnectionGroup connectionGroup) throws GuacamoleException {
+            public void add(final ConnectionGroup connectionGroup) throws GuacamoleException {
 
                 // Process attribute values before saving
                 connectionGroup.setAttributes(connectionGroup.getAttributes());
@@ -93,47 +85,33 @@ public class HvDirectoryService extends VaultDirectoryService {
             }
 
             @Override
-            public void update(ConnectionGroup connectionGroup) throws GuacamoleException {
-
-                // Unwrap the existing ConnectionGroup
-                if (connectionGroup instanceof HvConnectionGroup)
-                    connectionGroup = ((HvConnectionGroup) connectionGroup).getUnderlyingConnectionGroup();
-
+            public void update(final ConnectionGroup connectionGroup) throws GuacamoleException {
                 // Process attribute values before saving
                 connectionGroup.setAttributes(connectionGroup.getAttributes());
 
                 super.update(connectionGroup);
-
             }
 
             @Override
-            protected ConnectionGroup wrap(ConnectionGroup object) {
-
-                // Do not process the ConnectionGroup further if it does not exist
-                if (object == null)
-                    return null;
-
+            protected ConnectionGroup wrap(final ConnectionGroup object) {
                 // Sanitize values when a ConnectionGroup is fetched from the directory
-                return new HvConnectionGroup(object);
-
+                // Do not process the ConnectionGroup further if it does not exist
+                return (object == null) ? null : new HvConnectionGroup(object);
             }
 
         };
     }
 
     @Override
-    public Directory<User> getUserDirectory(Directory<User> underlyingDirectory) throws GuacamoleException {
+    public Directory<User> getUserDirectory(final Directory<User> underlyingDirectory) throws GuacamoleException {
         // A User directory that will intercept add and update calls to
-        // validate HV configurations, and translate one-time-tokens, if possible
-        // Additionally, this directory will will decorate all users with a
-        // HvUser wrapper to ensure that all defined HV fields will be exposed
-        // in the user attributes.  The value of the HV_CONFIGURATION_ATTRIBUTE
-        // will be sanitized if set.
+        // validate HV configurations. Additionally, this directory will will
+        // decorate all users with a HvUser wrapper to ensure that all defined
+        // HV fields will be exposed in the user attributes.
         return new HvDirectory<User>(underlyingDirectory) {
 
             @Override
-            public void add(User user) throws GuacamoleException {
-
+            public void add(final User user) throws GuacamoleException {
                 // Process attribute values before saving
                 user.setAttributes(user.getAttributes());
 
@@ -141,11 +119,13 @@ public class HvDirectoryService extends VaultDirectoryService {
             }
 
             @Override
-            public void update(User user) throws GuacamoleException {
+            public void update(final User oldUser) throws GuacamoleException {
+                User user = oldUser;
 
                 // Unwrap the existing user
-                if (user instanceof HvUser)
+                if (user instanceof HvUser) {
                     user = ((HvUser) user).getUnderlyingUser();
+                }
 
                 // Process attribute values before saving
                 user.setAttributes(user.getAttributes());
@@ -155,14 +135,9 @@ public class HvDirectoryService extends VaultDirectoryService {
             }
 
             @Override
-            protected User wrap(User object) {
-
-                // Do not process the user further if it does not exist
-                if (object == null)
-                    return null;
-
-                // Sanitize values when a user is fetched from the directory
-                return hvUserFactory.create(object);
+            protected User wrap(final User object) {
+                // If null, do not process the user further if it does not exist                
+                return (object == null) ? null : hvUserFactory.create(object);
 
             }
 

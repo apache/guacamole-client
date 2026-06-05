@@ -20,18 +20,35 @@
 package org.apache.guacamole.vault.hv.secret;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.GeneralSecurityException;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
-import org.apache.sshd.common.keyprovider.KeyPairProvider;
 import org.apache.sshd.common.config.keys.writer.openssh.OpenSSHKeyPairResourceWriter;
 import org.apache.sshd.common.config.keys.PublicKeyEntry;
 import org.apache.sshd.common.util.security.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * A Class using Apache MINA SSHD to create temporary SSH keys and
+ * corresponding public certificates. It supports the creation of
+ * RSA-4096 and ed25519 keys only.
+ */
 public class HvSshKeys {
+    /**
+     * The value of vailt-ssh-type to use for RSA certificate 
+     */
+    public static final String RSA = "rsa";
+    
+    
+    /**
+     * The value of vailt-ssh-type to use for ED25519 certificate 
+     */
+    public static final String ED25519 = "ed25519";
+    
     /**
      * Logger for this class.
      */
@@ -40,7 +57,7 @@ public class HvSshKeys {
     /**
      * The PEM encoded private SSH key
      */
-    public final String privateSshPem;
+    private final String privateSsh;
 
     /**
      * The OpenSSH encoded public SSH key
@@ -61,13 +78,13 @@ public class HvSshKeys {
      *      The type of ssh key to generate. Can be "rsa" or "ed25519" only.
      *      Generated RSA keys are 4096 bit only
      */
-    public HvSshKeys(String type) {
-        KeyPair keyPair;
+    public HvSshKeys(final String type) {
+        final KeyPair keyPair;
 
-        if ("rsa".equals(type)) {
+        if (RSA.equals(type)) {
             keyPair = generateRsa();
         }
-        else if ("ed25519".equals(type)) {
+        else if (ED25519.equals(type)) {
             keyPair = generateEd25519WithFallback();
         }
         else {
@@ -76,15 +93,15 @@ public class HvSshKeys {
 
         try {
             this.publicSsh = PublicKeyEntry.toString(keyPair.getPublic());
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            OpenSSHKeyPairResourceWriter writer =
+            final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            final OpenSSHKeyPairResourceWriter writer =
                     new OpenSSHKeyPairResourceWriter();
             writer.writePrivateKey(keyPair, null, null, baos);
-            this.privateSshPem =
+            this.privateSsh =
                     baos.toString(StandardCharsets.UTF_8);
         }
-        catch (Exception e) {
-            throw new IllegalStateException("Failed to serialize SSH keypair: " + e.getMessage(), e);
+        catch (IOException | GeneralSecurityException | IllegalStateException e) {
+            throw new IllegalStateException("Failed to serialize SSH keypair", e);
         }
     }
 
@@ -95,15 +112,17 @@ public class HvSshKeys {
      *      A java.security.KeyPair containing the ed25519 key pair or RSA if failure
      */
     private KeyPair generateEd25519WithFallback() {
+        KeyPair keyPair;
         try {
-            KeyPairGenerator keyPairGenerator =
-                    SecurityUtils.getKeyPairGenerator("EdDSA");
-            return keyPairGenerator.generateKeyPair();
+            final KeyPairGenerator keyPairGenerator = SecurityUtils.getKeyPairGenerator("EdDSA");
+            keyPair = keyPairGenerator.generateKeyPair();
         }
-        catch (Exception e) {
+        catch (GeneralSecurityException e) {
             logger.warn("Ed25519 not available via SSHD EdDSA. Falling back to RSA : {}", e.getMessage());
-            return generateRsa();
+            keyPair = generateRsa();
         }
+
+        return keyPair;
     }
 
     /**
@@ -114,13 +133,33 @@ public class HvSshKeys {
      */
     private KeyPair generateRsa() {
         try {
-            KeyPairGenerator keyPairGenerator =
+            final KeyPairGenerator keyPairGenerator =
                     SecurityUtils.getKeyPairGenerator("RSA");
             keyPairGenerator.initialize(4096);
             return keyPairGenerator.generateKeyPair();
         }
-        catch (Exception e) {
+        catch (GeneralSecurityException e) {
             throw new IllegalStateException("Failed to generate RSA SSH keypair", e);
         }
     }
+    
+    /**
+     * Returns the generated SSH public certificate
+     *
+     * @return
+     *    Return the public certificate in PEM format
+     */
+     public String getPublic() {
+         return publicSsh;
+     }
+
+    /**
+     * Returns the generated SSH private key
+     *
+     * @return
+     *    Return the private key in OpenSSH's format
+     */
+     public String getPrivate() {
+         return privateSsh;
+     }
 }
