@@ -29,11 +29,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * A HV-specific connection group implementation that always exposes
- * the HV_CONFIGURATION_ATTRIBUTE attribute, even when no value is set.
- * The value of the attribute will be sanitized if non-empty. This ensures
- * that the attribute will always show up in the UI, even for connection
- * groups that don't already have it set, and that any sensitive information
- * in the attribute value will not be exposed.
+ * the HV_URI_ATTRIBUTE, HV_TOKEN_ATTRIBUTE, HV_USERNAME_ATTRIBUTE and
+ * HV_PASSORD_ATTRIBUTE attributes, even when no value is set.
  */
 public class HvConnectionGroup extends DelegatingConnectionGroup {
 
@@ -62,16 +59,6 @@ public class HvConnectionGroup extends DelegatingConnectionGroup {
         return getDelegateConnectionGroup();
     }
 
-    /**
-     * Return the underlying ConnectionGroup that's wrapped by this HvConnectionGroup.
-     *
-     * @return
-     *     The underlying ConnectionGroup that's wrapped by this HvConnectionGroup.
-     */
-    public ConnectionGroup getUnderlyConnectionGroup() {
-        return getDelegateConnectionGroup();
-    }
-
     @Override
     public Map<String, String> getAttributes() {
 
@@ -95,5 +82,5 @@ public class HvConnectionGroup extends DelegatingConnectionGroup {
                 attributes.get(HvAttributeService.HV_PASSWORD_ATTRIBUTE)
         );        
         return attributes;
-    }
+    }   
 }
