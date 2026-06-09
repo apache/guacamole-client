@@ -44,10 +44,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Service which retrieves secrets from Hashicorp Vault.
+ * Service which retrieves secrets from OpenBao/Hashicorp Vault.
  * The configuration used to connect to HV can be set at a global
- * level using guacamole.properties, or using a connection group
- * attribute.
+ * level using guacamole.properties, using a connection group
+ * attribute, or users attributes.
  */
 @Singleton
 public class HvSecretService implements VaultSecretService {
@@ -113,8 +113,8 @@ public class HvSecretService implements VaultSecretService {
     }
 
     /**
-     * Helper function for prepareToken that implements that decides if
-     * a sub-token exists in the token and if it should be replaced
+     * Helper function for prepareToken that that decides if a sub-token
+     * exists in the token and if it should be replaced
      *
      * @param oldtoken
      *      The token string potentially containing a sub-token to replace
@@ -123,7 +123,7 @@ public class HvSecretService implements VaultSecretService {
      *      The sub-token value to look for. For example "{USERNAME}"
      *
      * @param filter
-     *      A TokenFilter to use of the value if the suboken itself is a token
+     *      A TokenFilter to use of the value if the sub-token itself is a token
      *
      *  @return
      *      The token with the sub-token replaced with its value
@@ -132,7 +132,7 @@ public class HvSecretService implements VaultSecretService {
             final String placeholder, final TokenFilter filter) {
         String token = oldtoken;
 
-        // FIXME There is an edge case for tokens like 
+        // FIXME There is an edge case for tokens like
         //     vault://ldap/$${USERNAME}/{USERNAME}/password
         // This seems a pretty unlikely case, so don't treat.
         if (value != null && !value.isEmpty()) {
@@ -161,7 +161,7 @@ public class HvSecretService implements VaultSecretService {
      *     depending on the underlying implementation.
      *
      * @return
-     *     A token with the sub-tokens included eplaced.
+     *     A token with the sub-tokens included replaced.
      */
     private String prepareToken(final String oldtoken, final UserContext userContext,
             final GuacamoleConfiguration config, final TokenFilter filter) {
@@ -188,9 +188,7 @@ public class HvSecretService implements VaultSecretService {
     /**
      * Returns a Future which eventually completes with the value of the secret
      * having the given name. If no such secret exists, the Future will be
-     * completed with null. The secrets retrieved from this method are independent
-     * of the context of the particular connection being established, or any
-     * associated user context.
+     * completed with null.
      *
      * @param userContext
      *     The user context from which the connectable originated.
@@ -229,8 +227,8 @@ public class HvSecretService implements VaultSecretService {
         }
 
         // Use a key including GUAC_USERNAME, to at least prevent a user stealing the
-        // session of another due to timing issues. The ssh certificates of keys
-        // of token from vault-token-mapping.yml must have an explicit username associated
+        // session of another due to timing issues. The ssh certificates of tokens
+        // from vault-token-mapping.yml must have an explicit username associated
         // with it
         final String username = config.getParameter("username");
         final String guacUsername = userContext.self().getIdentifier();
@@ -238,7 +236,7 @@ public class HvSecretService implements VaultSecretService {
                 userContext, config, new TokenFilter());
         final String key = guacUsername + "-" + username + "-" +
                 finalName.substring(0, finalName.lastIndexOf('/'));
-        
+
         return resolveSecret(clients, finalName, username, key);
     }
 
@@ -279,10 +277,7 @@ public class HvSecretService implements VaultSecretService {
     /*
      * Returns a map of token names to corresponding Futures which eventually
      * complete with the value of that token, where each token is dynamically
-     * defined based on connection parameters. If a vault implementation allows
-     * for predictable secrets based on the parameters of a connection, this
-     * function should be implemented to provide automatic tokens for those
-     * secrets and remove the need for manual mapping via YAML.
+     * defined based on connection parameters.
      *
      * @param userContext
      *     The user context from which the connectable originated.
@@ -315,7 +310,7 @@ public class HvSecretService implements VaultSecretService {
             final TokenFilter filter) throws GuacamoleException {
 
         final Map<String, Future<String>> tokens = new ConcurrentHashMap<>();
-        
+
         // An ordered array of non null HvClients
         final List<HvClient> clients = hvClientProvider.getHvClients(userContext, connectable);
         if (clients.size() == 0) {
@@ -363,14 +358,14 @@ public class HvSecretService implements VaultSecretService {
         return tokens;
 
     }
-    
+
     /**
      * Given a List of possible HvClients to use, attempt to resolve a secret value
      * with the HvClient that returns a value
      *
      * @param clients
-     *      An ordered list of HvClient with application-wide client, ConnectGroup
-     *      client followed by User client values, to ensure teh adminsitrator always 
+     *      An ordered list of HvClient with application-wide client, ConnectionGroup
+     *      client followed by User client values, to ensure the adminsitrator always
      *      has the last word on token resolution
      *
      * @param FinalName
@@ -389,7 +384,7 @@ public class HvSecretService implements VaultSecretService {
      *     A Future which completes with the value of the secret represented by
      *     the given HV notation, or null if there is no such secret.
      */
-    private Future<String> resolveSecret(final List<HvClient> clients, final String finalName, 
+    private Future<String> resolveSecret(final List<HvClient> clients, final String finalName,
             final String username, final String key) throws GuacamoleException {
         return clients.get(0).getSecret(finalName, username, key)
             .handle((value, ex) -> {
@@ -423,6 +418,6 @@ public class HvSecretService implements VaultSecretService {
 
                 return CompletableFuture.<String>completedFuture(null);
             })
-            .thenCompose(Function.identity());    
+            .thenCompose(Function.identity());
     }
 }
