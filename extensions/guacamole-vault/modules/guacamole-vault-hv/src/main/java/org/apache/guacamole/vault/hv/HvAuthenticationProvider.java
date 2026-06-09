@@ -34,7 +34,7 @@ public class HvAuthenticationProvider extends VaultAuthenticationProvider {
 
     /**
      * Creates a new HvKeyVaultAuthenticationProvider which reads secrets
-     * from a configured Hashicorp Vault.
+     * from a configured OpenBao/Hashicorp Vault.
      *
      * @throws GuacamoleException
      *     If configuration details cannot be read from guacamole.properties.
@@ -46,20 +46,5 @@ public class HvAuthenticationProvider extends VaultAuthenticationProvider {
     @Override
     public String getIdentifier() {
         return "hashicorp-vault";
-    }
-
-    @Override
-    public UserContext decorate(final UserContext context,
-            final AuthenticatedUser authenticatedUser, final Credentials credentials)
-            throws GuacamoleException {
-
-        return new HvUserContext(context);
-    }
-
-    @Override
-    public UserContext redecorate(final UserContext decorated, final UserContext context,
-            final AuthenticatedUser authenticatedUser, final Credentials credentials)
-            throws GuacamoleException {
-        return new HvUserContext(context);
     }
 }
