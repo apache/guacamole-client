@@ -87,8 +87,8 @@ public class UsernamePasswordAuthentication implements ClientAuthentication {
      *      the vault
      *
      * @throws VaultException
-     *      In case of a recoverable login issue, throws a VaultExecption, so tha the
-     *      SessionManager knows to try the authtication again
+     *      In case of a recoverable login issue, throws a VaultException, so that the
+     *      SessionManager knows to try the authentication again
      */
     @Override
     public VaultToken login() throws VaultException {

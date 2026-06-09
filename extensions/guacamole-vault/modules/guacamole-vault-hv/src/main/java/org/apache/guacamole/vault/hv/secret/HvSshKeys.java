@@ -39,23 +39,23 @@ import org.slf4j.LoggerFactory;
  */
 public class HvSshKeys {
     /**
-     * The value of vailt-ssh-type to use for RSA certificate 
+     * The value of vault-ssh-type to use for RSA certificate
      */
     public static final String RSA = "rsa";
-    
-    
+
+
     /**
-     * The value of vailt-ssh-type to use for ED25519 certificate 
+     * The value of vault-ssh-type to use for ED25519 certificate
      */
     public static final String ED25519 = "ed25519";
-    
+
     /**
      * Logger for this class.
      */
     private static final Logger logger = LoggerFactory.getLogger(HvSshKeys.class);
 
     /**
-     * The PEM encoded private SSH key
+     * The OpenSSH encoded private SSH key
      */
     private final String privateSsh;
 
@@ -130,6 +130,9 @@ public class HvSshKeys {
      *
      * @return
      *      A java.security.KeyPair containing the RSA key pair
+     *
+     * @throws IllegalStateException
+     *      If the RSA key could not be returned
      */
     private KeyPair generateRsa() {
         try {
@@ -142,7 +145,7 @@ public class HvSshKeys {
             throw new IllegalStateException("Failed to generate RSA SSH keypair", e);
         }
     }
-    
+
     /**
      * Returns the generated SSH public certificate
      *

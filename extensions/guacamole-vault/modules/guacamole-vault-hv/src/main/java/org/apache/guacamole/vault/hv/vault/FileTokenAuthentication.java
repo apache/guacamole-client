@@ -43,7 +43,7 @@ public final class FileTokenAuthentication implements ClientAuthentication {
      * is reread from a file on renewal requests. This allows integration
      * with a VaultAgent for complex authentication methods
      *
-     * @param String tokenPath
+     * @param tokenPath
      *     A path to a readable file containing the token
      */
     public FileTokenAuthentication(final String tokenPath) {

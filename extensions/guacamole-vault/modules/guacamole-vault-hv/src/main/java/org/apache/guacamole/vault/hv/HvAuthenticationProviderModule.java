@@ -36,7 +36,7 @@ import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
 
 /**
- * Guice module which configures injections specific to Hashicorp Vault
+ * Guice module which configures injections specific to OpenBao/Hashicorp Vault
  * support.
  */
 public class HvAuthenticationProviderModule

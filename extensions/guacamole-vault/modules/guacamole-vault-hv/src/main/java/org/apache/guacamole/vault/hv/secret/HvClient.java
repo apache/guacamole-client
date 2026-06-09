@@ -74,7 +74,7 @@ public class HvClient {
     private static final String VAULT_PATH_HELP = "/sys/internal/ui/mounts/";
 
     /**
-     * Name temporary entry in the ldap sessions for session being cosntructed
+     * Name temporary entry in the ldap sessions for session being constructed
      */
     public static final String VAULT_LDAP_SESSION = "checkin";
 
@@ -261,7 +261,7 @@ public class HvClient {
         private final String checkInPath;
         /** Stores the service account username of the checked out account */
         private final String username;
-        /** Is true id the TunnelConnectEVent has been detected */
+        /** Is true if the TunnelConnectEvent has been detected */
         private final boolean initialized;
         /** The date the account was checked-out, allowing automatic check-in after 2h */
         private final Instant created;
@@ -287,14 +287,14 @@ public class HvClient {
     }
 
     /**
-     * The LDAP session interface checks out session that then can not be
+     * The LDAP session interface checks out sessions that then can not be
      * used till they are checked in. In getTokens we have the problem that
      * we don't have access to the tunnel ID and so can't identify it.
      * Guacamole is also not guarenteed to generate a TunnelCloseEvent.
      *
      * So this function is fragile and relies on the fact that the TunnelConnectEvent
      * will be running a few tens of milliseconds after the getTokens command to
-     * limit the risk of confusing two connection. There is still a small risk
+     * limit the risk of confusing two connections. There is still a small risk
      * of error here.
      *
      * @param tunnelId
@@ -325,7 +325,7 @@ public class HvClient {
             // Do some clean up of the active LDAP sessions. If a session hasn't been
             // checked in after 2 hours, just drop it from the hashMap. As the TTL of
             // the vault is already 2 hours don't need to check it in. Don't really
-            // care if the value hang around in our hashmap so don't need a dedicated
+            // care if the value hangs around in our hashmap so don't need a dedicated
             // task for this
             ldapSessions.entrySet().removeIf(e -> Instant.now().isAfter(e.getValue().getCreated().plusSeconds(7200)));
 
@@ -337,7 +337,7 @@ public class HvClient {
     }
 
     /**
-     * Returns the value of the secret stored within Hashicorp Vault.
+     * Returns the value of the secret stored within OpenBao/Hashicorp Vault.
      *
      * @param notation
      *     The HV notation of the secret to retrieve.
@@ -347,8 +347,8 @@ public class HvClient {
      *     generation.
      *
      * @param key
-     *     A pseudo-unique key to use to stored cached secrets, to keep secrets
-     *     associated with the same connection together, even if they vault token
+     *     A pseudo-unique key to use to store cached secrets, to keep secrets
+     *     associated with the same connection together, even if the vault token
      *     itself is not unique.
      *
      * @return
@@ -485,7 +485,7 @@ public class HvClient {
      * @return
      *     The values associated with the path.
      *
-     * @throws GuacamoleException
+     * @throws VaultException
      *     If the secrets cannot be retrieved from the Vault.
      */
     private JsonNode getValueKV(final String mountPath, final String path, final VaultKeyValueOperations.KeyValueBackend type) throws VaultException {
@@ -518,7 +518,7 @@ public class HvClient {
      * @return
      *     The values associated with the path.
      *
-     * @throws GuacamoleException
+     * @throws VaultException
      *     If the secrets cannot be retrieved from the Vault.
      */
     private JsonNode getValueSSH(final String mountPath, final String path, final String username) throws VaultException {
@@ -588,7 +588,7 @@ public class HvClient {
      * @return
      *     The values associated with the path.
      *
-     * @throws GuacamoleException
+     * @throws VaultException
      *     If the secrets cannot be retrieved from the Vault.
      */
     private JsonNode getValueLDAP(final String mountPath, final String path) throws VaultException {
@@ -623,9 +623,9 @@ public class HvClient {
 
     /**
      * Retrieves a username or password from a Database secret engine.
-     * Before version 1.10 the data could only have username/password
-     * After there can be static preconfigured fields that the vault tokens
-     * might access.
+     * Before Hashicorp version 1.10 the data could only have username/password
+     * After there can be additional static preconfigured fields that the vault
+     * tokens might access.
      *
      * @param mountPath
      *     The mountPath of the database secret engine on the vault server.
@@ -636,7 +636,7 @@ public class HvClient {
      * @return
      *     The values associated with the path.
      *
-     * @throws GuacamoleException
+     * @throws VaultException
      *     If the secrets cannot be retrieved from the Vault.
      */
     private JsonNode getValueDB(final String mountPath, final String path) throws VaultException {

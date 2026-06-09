@@ -44,7 +44,7 @@ public class HvTunnelEventListener implements Listener {
      * add a checkin task to the sessions
      *
      * @param event
-     *      A tunnel close event
+     *      A tunnel connect/close event
      */
     @Override
     public void handleEvent(final Object event) throws GuacamoleException {

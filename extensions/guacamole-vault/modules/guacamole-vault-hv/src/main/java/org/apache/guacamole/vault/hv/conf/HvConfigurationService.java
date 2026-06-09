@@ -610,7 +610,7 @@ public class HvConfigurationService extends VaultConfigurationService {
          *
          * @return
          *      True is the value in non null, URI is set and at least one of
-         *      token or username/password id set
+         *      token or username/password is set
          */
         public boolean isVaultInfoInvalid() {
             return uri == null || uri.toString().isBlank() ||

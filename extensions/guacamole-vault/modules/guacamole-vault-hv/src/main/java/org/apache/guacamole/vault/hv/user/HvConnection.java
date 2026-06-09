@@ -27,7 +27,7 @@ import org.apache.guacamole.vault.hv.conf.HvAttributeService;
 
 /**
  * A Connection that explicitly adds a blank entry for any defined HV
- * connection attributes. This ensures that any such field will always
+ * connection attribute. This ensures that any such field will always
  * be displayed to the user when editing a connection through the UI.
  */
 public class HvConnection extends DelegatingConnection {
