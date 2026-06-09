@@ -24,7 +24,6 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.Map;
-import java.util.HashMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.DelegatingUser;
 import org.apache.guacamole.net.auth.User;

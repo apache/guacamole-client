@@ -49,16 +49,16 @@ public class HvAuthenticationProvider extends VaultAuthenticationProvider {
     }
 
     @Override
-    public UserContext decorate(UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
+    public UserContext decorate(final UserContext context,
+            final AuthenticatedUser authenticatedUser, final Credentials credentials)
             throws GuacamoleException {
 
         return new HvUserContext(context);
     }
 
     @Override
-    public UserContext redecorate(UserContext decorated, UserContext context,
-            AuthenticatedUser authenticatedUser, Credentials credentials)
+    public UserContext redecorate(final UserContext decorated, final UserContext context,
+            final AuthenticatedUser authenticatedUser, final Credentials credentials)
             throws GuacamoleException {
         return new HvUserContext(context);
     }
