@@ -20,7 +20,11 @@
 package org.apache.guacamole.vault.hv;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.vault.VaultAuthenticationProvider;
+import org.apache.guacamole.vault.hv.user.HvUserContext;
 
 /**
  * VaultAuthenticationProvider implementation which reads secrets from
@@ -44,4 +48,18 @@ public class HvAuthenticationProvider extends VaultAuthenticationProvider {
         return "hashicorp-vault";
     }
 
+    @Override
+    public UserContext decorate(UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+
+        return new HvUserContext(context);
+    }
+
+    @Override
+    public UserContext redecorate(UserContext decorated, UserContext context,
+            AuthenticatedUser authenticatedUser, Credentials credentials)
+            throws GuacamoleException {
+        return new HvUserContext(context);
+    }
 }
