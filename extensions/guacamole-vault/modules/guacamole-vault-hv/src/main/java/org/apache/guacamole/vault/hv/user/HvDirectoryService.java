@@ -69,10 +69,9 @@ public class HvDirectoryService extends VaultDirectoryService {
     @Override
     public Directory<ConnectionGroup> getConnectionGroupDirectory(final Directory<ConnectionGroup> underlyingDirectory) throws GuacamoleException {
         // A ConnectionGroup directory that will intercept add and update calls to
-        // validate HV configurations, and translate one-time-tokens, if possible,
-        // as well as ensuring that all ConnectionGroups returned include the
-        // HV_CONFIGURATION_ATTRIBUTE attribute, so it will be available in the UI.
-        // The value of the HV_CONFIGURATION_ATTRIBUTE will be sanitized if set.
+        // validate HV configurations, and ensure that all ConnectionGroups returned 
+        // include the HV_URI_ATTRIBUTE, HV_TOKEN_ATTRIBUTE, HV_USERNAME_ATTRIBUTE
+        // and HV_PASSWORD_ATTRIBUTE attributes, so they will be available in the UI..
         return new HvDirectory<ConnectionGroup>(underlyingDirectory) {
 
             @Override

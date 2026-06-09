@@ -39,7 +39,6 @@ import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
-import org.apache.guacamole.vault.hv.conf.HvConfigurationService.VaultInfo;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,13 +87,7 @@ public class HvSecretService implements VaultSecretService {
         // the per ConnectionGroup vaults, which MUST have a non expiring means of
         // authentication to avoid issues
         try {
-            final VaultInfo vaultInfo = confService.new VaultInfo(
-                    confService.getVaultUri(),
-                    confService.getVaultToken(),
-                    confService.getVaultUsername(),
-                    confService.getVaultPassword());
-
-            hvClientProvider.getHvClient(vaultInfo);
+            hvClientProvider.getAppHvClient();
         }
         catch (GuacamoleException e) {
             logger.error("Can't initialize HvClient : {}", e.getMessage());
@@ -274,14 +267,7 @@ public class HvSecretService implements VaultSecretService {
         // Ensure modifiers are removed
         final String name = token.replaceFirst(":(LOWER|UPPER|OPTIONAL)$", "");
 
-        // Use the default HV configuration from guacamole.properties
-        final VaultInfo vaultInfo = confService.new VaultInfo(
-                confService.getVaultUri(),
-                confService.getVaultToken(),
-                confService.getVaultUsername(),
-                confService.getVaultPassword());
-
-        final HvClient client = hvClientProvider.getHvClient(vaultInfo);
+        final HvClient client = hvClientProvider.getAppHvClient();
         if (client != null) {
             return client.getSecret(name, "", name.substring(0, name.lastIndexOf('/')));
         }

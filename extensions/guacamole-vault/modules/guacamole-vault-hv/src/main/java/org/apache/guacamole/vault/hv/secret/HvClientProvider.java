@@ -109,7 +109,7 @@ public class HvClientProvider {
      * @throws GuacamoleException
      *     If an error occurs while creating the HV client.
      */
-    public HvClient getHvClient(final VaultInfo vaultInfo)
+    private HvClient getHvClient(final VaultInfo vaultInfo)
             throws GuacamoleException {
         if (vaultInfo.isVaultInfoInvalid()) {
             return null;
@@ -130,6 +130,27 @@ public class HvClientProvider {
     }
 
     /**
+     * Returns the application-wide HVClient if one exists, else null.
+     *
+     * @return
+     *     The value of the HV configuration attributes if found in the tree, the default
+     *     HV config defined in guacamole.properties otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs while attempting to retrieve the HV config attribute.
+     */
+    public HvClient getAppHvClient() throws GuacamoleException {
+
+        final VaultInfo vaultInfo = confService.new VaultInfo(
+                confService.getVaultUri(),
+                confService.getVaultToken(),
+                confService.getVaultUsername(),
+                confService.getVaultPassword());
+
+        return getHvClient(vaultInfo);
+    }
+
+    /**
      * Search for a HV configuration attribute, recursing up the connection group tree
      * until a connection group with the appropriate attribute is found. If the HV
      * configuration is found, the corresponding HVClient will be returned, else null.
@@ -141,8 +162,8 @@ public class HvClientProvider {
      *     A connection or connection group for which the tokens are being replaced.
      *
      * @return
-     *     The value of the HV configuration attributes if found in the tree, the default
-     *     HV config defined in guacamole.properties otherwise.
+     *     The value of the HVClient corresponding to the configuration attributes if 
+     *     found in the tree, else null
      *
      * @throws GuacamoleException
      *     If an error occurs while attempting to retrieve the HV config attribute, or if
@@ -226,8 +247,7 @@ public class HvClientProvider {
      *    are enabled.
      *
      * @return
-     *     The value of the user HV configuration attributes if found in the tree,
-     *     the default HV config defined in guacamole.properties otherwise.
+     *     The value of the user HVClient if found for the current user, else null.
      *
      * @throws GuacamoleException
      *     If an error occurs while attempting to fetch the HV config.
@@ -269,7 +289,7 @@ public class HvClientProvider {
      * Return an ordered list of non null HVClients. The application-wide 
      * client is first if non null, followed by the ConnectionGroup client,
      * and finally the User client. This order is important to ensure that
-     * the adminsitrator always has control of te injected tokens*.
+     * the adminsitrator always has control of the injected tokens.
      *
      * @param userContext
      *    The user context from which the current user should be fetched.
@@ -280,8 +300,8 @@ public class HvClientProvider {
      *    are enabled.
      *
    * @return
-     *     The value of the user HV configuration attributes if found in the tree,
-     *     the default HV config defined in guacamole.properties otherwise.
+     *     The values of the HVClient corresponding to the application-wide,
+     *     connectionGroup and User HVClients in an ordered list.
      *
      * @throws GuacamoleException
      *     If an error occurs while attempting to fetch the HV config.
@@ -289,15 +309,9 @@ public class HvClientProvider {
     public List<HvClient> getHvClients(final UserContext userContext,
             final Connectable connectable) throws GuacamoleException {    
         final List<HvClient> clients = new ArrayList<>();
-    
-        // Create an application wide client
-        final VaultInfo vaultInfo = confService.new VaultInfo(
-                confService.getVaultUri(),
-                confService.getVaultToken(),
-                confService.getVaultUsername(),
-                confService.getVaultPassword());
 
-        final HvClient client = getHvClient(vaultInfo);
+        // Create an application-wide client
+        final HvClient client = getAppHvClient();
         if (client != null) {
             clients.add(client);
         }

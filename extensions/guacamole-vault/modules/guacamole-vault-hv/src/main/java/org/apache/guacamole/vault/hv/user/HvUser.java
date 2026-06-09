@@ -24,6 +24,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 import java.util.Map;
+import java.util.HashMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.DelegatingUser;
 import org.apache.guacamole.net.auth.User;
@@ -33,13 +34,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A HV-specific user implementation that exposes the
- * HV_CONFIGURATION_ATTRIBUTE attribute even if no value is set. but only
- * if user-specific HV configuration is enabled. The value of the attribute
- * will be sanitized if non-empty. This ensures that the attribute will always
- * show up in the UI when the feature is enabled, even for users that don't
- * already have it set, and that any sensitive information in the attribute
- * value will not be exposed.
+ * A HV-specific user implementation implementation that always exposes
+ * the HV_URI_ATTRIBUTE, HV_TOKEN_ATTRIBUTE, HV_USERNAME_ATTRIBUTE and
+ * HV_PASSORD_ATTRIBUTE attributes, even when no value is set.
  */
 public class HvUser extends DelegatingUser {
 
