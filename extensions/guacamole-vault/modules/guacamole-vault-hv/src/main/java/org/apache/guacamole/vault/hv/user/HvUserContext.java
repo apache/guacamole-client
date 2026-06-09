@@ -32,7 +32,6 @@ import org.apache.guacamole.net.auth.DelegatingUserContext;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
-import org.apache.guacamole.net.auth.UserGroup;
 import org.apache.guacamole.vault.hv.conf.HvAttributeService;
 
 /**
@@ -48,7 +47,7 @@ public class HvUserContext extends DelegatingUserContext {
      * @param userContext
      *     The UserContext to wrap.
      */
-    public HvUserContext(UserContext userContext) {
+    public HvUserContext(final UserContext userContext) {
         super(userContext);
     }
 
@@ -57,12 +56,12 @@ public class HvUserContext extends DelegatingUserContext {
         return new DecoratingDirectory<User>(super.getUserDirectory()) {
 
             @Override
-            protected User decorate(User object) {
+            protected User decorate(final User object) {
                 return new HvUser(object);
             }
 
             @Override
-            protected User undecorate(User object) {
+            protected User undecorate(final User object) {
                 assert(object instanceof HvUser);
                 return ((HvUser) object).getUnderlyingUser();
             }
@@ -72,7 +71,7 @@ public class HvUserContext extends DelegatingUserContext {
 
     @Override
     public Collection<Form> getUserAttributes() {
-        Collection<Form> userAttrs = new HashSet<>(super.getUserAttributes());
+        final Collection<Form> userAttrs = new HashSet<>(super.getUserAttributes());
         userAttrs.addAll(HvAttributeService.HV_ATTRIBUTES);
         return Collections.unmodifiableCollection(userAttrs);
     }   
@@ -82,12 +81,12 @@ public class HvUserContext extends DelegatingUserContext {
         return new DecoratingDirectory<Connection>(super.getConnectionDirectory()) {
 
             @Override
-            protected Connection decorate(Connection object) throws GuacamoleException {
+            protected Connection decorate(final Connection object) throws GuacamoleException {
                 return new HvConnection(object);
             }
 
             @Override
-            protected Connection undecorate(Connection object) {
+            protected Connection undecorate(final Connection object) {
                 assert(object instanceof HvConnection);
                 return ((HvConnection) object).getUnderlyingConnection();
             }
@@ -97,7 +96,7 @@ public class HvUserContext extends DelegatingUserContext {
     
     @Override
     public Collection<Form> getConnectionAttributes() {
-        Collection<Form> connectionAttrs = new HashSet<>(super.getConnectionAttributes());
+        final Collection<Form> connectionAttrs = new HashSet<>(super.getConnectionAttributes());
         connectionAttrs.addAll(HvAttributeService.HV_CONNECTION_ATTRIBUTES);
         return Collections.unmodifiableCollection(connectionAttrs);
     }
@@ -107,12 +106,12 @@ public class HvUserContext extends DelegatingUserContext {
         return new DecoratingDirectory<ConnectionGroup>(super.getConnectionGroupDirectory()) {
 
             @Override
-            protected ConnectionGroup decorate(ConnectionGroup object) throws GuacamoleException {
+            protected ConnectionGroup decorate(final ConnectionGroup object) throws GuacamoleException {
                 return new HvConnectionGroup(object);
             }
 
             @Override
-            protected ConnectionGroup undecorate(ConnectionGroup object) {
+            protected ConnectionGroup undecorate(final ConnectionGroup object) {
                 assert(object instanceof HvConnectionGroup);
                 return ((HvConnectionGroup) object).getUnderlyingConnectionGroup();
             }
@@ -122,7 +121,7 @@ public class HvUserContext extends DelegatingUserContext {
     
     @Override
     public Collection<Form> getConnectionGroupAttributes() {
-        Collection<Form> connectionGroupAttrs = new HashSet<>(super.getConnectionGroupAttributes());
+        final Collection<Form> connectionGroupAttrs = new HashSet<>(super.getConnectionGroupAttributes());
         connectionGroupAttrs.addAll(HvAttributeService.HV_ATTRIBUTES);
         return Collections.unmodifiableCollection(connectionGroupAttrs);
     }
