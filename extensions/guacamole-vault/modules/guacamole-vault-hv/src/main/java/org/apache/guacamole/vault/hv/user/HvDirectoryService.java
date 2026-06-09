@@ -84,7 +84,13 @@ public class HvDirectoryService extends VaultDirectoryService {
             }
 
             @Override
-            public void update(final ConnectionGroup connectionGroup) throws GuacamoleException {
+            public void update(final ConnectionGroup oldConnectionGroup) throws GuacamoleException {
+                ConnectionGroup connectionGroup = oldConnectionGroup;
+
+                // Unwrap the existing ConnectionGroup
+                if (connectionGroup instanceof HvConnectionGroup)
+                    connectionGroup = ((HvConnectionGroup) connectionGroup).getUnderlyingConnectionGroup();
+
                 // Process attribute values before saving
                 connectionGroup.setAttributes(connectionGroup.getAttributes());
 
