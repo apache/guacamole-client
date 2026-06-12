@@ -24,7 +24,6 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.vault.VaultAuthenticationProvider;
-import org.apache.guacamole.vault.hv.user.HvUserContext;
 
 /**
  * VaultAuthenticationProvider implementation which reads secrets from
