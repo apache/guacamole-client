@@ -25,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.GeneralSecurityException;
+import java.security.spec.ECGenParameterSpec;
 import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
 import org.apache.sshd.common.config.keys.writer.openssh.OpenSSHKeyPairResourceWriter;
 import org.apache.sshd.common.config.keys.PublicKeyEntry;
@@ -43,11 +44,16 @@ public class HvSshKeys {
      */
     public static final String RSA = "rsa";
 
-
     /**
      * The value of vault-ssh-type to use for ED25519 certificate
      */
     public static final String ED25519 = "ed25519";
+
+    /**
+     * The value of vault-ssh-type to use for EC256 (ECDSA with NIST P-256
+     * curve) certificate
+     */
+    public static final String EC256 = "ec";
 
     /**
      * Logger for this class.
@@ -86,6 +92,9 @@ public class HvSshKeys {
         }
         else if (ED25519.equals(type)) {
             keyPair = generateEd25519WithFallback();
+        }
+        else if (EC256.equals(type)) {
+            keyPair = generateEC256WithFallback();
         }
         else {
             throw new IllegalArgumentException("Unrecognized SSH encryption : "+ type);
@@ -126,6 +135,30 @@ public class HvSshKeys {
     }
 
     /**
+     * Generate a ec256 (NIST P-256 curve) key-pair
+     *
+     * @return
+     *      A java.security.KeyPair containing the ec256 key pair or RSA if failure
+     */
+    private KeyPair generateEC256WithFallback() {
+        KeyPair keyPair;
+        try {
+            final KeyPairGenerator keyPairGenerator = SecurityUtils.getKeyPairGenerator("EC");
+
+            // EC256 = secp256r1 (aka NIST P-256)
+            final ECGenParameterSpec ecSpec = new ECGenParameterSpec("secp256r1");
+            keyPairGenerator.initialize(ecSpec);
+
+            keyPair = keyPairGenerator.generateKeyPair();
+        } catch (GeneralSecurityException e) {
+            logger.warn("EC256 not available via SSHD ECDSA (NIST P-256). Falling back to RSA : {}", e.getMessage());
+            keyPair = generateRsa();
+        }
+
+        return keyPair;
+    }
+
+    /**
      * Generate a 4096-bit RSA key-pair
      *
      * @return
@@ -142,7 +175,8 @@ public class HvSshKeys {
             return keyPairGenerator.generateKeyPair();
         }
         catch (GeneralSecurityException e) {
-            throw new IllegalStateException("Failed to generate RSA SSH keypair", e);
+            logger.debug("Failed to generate RSA SSH keypair", e);
+            throw new IllegalStateException("Failed to generate RSA SSH keypair: " + e.getMessage());
         }
     }
 
