@@ -22,6 +22,7 @@ package org.apache.guacamole.form;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Represents an arbitrary field, such as an HTTP parameter, the parameter of a
@@ -148,6 +149,31 @@ public class Field {
     private Collection<String> options;
 
     /**
+     * Conditionally overrides this field's label with an alternate
+     * label based on the value of another field.
+     *
+     * This value is a map of string keys to values, similar to a
+     * JSON object. For example:
+     *
+     * {
+     *     "field"    : "exec-command",
+     *     "equals"   : "",
+     *     "labelKey" : "FIELD_HEADER_TERMINAL_TYPE_ATTACH"
+     * }
+     *
+     * Supported entries include:
+     * - "field"      : (String) name of the field to evaluate
+     * - "equals"     : (Object) value the field must equal (optional)
+     * - "notEquals"  : (Object) value the field must not equal (optional)
+     * - "labelKey"   : (String) label key to use if the condition
+     *                           matches
+     *
+     * Exactly one of "equals" or "notEquals" should be specified. If both
+     * are specified, "equals" takes precedence and "notEquals" is ignored.
+     */
+    private Map<String, Object> conditionalLabel;
+
+    /**
      * Creates a new Parameter with no associated name or type.
      */
     public Field() {
@@ -245,6 +271,27 @@ public class Field {
      */
     public void setOptions(Collection<String> options) {
         this.options = options;
+    }
+
+    /**
+     * Returns the conditional label definition for this field, or null if the
+     * label is unconditional.
+     *
+     * @return
+     *     The conditional label map, or null.
+     */
+    public Map<String, Object> getConditionalLabel() {
+        return conditionalLabel;
+    }
+
+    /**
+     * Sets the conditional label definition for this field.
+     *
+     * @param conditionalLabel
+     *     The conditional label map, or null for no condition.
+     */
+    public void setConditionalLabel(Map<String, Object> conditionalLabel) {
+        this.conditionalLabel = conditionalLabel;
     }
 
 }
