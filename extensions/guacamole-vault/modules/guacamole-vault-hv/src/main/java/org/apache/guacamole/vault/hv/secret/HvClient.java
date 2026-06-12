@@ -30,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -77,6 +78,24 @@ public class HvClient {
      * Name temporary entry in the ldap sessions for session being constructed
      */
     public static final String VAULT_LDAP_SESSION = "checkin";
+
+    /**
+     * A token query parameter to modify the ssh type
+     */
+    public static final String VAULT_SSH_KEY_TYPE = "key_type";
+
+    /**
+     * A token query parameter to modify the ssh key bits
+     */
+    public static final String VAULT_SSH_KEY_BITS = "key_bits";
+
+    /**
+     * Map of valid query parameter keys and valid values of these keys in vault
+     * token query parameters
+     */
+    public static final Map<String, String[]> VAULT_QUERY_PARAMS = Map.of(
+            VAULT_SSH_KEY_TYPE, new String[] {HvSshKeys.RSA, HvSshKeys.EC256, HvSshKeys.ED25519},
+            VAULT_SSH_KEY_BITS, new String[] {"256", "384", "521", "2048", "4096"});
 
     /**
      * Logger for this class.
@@ -337,6 +356,33 @@ public class HvClient {
     }
 
     /**
+     * Parse a string of query parameters and return a Map of the key/value of
+     * the parameters for the valid query parameters
+     *
+     * @param query
+     *     The query string extracted from the end of the token
+     *
+     * @return
+     *     A Map the the query parameters extracted
+     */
+    private Map<String, String> parseQueryParam(final String query) {
+        Map<String, String> queryMap = new ConcurrentHashMap<>();
+        if (query != null && !query.isBlank()) {
+            for (String pair : query.split("&")) {
+                final int idx = pair.indexOf("=");
+                final String key = idx > 0 ? pair.substring(0, idx) : pair;
+                final String val = idx > 0 && pair.length() > idx + 1 ? pair.substring(idx +1) : null;
+
+                VAULT_QUERY_PARAMS.forEach((k, v) -> {
+                    if (val != null && k.equals(key) && Arrays.asList(v).contains(val))
+                        queryMap.put(key, val);
+                });
+            }
+        }
+        return queryMap;
+    }
+
+    /**
      * Returns the value of the secret stored within OpenBao/Hashicorp Vault.
      *
      * @param notation
@@ -367,17 +413,27 @@ public class HvClient {
         }
 
         /*
-         * vault://path/to/secret  <-- the Guacamole token name and its modifier
-         *            ^^^^^^^         <-- this is the path
-         *                    ^^^^^^  <-- this is the secret (or key in HV terms)
+         * vault://path/to/secret?k=v    <-- the Guacamole token name and its modifier
+         *         ^^^^^^^               <-- this is the path
+         *                 ^^^^^^        <-- this is the secret (or key in HV terms)
+         *                       ^^^^    <-- These are the query parameters
          */
         int lastSlashIndex = notation.lastIndexOf('/');
         if (lastSlashIndex == -1) {
             lastSlashIndex = VAULT_TOKEN_PREFIX.length();
         }
-
+        int lastQueryIndex = notation.lastIndexOf('?');
+        final String query;
+        if (lastQueryIndex == -1 || lastQueryIndex < lastSlashIndex) {
+            lastQueryIndex = notation.length();
+            query = "";
+        }
+        else {
+            query = notation.substring(lastQueryIndex + 1);
+        }
+        final Map<String, String> queryMap = parseQueryParam(query);
         final String path = notation.substring(VAULT_TOKEN_PREFIX.length(), lastSlashIndex);
-        final String secret = notation.substring(lastSlashIndex + 1);
+        final String secret = notation.substring(lastSlashIndex + 1, lastQueryIndex);
 
         final JsonNode cachedSecrets = cache.getIfPresent(key);
 
@@ -406,12 +462,13 @@ public class HvClient {
                 final String type = getSecretsEngine(path).get("type").asText();
                 final String mountPath = getSecretsEngine(path).get("path").asText();
                 final String newpath = path.substring(mountPath.length());
-                logger.debug("Vault {}, {}, {}, {}", type, mountPath, path, secret);
+                logger.debug("Vault {}, {}, {}, {}, {}", type, mountPath, path, secret, queryMap.keySet());
 
                 final JsonNode jsonNode;
                 switch (type) {
                     case "ssh":
-                        jsonNode = getValueSSH(mountPath, newpath, username);
+                        // Only the SSH engine takes query arguments at the moment
+                        jsonNode = getValueSSH(mountPath, newpath, username, queryMap);
                         break;
                     case "ldap":
                         jsonNode = getValueLDAP(mountPath, newpath);
@@ -428,7 +485,6 @@ public class HvClient {
                     default:
                        throw new IllegalArgumentException("Unknown secret engine for the token: '" + type +"'");
                 }
-
                 return jsonNode;
             })
             .orTimeout(cacheLifetime, TimeUnit.MILLISECONDS);
@@ -503,7 +559,7 @@ public class HvClient {
     }
 
     /**
-     * Retrieves a an ssh one-time password or signed SSH certificate
+     * Retrieves an ssh one-time password or signed SSH certificate
      *
      * @param mountPath
      *     The mountPath of the SSH secret engine on the vault server.
@@ -521,11 +577,10 @@ public class HvClient {
      * @throws VaultException
      *     If the secrets cannot be retrieved from the Vault.
      */
-    private JsonNode getValueSSH(final String mountPath, final String path, final String username) throws VaultException {
+    private JsonNode getValueSSH(final String mountPath, final String path,
+            final String username, final Map<String, String> queryMap) throws VaultException {
+        // SSH One-time passwords
         if (path.startsWith("creds/")) {
-            if (username == null || username.isEmpty()) {
-                throw new VaultException("The username can not be empty for SSH signed certificates");
-            }
 
             final VaultResponse response =
                 vaultTemplate.write(mountPath + path, Map.of("ip", "0.0.0.0"));
@@ -539,40 +594,65 @@ public class HvClient {
             return objectMapper.valueToTree(retval);
         }
 
-        if (path.startsWith("sign/")) {
-            
-            final HvSshKeys sshKeys;
-            final Map<String, Object> request;
-            try {
-                sshKeys = new HvSshKeys(vaultInfo.getSshType());
+        if (!path.startsWith("sign/") && !path.startsWith("issue/")) {
+            throw new VaultException("Unknown SSH type on path: " + mountPath + path);
+        }
+
+        if (username == null || username.isEmpty()) {
+            throw new VaultException("The username can not be empty for SSH signed certificates");
+        }
+
+        final HvSshKeys sshKeys;
+        final Map<String, Object> request;
+        try {
+            final String sshType = queryMap.getOrDefault(VAULT_SSH_KEY_TYPE, vaultInfo.getSshType());
+
+            if (path.startsWith("sign/")) {
+                sshKeys = new HvSshKeys(sshType);
                 request = Map.of(
                         "public_key", sshKeys.getPublic(),
                         "valid_principals", username,
                         "extensions", Map.of("permit-pty", ""),
                         "ttl", vaultInfo.getSshConnectionTimeout());
             }
-            catch (GuacamoleException e) {
-                throw new VaultException("Error reading Vault configuration : " + e.getMessage());
+            else {
+                final String keyBits = queryMap.getOrDefault(VAULT_SSH_KEY_BITS,
+                        (sshType == HvSshKeys.EC256 ? "256" : "4096"));
+                sshKeys = null;
+                request = Map.of(
+                        "valid_principals", username,
+                        "extensions", Map.of("permit-pty", ""),
+                        "key_type", sshType,
+                        "key_bits", keyBits,
+                        "ttl", vaultInfo.getSshConnectionTimeout());
             }
-
-            final VaultResponse vaultResponse = vaultTemplate.write(mountPath + path, request);
-
-            if (vaultResponse == null || vaultResponse.getData() == null) {
-                throw new VaultException("No response from Vault SSH engine");
-            }
-            final Map<String, Object> data = vaultResponse.getData();
-            final String signedCert = (String) data.get("signed_key");
-
-            if (signedCert == null) {
-                throw new VaultException("Vault did not return a signed SSH certificate");
-            }
-
-            return objectMapper.valueToTree(Map.of("private", sshKeys.getPrivate(),
-                    "public", signedCert,
-                    "unsigned", sshKeys.getPublic()));
+        }
+        catch (GuacamoleException e) {
+            throw new VaultException("Error reading Vault configuration : " + e.getMessage());
         }
 
-        throw new VaultException("Unknown SSH type on path: " + mountPath + path);
+        final VaultResponse vaultResponse = vaultTemplate.write(mountPath + path, request);
+
+        if (vaultResponse == null || vaultResponse.getData() == null) {
+            throw new VaultException("No response from Vault SSH engine");
+        }
+
+        final Map<String, Object> data = vaultResponse.getData();
+        final String signedKey = (String) data.get("signed_key");
+        final String privateKey = (path.startsWith("sign/") ? sshKeys.getPrivate() : (String) data.get("private_key"));
+
+        if (signedKey == null || privateKey == null) {
+            throw new VaultException("Vault did not return a signed SSH certificate");
+        }
+
+        if (path.startsWith("sign/")) {
+            return objectMapper.valueToTree(Map.of("private", privateKey,
+                    "public", signedKey,
+                    "unsigned", sshKeys.getPublic()));
+        }
+        else {
+            return objectMapper.valueToTree(Map.of("private", privateKey, "public", signedKey));
+        }
     }
 
     /**

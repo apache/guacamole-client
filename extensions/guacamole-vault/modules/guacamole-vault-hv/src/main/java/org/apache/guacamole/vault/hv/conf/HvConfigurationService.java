@@ -338,7 +338,7 @@ public class HvConfigurationService extends VaultConfigurationService {
 
     /**
      * The type of SSH certificates are will be generated. Must be either
-     * 'rsa' for 4096-bit RSA keys or 'ed25519'.
+     * 'rsa' for 4096-bit RSA keys, 'ec' for ECDSA NIST P-256 keys or 'ed25519'.
      *
      * @return
      *      The ssh type to use.
@@ -348,8 +348,8 @@ public class HvConfigurationService extends VaultConfigurationService {
      */
     public String getSshType() throws GuacamoleException {
         final String type = environment.getProperty(VAULT_SSH_TYPE, DEFAULT_SSH_TYPE);
-        if (! HvSshKeys.RSA.equals(type) & ! HvSshKeys.ED25519.equals(type)) {
-            throw new GuacamoleException("Only ssh certificate types 'rsa' (4096-bit) and 'ed25519' are supported");
+        if (! HvSshKeys.RSA.equals(type) && ! HvSshKeys.ED25519.equals(type) && ! HvSshKeys.EC256.equals(type)) {
+            throw new GuacamoleException("Only ssh certificate types 'rsa' (4096-bit), 'ec' (256-bit) and 'ed25519' are supported");
         }
         return type;
     }
@@ -546,7 +546,7 @@ public class HvConfigurationService extends VaultConfigurationService {
 
         /**
          * The type of SSH certificates are will be generated. Must be either
-         * 'rsa' for 4096-bit RSA keys or 'ed25519'.
+         * 'rsa' for 4096-bit RSA keys, 'ec' for ECDSA NIST P-256 keys or 'ed25519'.
          *
          * @return
          *      The ssh type to use.
