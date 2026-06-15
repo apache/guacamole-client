@@ -337,7 +337,8 @@ public class HvSecretService implements VaultSecretService {
                 final String notation = tokenMatcher.group(1);
                 final String finalName = prepareToken(notation, userContext, config, filter);
 
-                tokens.put(notation, resolveSecret(clients, finalName, username, key));
+                tokens.put(notation, resolveSecret(clients, finalName, username, key + 
+                        finalName.substring(0, finalName.lastIndexOf('/'))));
             }
         }
 
