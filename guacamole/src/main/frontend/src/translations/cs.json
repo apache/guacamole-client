@@ -693,6 +693,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
         "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "UK Angličtina (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "US Angličtina (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_DVORAK" : "Španělština (Dvorak)",
         "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Španělština (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Standardní Angličtina (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
