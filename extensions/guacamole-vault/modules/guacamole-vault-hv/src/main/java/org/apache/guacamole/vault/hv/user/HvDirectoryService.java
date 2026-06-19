@@ -26,7 +26,6 @@ import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DecoratingDirectory;
 import org.apache.guacamole.net.auth.Directory;
 import org.apache.guacamole.net.auth.User;
-import org.apache.guacamole.vault.hv.conf.HvAttributeService;
 import org.apache.guacamole.vault.user.VaultDirectoryService;
 
 /**
@@ -40,13 +39,6 @@ public class HvDirectoryService extends VaultDirectoryService {
      */
     @Inject
     private HvUser.HvUserFactory hvUserFactory;
-
-    /**
-     * Service for retrieving any custom attributes defined for the
-     * current vault implementation and processing of said attributes.
-     */
-    @Inject
-    private HvAttributeService attributeService;
 
     @Override
     public Directory<Connection> getConnectionDirectory(final Directory<Connection> underlyingDirectory) throws GuacamoleException {

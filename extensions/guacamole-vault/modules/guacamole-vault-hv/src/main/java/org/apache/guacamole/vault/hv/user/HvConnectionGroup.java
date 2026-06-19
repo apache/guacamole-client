@@ -24,8 +24,6 @@ import java.util.Map;
 import org.apache.guacamole.net.auth.ConnectionGroup;
 import org.apache.guacamole.net.auth.DelegatingConnectionGroup;
 import org.apache.guacamole.vault.hv.conf.HvAttributeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A HV-specific connection group implementation that always exposes
@@ -33,11 +31,6 @@ import org.slf4j.LoggerFactory;
  * HV_PASSORD_ATTRIBUTE attributes, even when no value is set.
  */
 public class HvConnectionGroup extends DelegatingConnectionGroup {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(HvConnectionGroup.class);
 
     /**
      * Create a new HvConnectionGroup wrapping the provided ConnectionGroup record.

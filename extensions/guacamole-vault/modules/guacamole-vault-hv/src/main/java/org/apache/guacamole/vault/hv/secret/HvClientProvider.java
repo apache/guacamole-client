@@ -344,7 +344,7 @@ public class HvClientProvider {
             final String tunnelId = ((TunnelConnectEvent) event).getTunnel().getUUID().toString();
             for (final Map.Entry<VaultInfo, HvClient> entry : hvClientMap.entrySet()) {
                 final HvClient client = entry.getValue();
-                if (client.treatLdapSession(client.VAULT_LDAP_SESSION, tunnelId)) {
+                if (client.treatLdapSession(HvClient.VAULT_LDAP_SESSION, tunnelId)) {
                     break;
                 }
             }

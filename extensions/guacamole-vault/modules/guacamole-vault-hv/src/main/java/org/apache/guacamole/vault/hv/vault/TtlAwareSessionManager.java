@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.atomic.AtomicReference;
+
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -53,10 +55,6 @@ import org.slf4j.LoggerFactory;
  * - Handle both LoginToken and VaultToken types.
  */
 public final class TtlAwareSessionManager implements SessionManager {
-    /**
-     * The outcome of the renew token process
-     */
-    private enum Outcome { CONTINUE, REAUTH, STOP }
 
     /**
      * Logger for this class.
@@ -270,13 +268,13 @@ public final class TtlAwareSessionManager implements SessionManager {
             headers.set("X-Vault-Token", token.getToken());
             final HttpEntity<String> requestEntity = new HttpEntity<>(headers);
 
-            final ResponseEntity<Map> response;
+            final ResponseEntity<Map<String, Object>> response;
             try {
                 response = restOperations.exchange(
                         "/auth/token/lookup-self",
                         HttpMethod.GET,
                         requestEntity,
-                        Map.class
+                        new ParameterizedTypeReference<Map<String, Object>>() {}
                 );
             }
             catch (RestClientException e) {
