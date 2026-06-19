@@ -38,7 +38,6 @@ import org.apache.guacamole.net.auth.Connection;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
 import org.apache.guacamole.token.TokenFilter;
-import org.apache.guacamole.vault.hv.conf.HvConfigurationService;
 import org.apache.guacamole.vault.secret.VaultSecretService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,11 +57,6 @@ public class HvSecretService implements VaultSecretService {
     private static final Logger logger = LoggerFactory.getLogger(HvSecretService.class);
 
     /**
-     * Service for retrieving configuration information.
-     */
-    private final HvConfigurationService confService;
-
-    /**
      * Provider for HV client instances.
      */
     private final HvClientProvider hvClientProvider;
@@ -71,15 +65,11 @@ public class HvSecretService implements VaultSecretService {
      * Public constructor for Guice, so that we can instantiate the existing
      * Vault clients early, to avoid problems with expiring tokens
      *
-     * @param confService
-     *      Service for retrieving configuration information
-     *
      * @param hvClientFactory
      *      Factory for creating HV client instances
      */
     @Inject
-    public HvSecretService(final HvConfigurationService confService, final HvClientProvider hvClientProvider) {
-        this.confService = confService;
+    public HvSecretService(final HvClientProvider hvClientProvider) {
         this.hvClientProvider = hvClientProvider;
 
         // Instantiate the HvClient early to start Token renewal of main Vault account.
@@ -169,17 +159,9 @@ public class HvSecretService implements VaultSecretService {
 
         final String guacUsername = userContext == null ? "" : userContext.self().getIdentifier();
         token = applyToken(token, guacUsername, "{GUAC_USERNAME}", filter);
-
-        final String hostname = config.getParameter("hostname");
         token = applyToken(token, config.getParameter("hostname"), "{HOSTNAME}", filter);
-
-        final String username = config.getParameter("username");
         token = applyToken(token, config.getParameter("username"), "{USERNAME}", filter);
-
-        final String gatewayHostname = config.getParameter("gateway-hostname");
         token = applyToken(token, config.getParameter("gateway-hostname"), "{GATEWAY}", filter);
-
-        final String gatewayUsername = config.getParameter("gateway-username");
         token = applyToken(token, config.getParameter("gateway-username"), "{GATEWAY_USER}", filter);
 
         return token;

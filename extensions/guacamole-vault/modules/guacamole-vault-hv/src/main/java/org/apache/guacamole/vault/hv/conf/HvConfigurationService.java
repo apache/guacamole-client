@@ -31,8 +31,6 @@ import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.properties.URIGuacamoleProperty;
 import org.apache.guacamole.vault.conf.VaultConfigurationService;
 import org.apache.guacamole.vault.hv.secret.HvSshKeys;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Service class to retrieve configuration information for an OpenBao
@@ -40,11 +38,6 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 public class HvConfigurationService extends VaultConfigurationService {
-
-    /**
-     * Logger for this class.
-     */
-    private static final Logger logger = LoggerFactory.getLogger(VaultConfigurationService.class);
 
     /**
      * The default cache lifetime in milliseconds.

@@ -20,9 +20,6 @@
 package org.apache.guacamole.vault.hv;
 
 import org.apache.guacamole.GuacamoleException;
-import org.apache.guacamole.net.auth.AuthenticatedUser;
-import org.apache.guacamole.net.auth.Credentials;
-import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.vault.VaultAuthenticationProvider;
 
 /**
