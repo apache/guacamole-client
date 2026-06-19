@@ -75,7 +75,15 @@ angular.module('form').directive('guacFormField', [function formField() {
              *
              * @type ManagedClient
              */
-            client: '='
+            client: '=',
+
+            /**
+             * All current field values in the form, keyed by field name.
+             * Required to evaluate conditionalLabel conditions.
+             *
+             * @type Object.<String, String>
+             */
+            values: '='
 
         },
         templateUrl: 'app/form/templates/formField.html',
@@ -107,18 +115,12 @@ angular.module('form').directive('guacFormField', [function formField() {
             }) + '-' + new Date().getTime().toString(36);
 
             /**
-             * Produces the translation string for the header of the current
-             * field. The translation string will be of the form:
-             *
-             * <code>NAMESPACE.FIELD_HEADER_NAME<code>
-             *
-             * where <code>NAMESPACE</code> is the namespace provided to the
-             * directive and <code>NAME</code> is the field name transformed
-             * via translationStringService.canonicalize().
+             * Returns the translation key for this field's label, of the form
+             * NAMESPACE.FIELD_HEADER_NAME. If the field defines a
+             * conditionalLabel and its condition is met, returns the alternate
+             * key instead.
              *
              * @returns {String}
-             *     The translation string which produces the translated header
-             *     of the field.
              */
             $scope.getFieldHeader = function getFieldHeader() {
 
@@ -126,8 +128,34 @@ angular.module('form').directive('guacFormField', [function formField() {
                 if (!$scope.field || !$scope.field.name)
                     return '';
 
-                return translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE')
-                        + '.FIELD_HEADER_' + translationStringService.canonicalize($scope.field.name);
+                var ns = translationStringService.canonicalize($scope.namespace || 'MISSING_NAMESPACE');
+
+                var conditionalLabel = $scope.field.conditionalLabel;
+                if (conditionalLabel && conditionalLabel.labelKey && $scope.values) {
+
+                    var depValue = $scope.values[conditionalLabel.field];
+                    if (depValue == null)
+                        depValue = '';
+
+                    // equals and notEquals are mutually exclusive; equals wins if both are set
+                    var hasEquals    = 'equals'    in conditionalLabel;
+                    var hasNotEquals = 'notEquals' in conditionalLabel;
+                    var conditionMet;
+                    if (hasEquals)
+                        conditionMet = depValue === conditionalLabel.equals;
+                    else if (hasNotEquals)
+                        conditionMet = depValue !== conditionalLabel.notEquals;
+                    else {
+                        $log.warn('conditionalLabel for field "' + $scope.field.name
+                                + '" specifies neither "equals" nor "notEquals"; ignoring.');
+                        conditionMet = false;
+                    }
+
+                    if (conditionMet)
+                        return ns + '.' + conditionalLabel.labelKey;
+                }
+
+                return ns + '.FIELD_HEADER_' + translationStringService.canonicalize($scope.field.name);
 
             };
 
