@@ -1,0 +1,67 @@
+{
+
+    "DATA_SOURCE_LOGIN_RESTRICTIONS" : {
+        "NAME"  : "Restrictions supplémentaires"
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels vous pouvez vous connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels vous ne pouvez pas vous connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles vous êtes autorisé à vous connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles vous n'êtes pas autorisé à vous connecter\u202F:",
+
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM"  : "Restrictions supplémentaires à la connexion"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels le groupe de connexion peut être consulté\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels le groupe de connexion ne peut pas être consulté\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles le groupe de connexion est autorisé à se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles le groupe de connexion n'est pas autorisé à se connecter\u202F:",
+
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM"  : "Restrictions supplémentaires à la connexion"
+
+    },
+
+    "RESTRICT" : {
+
+        "ACTION_ADD_ENTRY"  : "Ajouter une entrée",
+
+        "ERROR_CONNECTION_NOT_ALLOWED_NOW"        : "La connexion n'est pas disponible pour le moment.",
+        "ERROR_CONNECTION_NOT_ALLOWED_FROM_HOST"  : "La connexion n'est pas autorisée depuis cet hôte.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_NOW"        : "La connexion pour cet utilisateur n'est pas permise pour le moment.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST"  : "La connexion de cet utilisateur n'est pas autorisée depuis cet hôte.",
+
+        "TABLE_HEADER_DAY"         : "Jour",
+        "TABLE_HEADER_END_TIME"    : "Heure de fin",
+        "TABLE_HEADER_HOST"        : "Hôte",
+        "TABLE_HEADER_START_TIME"  : "Heure de début"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels l'utilisateur peut se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels l'utilisateur ne peut pas se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles l'utilisateur est autorisé à se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles l'utilisateur n'est pas autorisé à se connecter\u202F:",
+
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM"  : "Autres restrictions de connexion"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED"  : "Hôtes depuis lesquels les membres peuvent se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"   : "Hôtes depuis lesquels les membres ne peuvent pas se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"   : "Heures auxquelles les membres sont autorisé à se connecter\u202F:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"    : "Heures auxquelles les membres ne sont pas autorisé à se connecter\u202F:",
+
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM"  : "Autres restrictions de connexion"
+
+    }
+
+}

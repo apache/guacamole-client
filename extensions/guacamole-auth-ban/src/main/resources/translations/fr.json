@@ -1,0 +1,5 @@
+{
+    "LOGIN": {
+        "ERROR_TOO_MANY_ATTEMPTS"  : "Trop de tentatives d'authentification ont échoué. Veuillez réessayer plus tard."
+    }
+}
