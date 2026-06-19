@@ -129,6 +129,16 @@
                     "name"    : "func-keys-and-keypad",
                     "type"    : "ENUM",
                     "options" : [ "", "esc", "vt100" ]
+                },
+                {
+                    "name"      : "terminal-type",
+                    "type"      : "ENUM",
+                    "options"   : [ "", "xterm", "xterm-256color", "vt220", "vt100", "ansi", "linux" ],
+                    "conditionalLabel" : {
+                        "field"    : "exec-command",
+                        "equals"   : "",
+                        "labelKey" : "FIELD_HEADER_TERMINAL_TYPE_ATTACH"
+                    }
                 }
             ]
         },
