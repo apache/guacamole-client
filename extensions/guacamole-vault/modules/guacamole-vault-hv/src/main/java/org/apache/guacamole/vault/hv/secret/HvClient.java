@@ -647,7 +647,9 @@ public class HvClient {
 
         if (path.startsWith("sign/")) {
             return objectMapper.valueToTree(Map.of("private", privateKey,
+                    "private_key", privateKey,
                     "public", signedKey,
+                    "signed_key", signedKey,
                     "unsigned", sshKeys.getPublic()));
         }
         else {
