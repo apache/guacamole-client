@@ -36,9 +36,11 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
+import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.properties.StringGuacamoleProperty;
 import org.apache.guacamole.GuacamoleSession;
 import org.apache.guacamole.rest.APIRequest;
 import org.slf4j.Logger;
@@ -61,6 +63,25 @@ public class TokenRESTService {
      */
     @Inject
     private AuthenticationService authenticationService;
+
+    /**
+     * The Guacamole server environment.
+     */
+    @Inject
+    private Environment environment;
+
+    /**
+     * The property within guacamole.properties which defines the HTTP header
+     * that contains the client base URL (for service discovery/load balancing).
+     */
+    private static final StringGuacamoleProperty AUTH_BASE_URL_HEADER = new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() {
+            return "auth-base-url-header";
+        }
+
+    };
 
     /**
      * Returns the credentials associated with the given request, using the
@@ -173,6 +194,19 @@ public class TokenRESTService {
         // Create/update session producing possibly-new token
         token = authenticationService.authenticate(credentials, token);
 
+        // Determine if a custom Base URL should be injected
+        String baseUrl = null;
+        
+        // Use the injected environment instead of static access
+        String headerName = environment.getProperty(AUTH_BASE_URL_HEADER);
+
+        if (headerName != null) {
+            String headerValue = request.getHeader(headerName);
+            if (headerValue != null) {
+                baseUrl = headerValue.replace("{TOKEN}", token);
+            }
+        }
+
         // Pull corresponding session
         GuacamoleSession session = authenticationService.getGuacamoleSession(token);
         if (session == null)
@@ -190,7 +224,8 @@ public class TokenRESTService {
             token,
             authenticatedUser.getIdentifier(),
             authenticatedUser.getAuthenticationProvider().getIdentifier(),
-            authProviderIdentifiers
+            authProviderIdentifiers,
+            baseUrl
         );
 
     }
