@@ -20,6 +20,7 @@
 /**
  * A directive which displays the contents of a connection group within an
  * automatically-paginated view.
+
  */
 angular.module('groupList').directive('guacGroupList', [function guacGroupList() {
 
@@ -40,7 +41,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              * Arbitrary object which shall be made available to the connection
              * and connection group templates within the scope as
              * <code>context</code>.
-             * 
+             *
              * @type Object
              */
             context : '=',
@@ -63,7 +64,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              * Whether the root of the connection group hierarchy given should
              * be shown. If false (the default), only the descendants of the
              * given connection group will be listed.
-             * 
+             *
              * @type Boolean
              */
             showRootGroup : '=',
@@ -96,6 +97,8 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             var dataSourceService       = $injector.get('dataSourceService');
             var requestService          = $injector.get('requestService');
 
+            var connectionReachabilityService = $injector.get('connectionReachabilityService');
+
             // Required types
             var GroupListItem = $injector.get('GroupListItem');
 
@@ -118,6 +121,19 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              * @type GroupListItem[]
              */
             $scope.rootItems = [];
+
+            /**
+             * Exposes the reachability service to the scope so that the
+             * connection.html template can read
+             * reachabilityService.reachable[item.identifier] and apply the
+             * vm-running / vm-stopped CSS classes.
+             *
+             * Child scopes created by ng-repeat and ng-include inherit this
+             * object through the AngularJS prototype chain.
+             *
+             * @type {Object}
+             */
+            $scope.reachabilityService = connectionReachabilityService;
 
             /**
              * Returns the number of active usages of a given connection.
@@ -152,6 +168,24 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              */
             $scope.isVisible = function isVisible(type) {
                 return !!$scope.templates[type];
+            };
+
+            /**
+             * Recursively collects connection identifiers from a raw connection
+             * group and all its descendants, as returned by the REST API.
+             *
+             * @param {Object} group  A connection group object from the REST API.
+             * @returns {String[]}    Array of connection identifiers.
+             */
+            var collectConnectionGroupIds = function collectConnectionGroupIds(group) {
+                var ids = [];
+                angular.forEach(group.childConnections, function connectionFound(connection) {
+                    ids.push(connection.identifier);
+                });
+                angular.forEach(group.childConnectionGroups, function groupFound(childGroup) {
+                    ids = ids.concat(collectConnectionGroupIds(childGroup));
+                });
+                return ids;
             };
 
             // Set contents whenever the connection group is assigned or changed
@@ -230,11 +264,19 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                 if ($scope.decorator)
                     $scope.decorator($scope.rootItems);
 
+                // Register reachability targets for each data source so that
+                // the polling service knows which connections to probe via TCP.
+                angular.forEach(connectionGroups, function targetsRegistered(rootGroup, dataSource) {
+                    var ids = collectConnectionGroupIds(rootGroup);
+                    if (ids.length)
+                        connectionReachabilityService.setTargets(dataSource, ids);
+                });
+
             });
 
             /**
              * Toggle the open/closed status of a group list item.
-             * 
+             *
              * @param {GroupListItem} groupListItem
              *     The list item to expand, which should represent a
              *     connection group.
