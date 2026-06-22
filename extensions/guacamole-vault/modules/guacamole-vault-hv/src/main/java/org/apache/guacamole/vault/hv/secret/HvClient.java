@@ -80,22 +80,12 @@ public class HvClient {
     public static final String VAULT_LDAP_SESSION = "checkin";
 
     /**
-     * A token query parameter to modify the ssh type
-     */
-    public static final String VAULT_SSH_KEY_TYPE = "key_type";
-
-    /**
-     * A token query parameter to modify the ssh key bits
-     */
-    public static final String VAULT_SSH_KEY_BITS = "key_bits";
-
-    /**
      * Map of valid query parameter keys and valid values of these keys in vault
      * token query parameters
      */
     public static final Map<String, String[]> VAULT_QUERY_PARAMS = Map.of(
-            VAULT_SSH_KEY_TYPE, new String[] {HvSshKeys.RSA, HvSshKeys.EC256, HvSshKeys.ED25519},
-            VAULT_SSH_KEY_BITS, new String[] {"256", "384", "521", "2048", "4096"});
+            HvSshKeys.VAULT_SSH_KEY_TYPE, new String[] {HvSshKeys.RSA, HvSshKeys.EC256, HvSshKeys.ED25519},
+            HvSshKeys.VAULT_SSH_KEY_BITS, new String[] {"256", "384", "521", "2048", "4096"});
 
     /**
      * Logger for this class.
@@ -605,7 +595,7 @@ public class HvClient {
         final HvSshKeys sshKeys;
         final Map<String, Object> request;
         try {
-            final String sshType = queryMap.getOrDefault(VAULT_SSH_KEY_TYPE, vaultInfo.getSshType());
+            final String sshType = queryMap.getOrDefault(HvSshKeys.VAULT_SSH_KEY_TYPE, vaultInfo.getSshType());
 
             if (path.startsWith("sign/")) {
                 sshKeys = new HvSshKeys(sshType);
@@ -616,7 +606,7 @@ public class HvClient {
                         "ttl", vaultInfo.getSshConnectionTimeout());
             }
             else {
-                final String keyBits = queryMap.getOrDefault(VAULT_SSH_KEY_BITS,
+                final String keyBits = queryMap.getOrDefault(HvSshKeys.VAULT_SSH_KEY_BITS,
                         (sshType == HvSshKeys.EC256 ? "256" : "4096"));
                 sshKeys = null;
                 request = Map.of(
@@ -653,7 +643,10 @@ public class HvClient {
                     "unsigned", sshKeys.getPublic()));
         }
         else {
-            return objectMapper.valueToTree(Map.of("private", privateKey, "public", signedKey));
+            return objectMapper.valueToTree(Map.of("private", privateKey,
+                    "private_key", privateKey,
+                    "public", signedKey,
+                    "signed_key", signedKey));
         }
     }
 

@@ -55,6 +55,16 @@ public class HvSshKeys {
      */
     public static final String EC256 = "ec";
 
+   /**
+     * A token query parameter to modify the ssh type
+     */
+    public static final String VAULT_SSH_KEY_TYPE = "key_type";
+
+    /**
+     * A token query parameter to modify the ssh key bits
+     */
+    public static final String VAULT_SSH_KEY_BITS = "key_bits";
+
     /**
      * Logger for this class.
      */
