@@ -369,6 +369,9 @@ public class HvSecretService implements VaultSecretService {
      */
     private Future<String> resolveSecret(final List<HvClient> clients, final String finalName,
             final String username, final String key) throws GuacamoleException {
+        if (clients.size() == 0) {
+            return CompletableFuture.<String>completedFuture(null);
+        }
         return clients.get(0).getSecret(finalName, username, key)
             .handle((value, ex) -> {
                 if (ex == null) {
