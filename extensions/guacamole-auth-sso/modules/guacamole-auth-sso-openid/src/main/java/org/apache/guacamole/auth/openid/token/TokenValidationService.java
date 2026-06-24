@@ -118,26 +118,21 @@ public class TokenValidationService {
             // Validate JWT
             JwtClaims claims = jwtConsumer.processToClaims(token);
 
-            if (confService.isImplicitFlow()) {
-                // Verify a nonce is present
-                String nonce = claims.getStringClaimValue("nonce");
-                if (nonce != null) {
-                    // Verify that we actually generated the nonce, and that it has not
-                    // already been used
-                    if (nonceService.isValid(nonce)) {
-                        // nonce is valid, consider claims valid
-                        return claims;
-                    }
-                    else {
-                        logger.info("Rejected OpenID token with invalid/old nonce.");
-                    }
+            // Verify a nonce is present
+            String nonce = claims.getStringClaimValue("nonce");
+            if (nonce != null) {
+                // Verify that we actually generated the nonce, and that it has not
+                // already been used
+                if (nonceService.isValid(nonce)) {
+                    // nonce is valid, consider claims valid
+                    return claims;
                 }
                 else {
-                    logger.info("Rejected OpenID token without nonce.");
+                    logger.info("Rejected OpenID token with invalid/old nonce.");
                 }
             }
             else {
-                return claims;
+                logger.info("Rejected OpenID token without nonce.");
             }
         }
         // Log any failures to validate/parse the JWT

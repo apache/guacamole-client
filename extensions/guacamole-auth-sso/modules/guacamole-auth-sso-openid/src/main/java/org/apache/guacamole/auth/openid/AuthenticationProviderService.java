@@ -200,33 +200,29 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
                 .queryParam("scope", confService.getScope())
                 .queryParam("response_type", confService.getResponseType().toString())
                 .queryParam("client_id", confService.getClientID())
-                .queryParam("redirect_uri", confService.getRedirectURI());
+                .queryParam("redirect_uri", confService.getRedirectURI())
+                .queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L));
 
-        if (confService.isImplicitFlow()) {
-            builder.queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L));
-        }
-        else  {
-            if (confService.isPKCERequired()) {
-                String codeVerifier = PKCEUtil.generateCodeVerifier();
-                String codeChallenge;
+        if (! confService.isImplicitFlow() && confService.isPKCERequired()) {
+            String codeVerifier = PKCEUtil.generateCodeVerifier();
+            String codeChallenge;
 
-                try {
-                    codeChallenge = PKCEUtil.generateCodeChallenge(codeVerifier);
-                }
-                catch (Exception e) {
-                    throw new GuacamoleException("Unable to compute PKCE challenge", e);
-                }
-
-                // Store verifier for authenticateUser
-                OpenIDAuthenticationSession session = new OpenIDAuthenticationSession(codeVerifier,
-                            confService.getMaxPKCEVerifierValidity() * 60000L);
-                String identifier = IdentifierGenerator.generateIdentifier();
-                sessionManager.defer(session, identifier);
-
-                builder.queryParam("code_challenge", codeChallenge)
-                       .queryParam("code_challenge_method", "S256")
-                       .queryParam(AUTH_SESSION_QUERY_PARAM, identifier);
+            try {
+                codeChallenge = PKCEUtil.generateCodeChallenge(codeVerifier);
             }
+            catch (Exception e) {
+                throw new GuacamoleException("Unable to compute PKCE challenge", e);
+            }
+
+            // Store verifier for authenticateUser
+            OpenIDAuthenticationSession session = new OpenIDAuthenticationSession(codeVerifier,
+                        confService.getMaxPKCEVerifierValidity() * 60000L);
+            String identifier = IdentifierGenerator.generateIdentifier();
+            sessionManager.defer(session, identifier);
+
+            builder.queryParam("code_challenge", codeChallenge)
+                    .queryParam("code_challenge_method", "S256")
+                    .queryParam(AUTH_SESSION_QUERY_PARAM, identifier);
         }
 
         return builder.build();
