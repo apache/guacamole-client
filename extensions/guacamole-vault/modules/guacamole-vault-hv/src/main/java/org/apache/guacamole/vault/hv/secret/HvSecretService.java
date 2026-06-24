@@ -204,7 +204,7 @@ public class HvSecretService implements VaultSecretService {
 
         // An ordered array of non null HvClients
         final List<HvClient> clients = hvClientProvider.getHvClients(userContext, connectable);
-        if (clients.size() == 0) {
+        if (clients.isEmpty()) {
             return null;
         }
 
@@ -295,7 +295,7 @@ public class HvSecretService implements VaultSecretService {
 
         // An ordered array of non null HvClients
         final List<HvClient> clients = hvClientProvider.getHvClients(userContext, connectable);
-        if (clients.size() == 0) {
+        if (clients.isEmpty()) {
             return tokens;
         }
 
@@ -369,7 +369,7 @@ public class HvSecretService implements VaultSecretService {
      */
     private Future<String> resolveSecret(final List<HvClient> clients, final String finalName,
             final String username, final String key) throws GuacamoleException {
-        if (clients.size() == 0) {
+        if (clients.isEmpty()) {
             return CompletableFuture.<String>completedFuture(null);
         }
         return clients.get(0).getSecret(finalName, username, key)

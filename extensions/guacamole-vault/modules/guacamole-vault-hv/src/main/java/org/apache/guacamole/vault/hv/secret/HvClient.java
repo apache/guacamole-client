@@ -356,10 +356,10 @@ public class HvClient {
      *     A Map the the query parameters extracted
      */
     private Map<String, String> parseQueryParam(final String query) {
-        Map<String, String> queryMap = new ConcurrentHashMap<>();
+        final Map<String, String> queryMap = new ConcurrentHashMap<>();
         if (query != null && !query.isBlank()) {
-            for (String pair : query.split("&")) {
-                final int idx = pair.indexOf("=");
+            for (final String pair : query.split("&")) {
+                final int idx = pair.indexOf('=');
                 final String key = idx > 0 ? pair.substring(0, idx) : pair;
                 final String val = idx > 0 && pair.length() > idx + 1 ? pair.substring(idx +1) : null;
 
@@ -584,7 +584,8 @@ public class HvClient {
             return objectMapper.valueToTree(retval);
         }
 
-        if (!path.startsWith("sign/") && !path.startsWith("issue/")) {
+        final boolean isSign = path.startsWith("sign/");
+        if (!isSign && !path.startsWith("issue/")) {
             throw new VaultException("Unknown SSH type on path: " + mountPath + path);
         }
 
@@ -597,7 +598,7 @@ public class HvClient {
         try {
             final String sshType = queryMap.getOrDefault(HvSshKeys.VAULT_SSH_KEY_TYPE, vaultInfo.getSshType());
 
-            if (path.startsWith("sign/")) {
+            if (isSign) {
                 sshKeys = new HvSshKeys(sshType);
                 request = Map.of(
                         "public_key", sshKeys.getPublic(),
@@ -607,7 +608,7 @@ public class HvClient {
             }
             else {
                 final String keyBits = queryMap.getOrDefault(HvSshKeys.VAULT_SSH_KEY_BITS,
-                        (sshType == HvSshKeys.EC256 ? "256" : "4096"));
+                        sshType == HvSshKeys.EC256 ? "256" : "4096");
                 sshKeys = null;
                 request = Map.of(
                         "valid_principals", username,
@@ -629,13 +630,13 @@ public class HvClient {
 
         final Map<String, Object> data = vaultResponse.getData();
         final String signedKey = (String) data.get("signed_key");
-        final String privateKey = (path.startsWith("sign/") ? sshKeys.getPrivate() : (String) data.get("private_key"));
+        final String privateKey = isSign ? sshKeys.getPrivate() : (String) data.get("private_key");
 
         if (signedKey == null || privateKey == null) {
             throw new VaultException("Vault did not return a signed SSH certificate");
         }
 
-        if (path.startsWith("sign/")) {
+        if (isSign) {
             return objectMapper.valueToTree(Map.of("private", privateKey,
                     "private_key", privateKey,
                     "public", signedKey,
