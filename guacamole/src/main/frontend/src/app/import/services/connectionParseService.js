@@ -41,9 +41,7 @@ angular.module('import').factory('connectionParseService',
         ['$injector', function connectionParseService($injector) {
 
     // Required types
-    const Connection             = $injector.get('Connection');
     const ConnectionImportConfig = $injector.get('ConnectionImportConfig');
-    const DirectoryPatch         = $injector.get('DirectoryPatch');
     const ImportConnection       = $injector.get('ImportConnection');
     const ParseError             = $injector.get('ParseError');
     const ParseResult            = $injector.get('ParseResult');
@@ -105,19 +103,18 @@ angular.module('import').factory('connectionParseService',
     const TreeLookups = template => ({
 
         /**
-         * A map of all known group paths to the corresponding identifier for
-         * that group. The is that a user-provided import file might directly
-         * specify a named group path like "ROOT", "ROOT/parent", or
-         * "ROOT/parent/child". This field field will map all of the above to
-         * the identifier of the appropriate group, if defined.
+         * A map of group identifier to the path of that group, keyed by
+         * identifier. Paths are of the form "ROOT", "ROOT/parent", or
+         * "ROOT/parent/child".
          *
          * @type Object.<String, String>
          */
         groupPathsByIdentifier: template.groupPathsByIdentifier || {},
 
         /**
-         * A map of all known group identifiers to the path of the corresponding
-         * group. These paths are all of the form "ROOT/parent/child".
+         * A map of group path to the identifier of that group, keyed by path.
+         * Used when the import file specifies a group path rather than a
+         * parentIdentifier.
          *
          * @type Object.<String, String>
          */
@@ -166,11 +163,9 @@ angular.module('import').factory('connectionParseService',
                 // To get the path for the current group, add the name
                 const currentPath = prefix + group.name;
 
-                // Add the current path to the identifier map
-                lookups.groupPathsByIdentifier[currentPath] = group.identifier;
-
-                // Add the current identifier to the path map
-                lookups.groupIdentifiersByPath[group.identifier] = currentPath;
+                // Map identifier to path and path to identifier
+                lookups.groupPathsByIdentifier[group.identifier] = currentPath;
+                lookups.groupIdentifiersByPath[currentPath] = group.identifier;
 
                 // Add each connection to the connection map
                 _.forEach(group.childConnections,
@@ -239,9 +234,6 @@ angular.module('import').factory('connectionParseService',
             
             // The identifier for the parent group of this connection
             let parentIdentifier;
-            
-            // The operator to apply for this connection
-            let op = DirectoryPatch.Operation.ADD;
 
             // If both are specified, the parent group is ambigious
             if (providedIdentifier && connection.group) {
@@ -299,11 +291,14 @@ angular.module('import').factory('connectionParseService',
                 if (group.endsWith('/'))
                     group = group.slice(0, -1);
 
+                // Collapse duplicate or empty path segments (e.g. "ROOT//Repro5")
+                group = group.split('/').filter(segment => segment.length).join('/');
+
                 // Look up the parent identifier for the specified group path
-                parentIdentifier = groupPathsByIdentifier[group];
+                parentIdentifier = groupIdentifiersByPath[group];
 
                 // If the group doesn't match anything in the tree
-                if (!parentIdentifier) {
+                if (!parentIdentifier && !importConfig.createMissingGroups) {
                     connection.errors.push(new ParseError({
                         message: 'No group found named: ' + connection.group,
                         key: 'IMPORT.ERROR_INVALID_GROUP',
@@ -578,7 +573,7 @@ angular.module('import').factory('connectionParseService',
         .then(({fieldTransformer, treeTransformer}) =>
                 connectionData.reduce((parseResult, data) => {
 
-            const { patches, users, groups, groupPaths } = parseResult;
+            const { connectionObjects, users, groups, groupPaths } = parseResult;
 
             // Run the array data through each provided transform
             let connectionObject = data;
@@ -596,52 +591,14 @@ angular.module('import').factory('connectionParseService',
             if (connectionObject.errors.length)
                 parseResult.hasErrors = true;
 
-            // The value for the patch is a full-fledged Connection
-            const value = new Connection(connectionObject);
+            // Save the connection details
+            connectionObjects.push(connectionObject);
 
-            // If a new connection is being created
-            if (connectionObject.importMode 
-                    === ImportConnection.ImportMode.CREATE) 
-
-                // Add a patch for creating the connection
-                patches.push(new DirectoryPatch({
-                    op: DirectoryPatch.Operation.ADD,
-                    path: '/',
-                    value
-                }));
-
-            // The connection is being replaced, and permissions are only being
-            // added, not replaced
-            else if (importConfig.existingPermissionMode ===
-                    ConnectionImportConfig.ExistingPermissionMode.PRESERVE)
-
-                // Add a patch for replacing the connection
-                patches.push(new DirectoryPatch({
-                    op: DirectoryPatch.Operation.REPLACE,
-                    path: '/' + connectionObject.identifier,
-                    value
-                }));
-
-            // The connection is being replaced, and permissions are also being
-            // replaced
-            else {
-
-                // Add a patch for removing the existing connection
-                patches.push(new DirectoryPatch({
-                    op: DirectoryPatch.Operation.REMOVE,
-                    path: '/' + connectionObject.identifier
-                }));
-
-                // Increment the index for the additional remove patch
+            // Logic to determine if this connection will later result in 2 patches
+            if (connectionObject.importMode === ImportConnection.ImportMode.REPLACE &&
+                    importConfig.existingPermissionMode !== ConnectionImportConfig.ExistingPermissionMode.PRESERVE) {
+                // Increment the index for the additional remove patch (which will be created during import)
                 index += 1;
-
-                // Add a second patch for creating the replacement connection
-                patches.push(new DirectoryPatch({
-                    op: DirectoryPatch.Operation.ADD,
-                    path: '/',
-                    value
-                }));
-
             }
 
             // Save the connection group path into the parse result

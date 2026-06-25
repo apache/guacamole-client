@@ -49,6 +49,26 @@ Guacamole.OnScreenKeyboard = function(layout) {
     var modifierKeysyms = {};
 
     /**
+     * When the sticky "shift" modifier is active, records which on-screen key
+     * turned it on so its pressed styling can be cleared if Shift is released
+     * automatically after a typing key (matching a physical Shift key).
+     *
+     * @private
+     * @type {{ keyName: string, keyElement: !Element }|null}
+     */
+    var shiftKeyActivation = null;
+
+    /**
+     * Keysyms sent on keydown for non-modifier keys, keyed by layout key name.
+     * Used for keyup so the same keysym is released even if sticky Shift is
+     * cleared between press and release.
+     *
+     * @private
+     * @type {!Object.<string, number>}
+     */
+    var pendingKeyupKeysyms = {};
+
+    /**
      * Map of all key names to their current pressed states. If a key is not
      * pressed, it may not be in this map at all, but all pressed keys will
      * have a corresponding mapping to true.
@@ -238,6 +258,80 @@ Guacamole.OnScreenKeyboard = function(layout) {
     };
 
     /**
+     * Returns whether pressing a key with the given keysym should turn off a
+     * latched Shift (letters, digits, punctuation, space, and keypad digits).
+     * Navigation, function keys, Tab, Enter, etc. return false so combinations
+     * such as Shift+Arrow remain possible.
+     *
+     * @private
+     * @param {!number} keysym
+     * @returns {!boolean}
+     */
+    var keysymClearsStickyShift = function keysymClearsStickyShift(keysym) {
+
+        if (typeof keysym !== "number" || keysym !== keysym /* NaN */)
+            return false;
+
+        // Unicode keysyms (non-ASCII letters and symbols)
+        if ((keysym & 0xFFFF0000) === 0x01000000)
+            return true;
+
+        // Latin-1 range: space through tilde and common byte-wide symbols
+        if (keysym >= 0x0020 && keysym <= 0x00FF)
+            return true;
+
+        // Keypad 0 through 9
+        if (keysym >= 0xFFB0 && keysym <= 0xFFB9)
+            return true;
+
+        return false;
+
+    };
+
+    /**
+     * Clears pressed styling on the on-screen Shift key that activated sticky
+     * Shift, if any, and forgets that activation.
+     *
+     * @private
+     */
+    var clearShiftKeyActivation = function clearShiftKeyActivation() {
+
+        if (!shiftKeyActivation)
+            return;
+
+        if (pressed[shiftKeyActivation.keyName]) {
+            removeClass(shiftKeyActivation.keyElement, "guac-keyboard-pressed");
+            pressed[shiftKeyActivation.keyName] = false;
+        }
+
+        shiftKeyActivation = null;
+
+    };
+
+    /**
+     * Releases the latched Shift modifier if it is currently active, sends the
+     * corresponding keyup, and clears any pressed styling on the Shift key.
+     *
+     * @private
+     */
+    var releaseStickyShiftModifier = function releaseStickyShiftModifier() {
+
+        if (modifierKeysyms.shift === undefined)
+            return;
+
+        var shiftKeysym = modifierKeysyms.shift;
+        delete modifierKeysyms.shift;
+
+        removeClass(keyboard, "guac-keyboard-modifier-shift");
+
+        if (shiftKeysym && osk.onkeyup)
+            osk.onkeyup(shiftKeysym);
+
+        clearShiftKeyActivation();
+
+    };
+
+    /**
      * Returns the single matching Key object associated with the key of the
      * given name, where that Key object's requirements (such as pressed
      * modifiers) are all currently satisfied.
@@ -297,6 +391,12 @@ Guacamole.OnScreenKeyboard = function(layout) {
             // Get current key based on modifier state
             var key = getActiveKey(keyName);
 
+            // No key variant matches current modifiers - avoid inconsistent state
+            if (!key) {
+                removeClass(keyElement, "guac-keyboard-pressed");
+                return;
+            }
+
             // Update modifier state
             if (key.modifier) {
 
@@ -311,6 +411,14 @@ Guacamole.OnScreenKeyboard = function(layout) {
                     
                     addClass(keyboard, modifierClass);
                     modifierKeysyms[key.modifier] = key.keysym;
+
+                    if (key.modifier === "shift") {
+                        clearShiftKeyActivation();
+                        shiftKeyActivation = {
+                            keyName    : keyName,
+                            keyElement : keyElement
+                        };
+                    }
                     
                     // Send key event only if keysym is meaningful
                     if (key.keysym && osk.onkeydown)
@@ -323,6 +431,9 @@ Guacamole.OnScreenKeyboard = function(layout) {
 
                     removeClass(keyboard, modifierClass);
                     delete modifierKeysyms[key.modifier];
+
+                    if (key.modifier === "shift")
+                        clearShiftKeyActivation();
                     
                     // Send key event only if original keysym is meaningful
                     if (originalKeysym && osk.onkeyup)
@@ -333,8 +444,13 @@ Guacamole.OnScreenKeyboard = function(layout) {
             }
 
             // If not modifier, send key event now
-            else if (osk.onkeydown)
-                osk.onkeydown(key.keysym);
+            else {
+                if (osk.onkeydown)
+                    osk.onkeydown(key.keysym);
+                // Pair keyup with this keydown even if Shift is cleared before mouseup
+                if (osk.onkeydown && key.keysym !== null && key.keysym !== undefined)
+                    pendingKeyupKeysyms[keyName] = key.keysym;
+            }
 
             // Mark key as pressed
             pressed[keyName] = true;
@@ -362,12 +478,40 @@ Guacamole.OnScreenKeyboard = function(layout) {
 
             removeClass(keyElement, "guac-keyboard-pressed");
 
-            // Get current key based on modifier state
-            var key = getActiveKey(keyName);
+            var hadPendingKeyup = Object.prototype.hasOwnProperty.call(
+                    pendingKeyupKeysyms, keyName);
 
-            // Send key event if not a modifier key
-            if (!key.modifier && osk.onkeyup)
-                osk.onkeyup(key.keysym);
+            try {
+
+                if (hadPendingKeyup) {
+
+                    var storedKeysym = pendingKeyupKeysyms[keyName];
+
+                    if (osk.onkeyup && storedKeysym != null)
+                        osk.onkeyup(storedKeysym);
+
+                    if (keysymClearsStickyShift(storedKeysym))
+                        releaseStickyShiftModifier();
+
+                }
+
+                else {
+
+                    var key = getActiveKey(keyName);
+
+                    if (key && !key.modifier && osk.onkeyup && key.keysym != null)
+                        osk.onkeyup(key.keysym);
+
+                }
+
+            }
+
+            finally {
+
+                if (hadPendingKeyup)
+                    delete pendingKeyupKeysyms[keyName];
+
+            }
 
             // Mark key as released
             pressed[keyName] = false;
