@@ -126,6 +126,7 @@ angular.module('storage').provider('localStorageService', [function localStorage
                 return JSON.parse(data);
             }
             catch (ignore) {
+                console.error('Ignoring invalid JSON from localStorage key "' + key + '":', data);
                 return null;
             }
         }
