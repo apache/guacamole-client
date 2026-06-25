@@ -121,8 +121,14 @@ angular.module('storage').provider('localStorageService', [function localStorage
 
         // Pull and parse value from internal storage, if present
         var data = storedItems[key];
-        if (data)
-            return JSON.parse(data);
+        if (data) {
+            try {
+                return JSON.parse(data);
+            }
+            catch (ignore) {
+                return null;
+            }
+        }
 
         // No value defined for given key
         return null;
