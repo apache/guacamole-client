@@ -162,6 +162,10 @@
                     "type"  : "NUMERIC"
                 },
                 {
+                    "name"  : "desktop-scale-factor",
+                    "type"  : "NUMERIC"
+                },
+                {
                     "name"    : "color-depth",
                     "type"    : "ENUM",
                     "options" : [ "", "8", "16", "24", "32" ]
