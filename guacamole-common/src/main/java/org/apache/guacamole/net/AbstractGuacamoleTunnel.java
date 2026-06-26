@@ -43,6 +43,11 @@ public abstract class AbstractGuacamoleTunnel implements GuacamoleTunnel {
     private final ReentrantLock writerLock;
 
     /**
+     * The time at which this tunnel was created.
+     */
+    private final long creationTime;
+
+    /**
      * Creates a new GuacamoleTunnel which synchronizes access to the
      * Guacamole instruction stream associated with the underlying
      * GuacamoleSocket.
@@ -50,6 +55,7 @@ public abstract class AbstractGuacamoleTunnel implements GuacamoleTunnel {
     public AbstractGuacamoleTunnel() {
         readerLock = new ReentrantLock();
         writerLock = new ReentrantLock();
+        creationTime = System.currentTimeMillis();
     }
 
     /**
@@ -123,6 +129,11 @@ public abstract class AbstractGuacamoleTunnel implements GuacamoleTunnel {
     @Override
     public boolean isOpen() {
         return getSocket().isOpen();
+    }
+
+    @Override
+    public long getCreationTime() {
+        return creationTime;
     }
 
 }
