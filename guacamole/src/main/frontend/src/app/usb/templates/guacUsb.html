@@ -1,0 +1,41 @@
+<div class="usb-management">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">{{'USB.SECTION_HEADER_USB_DEVICES' | translate}}</h3>
+        </div>
+        <div class="panel-body">
+            
+            <div ng-if="!webUsbSupported" class="alert alert-warning">
+                {{'USB.INFO_WEBUSB_NOT_SUPPORTED' | translate}}
+            </div>
+
+            <!-- Device list -->
+            <div>
+                <div class="list-group">
+                    <div ng-if="availableDevices.length === 0" class="list-group-item">
+                        <em>{{'USB.INFO_NO_DEVICES' | translate}}</em>
+                    </div>
+                    <div ng-repeat="device in availableDevices" class="list-group-item">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <strong>{{device.productName || 'USB Device'}}</strong>
+                                <div><small>Vendor: {{device.manufacturerName || 'Unknown'}} ({{device.vendorId}})</small></div>
+                                <div><small>Product: {{device.productName || 'Unknown'}} ({{device.productId}})</small></div>
+                                <div><small>Serial: {{device.serialNumber}}</small></div>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <button class="btn btn-sm btn-danger" ng-click="disconnectDevice(device)">
+                                    <span class="glyphicon glyphicon-eject"></span> {{'USB.ACTION_DISCONNECT_DEVICE' | translate}}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" ng-click="requestDevice()" ng-disabled="!webUsbSupported">
+                    <span class="glyphicon glyphicon-plus"></span> {{'USB.ACTION_CONNECT_DEVICE' | translate}}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
