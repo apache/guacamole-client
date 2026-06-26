@@ -99,8 +99,11 @@ USER guacamole
 # Environment variable defaults
 ENV BAN_ENABLED=true \
     ENABLE_FILE_ENVIRONMENT_PROPERTIES=true \
-    GUACAMOLE_HOME=/etc/guacamole
+    GUACAMOLE_HOME=/etc/guacamole \
+    HEALTH_CHECK_VALVE_ENABLED=true
 
 # Start Guacamole under Tomcat, listening on 0.0.0.0:8080
 EXPOSE 8080
+HEALTHCHECK --interval=60s --timeout=10s --start-period=30s \
+    CMD ["/opt/guacamole/bin/healthcheck.sh"]
 CMD ["/opt/guacamole/bin/entrypoint.sh" ]
