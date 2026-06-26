@@ -72,6 +72,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var $rootScope          = $injector.get('$rootScope');
     var localStorageService = $injector.get('localStorageService');
     var requestService      = $injector.get('requestService');
+    var $window             = $injector.get('$window');
 
     var service = {};
 
@@ -203,6 +204,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
             // the stack when fed to $.param().
             requestParams = _.omitBy(requestParams, (value, key) => key.startsWith('$'));
 
+            // Add a parameter "href" so that java authentication provider know
+            // where we came from
+            requestParams.href = $window.location.href;
+
             return requestService({
                 method: 'POST',
                 url: 'api/tokens',
@@ -230,6 +235,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
                     setAuthenticationResult(new AuthenticationResult(data));
                     $rootScope.$broadcast('guacLogin', data.authToken);
 
+                    // If a redirection is requested, redirect after authentication
+                    if (data.redirection) {
+                        $window.location.href = data.redirection;
+                    }
                 }
 
                 // Update cached authentication result, even if the token remains
