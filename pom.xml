@@ -47,6 +47,7 @@
         <hk2.version>2.6.1</hk2.version>
         <ipaddress.version>5.5.1</ipaddress.version>
         <jackson.version>2.19.0</jackson.version>
+        <jackson-annotations.version>2.19.0</jackson-annotations.version>
         <jackson-databind.version>2.19.0</jackson-databind.version>
         <jersey.version>2.46</jersey.version>
         <junit.version>5.12.2</junit.version>
@@ -430,7 +431,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson-annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
