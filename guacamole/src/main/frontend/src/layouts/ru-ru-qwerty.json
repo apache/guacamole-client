@@ -90,7 +90,7 @@
         "Meta" : [{
             "title"    : "Meta",
             "modifier" : "meta",
-            "keysym"   : 65511
+            "keysym"   : 65515
         }],
         "Latin" : [{
             "title"    : "Latin",
