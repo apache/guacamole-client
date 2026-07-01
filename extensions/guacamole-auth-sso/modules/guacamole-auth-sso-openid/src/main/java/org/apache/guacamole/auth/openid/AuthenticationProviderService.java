@@ -30,9 +30,12 @@ import java.util.Set;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
+import org.apache.guacamole.auth.openid.util.PKCEUtil;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
+import org.apache.guacamole.auth.sso.session.SSOAuthenticationSession;
+import org.apache.guacamole.auth.sso.session.SSOAuthenticationSessionManager;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.RedirectField;
@@ -41,6 +44,8 @@ import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.jose4j.jwt.JwtClaims;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service that authenticates Guacamole users by processing OpenID tokens.
@@ -49,16 +54,41 @@ import org.jose4j.jwt.JwtClaims;
 public class AuthenticationProviderService implements SSOAuthenticationProviderService {
 
     /**
-     * The standard HTTP parameter which will be included within the URL by all
-     * OpenID services upon successful authentication and redirect.
+     * Logger for this class.
      */
-    public static final String TOKEN_PARAMETER_NAME = "id_token";
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
+
+    /**
+     * The standard HTTP parameter which will be included within the URL by all
+     * OpenID services upon successful implicit flow authentication.
+     *
+     */
+    public static final String IMPLICIT_TOKEN_PARAMETER_NAME = "id_token";
+
+    /**
+     * The standard HTTP parameter which will be included within the URL by all
+     * OpenID services upon successful code flow authentication. Used to recover
+     * the stored user state.
+     */
+    public static final String CODE_TOKEN_PARAMETER_NAME = "code";
+
+    /**
+     * The name of the query parameter that identifies an active authentication
+     * session (in-progress OpenID authentication attempt).
+     */
+    public static final String AUTH_SESSION_QUERY_PARAM = "state";
 
     /**
      * Service for retrieving OpenID configuration information.
      */
     @Inject
     private ConfigurationService confService;
+
+    /**
+     * Manager of active OpenID authentication attempts.
+     */
+    @Inject
+    private SSOAuthenticationSessionManager sessionManager;
 
     /**
      * Service for validating and generating unique nonce values.
@@ -78,6 +108,25 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     @Inject
     private Provider<SSOAuthenticatedUser> authenticatedUserProvider;
 
+    /**
+     * Return the value of the session identifier associated with the given
+     * credentials, or null if no session identifier is found in the
+     * credentials.
+     *
+     * @param credentials
+     *     The credentials from which to extract the session identifier.
+     *
+     * @return
+     *     The session identifier associated with the given credentials, or
+     *     null if no identifier is found.
+     */
+    public static String getSessionIdentifier(Credentials credentials) {
+
+        // Return the session identifier from the request params, if set, or
+        // null otherwise
+        return credentials != null ? credentials.getParameter(AUTH_SESSION_QUERY_PARAM) : null;
+    }
+
     @Override
     public SSOAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
@@ -86,33 +135,63 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         Set<String> groups = null;
         Map<String,String> tokens = Collections.emptyMap();
 
-        // Validate OpenID token in request, if present, and derive username
-        String token = credentials.getParameter(TOKEN_PARAMETER_NAME);
-        if (token != null) {
-            JwtClaims claims = tokenService.validateToken(token);
-            if (claims != null) {
-                username = tokenService.processUsername(claims);
-                groups = tokenService.processGroups(claims);
-                tokens = tokenService.processAttributes(claims);
+        // Recover session
+        String identifier = getSessionIdentifier(credentials);
+        SSOAuthenticationSession session = sessionManager.resume(identifier);
+
+        logger.debug("OpenID authentication with '{}' reponse type (ID: {}, Secret: {}, PKCE: {}, Redirection: {})",
+                  confService.getResponseType(),
+                  confService.getClientID(),
+                  confService.getClientSecret(),
+                  confService.isPKCERequired(),
+                  credentials.getParameter("href"));
+
+        if (confService.isImplicitFlow()) {
+            String token = credentials.getParameter(IMPLICIT_TOKEN_PARAMETER_NAME);
+            if (token != null) {
+                JwtClaims claims = tokenService.validateTokenOrCode(token, "");
+                if (claims != null) {
+                    username = tokenService.processUsername(claims);
+                    groups = tokenService.processGroups(claims);
+                    tokens = tokenService.processAttributes(claims);
+                }
+            }
+        }
+        else {
+            String verifier = null;
+            if (confService.isPKCERequired()) {
+                if (session != null) {
+                    verifier = session.get("verifier").toString();
+                }
+            }
+            String code = credentials.getParameter("code");
+            if (code != null && (confService.isPKCERequired() == false || verifier != null)) {
+                JwtClaims claims = tokenService.validateTokenOrCode(code, verifier);
+                if (claims != null) {
+                    username = tokenService.processUsername(claims);
+                    groups = tokenService.processGroups(claims);
+                    tokens = tokenService.processAttributes(claims);
+                }
             }
         }
 
         // If the username was successfully retrieved from the token, produce
         // authenticated user
         if (username != null) {
-
             // Create corresponding authenticated user
             SSOAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(username, credentials, groups, tokens);
+            if (session != null) {
+                authenticatedUser.setOriginalUri(session.getRedirection());
+            }
             return authenticatedUser;
-
         }
 
         // Request OpenID token (will automatically redirect the user to the
         // OpenID authorization page via JavaScript)
         throw new GuacamoleInvalidCredentialsException("Invalid login.",
             new CredentialsInfo(Arrays.asList(new Field[] {
-                new RedirectField(TOKEN_PARAMETER_NAME, getLoginURI(),
+                new RedirectField(AUTH_SESSION_QUERY_PARAM, getLoginURI(credentials),
                         new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
             }))
         );
@@ -121,13 +200,45 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
     @Override
     public URI getLoginURI() throws GuacamoleException {
-        return UriBuilder.fromUri(confService.getAuthorizationEndpoint())
+        return getLoginURI(null);
+    }
+
+    private URI getLoginURI(Credentials credentials) throws GuacamoleException {
+        UriBuilder builder = UriBuilder.fromUri(confService.getAuthorizationEndpoint())
                 .queryParam("scope", confService.getScope())
-                .queryParam("response_type", "id_token")
+                .queryParam("response_type", confService.getResponseType().toString())
                 .queryParam("client_id", confService.getClientID())
                 .queryParam("redirect_uri", confService.getRedirectURI())
-                .queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L))
-                .build();
+                .queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L));
+
+        // Create a session to store redirection and PKCE verifier
+        SSOAuthenticationSession session = new SSOAuthenticationSession(
+                    confService.getMaxPKCEVerifierValidity() * 60000L);
+        if (credentials != null) {
+            session.setRedirection(credentials);
+            logger.debug("Redirection set : {}", session.getRedirection());
+        }
+
+        if (! confService.isImplicitFlow() && confService.isPKCERequired()) {
+            String codeVerifier = PKCEUtil.generateCodeVerifier();
+            String codeChallenge;
+
+            try {
+                codeChallenge = PKCEUtil.generateCodeChallenge(codeVerifier);
+            }
+            catch (Exception e) {
+                throw new GuacamoleException("Unable to compute PKCE challenge", e);
+            }
+
+            // Store verifier for authenticateUser
+            session.put("verifier", codeVerifier);
+
+            builder.queryParam("code_challenge", codeChallenge)
+                    .queryParam("code_challenge_method", "S256");
+        }
+
+        String identifier = sessionManager.defer(session);
+        return builder.queryParam(AUTH_SESSION_QUERY_PARAM, identifier).build();
     }
 
     @Override
@@ -156,7 +267,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
     @Override
     public void shutdown() {
-        // Nothing to clean up
+        sessionManager.shutdown();
     }
 
 }

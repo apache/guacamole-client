@@ -401,7 +401,17 @@ public class AuthenticationService {
             // If no existing session, generate a new token/session pair
             else {
                 authToken = authTokenGenerator.getToken();
-                tokenSessionMap.put(authToken, new GuacamoleSession(listenerService, authenticatedUser, userContexts));
+                GuacamoleSession newSession = new GuacamoleSession(listenerService, authenticatedUser, userContexts);
+                // Get the redirection if authenication provider updated it
+                String redirection = authenticatedUser.getOriginalUri();
+                if (redirection != null && ! redirection.isEmpty()) {
+                    // The authenication provider didn't update the redirection
+                    redirection = credentials.getParameter("href");
+                }
+                if (redirection != null && ! redirection.isEmpty()) {
+                    newSession.setRedirection(redirection);
+                }
+                tokenSessionMap.put(authToken, newSession);
             }
 
             // Report authentication success

@@ -53,6 +53,11 @@ public class APIAuthenticationResult {
     private final List<String> availableDataSources;
 
     /**
+     * If the session has just authenticated, allow a redirection to be applied
+     */
+    private final String redirection;
+
+    /**
      * Returns the unique authentication token which identifies the current
      * session.
      *
@@ -99,6 +104,18 @@ public class APIAuthenticationResult {
     }
 
     /**
+     * Returns a redirection path for newly authenticated users, allowing
+     * redirection to where they left off when an authentication was
+     * requested.
+     *
+     * @return
+     *      A String with the redirection path
+     */
+    public String getRedirection() {
+        return redirection;
+    }
+
+    /**
      * Create a new APIAuthenticationResult object containing the given data.
      *
      * @param authToken
@@ -115,13 +132,18 @@ public class APIAuthenticationResult {
      * @param availableDataSources
      *     The unique identifier of all AuthenticationProviders to which the
      *     user now has access.
+     *
+     * @param redirection
+     *     A redirection proposed for the newly created sessions
      */
     public APIAuthenticationResult(String authToken, String username,
-            String dataSource, List<String> availableDataSources) {
+            String dataSource, List<String> availableDataSources,
+            String redirection) {
         this.authToken = authToken;
         this.username = username;
         this.dataSource = dataSource;
         this.availableDataSources = Collections.unmodifiableList(availableDataSources);
+        this.redirection = redirection;
     }
 
 }
