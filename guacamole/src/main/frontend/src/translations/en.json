@@ -771,6 +771,7 @@
         "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE"      : "Clipboard buffer size:",
         "FIELD_HEADER_COLOR_DEPTH"                : "Color depth:",
         "FIELD_HEADER_CREATE_RECORDING_PATH"      : "Automatically create recording path:",
+        "FIELD_HEADER_DISABLE_AUDIO_OPUS"         : "Disable Opus audio codec (use legacy CELT):",
         "FIELD_HEADER_DISABLE_CLIPBOARD"          : "Disable clipboard:",
         "FIELD_HEADER_DISABLE_COPY"               : "Disable copying from remote desktop:",
         "FIELD_HEADER_DISABLE_DISPLAY_RESIZE"     : "Disable resize of remote display:",
