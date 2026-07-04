@@ -85,6 +85,11 @@
                     "options" : [ "", "off", "auto-glz", "auto-lz", "quic", "glz", "lz", "lz4" ]
                 },
                 {
+                    "name"    : "preferred-video-codec",
+                    "type"    : "ENUM",
+                    "options" : [ "", "h264", "vp9", "vp8", "mjpeg" ]
+                },
+                {
                     "name"    : "read-only",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]

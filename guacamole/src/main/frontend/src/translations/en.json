@@ -793,6 +793,7 @@
         "FIELD_HEADER_PASSWORD"                   : "Password:",
         "FIELD_HEADER_PORT"                       : "Port:",
         "FIELD_HEADER_PREFERRED_COMPRESSION"      : "Preferred compression:",
+        "FIELD_HEADER_PREFERRED_VIDEO_CODEC"      : "Preferred video codec:",
         "FIELD_HEADER_PROXY"                      : "Proxy server:",
         "FIELD_HEADER_PUBKEY"                     : "Public key (Base64):",
         "FIELD_HEADER_READ_ONLY"                  : "Read-only:",
@@ -841,6 +842,12 @@
         "FIELD_OPTION_PREFERRED_COMPRESSION_LZ4"      : "LZ4",
         "FIELD_OPTION_PREFERRED_COMPRESSION_OFF"      : "Off",
         "FIELD_OPTION_PREFERRED_COMPRESSION_QUIC"     : "QUIC",
+
+        "FIELD_OPTION_PREFERRED_VIDEO_CODEC_EMPTY"    : "",
+        "FIELD_OPTION_PREFERRED_VIDEO_CODEC_H264"     : "H.264",
+        "FIELD_OPTION_PREFERRED_VIDEO_CODEC_MJPEG"    : "MJPEG",
+        "FIELD_OPTION_PREFERRED_VIDEO_CODEC_VP8"      : "VP8",
+        "FIELD_OPTION_PREFERRED_VIDEO_CODEC_VP9"      : "VP9",
 
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY"    : "Danish (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ"    : "Swiss German (Qwertz)",
