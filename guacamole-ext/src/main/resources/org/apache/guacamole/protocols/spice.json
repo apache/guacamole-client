@@ -98,6 +98,10 @@
                     "name"    : "disable-display-resize",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"    : "secondary-monitors",
+                    "type"    : "NUMERIC"
                 }
             ]
         },
