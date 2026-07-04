@@ -803,6 +803,7 @@
         "FIELD_HEADER_RECORDING_NAME"             : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH"             : "Recording path:",
         "FIELD_HEADER_RECORDING_WRITE_EXISTING"   : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_SECONDARY_MONITORS"         : "Maximum secondary monitors:",
         "FIELD_HEADER_SERVER_LAYOUT"              : "Keyboard layout:",
         "FIELD_HEADER_SFTP_DIRECTORY"             : "Default upload directory:",
         "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Disable file download:",
