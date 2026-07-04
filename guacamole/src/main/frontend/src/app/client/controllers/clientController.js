@@ -739,8 +739,9 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     $scope.showAddMonitor = function showAddMonitor() {
 
-        // Multi monitor only supported with rdp protocol
-        if ($scope.focusedClient?.protocol !== 'rdp')
+        // Multi monitor is currently supported with the rdp and spice protocols
+        if ($scope.focusedClient?.protocol !== 'rdp'
+                && $scope.focusedClient?.protocol !== 'spice')
             return false;
 
         // The maximum number of secondary monitors that can be added.
