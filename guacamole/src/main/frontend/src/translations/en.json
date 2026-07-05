@@ -804,6 +804,7 @@
         "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"    : "Exclude mouse:",
         "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT"   : "Exclude graphics/streams:",
         "FIELD_HEADER_RECORDING_INCLUDE_KEYS"     : "Include key events:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Include clipboard events:",
         "FIELD_HEADER_RECORDING_NAME"             : "Recording name:",
         "FIELD_HEADER_RECORDING_PATH"             : "Recording path:",
         "FIELD_HEADER_RECORDING_WRITE_EXISTING"   : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
