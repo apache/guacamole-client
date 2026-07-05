@@ -330,6 +330,11 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "recording-include-clipboard",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
                     "name"    : "create-recording-path",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
