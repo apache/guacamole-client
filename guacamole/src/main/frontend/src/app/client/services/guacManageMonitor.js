@@ -97,6 +97,14 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         rendered: {},
     };
 
+    /**
+     * Map tracking consecutive missing counts per monitor ID.
+     *
+     * @type Object.<String, Number>
+     */
+    const missingCounts = {};
+
+
     const service = {};
 
     /**
@@ -337,6 +345,9 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         if (!monitors[monitorId])
             return;
 
+        // Clear missing count tracking
+        delete missingCounts[monitorId];
+
         // Close monitor
         if (!monitors[monitorId].closed)
             monitors[monitorId].close();
@@ -411,31 +422,19 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
     }
 
     /**
-     * Get the X offset of the current monitor. The X offset is the
-     * total width of all previous monitors.
+     * Get the X offset of the current monitor. The monitor displayed on the
+     * leftmost position (lowest left value) will have an offset of 0 and for
+     * other monitors, the offset is the left value of the monitor minus the left
+     * value of the leftmost monitor (lowest left offset).
+     * This is used to calculate the X offset to draw operations and mouse
+     * events.
      *
      * @return {number}
      *     The X offset of the current monitor, in pixels.
      */
     service.getOffsetX = function getOffsetX() {
-        const monitorId = service.monitorId;
-
-        if (monitorId === 0)
-            return 0;
-    
-        const thisPosition = monitorsInfos.map[monitorId];
-        let offsetX = 0;
-    
-        // Loop through all monitors to add their widths as offset if they
-        // are before the current monitor
-        for (const [id, pos] of Object.entries(monitorsInfos.map)) {
-            if (pos < thisPosition) {
-                const rendered = monitorsInfos.rendered[id];
-                if (rendered?.width) offsetX += rendered.width;
-            }
-        }
-
-        return offsetX;
+        const currentOffset = monitorsInfos.rendered[service.monitorId]?.left ?? 0;
+        return currentOffset - getLowestLeftOffset();
     }
 
     /**
@@ -520,6 +519,26 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         }
 
         return lowestTopValue;
+    }
+
+    /**
+     * Get the lowest left value of all monitors. This is used to calculate the
+     * X offset of the current monitor.
+     *
+     * @return {number}
+     *     The lowest left value of all monitors, in pixels.
+     */
+    function getLowestLeftOffset() {
+        let lowestLeftValue = monitorsInfos.rendered[0]?.left ?? 0;
+
+        // Loop through all monitors to find the leftmost monitor
+        for (const [_, rendered] of Object.entries(monitorsInfos.rendered)) {
+            if (rendered?.left < lowestLeftValue) {
+                lowestLeftValue = rendered.left;
+            }
+        }
+
+        return lowestLeftValue;
     }
 
     /**
@@ -623,12 +642,19 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
 
         for (const [id, pos] of Object.entries(monitorsInfos.map)) {
 
-            // If the monitor is not in the layout, it is not known by
-            // guacd anymore, so we close it
+            // Track absence of the monitor. Only close it if it has been missing
+            // for 8 consecutive layout updates.
             if (!layout[pos]) {
-                service.closeMonitor(id);
+                missingCounts[id] = (missingCounts[id] || 0) + 1;
+                if (missingCounts[id] >= 8) {
+                    service.closeMonitor(id);
+                    delete missingCounts[id];
+                }
                 continue;
             }
+
+            // Reset the missing count when the monitor is present in the layout
+            missingCounts[id] = 0;
 
             if (!monitorsInfos.rendered[id])
                 monitorsInfos.rendered[id] = {};
@@ -657,6 +683,16 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         client.offsetY = service.getOffsetY();
 
     }
+
+    /**
+     * Return the current monitorsInfos object.
+     *
+     * @returns {Object}
+     *     The monitorsInfos object.
+     */
+    service.getMonitorsInfos = function getMonitorsInfos() {
+        return monitorsInfos;
+    };
 
     // Close additional monitors when window is unloaded
     $window.addEventListener('unload', service.closeAllMonitors);
