@@ -189,6 +189,11 @@
             "name"  : "file-transfer",
             "fields" : [
                 {
+                    "name"    : "file-transfer-mode",
+                    "type"    : "ENUM",
+                    "options" : [ "", "none", "agent", "drive", "both" ]
+                },
+                {
                     "name"    : "enable-drive",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
