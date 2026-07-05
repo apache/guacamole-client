@@ -50,6 +50,7 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
         const $window           = $injector.get('$window');
         const clipboardService  = $injector.get('clipboardService');
         const guacManageMonitor = $injector.get('guacManageMonitor');
+        const $timeout          = $injector.get('$timeout');
 
         /**
          * The current Guacamole client instance.
@@ -123,30 +124,97 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
             return false;
         };
 
+        /**
+         * Promise representing the pending resize timeout.
+         */
+        let resizePromise = null;
+
+        /**
+         * Timestamp (in milliseconds) before which outbound resize requests are
+         * suppressed because the display was just resized by the server. Element
+         * resizes during this window are echoes of that remote resize rather than
+         * genuine user intent; forwarding them back produces a resize feedback
+         * loop that prevents the (combined) display from ever settling.
+         *
+         * @type Number
+         */
+        let suppressSendUntil = 0;
+
+        /**
+         * The maximum width or height, in pixels, that will be requested for
+         * this monitor. Matches the QXL per-head EDID maximum so that requested
+         * and actual sizes converge rather than the guest silently capping an
+         * over-large request. See guacClient (primary) for details.
+         *
+         * @type Number
+         */
+        const MAX_MONITOR_DIMENSION = 2560;
+
+        // Suppress the resize echo produced when the server resizes this display
+        display.onresize = function displayResized() {
+            suppressSendUntil = Date.now() + 700;
+        };
+
         // Adjust the display scaling according to the window size.
         $scope.mainElementResized = function mainElementResized() {
 
-            const pixelDensity = $window.devicePixelRatio ?? 1;
-            const width  = main.offsetWidth  * pixelDensity;
-            const height = main.offsetHeight * pixelDensity;
-            const top    = window.screenY;
-            const left   = window.screenX;
+            if (resizePromise) {
+                $timeout.cancel(resizePromise);
+            }
 
-            const size = {
-                width: width,
-                height: height,
-                top: top,
-                left: left,
-                monitorId: guacManageMonitor.monitorId,
-            };
+            resizePromise = $timeout(function() {
+                if (!main.offsetWidth || !main.offsetHeight)
+                    return;
 
-            // Send resize event to main window
-            guacManageMonitor.pushBroadcastMessage('size', size);
+                // Ignore element-resize echoes triggered by a recent remote
+                // display resize; re-check once the window has elapsed so a
+                // genuine pending resize is not lost.
+                const now = Date.now();
+                if (now < suppressSendUntil) {
+                    resizePromise = $timeout($scope.mainElementResized,
+                            suppressSendUntil - now);
+                    return;
+                }
+
+                const basePixelDensity = $window.devicePixelRatio || 1;
+                let otherWidths = 0;
+                const monitorsInfos = guacManageMonitor.getMonitorsInfos();
+                const currentMonitorId = guacManageMonitor.monitorId;
+                if (monitorsInfos && monitorsInfos.details) {
+                    for (const [id, details] of Object.entries(monitorsInfos.details)) {
+                        if (String(id) !== String(currentMonitorId)) {
+                            otherWidths += details.width || 0;
+                        }
+                    }
+                }
+                const maxAllowedSingleDPR = MAX_MONITOR_DIMENSION / main.offsetWidth;
+                const maxAllowedCombinedDPR = (4096 - otherWidths) / main.offsetWidth;
+                const pixelDensity = Math.max(1, Math.min(basePixelDensity, maxAllowedSingleDPR, maxAllowedCombinedDPR));
+
+                const width  = Math.min(main.offsetWidth  * pixelDensity, MAX_MONITOR_DIMENSION);
+                const height = Math.min(main.offsetHeight * pixelDensity, MAX_MONITOR_DIMENSION);
+                const top    = window.screenY;
+                const left   = window.screenX;
+
+                const size = {
+                    width: width,
+                    height: height,
+                    top: top,
+                    left: left,
+                    monitorId: guacManageMonitor.monitorId,
+                };
+
+                // Send resize event to main window
+                guacManageMonitor.pushBroadcastMessage('size', size);
+            }, 250);
 
             // Remove scrollbars
-            document.querySelector('.client-main').style.overflow = 'hidden';
+            const clientMain = document.querySelector('.client-main');
+            if (clientMain) {
+                clientMain.style.overflow = 'hidden';
+            }
 
-        }
+        };
 
         // Ready for resize
         $scope.mainElementResized();
