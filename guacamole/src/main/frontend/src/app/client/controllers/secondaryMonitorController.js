@@ -45,7 +45,10 @@ angular.module('client').controller('secondaryMonitorController', ['$scope', '$i
           CTRL_KEYS   = {0xFFE3 : true, 0xFFE4 : true},
           MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
 
-    guacManageMonitor.init("secondary");
+    // Join the per-connection broadcast channel identified by the opener's
+    // primary window (passed in the route), so this secondary only exchanges
+    // data with its own connection.
+    guacManageMonitor.init("secondary", $routeParams.channel);
     guacManageMonitor.monitorId = monitorId;
 
     guacManageMonitor.openConsentButton = function openConsentButton() {
