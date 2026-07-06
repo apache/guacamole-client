@@ -215,8 +215,9 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 
-        // Secondary monitor view
-        .when('/secondaryMonitor/:id', {
+        // Secondary monitor view (:channel namespaces the per-connection
+        // broadcast channel shared with the opening primary window)
+        .when('/secondaryMonitor/:id/:channel?', {
             bodyClassName : 'secondaryMonitor',
             templateUrl   : 'app/client/templates/secondaryMonitor.html',
             controller    : 'secondaryMonitorController',
