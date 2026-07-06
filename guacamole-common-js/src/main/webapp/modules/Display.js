@@ -765,7 +765,15 @@ Guacamole.Display = function() {
     this.setMonitorSize = function setMonitorSize(width, height) {
         monitorWidth = width;
         monitorHeight = height;
-    }
+
+        // A monitor layout update must take effect immediately. The Guacamole
+        // server may have already resized the default layer to the size of the
+        // overall desktop, and may not send another resize after the per-window
+        // monitor rectangle is known. Re-run the resize path to authoritatively
+        // clamp the visible display to the current monitor bounds.
+        if (displayWidth !== monitorWidth || displayHeight !== monitorHeight)
+            guac_display.resize(default_layer, displayWidth, displayHeight);
+    };
 
     /**
      * Changes the size of the given Layer to the given width and height.
