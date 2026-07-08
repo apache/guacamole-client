@@ -132,6 +132,35 @@ angular.module('player').factory('keyEventDisplayService',
         return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     };
 
+    /**
+     * Translate a raw server-annotated clipboard direction into display
+     * metadata (short label, tooltip, and a CSS class for colour-coding).
+     * Returns an empty object when the direction is unknown/unannotated.
+     *
+     * @param {String} direction
+     *     The raw direction ("guest-to-client" or "client-to-guest").
+     *
+     * @returns {Object}
+     *     Display metadata for the direction, or {} if none.
+     */
+    const directionMeta = direction => {
+        if (direction === 'guest-to-client')
+            return {
+                direction: direction,
+                directionLabel: 'from guest',
+                directionTitle: 'Copied from guest (data leaving the guest)',
+                directionClass: 'from-guest'
+            };
+        if (direction === 'client-to-guest')
+            return {
+                direction: direction,
+                directionLabel: 'to guest',
+                directionTitle: 'Pasted into guest',
+                directionClass: 'to-guest'
+            };
+        return {};
+    };
+
     const service = {};
 
     /**
@@ -262,7 +291,8 @@ angular.module('player').factory('keyEventDisplayService',
             mimetype: event.mimetype,
             isImage: event.isImage,
             dataURL: event.dataURL,
-            size: event.size
+            size: event.size,
+            direction: event.direction
         }));
 
         // Merge and sort all events by timestamp
@@ -346,18 +376,19 @@ angular.module('player').factory('keyEventDisplayService',
                         '[Clipboard image: ' + (event.mimetype || 'image')
                             + ' ' + sizeLabel + ']',
                         false,
-                        {
+                        Object.assign({
                             isImage: true,
                             mimetype: event.mimetype,
                             dataURL: event.dataURL,
                             sizeLabel: sizeLabel
-                        });
+                        }, directionMeta(event.direction)));
                 }
 
                 // Text clipboard: inline truncated preview (unchanged behaviour)
                 else {
                     const preview = (event.data || '').substring(0, 50);
-                    pushEvent('[Clipboard: ' + preview + ']', false, { isText: true });
+                    pushEvent('[Clipboard: ' + preview + ']', false,
+                        Object.assign({ isText: true }, directionMeta(event.direction)));
                 }
             }
 

@@ -124,6 +124,37 @@
 
 }
 
+/* Directional annotation badge shown before a clipboard event. */
+.text-batches .text .clipboard-direction {
+
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 0.75em;
+    font-style: normal;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.05em 0.4em;
+    margin-right: 0.35em;
+    border-radius: 3px;
+    color: #fff;
+
+}
+
+/* Copied out of the guest - highlighted as the exfiltration-relevant case. */
+.text-batches .text .clipboard-direction.from-guest {
+
+    background-color: #b25f00;
+
+}
+
+/* Pasted into the guest - neutral. */
+.text-batches .text .clipboard-direction.to-guest {
+
+    background-color: #4a6f8a;
+
+}
+
 /* Image clipboard chip: a small inline thumbnail with type/size metadata. */
 .text-batches .text .clipboard-image-event {
 

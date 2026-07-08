@@ -117,8 +117,111 @@ angular.module('player').directive('guacPlayerTextView',
 
         };
 
-        // Reapply the current filter to the updated text batches
-        $scope.$watch('textBatches', () => applyFilter($scope.searchPhrase));
+        /**
+         * The maximum width/height, in pixels, of a generated clipboard image
+         * thumbnail. The full-resolution image is retained only for the
+         * lightbox; the inline chip uses this downscaled copy to keep the
+         * key-log DOM light even when a recording contains many or large
+         * clipboard images.
+         *
+         * @type {!Number}
+         */
+        const THUMBNAIL_MAX_DIMENSION = 96;
+
+        /**
+         * Generate a downscaled thumbnail, and capture the natural dimensions,
+         * for the given image clipboard metadata - asynchronously populating
+         * its thumbURL, width, and height fields. Falls back to the full data
+         * URL if the browser cannot rasterize a thumbnail. No-op if the
+         * thumbnail already exists or is in progress.
+         *
+         * @param {Object} clipboard
+         *     The image clipboard metadata to enrich in place.
+         */
+        const pendingImages = new Set();
+
+        const generateThumbnail = clipboard => {
+
+            // Only process each image event once
+            if (!clipboard || !clipboard.isImage || !clipboard.dataURL
+                    || clipboard.thumbURL || clipboard.thumbPending)
+                return;
+
+            clipboard.thumbPending = true;
+
+            const image = new Image();
+            pendingImages.add(image);
+
+            image.onload = function thumbnailLoaded() {
+
+                pendingImages.delete(image);
+
+                const w = image.naturalWidth;
+                const h = image.naturalHeight;
+                const scale = Math.min(1, THUMBNAIL_MAX_DIMENSION / Math.max(w, h));
+                const tw = Math.max(1, Math.round(w * scale));
+                const th = Math.max(1, Math.round(h * scale));
+
+                let thumb = clipboard.dataURL;
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = tw;
+                    canvas.height = th;
+                    canvas.getContext('2d').drawImage(image, 0, 0, tw, th);
+                    thumb = canvas.toDataURL('image/png');
+                }
+                catch (ignore) {
+                    // Keep the full data URL as the thumbnail fallback
+                }
+
+                $scope.$evalAsync(function applyThumbnail() {
+                    clipboard.width = w;
+                    clipboard.height = h;
+                    clipboard.thumbURL = thumb;
+                    clipboard.thumbPending = false;
+                });
+            };
+
+            image.onerror = function thumbnailFailed() {
+                pendingImages.delete(image);
+                $scope.$evalAsync(function applyFailure() {
+                    clipboard.thumbPending = false;
+                });
+            };
+
+            image.src = clipboard.dataURL;
+
+        };
+
+        // Abort any in-flight thumbnail loads when the directive is destroyed
+        // so their callbacks don't run against a detached scope and their
+        // closures don't outlive the viewer
+        $scope.$on('$destroy', function abortPendingThumbnails() {
+            pendingImages.forEach(function detach(image) {
+                image.onload = null;
+                image.onerror = null;
+                image.src = '';
+            });
+            pendingImages.clear();
+        });
+
+        /**
+         * Kick off thumbnail generation for every image clipboard event across
+         * all current text batches that has not yet been processed.
+         */
+        const generateThumbnails = () => {
+            ($scope.textBatches || []).forEach(batch =>
+                (batch.events || []).forEach(event => {
+                    if (event.clipboard && event.clipboard.isImage)
+                        generateThumbnail(event.clipboard);
+                }));
+        };
+
+        // Reapply the current filter and refresh thumbnails when batches change
+        $scope.$watch('textBatches', () => {
+            applyFilter($scope.searchPhrase);
+            generateThumbnails();
+        });
 
         // Reapply the filter whenever the search phrase is updated
         $scope.$watch('searchPhrase', applyFilter);
