@@ -104,6 +104,28 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
     };
 
     /**
+     * Returns the number of decoded bytes represented by the given base64
+     * string, without actually decoding it. Handles both padded and unpadded
+     * base64; Guacamole blob payloads are newline-free, so length arithmetic
+     * is exact.
+     *
+     * @private
+     * @param {string} base64
+     *     The base64-encoded string to measure.
+     *
+     * @returns {number}
+     *     The size, in bytes, of the decoded data.
+     */
+    var base64ByteLength = function base64ByteLength(base64) {
+        if (!base64)
+            return 0;
+        var padding = 0;
+        if (base64.charAt(base64.length - 1) === '=') padding++;
+        if (base64.charAt(base64.length - 2) === '=') padding++;
+        return Math.max(0, Math.floor(base64.length * 3 / 4) - padding);
+    };
+
+    /**
      * Handles an end instruction, which completes a clipboard stream
      * and creates the final clipboard event.
      *
@@ -115,18 +137,39 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
 
         var stream = activeStreams[streamIndex];
         if (stream) {
-            // Decode the base64 data
+
+            var isImage = /^image\//i.test(stream.mimetype || '');
+
             var decodedData = '';
-            try {
-                decodedData = atob(stream.data);
-                // Handle UTF-8 decoding
-                decodedData = decodeURIComponent(escape(decodedData));
-            } catch (e) {
-                // If decoding fails, use raw decoded data or mark as binary
+            var dataURL = null;
+            var size = 0;
+
+            // Image clipboard: keep the base64 payload intact and expose it
+            // as a data: URL for inline preview. Do NOT run the text/UTF-8
+            // decode used below - binary image bytes are not valid UTF-8 and
+            // would otherwise collapse to the literal string '[Binary data]'.
+            if (isImage) {
+                // Lowercase the mimetype in the data: scheme - AngularJS's
+                // img-src sanitizer whitelists "data:image/" case-sensitively,
+                // so an uppercase mimetype would be rewritten to "unsafe:" and
+                // silently fail to render.
+                dataURL = 'data:' + (stream.mimetype || '').toLowerCase()
+                        + ';base64,' + stream.data;
+                size = base64ByteLength(stream.data);
+            }
+
+            // Text clipboard: decode the base64 data, then interpret as UTF-8
+            else {
                 try {
                     decodedData = atob(stream.data);
-                } catch (e2) {
-                    decodedData = '[Binary data]';
+                    decodedData = decodeURIComponent(escape(decodedData));
+                } catch (e) {
+                    // If decoding fails, use raw decoded data or mark as binary
+                    try {
+                        decodedData = atob(stream.data);
+                    } catch (e2) {
+                        decodedData = '[Binary data]';
+                    }
                 }
             }
 
@@ -139,6 +182,9 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
             parsedEvents.push(new Guacamole.ClipboardEventInterpreter.ClipboardEvent({
                 mimetype: stream.mimetype,
                 data: decodedData,
+                isImage: isImage,
+                dataURL: dataURL,
+                size: size,
                 timestamp: Math.max(0, stream.timestamp - startTimestamp)
             }));
 
@@ -178,11 +224,36 @@ Guacamole.ClipboardEventInterpreter.ClipboardEvent = function ClipboardEvent(tem
     this.mimetype = template.mimetype || 'text/plain';
 
     /**
-     * The clipboard content (decoded from base64).
+     * The clipboard content (decoded from base64). Empty for image clipboard
+     * events, whose payload is exposed via dataURL instead.
      *
      * @type {!string}
      */
     this.data = template.data || '';
+
+    /**
+     * Whether this clipboard event carries image data (mimetype image/*)
+     * rather than text.
+     *
+     * @type {!boolean}
+     */
+    this.isImage = template.isImage || false;
+
+    /**
+     * For image clipboard events, a data: URL suitable for direct use as an
+     * <img> source. Null for text clipboard events.
+     *
+     * @type {string}
+     */
+    this.dataURL = template.dataURL || null;
+
+    /**
+     * The size, in bytes, of the clipboard payload. Only meaningful for
+     * image clipboard events; 0 for text.
+     *
+     * @type {!number}
+     */
+    this.size = template.size || 0;
 
     /**
      * The timestamp when this clipboard event occurred, relative to

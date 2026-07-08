@@ -541,6 +541,15 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     };
 
     // Read instructions from provided blob, extracting each frame
+    //
+    // NOTE: The onkeyevents and onclipboardevents callbacks are only fired
+    // from the tunnel branch below (on tunnel CLOSED). When the recording is
+    // supplied as a Blob, only onload (via notifyLoaded) fires — the extracted
+    // key-event and clipboard-event logs are NOT delivered. The bundled player
+    // avoids this by feeding a StaticHTTPTunnel (see settings/.../
+    // connectionHistoryPlayerController.js), so both logs work today. If a
+    // future caller loads a recording from a Blob and expects the key/clipboard
+    // logs, fire those callbacks from the parseBlob completion handler here too.
     if (source instanceof Blob) {
         recordingBlob = source;
         parseBlob(recordingBlob, loadInstruction, notifyLoaded);
@@ -594,7 +603,10 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                 }
 
                 // Now that the recording is fully processed, and all key events
-                // have been extracted, call the onkeyevents handler if defined
+                // have been extracted, call the onkeyevents handler if defined.
+                // NOTE: This (and the onclipboardevents call below) fire ONLY on
+                // this tunnel-CLOSED path — a Blob source never reaches here.
+                // See the Blob branch above before changing how recordings load.
                 if (recording.onkeyevents && keyEventInterpreter)
                     recording.onkeyevents(keyEventInterpreter.getEvents());
 
