@@ -684,11 +684,26 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
         if (!layout)
             return;
 
+        // Guard the offset/size math against a malformed or compromised layout
+        // from guacd: every geometry field must be a finite number, otherwise
+        // the entry would poison setMonitorSize() and the client offsets with
+        // NaN. Dimensions must additionally be positive (a zero/negative
+        // width or height yields a degenerate surface). Offsets (top/left) may
+        // legitimately be negative for monitors placed above/left of primary.
+        // An entry that fails validation is treated as an absent monitor.
+        const isFiniteNumber = value =>
+            typeof value === 'number' && Number.isFinite(value);
+        const isValidGeometry = geom => !!geom
+            && isFiniteNumber(geom.width) && geom.width > 0
+            && isFiniteNumber(geom.height) && geom.height > 0
+            && isFiniteNumber(geom.top) && isFiniteNumber(geom.left);
+
         for (const [id, pos] of Object.entries(monitorsInfos.map)) {
 
             // Track absence of the monitor. Only close it if it has been missing
-            // for 8 consecutive layout updates.
-            if (!layout[pos]) {
+            // for 8 consecutive layout updates. A malformed geometry entry is
+            // treated exactly like an absent monitor.
+            if (!isValidGeometry(layout[pos])) {
                 missingCounts[id] = (missingCounts[id] || 0) + 1;
                 if (missingCounts[id] >= 8) {
                     service.closeMonitor(id);

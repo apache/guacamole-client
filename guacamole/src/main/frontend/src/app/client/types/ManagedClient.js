@@ -64,6 +64,19 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var THUMBNAIL_UPDATE_FREQUENCY = 5000;
 
     /**
+     * Pattern matching connection parameter names whose values are sensitive
+     * (passwords, passphrases, private keys) and must therefore never be
+     * reflected into the UI-visible arguments model when streamed back by the
+     * server via "argv". Mutating such a parameter toward guacd is already
+     * rejected server-side; this keeps the value out of the connection-
+     * parameters panel as well (security finding L4, guacamole-server#21).
+     *
+     * @constant
+     * @type {!RegExp}
+     */
+    var SENSITIVE_ARGUMENT = /password|passphrase|private-key|client-key|secret|token/i;
+
+    /**
      * A deferred pipe stream, that has yet to be consumed, as well as all
      * axuilary information needed to pull data from the stream.
      *
@@ -646,6 +659,13 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             // Test mutability once stream is finished, storing the current
             // value for the argument only if it is mutable
             reader.onend = function textComplete() {
+
+                // Never reflect a sensitive parameter value (password,
+                // passphrase, private key) streamed back via "argv" into the
+                // UI-visible arguments model (security finding L4).
+                if (SENSITIVE_ARGUMENT.test(name))
+                    return;
+
                 ManagedArgument.getInstance(managedClient, name, value).then(function argumentIsMutable(argument) {
                     managedClient.arguments[name] = argument;
                 }, function immutableArguments() {
