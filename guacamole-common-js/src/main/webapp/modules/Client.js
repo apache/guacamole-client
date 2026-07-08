@@ -1100,8 +1100,23 @@ Guacamole.Client = function(tunnel) {
 
         "multimon-layout": function multimonLayout(layer, value) {
 
-            if (guac_client.onmultimonlayout)
-                guac_client.onmultimonlayout(JSON.parse(value));
+            if (!guac_client.onmultimonlayout)
+                return;
+
+            // The layout is supplied by the server (guacd). A malformed payload
+            // must not throw out of the instruction handler and tear down the
+            // client, so both the parse and the dispatch are guarded here (the
+            // transport layer stays self-protecting regardless of what the
+            // consumer does). Anything that is not a usable object is ignored;
+            // per-field (finite geometry) validation is handled by the consumer.
+            try {
+                var layout = JSON.parse(value);
+                if (layout && typeof layout === 'object')
+                    guac_client.onmultimonlayout(layout);
+            }
+            catch (e) {
+                return;
+            }
 
         }
 
