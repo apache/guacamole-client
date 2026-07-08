@@ -21,9 +21,25 @@
                 <span
                     ng-repeat="event in batch.events"
                     class="key-event"
-                    ng-class="{ 'not-typed' : !event.typed, 'future': event.timestamp >= currentPosition }"
-                >{{ event.text }}</span>
+                    ng-class="{
+                        'not-typed' : !event.typed,
+                        'future': event.timestamp >= currentPosition,
+                        'clipboard-event': event.clipboard,
+                        'clipboard-image-event': event.clipboard.isImage
+                    }"
+                ><span ng-if="!event.clipboard.isImage">{{ event.text }}</span><span
+                    ng-if="event.clipboard.isImage" class="clipboard-image"
+                    title="{{ event.clipboard.mimetype }} · {{ event.clipboard.sizeLabel }}"
+                    ng-click="$event.stopPropagation(); openImage(event.clipboard)"
+                ><img class="clipboard-thumb" ng-src="{{ event.clipboard.dataURL }}"
+                        loading="lazy" alt="Clipboard image" /><span
+                        class="clipboard-meta">{{ event.clipboard.mimetype }} · {{ event.clipboard.sizeLabel }}</span></span></span>
             </div>
         </span>
+    </div>
+
+    <div class="clipboard-lightbox" ng-if="lightboxImage" ng-click="closeImage()"
+            role="dialog" aria-label="Clipboard image preview">
+        <img ng-src="{{ lightboxImage.dataURL }}" alt="Clipboard image" />
     </div>
 </div>
