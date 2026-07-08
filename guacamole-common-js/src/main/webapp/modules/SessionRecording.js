@@ -527,6 +527,13 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
         // Handle stream end (may complete clipboard stream)
         else if (opcode === 'end' && clipboardEventInterpreter)
             clipboardEventInterpreter.handleEnd(args);
+
+        // Handle log instructions, which may carry the clipboard direction
+        // annotation emitted by the server immediately before each clipboard
+        // stream (e.g. "clipboard stream=N direction=guest-to-client ...").
+        // Non-clipboard logs are ignored by the interpreter.
+        else if (opcode === 'log' && clipboardEventInterpreter)
+            clipboardEventInterpreter.handleLog(args);
     };
 
     /**

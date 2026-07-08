@@ -52,6 +52,18 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
     var activeStreams = {};
 
     /**
+     * Clipboard transfer directions parsed from server-emitted "log"
+     * instructions, keyed by stream index, awaiting the clipboard stream they
+     * annotate. The server writes the direction log immediately before the
+     * corresponding clipboard stream, so it is buffered here until the
+     * matching clipboard instruction arrives.
+     *
+     * @private
+     * @type {Object.<string, string>}
+     */
+    var pendingDirections = {};
+
+    /**
      * The timestamp of the most recent instruction, used for events
      * that don't have their own timestamp.
      *
@@ -83,8 +95,32 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
         activeStreams[streamIndex] = {
             mimetype: mimetype,
             data: '',
+            direction: pendingDirections[streamIndex] || null,
             timestamp: lastTimestamp
         };
+
+        // The buffered direction, if any, has now been consumed
+        delete pendingDirections[streamIndex];
+    };
+
+    /**
+     * Handles a log instruction. When the log carries a clipboard direction
+     * annotation ("clipboard stream=N direction=... mimetype=... [bytes=...]"),
+     * the direction is buffered against its stream index so it can be attached
+     * to the clipboard event once that stream arrives. All other log
+     * instructions are ignored.
+     *
+     * @param {!string[]} args
+     *     The arguments: [message]
+     */
+    this.handleLog = function handleLog(args) {
+        var message = args[0];
+        if (!message)
+            return;
+
+        var match = /^clipboard stream=(\d+) direction=(\S+)/.exec(message);
+        if (match)
+            pendingDirections[match[1]] = match[2];
     };
 
     /**
@@ -185,6 +221,7 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
                 isImage: isImage,
                 dataURL: dataURL,
                 size: size,
+                direction: stream.direction || null,
                 timestamp: Math.max(0, stream.timestamp - startTimestamp)
             }));
 
@@ -254,6 +291,16 @@ Guacamole.ClipboardEventInterpreter.ClipboardEvent = function ClipboardEvent(tem
      * @type {!number}
      */
     this.size = template.size || 0;
+
+    /**
+     * The direction of this clipboard transfer as annotated by the server,
+     * either "guest-to-client" (data copied out of the guest) or
+     * "client-to-guest" (data pasted into the guest), or null if the
+     * recording carries no direction annotation.
+     *
+     * @type {string}
+     */
+    this.direction = template.direction || null;
 
     /**
      * The timestamp when this clipboard event occurred, relative to
