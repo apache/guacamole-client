@@ -7,6 +7,12 @@
                 ng-click="exportCsv()">{{ 'PLAYER.ACTION_EXPORT_CSV' | translate }}</button>
     </div>
 
+    <!-- Truncation warning: some clipboard transfers were only partially
+         recorded and their data is missing. -->
+    <div class="clipboard-truncation-banner" ng-if="incompleteCount > 0"
+            translate="PLAYER.INFO_CLIPBOARD_INCOMPLETE"
+            translate-values="{COUNT: incompleteCount}"></div>
+
     <!-- Empty state -->
     <div class="clipboard-empty" ng-if="!sortedEvents.length">
         {{ 'PLAYER.INFO_NO_CLIPBOARD_ACTIVITY' | translate }}
@@ -15,14 +21,18 @@
     <!-- Chronological list of clipboard cards -->
     <div class="clipboard-cards" ng-if="sortedEvents.length">
         <div class="clipboard-card"
-                ng-repeat="item in sortedEvents"
+                ng-repeat="item in displayItems"
                 ng-class="{ 'future': item.timestamp >= currentPosition }"
                 tabindex="0"
                 ng-click="seekToEvent(item)"
                 ng-keydown="cardKeydown($event, item)">
 
             <div class="clipboard-card-header">
-                <span class="timestamp">{{ item.formattedTime }}</span>
+                <span class="timestamp"
+                    >{{ item.formattedTime }}<span ng-if="item.clusterCount > 1"> – {{ item.formattedLastTime }}</span></span>
+                <span class="clipboard-cluster-count" ng-if="item.clusterCount > 1"
+                        translate="PLAYER.LABEL_CLIPBOARD_REPEATS"
+                        translate-values="{COUNT: item.clusterCount}"></span>
                 <span class="clipboard-direction"
                         ng-class="item.directionClass"
                         aria-label="{{ item.directionLabelKey | translate }}"
@@ -47,6 +57,20 @@
                             ng-src="{{ item.raw.thumbURL || item.raw.dataURL }}"
                             loading="lazy" alt="Clipboard image" />
                 </span>
+            </div>
+
+            <!-- Cluster of repeated, identical transfers: reveal each member's
+                 timestamp, still individually click-to-seek. -->
+            <div class="clipboard-cluster" ng-if="item.clusterCount > 1">
+                <button class="clipboard-cluster-toggle"
+                        ng-click="$event.stopPropagation(); toggleCluster(item)"
+                >{{ (item.clusterExpanded ? 'PLAYER.ACTION_COLLAPSE_REPEATS' : 'PLAYER.ACTION_EXPAND_REPEATS') | translate }}</button>
+                <ul class="clipboard-cluster-members" ng-if="item.clusterExpanded">
+                    <li ng-repeat="member in item.clusterMembers"
+                            tabindex="0"
+                            ng-click="$event.stopPropagation(); seekToEvent(member)"
+                            ng-keydown="cardKeydown($event, member)">{{ member.formattedTime }}</li>
+                </ul>
             </div>
 
             <div class="clipboard-card-footer">

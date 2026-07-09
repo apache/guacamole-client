@@ -240,6 +240,20 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
         return parsedEvents;
     };
 
+    /**
+     * Returns the number of clipboard streams that were opened but never
+     * terminated by an "end" instruction. Such streams indicate clipboard
+     * transfers that were only partially recorded (e.g. a truncated
+     * recording), and whose data is therefore missing.
+     *
+     * @returns {!number}
+     *     The number of incomplete clipboard streams still open at the end of
+     *     parsing.
+     */
+    this.getIncompleteCount = function getIncompleteCount() {
+        return Object.keys(activeStreams).length;
+    };
+
 };
 
 /**

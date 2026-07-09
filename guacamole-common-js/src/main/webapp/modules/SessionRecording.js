@@ -620,7 +620,8 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
                 // call the onclipboardevents handler if defined with extracted
                 // clipboard events
                 if (recording.onclipboardevents && clipboardEventInterpreter)
-                    recording.onclipboardevents(clipboardEventInterpreter.getEvents());
+                    recording.onclipboardevents(clipboardEventInterpreter.getEvents(),
+                        { incomplete: clipboardEventInterpreter.getIncompleteCount() });
 
                 // Consider recording loaded if tunnel has closed without errors
                 if (!errorEncountered)

@@ -157,6 +157,7 @@
 }
 
 .settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .key-events::after,
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .clipboard-events::after,
 .settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .frame-events::after {
     display: inline-block;
     content: '';
@@ -173,6 +174,10 @@
 
 .settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .frame-events::after {
     background-color: #888888;
+}
+
+.settings.connectionHistoryPlayer .guac-player-controls .heat-map .legend .clipboard-events::after {
+    background-color: #b25f00;
 }
 
 .settings.connectionHistoryPlayer .heat-map svg.key-events path {

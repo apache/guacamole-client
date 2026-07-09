@@ -191,6 +191,25 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.clipboardEvents = [];
 
         /**
+         * The number of clipboard transfers that were recorded incompletely
+         * (streams opened but never terminated), surfaced to the clipboard
+         * activity viewer so it can warn that some transfers may be missing.
+         *
+         * @type {!number}
+         */
+        $scope.clipboardIncompleteCount = 0;
+
+        /**
+         * Timeline tick-marks for the seek bar, one per clipboard event,
+         * positioned along the same 0..HEATMAP_WIDTH coordinate space used by
+         * the heatmap SVGs. Rebuilt whenever the clipboard events or the
+         * recording duration become known.
+         *
+         * @type {!Object[]}
+         */
+        $scope.clipboardTicks = [];
+
+        /**
          * Whether or not the key log viewer should be displayed. False by
          * default unless explicitly enabled by user interaction.
          *
@@ -421,6 +440,76 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         };
 
         /**
+         * Seeks the recording to a point roughly five seconds before the given
+         * clipboard event, providing lead-in context so the moments preceding
+         * the transfer are visible rather than starting mid-event.
+         *
+         * @param {!number} timestamp
+         *     The recording-relative timestamp of the clipboard event, in
+         *     milliseconds.
+         */
+        $scope.seekWithLeadIn = function seekWithLeadIn(timestamp) {
+            $scope.seekToTimestamp(Math.max(0, timestamp - 5000));
+        };
+
+        /**
+         * Display metadata for clipboard tick-marks, keyed by the raw
+         * server-annotated transfer direction. Mirrors the mapping used by the
+         * clipboard activity panel so colours and labels stay consistent.
+         *
+         * @type {!Object.<String, {labelKey: String, directionClass: String}>}
+         */
+        const CLIPBOARD_TICK_META = {
+            'guest-to-client' : {
+                labelKey       : 'PLAYER.LABEL_CLIPBOARD_COPIED_OUT',
+                directionClass : 'from-guest'
+            },
+            'client-to-guest' : {
+                labelKey       : 'PLAYER.LABEL_CLIPBOARD_PASTED_IN',
+                directionClass : 'to-guest'
+            }
+        };
+
+        /**
+         * Rebuilds the clipboard timeline tick-marks from the current clipboard
+         * events and recording duration. Does nothing meaningful until both are
+         * available, so it is safe to call from either the clipboard-events or
+         * the load handler regardless of ordering.
+         */
+        const updateClipboardTicks = function updateClipboardTicks() {
+
+            const duration = $scope.recording ? $scope.recording.getDuration() : 0;
+            const events = $scope.clipboardEvents || [];
+
+            if (!duration || !events.length) {
+                $scope.clipboardTicks = [];
+                return;
+            }
+
+            $scope.clipboardTicks = events.map(function toTick(event) {
+
+                const meta = CLIPBOARD_TICK_META[event.direction]
+                        || { labelKey : 'PLAYER.LABEL_CLIPBOARD', directionClass : '' };
+
+                return {
+                    // Clamp so an event timestamped at/after the last frame
+                    // cannot position the tick past the end of the bar
+                    x                 : Math.max(0, Math.min($scope.HEATMAP_WIDTH,
+                                            (event.timestamp / duration) * $scope.HEATMAP_WIDTH)),
+                    timestamp         : event.timestamp,
+                    direction         : event.direction,
+                    directionClass    : meta.directionClass,
+                    directionLabelKey : meta.labelKey,
+                    isImage           : event.isImage,
+                    dataURL           : event.dataURL,
+                    textPreview       : (!event.isImage && event.data)
+                                            ? event.data.substring(0, 80) : ''
+                };
+            });
+
+        };
+
+        /**
          * Seek the recording to the current playback position value.
          */
         $scope.seekToPlaybackPosition = function seekToPlaybackPosition() {
@@ -511,6 +600,10 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                             keyTimestamps, recordingDuration, KEY_EVENT_RATE_CAP,
                             $scope.HEATMAP_HEIGHT, $scope.HEATMAP_WIDTH));
 
+                    // The recording duration is only known here; rebuild the
+                    // clipboard tick-marks now that it is available
+                    updateClipboardTicks();
+
                 };
 
                 // Notify listeners if an error occurs
@@ -557,17 +650,23 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 };
 
                 // Extract clipboard events from the recording
-                $scope.recording.onclipboardevents = function clipboardEventsReceived(events) {
+                $scope.recording.onclipboardevents = function clipboardEventsReceived(events, meta) {
 
                     clipboardEvents = events;
 
                     // Expose clipboard events for the clipboard activity viewer
                     $scope.clipboardEvents = events;
 
+                    // Surface any incompletely-recorded clipboard transfers
+                    $scope.clipboardIncompleteCount = (meta && meta.incomplete) || 0;
+
                     // Convert to a display-optimized format
                     $scope.textBatches = keyEventDisplayService.parseEventsWithClipboard(
                         keyEvents, clipboardEvents
                     );
+
+                    // Rebuild the seek-bar tick-marks for the new events
+                    updateClipboardTicks();
 
                 };
 

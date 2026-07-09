@@ -230,6 +230,89 @@ guac-player-text-view {
 
 }
 
+/*
+ * Clipboard event tick-marks overlaid on the seek bar / heatmap area. The
+ * layer aligns with the heatmap SVGs (same bottom offset and height) but
+ * ignores pointer events so the seek slider beneath remains draggable; only
+ * the thin, individually-positioned ticks capture clicks.
+ */
+.guac-player-controls .heat-map .clipboard-ticks {
+    position: absolute;
+    bottom: 7px;
+    height: 50px;
+    width: 100%;
+    z-index: 101;
+    pointer-events: none;
+}
+
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    margin-left: -1px;
+    background-color: #777;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick.from-guest {
+    background-color: #b25f00;
+}
+
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick.to-guest {
+    background-color: #4a6f8a;
+}
+
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick:focus {
+    outline: 2px solid #fff;
+    outline-offset: 1px;
+}
+
+/* Hover/focus tooltip previewing the transfer direction and payload. */
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick .clipboard-tick-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 6px;
+    max-width: 220px;
+    padding: 5px 7px;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 0.75em;
+    white-space: normal;
+    pointer-events: none;
+    z-index: 200;
+}
+
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick:hover .clipboard-tick-tooltip,
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick:focus .clipboard-tick-tooltip {
+    display: block;
+}
+
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick .clipboard-tick-direction {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 3px;
+}
+
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick .clipboard-tick-thumb {
+    display: block;
+    max-width: 200px;
+    max-height: 120px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+}
+
+.guac-player-controls .heat-map .clipboard-ticks .clipboard-tick .clipboard-tick-text {
+    word-break: break-word;
+    overflow-wrap: break-word;
+}
+
 guac-player-text-view.fullscreen {
 
     min-width: 100%;
