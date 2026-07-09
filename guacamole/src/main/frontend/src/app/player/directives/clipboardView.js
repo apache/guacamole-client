@@ -58,7 +58,16 @@ angular.module('player').directive('guacPlayerClipboardView',
          *
          * @type {!Number}
          */
-        currentPosition: '='
+        currentPosition: '=',
+
+        /**
+         * The number of clipboard transfers that were recorded incompletely
+         * (streams opened but never terminated). When greater than zero, a
+         * warning banner is shown.
+         *
+         * @type {Number}
+         */
+        incompleteCount: '='
 
     };
 
@@ -99,6 +108,17 @@ angular.module('player').directive('guacPlayerClipboardView',
          * @type {!Object[]}
          */
         $scope.sortedEvents = [];
+
+        /**
+         * The clustered, display-ready list derived from $scope.sortedEvents.
+         * Runs of consecutive events sharing the same direction and identical
+         * content are collapsed into a single cluster card. This is the list
+         * rendered in the template; $scope.sortedEvents remains the canonical
+         * flat list used for CSV export and per-item download.
+         *
+         * @type {!Object[]}
+         */
+        $scope.displayItems = [];
 
         /**
          * The set of image loads currently in flight for thumbnail generation,
@@ -185,6 +205,64 @@ angular.module('player').directive('guacPlayerClipboardView',
                 }
             });
 
+            buildDisplayItems();
+
+        };
+
+        /**
+         * Collapses runs of consecutive clipboard events sharing the same
+         * transfer direction and identical content into cluster entries, and
+         * stores the result in $scope.displayItems. A run of length one becomes
+         * a singleton cluster (clusterCount === 1). The canonical flat list in
+         * $scope.sortedEvents is left untouched.
+         */
+        const buildDisplayItems = () => {
+
+            const clusters = [];
+
+            $scope.sortedEvents.forEach(item => {
+
+                const last = clusters.length ? clusters[clusters.length - 1] : null;
+
+                const sameContent = last
+                        && last.raw.direction === item.raw.direction
+                        && last.isImage === item.isImage
+                        && (item.isImage
+                                ? last.raw.dataURL === item.raw.dataURL
+                                : last.text === item.text);
+
+                if (sameContent) {
+                    last.clusterCount++;
+                    last.clusterMembers.push(item);
+                    last.lastTime = item.timestamp;
+                    last.formattedLastTime = item.formattedTime;
+                }
+                else {
+                    clusters.push(angular.extend({}, item, {
+                        clusterCount      : 1,
+                        clusterMembers    : [item],
+                        clusterExpanded   : false,
+                        firstTime         : item.timestamp,
+                        lastTime          : item.timestamp,
+                        formattedLastTime : item.formattedTime
+                    }));
+                }
+
+            });
+
+            $scope.displayItems = clusters;
+
+        };
+
+        /**
+         * Toggles whether the individual member timestamps of a clustered card
+         * are revealed.
+         *
+         * @param {!Object} item
+         *     The cluster display item to toggle.
+         */
+        $scope.toggleCluster = function toggleCluster(item) {
+            item.clusterExpanded = !item.clusterExpanded;
         };
 
         $scope.$watch('clipboardEvents', rebuild);

@@ -61,6 +61,21 @@ guac-player-clipboard-view {
 
 }
 
+/* Warning shown when one or more clipboard transfers were only partially
+   recorded and their captured data is therefore missing. */
+.guac-player-clipboard-container .clipboard-truncation-banner {
+
+    margin: 0.5em;
+    padding: 0.5em 0.6em;
+    border: 1px solid #e0b000;
+    border-left: 4px solid #b25f00;
+    border-radius: 4px;
+    background-color: #fff7e0;
+    color: #5a3d00;
+    font-size: 0.9em;
+
+}
+
 .guac-player-clipboard-container .clipboard-empty {
 
     margin: 1em 0.75em;
@@ -149,9 +164,64 @@ guac-player-clipboard-view {
 
 }
 
+/* Count badge on a clustered card summarizing how many identical, consecutive
+   transfers were collapsed into it. */
+.clipboard-cards .clipboard-card .clipboard-cluster-count {
+
+    display: inline-block;
+    font-size: 0.75em;
+    font-weight: bold;
+    padding: 0.1em 0.5em;
+    margin: 0 0.4em;
+    border-radius: 3px;
+    color: #fff;
+    background-color: #555;
+
+}
+
 .clipboard-cards .clipboard-card .clipboard-card-body {
 
     margin: 0.2em 0;
+
+}
+
+/* Expand/collapse control and revealed member timestamps for a cluster. */
+.clipboard-cards .clipboard-card .clipboard-cluster {
+
+    margin-top: 0.3em;
+
+}
+
+.clipboard-cards .clipboard-card .clipboard-cluster-toggle {
+
+    cursor: pointer;
+    font-size: 0.85em;
+
+}
+
+.clipboard-cards .clipboard-card .clipboard-cluster-members {
+
+    list-style: none;
+    margin: 0.3em 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+
+}
+
+.clipboard-cards .clipboard-card .clipboard-cluster-members li {
+
+    color: blue;
+    cursor: pointer;
+    font-size: 0.85em;
+
+}
+
+.clipboard-cards .clipboard-card .clipboard-cluster-members li:focus {
+
+    outline: 2px solid #4a6f8a;
+    outline-offset: 1px;
 
 }
 
