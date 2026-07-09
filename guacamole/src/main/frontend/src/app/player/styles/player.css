@@ -145,6 +145,11 @@ guac-player .guac-player-controls {
     cursor: pointer;
 }
 
+.guac-player-controls .guac-player-clipboard {
+    padding-right: 0.5em;
+    cursor: pointer;
+}
+
 guac-player .guac-player-status {
 
     position: fixed;

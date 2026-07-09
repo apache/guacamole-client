@@ -12,6 +12,13 @@
                         duration="recording.getDuration()"
     ></guac-player-text-view>
 
+    <!-- Clipboard activity viewer -->
+    <guac-player-clipboard-view ng-show="showClipboardLog"
+                        clipboard-events="clipboardEvents"
+                        seek="seekToTimestamp(timestamp)"
+                        current-position="seekPosition || playbackPosition"
+    ></guac-player-clipboard-view>
+
 </div>
 
 <!-- Player controls -->
@@ -73,6 +80,14 @@
 
         <span ng-show="!hasTextBatches()" class="guac-player-keys disabled">
             {{ 'PLAYER.INFO_NO_KEY_LOG' | translate }}
+        </span>
+
+        <span ng-show="hasClipboardEvents()" class="guac-player-clipboard" ng-click="toggleClipboardLogView()">
+            {{ 'PLAYER.ACTION_SHOW_CLIPBOARD_LOG' | translate }}
+        </span>
+
+        <span ng-show="!hasClipboardEvents()" class="guac-player-clipboard disabled">
+            {{ 'PLAYER.INFO_NO_CLIPBOARD_LOG' | translate }}
         </span>
     </div>
 
