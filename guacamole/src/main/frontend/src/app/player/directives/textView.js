@@ -27,6 +27,7 @@ angular.module('player').directive('guacPlayerTextView',
 
     // Required services
     const playerTimeService = $injector.get('playerTimeService');
+    const clipboardMediaService = $injector.get('clipboardMediaService');
 
     const config = {
         restrict : 'E',
@@ -118,79 +119,27 @@ angular.module('player').directive('guacPlayerTextView',
         };
 
         /**
-         * The maximum width/height, in pixels, of a generated clipboard image
-         * thumbnail. The full-resolution image is retained only for the
-         * lightbox; the inline chip uses this downscaled copy to keep the
-         * key-log DOM light even when a recording contains many or large
-         * clipboard images.
+         * The set of image loads currently in flight for thumbnail generation,
+         * tracked so their callbacks can be detached on teardown.
          *
-         * @type {!Number}
+         * @type {!Set.<Image>}
          */
-        const THUMBNAIL_MAX_DIMENSION = 96;
+        const pendingImages = new Set();
 
         /**
-         * Generate a downscaled thumbnail, and capture the natural dimensions,
-         * for the given image clipboard metadata - asynchronously populating
-         * its thumbURL, width, and height fields. Falls back to the full data
-         * URL if the browser cannot rasterize a thumbnail. No-op if the
-         * thumbnail already exists or is in progress.
+         * Generate a downscaled thumbnail for the given image clipboard
+         * metadata via the shared clipboardMediaService, tracking the in-flight
+         * image load so it can be aborted when the directive is destroyed.
          *
          * @param {Object} clipboard
          *     The image clipboard metadata to enrich in place.
          */
-        const pendingImages = new Set();
-
         const generateThumbnail = clipboard => {
-
-            // Only process each image event once
-            if (!clipboard || !clipboard.isImage || !clipboard.dataURL
-                    || clipboard.thumbURL || clipboard.thumbPending)
-                return;
-
-            clipboard.thumbPending = true;
-
-            const image = new Image();
-            pendingImages.add(image);
-
-            image.onload = function thumbnailLoaded() {
-
-                pendingImages.delete(image);
-
-                const w = image.naturalWidth;
-                const h = image.naturalHeight;
-                const scale = Math.min(1, THUMBNAIL_MAX_DIMENSION / Math.max(w, h));
-                const tw = Math.max(1, Math.round(w * scale));
-                const th = Math.max(1, Math.round(h * scale));
-
-                let thumb = clipboard.dataURL;
-                try {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = tw;
-                    canvas.height = th;
-                    canvas.getContext('2d').drawImage(image, 0, 0, tw, th);
-                    thumb = canvas.toDataURL('image/png');
-                }
-                catch (ignore) {
-                    // Keep the full data URL as the thumbnail fallback
-                }
-
-                $scope.$evalAsync(function applyThumbnail() {
-                    clipboard.width = w;
-                    clipboard.height = h;
-                    clipboard.thumbURL = thumb;
-                    clipboard.thumbPending = false;
-                });
-            };
-
-            image.onerror = function thumbnailFailed() {
-                pendingImages.delete(image);
-                $scope.$evalAsync(function applyFailure() {
-                    clipboard.thumbPending = false;
-                });
-            };
-
-            image.src = clipboard.dataURL;
-
+            const image = clipboardMediaService.generateThumbnail(clipboard,
+                fn => $scope.$evalAsync(fn),
+                loaded => pendingImages.delete(loaded));
+            if (image)
+                pendingImages.add(image);
         };
 
         // Abort any in-flight thumbnail loads when the directive is destroyed

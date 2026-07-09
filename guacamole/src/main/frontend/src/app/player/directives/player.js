@@ -183,12 +183,28 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         $scope.textBatches = [];
 
         /**
+         * All clipboard events extracted from the recording, exposed for the
+         * clipboard activity viewer.
+         *
+         * @type {!Guacamole.ClipboardEventInterpreter.ClipboardEvent[]}
+         */
+        $scope.clipboardEvents = [];
+
+        /**
          * Whether or not the key log viewer should be displayed. False by
          * default unless explicitly enabled by user interaction.
          *
          * @type {boolean}
          */
         $scope.showKeyLog = false;
+
+        /**
+         * Whether or not the clipboard activity viewer should be displayed.
+         * False by default unless explicitly enabled by user interaction.
+         *
+         * @type {boolean}
+         */
+        $scope.showClipboardLog = false;
 
         /**
          * The height, in pixels, of the SVG heatmap paths. Note that this is not
@@ -324,6 +340,25 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
          */
         $scope.toggleKeyLogView = function toggleKeyLogView() {
             $scope.showKeyLog = !$scope.showKeyLog;
+        };
+
+        /**
+         * Return true if any clipboard events are available for this recording,
+         * or false otherwise.
+         *
+         * @return {boolean}
+         *     True if any clipboard events are available for this recording, or
+         *     false otherwise.
+         */
+        $scope.hasClipboardEvents = function hasClipboardEvents() {
+            return $scope.clipboardEvents.length > 0;
+        };
+
+        /**
+         * Toggle the visibility of the clipboard activity viewer.
+         */
+        $scope.toggleClipboardLogView = function toggleClipboardLogView() {
+            $scope.showClipboardLog = !$scope.showClipboardLog;
         };
 
         /**
@@ -525,6 +560,9 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 $scope.recording.onclipboardevents = function clipboardEventsReceived(events) {
 
                     clipboardEvents = events;
+
+                    // Expose clipboard events for the clipboard activity viewer
+                    $scope.clipboardEvents = events;
 
                     // Convert to a display-optimized format
                     $scope.textBatches = keyEventDisplayService.parseEventsWithClipboard(
