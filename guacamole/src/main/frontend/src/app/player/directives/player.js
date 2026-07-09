@@ -126,8 +126,8 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
 
     };
 
-    config.controller = ['$scope', '$element', '$window',
-        function guacPlayerController($scope, $element, $window) {
+    config.controller = ['$scope', '$element', '$window', 'clipboardMediaService',
+        function guacPlayerController($scope, $element, $window, clipboardMediaService) {
 
         /**
          * Guacamole.SessionRecording instance to be used to playback the
@@ -453,22 +453,22 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
         };
 
         /**
-         * Display metadata for clipboard tick-marks, keyed by the raw
-         * server-annotated transfer direction. Mirrors the mapping used by the
-         * clipboard activity panel so colours and labels stay consistent.
+         * The maximum number of clipboard tick-marks rendered on the seek bar.
+         * Only the visual ticks are capped - the Clipboard Activity panel and
+         * CSV export retain every event - since a transport bar with more than
+         * a few hundred ticks is unreadable and would bloat the DOM.
          *
-         * @type {!Object.<String, {labelKey: String, directionClass: String}>}
+         * @type {!Number}
          */
-        const CLIPBOARD_TICK_META = {
-            'guest-to-client' : {
-                labelKey       : 'PLAYER.LABEL_CLIPBOARD_COPIED_OUT',
-                directionClass : 'from-guest'
-            },
-            'client-to-guest' : {
-                labelKey       : 'PLAYER.LABEL_CLIPBOARD_PASTED_IN',
-                directionClass : 'to-guest'
-            }
-        };
+        const MAX_CLIPBOARD_TICKS = 500;
+
+        /**
+         * The set of image loads currently in flight for tick-tooltip thumbnail
+         * generation, tracked so their callbacks can be detached on teardown.
+         *
+         * @type {!Set.<Image>}
+         */
+        const pendingTickImages = new Set();
 
         /**
          * Rebuilds the clipboard timeline tick-marks from the current clipboard
@@ -486,10 +486,22 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                 return;
             }
 
-            $scope.clipboardTicks = events.map(function toTick(event) {
+            $scope.clipboardTicks = events.slice(0, MAX_CLIPBOARD_TICKS)
+                    .map(function toTick(event) {
 
-                const meta = CLIPBOARD_TICK_META[event.direction]
-                        || { labelKey : 'PLAYER.LABEL_CLIPBOARD', directionClass : '' };
+                const meta = clipboardMediaService.getDirectionMeta(event.direction);
+
+                // Generate a downscaled thumbnail so the (potentially many) tick
+                // tooltips hold a small image rather than the full-resolution
+                // data URL. Idempotent, and shared with the panel via the same
+                // clipboard event object.
+                if (event.isImage) {
+                    const image = clipboardMediaService.generateThumbnail(event,
+                        fn => $scope.$evalAsync(fn),
+                        loaded => pendingTickImages.delete(loaded));
+                    if (image)
+                        pendingTickImages.add(image);
+                }
 
                 return {
                     // Clamp so an event timestamped at/after the last frame
@@ -501,13 +513,23 @@ angular.module('player').directive('guacPlayer', ['$injector', function guacPlay
                     directionClass    : meta.directionClass,
                     directionLabelKey : meta.labelKey,
                     isImage           : event.isImage,
-                    dataURL           : event.dataURL,
+                    raw               : event,
                     textPreview       : (!event.isImage && event.data)
                                             ? event.data.substring(0, 80) : ''
                 };
             });
 
         };
+
+        // Abort any in-flight tick-thumbnail loads when the player is destroyed
+        $scope.$on('$destroy', function abortPendingTickImages() {
+            pendingTickImages.forEach(function detach(image) {
+                image.onload = null;
+                image.onerror = null;
+                image.src = '';
+            });
+            pendingTickImages.clear();
+        });
 
         /**
          * Seek the recording to the current playback position value.

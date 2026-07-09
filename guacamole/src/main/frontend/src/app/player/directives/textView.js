@@ -175,54 +175,10 @@ angular.module('player').directive('guacPlayerTextView',
         // Reapply the filter whenever the search phrase is updated
         $scope.$watch('searchPhrase', applyFilter);
 
-        /**
-         * The clipboard image currently shown enlarged in the lightbox, or
-         * null if the lightbox is closed. Objects here are the `clipboard`
-         * metadata attached to an image clipboard event (see
-         * keyEventDisplayService).
-         *
-         * @type {Object}
-         */
-        $scope.lightboxImage = null;
-
-        /**
-         * Handler which dismisses the lightbox when the Escape key is pressed.
-         * Bound to the document only while the lightbox is open.
-         *
-         * @param {KeyboardEvent} e
-         *     The keydown event.
-         */
-        const dismissOnEscape = function dismissOnEscape(e) {
-            if (e.keyCode === 27) // Escape
-                $scope.$apply(function applyClose() {
-                    $scope.closeImage();
-                });
-        };
-
-        /**
-         * Opens the clipboard-image lightbox for the given image clipboard
-         * event metadata.
-         *
-         * @param {Object} clipboard
-         *     The clipboard metadata (including dataURL) to display enlarged.
-         */
-        $scope.openImage = function openImage(clipboard) {
-            $scope.lightboxImage = clipboard;
-            angular.element(document).on('keydown', dismissOnEscape);
-        };
-
-        /**
-         * Closes the clipboard-image lightbox, if open.
-         */
-        $scope.closeImage = function closeImage() {
-            $scope.lightboxImage = null;
-            angular.element(document).off('keydown', dismissOnEscape);
-        };
-
-        // Ensure the document-level listener never outlives the directive
-        $scope.$on('$destroy', function unbindEscape() {
-            angular.element(document).off('keydown', dismissOnEscape);
-        });
+        // Wire up the clipboard-image lightbox (openImage/closeImage/
+        // lightboxImage + Escape handling + focus management), shared with the
+        // clipboard-activity viewer via clipboardMediaService.
+        clipboardMediaService.attachLightbox($scope, $element);
 
         /**
          * @borrows playerTimeService.formatTime

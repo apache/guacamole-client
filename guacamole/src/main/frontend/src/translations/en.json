@@ -505,6 +505,8 @@
         "ACTION_SHOW_MORE"    : "Show more",
 
         "INFO_CLIPBOARD_EVENTS_LEGEND" : "Clipboard Activity",
+        "INFO_CLIPBOARD_IMAGE_ALT" : "Clipboard image",
+        "INFO_CLIPBOARD_IMAGE_PREVIEW" : "Clipboard image preview",
         "INFO_CLIPBOARD_INCOMPLETE" : "{COUNT} clipboard {COUNT, plural, one{transfer was} other{transfers were}} recorded incompletely and may be missing.",
         "INFO_FRAME_EVENTS_LEGEND" : "On-screen Activity",
         "INFO_KEY_EVENTS_LEGEND"   : "Keyboard Activity",

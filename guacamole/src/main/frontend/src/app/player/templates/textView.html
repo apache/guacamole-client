@@ -36,7 +36,7 @@
                     title="{{ event.clipboard.mimetype }} · {{ event.clipboard.sizeLabel }}{{ event.clipboard.width ? ' · ' + event.clipboard.width + '×' + event.clipboard.height : '' }}"
                     ng-click="$event.stopPropagation(); openImage(event.clipboard)"
                 ><img class="clipboard-thumb" ng-src="{{ event.clipboard.thumbURL || event.clipboard.dataURL }}"
-                        loading="lazy" alt="Clipboard image" /><span
+                        loading="lazy" alt="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_ALT' | translate }}" /><span
                         class="clipboard-meta">{{ event.clipboard.mimetype }} · {{ event.clipboard.sizeLabel }}<span
                         ng-if="event.clipboard.width"> · {{ event.clipboard.width }}×{{ event.clipboard.height }}</span></span></span></span>
             </div>
@@ -44,7 +44,9 @@
     </div>
 
     <div class="clipboard-lightbox" ng-if="lightboxImage" ng-click="closeImage()"
-            role="dialog" aria-label="Clipboard image preview">
-        <img ng-src="{{ lightboxImage.dataURL }}" alt="Clipboard image" />
+            role="dialog" tabindex="-1"
+            aria-label="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_PREVIEW' | translate }}">
+        <img ng-src="{{ lightboxImage.dataURL }}"
+                alt="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_ALT' | translate }}" />
     </div>
 </div>

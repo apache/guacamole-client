@@ -55,7 +55,8 @@
                         ng-click="$event.stopPropagation(); openImage(item.raw)">
                     <img class="clipboard-thumb"
                             ng-src="{{ item.raw.thumbURL || item.raw.dataURL }}"
-                            loading="lazy" alt="Clipboard image" />
+                            loading="lazy"
+                            alt="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_ALT' | translate }}" />
                 </span>
             </div>
 
@@ -84,7 +85,9 @@
     </div>
 
     <div class="clipboard-lightbox" ng-if="lightboxImage" ng-click="closeImage()"
-            role="dialog" aria-label="Clipboard image preview">
-        <img ng-src="{{ lightboxImage.dataURL }}" alt="Clipboard image" />
+            role="dialog" tabindex="-1"
+            aria-label="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_PREVIEW' | translate }}">
+        <img ng-src="{{ lightboxImage.dataURL }}"
+                alt="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_ALT' | translate }}" />
     </div>
 </div>
