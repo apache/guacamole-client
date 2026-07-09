@@ -83,25 +83,6 @@ angular.module('player').directive('guacPlayerClipboardView',
         const TEXT_TRUNCATE_LENGTH = 500;
 
         /**
-         * Display metadata describing how each recognized clipboard transfer
-         * direction should be presented, keyed by the raw server-annotated
-         * direction. Every entry carries a text label (never colour alone) and
-         * a CSS class reused from the key-log viewer's colour treatment.
-         *
-         * @type {!Object.<String, {labelKey: String, directionClass: String}>}
-         */
-        const DIRECTION_META = {
-            'guest-to-client' : {
-                labelKey       : 'PLAYER.LABEL_CLIPBOARD_COPIED_OUT',
-                directionClass : 'from-guest'
-            },
-            'client-to-guest' : {
-                labelKey       : 'PLAYER.LABEL_CLIPBOARD_PASTED_IN',
-                directionClass : 'to-guest'
-            }
-        };
-
-        /**
          * The clipboard events, sorted chronologically and enriched with
          * display metadata for rendering.
          *
@@ -171,8 +152,7 @@ angular.module('player').directive('guacPlayerClipboardView',
 
             $scope.sortedEvents = events.map((event, index) => {
 
-                const meta = (event.direction && DIRECTION_META[event.direction])
-                        || { labelKey : 'PLAYER.LABEL_CLIPBOARD', directionClass : '' };
+                const meta = clipboardMediaService.getDirectionMeta(event.direction);
 
                 const bytes = event.isImage ? event.size : byteLength(event.data);
 
@@ -321,47 +301,10 @@ angular.module('player').directive('guacPlayerClipboardView',
             }
         };
 
-        /**
-         * The clipboard image currently shown enlarged in the lightbox, or
-         * null if the lightbox is closed.
-         *
-         * @type {Object}
-         */
-        $scope.lightboxImage = null;
-
-        /**
-         * Handler which dismisses the lightbox when the Escape key is pressed.
-         * Bound to the document only while the lightbox is open.
-         *
-         * @param {KeyboardEvent} e
-         *     The keydown event.
-         */
-        const dismissOnEscape = function dismissOnEscape(e) {
-            if (e.keyCode === 27) // Escape
-                $scope.$apply(function applyClose() {
-                    $scope.closeImage();
-                });
-        };
-
-        /**
-         * Opens the clipboard-image lightbox for the given image clipboard
-         * event metadata.
-         *
-         * @param {Object} clipboard
-         *     The clipboard metadata (including dataURL) to display enlarged.
-         */
-        $scope.openImage = function openImage(clipboard) {
-            $scope.lightboxImage = clipboard;
-            angular.element(document).on('keydown', dismissOnEscape);
-        };
-
-        /**
-         * Closes the clipboard-image lightbox, if open.
-         */
-        $scope.closeImage = function closeImage() {
-            $scope.lightboxImage = null;
-            angular.element(document).off('keydown', dismissOnEscape);
-        };
+        // Wire up the clipboard-image lightbox (openImage/closeImage/
+        // lightboxImage + Escape handling + focus management), shared with the
+        // key-log viewer via clipboardMediaService.
+        clipboardMediaService.attachLightbox($scope, $element);
 
         /**
          * Maps an image mimetype to a file extension for downloads.
@@ -374,15 +317,17 @@ angular.module('player').directive('guacPlayerClipboardView',
          */
         const imageExtension = mimetype => {
             const subtype = (mimetype || '').toLowerCase().replace(/^image\//, '');
-            if (subtype === 'jpeg' || subtype === 'jpg')
-                return 'jpg';
-            if (subtype === 'png')
-                return 'png';
-            if (subtype === 'bmp')
-                return 'bmp';
-            if (subtype === 'tiff' || subtype === 'tif')
-                return 'tiff';
-            return subtype || 'bin';
+
+            // Closed allowlist: the mimetype is attacker-controlled recording
+            // data, so an unknown subtype must NOT be echoed as the file
+            // extension (e.g. image/svg -> "clipboard-1.svg" containing a
+            // script that runs when the auditor opens it). Anything unrecognized
+            // gets an inert ".bin".
+            const KNOWN = {
+                jpeg : 'jpg',  jpg : 'jpg',  png : 'png',   gif : 'gif',
+                bmp  : 'bmp',  tiff : 'tiff', tif : 'tiff',  webp : 'webp'
+            };
+            return KNOWN[subtype] || 'bin';
         };
 
         /**
@@ -396,14 +341,15 @@ angular.module('player').directive('guacPlayerClipboardView',
          */
         const dataURLToBlob = dataURL => {
             const parts = dataURL.split(',');
-            const meta = parts[0];
-            const mimeMatch = /data:([^;]+)/.exec(meta);
-            const mimetype = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
             const binary = atob(parts[1] || '');
             const bytes = new Uint8Array(binary.length);
             for (let i = 0; i < binary.length; i++)
                 bytes[i] = binary.charCodeAt(i);
-            return new Blob([bytes], { type: mimetype });
+
+            // Force a benign type for the saved file rather than trusting the
+            // attacker-controlled recording mimetype (a forged image/svg or
+            // image/html would otherwise produce a script-capable download).
+            return new Blob([bytes], { type: 'application/octet-stream' });
         };
 
         /**
@@ -491,8 +437,8 @@ angular.module('player').directive('guacPlayerClipboardView',
 
         };
 
-        // Abort any in-flight thumbnail loads, and unbind the lightbox key
-        // handler, when the directive is destroyed
+        // Abort any in-flight thumbnail loads when the directive is destroyed
+        // (the lightbox's Escape listener is torn down by attachLightbox)
         $scope.$on('$destroy', function clipboardViewDestroyed() {
             pendingImages.forEach(function detach(image) {
                 image.onload = null;
@@ -500,7 +446,6 @@ angular.module('player').directive('guacPlayerClipboardView',
                 image.src = '';
             });
             pendingImages.clear();
-            angular.element(document).off('keydown', dismissOnEscape);
         });
 
         /**

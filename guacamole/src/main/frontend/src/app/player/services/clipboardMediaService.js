@@ -23,8 +23,8 @@
  * both render identical thumbnails without duplicating the canvas-downscale
  * logic.
  */
-angular.module('player').factory('clipboardMediaService', [
-        function clipboardMediaService() {
+angular.module('player').factory('clipboardMediaService', ['$timeout',
+        function clipboardMediaService($timeout) {
 
     /**
      * The maximum width/height, in pixels, of a generated clipboard image
@@ -36,7 +36,45 @@ angular.module('player').factory('clipboardMediaService', [
      */
     const THUMBNAIL_MAX_DIMENSION = 96;
 
+    /**
+     * Canonical display metadata for clipboard transfer directions, keyed by the
+     * raw server-annotated direction. Each entry carries a translation key for a
+     * text label (never colour alone) and a CSS class for the colour treatment.
+     * This is the single source of truth shared by the clipboard activity panel
+     * and the seek-bar tick-marks. (keyEventDisplayService keeps a separate,
+     * intentionally terser inline-chip variant with different label wording.)
+     *
+     * @type {!Object.<String, {labelKey: String, directionClass: String}>}
+     */
+    const DIRECTION_META = {
+        'guest-to-client' : {
+            labelKey       : 'PLAYER.LABEL_CLIPBOARD_COPIED_OUT',
+            directionClass : 'from-guest'
+        },
+        'client-to-guest' : {
+            labelKey       : 'PLAYER.LABEL_CLIPBOARD_PASTED_IN',
+            directionClass : 'to-guest'
+        }
+    };
+
     const service = {};
+
+    /**
+     * Returns the display metadata (label translation key + CSS colour class)
+     * for the given clipboard transfer direction, falling back to a neutral
+     * label for unknown/unannotated directions.
+     *
+     * @param {String} direction
+     *     The raw server-annotated direction ("guest-to-client" /
+     *     "client-to-guest"), or null.
+     *
+     * @returns {!{labelKey: String, directionClass: String}}
+     *     The display metadata for that direction.
+     */
+    service.getDirectionMeta = function getDirectionMeta(direction) {
+        return DIRECTION_META[direction]
+                || { labelKey : 'PLAYER.LABEL_CLIPBOARD', directionClass : '' };
+    };
 
     /**
      * Generate a downscaled thumbnail, and capture the natural dimensions, for
@@ -119,6 +157,71 @@ angular.module('player').factory('clipboardMediaService', [
         image.src = clipboard.dataURL;
 
         return image;
+
+    };
+
+    /**
+     * Wires a clipboard-image lightbox onto the given directive scope: defines
+     * $scope.lightboxImage, $scope.openImage(clipboard), and
+     * $scope.closeImage(), manages the Escape-to-dismiss document listener, and
+     * performs focus management (focus moves into the overlay on open and is
+     * restored to the previously focused element on close). Shared by the
+     * key-log and clipboard-activity viewers so the behaviour — and any future
+     * fix — lives in one place.
+     *
+     * @param {!Object} $scope
+     *     The directive scope to attach the lightbox handlers to.
+     *
+     * @param {!Object} $element
+     *     The directive's jqLite element, used to locate the overlay for focus
+     *     management.
+     */
+    service.attachLightbox = function attachLightbox($scope, $element) {
+
+        // The element focused before the lightbox opened, restored on close
+        let previousFocus = null;
+
+        const dismissOnEscape = function dismissOnEscape(e) {
+            if (e.keyCode === 27) // Escape
+                $scope.$apply(function applyClose() {
+                    $scope.closeImage();
+                });
+        };
+
+        $scope.lightboxImage = null;
+
+        $scope.openImage = function openImage(clipboard) {
+            previousFocus = document.activeElement;
+            $scope.lightboxImage = clipboard;
+            angular.element(document).on('keydown', dismissOnEscape);
+
+            // Move focus into the overlay once it has rendered. $timeout (not
+            // $evalAsync) is required: the overlay is created by an ng-if
+            // watcher during this same digest, so it is not yet in the DOM when
+            // the $evalAsync queue drains - $timeout runs after the digest, once
+            // the element exists.
+            $timeout(function focusOverlay() {
+                const overlay = $element && $element[0]
+                        && $element[0].querySelector('.clipboard-lightbox');
+                if (overlay)
+                    overlay.focus();
+            });
+        };
+
+        $scope.closeImage = function closeImage() {
+            $scope.lightboxImage = null;
+            angular.element(document).off('keydown', dismissOnEscape);
+
+            // Restore focus to wherever it was before the lightbox opened
+            if (previousFocus && previousFocus.focus)
+                previousFocus.focus();
+            previousFocus = null;
+        };
+
+        // Ensure the document-level listener never outlives the directive
+        $scope.$on('$destroy', function unbindEscape() {
+            angular.element(document).off('keydown', dismissOnEscape);
+        });
 
     };
 

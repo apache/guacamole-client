@@ -62,8 +62,9 @@
                     aria-hidden="true">
                 <div class="clipboard-tick-tooltip">
                     <div class="clipboard-tick-direction">{{ tick.directionLabelKey | translate }}</div>
-                    <img ng-if="tick.isImage && tick.dataURL" class="clipboard-tick-thumb"
-                            ng-src="{{ tick.dataURL }}" alt="" />
+                    <img ng-if="tick.isImage && tick.raw.dataURL" class="clipboard-tick-thumb"
+                            ng-src="{{ tick.raw.thumbURL || tick.raw.dataURL }}"
+                            loading="lazy" alt="" />
                     <div ng-if="!tick.isImage" class="clipboard-tick-text">{{ tick.textPreview }}</div>
                 </div>
             </div>
