@@ -41,6 +41,14 @@
             </includes>
         </dependencySet>
 
+        <!-- Hashicorp Vault extension .jar -->
+        <dependencySet>
+            <outputDirectory>hv</outputDirectory>
+            <includes>
+                <include>org.apache.guacamole:guacamole-vault-hv</include>
+            </includes>
+        </dependencySet>
+
     </dependencySets>
 
     <!-- Licenses -->
