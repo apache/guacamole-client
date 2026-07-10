@@ -84,7 +84,7 @@ public class HvClient {
      * token query parameters
      */
     public static final Map<String, String[]> VAULT_QUERY_PARAMS = Map.of(
-            HvSshKeys.VAULT_SSH_KEY_TYPE, new String[] {HvSshKeys.RSA, HvSshKeys.EC256, HvSshKeys.ED25519},
+            HvSshKeys.VAULT_SSH_KEY_TYPE, new String[] {HvSshKeys.RSA, HvSshKeys.EC, HvSshKeys.ED25519},
             HvSshKeys.VAULT_SSH_KEY_BITS, new String[] {"256", "384", "521", "2048", "4096"});
 
     /**
@@ -597,9 +597,11 @@ public class HvClient {
         final Map<String, Object> request;
         try {
             final String sshType = queryMap.getOrDefault(HvSshKeys.VAULT_SSH_KEY_TYPE, vaultInfo.getSshType());
+            final String keyBits = queryMap.getOrDefault(HvSshKeys.VAULT_SSH_KEY_BITS,
+                        (sshType == HvSshKeys.EC ? "256" : "4096"));
 
             if (isSign) {
-                sshKeys = new HvSshKeys(sshType);
+                sshKeys = new HvSshKeys(sshType, Integer.parseInt(keyBits));
                 request = Map.of(
                         "public_key", sshKeys.getPublic(),
                         "valid_principals", username,
@@ -607,8 +609,6 @@ public class HvClient {
                         "ttl", vaultInfo.getSshConnectionTimeout());
             }
             else {
-                final String keyBits = queryMap.getOrDefault(HvSshKeys.VAULT_SSH_KEY_BITS,
-                        sshType == HvSshKeys.EC256 ? "256" : "4096");
                 sshKeys = null;
                 request = Map.of(
                         "valid_principals", username,

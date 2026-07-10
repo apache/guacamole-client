@@ -50,10 +50,10 @@ public class HvSshKeys {
     public static final String ED25519 = "ed25519";
 
     /**
-     * The value of vault-ssh-type to use for EC256 (ECDSA with NIST P-256
-     * curve) certificate
+     * The value of vault-ssh-type to use for EC (ECDSA with NIST P-256
+     * P-384 or P-521 curve) certificate
      */
-    public static final String EC256 = "ec";
+    public static final String EC = "ec";
 
    /**
      * A token query parameter to modify the ssh type
@@ -84,7 +84,7 @@ public class HvSshKeys {
      * Class instantiation to return generated SSH keys. Default type
      */
     public HvSshKeys() {
-        this(HvConfigurationService.DEFAULT_SSH_TYPE);
+        this(HvConfigurationService.DEFAULT_SSH_TYPE, 0);
     }
 
     /**
@@ -94,17 +94,17 @@ public class HvSshKeys {
      *      The type of ssh key to generate. Can be "rsa" or "ed25519" only.
      *      Generated RSA keys are 4096 bit only
      */
-    public HvSshKeys(final String type) {
+    public HvSshKeys(final String type, final int keyBits) {
         final KeyPair keyPair;
 
         if (RSA.equals(type)) {
-            keyPair = generateRsa();
+            keyPair = generateRsa(keyBits);
         }
         else if (ED25519.equals(type)) {
             keyPair = generateEd25519WithFallback();
         }
-        else if (EC256.equals(type)) {
-            keyPair = generateEC256WithFallback();
+        else if (EC.equals(type)) {
+            keyPair = generateECWithFallback(keyBits);
         }
         else {
             throw new IllegalArgumentException("Unrecognized SSH encryption : "+ type);
@@ -138,7 +138,7 @@ public class HvSshKeys {
         }
         catch (GeneralSecurityException e) {
             logger.warn("Ed25519 not available via SSHD EdDSA. Falling back to RSA : {}", e.getMessage());
-            keyPair = generateRsa();
+            keyPair = generateRsa(4096);
         }
 
         return keyPair;
@@ -150,19 +150,28 @@ public class HvSshKeys {
      * @return
      *      A java.security.KeyPair containing the ec256 key pair or RSA if failure
      */
-    private KeyPair generateEC256WithFallback() {
+    private KeyPair generateECWithFallback(final int keyBits) {
         KeyPair keyPair;
         try {
             final KeyPairGenerator keyPairGenerator = SecurityUtils.getKeyPairGenerator("EC");
 
-            // EC256 = secp256r1 (aka NIST P-256)
-            final ECGenParameterSpec ecSpec = new ECGenParameterSpec("secp256r1");
+            final ECGenParameterSpec ecSpec;
+            if (keyBits == 384)
+                // EC384 = secp384r1 (aka NIST P-384)
+                ecSpec = new ECGenParameterSpec("secp384r1");
+            else if (keyBits == 521)
+                // EC521 = secp521r1 (aka NIST P-521)
+                ecSpec = new ECGenParameterSpec("secp521r1");
+            else
+                // EC256 = secp256r1 (aka NIST P-256)
+                ecSpec = new ECGenParameterSpec("secp256r1");
+
             keyPairGenerator.initialize(ecSpec);
 
             keyPair = keyPairGenerator.generateKeyPair();
         } catch (GeneralSecurityException e) {
-            logger.warn("EC256 not available via SSHD ECDSA (NIST P-256). Falling back to RSA : {}", e.getMessage());
-            keyPair = generateRsa();
+            logger.warn("EC not available via SSHD ECDSA (NIST P-256, P-384 or P-521). Falling back to RSA : {}", e.getMessage());
+            keyPair = generateRsa(4096);
         }
 
         return keyPair;
@@ -177,11 +186,12 @@ public class HvSshKeys {
      * @throws IllegalStateException
      *      If the RSA key could not be returned
      */
-    private KeyPair generateRsa() {
+    private KeyPair generateRsa(final int keyBits) {
         try {
             final KeyPairGenerator keyPairGenerator =
                     SecurityUtils.getKeyPairGenerator("RSA");
-            keyPairGenerator.initialize(4096);
+            // Only support 2048 and 4096 bit RSA
+            keyPairGenerator.initialize(keyBits == 2048 ? 2048 : 4096);
             return keyPairGenerator.generateKeyPair();
         }
         catch (GeneralSecurityException e) {
