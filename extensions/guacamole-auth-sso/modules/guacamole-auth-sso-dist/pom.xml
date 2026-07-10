@@ -74,6 +74,22 @@
             parent guacamole-auth-sso project, not after guacamole-auth-sso-dist -->
         <finalName>${project.parent.artifactId}-${project.parent.version}</finalName>
 
+        <!-- Disable unnecessary dependency consistency check in dist bundler
+        (will fail here when different underlying SSO libraries use different
+        versions of the same dependency) -->
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-dependency-consistency</id>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+
     </build>
 
 </project>
