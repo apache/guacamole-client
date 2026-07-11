@@ -1,0 +1,52 @@
+<div class="ipmi-control">
+
+    <!-- Chassis status -->
+    <div class="ipmi-status">
+        <span class="ipmi-power-badge" ng-class="'ipmi-power-' + power">
+            {{('CLIENT.IPMI_POWER_' + (power | uppercase)) | translate}}
+        </span>
+        <span class="ipmi-health-badge" ng-class="'ipmi-health-' + health">
+            {{('CLIENT.IPMI_HEALTH_' + (health === 'sol-connected' ? 'CONNECTED' : 'DISCONNECTED')) | translate}}
+        </span>
+        <button class="ipmi-refresh" ng-click="refresh()" ng-disabled="busy">
+            {{'CLIENT.IPMI_ACTION_REFRESH' | translate}}
+        </button>
+    </div>
+
+    <!-- Last command result -->
+    <p class="ipmi-message" ng-if="message" ng-class="{ 'ipmi-message-error': messageError }">
+        {{message}}
+    </p>
+
+    <!-- Confirmation prompt for destructive actions -->
+    <div class="ipmi-confirm" ng-if="pending">
+        <p>{{'CLIENT.IPMI_CONFIRM_PROMPT' | translate}}</p>
+        <p class="ipmi-confirm-action">{{('CLIENT.IPMI_ACTION_' + pendingKey) | translate}}</p>
+        <button class="ipmi-danger" ng-click="confirm()">{{'CLIENT.IPMI_ACTION_CONFIRM' | translate}}</button>
+        <button ng-click="cancel()">{{'CLIENT.IPMI_ACTION_CANCEL' | translate}}</button>
+    </div>
+
+    <!-- Power controls -->
+    <div class="ipmi-actions" ng-hide="pending">
+        <button ng-click="power_action('power-on')"    ng-disabled="busy">{{'CLIENT.IPMI_ACTION_POWER_ON' | translate}}</button>
+        <button ng-click="power_action('soft-shutdown')" ng-disabled="busy">{{'CLIENT.IPMI_ACTION_SOFT_SHUTDOWN' | translate}}</button>
+        <button ng-click="power_action('power-cycle')"  ng-disabled="busy" class="ipmi-danger">{{'CLIENT.IPMI_ACTION_POWER_CYCLE' | translate}}</button>
+        <button ng-click="power_action('hard-reset')"   ng-disabled="busy" class="ipmi-danger">{{'CLIENT.IPMI_ACTION_HARD_RESET' | translate}}</button>
+        <button ng-click="power_action('power-off')"    ng-disabled="busy" class="ipmi-danger">{{'CLIENT.IPMI_ACTION_POWER_OFF' | translate}}</button>
+        <button ng-click="power_action('diagnostic-interrupt')" ng-disabled="busy" class="ipmi-danger">{{'CLIENT.IPMI_ACTION_DIAGNOSTIC_INTERRUPT' | translate}}</button>
+    </div>
+
+    <!-- Chassis / SOL utilities -->
+    <div class="ipmi-actions" ng-hide="pending">
+        <button ng-click="identify()"  ng-disabled="busy">{{'CLIENT.IPMI_ACTION_IDENTIFY' | translate}}</button>
+        <button ng-click="sendBreak()" ng-disabled="busy">{{'CLIENT.IPMI_ACTION_SEND_BREAK' | translate}}</button>
+        <button ng-click="readSel()"   ng-disabled="busy">{{'CLIENT.IPMI_ACTION_READ_SEL' | translate}}</button>
+    </div>
+
+    <!-- System Event Log -->
+    <div class="ipmi-sel" ng-if="sel !== null">
+        <h4>{{'CLIENT.IPMI_SECTION_SEL' | translate}}</h4>
+        <pre>{{sel}}</pre>
+    </div>
+
+</div>

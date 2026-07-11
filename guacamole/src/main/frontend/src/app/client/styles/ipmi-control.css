@@ -1,0 +1,100 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+.ipmi-control .ipmi-status {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.ipmi-control .ipmi-power-badge,
+.ipmi-control .ipmi-health-badge {
+    display: inline-block;
+    padding: 0.15em 0.6em;
+    border-radius: 0.75em;
+    font-size: 0.85em;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+    background: #888;
+}
+
+.ipmi-control .ipmi-power-on          { background: #2e7d32; }
+.ipmi-control .ipmi-power-off         { background: #b71c1c; }
+.ipmi-control .ipmi-power-unknown     { background: #888; }
+.ipmi-control .ipmi-health-connected  { background: #1565c0; }
+.ipmi-control .ipmi-health-disconnected { background: #888; }
+
+.ipmi-control .ipmi-refresh {
+    margin-left: auto;
+}
+
+.ipmi-control .ipmi-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35em;
+    margin: 0.5em 0;
+}
+
+.ipmi-control .ipmi-actions button {
+    flex: 1 1 45%;
+}
+
+.ipmi-control button.ipmi-danger {
+    border-color: #b71c1c;
+    color: #b71c1c;
+}
+
+.ipmi-control .ipmi-message {
+    margin: 0.5em 0;
+    font-size: 0.9em;
+}
+
+.ipmi-control .ipmi-message-error {
+    color: #b71c1c;
+    font-weight: bold;
+}
+
+.ipmi-control .ipmi-confirm {
+    border: 1px solid #b71c1c;
+    border-radius: 0.25em;
+    padding: 0.5em;
+    margin: 0.5em 0;
+}
+
+.ipmi-control .ipmi-confirm-action {
+    font-weight: bold;
+    margin: 0.25em 0 0.5em 0;
+}
+
+.ipmi-control .ipmi-sel {
+    margin-top: 0.5em;
+}
+
+.ipmi-control .ipmi-sel pre {
+    max-height: 12em;
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    padding: 0.5em;
+    font-size: 0.75em;
+    white-space: pre;
+}
