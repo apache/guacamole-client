@@ -4,7 +4,7 @@
 # License: Apache v2.0
 # Source:  https://raw.githubusercontent.com/JetBrains/kotlin/refs/tags/v${VERSION}/license/NOTICE.txt
 #
-# --- BEGIN LICENSE FILE [1.9.25] ---
+# --- BEGIN LICENSE FILE [2.4.0] ---
    Kotlin Compiler
-   Copyright 2010-2023 JetBrains s.r.o and respective authors and developers
-# --- END LICENSE FILE [1.9.25] ---
+   Copyright 2010-2024 JetBrains s.r.o and respective authors and developers
+# --- END LICENSE FILE [2.4.0] ---

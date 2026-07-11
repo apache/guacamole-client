@@ -331,17 +331,6 @@
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
-            <exclusions>
-
-                <!-- Resolve version conflict (see below - transitive
-                    dependencies of jersey-media-json-jackson disagree on
-                    1.2.1 vs. 1.2.2) -->
-                <exclusion>
-                    <groupId>jakarta.activation</groupId>
-                    <artifactId>jakarta.activation-api</artifactId>
-                </exclusion>
-
-            </exclusions>
         </dependency>
 
         <!-- JSR-250 annotations -->
@@ -357,13 +346,6 @@
             <artifactId>guava</artifactId>
         </dependency>
 
-        <!-- Force use of version 1.2.2 (transitive dependencies of
-            jersey-media-json-jackson disagree on 1.2.1 vs. 1.2.2) -->
-        <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-            <version>1.2.2</version>
-        </dependency>
 
         <!-- JUnit for unit testing -->
         <dependency>

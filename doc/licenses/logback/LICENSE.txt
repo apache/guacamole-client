@@ -6,7 +6,7 @@
 #
 # +: ** ECLIPSE PUBLIC LICENSE v1.0 CHOSEN. **
 #
-# --- BEGIN LICENSE FILE [1.3.15] ---
+# --- BEGIN LICENSE FILE [1.3.16] ---
 Logback LICENSE
 ---------------
 
@@ -21,4 +21,4 @@ the Eclipse Foundation
  
 under the terms of the GNU Lesser General Public License version 2.1
 as published by the Free Software Foundation.
-# --- END LICENSE FILE [1.3.15] ---
+# --- END LICENSE FILE [1.3.16] ---
