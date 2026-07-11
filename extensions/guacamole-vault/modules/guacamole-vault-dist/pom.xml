@@ -49,7 +49,7 @@
             <version>${revision}</version>
         </dependency>
 
-   </dependencies>
+    </dependencies>
 
     <build>
 
