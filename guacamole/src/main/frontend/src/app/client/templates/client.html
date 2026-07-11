@@ -128,6 +128,14 @@
                                model-only="true"></guac-form>
                 </div>
 
+                <!-- IPMI chassis control -->
+                <div class="menu-section" id="ipmi-settings" ng-if="focusedClient.protocol === 'ipmi'">
+                    <h3>{{'CLIENT.SECTION_HEADER_IPMI' | translate}}</h3>
+                    <div class="content">
+                        <guac-ipmi-control client="focusedClient"></guac-ipmi-control>
+                    </div>
+                </div>
+
                 <!-- Input method -->
                 <div class="menu-section" id="keyboard-settings">
                     <h3>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h3>
