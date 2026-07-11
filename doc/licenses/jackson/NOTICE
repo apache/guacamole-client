@@ -4,7 +4,7 @@
 # License: Apache v2.0
 # Source:  https://raw.githubusercontent.com/FasterXML/jackson-core/refs/tags/jackson-core-${VERSION}/src/main/resources/META-INF/jackson-core-NOTICE
 #
-# --- BEGIN LICENSE FILE [2.19.0] ---
+# --- BEGIN LICENSE FILE [2.22.1] ---
 # Jackson JSON processor
 
 Jackson is a high-performance, Free/Open Source JSON processing library.
@@ -30,6 +30,16 @@ under the following copyright.
 
 Copyright © 2023 Werner Randelshofer, Switzerland. MIT License.
 
-See FastDoubleParser-NOTICE for details of other source code included in FastDoubleParser
-and the licenses and copyrights that apply to that code.
-# --- END LICENSE FILE [2.19.0] ---
+See FastDoubleParser-LICENSE and also FastDoubleParser-ThirdParty-LICENSE for details of other source code
+included in FastDoubleParser and the licenses and copyrights that apply to that code.
+
+## Schubfach
+
+jackson-core bundles a copy of the Schubfach number writing code <https://github.com/c4f7fcce9cb06515/Schubfach>.
+That code is available under an MIT license <https://github.com/c4f7fcce9cb06515/Schubfach/blob/master/todec/LICENSE>
+under the following copyright.
+
+Copyright 2018-2020 Raffaello Giulietti
+
+See Schubfach-LICENSE.
+# --- END LICENSE FILE [2.22.1] ---

@@ -36,9 +36,6 @@
         <relativePath>../../</relativePath>
     </parent>
 
-    <properties>
-        <kotlin.version>1.9.25</kotlin.version>
-    </properties>
 
     <dependencies>
 
@@ -58,10 +55,7 @@
         <dependency>
             <groupId>com.keepersecurity.secrets-manager</groupId>
             <artifactId>core</artifactId>
-            <version>17.1.1</version>
-
-            <!-- Correct version conflict (different versions across transitive
-                dependencies) -->
+            <version>17.3.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jetbrains.kotlin</groupId>
@@ -69,42 +63,37 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.jetbrains.kotlin</groupId>
-                    <artifactId>kotlin-stdlib</artifactId>
+                    <artifactId>kotlin-stdlib-common</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.jetbrains.kotlin</groupId>
-                    <artifactId>kotlin-stdlib-common</artifactId>
+                    <artifactId>kotlin-stdlib-jdk7</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.jetbrains.kotlin</groupId>
                     <artifactId>kotlin-stdlib-jdk8</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.jetbrains.kotlin</groupId>
+                    <artifactId>kotlin-stdlib</artifactId>
+                </exclusion>
             </exclusions>
-
         </dependency>
 
-        <!-- Use same version of Kotlin across all dependencies -->
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-reflect</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib-jdk8</artifactId>
-            <version>${kotlin.version}</version>
-        </dependency>
 
         <!-- Use FIPS variant of Bouncy Castle crypto library -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bc-fips</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.2</version>
+        </dependency>
+
+        <!-- Manual overrides to force consistent, non-vulnerable versions of
+        transitive dependencies (see exclusions) -->
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-stdlib</artifactId>
+            <version>2.4.0</version>
         </dependency>
 
     </dependencies>

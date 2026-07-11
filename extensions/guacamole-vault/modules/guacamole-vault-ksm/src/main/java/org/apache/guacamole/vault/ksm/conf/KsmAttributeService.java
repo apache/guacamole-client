@@ -79,7 +79,7 @@ public class KsmAttributeService implements VaultAttributeService {
                     SecretsManager.KEY_CLIENT_KEY,
                     SecretsManager.KEY_APP_KEY,
                     SecretsManager.KEY_OWNER_PUBLIC_KEY,
-                    SecretsManager.KEY_SERVER_PUBIC_KEY_ID
+                    SecretsManager.KEY_SERVER_PUBLIC_KEY_ID
     )));
 
     /**
