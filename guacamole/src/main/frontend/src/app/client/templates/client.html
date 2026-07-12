@@ -44,7 +44,12 @@
     <div id="connection-warning" ng-show="isConnectionUnstable()">
         {{'CLIENT.TEXT_CLIENT_STATUS_UNSTABLE' | translate}}
     </div>
-    
+
+    <!-- Always-visible IPMI chassis power indicator -->
+    <div id="ipmi-status-overlay" ng-if="focusedClient.protocol === 'ipmi'">
+        <guac-ipmi-status client="focusedClient"></guac-ipmi-status>
+    </div>
+
     <!-- Menu -->
     <div class="menu" ng-class="{open: menu.shown}" id="guac-menu">
         <div class="menu-content" ng-if="menu.shown" guac-touch-drag="menuDrag">
