@@ -5,13 +5,23 @@
         <span class="ipmi-power-badge" ng-class="'ipmi-power-' + state.power">
             {{('CLIENT.IPMI_POWER_' + ((state.power || 'unknown') | uppercase)) | translate}}
         </span>
-        <span class="ipmi-health-badge" ng-class="'ipmi-health-' + state.health">
+        <span class="ipmi-health-badge"
+              ng-class="state.health === 'sol-connected' ? 'ipmi-health-connected' : 'ipmi-health-disconnected'">
             {{('CLIENT.IPMI_HEALTH_' + (state.health === 'sol-connected' ? 'CONNECTED' : 'DISCONNECTED')) | translate}}
         </span>
-        <button class="ipmi-refresh" ng-click="refresh()" ng-disabled="state.busy">
+        <!-- While a command is in flight, show a spinner in place of Refresh -->
+        <span class="ipmi-working" ng-if="state.busy">
+            <span class="ipmi-spinner"></span>{{'CLIENT.IPMI_WORKING' | translate}}
+        </span>
+        <button class="ipmi-refresh" ng-click="refresh()" ng-hide="state.busy">
             {{'CLIENT.IPMI_ACTION_REFRESH' | translate}}
         </button>
     </div>
+
+    <!-- When the status was last authoritatively read -->
+    <p class="ipmi-last-checked" ng-if="state.lastUpdated">
+        {{'CLIENT.IPMI_LAST_CHECKED' | translate}} {{state.lastUpdated | date:'HH:mm:ss'}}
+    </p>
 
     <!-- Last command result -->
     <p class="ipmi-message" ng-if="state.message" ng-class="{ 'ipmi-message-error': state.messageError }">

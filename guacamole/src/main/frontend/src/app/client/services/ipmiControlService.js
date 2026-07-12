@@ -86,7 +86,12 @@ angular.module('client').factory('ipmiControlService', ['$rootScope', '$injector
             switch (msg.type) {
 
                 case 'state':
-                    if (msg.power)  state.power  = msg.power;
+                    if (msg.power) {
+                        state.power = msg.power;
+                        // A power value means an authoritative status query
+                        // completed; record when it was last checked.
+                        state.lastUpdated = new Date();
+                    }
                     if (msg.health) state.health = msg.health;
                     break;
 
@@ -126,7 +131,8 @@ angular.module('client').factory('ipmiControlService', ['$rootScope', '$injector
                 sel          : null,
                 message      : null,
                 messageError : false,
-                busy         : false
+                busy         : false,
+                lastUpdated  : null
             };
             states[id] = state;
 

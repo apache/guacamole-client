@@ -36,9 +36,13 @@
 
 #ipmi-status-overlay .ipmi-status-indicator {
     opacity: 0.85;
+    display: flex;
+    gap: 0.3em;
+    align-items: center;
 }
 
-#ipmi-status-overlay .ipmi-power-badge {
+#ipmi-status-overlay .ipmi-power-badge,
+#ipmi-status-overlay .ipmi-health-badge {
     display: inline-block;
     padding: 0.15em 0.6em;
     border-radius: 0.75em;
@@ -50,9 +54,11 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-#ipmi-status-overlay .ipmi-power-on      { background: #2e7d32; }
-#ipmi-status-overlay .ipmi-power-off     { background: #b71c1c; }
-#ipmi-status-overlay .ipmi-power-unknown { background: #888; }
+#ipmi-status-overlay .ipmi-power-on          { background: #2e7d32; }
+#ipmi-status-overlay .ipmi-power-off         { background: #b71c1c; }
+#ipmi-status-overlay .ipmi-power-unknown     { background: #888; }
+#ipmi-status-overlay .ipmi-health-connected  { background: #1565c0; }
+#ipmi-status-overlay .ipmi-health-disconnected { background: #b71c1c; }
 
 .ipmi-control .ipmi-power-badge,
 .ipmi-control .ipmi-health-badge {
@@ -70,10 +76,39 @@
 .ipmi-control .ipmi-power-off         { background: #b71c1c; }
 .ipmi-control .ipmi-power-unknown     { background: #888; }
 .ipmi-control .ipmi-health-connected  { background: #1565c0; }
-.ipmi-control .ipmi-health-disconnected { background: #888; }
+.ipmi-control .ipmi-health-disconnected { background: #b71c1c; }
 
-.ipmi-control .ipmi-refresh {
+.ipmi-control .ipmi-refresh,
+.ipmi-control .ipmi-working {
     margin-left: auto;
+}
+
+/* In-progress affordance shown while a chassis command is outstanding */
+.ipmi-control .ipmi-working {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    font-size: 0.85em;
+    color: #555;
+}
+
+.ipmi-control .ipmi-spinner {
+    width: 0.9em;
+    height: 0.9em;
+    border: 2px solid rgba(0, 0, 0, 0.25);
+    border-top-color: #555;
+    border-radius: 50%;
+    animation: ipmi-spin 0.7s linear infinite;
+}
+
+@keyframes ipmi-spin {
+    to { transform: rotate(360deg); }
+}
+
+.ipmi-control .ipmi-last-checked {
+    margin: -0.25em 0 0.5em 0;
+    font-size: 0.75em;
+    color: #888;
 }
 
 .ipmi-control .ipmi-actions {
