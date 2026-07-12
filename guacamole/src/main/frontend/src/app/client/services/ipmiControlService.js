@@ -79,6 +79,10 @@ angular.module('client').factory('ipmiControlService', ['$rootScope', '$injector
      */
     const handleMessage = function handleMessage(state, msg) {
         $rootScope.$evalAsync(function applyMessage() {
+
+            // Any recognized inbound message concludes the outstanding command
+            state.busy = false;
+
             switch (msg.type) {
 
                 case 'state':
@@ -87,7 +91,6 @@ angular.module('client').factory('ipmiControlService', ['$rootScope', '$injector
                     break;
 
                 case 'result':
-                    state.busy = false;
                     state.message = msg.message;
                     state.messageError = (msg.ok === false);
                     break;
