@@ -164,6 +164,8 @@
         "IPMI_HEALTH_CONNECTED"        : "SOL Connected",
         "IPMI_HEALTH_DISCONNECTED"     : "SOL Disconnected",
         "IPMI_ACTION_REFRESH"          : "Refresh",
+        "IPMI_WORKING"                 : "Working…",
+        "IPMI_LAST_CHECKED"            : "Checked",
         "IPMI_ACTION_POWER_ON"         : "Power On",
         "IPMI_ACTION_SOFT_SHUTDOWN"    : "Soft Shutdown",
         "IPMI_ACTION_POWER_CYCLE"      : "Power Cycle",
