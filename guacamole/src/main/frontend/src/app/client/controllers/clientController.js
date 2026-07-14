@@ -546,6 +546,16 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
+     * Sends a break signal to the serial device associated with the current
+     * connection. Has no effect if the current connection is not using the
+     * serial protocol.
+     */
+    $scope.sendSerialBreak = function sendSerialBreak() {
+        if ($scope.focusedClient)
+            ManagedClient.sendSerialBreak($scope.focusedClient);
+    };
+
+    /**
      * Returns whether the current connection has any associated share links.
      *
      * @returns {Boolean}

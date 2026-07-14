@@ -1,0 +1,232 @@
+{
+    "name"  : "serial",
+    "connectionForms" : [
+
+        {
+            "name"  : "connection",
+            "fields" : [
+                {
+                    "name"    : "serial-type",
+                    "type"    : "ENUM",
+                    "options" : [ "", "local", "network" ]
+                },
+                {
+                    "name"    : "network-protocol",
+                    "type"    : "ENUM",
+                    "options" : [ "", "raw", "rfc2217" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "device",
+            "fields" : [
+                {
+                    "name"  : "device",
+                    "type"  : "TEXT"
+                }
+            ]
+        },
+
+        {
+            "name"  : "network",
+            "fields" : [
+                {
+                    "name"  : "hostname",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "port",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "timeout",
+                    "type"  : "NUMERIC"
+                }
+            ]
+        },
+
+        {
+            "name"  : "serial-line",
+            "fields" : [
+                {
+                    "name"    : "baud-rate",
+                    "type"    : "ENUM",
+                    "options" : [ "", "300", "600", "1200", "2400", "4800", "9600", "19200", "38400", "57600", "115200", "230400" ]
+                },
+                {
+                    "name"    : "data-bits",
+                    "type"    : "ENUM",
+                    "options" : [ "", "5", "6", "7", "8" ]
+                },
+                {
+                    "name"    : "stop-bits",
+                    "type"    : "ENUM",
+                    "options" : [ "", "1", "2" ]
+                },
+                {
+                    "name"    : "parity",
+                    "type"    : "ENUM",
+                    "options" : [ "", "none", "odd", "even", "mark", "space" ]
+                },
+                {
+                    "name"    : "flow-control",
+                    "type"    : "ENUM",
+                    "options" : [ "", "none", "rts-cts", "xon-xoff" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "serial-features",
+            "fields" : [
+                {
+                    "name"  : "break-duration",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "paste-delay",
+                    "type"  : "NUMERIC"
+                }
+            ]
+        },
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"  : "color-scheme",
+                    "type"  : "TERMINAL_COLOR_SCHEME",
+                    "options" : [ "", "black-white", "gray-black", "green-black", "white-black" ]
+                },
+                {
+                    "name"  : "font-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "font-size",
+                    "type"  : "ENUM",
+                    "options" : [ "", "8", "9", "10", "11", "12", "14", "18", "24", "30", "36", "48", "60", "72", "96" ]
+                },
+                {
+                    "name"  : "scrollback",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "backspace",
+                    "type"    : "ENUM",
+                    "options" : [ "", "127", "8" ]
+                },
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name"  : "clipboard",
+            "fields" : [
+                {
+                    "name"    : "clipboard-buffer-size",
+                    "type"    : "ENUM",
+                    "options" : [ "", "262144", "1048576", "10485760" ]
+                },
+                {
+                    "name"    : "disable-copy",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "disable-paste",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name" : "recording",
+            "fields" : [
+                {
+                    "name"  : "recording-path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "recording-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "recording-exclude-output",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-exclude-mouse",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-include-keys",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-include-clipboard",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "create-recording-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "recording-write-existing",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+
+        {
+            "name" : "typescript",
+            "fields" : [
+                {
+                    "name"  : "typescript-path",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "typescript-name",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "create-typescript-path",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "typescript-write-existing",
+                    "type"  : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        }
+
+    ],
+    "sharingProfileForms" : [
+
+        {
+            "name"  : "display",
+            "fields" : [
+                {
+                    "name"    : "read-only",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        }
+
+    ]
+}
