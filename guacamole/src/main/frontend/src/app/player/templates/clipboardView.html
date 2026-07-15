@@ -1,0 +1,93 @@
+<div class="guac-player-clipboard-container">
+
+    <div class="clipboard-controls">
+        <span class="clipboard-title">{{ 'PLAYER.ACTION_SHOW_CLIPBOARD_LOG' | translate }}</span>
+        <button class="clipboard-export"
+                ng-show="sortedEvents.length"
+                ng-click="exportCsv()">{{ 'PLAYER.ACTION_EXPORT_CSV' | translate }}</button>
+    </div>
+
+    <!-- Truncation warning: some clipboard transfers were only partially
+         recorded and their data is missing. -->
+    <div class="clipboard-truncation-banner" ng-if="incompleteCount > 0"
+            translate="PLAYER.INFO_CLIPBOARD_INCOMPLETE"
+            translate-values="{COUNT: incompleteCount}"></div>
+
+    <!-- Empty state -->
+    <div class="clipboard-empty" ng-if="!sortedEvents.length">
+        {{ 'PLAYER.INFO_NO_CLIPBOARD_ACTIVITY' | translate }}
+    </div>
+
+    <!-- Chronological list of clipboard cards -->
+    <div class="clipboard-cards" ng-if="sortedEvents.length">
+        <div class="clipboard-card"
+                ng-repeat="item in displayItems"
+                ng-class="{ 'future': item.timestamp >= currentPosition }"
+                tabindex="0"
+                ng-click="seekToEvent(item)"
+                ng-keydown="cardKeydown($event, item)">
+
+            <div class="clipboard-card-header">
+                <span class="timestamp"
+                    >{{ item.formattedTime }}<span ng-if="item.clusterCount > 1"> – {{ item.formattedLastTime }}</span></span>
+                <span class="clipboard-cluster-count" ng-if="item.clusterCount > 1"
+                        translate="PLAYER.LABEL_CLIPBOARD_REPEATS"
+                        translate-values="{COUNT: item.clusterCount}"></span>
+                <span class="clipboard-direction"
+                        ng-class="item.directionClass"
+                        aria-label="{{ item.directionLabelKey | translate }}"
+                >{{ item.directionLabelKey | translate }}</span>
+            </div>
+
+            <!-- Text payload -->
+            <div class="clipboard-card-body" ng-if="!item.isImage">
+                <pre class="clipboard-text">{{ displayText(item) }}</pre>
+                <button class="clipboard-show-more"
+                        ng-if="item.truncatable"
+                        ng-click="$event.stopPropagation(); toggleExpanded(item)"
+                >{{ (item.expanded ? 'PLAYER.ACTION_SHOW_LESS' : 'PLAYER.ACTION_SHOW_MORE') | translate }}</button>
+            </div>
+
+            <!-- Image payload -->
+            <div class="clipboard-card-body" ng-if="item.isImage">
+                <span class="clipboard-image"
+                        title="{{ item.mimetype }} · {{ item.sizeLabel }}{{ item.raw.width ? ' · ' + item.raw.width + '×' + item.raw.height : '' }}"
+                        ng-click="$event.stopPropagation(); openImage(item.raw)">
+                    <img class="clipboard-thumb"
+                            ng-src="{{ item.raw.thumbURL || item.raw.dataURL }}"
+                            loading="lazy"
+                            alt="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_ALT' | translate }}" />
+                </span>
+            </div>
+
+            <!-- Cluster of repeated, identical transfers: reveal each member's
+                 timestamp, still individually click-to-seek. -->
+            <div class="clipboard-cluster" ng-if="item.clusterCount > 1">
+                <button class="clipboard-cluster-toggle"
+                        ng-click="$event.stopPropagation(); toggleCluster(item)"
+                >{{ (item.clusterExpanded ? 'PLAYER.ACTION_COLLAPSE_REPEATS' : 'PLAYER.ACTION_EXPAND_REPEATS') | translate }}</button>
+                <ul class="clipboard-cluster-members" ng-if="item.clusterExpanded">
+                    <li ng-repeat="member in item.clusterMembers"
+                            tabindex="0"
+                            ng-click="$event.stopPropagation(); seekToEvent(member)"
+                            ng-keydown="cardKeydown($event, member)">{{ member.formattedTime }}</li>
+                </ul>
+            </div>
+
+            <div class="clipboard-card-footer">
+                <span class="clipboard-meta">{{ item.mimetype }} · {{ item.sizeLabel }}</span>
+                <button class="clipboard-download"
+                        ng-click="$event.stopPropagation(); download(item)"
+                >{{ 'PLAYER.ACTION_DOWNLOAD' | translate }}</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="clipboard-lightbox" ng-if="lightboxImage" ng-click="closeImage()"
+            role="dialog" tabindex="-1"
+            aria-label="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_PREVIEW' | translate }}">
+        <img ng-src="{{ lightboxImage.dataURL }}"
+                alt="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_ALT' | translate }}" />
+    </div>
+</div>

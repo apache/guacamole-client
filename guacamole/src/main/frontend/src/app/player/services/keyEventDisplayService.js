@@ -112,6 +112,55 @@ angular.module('player').factory('keyEventDisplayService',
      */
     const formatKeyName = name => ('<' + name + '>');
 
+    /**
+     * Format a raw byte count into a compact human-readable string
+     * (e.g. "24 KB", "1.4 MB").
+     *
+     * @param {Number} bytes
+     *     The number of bytes.
+     *
+     * @returns {String}
+     *     A compact, human-readable representation of the given size.
+     */
+    const formatBytes = bytes => {
+        if (!bytes && bytes !== 0)
+            return '';
+        if (bytes < 1024)
+            return bytes + ' B';
+        if (bytes < 1024 * 1024)
+            return Math.round(bytes / 1024) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    };
+
+    /**
+     * Translate a raw server-annotated clipboard direction into display
+     * metadata (short label, tooltip, and a CSS class for colour-coding).
+     * Returns an empty object when the direction is unknown/unannotated.
+     *
+     * @param {String} direction
+     *     The raw direction ("guest-to-client" or "client-to-guest").
+     *
+     * @returns {Object}
+     *     Display metadata for the direction, or {} if none.
+     */
+    const directionMeta = direction => {
+        if (direction === 'guest-to-client')
+            return {
+                direction: direction,
+                directionLabel: 'from guest',
+                directionTitle: 'Copied from guest (data leaving the guest)',
+                directionClass: 'from-guest'
+            };
+        if (direction === 'client-to-guest')
+            return {
+                direction: direction,
+                directionLabel: 'to guest',
+                directionTitle: 'Pasted into guest',
+                directionClass: 'to-guest'
+            };
+        return {};
+    };
+
     const service = {};
 
     /**
@@ -187,6 +236,18 @@ angular.module('player').factory('keyEventDisplayService',
          */
         this.timestamp = template.timestamp;
 
+        /**
+         * Clipboard presentation metadata, present only when this event
+         * represents a clipboard transfer rather than a keystroke. For image
+         * clipboard events this carries the preview data URL, mimetype, and a
+         * human-readable size; for text clipboard events it simply flags the
+         * event so it can be styled distinctly.
+         *
+         * @type {{isImage: !boolean, isText: !boolean, mimetype: String,
+         *         dataURL: String, sizeLabel: String}}
+         */
+        this.clipboard = template.clipboard || null;
+
     };
 
     /**
@@ -220,11 +281,18 @@ angular.module('player').factory('keyEventDisplayService',
         if (batchSeparation === undefined || batchSeparation === null)
             batchSeparation = 5000;
 
-        // Convert clipboard events to unified format
+        // Convert clipboard events to unified format, preserving the mimetype
+        // and (for images) the preview payload so they can be rendered as
+        // something richer than truncated text downstream
         const clipboardAsEvents = (clipboardEvents || []).map(event => ({
             isClipboard: true,
             timestamp: event.timestamp,
-            data: event.data
+            data: event.data,
+            mimetype: event.mimetype,
+            isImage: event.isImage,
+            dataURL: event.dataURL,
+            size: event.size,
+            direction: event.direction
         }));
 
         // Merge and sort all events by timestamp
@@ -274,12 +342,15 @@ angular.module('player').factory('keyEventDisplayService',
              *     Whether the text value would be literally produced by typing
              *     the key that produced the event.
              */
-            const pushEvent = (text, typed) => {
+            const pushEvent = (text, typed, clipboard) => {
                 const latestEvent = _.last(currentBatch.events);
 
                 // Only consolidate the event if configured to do so and it
-                // matches the type of the previous event
-                if (consolidateEvents && latestEvent && latestEvent.typed === typed) {
+                // matches the type of the previous event. Clipboard events are
+                // never consolidated - each is a distinct object with its own
+                // metadata (and, for images, its own preview).
+                if (consolidateEvents && latestEvent && latestEvent.typed === typed
+                        && !clipboard && !latestEvent.clipboard) {
                     latestEvent.text += text;
                     currentBatch.simpleValue += text;
                 }
@@ -287,7 +358,7 @@ angular.module('player').factory('keyEventDisplayService',
                 // Otherwise, push a new event
                 else {
                     currentBatch.events.push(new service.ConsolidatedKeyEvent({
-                        text, typed, timestamp
+                        text, typed, timestamp, clipboard
                     }));
                     currentBatch.simpleValue += text;
                 }
@@ -295,8 +366,30 @@ angular.module('player').factory('keyEventDisplayService',
 
             // Handle clipboard events
             if (event.isClipboard) {
-                const preview = (event.data || '').substring(0, 50);
-                pushEvent('[Clipboard: ' + preview + ']', false);
+
+                // Image clipboard: render as a preview chip rather than text.
+                // The text still carries a searchable synthetic label so the
+                // (text-based) key-log filter continues to match it.
+                if (event.isImage && event.dataURL) {
+                    const sizeLabel = formatBytes(event.size);
+                    pushEvent(
+                        '[Clipboard image: ' + (event.mimetype || 'image')
+                            + ' ' + sizeLabel + ']',
+                        false,
+                        Object.assign({
+                            isImage: true,
+                            mimetype: event.mimetype,
+                            dataURL: event.dataURL,
+                            sizeLabel: sizeLabel
+                        }, directionMeta(event.direction)));
+                }
+
+                // Text clipboard: inline truncated preview (unchanged behaviour)
+                else {
+                    const preview = (event.data || '').substring(0, 50);
+                    pushEvent('[Clipboard: ' + preview + ']', false,
+                        Object.assign({ isText: true }, directionMeta(event.direction)));
+                }
             }
 
             // Handle key events
