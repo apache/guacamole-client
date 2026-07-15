@@ -1,0 +1,10 @@
+<div class="ipmi-status-indicator"
+     title="{{('CLIENT.IPMI_POWER_' + ((state.power || 'unknown') | uppercase)) | translate}} &bull; {{('CLIENT.IPMI_HEALTH_' + (state.health === 'sol-connected' ? 'CONNECTED' : 'DISCONNECTED')) | translate}}">
+    <span class="ipmi-power-badge" ng-if="state" ng-class="'ipmi-power-' + state.power">
+        {{('CLIENT.IPMI_POWER_' + ((state.power || 'unknown') | uppercase)) | translate}}
+    </span>
+    <span class="ipmi-health-badge" ng-if="state"
+          ng-class="state.health === 'sol-connected' ? 'ipmi-health-connected' : 'ipmi-health-disconnected'">
+        {{('CLIENT.IPMI_HEALTH_' + (state.health === 'sol-connected' ? 'CONNECTED' : 'DISCONNECTED')) | translate}}
+    </span>
+</div>
