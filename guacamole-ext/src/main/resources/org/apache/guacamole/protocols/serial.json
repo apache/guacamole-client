@@ -14,6 +14,11 @@
                     "name"    : "network-protocol",
                     "type"    : "ENUM",
                     "options" : [ "", "raw", "rfc2217" ]
+                },
+                {
+                    "name"    : "auto-reconnect",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
@@ -73,6 +78,11 @@
                     "name"    : "flow-control",
                     "type"    : "ENUM",
                     "options" : [ "", "none", "rts-cts", "xon-xoff" ]
+                },
+                {
+                    "name"    : "line-ending",
+                    "type"    : "ENUM",
+                    "options" : [ "", "cr", "lf", "crlf" ]
                 }
             ]
         },
@@ -87,6 +97,16 @@
                 {
                     "name"  : "paste-delay",
                     "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "local-echo",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "hangup-on-close",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
