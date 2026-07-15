@@ -199,6 +199,11 @@ div.section {
 }
 
 .connection .icon.kubernetes,
+.connection .icon.mongodb,
+.connection .icon.mssql,
+.connection .icon.mysql,
+.connection .icon.oracle,
+.connection .icon.postgresql,
 .connection .icon.ssh,
 .connection .icon.telnet {
     background-image: url('images/protocol-icons/guac-text.svg');

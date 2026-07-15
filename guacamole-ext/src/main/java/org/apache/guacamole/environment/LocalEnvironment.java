@@ -60,6 +60,11 @@ public class LocalEnvironment implements Environment {
      */
     private static final String[] KNOWN_PROTOCOLS = new String[] {
         "kubernetes",
+        "mongodb",
+        "mssql",
+        "mysql",
+        "oracle",
+        "postgresql",
         "rdp",
         "ssh",
         "telnet",
