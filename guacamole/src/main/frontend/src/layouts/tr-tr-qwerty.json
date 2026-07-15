@@ -74,6 +74,7 @@
         "Caps" : [{
             "title"    : "Caps",
             "modifier" : "caps",
+            "toggle"   : true,
             "keysym"   : 65509
         }],
         "LAlt" : [{
