@@ -286,6 +286,48 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
 
             };
 
+            /**
+             * Handles the given "paste" event, normalizing clipboard text
+             * before sending it to the remote session.
+             *
+             * @private
+             * @param {!ClipboardEvent} e
+             *     The "paste" event to handle.
+             */
+            target.addEventListener("paste", function(e) {
+
+                if (!e.clipboardData)
+                    return;
+
+                var content = e.clipboardData.getData('text/plain');
+                if (!content)
+                    return;
+
+                // This paste path works with canonical text buffered by the
+                // text input control. Normalize to LF here and let
+                // sendString()/sendCodepoint() map LF to Enter where needed.
+                content = Guacamole.Paste.normalizeToLF(content);
+
+                // Release held modifiers so pasted text isn't treated as
+                // modified input or shortcuts on the remote side.
+                Guacamole.Keyboard.releaseModifiersForSyntheticInput(function(keysym) {
+                    $rootScope.$broadcast('guacSyntheticKeyup', keysym);
+                });
+
+                sendString(content);
+
+                releaseStickyKeys();
+
+                // Reset content
+                resetTextInputTarget(TEXT_INPUT_PADDING);
+                e.preventDefault();
+
+                // Stop propagation defensively in case paste handling is added
+                // on parent elements.
+                e.stopPropagation();
+
+            }, false);
+
             target.addEventListener("input", function(e) {
 
                 // Ignore input events during text composition
