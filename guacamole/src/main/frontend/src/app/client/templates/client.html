@@ -134,6 +134,10 @@
                     <div class="content">
                         <p class="description">{{'CLIENT.HELP_SERIAL' | translate}}</p>
                         <button ng-click="sendSerialBreak()">{{'CLIENT.SERIAL_ACTION_SEND_BREAK' | translate}}</button>
+                        <button ng-click="sendSerialControl('dtr-on')">{{'CLIENT.SERIAL_ACTION_DTR_ON' | translate}}</button>
+                        <button ng-click="sendSerialControl('dtr-off')">{{'CLIENT.SERIAL_ACTION_DTR_OFF' | translate}}</button>
+                        <button ng-click="sendSerialControl('rts-on')">{{'CLIENT.SERIAL_ACTION_RTS_ON' | translate}}</button>
+                        <button ng-click="sendSerialControl('rts-off')">{{'CLIENT.SERIAL_ACTION_RTS_OFF' | translate}}</button>
                     </div>
                 </div>
 

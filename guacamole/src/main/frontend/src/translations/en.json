@@ -160,6 +160,10 @@
         "SECTION_HEADER_MOUSE_MODE"     : "Mouse emulation mode",
         "SECTION_HEADER_SERIAL"        : "Serial Console",
 
+        "SERIAL_ACTION_DTR_OFF"    : "DTR Off",
+        "SERIAL_ACTION_DTR_ON"     : "DTR On",
+        "SERIAL_ACTION_RTS_OFF"    : "RTS Off",
+        "SERIAL_ACTION_RTS_ON"     : "RTS On",
         "SERIAL_ACTION_SEND_BREAK" : "Send Break",
 
         "TEXT_ANONYMOUS_USER_JOINED"      : "An anonymous user has joined the connection.",
@@ -769,6 +773,7 @@
     },
 
     "PROTOCOL_SERIAL" : {
+        "FIELD_HEADER_AUTO_RECONNECT": "Reconnect automatically if the connection drops:",
         "FIELD_HEADER_BACKSPACE": "Backspace key sends:",
         "FIELD_HEADER_BAUD_RATE": "Baud rate:",
         "FIELD_HEADER_BREAK_DURATION": "Break signal duration (ms):",
@@ -783,7 +788,10 @@
         "FIELD_HEADER_FLOW_CONTROL": "Flow control:",
         "FIELD_HEADER_FONT_NAME": "Font name:",
         "FIELD_HEADER_FONT_SIZE": "Font size:",
+        "FIELD_HEADER_HANGUP_ON_CLOSE": "Drop DTR on disconnect (hangup):",
         "FIELD_HEADER_HOSTNAME": "Hostname:",
+        "FIELD_HEADER_LINE_ENDING": "Line ending:",
+        "FIELD_HEADER_LOCAL_ECHO": "Local echo (show typed characters):",
         "FIELD_HEADER_NETWORK_PROTOCOL": "Network protocol:",
         "FIELD_HEADER_PARITY": "Parity:",
         "FIELD_HEADER_PASTE_DELAY": "Paste delay (ms):",
@@ -851,6 +859,10 @@
         "FIELD_OPTION_FONT_SIZE_9": "9",
         "FIELD_OPTION_FONT_SIZE_96": "96",
         "FIELD_OPTION_FONT_SIZE_EMPTY": "",
+        "FIELD_OPTION_LINE_ENDING_CR": "Carriage return (CR)",
+        "FIELD_OPTION_LINE_ENDING_CRLF": "CR+LF",
+        "FIELD_OPTION_LINE_ENDING_EMPTY": "",
+        "FIELD_OPTION_LINE_ENDING_LF": "Line feed (LF)",
         "FIELD_OPTION_NETWORK_PROTOCOL_EMPTY": "",
         "FIELD_OPTION_NETWORK_PROTOCOL_RAW": "Raw TCP",
         "FIELD_OPTION_NETWORK_PROTOCOL_RFC2217": "RFC 2217 (Telnet COM Port Control)",
