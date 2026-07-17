@@ -36,6 +36,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     const ManagedFilesystem      = $injector.get('ManagedFilesystem');
     const ManagedFileUpload      = $injector.get('ManagedFileUpload');
     const ManagedShareLink       = $injector.get('ManagedShareLink');
+    const ManagedAAD             = $injector.get('ManagedAAD');
 
     // Required services
     const $document               = $injector.get('$document');
@@ -278,7 +279,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         this.arguments = template.arguments || {};
 
         /**
-         * Any received pipe streams that have not been consumed by an onpipe
+ * Any received pipe streams that have not been consumed by an onpipe
          * handler or registered pipe handler, indexed by pipe stream name.
          *
          * @type {Object.<String, Object>}
@@ -292,6 +293,16 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          * @type {Object.<String, Function>}
          */
         this.deferredPipeStreamHandlers = template.deferredPipeStreamHandlers || {};
+
+        /**
+         * State tracking Azure AD sign-in for this client. The device code
+         * prompt arrives as an inbound pipe stream with the Azure AD mimetype
+         * and is shown as a QR code; sign-in itself completes out of band (on
+         * the user's phone) while the server polls Azure.
+         *
+         * @type ManagedAAD
+         */
+        this.managedAAD = template.managedAAD || null;
 
     };
 
@@ -443,6 +454,17 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             tunnel : tunnel
         });
 
+        // Set up Azure AD sign-in. The device-code prompt is delivered as a
+        // named pipe stream; register a handler for it with the deferred pipe
+        // stream framework rather than overriding the default onpipe handler.
+        managedClient.managedAAD = ManagedAAD.getInstance(managedClient);
+
+        ManagedClient.registerDeferredPipeHandler(managedClient,
+                ManagedAAD.PIPE_NAME,
+                function aadPromptReceived(stream, mimetype, name) {
+            ManagedAAD.handlePrompt(managedClient.managedAAD, stream, mimetype, name);
+        });
+
         // Fire events for tunnel errors
         tunnel.onerror = function tunnelError(status) {
             $rootScope.$apply(function handleTunnelError() {
@@ -458,6 +480,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             tunnelService.getProtocol(uuid).then(function protocolRetrieved(protocol) {
                 managedClient.protocol = protocol.name;
                 managedClient.forms = protocol.connectionForms;
+                $rootScope.$broadcast('guacClientProtocolAssigned', managedClient);
             }, requestService.WARN);
         };
 
@@ -485,6 +508,10 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
                     // Connection has closed
                     case Guacamole.Tunnel.State.CLOSED:
+                        // Dismiss any sign-in prompt left stranded by the tunnel
+                        // dropping mid-flow
+                        if (managedClient.managedAAD)
+                            ManagedAAD.clear(managedClient.managedAAD);
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.DISCONNECTED);
                         break;
