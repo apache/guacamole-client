@@ -13,7 +13,7 @@
                 {
                     "name"    : "network-protocol",
                     "type"    : "ENUM",
-                    "options" : [ "", "raw", "rfc2217" ]
+                    "options" : [ "", "raw", "rfc2217", "telnet" ]
                 },
                 {
                     "name"    : "auto-reconnect",
