@@ -47,6 +47,19 @@
                 {
                     "name"  : "timeout",
                     "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "reverse-connect",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "bind-address",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "listen-timeout",
+                    "type"  : "NUMERIC"
                 }
             ]
         },
