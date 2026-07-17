@@ -546,6 +546,29 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
     };
 
     /**
+     * Sends the given out-of-band control command to the serial device
+     * associated with the current connection. Has no effect if the current
+     * connection is not using the serial protocol.
+     *
+     * @param {String} command
+     *     The literal text command to send (e.g. "break", "dtr-on",
+     *     "rts-off").
+     */
+    $scope.sendSerialControl = function sendSerialControl(command) {
+        if ($scope.focusedClient)
+            ManagedClient.sendSerialControl($scope.focusedClient, command);
+    };
+
+    /**
+     * Sends a break signal to the serial device associated with the current
+     * connection. Has no effect if the current connection is not using the
+     * serial protocol.
+     */
+    $scope.sendSerialBreak = function sendSerialBreak() {
+        $scope.sendSerialControl('break');
+    };
+
+    /**
      * Returns whether the current connection has any associated share links.
      *
      * @returns {Boolean}
