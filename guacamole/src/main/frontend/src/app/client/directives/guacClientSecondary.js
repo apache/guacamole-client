@@ -140,16 +140,6 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
          */
         let suppressSendUntil = 0;
 
-        /**
-         * The maximum width or height, in pixels, that will be requested for
-         * this monitor. Matches the QXL per-head EDID maximum so that requested
-         * and actual sizes converge rather than the guest silently capping an
-         * over-large request. See guacClient (primary) for details.
-         *
-         * @type Number
-         */
-        const MAX_MONITOR_DIMENSION = 2560;
-
         // Suppress the resize echo produced when the server resizes this display
         display.onresize = function displayResized() {
             suppressSendUntil = Date.now() + 700;
@@ -176,23 +166,9 @@ angular.module('client').directive('guacClientSecondary', [function guacClient()
                     return;
                 }
 
-                const basePixelDensity = $window.devicePixelRatio || 1;
-                let otherWidths = 0;
-                const monitorsInfos = guacManageMonitor.getMonitorsInfos();
-                const currentMonitorId = guacManageMonitor.monitorId;
-                if (monitorsInfos && monitorsInfos.details) {
-                    for (const [id, details] of Object.entries(monitorsInfos.details)) {
-                        if (String(id) !== String(currentMonitorId)) {
-                            otherWidths += details.width || 0;
-                        }
-                    }
-                }
-                const maxAllowedSingleDPR = MAX_MONITOR_DIMENSION / main.offsetWidth;
-                const maxAllowedCombinedDPR = (4096 - otherWidths) / main.offsetWidth;
-                const pixelDensity = Math.max(1, Math.min(basePixelDensity, maxAllowedSingleDPR, maxAllowedCombinedDPR));
-
-                const width  = Math.min(main.offsetWidth  * pixelDensity, MAX_MONITOR_DIMENSION);
-                const height = Math.min(main.offsetHeight * pixelDensity, MAX_MONITOR_DIMENSION);
+                const pixelDensity = $window.devicePixelRatio ?? 1;
+                const width  = main.offsetWidth  * pixelDensity;
+                const height = main.offsetHeight * pixelDensity;
                 const top    = window.screenY;
                 const left   = window.screenX;
 

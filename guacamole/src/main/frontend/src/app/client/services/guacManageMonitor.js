@@ -743,17 +743,7 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
 
     }
 
-    /**
-     * Return the current monitorsInfos object.
-     *
-     * @returns {Object}
-     *     The monitorsInfos object.
-     */
-    service.getMonitorsInfos = function getMonitorsInfos() {
-        return monitorsInfos;
-    };
-
-    // Close additional monitors when window is unloaded
+        // Close additional monitors when window is unloaded
     $window.addEventListener('unload', service.closeAllMonitors);
 
     return service;

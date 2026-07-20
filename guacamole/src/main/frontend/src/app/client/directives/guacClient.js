@@ -530,18 +530,6 @@ angular.module('client').directive('guacClient', [function guacClient() {
         let suppressSendUntil = 0;
 
         /**
-         * The maximum width or height, in pixels, that will be requested for a
-         * single monitor. The QXL virtual GPU used by SPICE guests advertises a
-         * per-head EDID maximum (typically 2560x1600); requesting a larger mode
-         * is silently capped by the guest, so the requested and actual sizes
-         * never converge and the display keeps resizing. Capping the request to
-         * this bound keeps the requested size within what the guest can honor.
-         *
-         * @type Number
-         */
-        const MAX_MONITOR_DIMENSION = 2560;
-
-        /**
          * Sends the current size of the main element (the display container)
          * to the Guacamole server, requesting that the remote display be
          * resized. If the Guacamole client is not yet connected, it will be
@@ -576,24 +564,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
                         return;
                     }
 
-                    const basePixelDensity = $window.devicePixelRatio || 1;
-                    let otherWidths = 0;
-                    const monitorsInfos = guacManageMonitor.getMonitorsInfos();
-                    if (monitorsInfos && monitorsInfos.details) {
-                        for (const [id, details] of Object.entries(monitorsInfos.details)) {
-                            if (String(id) !== "0") {
-                                otherWidths += details.width || 0;
-                            }
-                        }
-                    }
-                    const maxAllowedSingleDPR = MAX_MONITOR_DIMENSION / main.offsetWidth;
-                    const maxAllowedCombinedDPR = (4096 - otherWidths) / main.offsetWidth;
-                    const pixelDensity = Math.max(1, Math.min(basePixelDensity, maxAllowedSingleDPR, maxAllowedCombinedDPR));
-
-                    // Cap each dimension to what the guest can actually honor so
-                    // the requested and actual sizes converge
-                    const width    = Math.min(main.offsetWidth  * pixelDensity, MAX_MONITOR_DIMENSION);
-                    const height   = Math.min(main.offsetHeight * pixelDensity, MAX_MONITOR_DIMENSION);
+                    const pixelDensity = $window.devicePixelRatio ?? 1;
+                    const width    = main.offsetWidth  * pixelDensity;
+                    const height   = main.offsetHeight * pixelDensity;
                     const top      = window.screenY;
                     const left     = window.screenX;
 
