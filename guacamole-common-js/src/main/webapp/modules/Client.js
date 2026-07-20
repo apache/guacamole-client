@@ -358,14 +358,30 @@ Guacamole.Client = function(tunnel) {
      *
      * @param {!number} top_offset
      *     The top offset of the screen, in pixel.
+     *
+     * @param {number} [left_offset]
+     *     The left offset of the screen, in pixels, relative to the primary
+     *     monitor. Optional: when omitted the argument is not sent, and the
+     *     server derives the horizontal position from the widths of the
+     *     preceding monitors, which is only correct for a gapless
+     *     left-to-right row. Supplying it allows any arrangement, including a
+     *     vertical stack, to be described.
      */
-    this.sendSize = function sendSize(width, height, x_position, top_offset) {
+    this.sendSize = function sendSize(width, height, x_position, top_offset,
+            left_offset) {
 
         // Do not send requests if not connected
         if (!isConnected())
             return;
 
-        tunnel.sendMessage("size", width, height, x_position, top_offset);
+        // Omit the left offset entirely when it is not known, rather than
+        // sending a placeholder: the server distinguishes "not supplied" from
+        // any real coordinate, including zero and negative values
+        if (left_offset === undefined || left_offset === null)
+            tunnel.sendMessage("size", width, height, x_position, top_offset);
+        else
+            tunnel.sendMessage("size", width, height, x_position, top_offset,
+                    left_offset);
 
     };
 

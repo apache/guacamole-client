@@ -515,7 +515,8 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
                 details.width,
                 details.height,
                 monitorsInfos.map[id],
-                getTopOffset(id, details.top)
+                getTopOffset(id, details.top),
+                getLeftOffset(id, details.left)
             );
         }
     }
@@ -543,6 +544,34 @@ angular.module('client').factory('guacManageMonitor', ['$injector',
             return 0;
 
         return top - Math.abs(monitorsInfos.details[primaryMonitorId].top ?? 0);
+    }
+
+    /**
+     * Get the left offset of the given monitor id and left value based on the
+     * primary monitor's left value. The left offset is the difference between
+     * the left value of the monitor and the left value of the primary monitor.
+     * This is used to calculate the X offset to send to guacd.
+     *
+     * Note the sign is preserved: a monitor placed to the left of the primary
+     * has a negative offset, which the server accepts.
+     *
+     * @param {number} id
+     *     The id of the monitor.
+     * @param {number} left
+     *     The left value of the monitor.
+     *
+     * @return {number}
+     *     The left offset of the monitor, in pixels.
+     */
+    function getLeftOffset(id, left) {
+
+        const primaryMonitorId = 0;
+
+        // If this is the primary monitor, return 0
+        if (id === primaryMonitorId)
+            return 0;
+
+        return left - (monitorsInfos.details[primaryMonitorId]?.left ?? 0);
     }
 
     /**
