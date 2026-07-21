@@ -41,7 +41,7 @@ public class HostRestrictionField extends Field {
      * 
      */
     public HostRestrictionField(String name) {
-        super(name, FIELD_TYPE);
+        super(name, FIELD_TYPE, Field.Autocomplete.OFF);
     }
     
 }

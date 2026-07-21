@@ -112,7 +112,7 @@ public class AuthenticationProviderService {
         // We have the required attributes - convert to strings and then generate the additional login box/field
         String replyMsg = replyAttr.getValue().toString();
         String radiusState = BaseEncoding.base16().encode(stateAttr.getValue().getBytes());
-        Field radiusResponseField = new PasswordField(CHALLENGE_RESPONSE_PARAM);
+        Field radiusResponseField = new PasswordField(CHALLENGE_RESPONSE_PARAM, Field.Autocomplete.ONE_TIME_PASSWORD);
         Field radiusStateField = new RadiusStateField(radiusState);
 
         // Return the GuacamoleRadiusChallenge object that has the state
