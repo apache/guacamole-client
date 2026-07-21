@@ -4,6 +4,9 @@
 
     "APP" : {
 
+        "NAME"    : "Apache Guacamole",
+        "VERSION" : "${project.version}",
+
         "ACTION_ACKNOWLEDGE"        : "ОК",
         "ACTION_CANCEL"             : "Отмена",
         "ACTION_CLONE"              : "Клонировать",
@@ -32,18 +35,22 @@
         "ERROR_PAGE_UNAVAILABLE"  : "Произошла ошибка, действие не может быть завершено. Если проблема будет повторяться, обратитесь к системному администратору или проверьте системные журналы.",
         "ERROR_PASSWORD_BLANK"    : "Пароль не может быть пустым.",
         "ERROR_PASSWORD_MISMATCH" : "Указанные пароли не совпадают.",
+        "ERROR_SINGLE_FILE_ONLY"  : "Пожалуйста, загружайте только один файл за раз",
 
         "FIELD_HEADER_PASSWORD"       : "Пароль:",
         "FIELD_HEADER_PASSWORD_AGAIN" : "Повтор пароля:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "Разрешить запись в существующий файл записи:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "Разрешить запись в существующий файл typescript:",
 
         "FIELD_PLACEHOLDER_FILTER" : "Фильтр",
 
         "FORMAT_DATE_TIME_PRECISE" : "dd.MM.yyyy HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "Сейчас в системе {USERS} {USERS, plural, one{пользователь} few{пользователя} many{пользователей} other{пользователя}}.",
+        "INFO_LOGGED_OUT"        : "Вы вышли из системы.",
 
         "TEXT_ANONYMOUS_USER"   : "Аноним",
-        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} few{секуны} many{секунд} other{секуны}}} minute{{VALUE, plural, one{минута} few{минуты} many{минут} other{минуты}}} hour{{VALUE, plural, one{час} few{часа} many{часов} other{часа}}} day{{VALUE, plural, one{день} few{дня} many{дней} other{дня}}} other{}}"
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{секунда} few{секунды} many{секунд} other{секунды}}} minute{{VALUE, plural, one{минута} few{минуты} many{минут} other{минуты}}} hour{{VALUE, plural, one{час} few{часа} many{часов} other{часа}}} day{{VALUE, plural, one{день} few{дня} many{дней} other{дня}}} other{}}"
 
     },
 
@@ -52,14 +59,15 @@
         "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CLEAR_COMPLETED_TRANSFERS" : "Очистить",
         "ACTION_DISCONNECT"                : "Отключиться",
+        "ACTION_FULLSCREEN"                : "Полноэкранный",
         "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
         "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
         "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_RECONNECT"                 : "Переподключиться",
         "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
         "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SHOW_CLIPBOARD"            : "Щелкните, чтобы просмотреть содержимое буфера обмена.",
         "ACTION_UPLOAD_FILES"              : "Загрузка файлов",
-
         "DIALOG_HEADER_CONNECTING"       : "Подключение",
         "DIALOG_HEADER_CONNECTION_ERROR" : "Ошибка подключения",
         "DIALOG_HEADER_DISCONNECTED"     : "Отключено",
@@ -103,6 +111,7 @@
         "ERROR_UPLOAD_31D"     : "Слишком много файлов уже передается в настоящий момент. Подождите завершения текущих передач и повторите попытку снова.",
         "ERROR_UPLOAD_DEFAULT" : "Соединение было прервано из-за внутренней ошибки сервера Guacamole. Пожалуйста, попробуйте повторить попытку позднее или обратитесь к администратору.",
 
+
         "HELP_CLIPBOARD"           : "Текст, скопированный или вырезанный внутри сеанса, появится в этом поле. Изменение текста в этом поле также отобразится в буфере обмена удаленного рабочего стола.",
         "HELP_INPUT_METHOD_NONE"   : "Никакой метод ввода не используется. Ввод разрешен только для физической клавиатуры.",
         "HELP_INPUT_METHOD_OSK"    : "Отображать и принимать ввод со встроенной экранной клавиатуры. Экранная клавиатура позволяет вводить любые комбинации, недоступные в других режимах (например Alt-Ctrl-Del).",
@@ -121,6 +130,7 @@
         "NAME_MOUSE_MODE_ABSOLUTE" : "Тачскрин",
         "NAME_MOUSE_MODE_RELATIVE" : "Тачпад",
 
+        "SECTION_HEADER_CLIENT_MESSAGES" : "Сообщения",
         "SECTION_HEADER_CLIPBOARD"      : "Буфер обмена",
         "SECTION_HEADER_DEVICES"        : "Устройства",
         "SECTION_HEADER_DISPLAY"        : "Экран",
@@ -128,12 +138,16 @@
         "SECTION_HEADER_INPUT_METHOD"   : "Метод ввода",
         "SECTION_HEADER_MOUSE_MODE"     : "Режим эмуляции мыши",
 
+        "TEXT_ANONYMOUS_USER_JOINED"      : "К подключению присоединился анонимный пользователь.",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "Анонимный пользователь прервал соединение.",
         "TEXT_ZOOM_AUTO_FIT"              : "Автоматически умещать в браузере",
         "TEXT_CLIENT_STATUS_IDLE"         : "Бездействие.",
         "TEXT_CLIENT_STATUS_CONNECTING"   : "Подключение к Guacamole...",
         "TEXT_CLIENT_STATUS_DISCONNECTED" : "Вы были отключены.",
         "TEXT_CLIENT_STATUS_UNSTABLE"     : "Сетевое соединение с сервером Guacamole нестабильно.",
         "TEXT_CLIENT_STATUS_WAITING"      : "Подключено к Guacamole. Ожидание ответа...",
+        "TEXT_USER_JOINED"                : "{USERNAME} подключился к соединению.",
+        "TEXT_USER_LEFT"                  : "{USERNAME} прервал связь.",
         "TEXT_RECONNECT_COUNTDOWN"        : "Переподключение через {REMAINING} {REMAINING, plural, one{секунду} few{секунды} many{секунд} other{секунды}}...",
         "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
 
@@ -147,14 +161,80 @@
         "ACTION_HIDE_DETAILS" : "Спрятать",
         "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
         "ACTION_SHOW_DETAILS" : "Показать",
-
         "FIELD_HEADER_BACKGROUND" : "Цвет фона",
         "FIELD_HEADER_FOREGROUND" : "Основной цвет",
-
         "FIELD_OPTION_CUSTOM" : "Выбрать...",
-
         "SECTION_HEADER_DETAILS" : "Подробно:"
 
+    },
+
+    "IMPORT": {
+
+        "ACTION_BROWSE"             : "Просмотреть файлы",
+        "ACTION_VIEW_FORMAT_HELP"   : "Советы по форматированию просмотра",
+        "ACTION_IMPORT_CONNECTIONS" : "Импорт подключений",
+
+        "DIALOG_HEADER_SUCCESS" : "Успшно",
+
+        "ERROR_AMBIGUOUS_CSV_HEADER"         : "Неоднозначный заголовок CSV \"{HEADER}\" может быть либо атрибутом соединения, либо параметром",
+        "ERROR_AMBIGUOUS_PARENT_GROUP"       : "Идентификатор группы и родительский идентификатор не могут быть указаны одновременно",
+        "ERROR_ARRAY_REQUIRED"               : "Предоставленный файл должен содержать список подключений",
+        "ERROR_DETECTED_INVALID_TYPE"        : "Неподдерживаемый тип файла. Пожалуйста, убедитесь, что файл имеет формат CSV, JSON, или YAML.",
+        "ERROR_DUPLICATE_CONNECTION_IN_FILE" : "Продублированное соединение \"{NAME}\" из \"{PATH}\" в файле импорта",
+        "ERROR_DUPLICATE_CSV_HEADER"         : "Продублированный CSV заголовок: {HEADER}",
+        "ERROR_EMPTY_FILE"                   : "Предоставленный файл пуст",
+        "ERROR_INVALID_CSV_HEADER"           : "Недействительный CSV заголовок \"{HEADER}\" не является ни атрибутом, ни параметром",
+        "ERROR_INVALID_MIME_TYPE"            : "Неподдерживаемый тип файла: \"{TYPE}\"",
+        "ERROR_INVALID_GROUP"                : "Соответственные группы \"{GROUP}\" не найдены",
+        "ERROR_INVALID_GROUP_IDENTIFIER"     : "Не найдена группа соединений с идентификатором \"{IDENTIFIER}\" ",
+        "ERROR_INVALID_GROUP_TYPE"           : "Недопустимая группа - должна быть строкой.",
+        "ERROR_INVALID_PROTOCOL"             : "Недействительный протокол \"{PROTOCOL}\"",
+        "ERROR_INVALID_USER_GROUPS_TYPE"     : "Недопустимые группы пользователей - должен быть массив идентификаторов групп пользователей.",
+        "ERROR_INVALID_USERS_TYPE"           : "Недопустимые пользователи - должен быть массив идентификаторов пользователей.",
+        "ERROR_NO_FILE_SUPPLIED"             : "Пожалуйста, выберите файл для импорта",
+        "ERROR_PARSE_FAILURE_CSV"            : "Пожалуйста, убедитесь, что ваш файл имеет формат CSV. При синтаксическом анализе произошла ошибка \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_JSON"           : "Пожалуйста, убедитесь, что ваш файл имеет формат JSON. При синтаксическом анализе произошла ошибка \"{ERROR}\". ",
+        "ERROR_PARSE_FAILURE_YAML"           : "Пожалуйста, убедитесь, что ваш файл имеет формат YAML. При синтаксическом анализе произошла ошибка \"{ERROR}\". ",
+        "ERROR_REJECT_UPDATE_CONNECTION"     : "Соединение  \"{NAME}\" уже существует по адресу \"{PATH}\"",
+        "ERROR_REQUIRED_NAME_CONNECTION"     : "Требуется указать имя подключения",
+        "ERROR_REQUIRED_PROTOCOL_CONNECTION" : "Требуется протокол подключения",
+        "ERROR_REQUIRED_NAME_FILE"           : "В предоставленном файле не найдено имя подключения",
+        "ERROR_REQUIRED_PROTOCOL_FILE"       : "В предоставленном файле не найден протокол подключения",
+
+
+
+        "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Заменить/Обновить существующие соединения",
+        "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "Сброс разрешений",
+
+        "HELP_CSV_DESCRIPTION"              : "В CSV-файле импорта соединений содержится одна запись о соединении в строке. В каждом столбце будет указано поле для подключения. Как минимум, необходимо указать имя соединения и протокол.",
+
+        "HELP_CSV_MORE_DETAILS"             : "Заголовок CSV для каждой строки указывает поле подключения. Идентификатор группы подключений, в которую должно быть импортировано соединение, может быть указан непосредственно с помощью \"parentIdentifier\", или путь к родительской группе может быть указан с помощью \"group\" как показано ниже. В большинстве случаев между полями не должно быть конфликтов, но при необходимости для устранения неоднозначности можно добавить суффикс \" (attribute)\" или \" (parameter)\". Списки идентификаторов пользователей или групп пользователей должны быть разделены точкой с запятой.¹",
+        "HELP_FILE_TYPE_DESCRIPTION"        : "Для импорта подключений поддерживаются три типа файлов: CSV, JSON, and YAML. Для каждого типа файла могут быть указаны одни и те же данные. Они должны включать имя соединения и протокол. При желании также можно указать местоположение группы соединений, список пользователей и/или групп пользователей, которым предоставляется доступ, параметры соединения или протоколы подключения. Все пользователи или группы пользователей, которых нет в текущем источнике данных, будут созданы автоматически. Обратите внимание, что все существующие разрешения на подключение не будут удалены для обновленных подключений, если только установлен \"Reset permissions\".",
+        "HELP_FILE_TYPE_HEADER"             : "Типы файлов",
+        "HELP_JSON_DESCRIPTION"             : "JSON-файл импорта соединения представляет собой список объектов подключения. Как минимум, в каждом объекте подключения должны быть указаны имя соединения и протокол.",
+
+        "HELP_JSON_MORE_DETAILS"            : "Идентификатор группы соединений, в которую должно быть импортировано соединение, может быть непосредственно задан с помощью поля \"parentIdentifier\", или путь к родительской группе может быть указан с помощью \"group\" поля, как показано ниже. Для каждого соединения может быть указан массив идентификаторов пользователя и группы пользователей, которым предоставляется доступ.",
+        "HELP_EXISTING_CONNECTION_MODE"     : "Полностью замените/обновите существующие соединения, если их имена и родительские группы соединений соответствуют значениям в предоставленном файле. Если флажок не установлен, попытка импортировать соединение с таким же именем и родительской группой соединений существующего соединения будет считаться ошибкой.",
+        "HELP_EXISTING_PERMISSION_MODE"     : "Полностью восстановите разрешения, предоставленные для всех подключений в предоставленном файле, до разрешений, указанных в этом файле. Если разрешения не указаны, все соответствующие разрешения на подключение будут отозваны. Если флажок не установлен, существующие разрешения сохраняются, а все разрешения, указанные в файле, будут добавлены.",
+        "HELP_SEMICOLON_FOOTNOTE"           : "Если точка с запятой присутствует, ее можно экранировать обратной косой чертой, например \"first\\\\;last\"",
+        "HELP_UPLOAD_DROP_TITLE"            : "Скиньте файл сюда",
+
+        "HELP_YAML_DESCRIPTION"             : "Файл YAML для импорта соединений представляет собой список объектов соединений с точно такой же структурой, как и в формате JSON.",
+
+
+        "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "{NUMBER} {NUMBER, plural, one{connection} other{connections}} успешно импортирован.",
+
+        "SECTION_HEADER_CONNECTION_IMPORT"           : "Импорт соединений",
+        "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "Формат файла импорта соединения",
+        "SECTION_HEADER_CSV"                         : "CSV Формат",
+        "SECTION_HEADER_JSON"                        : "JSON Формат",
+        "SECTION_HEADER_YAML"                        : "YAML Формат",
+
+        "TABLE_HEADER_ERRORS"     : "Ошибки",
+        "TABLE_HEADER_GROUP"      : "Группа",
+        "TABLE_HEADER_NAME"       : "Имя",
+        "TABLE_HEADER_PROTOCOL"   : "Протокол",
+        "TABLE_HEADER_ROW_NUMBER" : "Строка #"
     },
 
     "DATA_SOURCE_DEFAULT" : {
@@ -369,8 +449,26 @@
         "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Дочерние группы",
         "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
         "SECTION_HEADER_USER_GROUPS"         : "Родительские группы",
-
         "TEXT_CONFIRM_DELETE" : "Группы не могут быть восстановлены после удаления. Вы уверены, что хотите удалить группу?"
+
+    },
+
+    "PLAYER" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_CLOSE"        : "Close",
+        "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
+        "ACTION_SHOW_KEY_LOG" : "Keystroke Log",
+
+        "INFO_FRAME_EVENTS_LEGEND" : "Активность на экране",
+        "INFO_KEY_EVENTS_LEGEND"   : "Работа с клавиатурой",
+        "INFO_LOADING_RECORDING"   : "Сейчас загружается ваша запись. Пожалуйста, подождите...",
+        "INFO_NO_KEY_LOG"          : "Журнал нажатий клавиш недоступен",
+        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} {RESULTS, plural, one{Match} other{Matches}}",
+        "INFO_SEEK_IN_PROGRESS"    : "Поиск запрошенной позиции. Пожалуйста, подождите...",
+
+        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
 
     },
 
