@@ -125,6 +125,7 @@
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
+        "HELP_AAD_SIGN_IN"         : "This connection requires you to sign in with Azure AD. Scan the QR code with your phone to continue.",
         "HELP_CLIPBOARD"           : "Text copied/cut within Guacamole will appear here. Changes to the text below will affect the remote clipboard.",
         "HELP_INPUT_METHOD_NONE"   : "No input method is used. Keyboard input is accepted from a connected, physical keyboard.",
         "HELP_INPUT_METHOD_OSK"    : "Display and accept input from the built-in Guacamole on-screen keyboard. The on-screen keyboard allows typing of key combinations that may otherwise be impossible (such as Ctrl-Alt-Del).",
@@ -134,6 +135,8 @@
         "HELP_MOUSE_MODE_RELATIVE" : "Drag to move the mouse pointer and tap to click. The click occurs at the location of the pointer.",
         "HELP_SHARE_LINK"          : "The current connection is being shared, and can be accessed by anyone with the following {LINKS, plural, one{link} other{links}}:",
 
+        "INFO_AAD_SIGN_IN_CODE"         : "Then enter the code:",
+        "INFO_AAD_SIGN_IN_INSTRUCTIONS" : "Or, on another device, go to:",
         "INFO_ANONYMOUS_USER_COUNT" : "Anonymous{COUNT, plural, one{} other{ (#)}}",
         "INFO_CONNECTION_SHARED"    : "This connection is now shared.",
         "INFO_NO_FILE_TRANSFERS"    : "No file transfers.",
@@ -601,6 +604,9 @@
 
     "PROTOCOL_RDP" : {
 
+        "FIELD_HEADER_AAD_CLIENT_ID"         : "Azure AD application (client) ID (optional):",
+        "FIELD_HEADER_AAD_SCOPE"             : "Azure AD scope (optional):",
+        "FIELD_HEADER_AAD_TENANT_ID"         : "Azure AD tenant (directory) ID (optional):",
         "FIELD_HEADER_CERT_TOFU"             : "Trust host certificate on first use:",
         "FIELD_HEADER_CERT_FINGERPRINTS"     : "Fingerprints of trusted host certificates:",
         "FIELD_HEADER_CLIENT_NAME"           : "Client name:",
@@ -719,6 +725,7 @@
         "FIELD_OPTION_SECURITY_RDP"   : "RDP encryption",
         "FIELD_OPTION_SECURITY_TLS"   : "TLS encryption",
         "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
+        "FIELD_OPTION_SECURITY_AAD"   : "Azure AD (AAD)",
 
         "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Czech (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danish (Qwerty)",
