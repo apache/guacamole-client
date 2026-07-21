@@ -34,14 +34,16 @@ Guacamole.Display = function() {
      * Reference to this Guacamole.Display.
      * @private
      */
-    var guac_display = this;
+    const guac_display = this;
 
-    var displayWidth = 0;
-    var displayHeight = 0;
-    var displayScale = 1;
+    let displayWidth = 0;
+    let displayHeight = 0;
+    let monitorWidth = null;
+    let monitorHeight = null;
+    let displayScale = 1;
 
     // Create display
-    var display = document.createElement("div");
+    const display = document.createElement("div");
     display.style.position = "relative";
     display.style.width = displayWidth + "px";
     display.style.height = displayHeight + "px";
@@ -740,7 +742,7 @@ Guacamole.Display = function() {
      * @param {!number} y
      *     The Y coordinate to move the cursor to.
      */
-    this.moveCursor = function(x, y) {
+    this.moveCursor = function moveCursor(x, y) {
 
         // Move cursor layer
         cursor.translate(x - guac_display.cursorHotspotX,
@@ -751,6 +753,19 @@ Guacamole.Display = function() {
         guac_display.cursorY = y;
 
     };
+
+    /**
+     * Set the current monitor size.
+     * 
+     * @param {!number} width
+     *     The width of the monitor, in pixels.
+     * @param {!number} height
+     *     The height of the monitor, in pixels.
+     */
+    this.setMonitorSize = function setMonitorSize(width, height) {
+        monitorWidth = width;
+        monitorHeight = height;
+    }
 
     /**
      * Changes the size of the given Layer to the given width and height.
@@ -768,6 +783,14 @@ Guacamole.Display = function() {
      */
     this.resize = function(layer, width, height) {
         scheduleTask(function __display_resize() {
+
+            // Adjust width when using multiple monitors
+            if (monitorWidth)
+                width = monitorWidth;
+
+            // Adjust height when using multiple monitors
+            if (monitorHeight)
+                height = monitorHeight;
 
             layer.resize(width, height);
 

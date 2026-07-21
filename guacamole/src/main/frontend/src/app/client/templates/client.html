@@ -109,6 +109,16 @@
                     </div>
                 </div>
 
+                <!-- Multi monitor -->
+                <div class="menu-section" id="multi-monitor" ng-if="showAddMonitor()">
+                    <h3>{{'CLIENT.SECTION_HEADER_MULTI_MONITOR' | translate}}</h3>
+                    <div class="content">
+                        <div class="add-monitor" ng-class="{'disabled': disableAddMonitor}" ng-click="addMonitor()">
+                             {{'CLIENT.ACTION_ADD_MONITOR' | translate}}
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Devices -->
                 <div class="menu-section" id="devices" ng-if="focusedClient.filesystems.length">
                     <h3>{{'CLIENT.SECTION_HEADER_DEVICES' | translate}}</h3>
