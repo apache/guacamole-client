@@ -31,7 +31,7 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
      * Object which serves as a surrogate interface, encapsulating a Guacamole
      * filesystem object while it is active, allowing it to be detached and
      * reattached from different client views.
-     * 
+     *
      * @constructor
      * @param {ManagedFilesystem|Object} [template={}]
      *     The object whose properties should be copied within the new
@@ -147,13 +147,26 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
                         if (mimetypes[name] === Guacamole.Object.STREAM_INDEX_MIMETYPE)
                             type = ManagedFilesystem.File.Type.DIRECTORY;
 
+                        // try deserialization fileJSON String to fileObject
+                        var size = 0;
+                        var permission = null;
+                        try {
+                            var fileObj = JSON.parse(mimetypes[name])
+                            size = fileObj.size || 0;
+                            if (fileObj.perm) {
+                                permission = ManagedFilesystem.permissionTranslate(fileObj.perm);
+                            }
+                        } catch (e) {
+                            return false;
+                        }
+
                         // Add file entry
                         file.files[filename] = new ManagedFilesystem.File({
-                            mimetype   : mimetypes[name],
-                            streamName : name,
-                            type       : type,
-                            parent     : file,
-                            name       : filename
+                            mimetype: mimetypes[name],
+                            streamName: name,
+                            type: type,
+                            parent: file,
+                            name: filename
                         });
 
                     }
@@ -334,6 +347,72 @@ angular.module('client').factory('ManagedFilesystem', ['$rootScope', '$injector'
         DIRECTORY : 'DIRECTORY'
 
     };
+
+    /**
+     * translate the permission number to the permission string
+     *
+     * @param {Number} permission
+     */
+    ManagedFilesystem.permissionTranslate = function permissionTranslate(permission) {
+
+        var Ow_R = 256;
+        var Ow_W = 128;
+        var Ow_X = 64;
+        var Gp_R = 32;
+        var Gp_W = 16;
+        var Gp_X = 8;
+        var Ot_R = 4;
+        var Ot_W = 2;
+        var Ot_X = 1;
+
+        let res = '';
+        if ((permission & Ow_R) === Ow_R) {
+            res += 'r';
+        } else {
+            res += '-';
+        }
+        if ((permission & Ow_W) === Ow_W) {
+            res += 'w';
+        } else {
+            res += '-';
+        }
+        if ((permission & Ow_X) === Ow_X) {
+            res += 'x';
+        } else {
+            res += '-';
+        }
+        if ((permission & Gp_R) === Gp_R) {
+            res += 'r';
+        } else {
+            res += '-';
+        }
+        if ((permission & Gp_W) === Gp_W) {
+            res += 'w';
+        } else {
+            res += '-';
+        }
+        if ((permission & Gp_X) === Gp_X) {
+            res += 'x';
+        } else {
+            res += '-';
+        }
+        if ((permission & Ot_R) === Ot_R) {
+            res += 'r';
+        } else {
+            res += '-';
+        }
+        if ((permission & Ot_W) === Ot_W) {
+            res += 'w';
+        } else {
+            res += '-';
+        }
+        if ((permission & Ot_X) === Ot_X) {
+            res += 'x';
+        } else {
+            res += '-';
+        }
+        return res;
+    }
 
     return ManagedFilesystem;
 
