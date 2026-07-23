@@ -67,6 +67,11 @@ public class GuacamoleSession {
     private final ListenerService listenerService;
 
     /**
+     * If the session has just authenticated, allow a redirection to be applied
+     */
+    private String redirection;
+
+    /**
      * The last time this session was accessed.
      */
     private long lastAccessedTime;
@@ -96,6 +101,7 @@ public class GuacamoleSession {
         this.listenerService = listenerService;
         this.authenticatedUser = authenticatedUser;
         this.userContexts = userContexts;
+        this.redirection = null;
     }
 
     /**
@@ -121,6 +127,32 @@ public class GuacamoleSession {
     public void setAuthenticatedUser(AuthenticatedUser authenticatedUser) {
         this.access();
         this.authenticatedUser = authenticatedUser;
+    }
+
+    /**
+     * Returns a redirection path for newly authenticated users, allowing
+     * redirection to where they left off when an authentication was
+     * requested.
+     *
+     * @return
+     *      A String with the redirection path
+     */
+    public String getRedirection() {
+        this.access();
+        return this.redirection;
+    }
+
+    /**
+     * Returns a redirection path for newly authenticated users, allowing
+     * redirection to where they left off when an authentication was
+     * requested.
+     *
+     * @return
+     *      A String with the redirection path
+     */
+    public void setRedirection(String redirection) {
+        this.access();
+        this.redirection = redirection;
     }
 
     /**

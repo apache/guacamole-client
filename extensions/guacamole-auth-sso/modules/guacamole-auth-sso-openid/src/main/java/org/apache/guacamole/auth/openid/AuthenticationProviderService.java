@@ -33,6 +33,8 @@ import org.apache.guacamole.auth.openid.token.TokenValidationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
+import org.apache.guacamole.auth.sso.session.SSOAuthenticationSession;
+import org.apache.guacamole.auth.sso.session.SSOAuthenticationSessionManager;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.RedirectField;
@@ -67,6 +69,12 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     private NonceService nonceService;
 
     /**
+     * Manager of active OpenID authentication attempts. Tracks redirection
+     */
+    @Inject
+    private SSOAuthenticationSessionManager sessionManager;
+
+    /**
      * Service for validating received ID tokens.
      */
     @Inject
@@ -78,6 +86,25 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     @Inject
     private Provider<SSOAuthenticatedUser> authenticatedUserProvider;
 
+    /**
+     * Return the value of the session identifier associated with the given
+     * credentials, or null if no session identifier is found in the
+     * credentials.
+     *
+     * @param credentials
+     *     The credentials from which to extract the session identifier.
+     *
+     * @return
+     *     The session identifier associated with the given credentials, or
+     *     null if no identifier is found.
+     */
+    private static String getSessionIdentifier(Credentials credentials) {
+
+        // Return the session identifier from the request params, if set, or
+        // null otherwise
+        return credentials != null ? credentials.getParameter("state") : null;
+    }
+
     @Override
     public SSOAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
@@ -85,6 +112,10 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         String username = null;
         Set<String> groups = null;
         Map<String,String> tokens = Collections.emptyMap();
+
+        // Recover session
+        String identifier = getSessionIdentifier(credentials);
+        SSOAuthenticationSession session = sessionManager.resume(identifier);        
 
         // Validate OpenID token in request, if present, and derive username
         String token = credentials.getParameter(TOKEN_PARAMETER_NAME);
@@ -104,6 +135,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
             // Create corresponding authenticated user
             SSOAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(username, credentials, groups, tokens);
+            if (session != null) {
+                authenticatedUser.setOriginalUri(session.getRedirection());
+            }
             return authenticatedUser;
 
         }
@@ -112,7 +146,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         // OpenID authorization page via JavaScript)
         throw new GuacamoleInvalidCredentialsException("Invalid login.",
             new CredentialsInfo(Arrays.asList(new Field[] {
-                new RedirectField(TOKEN_PARAMETER_NAME, getLoginURI(),
+                new RedirectField(TOKEN_PARAMETER_NAME, getLoginURI(credentials),
                         new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
             }))
         );
@@ -121,12 +155,24 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
     @Override
     public URI getLoginURI() throws GuacamoleException {
+        return getLoginURI(null);
+    }
+
+    private URI getLoginURI(Credentials credentials) throws GuacamoleException {
+        // Create a session to store redirection, validity 10 miinutes
+        SSOAuthenticationSession session = new SSOAuthenticationSession(600000L);
+        if (credentials != null) {
+            session.setRedirection(credentials);
+        }
+        String identifier = sessionManager.defer(session);
+
         return UriBuilder.fromUri(confService.getAuthorizationEndpoint())
                 .queryParam("scope", confService.getScope())
                 .queryParam("response_type", "id_token")
                 .queryParam("client_id", confService.getClientID())
                 .queryParam("redirect_uri", confService.getRedirectURI())
                 .queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L))
+                .queryParam("state", identifier)
                 .build();
     }
 

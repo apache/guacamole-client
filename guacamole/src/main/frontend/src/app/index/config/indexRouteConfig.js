@@ -79,10 +79,10 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
 
         // Re-authenticate including any parameters in URL
         $injector.invoke(updateCurrentToken)
-        .then(function tokenUpdateComplete() {
+        .then(function tokenUpdateComplete(data) {
 
             // Redirect to home page
-            userPageService.getHomePage()
+            userPageService.getHomePage(data.redirection)
             .then(function homePageRetrieved(homePage) {
 
                 // If home page is the requested location, allow through
