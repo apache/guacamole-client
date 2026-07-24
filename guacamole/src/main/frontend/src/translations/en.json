@@ -1271,6 +1271,19 @@
         "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
         "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
 
+    },
+
+    "WEBAUTHN" : {
+
+        "SECTION_HEADER_WEBAUTHN" : "WebAuthn Passthrough",
+
+        "INFO_NOT_SUPPORTED"      : "This browser does not support WebAuthn. WebAuthn passthrough requires a browser that implements the WebAuthn API, such as Chrome or Edge.",
+        "INFO_POLICY_BLOCKED"     : "This browser is not configured to allow WebAuthn passthrough from this site. Add {ORIGIN} to the WebAuthenticationRemoteDesktopAllowedOrigins Chromium policy.",
+
+        "STATUS_AWAITING"         : "Awaiting authenticator...",
+        "STATUS_COMPLETED"        : "Last WebAuthn ceremony completed.",
+        "STATUS_FAILED"           : "Last WebAuthn ceremony failed."
+
     }
 
 }

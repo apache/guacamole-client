@@ -18,18 +18,25 @@
  */
 
 /**
- * The module for code used to connect to a connection or balancing group.
+ * Directive which displays the current status of WebAuthn passthrough for
+ * the given client.
  */
-angular.module('client', [
-    'auth',
-    'clipboard',
-    'element',
-    'history',
-    'navigation',
-    'notification',
-    'osk',
-    'rest',
-    'textInput',
-    'touch',
-    'webauthn'
-]);
+angular.module('webauthn').directive('guacWebAuthn', [function guacWebAuthn() {
+    return {
+        restrict: 'E',
+        replace: true,
+        scope: {
+
+            /**
+             * The ManagedClient for which the WebAuthn status should be
+             * shown.
+             *
+             * @type ManagedClient
+             */
+            client: '='
+
+        },
+        templateUrl: 'app/webauthn/templates/guacWebAuthn.html',
+        controller: 'webAuthnController'
+    };
+}]);
