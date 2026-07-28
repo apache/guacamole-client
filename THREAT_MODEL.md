@@ -32,9 +32,13 @@
 - **Author:** ASF Security team, drafted via the threat-model-producer (Scovetta)
   rubric at the Guacamole PMC's request (path 3 — the Security team drafts, the
   PMC reviews and ratifies).
-- **Status:** **v0 DRAFT — for Guacamole PMC review.** Nothing here is ratified;
-  every *(inferred)* claim is a proposal for the PMC to confirm, correct, or
-  strike (see §14). No maintainer answers have been folded in yet.
+- **Status:** **v0 — PMC-reviewed.** Nick Couchman (`necouchman`) reviewed the
+  draft on 2026-07-24, with an additional note from Corentin Soriano
+  (`corentin-soriano`); their answers are folded into the body and recorded in
+  §14. Several corrected the draft rather than confirming it — most notably the
+  §4 data-flow diagram, which wrongly implied the remote server speaks the
+  Guacamole protocol straight to the browser. Remaining *(inferred)* claims are
+  still proposals for the PMC to confirm, correct, or strike (see §14).
 - **Reporting cross-reference:** Findings that violate a property we claim in §8
   should be reported privately per our security policy
   (<https://guacamole.apache.org/security/>, `security@guacamole.apache.org`, or
@@ -45,13 +49,14 @@
   - *(documented)* — stated in our own docs (the security page, the manual, the
     configuration reference). Cited inline.
   - *(maintainer)* — stated by a Guacamole maintainer in response to this
-    process. **None yet — this is v0.**
+    process (necouchman / corentin-soriano, 2026-07-24).
   - *(inferred)* — reasoned from architecture, code structure, or domain
     knowledge; not yet confirmed. Every such tag has a matching open question in
     §14.
-- **Draft confidence:** ~30 documented citations / 0 maintainer / 18 distinct
-  *(inferred)* claims (I1–I18, each with a §14 question). The bulk of the model's
-  *reasoning* is still hypothesis pending PMC review — expected for a v0.
+- **Draft confidence:** ~30 documented citations, plus the 2026-07-24 maintainer
+  review, which settled most of I1–I18. What remains *(inferred)* is listed as
+  still-open in §14; the load-bearing architecture, trust-boundary and disposition
+  questions are now maintainer-backed.
 
 **What Guacamole is.** Apache Guacamole is a *clientless, protocol-agnostic remote
 desktop gateway* delivered as an HTML5 web application *(documented —
@@ -62,7 +67,9 @@ software installed beyond the browser. The system has two moving parts that must
 be modeled separately because they live at very different trust levels and are
 written in different languages: **guacd**, a C daemon (`apache/guacamole-server`)
 that actually speaks the remote-desktop protocols and translates them to and from
-the text-based *Guacamole protocol*; and the **web application**, a Java servlet
+the *Guacamole protocol* — a text-based instruction protocol that also carries
+binary payloads such as images and audio *(maintainer)*; and the **web
+application**, a Java servlet
 plus JavaScript/HTML5 front-end (`apache/guacamole-client`) that authenticates
 users, brokers connections, and tunnels the Guacamole protocol between the browser
 and guacd *(documented —
@@ -79,6 +86,18 @@ browser users reach remote desktops/shells they are authorized for, over a
 firewall-friendly HTTPS front door, without installing native RDP/VNC/SSH clients
 *(documented — introduction)*. Guacamole is a *deployed network service operated
 by an administrator*, not an in-process library.
+
+**Library consumers are a second, narrower audience.** The projects also ship
+components that third parties embed directly — `libguac` (guacamole-server) and
+`guacamole-common` / `guacamole-common-js` (guacamole-client). guacd itself is
+documented and supported as a **generic Guacamole-protocol proxy**, so a custom
+front-end speaking that protocol is a supported deployment, not a misuse
+*(maintainer)*. This model is written for the deployed-gateway case; where a
+finding depends only on how a third-party application drives one of those
+libraries, the reachability preconditions in §4 are what decide it, and the
+embedding application owns whatever it puts in front. Treat "an embedder can
+misuse `libguac`" as `DOWNSTREAM` unless the library itself mishandles bytes it
+is responsible for parsing.
 
 **Caller roles.** There is no single "caller"; the roles split as follows and each
 gets separate treatment in §6/§7:
@@ -103,7 +122,7 @@ gets separate treatment in §6/§7:
 
 | Family | Repo | Language | Representative entry point | Touches outside the process? | In model? |
 | --- | --- | --- | --- | --- | --- |
-| **guacd core + libguac** | guacamole-server | C | TCP `:4822`, Guacamole-protocol parser, plugin loader | Yes — outbound TCP to remote servers; loads `.so` plugins | **Yes** — primary memory-safety surface |
+| **guacd core + libguac** | guacamole-server | C | TCP `:4822` — inbound Guacamole-protocol connection from *a* client (typically the web app, but guacd is supported as a generic proxy for custom front-ends *(maintainer)*); protocol parser; plugin loader | Yes — outbound TCP to remote servers; loads `.so` plugins | **Yes** — primary memory-safety surface |
 | **Protocol plugins** (VNC/RDP/SSH/telnet/Kubernetes) | guacamole-server | C | per-protocol client `.so`; parses remote-server wire data, images, audio, clipboard | Yes — network sockets to the remote peer | **Yes** — the untrusted-remote-input surface |
 | **Web application / servlet** | guacamole-client | Java | HTTP endpoints, the tunnel servlet, REST API | Yes — HTTP in, TCP out to guacd | **Yes** |
 | **Auth / extension framework** | guacamole-client | Java | LDAP, SAML, CAS, OpenID, DB auth (MySQL/Postgres/SQL Server/MariaDB), TOTP, Duo, RADIUS, header/JSON auth | Yes — LDAP/HTTP/DB to identity sources | **Yes** — authn/authz surface |
@@ -132,8 +151,10 @@ Anything marked out of model here reappears in §3 with the reason.
   *(inferred — I6)*.
 - **guacd exposed directly to untrusted networks.** guacd is designed to sit behind
   the web app on a trusted network segment; a deployment that publishes `:4822` to
-  the Internet is a misconfiguration, not a scenario we defend (see §9, §10)
-  *(inferred — I3)*.
+  **any untrusted network** — the Internet is only the extreme case — is a
+  misconfiguration, not a scenario we defend. Reaching guacd directly means proxy
+  access to the remote systems behind it, so any user or system that should not
+  have that access counts as untrusted (see §9, §10) *(maintainer — I3)*.
 - **Third-party dependency internals.** libVNCserver, FreeRDP, libssh2, Cairo,
   etc., and the front-end's bundled JS libraries are modeled only at the boundary
   where guacd/the web app hands them data; CVEs internal to those projects are
@@ -149,10 +170,19 @@ Guacamole is a service, so it has several distinct trust boundaries rather than 
 API surface. The end-to-end path is:
 
 ```
-browser  ──HTTPS/tunnel──▶  web app (Java)  ──TCP :4822──▶  guacd (C)  ──RDP/VNC/SSH──▶  remote server
-   ▲                                                                                          │
-   └───────────── Guacamole protocol (rendered images/audio/clipboard) ◀──────────────────────┘
+                  HTTP(S)/WS(S) tunnel            TCP :4822              RDP/VNC/SSH/...
+   browser  ◀───────────────────────────▶  web app (Java)  ◀──────────▶  guacd (C)  ◀──────────▶  remote server
+                                                 │
+                                                 └─ also serves the REST API: authentication,
+                                                    authorization, connection configuration
 ```
+
+**Every byte in both directions passes through the web app.** The browser never
+speaks to guacd, and the remote server never speaks the Guacamole protocol to the
+browser. The web app terminates the browser's tunnel, holds the TCP connection to
+guacd, and relays between the two — so the return path (rendered images, audio,
+clipboard) travels remote server → guacd → **web app** → browser
+*(maintainer)*.
 
 Trust transitions, each of which a finding must cross to be in-model:
 
@@ -173,19 +203,31 @@ Trust transitions, each of which a finding must cross to be in-model:
    project's memory-safety CVE history (see §7, §11a) *(documented — the security
    page lists VNC/RDP/SSH memory-corruption CVEs originating from remote-server or
    session data; inferred as to it being the load-bearing boundary — I2)*.
-4. **guacd/web app → identity & storage backends.** LDAP/SAML/DB/RADIUS lookups
-   during authentication, and connection-credential storage/retrieval *(documented
-   — introduction lists the extensions; inferred as to trust treatment — I9)*.
+4. **Web app → identity & storage backends.** LDAP/SAML/DB/RADIUS lookups during
+   authentication, and connection-credential storage/retrieval. **This boundary is
+   the web application's alone — guacd persists nothing outside memory**
+   *(maintainer)*. The web app (1) authenticates the user, (2) authorizes the
+   connection, (3) records it, (4) stores and looks up connection details,
+   potentially including credentials, (5) prompts the user for any further
+   credentials required, and (6) hands the resulting connection parameters to
+   guacd. guacd receives those parameters over boundary 2 and keeps them only for
+   the life of the connection *(documented — introduction lists the extensions;
+   maintainer as to the storage split)*.
 
 **Reachability precondition per family.** A finding in a guacd protocol plugin is
 in-model only if it is reachable from data the **remote server or the connected
 session** controls (framebuffer, audio, clipboard, channel, console bytes). A
 finding in libguac's Guacamole-protocol parser is in-model if reachable from the
 bytes crossing boundary 2. A finding in the web app is in-model if reachable from
-an **unauthenticated** request or from an **authenticated but unprivileged** user's
-input. A finding reachable only from `guacamole.properties`, a connection
-definition, or a plugin `.so` an operator installed is operator-controlled and
-out of model (see §3) *(inferred — I10)*.
+an **unauthenticated** request, from an **authenticated but unprivileged** user's
+input, or from an **authenticated and authorized user exceeding what that
+authorization was meant to permit** — for example reaching data or an operation
+that a connection parameter was configured to withhold *(maintainer)*. That third
+case matters because Guacamole's authorization is not only "may this user open
+this connection" but also "under which parameters"; see §8.2 and the
+connection-parameter note in §9. A finding reachable only from
+`guacamole.properties`, a connection definition, or a plugin `.so` an operator
+installed is operator-controlled and out of model (see §3) *(inferred — I10)*.
 
 ---
 
@@ -200,7 +242,11 @@ out of model (see §3) *(inferred — I10)*.
 - **Web-app host.** A standard servlet container (e.g. Tomcat) fronted by a
   reverse proxy or the container itself terminating TLS *(inferred — I12)*.
 - **TLS termination.** HTTPS for the browser boundary is provided by the operator's
-  container/reverse proxy, not by Guacamole itself *(inferred — I12)*.
+  container/reverse proxy, **not by Guacamole itself**. Terminating TLS correctly
+  is squarely the operator's/administrator's responsibility, and a report whose
+  substance is that an un-TLS-terminated deployment exposes traffic is **not a
+  Guacamole vulnerability** — it is `DOWNSTREAM` (see §10, §11a)
+  *(maintainer — I12)*.
 - **Concurrency.** guacd handles multiple simultaneous connections; the web app is
   multi-user and multi-session concurrently *(inferred — I11)*.
 - **What we do *not* do to the host (negative inventory — high-priority to
@@ -211,7 +257,7 @@ out of model (see §3) *(inferred — I10)*.
 
 ---
 
-## §5a Build-time and configuration variants
+## §5a Deployment and configuration variants
 
 The security envelope depends heavily on deployment configuration — "Guacamole" is
 really a family of deployments. Load-bearing knobs:
@@ -245,6 +291,7 @@ rather than a function name, since these are services:
 | guacd RDP plugin | virtual-channel PDUs, audio-input buffers, static channels | **yes** — malicious/compromised RDP server | bounds/UAF safety in C (cf. CVE-2020-9497/9498, CVE-2023-30576) *(documented)* |
 | guacd VNC plugin | framebuffer/image geometry & pixel data | **yes** — malicious VNC server | integer-overflow safety on image buffers (cf. CVE-2023-43826) *(documented)* |
 | guacd SSH/telnet plugin | terminal/console escape sequences | **yes** — remote shell / session content | console-code validation (cf. CVE-2024-35164) *(documented)* |
+| guacd Kubernetes plugin | container attach/exec stream, terminal output | **yes** — the container's output, and the API endpoint guacd is pointed at | same console/terminal handling as SSH/telnet, over the Kubernetes streaming API *(maintainer — belongs in this list)* |
 | guacd all plugins | clipboard, audio, printer/redirect data | **yes** — remote peer or session | safe parsing of variable-length remote data *(inferred — I2)* |
 
 **Size/shape.** The Guacamole protocol is a streaming text protocol with
@@ -341,7 +388,13 @@ many tunnels, constitutes a bug is unresolved and flagged in §9/§14 (I17)
   the connection instructions it is given (which protocol, which host, which
   credentials). Authorization is entirely the web app's job. A report that "guacd
   connected to an arbitrary host / used given credentials" is by design — the web
-  app is responsible for only ever sending authorized instructions *(inferred —
+  app is responsible for only ever sending authorized instructions. **The same
+  applies to what a connection may *do*.** guacd places no restriction on which
+  valid connection parameters a caller may set, so anyone who can reach guacd can
+  invoke any capability the underlying remote protocol supports — file transfer,
+  clipboard transfer, printing, drive redirection — not merely open a session.
+  Restricting those capabilities is the web app's job, via the connection
+  parameters it sends *(maintainer)* *(inferred —
   I3)*.
 - **No confidentiality or authentication on the webapp↔guacd link by default.**
   Unless `guacd-ssl` is enabled and guacd is network-isolated, the Guacamole
@@ -389,8 +442,8 @@ the gateway host itself is compromised; and DoS from hostile remote streams
 For the assumptions in §5–§7 to hold, the *operator* must:
 
 - **Keep guacd off untrusted networks.** Bind `:4822` to localhost or a trusted
-  segment; never expose guacd directly to the Internet or to untrusted clients
-  *(inferred — I3)*.
+  segment; never expose guacd directly to any network or client that should not
+  have proxy access to the remote systems behind it *(maintainer — I3)*.
 - **Enable `guacd-ssl`** (and, where supported, mutual authentication) whenever the
   webapp↔guacd link crosses any boundary that is not fully trusted *(documented —
   configuring-guacamole)*.
@@ -438,9 +491,11 @@ For the assumptions in §5–§7 to hold, the *operator* must:
   (§9). `BY-DESIGN` unless the instructions are reachable from an *unauthenticated
   or cross-user* web-app path (then it is a §8.1/§8.2 issue) *(inferred — I3)*.
 - **"Cleartext webapp↔guacd traffic / credentials on `:4822`."** Expected when
-  `guacd-ssl` is off and the port is on a trusted segment; `OUT-OF-MODEL:
-  non-default-build` / operator-config, pending the I14 ruling *(documented —
-  configuring-guacamole)*.
+  `guacd-ssl` is off and the port is on a trusted segment: `OUT-OF-MODEL`. This is
+  the default configuration and a deliberate design decision, and most deployments
+  run guacd on the same host as the web application, natively or in containers.
+  Enabling `guacd-ssl` is the operator's call where the link is not trusted
+  *(maintainer — I14)* *(documented — configuring-guacamole)*.
 - **Findings in `apache/guacamole-website`.** Static site, no runtime surface;
   `OUT-OF-MODEL: unsupported-component` (§3) *(inferred — I4)*.
 - **Dependency CVEs the project has already assessed as non-impacting** — e.g.
@@ -480,7 +535,7 @@ For the assumptions in §5–§7 to hold, the *operator* must:
 | `OUT-OF-MODEL: trusted-input` | Requires attacker control of a parameter marked trusted in §6 — e.g. the web-app→guacd connection instructions, `guacamole.properties`, or a connection definition. | §6 |
 | `OUT-OF-MODEL: adversary-not-in-scope` | Requires an excluded capability — operator/host code execution, or a trusted-segment position when isolation guidance was followed. | §7 |
 | `OUT-OF-MODEL: unsupported-component` | Lands in `guacamole-website`, or in test/example/build code. | §3 |
-| `OUT-OF-MODEL: non-default-build` | Only manifests under a discouraged/non-default config (e.g. cleartext `:4822` exposed, no auth extension) — pending the I14/I15 rulings. | §5a |
+| `OUT-OF-MODEL: non-default-build` | Only manifests under a discouraged/non-default config (e.g. no auth extension installed). Also covers cleartext `:4822` on a trusted segment, which the PMC has ruled out-of-model as the deliberate default *(maintainer — I14/I15)*. | §5a |
 | `BY-DESIGN: property-disclaimed` | Concerns a property in §9 — e.g. guacd trusting its web-app peer, or lack of default webapp↔guacd auth. | §9 |
 | `KNOWN-NON-FINDING` | Matches a documented recurring false positive (dependency CVEs already assessed, website findings). | §11a |
 | `MODEL-GAP` | Cannot be routed to any of the above — revise the model. | triggers §12 |
@@ -489,83 +544,80 @@ For the assumptions in §5–§7 to hold, the *operator* must:
 
 ## §14 Open questions for the maintainers
 
-Every *(inferred)* tag above routes to a question here. Each states a **proposed
-answer** for the PMC to confirm, correct, or strike, and the section it lands in.
-Grouped into waves.
+Every *(inferred)* tag above routes to a question here. **Answered by Nick
+Couchman (`necouchman`) on 2026-07-24**, with one note from Corentin Soriano
+(`corentin-soriano`); answers are folded into the body and kept here.
 
-### Wave 1 — scope, the guacd trust posture, and insecure defaults (highest leverage)
+### Wave 1 — scope, the guacd trust posture, and insecure defaults — ANSWERED
 
-1. **(I3) guacd trusts its connecting web app and is not an auth boundary; it must
-   be kept off untrusted networks.** Proposed: correct — guacd executes the
-   Guacamole-protocol instructions it receives, authorization lives in the web app,
-   and exposing `:4822` is a misconfiguration, not an in-model attack. *Lands in
-   §4/§7/§9/§10/§11a.*
-2. **(I2) The primary modeled guacd adversary is a malicious/compromised remote
-   desktop server whose data reaches C parsers; remote-data-driven memory
-   corruption is security-critical.** Proposed: correct — consistent with the CVE
-   history. Confirm this is the intended framing and that clipboard/audio/printer
-   channels are included. *Lands in §6/§7/§8.3/§9.*
-3. **(I14) Is plaintext, unauthenticated webapp↔guacd (the `guacd-ssl`=off /
-   `guacd-hostname`=localhost default) the *supported production posture on a
-   trusted segment*, making a report against cleartext `:4822`
-   `OUT-OF-MODEL: non-default-build`?** Or should such a report be `VALID`?
-   Proposed: supported-on-trusted-segment; `guacd-ssl` required once the link is
-   not fully trusted. *Lands in §5a/§9/§13.*
-4. **(I4/I8) `guacamole-website` and all test/example/build code are out of model
-   for runtime findings (in scope only for discoverability of the security policy
-   and docs).** Proposed: correct. *Lands in §2/§3/§11a.*
-5. **(I5/I6) The remote desktops, their credentials, and the operator/admin are out
-   of the adversary model.** Proposed: correct. *Lands in §3/§7.*
+1. **(I3) guacd trusts its connecting peer and is not an auth boundary.**
+   → **Correct.** Extended by the maintainer on two points, both now in §9:
+   guacd places **no restriction on which valid connection parameters a caller
+   may use**, so reaching guacd means access to any capability the remote
+   protocol supports (file transfer, clipboard, printing), not merely session
+   access; and the exposure rule is **any untrusted network**, not just the
+   Internet (§3, §10).
+2. **(I2) The primary guacd adversary is a malicious/compromised remote server
+   whose data reaches C parsers.** → **Agreed**, clipboard/audio/printer channels
+   included.
+3. **(I14) Is plaintext, unauthenticated webapp↔guacd the supported posture, making
+   a cleartext-`:4822` report `OUT-OF-MODEL`?** → **`OUT-OF-MODEL`.** It is the
+   default configuration and a deliberate design decision; most deployments run
+   guacd on the same host as the web application, natively or in containers, so it
+   is safe for most people. Configuring otherwise is the operator's call. (§5a,
+   §13.)
+4. **(I4/I8) `guacamole-website` and test/example/build code are out of model for
+   runtime findings.** → **Correct.**
+5. **(I5/I6) Remote desktops, their credentials, and the operator/admin are outside
+   the adversary model.** → **Agreed.**
 
-### Wave 2 — web-app authn/authz surface
+### Wave 2 — web-app authn/authz surface — ANSWERED
 
-6. **(I1) The modeled web adversaries are the unauthenticated web attacker and the
-   authenticated-but-unprivileged user; the claimed properties are user
-   authentication (§8.1) and per-user connection/tunnel/history isolation (§8.2).**
-   Proposed: correct — consistent with CVE-2021-43999/41767/2020-11997. *Lands in
-   §6/§7/§8.*
-7. **(I15) With no auth extension installed there is no production authentication;
-   operators must install one (and MFA for sensitive deployments), and a no-auth
-   install is `OUT-OF-MODEL: non-default-build`.** Proposed: correct. *Lands in
-   §5a/§8.1/§9/§10.*
-8. **(I16) Output encoding of session/remote-derived strings (§8.5) is a claimed
-   property (CVE-2016-1566), but we make no blanket CSRF/clickjacking guarantee
-   beyond framework mechanisms.** Proposed: correct. *Lands in §8/§9.*
-9. **(I9) Identity/storage backends (LDAP/SAML/DB/RADIUS) are trusted infrastructure
-   configured by the operator; compromise of those backends is out of model.**
-   Proposed: correct. *Lands in §4/§6.*
+6. **(I1) The modeled web adversaries are the unauthenticated attacker and the
+   authenticated-but-unprivileged user.** → Correct as far as it goes, but
+   **incomplete as originally worded**: it must also cover an authenticated *and
+   authorized* user who achieves something unintended — e.g. transferring files
+   when file transfer was configured off. Connection parameters are themselves a
+   security guard, and bypassing one is in-model. Folded into §4 and §8.2.
+7. **(I15) A no-auth install is `OUT-OF-MODEL: non-default-build`.** → **Agreed.**
+8. **(I16) Output encoding is claimed (CVE-2016-1566); no blanket
+   CSRF/clickjacking guarantee.** → **Agreed.**
+9. **(I9) Identity/storage backends are trusted infrastructure.** → **Agreed.**
+   Note the storage split corrected in §4: **guacd persists nothing outside
+   memory**; all credential lookup and storage is the web application's.
 
-### Wave 3 — environment, transport, and resource guarantees
+### Wave 3 — environment, transport, and resource guarantees — ANSWERED
 
-10. **(I12) TLS termination and secure-cookie handling for the browser boundary are
-    the operator's responsibility (cf. CVE-2018-1340); absent TLS, §8.6 does not
-    hold.** Proposed: correct. *Lands in §5/§8.6/§10.*
-11. **(I18) `guacd-ssl` provides transport encryption but not, by itself, mutual
-    authentication of the web app to guacd (false friend).** Proposed: correct —
-    confirm whether any mutual-auth mechanism exists on this link. *Lands in §9.*
-12. **(I11/I13) guacd runs as a forking POSIX daemon, does not treat environment
-    variables as a trust input, does not phone home, and confines outbound
-    connections to operator-defined targets; guacd and the web app are expected to
-    run matching patched versions.** Proposed: correct — this negative-side-effects
-    inventory is the one most needing maintainer confirmation. *Lands in §5.*
-13. **(I17) Resource guarantees: is there *any* categorical line on DoS from a
-    hostile remote stream or a client opening many tunnels — e.g. "a crash/UAF is a
-    bug, but sustained CPU/bandwidth from a connected server is not"?** Proposed: no
-    categorical resource guarantee at this layer; memory-safety failures remain
-    bugs. *Lands in §8/§9/§11a.*
-14. **(I7/I10) Third-party protocol libraries (FreeRDP/libVNCserver/libssh2/Cairo,
-    bundled JS) are modeled only at the boundary where we hand them data; internal
-    CVEs are triaged upstream. Reachability preconditions per §4 are the triage
-    test.** Proposed: correct. *Lands in §3/§4.*
+10. **(I12) TLS termination and secure-cookie handling are the operator's.** →
+    **Agreed**, and stated more directly in §5: a report whose substance is that an
+    un-TLS-terminated deployment exposes traffic is `DOWNSTREAM`, not a Guacamole
+    vulnerability.
+11. **(I18) `guacd-ssl` gives transport encryption but not mutual authentication.**
+    → **Correct.** There is **no mutual authentication native to the web app ↔
+    guacd link**. It can be built with SSH or SSL tunnelling plus additional
+    components, but that is outside this model.
+12. **(I11/I13) Negative-side-effects inventory, and matching patched versions.** →
+    **Mostly correct**, with one correction: running **different** web-app and
+    guacd versions **is supported**, and there are mechanisms to negotiate feature
+    differences between them. That machinery exists to handle feature mismatch
+    only — **no guarantee is made that a version mismatch is *safe***.
+13. **(I17) Any categorical line on DoS?** → **No resource guarantees at this
+    time.** Monitoring and throttling resource utilisation is the operator's.
+14. **(I7/I10) Third-party protocol libraries are modeled only at the boundary
+    where we hand them data.** → **Agreed.**
 
 ### Wave 4 — meta
 
-15. **Document ownership & coexistence.** There is currently **no `SECURITY.md` in
-    either code repository** — the sole published security artifact is the website
-    security page. Proposed: this threat model becomes the canonical model that the
-    security page (and new `SECURITY.md` files in both repos) link to. Confirm the
-    venue and whether the PMC wants the machine-readable §15 sidecar. *Meta — no
-    body claim.*
+15. **Document ownership & coexistence.** → necouchman is **content with the
+    proposed solution** (this model becomes canonical, linked from the security
+    page and from new `SECURITY.md` files in both repos) but **defers the final
+    call to @mike-jumper**. The §15 machine-readable sidecar likewise awaits that
+    decision. *Still open.*
+
+### Still open
+
+- The venue/ownership decision above, pending @mike-jumper.
+- Any *(inferred)* tag not listed above remains a proposal.
 
 ---
 
