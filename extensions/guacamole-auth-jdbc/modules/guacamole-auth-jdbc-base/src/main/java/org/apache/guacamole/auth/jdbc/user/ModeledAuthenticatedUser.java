@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.base.EntityService;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
@@ -45,6 +46,13 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      * corresponding ModeledUser.
      */
     private final AuthenticationProvider modelAuthenticationProvider;
+
+    /**
+     * Service for resolving effective group memberships (including recursive
+     * expansion of parent groups in the database group hierarchy) for
+     * arbitrary entities.
+     */
+    private final EntityService entityService;
 
     /**
      * The connections which have been committed for use by this user in the
@@ -74,12 +82,19 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      * @param user
      *     A ModeledUser object which is backed by the data associated with
      *     this user in the database.
+     *
+     * @param entityService
+     *     The service to use to resolve the effective group memberships of
+     *     this user, including recursive expansion of parent groups in the
+     *     database group hierarchy.
      */
     public ModeledAuthenticatedUser(AuthenticatedUser authenticatedUser,
-            AuthenticationProvider modelAuthenticationProvider, ModeledUser user) {
+            AuthenticationProvider modelAuthenticationProvider, ModeledUser user,
+            EntityService entityService) {
         super(authenticatedUser.getAuthenticationProvider(), authenticatedUser.getCredentials(), authenticatedUser.getEffectiveUserGroups());
         this.modelAuthenticationProvider = modelAuthenticationProvider;
         this.user = user;
+        this.entityService = entityService;
     }
 
     /**
@@ -96,12 +111,18 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      *
      * @param credentials
      *     The credentials given by the user when they authenticated.
+     *
+     * @param entityService
+     *     The service to use to resolve the effective group memberships of
+     *     this user, including recursive expansion of parent groups in the
+     *     database group hierarchy.
      */
     public ModeledAuthenticatedUser(AuthenticationProvider authenticationProvider,
-            ModeledUser user, Credentials credentials) {
+            ModeledUser user, Credentials credentials, EntityService entityService) {
         super(authenticationProvider, credentials, user.getEffectiveUserGroups());
         this.modelAuthenticationProvider = authenticationProvider;
         this.user = user;
+        this.entityService = entityService;
     }
 
     /**
@@ -128,6 +149,18 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      */
     public AuthenticationProvider getModelAuthenticationProvider() {
         return modelAuthenticationProvider;
+    }
+
+    /**
+     * Returns the EntityService instance this user was constructed with, which
+     * is used to resolve effective group memberships (including recursive
+     * expansion of parent groups in the database group hierarchy).
+     *
+     * @return
+     *     The EntityService instance this user was constructed with.
+     */
+    public EntityService getEntityService() {
+        return entityService;
     }
 
     /**
@@ -172,10 +205,11 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
 
 
     /**
-     * Expands a user's groups through the parents in database group hierarchy
-     * so that parent groups of external groups (e.g. SAML/SSO group claims)
-     * are included. This also covers the user's own direct
-     * DB memberships (via entity_id) and skeleton users with null entity_id.
+     * Returns the identifiers of all effective groups for this user, including
+     * any parent groups reachable through the database group hierarchy from
+     * externally-asserted memberships (e.g. SAML/SSO group claims), as well as
+     * the user's own direct DB memberships (via entity_id). Skeleton users with
+     * a null entity_id are also handled correctly.
      *
      * @return
      *     The set of effective groups for this user, whether inherited or
@@ -183,7 +217,7 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      */
     @Override
     public Set<String> getEffectiveUserGroups() {
-        return user.expandEffectiveGroups(super.getEffectiveUserGroups());
+        return entityService.retrieveEffectiveGroups(user, super.getEffectiveUserGroups());
     }
 
     /**
