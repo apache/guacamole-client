@@ -66,6 +66,11 @@ public class SystemPermission implements Permission<SystemPermission.Type> {
         AUDIT,
 
         /**
+         * View the names of users currently using active connections.
+         */
+        VIEW_ACTIVE_CONNECTION_USERS,
+
+        /**
          * Administer the system in general, including adding permissions
          * which affect the system (like user creation, connection creation,
          * and system administration).

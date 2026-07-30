@@ -423,6 +423,7 @@
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USER_DISABLED"                 : "Login disabled:",
         "FIELD_HEADER_USERNAME"                      : "Username:",
+        "FIELD_HEADER_VIEW_ACTIVE_CONNECTION_USERS"  : "View names of active connection users:",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
