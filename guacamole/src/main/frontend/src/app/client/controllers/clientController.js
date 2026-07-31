@@ -76,7 +76,8 @@ angular.module('client').controller('clientController', ['$scope', '$routeParams
      */
     var SHIFT_KEYS  = {0xFFE1 : true, 0xFFE2 : true},
         ALT_KEYS    = {0xFFE9 : true, 0xFFEA : true, 0xFE03 : true,
-                       0xFFE7 : true, 0xFFE8 : true},
+                       0xFFE7 : true, 0xFFE8 : true,
+                       0xFFED : true, 0xFFEE : true},
         CTRL_KEYS   = {0xFFE3 : true, 0xFFE4 : true},
         MENU_KEYS   = angular.extend({}, SHIFT_KEYS, ALT_KEYS, CTRL_KEYS);
 
