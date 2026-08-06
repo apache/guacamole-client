@@ -286,6 +286,7 @@
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_AVAILABLE_CONNECTIONS"   : "{AVAILABLE} of {TOTAL} {TOTAL, plural, one{connection} other{connections}} available",
 
         "INFO_NO_RECENT_CONNECTIONS" : "No recent connections.",
         
