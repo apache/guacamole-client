@@ -125,6 +125,17 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
         });
 
         /**
+         * Returns the number of available connections for this connection
+         * group.
+         *
+         * @returns {Number}
+         *     The number of available connections for this connection group.
+         */
+        this.getAvailableConnections = template.getAvailableConnections || (function getAvailableConnections() {
+            return null;
+        });
+
+        /**
          * Returns the unique string identifier that must be used when
          * connecting to a connection or connection group represented by this
          * GroupListItem.
@@ -177,6 +188,18 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
             return null;
 
         };
+
+        /**
+         * Returns the unique maximum number of connections that can be active
+         * for this connection group, if known. If unknown, null may be returned.
+         *
+         * @returns {Number}
+         *     The unique maximum number of connections that can be active for
+         *     this connection group.
+         */
+        this.getEffectiveMaxConnections = template.getEffectiveMaxConnections || (function getEffectiveMaxConnections() {
+            return null;
+        });
 
         /**
          * The connection, connection group, or sharing profile whose data is
@@ -312,7 +335,8 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
      */
     GroupListItem.fromConnectionGroup = function fromConnectionGroup(dataSource,
         connectionGroup, includeConnections, includeSharingProfiles,
-        countActiveConnections, countActiveConnectionGroups) {
+        countActiveConnections, countActiveConnectionGroups, 
+        countUserActiveConnectionGroups) {
 
         var children = [];
 
@@ -329,7 +353,8 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
             connectionGroup.childConnectionGroups.forEach(function addChildGroup(child) {
                 children.push(GroupListItem.fromConnectionGroup(dataSource,
                     child, includeConnections, includeSharingProfiles,
-                    countActiveConnections, countActiveConnectionGroups));
+                    countActiveConnections, countActiveConnectionGroups,
+                    countUserActiveConnectionGroups));
             });
         }
 
@@ -360,6 +385,73 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
 
             },
 
+            // Available slots considering both global and per-user limits
+            getAvailableConnections : function getAvailableConnections() {
+                // Get total active connections across all children
+                let totalActive = 0;
+                connectionGroup.childConnections.forEach(function addChildConnection(child) {
+                    if (!countActiveConnections)
+                        return;
+
+                    totalActive += countActiveConnections(dataSource, child) ?? 0;
+                });
+
+                // Get current user's active connections across all children
+                if (!countUserActiveConnectionGroups)
+                    return totalActive;
+                const userActive  = countUserActiveConnectionGroups(dataSource, connectionGroup) ?? 0;
+
+                return this.getEffectiveMaxConnections() - Math.max(totalActive, userActive);
+            },
+
+            // Effective max slots from this user's perspective
+            getEffectiveMaxConnections : function getEffectiveMaxConnections() {
+
+                /**
+                 * Parses the given value as an integer, returning Infinity if the
+                 * value is not a valid integer.
+                 *
+                 * @param {String} value
+                 *     The value to parse as an integer.
+                 *
+                 * @returns {Number}
+                 *     The parsed integer, or Infinity if the given value is not a
+                 *     valid integer.
+                 */
+                const parseIntOrInfinity = (value) => {
+                    const parsed = Number.parseInt(value, 10);
+                    return Number.isNaN(parsed) ? Infinity : parsed;
+                };
+
+                // Group limits
+                const attrs = connectionGroup.attributes ?? {};
+                const maxGlobal  = parseIntOrInfinity(attrs['max-connections']);
+                const maxPerUser = parseIntOrInfinity(attrs['max-connections-per-user']);
+
+                // Per-connection limits are summed across all children
+                let maxPerConnection = Infinity;
+                connectionGroup.childConnections.forEach(function addChildConnection(child) {
+                    const childAttrs = child.attributes ?? {};
+                    const childMaxGlobal  = parseIntOrInfinity(childAttrs['max-connections']);
+                    const childMaxPerUser = parseIntOrInfinity(childAttrs['max-connections-per-user']);
+
+                    // If neither limit is set, this child does not affect the effective max
+                    if (childMaxGlobal === Infinity && childMaxPerUser === Infinity)
+                        return;
+
+                    maxPerConnection = maxPerConnection === Infinity ? 0 : maxPerConnection;
+                    maxPerConnection += Math.min(childMaxGlobal, childMaxPerUser);
+                });
+
+                const minValue = Math.min(maxGlobal, maxPerUser, maxPerConnection);
+
+                // If the minimum value is Infinity, it means there are no effective
+                // limits, so return null
+                if (minValue === Infinity)
+                    return null;
+
+                return minValue;
+            },
 
             // Wrapped item
             wrappedItem : connectionGroup

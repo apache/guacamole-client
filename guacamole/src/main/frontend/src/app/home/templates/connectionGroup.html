@@ -7,4 +7,10 @@
     <!-- Connection group name -->
     <span class="name">{{item.name}}</span>
 
+    <!-- Available vs. total connection slots (respects global and per-user limits) -->
+    <span class="activeUserCount"
+          ng-if="item.balancing && item.getEffectiveMaxConnections() !== null"
+          translate="HOME.INFO_AVAILABLE_CONNECTIONS"
+          translate-values="{AVAILABLE: item.getAvailableConnections(), TOTAL: item.getEffectiveMaxConnections()}"></span>
+
 </a>

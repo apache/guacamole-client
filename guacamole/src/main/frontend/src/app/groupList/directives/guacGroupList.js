@@ -93,6 +93,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
 
             // Required services
             var activeConnectionService = $injector.get('activeConnectionService');
+            var authenticationService   = $injector.get('authenticationService');
             var dataSourceService       = $injector.get('dataSourceService');
             var requestService          = $injector.get('requestService');
 
@@ -108,6 +109,14 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              * @type Object.<String, Object.<String, Number>>
              */
             var connectionCount = {};
+
+            /**
+             * Like connectionCount, but restricted to the connections owned
+             * by the currently-authenticated user.
+             *
+             * @type Object.<String, Object.<String, Number>>
+             */
+            var userConnectionCount = {};
 
             /**
              * A list of all items which should appear at the root level. As
@@ -135,6 +144,38 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              */
             var countActiveConnections = function countActiveConnections(dataSource, connection) {
                 return connectionCount[dataSource][connection.identifier];
+            };
+
+            /**
+             * Returns the number of connections by the current user through
+             * the given connection group, by summing across all descendants.
+             *
+             * @param {String} dataSource
+             * @param {ConnectionGroup} connectionGroup
+             * @returns {Number}
+             */
+            var countUserActiveConnectionGroups = function countUserActiveConnectionGroups(dataSource, connectionGroup) {
+                let count = 0;
+                const userConnections = userConnectionCount[dataSource];
+
+                if (!userConnections)
+                    return 0;
+
+                // Count active connections through child connections
+                if (connectionGroup.childConnections) {
+                    connectionGroup.childConnections.forEach(function(child) {
+                        count += userConnections[child.identifier] ?? 0;
+                    });
+                }
+
+                // Recursively count active connections through child connection groups
+                if (connectionGroup.childConnectionGroups) {
+                    connectionGroup.childConnectionGroups.forEach(function(child) {
+                        count += countUserActiveConnectionGroups(dataSource, child);
+                    });
+                }
+
+                return count;
             };
 
             /**
@@ -184,7 +225,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                             rootItem = GroupListItem.fromConnectionGroup(dataSource, connectionGroup,
                                 $scope.isVisible(GroupListItem.Type.CONNECTION),
                                 $scope.isVisible(GroupListItem.Type.SHARING_PROFILE),
-                                countActiveConnections);
+                                countActiveConnections, null, countUserActiveConnectionGroups);
 
                         // If root group is to be shown, add it as a root item
                         if ($scope.showRootGroup)
@@ -206,8 +247,13 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                     )
                     .then(function activeConnectionsRetrieved(activeConnectionMap) {
 
+                        const currentUsername = authenticationService.getCurrentUsername();
+
                         // Within each data source, count each active connection by identifier
                         angular.forEach(activeConnectionMap, function addActiveConnections(activeConnections, dataSource) {
+
+                            userConnectionCount[dataSource] ??= {};
+
                             angular.forEach(activeConnections, function addActiveConnection(activeConnection) {
 
                                 // If counter already exists, increment
@@ -218,6 +264,12 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                                 // Otherwise, initialize counter to 1
                                 else
                                     connectionCount[dataSource][identifier] = 1;
+
+                                // Track connections belonging to the current user
+                                if (activeConnection.username === currentUsername) {
+                                    userConnectionCount[dataSource][identifier] ??= 0;
+                                    userConnectionCount[dataSource][identifier]++;
+                                }
 
                             });
                         });
