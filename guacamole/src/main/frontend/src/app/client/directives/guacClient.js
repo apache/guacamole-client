@@ -243,8 +243,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
             if (!client || !display)
                 return;
 
-            // Broadcast mousedown event before sending to allow keyboard to resolve
-            // deferred modifier keys (especially CMD+click)
+            // Broadcast mousedown event before sending so that modifiers
+            // inferred from its flags (especially Cmd+Click) are processed
+            // before the click that depends on them
             if (event.type === 'mousedown')
                 $rootScope.$broadcast('guacBeforeClientMouseDown', event, client);
 
@@ -308,8 +309,9 @@ angular.module('client').directive('guacClient', [function guacClient() {
             if (!client || !display)
                 return;
 
-            // Broadcast mousedown event before sending to allow keyboard to resolve
-            // deferred modifier keys (especially CMD+click)
+            // Broadcast mousedown event before sending so that modifiers
+            // inferred from its flags (especially Cmd+Click) are processed
+            // before the click that depends on them
             if (event.type === 'mousedown')
                 $rootScope.$broadcast('guacBeforeClientMouseDown', event, client);
 

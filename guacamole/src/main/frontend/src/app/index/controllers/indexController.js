@@ -183,24 +183,29 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     var keyboard = new Guacamole.Keyboard($document[0]);
     keyboard.listenTo(sink.getElement());
 
-    // Update keyboard modifiers based mouse click events. Note we need to run
-    // before mousedown to resolve deferred Meta key events to enable Cmd+Click.
-    $scope.$on('guacBeforeClientMouseDown', function mouseDownModifierSync(event, mouseEvent) {
-        keyboard.updateModifiersFromMouse(mouseEvent);
-    });
+    /**
+     * Resynchronizes keyboard modifier state against the modifier flags
+     * reported by the given mouse or touch event. Note that mousedown events
+     * must be handled before the mouse state is sent so that modifiers
+     * inferred from the event's flags (such as a Command key held
+     * while the window lacked keyboard focus) are processed before the click
+     * that depends on them.
+     *
+     * @param {!Object} event
+     *     The AngularJS event that triggered this sync.
+     *
+     * @param {!Guacamole.Mouse.Event|!Guacamole.Touch.Event} inputEvent
+     *     The mouse or touch event to sync modifier state against.
+     */
+    var updateKeyboardModifiers = function updateKeyboardModifiers(event, inputEvent) {
+        keyboard.updateModifiers(inputEvent);
+    };
 
-    $scope.$on('guacClientMouseUp', function mouseUpModifierSync(event, mouseEvent) {
-        keyboard.updateModifiersFromMouse(mouseEvent);
-    });
-
-    // Update keyboard modifiers based on touch contact events
-    $scope.$on('guacClientTouchStart', function touchStartModifierSync(event, touchEvent) {
-        keyboard.updateModifiersFromTouch(touchEvent);
-    });
-
-    $scope.$on('guacClientTouchEnd', function touchEndModifierSync(event, touchEvent) {
-        keyboard.updateModifiersFromTouch(touchEvent);
-    });
+    // Update keyboard modifiers based on mouse/touch events
+    $scope.$on('guacBeforeClientMouseDown', updateKeyboardModifiers);
+    $scope.$on('guacClientMouseUp', updateKeyboardModifiers);
+    $scope.$on('guacClientTouchStart', updateKeyboardModifiers);
+    $scope.$on('guacClientTouchEnd', updateKeyboardModifiers);
 
     // Broadcast keydown events
     keyboard.onkeydown = function onkeydown(keysym) {
