@@ -84,68 +84,6 @@ Guacamole.Keyboard = function Keyboard(element) {
     this.onkeyup = null;
 
     /**
-     * Set of known platform-specific or browser-specific quirks which must be
-     * accounted for to properly interpret key events, even if the only way to
-     * reliably detect that quirk is to platform/browser-sniff.
-     *
-     * @private
-     * @type {!Object.<string, boolean>}
-     */
-    var quirks = {
-
-        /**
-         * Whether keyup events are universally unreliable.
-         *
-         * @type {!boolean}
-         */
-        keyupUnreliable: false,
-
-        /**
-         * Whether the Alt key is actually a modifier for typable keys and is
-         * thus never used for keyboard shortcuts.
-         *
-         * @type {!boolean}
-         */
-        altIsTypableOnly: false,
-
-        /**
-         * - Normal key mode (Windows/Linux): lock keys (for example, Caps Lock)
-         *   generate both keydown and keyup events, so we can rely on
-         *   receiving keyup for physical release.
-         *
-         * - Modifier-toggle mode (macOS): lock keys (for example, Caps Lock)
-         *   may be exposed as modifier state toggles, often producing only a
-         *   single keyboard event per toggle (typically keydown) with no
-         *   dependable matching keyup.
-         *
-         * When true, lock keys are treated as modifier toggles and keyup
-         * cannot be relied upon.
-         *
-         * @type {!boolean}
-         */
-        lockKeyIsModifierToggle: false
-
-    };
-
-    // Set quirk flags depending on platform/browser, if such information is
-    // available
-    if (navigator && navigator.platform) {
-
-        // All keyup events are unreliable on iOS (sadly)
-        if (navigator.platform.match(/ipad|iphone|ipod/i))
-            quirks.keyupUnreliable = true;
-
-        // The Alt key on Mac is never used for keyboard shortcuts.
-        // Lock keys (for example, Caps Lock) may be exposed as modifier state
-        // toggles, generating only 1 event per toggle.
-        else if (navigator.platform.match(/^mac/i)) {
-            quirks.altIsTypableOnly = true;
-            quirks.lockKeyIsModifierToggle = true;
-        }
-
-    }
-
-    /**
      * A key event having a corresponding timestamp. This event is non-specific.
      * Its subclasses should be used instead when recording specific key
      * events.
@@ -207,7 +145,7 @@ Guacamole.Keyboard = function Keyboard(element) {
          *
          * @type {!Guacamole.Keyboard.ModifierState}
          */
-        this.modifiers = orig ? Guacamole.Keyboard.ModifierState.fromKeyboardEvent(orig) : new Guacamole.Keyboard.ModifierState();
+        this.modifiers = orig ? Guacamole.Keyboard.ModifierState.fromKeyboardEvent(orig) : new Guacamole.Keyboard.ModifierState({}, null);
 
         /**
          * An arbitrary timestamp in milliseconds, indicating this event's
@@ -241,6 +179,16 @@ Guacamole.Keyboard = function Keyboard(element) {
          * @type {!boolean}
          */
         this.reliable = false;
+
+        /**
+         * Whether this event has been initially processed but deferred
+         * (pending further events). An event may need to be deferred if its
+         * details are ambiguous without context from events that have not yet
+         * fired.
+         *
+         * @type {!boolean}
+         */
+        this.deferred = false;
 
         /**
          * Returns the number of milliseconds elapsed since this event was
@@ -282,34 +230,32 @@ Guacamole.Keyboard = function Keyboard(element) {
          *
          * @type {!boolean}
          */
-        this.keyupReliable = !quirks.keyupUnreliable;
+        this.keyupReliable = !Guacamole.Keyboard._quirks.keyupUnreliable;
 
         // DOM3 and keyCode are reliable sources if the corresponding key is
         // not a printable key
-        if (this.keysym && !isPrintable(this.keysym))
+        if (this.keysym && !Guacamole.Keyboard.Keysym.isPrintable(this.keysym))
             this.reliable = true;
 
         // Use legacy keyIdentifier as a last resort, if it looks sane
         if (!this.keysym && key_identifier_sane(this.keyCode, this.keyIdentifier))
             this.keysym = keysym_from_key_identifier(this.keyIdentifier, this.location, this.modifiers.shift);
 
-        // If a key is pressed while meta is held down, the keyup will
-        // never be sent in Chrome (bug #108404). Modifier keys are excluded
-        // from this workaround as they have reliable keyup events and need
-        // to be held down simultaneously with Meta.
-        if (this.modifiers.meta && !isModifierKey(this.keysym))
+        // If a key is pressed while the "Super" or "Command" keys are held
+        // (each platform-specific interpretations of JavaScript key events for
+        // the "Meta" key), the keyup will never be sent in Chrome (bug #108404).
+        // Modifier keys are excluded from this workaround as they have
+        // reliable keyup events and may need to be held down simultaneously
+        // with Super/Command.
+        if ((this.modifiers.super || this.modifiers.command) && !Guacamole.Keyboard.Keysym.isModifier(this.keysym))
             this.keyupReliable = false;
 
         // We cannot rely on receiving keyup for lock keys on certain platforms
-        else if (isLockKey(this.keysym) && quirks.lockKeyIsModifierToggle)
+        else if (Guacamole.Keyboard.Keysym.isLock(this.keysym) && Guacamole.Keyboard._quirks.lockKeyIsModifierToggle)
             this.keyupReliable = false;
 
         // Determine whether default action for Alt+combinations must be prevented
-        var prevent_alt = !this.modifiers.ctrl && !quirks.altIsTypableOnly;
-
-        // If alt is typeable only, and this is actually an alt key event, treat as AltGr instead
-        if (quirks.altIsTypableOnly && (this.keysym === 0xFFE9 || this.keysym === 0xFFEA))
-            this.keysym = 0xFE03;
+        var prevent_alt = !this.modifiers.ctrl;
 
         // Determine whether default action for Ctrl+combinations must be prevented
         var prevent_ctrl = !this.modifiers.alt;
@@ -318,8 +264,8 @@ Guacamole.Keyboard = function Keyboard(element) {
         // the default action is important
         if ((prevent_ctrl && this.modifiers.ctrl)
          || (prevent_alt  && this.modifiers.alt)
-         || this.modifiers.meta
-         || this.modifiers.hyper)
+         || this.modifiers.super
+         || this.modifiers.command)
             this.reliable = true;
 
         // Record most recently known keysym by associated key code
@@ -398,6 +344,54 @@ Guacamole.Keyboard = function Keyboard(element) {
     var eventLog = [];
 
     /**
+     * The keysym to use for the left key reported by the DOM as "Meta" (key
+     * code 91). This is the "Command" key on macOS and the "Super" ("Windows")
+     * key on other platforms.
+     *
+     * @private
+     * @constant
+     * @type {!number}
+     */
+    const DOM_META_L = Guacamole.Keyboard._quirks.metaIsCommand ?
+        Guacamole.Keyboard.Keysym.COMMAND_L : Guacamole.Keyboard.Keysym.SUPER_L;
+
+    /**
+     * The keysym to use for the right key reported by the DOM as "Meta" (key
+     * code 92). This is the "Command" key on macOS and the "Super" ("Windows")
+     * key on other platforms.
+     *
+     * @private
+     * @constant
+     * @type {!number}
+     */
+    const DOM_META_R = Guacamole.Keyboard._quirks.metaIsCommand ?
+        Guacamole.Keyboard.Keysym.COMMAND_R : Guacamole.Keyboard.Keysym.SUPER_R;
+
+    /**
+     * The keysym to use for the left key reported by the DOM as "Alt" (key
+     * code 18). This is the "Option" key on macOS and the "Alt" key on other
+     * platforms.
+     *
+     * @private
+     * @constant
+     * @type {!number}
+     */
+    const DOM_ALT_L = Guacamole.Keyboard._quirks.altIsOption ?
+        Guacamole.Keyboard.Keysym.OPTION_L : Guacamole.Keyboard.Keysym.ALT_L;
+
+    /**
+     * The keysym to use for the right key reported by the DOM as "Alt" (key
+     * code 18, right location). This is the "Option" key on macOS and the
+     * "Alt" key on other platforms.
+     *
+     * @private
+     * @constant
+     * @type {!number}
+     */
+    const DOM_ALT_R = Guacamole.Keyboard._quirks.altIsOption ?
+        Guacamole.Keyboard.Keysym.OPTION_R : Guacamole.Keyboard.Keysym.ALT_R;
+
+    /**
      * Map of known JavaScript keycodes which do not map to typable characters
      * to their X11 keysym equivalents.
      *
@@ -411,7 +405,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         13:  [0xFF0D], // enter
         16:  [0xFFE1, 0xFFE1, 0xFFE2], // shift
         17:  [0xFFE3, 0xFFE3, 0xFFE4], // ctrl
-        18:  [0xFFE9, 0xFFE9, 0xFFEA], // alt
+        18:  [DOM_ALT_L, DOM_ALT_L, DOM_ALT_R], // alt
         19:  [0xFF13], // pause/break
         20:  [0xFFE5], // caps lock
         27:  [0xFF1B], // escape
@@ -426,8 +420,8 @@ Guacamole.Keyboard = function Keyboard(element) {
         40:  [0xFF54, 0xFF54, 0xFF54, 0xFFB2], // down arrow  / KP 2
         45:  [0xFF63, 0xFF63, 0xFF63, 0xFFB0], // insert      / KP 0
         46:  [0xFFFF, 0xFFFF, 0xFFFF, 0xFFAE], // delete      / KP decimal
-        91:  [0xFFE7], // left windows/command key (meta_l)
-        92:  [0xFFE8], // right window/command key (meta_r)
+        91:  [DOM_META_L], // left windows/command key (meta_l)
+        92:  [DOM_META_R], // right window/command key (meta_r)
         93:  [0xFF67], // menu key
         96:  [0xFFB0], // KP 0
         97:  [0xFFB1], // KP 1
@@ -472,7 +466,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         "Again": [0xFF66],
         "AllCandidates": [0xFF3D],
         "Alphanumeric": [0xFF30],
-        "Alt": [0xFFE9, 0xFFE9, 0xFFEA],
+        "Alt": [DOM_ALT_L, DOM_ALT_L, DOM_ALT_R],
         "Attn": [0xFD0E],
         "AltGraph": [0xFE03],
         "ArrowDown": [0xFF54],
@@ -538,7 +532,6 @@ Guacamole.Keyboard = function Keyboard(element) {
         "Hiragana": [0xFF25],
         "HiraganaKatakana": [0xFF27],
         "Home": [0xFF50],
-        "Hyper": [0xFFED, 0xFFED, 0xFFEE],
         "Insert": [0xFF63],
         "JapaneseHiragana": [0xFF25],
         "JapaneseKatakana": [0xFF26],
@@ -548,10 +541,11 @@ Guacamole.Keyboard = function Keyboard(element) {
         "KanjiMode": [0xFF21],
         "Katakana": [0xFF26],
         "Left": [0xFF51],
-        "Meta": [0xFFE7, 0xFFE7, 0xFFE8],
+        "Meta": [DOM_META_L, DOM_META_L, DOM_META_R],
         "ModeChange": [0xFF7E],
         "NonConvert": [0xFF22],
         "NumLock": [0xFF7F],
+        "OS": [0xFFEB, 0xFFEB, 0xFFEC],
         "PageDown": [0xFF56],
         "PageUp": [0xFF55],
         "Pause": [0xFF13],
@@ -576,91 +570,37 @@ Guacamole.Keyboard = function Keyboard(element) {
         "UIKeyInputUpArrow": [0xFF52],
         "Up": [0xFF52],
         "Undo": [0xFF65],
-        "Win": [0xFFE7, 0xFFE7, 0xFFE8],
+        "Win": [0xFFEB, 0xFFEB, 0xFFEC],
         "Zenkaku": [0xFF28],
         "ZenkakuHankaku": [0xFF2A]
     };
 
     /**
-     * All hold modifier key keysyms, grouped by modifier type.
-     *
-     * @private
-     * @type {!Object.<string, number[]>}
-     */
-    var modifierKeysymsByType = {
-        shift: [0xFFE1, 0xFFE2],           // Left shift, Right shift
-        ctrl:  [0xFFE3, 0xFFE4],           // Left ctrl, Right ctrl
-        alt:   [0xFFE9, 0xFFEA, 0xFE03],   // Left alt, Right alt, AltGr
-        meta:  [0xFFE7, 0xFFE8],           // Left meta, Right meta
-        hyper: [0xFFEB, 0xFFEC]            // Left super/hyper, Right super/hyper
-    };
-
-    /**
-     * All modifier key keysyms for easy lookup.
-     *
-     * @private
-     * @type {!Object.<number, boolean>}
-     */
-    var modifierKeysyms = (function() {
-        var lookup = {};
-        for (var modifier in modifierKeysymsByType) {
-            var keysyms = modifierKeysymsByType[modifier];
-            for (var i = 0; i < keysyms.length; i++) {
-                lookup[keysyms[i]] = true;
-            }
-        }
-        return lookup;
-    })();
-
-    /**
-     * All keysyms that represent each supported toggle modifier
-     * type.
+     * The keysyms which represent each modifier, indexed by the name of the
+     * corresponding {@link Guacamole.Keyboard.ModifierState} property.
      *
      * @private
      * @constant
      * @type {!Object.<string, !number[]>}
      */
-    var toggleModifierKeysymsByType = {
-         capsLock:   [0xFFE5],    // Caps Lock
-         numLock:    [0xFF7F],    // Num Lock
-         scrollLock: [0xFF14]     // Scroll Lock
-     };
+    var modifierKeysymsByProperty = Guacamole.Keyboard._modifierKeysymsByProperty;
 
     /**
-     * All keysyms which should not repeat when held down.
+     * All modifier key keysyms for easy lookup.
      *
      * @private
-     * @type {!Object.<number, boolean>}
+     * @constant
+     * @type {!Object.<number, string>}
      */
-    var no_repeat = {
-        0xFE03: true, // ISO Level 3 Shift (AltGr)
-        0xFFE1: true, // Left shift
-        0xFFE2: true, // Right shift
-        0xFFE3: true, // Left ctrl 
-        0xFFE4: true, // Right ctrl 
-        0xFFE5: true, // Caps Lock
-        0xFFE7: true, // Left meta 
-        0xFFE8: true, // Right meta 
-        0xFFE9: true, // Left alt
-        0xFFEA: true, // Right alt
-        0xFFEB: true, // Left super/hyper
-        0xFFEC: true  // Right super/hyper
-    };
+    var modifierPropertiesByKeysym = Guacamole.Keyboard._modifierPropertiesByKeysym;
 
     /**
-     * All modifiers and their states.
+     * All modifiers and their states. Initially, all modifier states are
+     * assumed to be released/inactive.
      *
      * @type {!Guacamole.Keyboard.ModifierState}
      */
     this.modifiers = new Guacamole.Keyboard.ModifierState();
-
-    /**
-     * The last toggle modifier state seen on keydown, indexed by modifier name.
-     *
-     * @private
-     * @type {!Object.<string, (boolean|undefined)>}
-     */
-    var lastToggleKeydownState = {};
 
     /**
      * The state of every key, indexed by keysym. If a particular key is
@@ -722,6 +662,15 @@ Guacamole.Keyboard = function Keyboard(element) {
     var key_repeat_interval = null;
 
     /**
+     * The timeout ID of the pending deferred interpretation pass, if any. At
+     * most one such pass is ever scheduled at a time.
+     *
+     * @private
+     * @type {number}
+     */
+    var deferredInterpretEvents = null;
+
+    /**
      * Given an array of keysyms indexed by location, returns the keysym
      * for the given location, or the keysym for the standard location if
      * undefined.
@@ -741,113 +690,6 @@ Guacamole.Keyboard = function Keyboard(element) {
             return null;
 
         return keysyms[location] || keysyms[0];
-    };
-
-    /**
-     * Returns true if the given keysym corresponds to a printable character,
-     * false otherwise.
-     *
-     * @param {!number} keysym
-     *     The keysym to check.
-     *
-     * @returns {!boolean}
-     *     true if the given keysym corresponds to a printable character,
-     *     false otherwise.
-     */
-    var isPrintable = function isPrintable(keysym) {
-
-        // Keysyms with Unicode equivalents are printable
-        return (keysym >= 0x00 && keysym <= 0xFF)
-            || (keysym & 0xFFFF0000) === 0x01000000;
-
-    };
-
-    /**
-     * Returns whether the given keysym is the Caps Lock key.
-     *
-     * @private
-     * @param {!number} keysym
-     *     The keysym to check.
-     *
-     * @returns {!boolean}
-     *     true if the given keysym is Caps Lock, false otherwise.
-     */
-    var isCapsLockKey = function isCapsLockKey(keysym) {
-        return toggleModifierKeysymsByType.capsLock.indexOf(keysym) !== -1;
-    };
-
-    /**
-     * Returns whether the given keysym is the Num Lock key.
-     *
-     * @private
-     * @param {!number} keysym
-     *     The keysym to check.
-     *
-     * @returns {!boolean}
-     *     true if the given keysym is Num Lock, false otherwise.
-     */
-    var isNumLockKey = function isNumLockKey(keysym) {
-        return toggleModifierKeysymsByType.numLock.indexOf(keysym) !== -1;
-    };
-
-    /**
-     * Returns whether the given keysym is the Scroll Lock key.
-     *
-     * @private
-     * @param {!number} keysym
-     *     The keysym to check.
-     *
-     * @returns {!boolean}
-     *     true if the given keysym is Scroll Lock, false otherwise.
-     */
-    var isScrollLockKey = function isScrollLockKey(keysym) {
-        return toggleModifierKeysymsByType.scrollLock.indexOf(keysym) !== -1;
-    };
-
-    /**
-     * Returns whether the given keysym is any lock key (Caps/Num/Scroll).
-     *
-     * @private
-     * @param {!number} keysym
-     *     The keysym to check.
-     *
-     * @returns {!boolean}
-     *     true if the given keysym is a lock key, false otherwise.
-     */
-    var isLockKey = function isLockKey(keysym) {
-        return isCapsLockKey(keysym)
-            || isNumLockKey(keysym)
-            || isScrollLockKey(keysym);
-    };
-
-    /**
-     * Returns true if the given keysym corresponds to a Meta key (left or
-     * right Meta/Command/Windows key).
-     *
-     * @private
-     * @param {!number} keysym
-     *     The keysym to check.
-     *
-     * @returns {!boolean}
-     *     true if the given keysym corresponds to a Meta key, false otherwise.
-     */
-    var isMetaKey = function isMetaKey(keysym) {
-        return modifierKeysymsByType.meta.indexOf(keysym) !== -1;
-    };
-
-    /**
-     * Returns true if the given keysym corresponds to a modifier key
-     * (Shift, Ctrl, Alt, Meta, Hyper, AltGr).
-     *
-     * @private
-     * @param {!number} keysym
-     *     The keysym to check.
-     *
-     * @returns {!boolean}
-     *     true if the given keysym corresponds to a modifier key, false otherwise.
-     */
-    var isModifierKey = function isModifierKey(keysym) {
-        return modifierKeysyms[keysym] === true;
     };
 
     function keysym_from_key_identifier(identifier, location, shifted) {
@@ -977,18 +819,20 @@ Guacamole.Keyboard = function Keyboard(element) {
             // Mark key as pressed
             guac_keyboard.pressed[keysym] = true;
 
+            // Set/toggle modifier state if the pressed key is a modifier
+            let modifierProperty = modifierPropertiesByKeysym[keysym];
+            if (modifierProperty) {
+                if (Guacamole.Keyboard.Keysym.isLock(keysym)) {
+                    if (guac_keyboard.modifiers[modifierProperty] !== null)
+                        guac_keyboard.modifiers[modifierProperty] = !guac_keyboard.modifiers[modifierProperty];
+                }
+                else
+                    guac_keyboard.modifiers[modifierProperty] = true;
+            }
+
             // Send key event
             if (guac_keyboard.onkeydown) {
                 var result = guac_keyboard.onkeydown(keysym);
-
-                // Keep local lock-modifier tracking in sync with each lock key
-                // keydown that is dispatched.
-                if (isCapsLockKey(keysym))
-                    guac_keyboard.modifiers.capsLock = !guac_keyboard.modifiers.capsLock;
-                else if (isNumLockKey(keysym))
-                    guac_keyboard.modifiers.numLock = !guac_keyboard.modifiers.numLock;
-                else if (isScrollLockKey(keysym))
-                    guac_keyboard.modifiers.scrollLock = !guac_keyboard.modifiers.scrollLock;
 
                 last_keydown_result[keysym] = result;
 
@@ -997,13 +841,14 @@ Guacamole.Keyboard = function Keyboard(element) {
                 window.clearInterval(key_repeat_interval);
 
                 // Repeat after a delay as long as pressed
-                if (!no_repeat[keysym])
+                if (Guacamole.Keyboard.Keysym.isRepeatable(keysym)) {
                     key_repeat_timeout = window.setTimeout(function() {
                         key_repeat_interval = window.setInterval(function() {
                             guac_keyboard.onkeyup(keysym);
                             guac_keyboard.onkeydown(keysym);
                         }, 50);
                     }, 500);
+                }
 
                 return result;
             }
@@ -1032,6 +877,16 @@ Guacamole.Keyboard = function Keyboard(element) {
             // Stop repeat
             window.clearTimeout(key_repeat_timeout);
             window.clearInterval(key_repeat_interval);
+
+            // Clear non-lock modifier state when no further keys are still
+            // pressed for a particular modifier
+            if (!Guacamole.Keyboard.Keysym.isLock(keysym)) {
+                let modifierProperty = modifierPropertiesByKeysym[keysym];
+                if (modifierProperty && guac_keyboard.modifiers[modifierProperty]) {
+                    guac_keyboard.modifiers[modifierProperty] =
+                            modifierKeysymsByProperty[modifierProperty].some((modifierKeysym) => guac_keyboard.pressed[modifierKeysym]);
+                }
+            }
 
             // Send key event
             if (keysym !== null && guac_keyboard.onkeyup)
@@ -1081,70 +936,36 @@ Guacamole.Keyboard = function Keyboard(element) {
             guac_keyboard.release(parseInt(keysym));
 
         // Clear event log
+        window.clearTimeout(deferredInterpretEvents);
         eventLog = [];
 
     };
 
-    // Mouse and touch events provide a reliable opportunity to resync modifier
-    // toggle state when keyboard events may not occur immediately after focus
-    // changes. This supports toolbars, desktop indicators, and editors that
-    // dynamically reflect lock-key status, keeping the remote session visually
-    // and functionally consistent with the local system.
-
     /**
-     * Updates keyboard modifier state from a mouse event.
+     * Updates the remote state of all modifiers to match the local modifier
+     * state reported by the given mouse or touch event, implicitly pressing
+     * or releasing modifier keys and toggling lock keys as needed.
      *
-     * @param {!Guacamole.Mouse.Event} mouseEvent
-     *     The mouse event that occurred.
+     * Mouse and touch events provide an opportunity to resync modifier state
+     * that has drifted via key events that could not be received, such as lock
+     * keys toggled while the window lacked keyboard focus, or a modifier that
+     * was already held before focus arrived.
+     *
+     * @param {Guacamole.Mouse.Event|Guacamole.Touch.Event} event
+     *     The mouse or touch event that occurred.
      */
-    this.updateModifiersFromMouse = function updateModifiersFromMouse(mouseEvent) {
+    this.updateModifiers = function updateModifiers(event) {
 
         // Only intercept if handler set
-        if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
-
-        // Ignore invalid or modifierless events
-        if (!mouseEvent || !mouseEvent.modifiers)
+        if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup)
             return;
 
-        // Keep lock modifiers synchronized using mouse event modifier flags
-        syncToggleModifierStates(mouseEvent.modifiers);
-
-        // Check if there's a pending Meta key waiting for context
-        var hasPendingMeta = eventLog.length > 0 &&
-                             eventLog[0] instanceof KeydownEvent &&
-                             isMetaKey(eventLog[0].keysym);
-
-        // Only add mouse event if it has meta modifier and there's a pending Meta key
-        if (mouseEvent.modifiers.meta && hasPendingMeta) {
-            // Push mouse event onto the event log to provide context for the
-            // deferred Meta key. The mouse event will be silently dropped when
-            // processed as it's not a KeyEvent type.
-            eventLog.push(mouseEvent);
-
-            // Process the event log, which will now resolve the deferred Meta
-            // key using the mouse event's modifier state as context
-            interpret_events();
-        }
-
-    };
-
-    /**
-     * Updates keyboard modifier state from a touch event.
-     *
-     * @param {!Guacamole.Touch.Event} touchEvent
-     *     The touch event that occurred.
-     */
-    this.updateModifiersFromTouch = function updateModifiersFromTouch(touchEvent) {
-
-        // Only intercept if handler set
-        if (!guac_keyboard.onkeydown && !guac_keyboard.onkeyup) return;
-
-        // Ignore invalid or modifierless events
-        if (!touchEvent || !touchEvent.modifiers)
-            return;
-
-        // Keep lock modifiers synchronized using touch event modifier flags
-        syncToggleModifierStates(touchEvent.modifiers);
+        // Resync modifier state using the modifier flags of the event (mouse
+        // and touch events do not themselves identify any key)
+        syncModifierStates({
+            keysym: null,
+            modifiers: event.modifiers
+        });
 
     };
 
@@ -1152,7 +973,9 @@ Guacamole.Keyboard = function Keyboard(element) {
      * Resynchronizes the remote state of the given modifier with its
      * corresponding local modifier state, as dictated by
      * {@link KeyEvent#modifiers} within the given key event, by pressing or
-     * releasing keysyms.
+     * releasing keysyms. Modifiers represented by lock keys (Caps Lock, Num
+     * Lock, Scroll Lock) are toggled by pressing and releasing the relevant
+     * key, rather than held down.
      *
      * @private
      * @param {!string} modifier
@@ -1182,6 +1005,16 @@ Guacamole.Keyboard = function Keyboard(element) {
         if (keysyms.indexOf(keyEvent.keysym) !== -1)
             return;
 
+        // Toggle lock modifier state if remote state is known to differ from
+        // local state
+        if (Guacamole.Keyboard.Keysym.isLock(keysyms[0])) {
+            if (localState !== null && remoteState !== null && localState !== remoteState) {
+                guac_keyboard.press(keysyms[0]);
+                guac_keyboard.release(keysyms[0]);
+            }
+            return;
+        }
+
         // Release all related keys if modifier is implicitly released
         if (remoteState && localState === false) {
             for (i = 0; i < keysyms.length; i++) {
@@ -1190,7 +1023,7 @@ Guacamole.Keyboard = function Keyboard(element) {
         }
 
         // Press if modifier is implicitly pressed
-        else if (!remoteState && localState) {
+        else if (remoteState === false && localState) {
 
             // Verify that modifier flag isn't already pressed or already set
             // due to another version of the same key being held down
@@ -1215,84 +1048,27 @@ Guacamole.Keyboard = function Keyboard(element) {
     };
 
     /**
-     * Resynchronizes the remote state of the given toggle modifier with the
-     * local browser state (modifier flags within the event). "Remote" refers
-     * to the modifier state tracked for the Guacamole connection.
+     * Updates all local and remote lock key states to match the known lock
+     * key states within the given event. Any lock keys not reported within the
+     * event are left untouched. This function pays no attention to keycodes.
      *
      * @private
-     * @param {!string} modifier
-     *     The name of the {@link Guacamole.Keyboard.ModifierState} property
-     *     being updated.
-     *
-     * @param {!number[]} keysyms
-     *     The keysyms which represent the modifier being updated.
-     *
      * @param {!KeyEvent} keyEvent
      *     Guacamole's current best interpretation of the key event being
      *     processed.
      */
-    var updateToggleModifierState = function updateToggleModifierState(modifier,
-        keysyms, keyEvent) {
-
-        // Skip if event/modifier state is not available
-        if (!keyEvent || !keyEvent.modifiers)
-            return;
-
-        var localToggleState = keyEvent.modifiers[modifier];
-
-        // Skip if local state is not known
-        if (localToggleState === undefined)
-            return;
-
-        // Record toggle state at keydown for this modifier
-        if (keyEvent.keysym === keysyms[0] && keyEvent instanceof KeydownEvent) {
-            lastToggleKeydownState[modifier] = localToggleState;
-            return;
-        }
-
-        // If this is keyup for the toggle key, only resync if state changed
-        // between keydown and keyup.
-        if (keyEvent.keysym === keysyms[0] && keyEvent instanceof KeyupEvent) {
-            if (lastToggleKeydownState[modifier] === localToggleState)
-                return;
-        }
-
-        // Toggle if local and remote states do not match
-        if (localToggleState !== guac_keyboard.modifiers[modifier]) {
-            var keysym = keysyms[0];
-            guac_keyboard.press(keysym);
-            guac_keyboard.release(keysym);
-        }
-
-    };
-
-    /**
-     * Resynchronizes toggle modifier keys (Caps Lock, Num Lock, Scroll Lock)
-     * from the provided modifier state.
-     *
-     * @private
-     * @param {!Guacamole.Keyboard.ModifierState|!Object} modifierState
-     *     The modifier state to synchronize from.
-     */
-    var syncToggleModifierStates = function syncToggleModifierStates(modifierState) {
-
-        // Skip if modifier state is not available
-        if (!modifierState)
-            return;
-
-        ['capsLock', 'numLock', 'scrollLock'].forEach(function syncToggleModifier(modifier) {
-            updateToggleModifierState(modifier, toggleModifierKeysymsByType[modifier], {
-                modifiers: modifierState,
-                keysym: null
-            });
+    var syncLockModifierStates = function syncLockModifierStates(keyEvent) {
+        Object.entries(modifierKeysymsByProperty).forEach(([modifier, keysyms]) => {
+            if (Guacamole.Keyboard.Keysym.isLock(keysyms[0]))
+                updateModifierState(modifier, keysyms, keyEvent);
         });
-
     };
 
     /**
-     * Given a keyboard event, updates the remote key state to match the local
-     * modifier state and remote based on the modifier flags within the event.
-     * This function pays no attention to keycodes.
+     * Updates all local and remote modifier states to match the known modifier
+     * states within the given event, including lock keys. Any modifiers not
+     * reported within the event are left untouched. This function pays no
+     * attention to keycodes.
      *
      * @private
      * @param {!KeyEvent} keyEvent
@@ -1301,40 +1077,15 @@ Guacamole.Keyboard = function Keyboard(element) {
      */
     var syncModifierStates = function syncModifierStates(keyEvent) {
 
-        // Hold modifiers (pressed/released)
+        // Resync state of all modifiers that are held down while in effect
+        Object.entries(modifierKeysymsByProperty).forEach(([modifier, keysyms]) => {
+            if (!Guacamole.Keyboard.Keysym.isLock(keysyms[0]))
+                updateModifierState(modifier, keysyms, keyEvent);
+        });
 
-        // Resync state of alt
-        updateModifierState('alt', modifierKeysymsByType.alt, keyEvent);
-
-        // Resync state of shift
-        updateModifierState('shift', modifierKeysymsByType.shift, keyEvent);
-
-        // Resync state of ctrl
-        updateModifierState('ctrl', modifierKeysymsByType.ctrl, keyEvent);
-
-        // Resync state of meta
-        updateModifierState('meta', modifierKeysymsByType.meta, keyEvent);
-
-        // Resync state of hyper
-        updateModifierState('hyper', modifierKeysymsByType.hyper, keyEvent);
-
-        // Update hold modifiers' state: toggle modifiers, e.g. like Lock,
-        // are intentionally excluded because their event flags can reflect
-        // post-toggle state and are resynced separately.
-        guac_keyboard.modifiers.shift = keyEvent.modifiers.shift;
-        guac_keyboard.modifiers.ctrl  = keyEvent.modifiers.ctrl;
-        guac_keyboard.modifiers.alt   = keyEvent.modifiers.alt;
-        guac_keyboard.modifiers.meta  = keyEvent.modifiers.meta;
-        guac_keyboard.modifiers.hyper = keyEvent.modifiers.hyper;
-
-        // Toggle modifiers (state toggles)
-
-        // Resync toggle modifier states based on modifier flags
-        updateToggleModifierState('capsLock', toggleModifierKeysymsByType.capsLock, keyEvent);
-
-        updateToggleModifierState('numLock', toggleModifierKeysymsByType.numLock, keyEvent);
-
-        updateToggleModifierState('scrollLock', toggleModifierKeysymsByType.scrollLock, keyEvent);
+        // Resync state of lock keys, whose modifier state is toggled through
+        // press/release pairs
+        syncLockModifierStates(keyEvent);
 
     };
 
@@ -1370,24 +1121,30 @@ Guacamole.Keyboard = function Keyboard(element) {
      */
     function interpret_events() {
 
-        // Do not prevent default if no event could be interpreted
-        var handled_event = interpret_event();
-        if (!handled_event)
-            return false;
+        let lastInterpretedEvent = null;
 
-        // Interpret as much as possible
-        var last_event;
-        do {
-            last_event = handled_event;
-            handled_event = interpret_event();
-        } while (handled_event !== null);
+        // Interpret as many events as possible
+        let interpretedEvent;
+        while (!!(interpretedEvent = interpret_event())) {
+            lastInterpretedEvent = interpretedEvent;
+        }
+
+        // Mark all remaining events as deferred, waiting only until next event
+        // loop evaluation before assuming no further events are coming that
+        // are relevant to the deferred event
+        if (eventLog.length) {
+            eventLog.forEach((event) => event.deferred = true);
+            window.clearTimeout(deferredInterpretEvents);
+            deferredInterpretEvents = window.setTimeout(interpret_events, 0);
+        }
 
         // Reset keyboard state if we cannot expect to receive any further
         // keyup events
-        if (isStateImplicit())
+        else if (isStateImplicit())
             guac_keyboard.reset();
 
-        return last_event.defaultPrevented;
+        // Use default prevention status of final interpreted event, if any
+        return lastInterpretedEvent ? lastInterpretedEvent.defaultPrevented : false;
 
     }
 
@@ -1414,11 +1171,11 @@ Guacamole.Keyboard = function Keyboard(element) {
             return;
 
         // Release Ctrl+Alt if the keysym is printable
-        if (keysym <= 0xFF || (keysym & 0xFF000000) === 0x01000000) {
-            guac_keyboard.release(0xFFE3); // Left ctrl 
-            guac_keyboard.release(0xFFE4); // Right ctrl 
-            guac_keyboard.release(0xFFE9); // Left alt
-            guac_keyboard.release(0xFFEA); // Right alt
+        if (Guacamole.Keyboard.Keysym.isPrintable(keysym)) {
+            guac_keyboard.release(Guacamole.Keyboard.Keysym.CTRL_L);
+            guac_keyboard.release(Guacamole.Keyboard.Keysym.CTRL_R);
+            guac_keyboard.release(Guacamole.Keyboard.Keysym.ALT_L);
+            guac_keyboard.release(Guacamole.Keyboard.Keysym.ALT_R);
         }
 
     };
@@ -1446,24 +1203,25 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             var keysym = null;
             var accepted_events = [];
-
-            // Defer handling of Meta until it is known to be functioning as a
+            // Defer handling of Super until it is known to be functioning as a
             // modifier (it may otherwise actually be an alternative method for
-            // pressing a single key, such as Meta+Left for Home on ChromeOS)
-            if (isMetaKey(first.keysym)) {
+            // pressing a single key, such as Super+Left for Home on ChromeOS)
+            if (first.keysym === Guacamole.Keyboard.Keysym.SUPER_L
+                    || first.keysym === Guacamole.Keyboard.Keysym.SUPER_R) {
 
                 // Defer handling until further events exist to provide context
-                if (eventLog.length === 1)
+                if (!eventLog[1])
                     return null;
 
-                // Drop keydown if it turns out Meta does not actually apply
+                // Drop keydown if it turns out Super is not actually
+                // functioning as a modifier
                 if (eventLog[1].keysym !== first.keysym) {
-                    if (!eventLog[1].modifiers.meta)
+                    if (!eventLog[1].modifiers.super)
                         return eventLog.shift();
                 }
 
                 // Drop duplicate keydown events while waiting to determine
-                // whether to acknowledge Meta (browser may repeat keydown
+                // whether to acknowledge Super (browser may repeat keydown
                 // while the key is held)
                 else if (eventLog[1] instanceof KeydownEvent)
                     return eventLog.shift();
@@ -1472,7 +1230,7 @@ Guacamole.Keyboard = function Keyboard(element) {
 
             // On AltGr hold, ControlLeft is sent without Ctrl modifier and
             // could be misinterpreted as Ctrl press.
-            if (first.keysym == 0xFFE3 && !first.modifiers.ctrl)
+            if (first.keysym === Guacamole.Keyboard.Keysym.CTRL_L && !first.modifiers.ctrl)
                 return eventLog.shift();
 
             // If event itself is reliable, no need to wait for other events
@@ -1490,7 +1248,7 @@ Guacamole.Keyboard = function Keyboard(element) {
             // If keydown is immediately followed by anything else, then no
             // keypress can possibly occur to clarify this event, and we must
             // handle it now
-            else if (eventLog[1]) {
+            else if (first.deferred || eventLog[1]) {
                 keysym = first.keysym;
                 accepted_events = eventLog.splice(0, 1);
             }
@@ -1525,11 +1283,25 @@ Guacamole.Keyboard = function Keyboard(element) {
         } // end if keydown
 
         // Keyup event
-        else if (first instanceof KeyupEvent && !quirks.keyupUnreliable) {
+        else if (first instanceof KeyupEvent && !Guacamole.Keyboard._quirks.keyupUnreliable) {
 
             // Release specific key if known
             var keysym = first.keysym;
             if (keysym) {
+
+                // On platforms where lock keys are exposed as modifier-state
+                // toggles (such as macOS), a lock is deactivated via a lone
+                // keyup with no corresponding keydown. We must manually add
+                // that keydown here to toggle the state as intended, but ONLY
+                // if local state is known to differ from remote state.
+                let modifier = modifierPropertiesByKeysym[keysym];
+                if (Guacamole.Keyboard.Keysym.isLock(keysym)
+                        && Guacamole.Keyboard._quirks.lockKeyIsModifierToggle
+                        && first.modifiers[modifier] === false
+                        && guac_keyboard.modifiers[modifier] === true) {
+                    guac_keyboard.press(keysym);
+                }
+
                 guac_keyboard.release(keysym);
                 delete recentKeysym[first.keyCode];
                 first.defaultPrevented = true;
@@ -1541,15 +1313,23 @@ Guacamole.Keyboard = function Keyboard(element) {
                 return first;
             }
 
-            syncModifierStates(first);
+            // Resynchronize only lock modifiers during keyup - modifier keys
+            // that must be held AND are unreliable for keyup may still be
+            // physically held, causing a spurious press/release based on flags
+            // despite the modifier already having been preemptively released.
+            syncLockModifierStates(first);
+
             return eventLog.shift();
 
         } // end if keyup
 
         // Ignore any other type of event (keypress by itself is invalid, and
-        // unreliable keyup events should simply be dumped)
-        else
+        // unreliable keyup events should be used only for possible modifier
+        // resynchronization)
+        else {
+            syncModifierStates(first);
             return eventLog.shift();
+        }
 
         // No event interpreted
         return null;
@@ -1765,106 +1545,425 @@ Guacamole.Keyboard = function Keyboard(element) {
 Guacamole.Keyboard._nextID = 0;
 
 /**
- * The state of all supported keyboard modifiers.
- * @constructor
+ * Set of known platform-specific or browser-specific quirks which must be
+ * accounted for to properly interpret key events, even if the only way to
+ * reliably detect that quirk is to platform/browser-sniff.
+ *
+ * @private
+ * @type {!Object.<string, boolean>}
  */
-Guacamole.Keyboard.ModifierState = function() {
-    
-    /**
-     * Whether shift is currently pressed.
-     *
-     * @type {!boolean}
-     */
-    this.shift = false;
-    
-    /**
-     * Whether ctrl is currently pressed.
-     *
-     * @type {!boolean}
-     */
-    this.ctrl = false;
-    
-    /**
-     * Whether alt is currently pressed.
-     *
-     * @type {!boolean}
-     */
-    this.alt = false;
-    
-    /**
-     * Whether meta (apple key) is currently pressed.
-     *
-     * @type {!boolean}
-     */
-    this.meta = false;
+Guacamole.Keyboard._quirks = {
 
     /**
-     * Whether hyper (windows key) is currently pressed.
+     * Whether keyup events are universally unreliable.
      *
      * @type {!boolean}
      */
-    this.hyper = false;
+    keyupUnreliable: false,
 
     /**
-     * Whether caps lock is currently on.
+     * - Normal key mode (Windows/Linux): lock keys (for example, Caps Lock)
+     *   generate both keydown and keyup events, so we can rely on
+     *   receiving keyup for physical release.
+     *
+     * - Modifier-toggle mode (macOS): lock keys (for example, Caps Lock)
+     *   may be exposed as modifier state toggles, often producing only a
+     *   single keyboard event per toggle (typically keydown) with no
+     *   dependable matching keyup.
+     *
+     * When true, lock keys are treated as modifier toggles and keyup
+     * cannot be relied upon.
      *
      * @type {!boolean}
      */
-    this.capsLock = false;
+    lockKeyIsModifierToggle: false,
 
     /**
-     * Whether num lock is currently on.
+     * Whether the key reported by the DOM as "Alt" is actually the macOS
+     * "Option" key. The Option key has different semantics from a traditional
+     * Alt key and is mapped to its own distinct modifier rather than to Alt.
      *
      * @type {!boolean}
      */
-    this.numLock = false;
+    altIsOption: false,
 
     /**
-     * Whether scroll lock is currently on.
+     * Whether the key reported by the DOM as "Meta" is actually the macOS
+     * "Command" key. The Command key has different semantics from the "Super"
+     * ("Windows") key and is mapped to its own distinct modifier rather than
+     * to Super.
      *
      * @type {!boolean}
      */
-    this.scrollLock = false;
+    metaIsCommand: false
 
 };
 
 /**
- * Returns the modifier state applicable to the event given.
+ * Checks the local platform for keyboard-related quirks, initializing the
+ * content of {@link Guacamole.Keyboard._quirks} appropriately.
  *
  * @private
- * @param {!Event} e
+ */
+(function detectQuirks() {
+
+    // Set quirk flags depending on platform/browser, if such information is
+    // available (navigator may legitimately be absent in non-browser
+    // environments, and this file must remain loadable there)
+    if (typeof navigator !== 'undefined' && navigator.platform) {
+
+        // All keyup events are unreliable on iOS (sadly)
+        if (navigator.platform.match(/ipad|iphone|ipod/i))
+            Guacamole.Keyboard._quirks.keyupUnreliable = true;
+
+        // The Alt key on Mac is the "Option" key with different semantics from
+        // traditional Alt, the "Super" key is "Command" (similar but different
+        // from Ctrl), and key events for locks like Caps Lock represent the
+        // state of the lock (keydown = activated, keyup = deactivated) rather
+        // than the state of the key (keydown = pressed, keyup = released).
+        else if (navigator.platform.match(/^mac/i)) {
+            Guacamole.Keyboard._quirks.altIsOption = true;
+            Guacamole.Keyboard._quirks.lockKeyIsModifierToggle = true;
+            Guacamole.Keyboard._quirks.metaIsCommand = true;
+        }
+
+    }
+
+})();
+
+/**
+ * The keysyms of keys which are referenced by name within this implementation,
+ * indexed by name. Some platform-specific keys are represented here by the
+ * keysym of the X11 key to which they are mapped: the macOS "Option" key by
+ * the "Hyper" keysyms, and the macOS "Command" key by the "Meta" keysyms.
+ *
+ * @constant
+ * @type {!Object.<string, !number>}
+ */
+Guacamole.Keyboard.Keysym = {
+
+    ALTGR: 0xFE03,
+    ALT_L: 0xFFE9,
+    ALT_R: 0xFFEA,
+    CAPS_LOCK: 0xFFE5,
+    COMMAND_L: 0xFFE7,
+    COMMAND_R: 0xFFE8,
+    CTRL_L: 0xFFE3,
+    CTRL_R: 0xFFE4,
+    NUM_LOCK: 0xFF7F,
+    OPTION_L: 0xFFED,
+    OPTION_R: 0xFFEE,
+    SCROLL_LOCK: 0xFF14,
+    SHIFT_L: 0xFFE1,
+    SHIFT_R: 0xFFE2,
+    SUPER_L: 0xFFEB,
+    SUPER_R: 0xFFEC
+
+};
+
+/**
+ * The keysyms which represent each keyboard modifier, indexed by the name of
+ * the corresponding {@link Guacamole.Keyboard.ModifierState} property. A
+ * single modifier may be represented by multiple keysyms, such as the left
+ * and right variants of the same key. This table is the authoritative
+ * definition of the set of modifier keys, including lock keys.
+ *
+ * @private
+ * @constant
+ * @type {!Object.<string, !number[]>}
+ */
+Guacamole.Keyboard._modifierKeysymsByProperty = {
+
+    'alt'        : [ Guacamole.Keyboard.Keysym.ALT_L,     Guacamole.Keyboard.Keysym.ALT_R     ],
+    'command'    : [ Guacamole.Keyboard.Keysym.COMMAND_L, Guacamole.Keyboard.Keysym.COMMAND_R ],
+    'ctrl'       : [ Guacamole.Keyboard.Keysym.CTRL_L,    Guacamole.Keyboard.Keysym.CTRL_R    ],
+    'option'     : [ Guacamole.Keyboard.Keysym.OPTION_L,  Guacamole.Keyboard.Keysym.OPTION_R  ],
+    'shift'      : [ Guacamole.Keyboard.Keysym.SHIFT_L,   Guacamole.Keyboard.Keysym.SHIFT_R   ],
+    'super'      : [ Guacamole.Keyboard.Keysym.SUPER_L,   Guacamole.Keyboard.Keysym.SUPER_R   ],
+
+    'altGr'      : [ Guacamole.Keyboard.Keysym.ALTGR       ],
+    'capsLock'   : [ Guacamole.Keyboard.Keysym.CAPS_LOCK   ],
+    'numLock'    : [ Guacamole.Keyboard.Keysym.NUM_LOCK    ],
+    'scrollLock' : [ Guacamole.Keyboard.Keysym.SCROLL_LOCK ]
+
+};
+
+/**
+ * The name of the {@link Guacamole.Keyboard.ModifierState} property
+ * corresponding to each modifier keysym, including lock keys.
+ *
+ * @private
+ * @constant
+ * @type {!Object.<number, string>}
+ */
+Guacamole.Keyboard._modifierPropertiesByKeysym = (function deriveLookup() {
+
+    let lookup = {};
+
+    Object.entries(Guacamole.Keyboard._modifierKeysymsByProperty).forEach(([modifier, keysyms]) => {
+        keysyms.forEach((keysym) => {
+            lookup[keysym] = modifier;
+        });
+    });
+
+    return lookup;
+
+})();
+
+/**
+ * Returns true if the given keysym corresponds to a modifier key, such as
+ * Shift or Ctrl. This intentionally excludes lock keys like Caps Lock.
+ *
+ * @private
+ * @param {!number} keysym
+ *     The keysym to check.
+ *
+ * @returns {!boolean}
+ *     true if the given keysym corresponds to a modifier key, false otherwise.
+ */
+Guacamole.Keyboard.Keysym.isModifier = function isModifier(keysym) {
+
+    if (keysym === Guacamole.Keyboard.Keysym.ALTGR)
+        return true;
+
+    return keysym >= 0xFFE1 && keysym <= 0xFFEE && !Guacamole.Keyboard.Keysym.isLock(keysym);
+
+};
+
+/**
+ * Returns true if the given keysym corresponds to a lock key (Caps Lock, Num
+ * Lock, or Scroll Lock).
+ *
+ * @private
+ * @param {!number} keysym
+ *     The keysym to check.
+ *
+ * @returns {!boolean}
+ *     true if the given keysym corresponds to a lock key, false otherwise.
+ */
+Guacamole.Keyboard.Keysym.isLock = function isLock(keysym) {
+
+    switch (keysym) {
+        case Guacamole.Keyboard.Keysym.CAPS_LOCK:
+        case Guacamole.Keyboard.Keysym.NUM_LOCK:
+        case Guacamole.Keyboard.Keysym.SCROLL_LOCK:
+            return true;
+    }
+
+    return false;
+
+};
+
+/**
+ * Returns true if the key having the given keysym should automatically repeat
+ * while held down.
+ *
+ * @private
+ * @param {!number} keysym
+ *     The keysym to check.
+ *
+ * @returns {!boolean}
+ *     true if the key having the given keysym should repeat while held down,
+ *     false otherwise.
+ */
+Guacamole.Keyboard.Keysym.isRepeatable = function isRepeatable(keysym) {
+    return !Guacamole.Keyboard.Keysym.isLock(keysym) && !Guacamole.Keyboard.Keysym.isModifier(keysym);
+};
+
+/**
+ * Returns true if the given keysym corresponds to a printable character,
+ * false otherwise.
+ *
+ * @private
+ * @param {!number} keysym
+ *     The keysym to check.
+ *
+ * @returns {!boolean}
+ *     true if the given keysym corresponds to a printable character,
+ *     false otherwise.
+ */
+Guacamole.Keyboard.Keysym.isPrintable = function isPrintable(keysym) {
+
+    // Keysyms with Unicode equivalents are printable
+    return (keysym >= 0x00 && keysym <= 0xFF)
+        || (keysym & 0xFF000000) === 0x01000000;
+
+};
+
+/**
+ * The state of all supported keyboard modifiers.
+ *
+ * @constructor
+ * @param {Object.<string, ?boolean>} [template={}]
+ *     An object whose properties provide the initial value of each
+ *     corresponding modifier. Any modifier absent from this object is assigned
+ *     the given default state. If omitted, all modifiers are assigned the
+ *     default state.
+ *
+ * @param {?boolean} [defaultState=false]
+ *     The state to assign to any modifier absent from the template, or null if
+ *     the state of such modifiers should instead be considered unknown.
+ */
+Guacamole.Keyboard.ModifierState = function(template, defaultState) {
+
+    if (defaultState !== null)
+        defaultState = !!defaultState;
+
+    template = template || {};
+
+    /**
+     * Returns the initial state to assign to a modifier given the value
+     * provided for that modifier within the template. A value of null (a
+     * modifier explicitly known to be in an unknown state) is preserved as-is,
+     * while a value of undefined (a modifier absent from the template) is
+     * replaced with the default state.
+     *
+     * @private
+     * @param {?boolean} [state]
+     *     The value provided for the modifier within the template, if any.
+     *
+     * @returns {?boolean}
+     *     The initial state to assign to the modifier.
+     */
+    let getInitialState = function getInitialState(state) {
+        return state === undefined ? defaultState : state;
+    };
+
+    /**
+     * Whether the left or right "Shift" key is currently pressed, or null if
+     * the state of Shift is not known.
+     *
+     * @type {?boolean}
+     */
+    this.shift = getInitialState(template.shift);
+    
+    /**
+     * Whether the left or right "Ctrl" key ("Control" on Mac) is currently
+     * pressed, or null if the state of Ctrl/Control is not known.
+     *
+     * @type {?boolean}
+     */
+    this.ctrl = getInitialState(template.ctrl);
+    
+    /**
+     * Whether the left or right "Alt" key is currently pressed, or null if the
+     * state of Alt is not known.
+     *
+     * @type {?boolean}
+     */
+    this.alt = getInitialState(template.alt);
+
+    /**
+     * Whether the "AltGr" key is currently pressed, or null if the state of
+     * AltGr is not known.
+     *
+     * @type {?boolean}
+     */
+    this.altGr = getInitialState(template.altGr);
+
+    /**
+     * Whether the left or right "Super" key is currently pressed ("Windows"
+     * or "OS" key on typical PC keyboards), or null if the state of Super is
+     * not known.
+     *
+     * @type {?boolean}
+     */
+    this.super = getInitialState(template.super);
+
+    /**
+     * Whether the "Command" / "Apple" key is currently pressed, or null if the
+     * state of Command is not known.
+     *
+     * @type {?boolean}
+     */
+    this.command = getInitialState(template.command);
+
+    /**
+     * Whether the left or right "Option" key is currently pressed, or null if
+     * the state of Option is not known.
+     *
+     * @type {?boolean}
+     */
+    this.option = getInitialState(template.option);
+
+    /**
+     * Whether "Caps Lock" is currently on, or null if the state of Caps Lock is
+     * not known.
+     *
+     * @type {?boolean}
+     */
+    this.capsLock = getInitialState(template.capsLock);
+
+    /**
+     * Whether "Num Lock" is currently on, or null if the state of Num Lock is
+     * not known.
+     *
+     * @type {?boolean}
+     */
+    this.numLock = getInitialState(template.numLock);
+
+    /**
+     * Whether "Scroll Lock" is currently on, or null if the state of Scroll
+     * Lock is not known.
+     *
+     * @type {?boolean}
+     */
+    this.scrollLock = getInitialState(template.scrollLock);
+
+};
+
+/**
+ * Returns the modifier state applicable to the given event. The event may be
+ * a keyboard, mouse, or touch event, or any other event that reports the
+ * state of keyboard modifiers. Any modifier state that cannot be determined
+ * from the given event, such as the state of lock keys within an event that
+ * does not support getModifierState(), will be null.
+ *
+ * @param {!(KeyboardEvent|MouseEvent|TouchEvent)} e
  *     The event to read.
  *
  * @returns {!Guacamole.Keyboard.ModifierState}
- *     The current state of keyboard modifiers.
+ *     The state of keyboard modifiers applicable to the given event.
  */
-Guacamole.Keyboard.ModifierState._fromEvent = function(e) {
+Guacamole.Keyboard.ModifierState.fromEvent = function fromEvent(e) {
 
-    var state = new Guacamole.Keyboard.ModifierState();
+    // Use DOM3 getModifierState() if necessary and supported
+    const getModifierState = e.getModifierState ? e.getModifierState.bind(e) : () => null;
 
-    state.shift = e.shiftKey;
-    state.ctrl  = e.ctrlKey;
-    state.alt   = e.altKey;
-    state.meta  = e.metaKey;
+    const altKey = e.altKey !== undefined ? e.altKey : getModifierState('Alt');
+    const ctrlKey = e.ctrlKey !== undefined ? e.ctrlKey : getModifierState('Control');
+    const metaKey = e.metaKey !== undefined ? e.metaKey : getModifierState('Meta');
+    const shiftKey = e.shiftKey !== undefined ? e.shiftKey : getModifierState('Shift');
+    const superKey = getModifierState('OS')
+            || getModifierState('Super')
+            || getModifierState('Win');
 
-    // Use DOM3 getModifierState() for others
-    if (e.getModifierState) {
-        state.hyper = e.getModifierState("OS")
-                   || e.getModifierState("Super")
-                   || e.getModifierState("Hyper")
-                   || e.getModifierState("Win");
-        state.capsLock = e.getModifierState("CapsLock");
-        state.numLock = e.getModifierState("NumLock");
-        state.scrollLock = e.getModifierState("ScrollLock");
-    }
+    return new Guacamole.Keyboard.ModifierState({
 
-    return state;
+        // Keys not specific to any platform
+        'shift'      : shiftKey,
+        'ctrl'       : ctrlKey,
+        'capsLock'   : getModifierState('CapsLock'),
+        'numLock'    : getModifierState('NumLock'),
+        'scrollLock' : getModifierState('ScrollLock'),
+
+        // Non-Mac keys (NOTE: Some browsers will set the AltGr flag when Option is held)
+        'alt'     : !Guacamole.Keyboard._quirks.altIsOption && altKey,
+        'altGr'   : !Guacamole.Keyboard._quirks.altIsOption && getModifierState('AltGraph'),
+        'super'   : Guacamole.Keyboard._quirks.metaIsCommand ? superKey : (superKey || metaKey),
+
+        // Mac-specific keys
+        'option'  : Guacamole.Keyboard._quirks.altIsOption && altKey,
+        'command' : Guacamole.Keyboard._quirks.metaIsCommand && metaKey
+
+    }, null);
 
 };
 
 /**
  * Returns the modifier state applicable to the keyboard event given.
  *
+ * @deprecated Use {@link Guacamole.Keyboard.ModifierState.fromEvent()} instead.
  * @param {!KeyboardEvent} e
  *     The keyboard event to read.
  *
@@ -1872,41 +1971,5 @@ Guacamole.Keyboard.ModifierState._fromEvent = function(e) {
  *     The current state of keyboard modifiers.
  */
 Guacamole.Keyboard.ModifierState.fromKeyboardEvent = function(e) {
-    return Guacamole.Keyboard.ModifierState._fromEvent(e);
-};
-
-/**
- * Returns the modifier state applicable to the mouse event given.
- *
- * @param {!MouseEvent} e
- *     The mouse event to read.
- *
- * @returns {!Guacamole.Keyboard.ModifierState}
- *     The current state of keyboard modifiers.
- */
-Guacamole.Keyboard.ModifierState.fromMouseEvent = function(e) {
-
-    // Mouse events may be synthesized without a related DOM event.
-    if (!e)
-        return new Guacamole.Keyboard.ModifierState();
-
-    return Guacamole.Keyboard.ModifierState._fromEvent(e);
-};
-
-/**
- * Returns the modifier state applicable to the touch event given.
- *
- * @param {!TouchEvent} e
- *     The touch event to read.
- *
- * @returns {!Guacamole.Keyboard.ModifierState}
- *     The current state of keyboard modifiers.
- */
-Guacamole.Keyboard.ModifierState.fromTouchEvent = function(e) {
-
-    // Touch events may be synthesized without a related DOM event.
-    if (!e)
-        return new Guacamole.Keyboard.ModifierState();
-
-    return Guacamole.Keyboard.ModifierState._fromEvent(e);
+    return Guacamole.Keyboard.ModifierState.fromEvent(e);
 };
