@@ -121,14 +121,14 @@ Guacamole.KeyEventInterpreter = function KeyEventInterpreter(startTimestamp) {
         {keysym: 0xFFE3, name: 'Ctrl' },
         {keysym: 0xFFE4, name: 'Ctrl' },
         {keysym: 0xFFE5, name: 'Caps' },
-        {keysym: 0xFFE7, name: 'Meta' },
-        {keysym: 0xFFE8, name: 'Meta' },
+        {keysym: 0xFFE7, name: 'Command' },
+        {keysym: 0xFFE8, name: 'Command' },
         {keysym: 0xFFE9, name: 'Alt' },
         {keysym: 0xFFEA, name: 'Alt' },
-        {keysym: 0xFFEB, name: 'Super' },
-        {keysym: 0xFFEC, name: 'Super' },
-        {keysym: 0xFFED, name: 'Hyper' },
-        {keysym: 0xFFEE, name: 'Hyper' },
+        {keysym: 0xFFEB, name: 'OS' },
+        {keysym: 0xFFEC, name: 'OS' },
+        {keysym: 0xFFED, name: 'Option' },
+        {keysym: 0xFFEE, name: 'Option' },
         {keysym: 0xFFFF, name: 'Delete' }
     ];
 

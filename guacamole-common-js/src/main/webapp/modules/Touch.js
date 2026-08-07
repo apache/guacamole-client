@@ -337,25 +337,12 @@ Guacamole.Touch.Event = function TouchEvent(type, event, state) {
     Guacamole.Event.DOMEvent.call(this, type, [ event ]);
 
     /**
-     * The state of all modifier keys at the time this event was received.
-     * If the original DOM event is not a TouchEvent or modifier state is
-     * otherwise unavailable, modifier flags default to false. If Keyboard.js
-     * is unavailable, this will be null.
+     * The state of all keyboard modifiers at the time this event was
+     * received.
      *
-     * @type {?Guacamole.Keyboard.ModifierState}
+     * @type {!Guacamole.Keyboard.ModifierState}
      */
-    this.modifiers = (function getTouchModifierState() {
-
-        // Guard against Keyboard.js not being available/loaded yet.
-        if (!Guacamole.Keyboard || !Guacamole.Keyboard.ModifierState)
-            return null;
-
-        if (!event || !Guacamole.Keyboard.ModifierState.fromTouchEvent)
-            return new Guacamole.Keyboard.ModifierState();
-
-        return Guacamole.Keyboard.ModifierState.fromTouchEvent(event);
-
-    })();
+    this.modifiers = Guacamole.Keyboard.ModifierState.fromEvent(event);
 
     /**
      * The state of the touch contact associated with this event.
