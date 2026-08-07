@@ -85,6 +85,8 @@ angular.module('textInput').directive('guacTextInput', [function guacTextInput()
                 0xFFE4: true, /* Right ctrl */
                 0xFFE9: true, /* Left alt */
                 0xFFEA: true, /* Right alt */
+                0xFFED: true, /* Left option (Mac) */
+                0xFFEE: true, /* Right option (Mac) */
                 0xFFFF: true  /* Delete */
             };
 

@@ -231,7 +231,7 @@ Guacamole.Mouse = function Mouse(element) {
 
             // Repeatedly click the up button until insufficient delta remains
             do {
-                guac_mouse.click(Guacamole.Mouse.State.Buttons.UP);
+                guac_mouse.click(Guacamole.Mouse.State.Buttons.UP, e);
                 scroll_delta += guac_mouse.scrollThreshold;
             } while (scroll_delta <= -guac_mouse.scrollThreshold);
 
@@ -245,7 +245,7 @@ Guacamole.Mouse = function Mouse(element) {
 
             // Repeatedly click the down button until insufficient delta remains
             do {
-                guac_mouse.click(Guacamole.Mouse.State.Buttons.DOWN);
+                guac_mouse.click(Guacamole.Mouse.State.Buttons.DOWN, e);
                 scroll_delta -= guac_mouse.scrollThreshold;
             } while (scroll_delta >= guac_mouse.scrollThreshold);
 
@@ -554,28 +554,20 @@ Guacamole.Mouse.Event = function MouseEvent(type, state, events) {
     this.state = { ...state };
 
     /**
-     * The state of all modifier keys at the time this event was received.
-     * If the original DOM event is not a MouseEvent or modifier state is
-     * otherwise unavailable, modifier flags default to false. If Keyboard.js
-     * is unavailable, this will be null.
+     * The first DOM event related to this event, if any.
      *
-     * @type {?Guacamole.Keyboard.ModifierState}
+     * @private
+     * @type {Event}
      */
-    this.modifiers = (function getMouseModifierState() {
+    var firstRelatedEvent = Array.isArray(events) ? events[0] : events;
 
-        // Support both single-event and event-array inputs from DOMEvent.
-        var firstEvent = Array.isArray(events) ? events[0] : events;
-
-        // Guard against Keyboard.js not being available/loaded yet.
-        if (!Guacamole.Keyboard || !Guacamole.Keyboard.ModifierState)
-            return null;
-
-        if (!firstEvent || !Guacamole.Keyboard.ModifierState.fromMouseEvent)
-            return new Guacamole.Keyboard.ModifierState();
-
-        return Guacamole.Keyboard.ModifierState.fromMouseEvent(firstEvent);
-
-    })();
+    /**
+     * The state of all keyboard modifiers at the time this event was
+     * received.
+     *
+     * @type {!Guacamole.Keyboard.ModifierState}
+     */
+    this.modifiers = Guacamole.Keyboard.ModifierState.fromEvent(firstRelatedEvent || {});
 
     /**
      * @inheritdoc
