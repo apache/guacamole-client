@@ -128,6 +128,19 @@
                                model-only="true"></guac-form>
                 </div>
 
+                <!-- Serial console controls -->
+                <div class="menu-section" id="serial-settings" ng-if="focusedClient.protocol === 'serial'">
+                    <h3>{{'CLIENT.SECTION_HEADER_SERIAL' | translate}}</h3>
+                    <div class="content">
+                        <p class="description">{{'CLIENT.HELP_SERIAL' | translate}}</p>
+                        <button ng-click="sendSerialBreak()">{{'CLIENT.SERIAL_ACTION_SEND_BREAK' | translate}}</button>
+                        <button ng-click="sendSerialControl('dtr-on')">{{'CLIENT.SERIAL_ACTION_DTR_ON' | translate}}</button>
+                        <button ng-click="sendSerialControl('dtr-off')">{{'CLIENT.SERIAL_ACTION_DTR_OFF' | translate}}</button>
+                        <button ng-click="sendSerialControl('rts-on')">{{'CLIENT.SERIAL_ACTION_RTS_ON' | translate}}</button>
+                        <button ng-click="sendSerialControl('rts-off')">{{'CLIENT.SERIAL_ACTION_RTS_OFF' | translate}}</button>
+                    </div>
+                </div>
+
                 <!-- Input method -->
                 <div class="menu-section" id="keyboard-settings">
                     <h3>{{'CLIENT.SECTION_HEADER_INPUT_METHOD' | translate}}</h3>
