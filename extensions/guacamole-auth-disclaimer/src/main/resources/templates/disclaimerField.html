@@ -1,0 +1,21 @@
+<div class="disclaimer-field">
+    
+    <div class="disclaimer-field-title">{{ field.title }}</div>
+    <div class="disclaimer-field-body">{{ field.disclaimer }}</div>
+    <div class="disclaimer-last-login" ng-class="{ 'disclaimer-show-last-login' : field.showLastLogin; }">
+        Last Login: {{ showLastLogin(); }}
+    </div>
+    <label class="disclaimer-accept-label">
+        <input type="checkbox"
+               class="disclaimer-accept-checkbox"
+               ng-attr-id="{{ fieldId }}"
+               ng-attr-name="{{ field.name }}"
+               ng-disabled="disabled"
+               ng-model="typedValue"
+               guac-focus="focused" />
+        <span class="disclaimer-accept-text">
+            {{'LOGIN.FIELD_PLACEHOLDER_ACKNOWLEDGE' | translate}}
+        </span>
+    </label>
+    
+</div>
