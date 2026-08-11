@@ -79,6 +79,20 @@ angular.module('settings').provider('preferenceService', ['$injector',
     };
 
     /**
+     * Returns the value of the given cookie, if present.
+     *
+     * @param name
+     *     The name of the cookie to retrieve.
+     *
+     * @returns {String|null}
+     *     The decoded value of the cookie, or null if the cookie does not exist.
+     */
+    function getCookie(name) {
+        var match = document.cookie.match(new RegExp("(^| )" + name + "=([^;]+)"));
+        return match ? decodeURIComponent(match[2]) : null;
+    }
+
+    /**
      * Returns the key of the language currently in use within the browser.
      * This is not necessarily the user's desired language, but is rather the
      * language user by the browser's interface.
@@ -98,11 +112,11 @@ angular.module('settings').provider('preferenceService', ['$injector',
         return language.replace(/-/g, '_');
 
     };
-    
+
     /**
      * Return the timezone detected for the current browser session
      * by the JSTZ timezone library.
-     * 
+     *
      * @returns String
      *     The name of the currently-detected timezone in IANA zone key
      *     format (Olson time zone database).
@@ -122,7 +136,7 @@ angular.module('settings').provider('preferenceService', ['$injector',
         /**
          * Whether translation of touch to mouse events should emulate an
          * absolute pointer device, or a relative pointer device.
-         * 
+         *
          * @type Boolean
          */
         emulateAbsoluteMouse : true,
@@ -133,33 +147,33 @@ angular.module('settings').provider('preferenceService', ['$injector',
          *
          * @type String
          */
-        inputMethod : inputMethods.NONE,
-        
+        inputMethod: inputMethods.TEXT,
+
         /**
          * The key of the desired display language.
-         * 
+         *
          * @type String
          */
         language : getDefaultLanguageKey(),
-        
+
         /**
          * The number of recent connections to display.
-         * 
+         *
          * @type {!number}
          */
         numberOfRecentConnections: 6,
-        
+
         /**
          * Whether or not to show the "Recent Connections" section.
-         * 
+         *
          * @type {!boolean}
          */
         showRecentConnections : true,
-        
+
         /**
          * The timezone set by the user, in IANA zone key format (Olson time
          * zone database).
-         * 
+         *
          * @type String
          */
         timezone : getDetectedTimezone()
@@ -168,8 +182,16 @@ angular.module('settings').provider('preferenceService', ['$injector',
 
     // Get stored preferences from localStorage
     var storedPreferences = localStorageServiceProvider.getItem(GUAC_PREFERENCES_STORAGE_KEY);
-    if (storedPreferences)
+    if (storedPreferences) {
+        delete storedPreferences.inputMethod;
         angular.extend(provider.preferences, storedPreferences);
+    }
+
+    // Load inputMethod from cookie - ONLY READ, DON'T WRITE
+    var cookieInputMethod = getCookie("GUAC_INPUT_METHOD");
+    if (cookieInputMethod) {
+        provider.preferences.inputMethod = cookieInputMethod;
+    }
 
     // Factory method required by provider
     this.$get = ['$injector', function preferenceServiceFactory($injector) {
@@ -200,7 +222,10 @@ angular.module('settings').provider('preferenceService', ['$injector',
          * Persists the current values of all preferences, if possible.
          */
         service.save = function save() {
-            localStorageService.setItem(GUAC_PREFERENCES_STORAGE_KEY, service.preferences);
+            // Save other preferences into localStorage
+            var prefsClone = angular.copy(service.preferences);
+            delete prefsClone.inputMethod;
+            localStorageService.setItem(GUAC_PREFERENCES_STORAGE_KEY, prefsClone);
         };
 
         // Persist settings when window is unloaded
@@ -219,5 +244,4 @@ angular.module('settings').provider('preferenceService', ['$injector',
         return service;
 
     }];
-
 }]);
