@@ -110,11 +110,21 @@
                 </div>
 
                 <!-- Devices -->
-                <div class="menu-section" id="devices" ng-if="focusedClient.filesystems.length">
+                <div class="menu-section" id="devices" ng-if="focusedClient">
                     <h3>{{'CLIENT.SECTION_HEADER_DEVICES' | translate}}</h3>
                     <div class="content">
-                        <div class="device filesystem" ng-repeat="filesystem in focusedClient.filesystems" ng-click="showFilesystemMenu(filesystem)">
-                            {{filesystem.name}}
+                        <!-- Filesystems -->
+                        <div ng-if="focusedClient.filesystems.length">
+                            <h4>Filesystems</h4>
+                            <div class="device filesystem" ng-repeat="filesystem in focusedClient.filesystems" ng-click="showFilesystemMenu(filesystem)">
+                                {{filesystem.name}}
+                            </div>
+                            <br>
+                        </div>
+                        
+                        <!-- USB Devices -->
+                        <div>
+                            <guac-usb client="focusedClient"></guac-usb>
                         </div>
                     </div>
                 </div>
