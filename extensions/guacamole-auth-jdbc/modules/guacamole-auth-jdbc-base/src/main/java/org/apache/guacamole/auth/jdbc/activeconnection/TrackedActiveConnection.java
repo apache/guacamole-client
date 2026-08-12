@@ -119,6 +119,11 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
      *     as well. This includes the remote host, associated tunnel, and
      *     username.
      *
+     * @param includeUsername
+     *     Whether the username of the user that initiated this connection
+     *     should be included. This is only relevant if
+     *     includeSensitiveInformation is false.
+     *
      * @param connectable
      *     Whether the user that retrieved this object should be allowed to
      *     join the active connection.
@@ -126,6 +131,7 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
     public void init(ModeledAuthenticatedUser currentUser,
             ActiveConnectionRecord activeConnectionRecord,
             boolean includeSensitiveInformation,
+            boolean includeUsername,
             boolean connectable) {
 
         super.init(currentUser);
@@ -143,6 +149,10 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
             this.remoteHost = activeConnectionRecord.getRemoteHost();
             this.tunnel     = activeConnectionRecord.getTunnel();
             this.username   = activeConnectionRecord.getUsername();
+        }
+
+        else if (includeUsername) {
+            this.username = activeConnectionRecord.getUsername();
         }
 
     }

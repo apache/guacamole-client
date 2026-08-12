@@ -50,6 +50,7 @@
         "FORMAT_DATE_TIME_PRECISE" : "dd-MM-yyyy HH:mm:ss",
 
         "INFO_ACTIVE_USER_COUNT" : "Actuellement utilisé par {USERS} {USERS, plural, one{utilisateur} other{utilisateurs}}.",
+        "INFO_ACTIVE_USER_DETAILS" : "{USERNAME} (depuis {SINCE} {UNIT, select, second{{VALUE, plural, one{seconde} other{secondes}}} minute{{VALUE, plural, one{minute} other{minutes}}} hour{{VALUE, plural, one{heure} other{heures}}} day{{VALUE, plural, one{jour} other{jours}}} other{}})",
         "INFO_LOGGED_OUT"        : "Vous avez été déconnecté.",
 
         "TEXT_ANONYMOUS_USER"   : "Anonyme",
@@ -280,6 +281,7 @@
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_ACTIVE_USER_DETAILS" : "@:APP.INFO_ACTIVE_USER_DETAILS",
         "INFO_AVAILABLE_CONNECTIONS" : "{AVAILABLE} {AVAILABLE, plural, one{connexion disponible} other{connexions disponibles}} sur {TOTAL}",
 
         "INFO_NO_RECENT_CONNECTIONS" : "Pas de connexion récente.",
@@ -417,6 +419,7 @@
         "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
         "FIELD_HEADER_USER_DISABLED"                 : "Connexion désactivée\u202F:",
         "FIELD_HEADER_USERNAME"                      : "Identifiant\u202F:",
+        "FIELD_HEADER_VIEW_ACTIVE_CONNECTION_USERS"  : "Voir les noms des utilisateurs actifs\u202F:",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
@@ -1038,6 +1041,7 @@
       "HELP_CONNECTIONS"   : "Cliquer ou appuyer sur une connexion en dessous pour la gérer. Selon vos permissions, les connexions peuvent être ajoutées, supprimées, leur propriétés (protocole, nom d'hôte, port, etc.) changées.",
 
       "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+      "INFO_ACTIVE_USER_DETAILS" : "@:APP.INFO_ACTIVE_USER_DETAILS",
 
       "SECTION_HEADER_CONNECTIONS"     : "Connexions"
 
