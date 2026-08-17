@@ -539,6 +539,7 @@
         "FIELD_HEADER_SCROLLBACK"      : "Maximum scrollback size:",
         "FIELD_HEADER_TERMINAL_TYPE"        : "Terminal type (available as $TERM in command):",
         "FIELD_HEADER_TERMINAL_TYPE_ATTACH" : "Terminal type (set manually in session):",
+        "FIELD_HEADER_TEXT_OUTPUT"     : "Raw terminal output (may contain secrets; disabled by \"Disable copying from terminal\"):",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
         "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
@@ -578,6 +579,10 @@
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_EMPTY" : "",
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_ESC"   : "ESC[n~",
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_VT100" : "VT100",
+
+        "FIELD_OPTION_TEXT_OUTPUT_EMPTY" : "Disabled",
+        "FIELD_OPTION_TEXT_OUTPUT_TRUE"  : "Tee to STDOUT pipe",
+        "FIELD_OPTION_TEXT_OUTPUT_RAW"   : "Raw/headless STDOUT pipe",
 
         "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
         "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
@@ -802,6 +807,7 @@
         "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "File browser root directory:",
         "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "Disable file upload:",
         "FIELD_HEADER_TERMINAL_TYPE"   : "Terminal type:",
+        "FIELD_HEADER_TEXT_OUTPUT"     : "Raw terminal output (may contain secrets; disabled by \"Disable copying from terminal\"):",
         "FIELD_HEADER_TIMEOUT"         : "Connection timeout:",
         "FIELD_HEADER_TIMEZONE"        : "Time zone ($TZ):",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
@@ -847,6 +853,10 @@
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_EMPTY" : "",
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_ESC"   : "ESC[n~",
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_VT100" : "VT100",
+
+        "FIELD_OPTION_TEXT_OUTPUT_EMPTY" : "Disabled",
+        "FIELD_OPTION_TEXT_OUTPUT_TRUE"  : "Tee to STDOUT pipe",
+        "FIELD_OPTION_TEXT_OUTPUT_RAW"   : "Raw/headless STDOUT pipe",
 
         "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
         "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
@@ -901,6 +911,7 @@
         "FIELD_HEADER_RECORDING_PATH" : "Recording path:",
         "FIELD_HEADER_SCROLLBACK"     : "Maximum scrollback size:",
         "FIELD_HEADER_TERMINAL_TYPE"   : "Terminal type:",
+        "FIELD_HEADER_TEXT_OUTPUT"     : "Raw terminal output (may contain secrets; disabled by \"Disable copying from terminal\"):",
         "FIELD_HEADER_TIMEOUT"         : "Connection timeout:",
         "FIELD_HEADER_TYPESCRIPT_NAME" : "Typescript name:",
         "FIELD_HEADER_TYPESCRIPT_PATH" : "Typescript path:",
@@ -945,6 +956,10 @@
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_EMPTY" : "",
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_ESC"   : "ESC[n~",
         "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_VT100" : "VT100",
+
+        "FIELD_OPTION_TEXT_OUTPUT_EMPTY" : "Disabled",
+        "FIELD_OPTION_TEXT_OUTPUT_TRUE"  : "Tee to STDOUT pipe",
+        "FIELD_OPTION_TEXT_OUTPUT_RAW"   : "Raw/headless STDOUT pipe",
 
         "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
         "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
