@@ -109,6 +109,9 @@ public class HvSecretService implements VaultSecretService {
      * @param oldtoken
      *      The token string potentially containing a sub-token to replace
      *
+     * @param value
+     *      The value to replace the placeholder with
+     *
      * @param placeholder
      *      The sub-token value to look for. For example "{USERNAME}"
      *
@@ -128,7 +131,7 @@ public class HvSecretService implements VaultSecretService {
         if (value != null && !value.isEmpty()) {
             value = filter.filter(value);
             if (!value.contains("${") && token.contains(placeholder) && !token.contains("$$" + placeholder)) {
-                token = token.replace(placeholder, value);
+                token = token.replace(placeholder, canonicalize(value));
             }
         }
         return token;
