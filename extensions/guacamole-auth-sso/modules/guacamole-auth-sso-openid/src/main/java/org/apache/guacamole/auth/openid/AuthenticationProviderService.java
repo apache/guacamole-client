@@ -158,6 +158,19 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         return getLoginURI(null);
     }
 
+    /**
+     * A local version of getLoginURI that allows credentials to be passed. These
+     * are used to set a redirection path in session state 
+     * 
+     * @param credentials
+     *      The credentials from which to extract the redirection path
+     * 
+     * @return
+     *      A URI with the reedirection path
+     * 
+     * @throws GuacamoleException
+     *      If the configuration parameters can not be parsed
+     */
     private URI getLoginURI(Credentials credentials) throws GuacamoleException {
         // Create a session to store redirection, validity 10 miinutes
         SSOAuthenticationSession session = new SSOAuthenticationSession(600000L);

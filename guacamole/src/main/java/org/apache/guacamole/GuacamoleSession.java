@@ -135,7 +135,7 @@ public class GuacamoleSession {
      * requested.
      *
      * @return
-     *      A String with the redirection path
+     *      A String with the redirection path or null if no such path is set
      */
     public String getRedirection() {
         this.access();
@@ -143,11 +143,11 @@ public class GuacamoleSession {
     }
 
     /**
-     * Returns a redirection path for newly authenticated users, allowing
+     * Sets a redirection path for newly authenticated users, allowing
      * redirection to where they left off when an authentication was
      * requested.
-     *
-     * @return
+     * 
+     * @param redirection
      *      A String with the redirection path
      */
     public void setRedirection(String redirection) {
