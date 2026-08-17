@@ -1,0 +1,17 @@
+<div class="template-chooser">
+
+    <!-- Chosen group name -->
+    <div ng-click="toggleMenu()" class="location">{{chosenConnectionName}}</div>
+
+    <!-- Dropdown hierarchical menu of groups -->
+    <div ng-show="menuOpen" class="dropdown">
+        <guac-group-list
+            context="connectionListContext"
+            connection-groups="rootGroups"
+            templates="{
+                'connection-group' : 'app/ext/template-ext/templates/templateChooserConnectionGroup.html',
+                'connection' : 'app/ext/template-ext/templates/templateChooserConnection.html'
+            }"></guac-group-list>
+    </div>
+
+</div>
