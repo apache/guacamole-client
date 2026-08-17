@@ -79,6 +79,11 @@ public class RequestDetails {
     private final List<Cookie> cookies;
 
     /**
+     *  The request URI of the associated request
+     */
+    private final String requestURI;
+
+    /**
      * Returns an unmodifiable Map of all HTTP headers within the given request.
      * If there are no such headers, the returned Map will be empty. As there
      * may be many values for each header, each value is stored as a separate
@@ -193,6 +198,7 @@ public class RequestDetails {
         this.parameters = getParameters(request);
         this.remoteAddress = request.getRemoteAddr();
         this.remoteHostname = request.getRemoteHost();
+        this.requestURI = request.getRequestURI();
         this.session = request.getSession(false);
     }
 
@@ -209,6 +215,7 @@ public class RequestDetails {
         this.parameters = requestDetails.getParameters();
         this.remoteAddress = requestDetails.getRemoteAddress();
         this.remoteHostname = requestDetails.getRemoteHostname();
+        this.requestURI = requestDetails.getRequestURI();
         this.session = requestDetails.getSession();
     }
 
@@ -410,6 +417,16 @@ public class RequestDetails {
      */
     public String getRemoteHostname() {
         return remoteHostname;
+    }
+
+    /**
+     * Returns the request URI used by the client that sent the associated request
+     *
+     * @return
+     *     The original request URI
+     */
+    public String getRequestURI() {
+        return requestURI;
     }
 
 }
