@@ -27,6 +27,7 @@ import java.util.List;
 import org.apache.guacamole.auth.openid.conf.OpenIDResponseType;
 import org.apache.guacamole.auth.openid.conf.OpenIDWellKnown;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.environment.Environment;
 import org.apache.guacamole.properties.BooleanGuacamoleProperty;
 import org.apache.guacamole.properties.EnumGuacamoleProperty;
@@ -349,7 +350,7 @@ public class ConfigurationService {
     public URI getAuthorizationEndpoint() throws GuacamoleException {
         URI authorization_endpoint = environment.getProperty(OPENID_AUTHORIZATION_ENDPOINT, confWellKnown.getAuthorizationEndpoint());
         if (authorization_endpoint == null) {
-            throw new GuacamoleException("Property openid-authorization-endpoint or openid-well-known-endpoint is required");
+            throw new GuacamoleServerException("Property openid-authorization-endpoint or openid-well-known-endpoint is required");
         }
         return authorization_endpoint;
     }
@@ -405,7 +406,7 @@ public class ConfigurationService {
     public String getIssuer() throws GuacamoleException {
         String issuer = environment.getProperty(OPENID_ISSUER, confWellKnown.getIssuer());
         if (issuer == null) {
-            throw new GuacamoleException("Property openid-issuer or openid-well-known-endpoint is required");
+            throw new GuacamoleServerException("Property openid-issuer or openid-well-known-endpoint is required");
         }
         return issuer;
     }
@@ -427,7 +428,7 @@ public class ConfigurationService {
     public URI getJWKSEndpoint() throws GuacamoleException {
         URI jwks_uri = environment.getProperty(OPENID_JWKS_ENDPOINT, confWellKnown.getJWKSEndpoint());
         if (jwks_uri == null) {
-            throw new GuacamoleException("Property openid-jwks-endpoint or openid-well-known-endpoint is required");
+            throw new GuacamoleServerException("Property openid-jwks-endpoint or openid-well-known-endpoint is required");
         }
         return jwks_uri;
     }
@@ -447,7 +448,7 @@ public class ConfigurationService {
     public URI getTokenEndpoint() throws GuacamoleException {
         URI token_endpoint = environment.getProperty(OPENID_TOKEN_ENDPOINT, confWellKnown.getTokenEndpoint());
         if (token_endpoint == null) {
-            throw new GuacamoleException("Property openid-token-endpoint or openid-well-known-endpoint is required");
+            throw new GuacamoleServerException("Property openid-token-endpoint or openid-well-known-endpoint is required");
         }
         return token_endpoint;
     }

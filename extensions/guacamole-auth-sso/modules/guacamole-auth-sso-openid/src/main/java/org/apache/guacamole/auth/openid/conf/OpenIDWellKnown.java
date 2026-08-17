@@ -49,7 +49,6 @@ public class OpenIDWellKnown {
      */
     private static final Logger logger = LoggerFactory.getLogger(OpenIDWellKnown.class);
 
-
     /**
      * The number of attempts to the well-known endpoint to get the values before giving up
      */
@@ -92,12 +91,6 @@ public class OpenIDWellKnown {
      */
     @Inject
     private Environment environment;
-    
-    /**
-     * Empty constructor of the class to populate data recovered from a OIDC
-     * well-known URL. The class will be populated on injection by Guice
-     */
-    public OpenIDWellKnown() { }
 
     /**
      * The well-known endpoint (URI) of the OIDC service.
@@ -130,7 +123,8 @@ public class OpenIDWellKnown {
     private void awaitInitialization() {
         try {
             initializedLatch.await();
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IllegalStateException("Initialization interrupted", e);
         }

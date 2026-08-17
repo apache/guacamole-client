@@ -48,7 +48,6 @@ import org.jose4j.jwt.JwtClaims;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 /**
  * Service that authenticates Guacamole users by processing OpenID tokens.
  */

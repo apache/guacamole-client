@@ -35,11 +35,6 @@ public final class PKCEUtil {
      */
     private static final SecureRandom RANDOM = new SecureRandom();
 
-    /*
-     * Class to create PKCE challenges and verifiers. This class should not be instantiated
-     */
-    private PKCEUtil() {}
-
     /**
      * Generates a high-entropy PKCE code_verifier.
      *
