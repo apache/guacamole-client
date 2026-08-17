@@ -46,8 +46,9 @@ public class TokenFilter {
      * escape character preceding the token, the name of the token, and the
      * entire token itself.
      */
-    private final Pattern tokenPattern = Pattern.compile("(.*?)(^|.)(\\$\\{((?:[^{}:]|:(?!(?:LOWER|UPPER|OPTIONAL)" +
-                        "(?=\\}))|\\{(?:[^{}]|\\{[^{}]*\\})*\\})+)(:(?:(LOWER|UPPER|OPTIONAL))(?=\\}))?\\})");
+    private final Pattern tokenPattern = Pattern.compile("(.*?)(^|.)"
+            + "(\\$\\{([A-Za-z0-9_]*|[a-z]+:\\/(?:\\/[a-zA-Z0-9_-]+)+"
+            + "(?:\\?(?:[^=&?#]+=[^&#:]*(?:&[^=&?#]+=[^&#:]*)*)?)?)(\\:([^:]*))?\\})");
 
     /**
      * The index of the capturing group within tokenPattern which matches
