@@ -27,6 +27,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
@@ -356,6 +357,50 @@ public class VaultUserContext extends TokenInjectingUserContext {
         tokens.putAll(resolve(getTokens(
                 connectionGroup, confService.getTokenMapping(), filter,
                 null, new TokenFilter(tokens))));
+
+        // For BALANCING groups, the JDBC layer selects and connects a child
+        // connection internally, bypassing the vault's addTokens(Connection).
+        // Pre-resolve vault tokens for child connections here so they are
+        // available when the JDBC layer applies tokens to the child's config.
+        if (connectionGroup.getType() == ConnectionGroup.Type.BALANCING) {
+
+            Set<String> childIds;
+            try {
+                childIds = connectionGroup.getConnectionIdentifiers();
+            }
+            catch (GuacamoleException e) {
+                logger.debug("Unable to retrieve child connection identifiers "
+                        + "for BALANCING group \"{}\": {}", identifier,
+                        e.getMessage());
+                return;
+            }
+
+            for (String childId : childIds) {
+                try {
+
+                    Connection child = getPrivileged()
+                            .getConnectionDirectory().get(childId);
+                    if (child == null)
+                        continue;
+
+                    logger.debug("Resolving vault tokens for BALANCING "
+                            + "child connection \"{}\" (\"{}\").",
+                            child.getIdentifier(), child.getName());
+
+                    // Delegate to addTokens(Connection) to reuse the
+                    // same token resolution logic used for direct
+                    // connections, avoiding duplication and ensuring
+                    // all extension-contributed tokens are included
+                    addTokens(child, tokens);
+
+                }
+                catch (GuacamoleException e) {
+                    logger.debug("Unable to resolve vault tokens for "
+                            + "child connection \"{}\": {}",
+                            childId, e.getMessage());
+                }
+            }
+        }
 
     }
 
