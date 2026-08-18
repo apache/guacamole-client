@@ -135,3 +135,19 @@ body.client {
 .client .drop-pending .display > *{
     opacity: 0.5;
 }
+.wol-countdown {
+    text-align: center;
+    margin: 0.75em 0 0;
+    opacity: 0.9;
+}
+.wol-countdown .wol-status {
+    color: #ffd580;
+    font-size: 0.95em;
+    margin: 0 0 0.25em;
+    font-style: italic;
+}
+.wol-countdown .wol-timer {
+    color: #cce5ff;
+    font-size: 1.1em;
+    margin: 0;
+}
