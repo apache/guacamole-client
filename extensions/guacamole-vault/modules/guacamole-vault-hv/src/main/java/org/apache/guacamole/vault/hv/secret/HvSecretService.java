@@ -259,7 +259,7 @@ public class HvSecretService implements VaultSecretService {
         }
     }
 
-    /*
+    /**
      * Returns a map of token names to corresponding Futures which eventually
      * complete with the value of that token, where each token is dynamically
      * defined based on connection parameters.

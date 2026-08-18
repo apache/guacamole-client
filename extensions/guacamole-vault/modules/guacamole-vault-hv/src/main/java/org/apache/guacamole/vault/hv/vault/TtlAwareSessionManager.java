@@ -173,7 +173,7 @@ public final class TtlAwareSessionManager implements SessionManager {
      * non-renewable tokens, this will re-authenticate to get a new token.
      *
      * @param token
-    *       The token to schedule renewal for.
+     *       The token to schedule renewal for.
      */
     private void scheduleRenewal(final VaultToken token) {
 
