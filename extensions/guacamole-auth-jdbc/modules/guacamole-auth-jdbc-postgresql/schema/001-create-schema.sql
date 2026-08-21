@@ -299,7 +299,7 @@ CREATE TABLE guacamole_connection_parameter (
 
   connection_id   integer       NOT NULL,
   parameter_name  varchar(128)  NOT NULL,
-  parameter_value varchar(8196) NOT NULL,
+  parameter_value varchar(8192) NOT NULL,
 
   PRIMARY KEY (connection_id,parameter_name),
 
