@@ -24,8 +24,8 @@
         "INFO_ENROLL_REQUIRED"     : "Se ha habilitado la autenticación de doble factor para su cuenta.",
         "INFO_VERIFICATION_FAILED" : "Verificación fallida. Inténtelo de nuevo.",
 
-        "HELP_ENROLL_BARCODE" : "Para completar el proceso de registro, escanée el código QR con su aplicación o dispositivo.",
-        "HELP_ENROLL_VERIFY"  : "Despues de escanear el código QR, se le mostrará un código de {DIGITS} dígitos. Introdúzcalo para finalizar el registro de la autenticación de doble factor.",
+        "INFO_ENROLL_BARCODE" : "Para completar el proceso de registro, escanée el código QR con su aplicación o dispositivo.",
+        "INFO_ENROLL_VERIFY"  : "Despues de escanear el código QR, se le mostrará un código de {DIGITS} dígitos. Introdúzcalo para finalizar el registro de la autenticación de doble factor.",
 
         "SECTION_HEADER_DETAILS" : "Detalles:"
 
