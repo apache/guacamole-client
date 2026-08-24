@@ -242,7 +242,7 @@
         "HELP_YAML_EXAMPLE"                 : "---\n - nome: conn1\n protocollo: vnc\n parametri:\n nome utente: alice\n password: pass1\n nome host: conn1.web.com\n gruppo: ROOT\n utenti:\n - guac utente 1\n - guac utente 2\n gruppi:\n - Utenti Connessione 1\n attributi:\n guacd-encryption: none\n - nome: conn2\n protocollo: rdp\n parametri:\n nome utente: bob\n password: pass2\n nome host: conn2.web.com\n gruppo: ROOT/Gruppo padre\n utenti:\n - guac utente 1\n attributi:\n guacd-encryption: none\n - nome: conn3\n protocollo: ssh\n parametri:\n nome utente: carol\n password: pass3\n nome host: conn3.web.com\n gruppo: ROOT/Gruppo padre/Gruppo figlio\n utenti:\n - guac utente 2\n - guac utente 3\n - nome: conn4\n protocollo: kubernetes",
 
         "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "{NUMBER} {NUMBER, plural, one{connessione} other{connessioni}} importata/e con successo.",
-        
+
         "SECTION_HEADER_CONNECTION_IMPORT"           : "Importazione della connessione",
         "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "Formato file di importazione della connessione",
         "SECTION_HEADER_CSV"                         : "Formato CSV",
@@ -412,7 +412,7 @@
         "FIELD_HEADER_USERNAME"                      : "Nome utente:",
         
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
-  
+
         "HELP_NO_USER_GROUPS" : "Questo utente non appartiene attualmente ad alcun gruppo. Espandi questa sezione per aggiungere gruppi..",
 
         "INFO_READ_ONLY"                : "Spiacenti, ma questo account utente non può essere modificato.",
@@ -649,7 +649,7 @@
         "FIELD_HEADER_WOL_SEND_PACKET"            : "Invia pacchetto WoL:",
         "FIELD_HEADER_WOL_UDP_PORT"               : "Porta UDP per pacchetto WoL:",
         "FIELD_HEADER_WOL_WAIT_TIME"              : "Tempo di attesa per l'avvio dell'host:",
-        
+
         "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
         "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "Mantieni così com'è",
         "FIELD_OPTION_NORMALIZE_CLIPBOARD_UNIX"     : "Linux/Mac/Unix (LF)",
@@ -1023,9 +1023,6 @@
 
     "SETTINGS_CONNECTION_HISTORY" : {
 
-        "ACTION_SEARCH"                         : "@:APP.ACTION_SEARCH",
-        "ACTION_DOWNLOAD"                       : "@:APP.ACTION_DOWNLOAD",
-
         "FILENAME_HISTORY_CSV"                  : "storico_connessioni.csv",
         "HELP_CONNECTION_HISTORY"               : "Questa sezione riporta la cronologia delle connessioni recenti e può essere ordinata cliccando sulle intestazioni di colonna. Per cercare un record specifico, inserisci la stringa di testo da filtrare e clicca su \"Ricerca\". Verranno elencati solo i record che corrispondono al filtro.",
         "INFO_NO_HISTORY"                       : "Nessuna registrazione corrispondente trovata",
@@ -1070,25 +1067,25 @@
         "FIELD_HEADER_SHOW_RECENT_CONNECTIONS"    : "Visualizza connessioni recenti:",
         "FIELD_HEADER_NUMBER_RECENT_CONNECTIONS"  : "Numero di connessioni recenti da mostrare:",
         
-        "HELP_DEFAULT_INPUT_METHOD"               : "Il metodo di input predefinito determina come gli eventi della tastiera vengono ricevuti da Guacamole. La modifica di questa impostazione potrebbe essere necessaria quando si utilizza un dispositivo mobile o quando si digita un IME. Questa impostazione può essere ignorata in base alla connessione all'interno del menu Guacamole.",
-        "HELP_DEFAULT_MOUSE_MODE"                 : "La modalità di emulazione del mouse predefinita determina come si comporterà il mouse remoto nelle nuove connessioni rispetto ai tocchi. Questa impostazione può essere ignorata in base alla connessione all'interno del menu Guacamole.",
-        "HELP_INPUT_METHOD_NONE"                  : "@:CLIENT.HELP_INPUT_METHOD_NONE",
-        "HELP_INPUT_METHOD_OSK"                   : "@:CLIENT.HELP_INPUT_METHOD_OSK",
-        "HELP_INPUT_METHOD_TEXT"                  : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
-        "HELP_LANGUAGE"                           : "Seleziona una lingua diversa di seguito per cambiare la lingua di tutto il testo all'interno di Guacamole. Le scelte disponibili dipenderanno dalle lingue installate.",
-        "HELP_MOUSE_MODE_ABSOLUTE"                : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
-        "HELP_MOUSE_MODE_RELATIVE"                : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
-        "HELP_UPDATE_PASSWORD"                    : "Se desideri cambiare la tua password, inserisci la tua password attuale e sotto scrivi quella che desideri come nuova password, clicca \"Modifica Password\". La modifica avrà effetto immediato.",
+        "HELP_DEFAULT_INPUT_METHOD" : "Il metodo di input predefinito determina come gli eventi della tastiera vengono ricevuti da Guacamole. La modifica di questa impostazione potrebbe essere necessaria quando si utilizza un dispositivo mobile o quando si digita un IME. Questa impostazione può essere ignorata in base alla connessione all'interno del menu Guacamole.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "La modalità di emulazione del mouse predefinita determina come si comporterà il mouse remoto nelle nuove connessioni rispetto ai tocchi. Questa impostazione può essere ignorata in base alla connessione all'interno del menu Guacamole.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LANGUAGE"             : "Seleziona una lingua diversa di seguito per cambiare la lingua di tutto il testo all'interno di Guacamole. Le scelte disponibili dipenderanno dalle lingue installate.",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "Se desideri cambiare la tua password, inserisci la tua password attuale e sotto scrivi quella che desideri come nuova password, clicca \"Modifica Password\". La modifica avrà effetto immediato.",
 
-        "INFO_PASSWORD_CHANGED"                   : "Password Modificata.",
+        "INFO_PASSWORD_CHANGED" : "Password Modificata.",
 
-        "NAME_INPUT_METHOD_NONE"                  : "@:CLIENT.NAME_INPUT_METHOD_NONE",
-        "NAME_INPUT_METHOD_OSK"                   : "@:CLIENT.NAME_INPUT_METHOD_OSK",
-        "NAME_INPUT_METHOD_TEXT"                  : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
 
-        "SECTION_HEADER_DEFAULT_INPUT_METHOD"     : "Metodo di immissione predefinito",
-        "SECTION_HEADER_DEFAULT_MOUSE_MODE"       : "Modalità di emulazione del mouse predefinita",
-        "SECTION_HEADER_UPDATE_PASSWORD"          : "Modifica Password"
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Metodo di immissione predefinito",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Modalità di emulazione del mouse predefinita",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Modifica Password"
 
     },
 
@@ -1105,17 +1102,13 @@
 
         "HELP_USERS"                : "Fare clic o toccare un utente di seguito per gestire quell'utente. A seconda del livello di accesso, gli utenti possono essere aggiunti ed eliminati e le loro password possono essere modificate.",
 
-<<<<<<< HEAD
-        "SECTION_HEADER_USERS"  : "Utenti",
-=======
         "SECTION_HEADER_USERS"      : "Utenti",
->>>>>>> a875ec225 (GUACAMOLE-2172: Update italian localization)
 
         "TABLE_HEADER_USERNAME"     : "Nome utente",
         "TABLE_HEADER_FULL_NAME"    : "Nome completo",
         "TABLE_HEADER_LAST_ACTIVE"  : "Ultima connessione",
         "TABLE_HEADER_ORGANIZATION" : "Organizzazione"
-  
+
     },
     
     "SETTINGS_USER_GROUPS" : {
