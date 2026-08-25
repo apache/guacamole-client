@@ -36,6 +36,7 @@ import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.ActiveConnection;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.ObjectPermissionSet;
+import org.apache.guacamole.net.auth.permission.SystemPermission;
 
 /**
  * Service which provides convenience methods for creating, retrieving, and
@@ -82,6 +83,8 @@ public class ActiveConnectionService
 
         String username = user.getIdentifier();
         boolean isPrivileged = user.isPrivileged();
+        boolean canViewConnectionOwner = user.getUser().getEffectivePermissions()
+                .getSystemPermissions().hasPermission(SystemPermission.Type.VIEW_ACTIVE_CONNECTION_USERS);
         Set<String> identifierSet = new HashSet<String>(identifiers);
 
         // Retrieve all visible connections (permissions enforced by tunnel service)
@@ -100,7 +103,7 @@ public class ActiveConnectionService
             // Add connection if within requested identifiers
             if (identifierSet.contains(record.getUUID().toString())) {
                 TrackedActiveConnection activeConnection = trackedActiveConnectionProvider.get();
-                activeConnection.init(user, record, hasPrivilegedAccess, hasPrivilegedAccess);
+                activeConnection.init(user, record, hasPrivilegedAccess, canViewConnectionOwner, hasPrivilegedAccess);
                 activeConnections.add(activeConnection);
             }
 
