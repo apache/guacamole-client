@@ -190,7 +190,8 @@ public class TokenRESTService {
             token,
             authenticatedUser.getIdentifier(),
             authenticatedUser.getAuthenticationProvider().getIdentifier(),
-            authProviderIdentifiers
+            authProviderIdentifiers,
+            session.getRedirection()
         );
 
     }
