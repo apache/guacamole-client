@@ -24,29 +24,47 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.guacamole</groupId>
-    <artifactId>guacamole-vault</artifactId>
-    <packaging>pom</packaging>
-    <name>guacamole-vault</name>
+    <artifactId>guacamole-vault-openbao</artifactId>
+    <packaging>jar</packaging>
+    <name>guacamole-vault-openbao</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
-        <artifactId>extensions</artifactId>
+        <artifactId>guacamole-vault</artifactId>
         <version>${revision}</version>
+        <relativePath>../../</relativePath>
     </parent>
 
-    <modules>
+    <dependencies>
 
-        <!-- Distribution .tar.gz -->
-        <module>modules/guacamole-vault-dist</module>
+        <!-- Guacamole Extension API -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-ext</artifactId>
+        </dependency>
 
-        <!-- Base key vault classes -->
-        <module>modules/guacamole-vault-base</module>
+        <!-- Guacamole base key vault support -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-vault-base</artifactId>
+            <version>${revision}</version>
+        </dependency>
 
-        <!-- Provider-specific implementations -->
-        <module>modules/guacamole-vault-ksm</module>
-        <module>modules/guacamole-vault-openbao</module>
+        <!-- Apache HttpClient 5 for REST API calls -->
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+            <version>5.2.1</version>
+        </dependency>
 
-    </modules>
+        <!-- Gson for JSON parsing -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
+    </dependencies>
 
 </project>
