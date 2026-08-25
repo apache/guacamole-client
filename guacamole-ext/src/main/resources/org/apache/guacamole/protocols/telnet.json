@@ -120,6 +120,110 @@
                 }
             ]
         },
+        
+        {
+            "name"  : "sftp",
+            "fields" : [
+                {
+                    "name"    : "enable-sftp",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"  : "sftp-hostname",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-port",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "sftp-host-key",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-username",
+                    "type"  : "USERNAME"
+                },
+                {
+                    "name"  : "sftp-password",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "sftp-private-key",
+                    "type"  : "MULTILINE"
+                },
+                {
+                    "name"  : "sftp-passphrase",
+                    "type"  : "PASSWORD"
+                },
+                {
+                    "name"  : "sftp-root-directory",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-directory",
+                    "type"  : "TEXT"
+                },
+                {
+                    "name"  : "sftp-server-alive-interval",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"    : "sftp-disable-download",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "sftp-disable-upload",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                }
+            ]
+        },
+        
+        {
+            "name"   : "ssh-tunnel",
+            "fields" : [
+                {
+                    "name"    : "ssh-tunnel",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
+                },
+                {
+                    "name"    : "ssh-tunnel-host",
+                    "type"    : "TEXT"
+                },
+                {
+                    "name" : "ssh-tunnel-port",
+                    "type" : "NUMERIC"
+                },
+                {
+                    "name" : "ssh-tunnel-host-key",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "ssh-tunnel-username",
+                    "type" : "TEXT"
+                },
+                {
+                    "name" : "ssh-tunnel-password",
+                    "type" : "PASSWORD"
+                },
+                {
+                    "name" : "ssh-tunnel-private-key",
+                    "type" : "MULTILINE"
+                },
+                {
+                    "name" : "ssh-tunnel-passphrase",
+                    "type" : "PASSWORD"
+                },
+                {
+                    "name" : "ssh-tunnel-alive-interval",
+                    "type" : "NUMERIC"
+                }
+            ]
+        },
 
         {
             "name" : "typescript",
