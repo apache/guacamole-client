@@ -63,6 +63,15 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     var THUMBNAIL_UPDATE_FREQUENCY = 5000;
 
     /**
+     * The name of the pipe stream used to send out-of-band serial control
+     * commands (break, DTR, RTS) to the guacd serial protocol module.
+     *
+     * @constant
+     * @type String
+     */
+    var SERIAL_CONTROL_PIPE_NAME = 'serial-control';
+
+    /**
      * A deferred pipe stream, that has yet to be consumed, as well as all
      * axuilary information needed to pull data from the stream.
      *
@@ -932,6 +941,43 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             writer.sendText(value);
             writer.sendEnd();
         });
+    };
+
+    /**
+     * Sends the given out-of-band control command (e.g. "break", "dtr-on",
+     * "rts-off") to the serial device associated with the given
+     * ManagedClient, over the dedicated "serial-control" pipe stream. Has no
+     * effect if the underlying Guacamole client is not yet connected.
+     *
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient of the serial connection to send the command to.
+     *
+     * @param {String} command
+     *     The literal text command to send.
+     */
+    ManagedClient.sendSerialControl = function sendSerialControl(managedClient, command) {
+
+        if (!managedClient.client)
+            return;
+
+        var stream = managedClient.client.createPipeStream('text/plain', SERIAL_CONTROL_PIPE_NAME);
+        var writer = new Guacamole.StringWriter(stream);
+        writer.sendText(command);
+        writer.sendEnd();
+
+    };
+
+    /**
+     * Sends an out-of-band break signal to the serial device associated with
+     * the given ManagedClient. Convenience wrapper around
+     * ManagedClient.sendSerialControl().
+     *
+     * @param {ManagedClient} managedClient
+     *     The ManagedClient of the serial connection to send the break
+     *     signal to.
+     */
+    ManagedClient.sendSerialBreak = function sendSerialBreak(managedClient) {
+        ManagedClient.sendSerialControl(managedClient, 'break');
     };
 
     /**
