@@ -567,6 +567,8 @@
         "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ"    : "Húngaro (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY"    : "Italiano (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY"    : "Japones (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NB_NO_QWERTY"    : "Noruego Bokmål (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY"    : "Noruego Nynorsk (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY"    : "Polaco (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY"    : "Portugués Brazileño (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY"    : "Portugués (Qwerty)",
