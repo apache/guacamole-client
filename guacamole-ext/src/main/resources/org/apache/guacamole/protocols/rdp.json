@@ -269,6 +269,11 @@
                 {
                     "name"  : "static-channels",
                     "type"  : "TEXT"
+                },
+                {
+                    "name"    : "enable-usb",
+                    "type"    : "BOOLEAN",
+                    "options" : [ "true" ]
                 }
             ]
         },
