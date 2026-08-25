@@ -27,7 +27,10 @@
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
+    
+    <display-name>Guacamole</display-name>
 
+    
     <!-- Ensure that our own ServletContainerInitializer is used to initialize
     logging, and that Logback does not potentially initialize SLF4J first (which
     would prevent our custom logging from taking effect) -->
