@@ -21,9 +21,32 @@
                 <span
                     ng-repeat="event in batch.events"
                     class="key-event"
-                    ng-class="{ 'not-typed' : !event.typed, 'future': event.timestamp >= currentPosition }"
-                >{{ event.text }}</span>
+                    ng-class="{
+                        'not-typed' : !event.typed,
+                        'future': event.timestamp >= currentPosition,
+                        'clipboard-event': event.clipboard,
+                        'clipboard-image-event': event.clipboard.isImage
+                    }"
+                ><span ng-if="event.clipboard.direction" class="clipboard-direction"
+                    ng-class="event.clipboard.directionClass"
+                    title="{{ event.clipboard.directionTitle }}"
+                >{{ event.clipboard.directionLabel }}</span><span
+                    ng-if="!event.clipboard.isImage">{{ event.text }}</span><span
+                    ng-if="event.clipboard.isImage" class="clipboard-image"
+                    title="{{ event.clipboard.mimetype }} · {{ event.clipboard.sizeLabel }}{{ event.clipboard.width ? ' · ' + event.clipboard.width + '×' + event.clipboard.height : '' }}"
+                    ng-click="$event.stopPropagation(); openImage(event.clipboard)"
+                ><img class="clipboard-thumb" ng-src="{{ event.clipboard.thumbURL || event.clipboard.dataURL }}"
+                        loading="lazy" alt="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_ALT' | translate }}" /><span
+                        class="clipboard-meta">{{ event.clipboard.mimetype }} · {{ event.clipboard.sizeLabel }}<span
+                        ng-if="event.clipboard.width"> · {{ event.clipboard.width }}×{{ event.clipboard.height }}</span></span></span></span>
             </div>
         </span>
+    </div>
+
+    <div class="clipboard-lightbox" ng-if="lightboxImage" ng-click="closeImage()"
+            role="dialog" tabindex="-1"
+            aria-label="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_PREVIEW' | translate }}">
+        <img ng-src="{{ lightboxImage.dataURL }}"
+                alt="{{ 'PLAYER.INFO_CLIPBOARD_IMAGE_ALT' | translate }}" />
     </div>
 </div>

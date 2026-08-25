@@ -12,6 +12,14 @@
                         duration="recording.getDuration()"
     ></guac-player-text-view>
 
+    <!-- Clipboard activity viewer -->
+    <guac-player-clipboard-view ng-show="showClipboardLog"
+                        clipboard-events="clipboardEvents"
+                        incomplete-count="clipboardIncompleteCount"
+                        seek="seekToTimestamp(timestamp)"
+                        current-position="seekPosition || playbackPosition"
+    ></guac-player-clipboard-view>
+
 </div>
 
 <!-- Player controls -->
@@ -37,9 +45,35 @@
             <path ng-attr-d="{{ keyHeatmap }}"/>
         </svg>
 
+        <!-- Clipboard event tick-marks. The layer ignores pointer events so it
+             never blocks the seek slider's drag; only the individual ticks are
+             interactive. -->
+        <div class="clipboard-ticks">
+            <!-- Ticks are a mouse/hover affordance; keyboard-accessible seeking
+                 to each clipboard event is provided by the cards in the
+                 Clipboard Activity panel, so ticks are intentionally not
+                 focusable (hundreds of events would otherwise flood the
+                 transport bar with tab stops). -->
+            <div class="clipboard-tick"
+                    ng-repeat="tick in clipboardTicks"
+                    ng-class="tick.directionClass"
+                    ng-style="{ left: (tick.x / HEATMAP_WIDTH * 100) + '%' }"
+                    ng-click="seekWithLeadIn(tick.timestamp)"
+                    aria-hidden="true">
+                <div class="clipboard-tick-tooltip">
+                    <div class="clipboard-tick-direction">{{ tick.directionLabelKey | translate }}</div>
+                    <img ng-if="tick.isImage && tick.raw.dataURL" class="clipboard-tick-thumb"
+                            ng-src="{{ tick.raw.thumbURL || tick.raw.dataURL }}"
+                            loading="lazy" alt="" />
+                    <div ng-if="!tick.isImage" class="clipboard-tick-text">{{ tick.textPreview }}</div>
+                </div>
+            </div>
+        </div>
+
         <div class="legend">
             <span class="frame-events">{{ 'PLAYER.INFO_FRAME_EVENTS_LEGEND' | translate }}</span>
             <span class="key-events">{{ 'PLAYER.INFO_KEY_EVENTS_LEGEND' | translate }}</span>
+            <span class="clipboard-events">{{ 'PLAYER.INFO_CLIPBOARD_EVENTS_LEGEND' | translate }}</span>
         </div>
     </div>
 
@@ -73,6 +107,14 @@
 
         <span ng-show="!hasTextBatches()" class="guac-player-keys disabled">
             {{ 'PLAYER.INFO_NO_KEY_LOG' | translate }}
+        </span>
+
+        <span ng-show="hasClipboardEvents()" class="guac-player-clipboard" ng-click="toggleClipboardLogView()">
+            {{ 'PLAYER.ACTION_SHOW_CLIPBOARD_LOG' | translate }}
+        </span>
+
+        <span ng-show="!hasClipboardEvents()" class="guac-player-clipboard disabled">
+            {{ 'PLAYER.INFO_NO_CLIPBOARD_LOG' | translate }}
         </span>
     </div>
 
