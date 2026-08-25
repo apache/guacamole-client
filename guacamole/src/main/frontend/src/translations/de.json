@@ -302,7 +302,7 @@
 
         "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
 
-        "ERROR_INVALID_LOGIN" : "Anmeldungefehler",
+        "ERROR_INVALID_LOGIN" : "Anmeldungsfehler",
 
         "FIELD_HEADER_USERNAME" : "Benutzername",
         "FIELD_HEADER_PASSWORD" : "Passwort"
@@ -670,7 +670,8 @@
         "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Ungarisch (Qwertz)",
         "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italienisch (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japanisch (Qwerty)",
-        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norwegisch (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NB_NO_QWERTY" : "Norwegisch Bokmål (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norwegisch Nynorsk (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polnisches (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portugiesisch (BR) (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portugiesisch (Qwerty)",
