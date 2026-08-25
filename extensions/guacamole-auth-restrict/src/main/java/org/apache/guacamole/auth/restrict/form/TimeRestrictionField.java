@@ -41,7 +41,7 @@ public class TimeRestrictionField extends Field {
      * 
      */
     public TimeRestrictionField(String name) {
-        super(name, FIELD_TYPE);
+        super(name, FIELD_TYPE, Field.Autocomplete.OFF);
     }
     
 }
