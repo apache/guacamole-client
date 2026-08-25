@@ -96,4 +96,9 @@ public class DelegatingGuacamoleTunnel implements GuacamoleTunnel {
         return tunnel.isOpen();
     }
 
+    @Override
+    public long getCreationTime() {
+        return tunnel.getCreationTime();
+    }
+
 }
