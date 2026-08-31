@@ -12,12 +12,12 @@
 
         "FIELD_PLACEHOLDER_CODE" : "認証コード",
 
+        "HELP_ENROLL_BARCODE" : "スマートフォンやタブレット等のデバイスの二要素認証アプリでQRコードを読み込んでください。",
+        "HELP_ENROLL_VERIFY"  : "QRコードを読み込み、表示された {DIGITS}桁の認証コードを入力してください。",
+
         "INFO_CODE_REQUIRED"       : "認証コードを入力してください。",
         "INFO_ENROLL_REQUIRED"     : "二要素認証システムが有効になっています。",
         "INFO_VERIFICATION_FAILED" : "認証に失敗しました。もう一度やり直してください。",
-
-        "HELP_ENROLL_BARCODE" : "スマートフォンやタブレット等のデバイスの二要素認証アプリでQRコードを読み込んでください。",
-        "HELP_ENROLL_VERIFY"  : "QRコードを読み込み、表示された {DIGITS}桁の認証コードを入力してください。",
 
         "SECTION_HEADER_DETAILS" : "詳細:"
 

@@ -20,12 +20,12 @@
 
         "FIELD_PLACEHOLDER_CODE" : "Kod weryfikacyjny",
 
+        "HELP_ENROLL_BARCODE" : "Aby zakończyć proces rejestracji, zeskanuj poniższy kod kreskowy za pomocą aplikacji do uwierzytelniania dwuskładnikowego na swoim telefonie lub urządzeniu.",
+        "HELP_ENROLL_VERIFY"  : "Po zeskanowaniu kodu kreskowego, wprowadź {DIGITS}-cyfrowy kod weryfikacyjny aby potwierdzić, że proces rejestracji przebiegł pomyślnie.",
+
         "INFO_CODE_REQUIRED"       : "Podaj kod weryfikacyjny, aby potwierdzić swoją tożsamość.",
         "INFO_ENROLL_REQUIRED"     : "Uwierzytelnianie wieloskładnikowe zostało włączone na Twoim koncie.",
         "INFO_VERIFICATION_FAILED" : "Weryfikacja nie powiodła się. Spróbuj ponownie.",
-
-        "HELP_ENROLL_BARCODE" : "Aby zakończyć proces rejestracji, zeskanuj poniższy kod kreskowy za pomocą aplikacji do uwierzytelniania dwuskładnikowego na swoim telefonie lub urządzeniu.",
-        "HELP_ENROLL_VERIFY"  : "Po zeskanowaniu kodu kreskowego, wprowadź {DIGITS}-cyfrowy kod weryfikacyjny aby potwierdzić, że proces rejestracji przebiegł pomyślnie.",
 
         "SECTION_HEADER_DETAILS" : "Szczegóły:"
 
