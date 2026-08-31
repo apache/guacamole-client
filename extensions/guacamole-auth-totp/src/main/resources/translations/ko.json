@@ -12,12 +12,12 @@
 
         "FIELD_PLACEHOLDER_CODE" : "인증 코드",
 
+        "HELP_ENROLL_BARCODE" : "등록 절차를 완료하려면 휴대 전화 또는 기기의 이중 인증 앱으로 아래 바코드를 스캔하세요.",
+        "HELP_ENROLL_VERIFY"  : "바코드를 스캔한 후 표시되는 {DIGITS} 자리 인증 코드를 입력하여 성공적으로 등록되었는지 확인하십시오.",
+
         "INFO_CODE_REQUIRED"       : "신원을 확인하려면 인증 코드를 입력하세요.",
         "INFO_ENROLL_REQUIRED"     : "계정에서 다단계 인증이 활성화되었습니다.",
         "INFO_VERIFICATION_FAILED" : "확인에 실패했습니다. 다시 시도하십시오.",
-
-        "HELP_ENROLL_BARCODE" : "등록 절차를 완료하려면 휴대 전화 또는 기기의 이중 인증 앱으로 아래 바코드를 스캔하세요.",
-        "HELP_ENROLL_VERIFY"  : "바코드를 스캔한 후 표시되는 {DIGITS} 자리 인증 코드를 입력하여 성공적으로 등록되었는지 확인하십시오.",
 
         "SECTION_HEADER_DETAILS" : "세부 정보:"
 
