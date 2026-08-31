@@ -18,18 +18,21 @@
  */
 
 /**
- * The module for code used to connect to a connection or balancing group.
+ * Controller for the WebAuthn status panel within the connection menu.
+ * Surfaces in-flight ceremony count and last-ceremony status from the
+ * client's ManagedWebAuthn instance.
  */
-angular.module('client', [
-    'auth',
-    'clipboard',
-    'element',
-    'history',
-    'navigation',
-    'notification',
-    'osk',
-    'rest',
-    'textInput',
-    'touch',
-    'webauthn'
+angular.module('webauthn').controller('webAuthnController', ['$scope',
+    function webAuthnController($scope) {
+
+        /**
+         * The current page origin, exposed for the policy-blocked hint so
+         * the user can see the exact value that must be added to the
+         * WebAuthenticationRemoteDesktopAllowedOrigins entry.
+         *
+         * @type {!String}
+         */
+        $scope.webAuthnOrigin = window.location.origin;
+
+    }
 ]);

@@ -119,6 +119,9 @@
                     </div>
                 </div>
 
+                <!-- WebAuthn passthrough -->
+                <guac-web-authn client="focusedClient"></guac-web-authn>
+
                 <!-- Connection parameters which may be modified while the connection is open -->
                 <div class="menu-section connection-parameters" id="connection-settings" ng-if="focusedClient.protocol">
                     <guac-form namespace="getProtocolNamespace(focusedClient.protocol)"
