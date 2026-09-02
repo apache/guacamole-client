@@ -1,0 +1,23 @@
+{
+
+    "guacamoleVersion" : "${project.version}",
+
+    "name"      : "Hashicorp Vault",
+    "namespace" : "hashicorp-vault",
+
+    "authProviders" : [
+        "org.apache.guacamole.vault.hv.HvAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/de.json",
+        "translations/en.json",
+        "translations/es.json",
+        "translations/fr.json"
+    ],
+    
+    "listeners" : [
+        "org.apache.guacamole.vault.hv.secret.HvTunnelEventListener"
+    ]
+
+}

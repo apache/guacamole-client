@@ -43,6 +43,7 @@ public class TokenFilterGrammarTest {
     private TokenFilter createFilter() {
         TokenFilter filter = new TokenFilter();
         filter.setToken("TOKEN_C", "Value-of-C");
+        filter.setToken("token://path/secret?modifier=value", "Value-of-URL");
         return filter;
     }
 
@@ -59,6 +60,10 @@ public class TokenFilterGrammarTest {
         assertEquals("value-of-c", filter.filter("${TOKEN_C:LOWER}"));
         assertEquals("VALUE-OF-C", filter.filter("${TOKEN_C:UPPER}"));
 
+        assertEquals("Value-of-URL", filter.filter("${token://path/secret?modifier=value}"));
+        assertEquals("value-of-url", filter.filter("${token://path/secret?modifier=value:LOWER}"));
+        assertEquals("VALUE-OF-URL", filter.filter("${token://path/secret?modifier=value:UPPER}"));
+
     }
 
     /**
@@ -74,6 +79,9 @@ public class TokenFilterGrammarTest {
         assertEquals("Value-of-C", filter.filter("${TOKEN_C:BOGUS}"));
         assertEquals("Value-of-C", filter.filter("${TOKEN_C:lower}"));
 
+        assertEquals("Value-of-URL", filter.filter("${token://path/secret?modifier=value:BOGUS}"));
+        assertEquals("Value-of-URL", filter.filter("${token://path/secret?modifier=value:lower}"));
+
     }
 
     /**
@@ -87,6 +95,8 @@ public class TokenFilterGrammarTest {
         TokenFilter filter = createFilter();
 
         assertEquals("Value-of-C", filter.filterStrict("${TOKEN_C:BOGUS}"));
+
+        assertEquals("Value-of-URL", filter.filterStrict("${token://path/secret?modifier=value:BOGUS}"));
 
     }
 
@@ -130,6 +140,10 @@ public class TokenFilterGrammarTest {
         assertEquals("Value-of-C}}", filter.filter("${TOKEN_C}}}"));
         assertEquals("a{b}cValue-of-C", filter.filter("a{b}c${TOKEN_C}"));
 
+        assertEquals("{Value-of-URL}", filter.filter("{${token://path/secret?modifier=value}}"));
+        assertEquals("Value-of-URL}}", filter.filter("${token://path/secret?modifier=value}}}"));
+        assertEquals("a{b}cValue-of-URL", filter.filter("a{b}c${token://path/secret?modifier=value}"));
+
     }
 
     /**
@@ -145,6 +159,13 @@ public class TokenFilterGrammarTest {
         assertEquals("${TOKEN_C:UPPER}", filter.filter("$${TOKEN_C:UPPER}"));
         assertEquals("Value-of-C${TOKEN_C}",
                 filter.filter("${TOKEN_C}$${TOKEN_C}"));
+
+        assertEquals("${token://path/secret?modifier=value}",
+                filter.filter("$${token://path/secret?modifier=value}"));
+        assertEquals("${token://path/secret?modifier=value:UPPER}",
+                filter.filter("$${token://path/secret?modifier=value:UPPER}"));
+        assertEquals("Value-of-URL${token://path/secret?modifier=value}",
+                filter.filter("${token://path/secret?modifier=value}$${token://path/secret?modifier=value}"));
 
     }
 
@@ -212,6 +233,15 @@ public class TokenFilterGrammarTest {
         // Directly adjacent tokens: only the first is substituted
         assertEquals("Value-of-C${TOKEN_C}",
                 filter.filter("${TOKEN_C}${TOKEN_C}"));
+
+        assertEquals("Value-of-URL/Value-of-URL",
+                filter.filter("${token://path/secret?modifier=value}/${token://path/secret?modifier=value}"));
+        assertEquals("xValue-of-URLyValue-of-URLz",
+                filter.filter("x${token://path/secret?modifier=value}y${token://path/secret?modifier=value}z"));
+
+        // Directly adjacent tokens: only the first is substituted
+        assertEquals("Value-of-URL${token://path/secret?modifier=value}",
+                filter.filter("${token://path/secret?modifier=value}${token://path/secret?modifier=value}"));
 
     }
 
