@@ -39,7 +39,8 @@ public class PrivilegedModeledAuthenticatedUser extends ModeledAuthenticatedUser
      *     in question.
      */
     public PrivilegedModeledAuthenticatedUser(ModeledAuthenticatedUser authenticatedUser){
-        super(authenticatedUser, authenticatedUser.getModelAuthenticationProvider(), authenticatedUser.getUser());
+        super(authenticatedUser, authenticatedUser.getModelAuthenticationProvider(),
+                authenticatedUser.getUser(), authenticatedUser.getEntityService());
     }
 
     @Override
