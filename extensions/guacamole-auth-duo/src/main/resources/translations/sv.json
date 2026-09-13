@@ -1,0 +1,14 @@
+{
+
+    "DATA_SOURCE_DUO" : {
+        "NAME" : "Duo-tjänst för tvåfaktorsautentisering"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_DUO_SIGNED_RESPONSE" : "",
+        "INFO_DUO_VALIDATION_CODE_INCORRECT"    : "Felaktig verifieringskod för Duo.",
+        "INFO_DUO_AUTH_REQUIRED"                : "Autentisera dig med Duo för att fortsätta.",
+        "INFO_DUO_REDIRECT_PENDING"             : "Vänta, du omdirigeras till Duo..."
+    }
+
+}

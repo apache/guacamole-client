@@ -7,6 +7,7 @@
 
     "translations" : [
         "translations/en.json",
+        "translations/sv.json",
         "translations/tr.json"
     ],
 

@@ -1,0 +1,25 @@
+{
+
+    "DATA_SOURCE_KEEPER_SECRETS_MANAGER" : {
+        "NAME" : "Keeper Secrets Manager"
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG"            : "Keeper Secrets Manager",
+        "FIELD_HEADER_KSM_USER_CONFIG_ENABLED" : "Tillåt användarens egen KSM-konfiguration"
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG" : "Keeper Secrets Manager",
+        "FIELD_HEADER_KSM_CONFIG"   : "Konfiguration av KSM-tjänsten",
+
+        "ERROR_INVALID_KSM_CONFIG_BLOB"    : "Den angivna base64-kodade KSM-konfigurationen är ogiltig. Kontrollera att du har kopierat hela konfigurationen.",
+        "ERROR_INVALID_KSM_ONE_TIME_TOKEN" : "Den angivna konfigurationen är varken en giltig KSM-engångstoken eller en base64-kodad konfiguration. Kontrollera att du har kopierat hela tokenvärdet."
+    },
+
+    "USER_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG" : "Keeper Secrets Manager",
+        "FIELD_HEADER_KSM_CONFIG"   : "Konfiguration av KSM-tjänsten"
+    }
+
+}

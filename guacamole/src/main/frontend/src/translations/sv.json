@@ -1,0 +1,1276 @@
+{
+
+    "NAME" : "Svenska",
+
+    "APP" : {
+
+
+        "ACTION_ACKNOWLEDGE"        : "OK",
+        "ACTION_CANCEL"             : "Avbryt",
+        "ACTION_CLEAR"              : "Rensa",
+        "ACTION_CLONE"              : "Klona",
+        "ACTION_CONTINUE"           : "Fortsätt",
+        "ACTION_DELETE"             : "Ta bort",
+        "ACTION_DELETE_SESSIONS"    : "Avsluta sessioner",
+        "ACTION_DOWNLOAD"           : "Hämta",
+        "ACTION_IMPORT"             : "Importera",
+        "ACTION_LOGIN"              : "Logga in",
+        "ACTION_LOGIN_AGAIN"        : "Logga in igen",
+        "ACTION_LOGOUT"             : "Logga ut",
+        "ACTION_MANAGE_CONNECTIONS" : "Anslutningar",
+        "ACTION_MANAGE_PREFERENCES" : "Personliga inställningar",
+        "ACTION_MANAGE_SETTINGS"    : "Inställningar",
+        "ACTION_MANAGE_SESSIONS"    : "Aktiva sessioner",
+        "ACTION_MANAGE_USERS"       : "Användare",
+        "ACTION_MANAGE_USER_GROUPS" : "Grupper",
+        "ACTION_NAVIGATE_BACK"      : "Tillbaka",
+        "ACTION_NAVIGATE_HOME"      : "Hem",
+        "ACTION_PAUSE"              : "Pausa",
+        "ACTION_PLAY"               : "Spela upp",
+        "ACTION_SAVE"               : "Spara",
+        "ACTION_SEARCH"             : "Sök",
+        "ACTION_SHARE"              : "Dela",
+        "ACTION_UPDATE_PASSWORD"    : "Uppdatera lösenord",
+        "ACTION_VIEW_HISTORY"       : "Historik",
+        "ACTION_VIEW_RECORDING"     : "Visa",
+
+        "DIALOG_HEADER_ERROR" : "Fel",
+
+        "ERROR_PAGE_UNAVAILABLE"  : "Ett fel har inträffat och åtgärden kan inte slutföras. Kontakta systemadministratören eller kontrollera systemloggarna om problemet kvarstår.",
+        "ERROR_PASSWORD_BLANK"    : "Lösenordet får inte vara tomt.",
+        "ERROR_PASSWORD_MISMATCH" : "De angivna lösenorden stämmer inte överens.",
+        "ERROR_SINGLE_FILE_ONLY"  : "Ladda bara upp en fil åt gången",
+
+        "FIELD_HEADER_PASSWORD"       : "Lösenord:",
+        "FIELD_HEADER_PASSWORD_AGAIN" : "Ange lösenordet igen:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "Tillåt skrivning till en befintlig inspelningsfil:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "Tillåt skrivning till en befintlig textinspelningsfil:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "Filter",
+
+        "FORMAT_DATE_TIME_PRECISE" : "yyyy-MM-dd HH:mm:ss",
+
+        "INFO_ACTIVE_USER_COUNT" : "Används för närvarande av {USERS} {USERS, plural, one{användare} other{användare}}.",
+        "INFO_LOGGED_OUT"        : "Du har loggats ut.",
+
+        "TEXT_ANONYMOUS_USER"   : "Anonym",
+        "TEXT_HISTORY_DURATION" : "{VALUE} {UNIT, select, second{{VALUE, plural, one{sekund} other{sekunder}}} minute{{VALUE, plural, one{minut} other{minuter}}} hour{{VALUE, plural, one{timme} other{timmar}}} day{{VALUE, plural, one{dag} other{dagar}}} other{}}",
+        "TEXT_UNTRANSLATED" : "{MESSAGE}"
+
+    },
+
+    "CLIENT" : {
+
+        "ACTION_ACKNOWLEDGE"               : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"                    : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR_CLIENT_MESSAGES"     : "@:APP.ACTION_CLEAR",
+        "ACTION_CLEAR_COMPLETED_TRANSFERS" : "@:APP.ACTION_CLEAR",
+        "ACTION_CONTINUE"                  : "@:APP.ACTION_CONTINUE",
+        "ACTION_DISCONNECT"                : "Koppla från",
+        "ACTION_FULLSCREEN"                : "Helskärm",
+        "ACTION_LOGOUT"                    : "@:APP.ACTION_LOGOUT",
+        "ACTION_NAVIGATE_BACK"             : "@:APP.ACTION_NAVIGATE_BACK",
+        "ACTION_NAVIGATE_HOME"             : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_RECONNECT"                 : "Återanslut",
+        "ACTION_SAVE_FILE"                 : "@:APP.ACTION_SAVE",
+        "ACTION_SHARE"                     : "@:APP.ACTION_SHARE",
+        "ACTION_SHOW_CLIPBOARD"            : "Klicka för att visa urklippets innehåll.",
+        "ACTION_UPLOAD_FILES"              : "Ladda upp filer",
+
+        "DIALOG_HEADER_CONNECTING"       : "Ansluter",
+        "DIALOG_HEADER_CONNECTION_ERROR" : "Anslutningsfel",
+        "DIALOG_HEADER_DISCONNECTED"     : "Frånkopplad",
+
+        "ERROR_CLIENT_201"     : "Anslutningen har stängts eftersom servern är upptagen. Vänta några minuter och försök igen.",
+        "ERROR_CLIENT_202"     : "Guacamole-servern har stängt anslutningen eftersom fjärrskrivbordet tar för lång tid på sig att svara. Försök igen eller kontakta systemadministratören.",
+        "ERROR_CLIENT_203"     : "Ett fel inträffade på fjärrskrivbordsservern och anslutningen har stängts. Försök igen eller kontakta systemadministratören.",
+        "ERROR_CLIENT_205"     : "Anslutningen kräver en resurs som redan används, men delad åtkomst till resursen är antingen inte möjlig eller inte tillåten. Försök igen senare.",
+        "ERROR_CLIENT_207"     : "Fjärrskrivbordsservern kan inte nås just nu. Kontakta systemadministratören eller kontrollera systemloggarna om problemet kvarstår.",
+        "ERROR_CLIENT_208"     : "Fjärrskrivbordsservern är inte tillgänglig just nu. Kontakta systemadministratören eller kontrollera systemloggarna om problemet kvarstår.",
+        "ERROR_CLIENT_209"     : "Fjärrskrivbordsservern har stängt anslutningen eftersom den står i konflikt med en annan anslutning. Försök igen senare.",
+        "ERROR_CLIENT_20A"     : "Fjärrskrivbordsservern har stängt anslutningen eftersom den verkade vara inaktiv. Kontakta systemadministratören eller kontrollera systeminställningarna om detta är oönskat eller oväntat.",
+        "ERROR_CLIENT_20B"     : "Fjärrskrivbordsservern har tvångsstängt anslutningen. Kontakta systemadministratören eller kontrollera systemloggarna om detta är oönskat eller oväntat.",
+        "ERROR_CLIENT_301"     : "Inloggningen misslyckades. Återanslut och försök igen.",
+        "ERROR_CLIENT_303"     : "Fjärrskrivbordsservern har nekat åtkomst till anslutningen. Be systemadministratören att ge ditt konto åtkomst eller kontrollera systeminställningarna om du behöver åtkomst.",
+        "ERROR_CLIENT_308"     : "Guacamole-servern har stängt anslutningen eftersom webbläsaren inte har svarat på så länge att den verkade vara frånkopplad. Detta beror ofta på nätverksproblem, till exempel en svag trådlös signal eller mycket låg nätverkshastighet. Kontrollera nätverket och försök igen.",
+        "ERROR_CLIENT_31D"     : "Guacamole-servern nekar åtkomst till anslutningen eftersom du har nått gränsen för antalet samtidiga anslutningar per användare. Stäng en eller flera anslutningar och försök igen.",
+        "ERROR_CLIENT_DEFAULT" : "Ett internt fel har inträffat på Guacamole-servern och anslutningen har avslutats. Kontakta systemadministratören eller kontrollera systemloggarna om problemet kvarstår.",
+
+        "ERROR_TUNNEL_201"     : "Guacamole-servern har avvisat anslutningsförsöket eftersom det finns för många aktiva anslutningar. Vänta några minuter och försök igen.",
+        "ERROR_TUNNEL_202"     : "Anslutningen har stängts eftersom servern tar för lång tid på sig att svara. Detta beror oftast på nätverksproblem, till exempel en svag trådlös signal eller låg nätverkshastighet. Kontrollera nätverksanslutningen och försök igen eller kontakta systemadministratören.",
+        "ERROR_TUNNEL_203"     : "Ett fel inträffade på servern och anslutningen har stängts. Försök igen eller kontakta systemadministratören.",
+        "ERROR_TUNNEL_204"     : "Den begärda anslutningen finns inte. Kontrollera anslutningens namn och försök igen.",
+        "ERROR_TUNNEL_205"     : "Anslutningen används redan och samtidig åtkomst är inte tillåten. Försök igen senare.",
+        "ERROR_TUNNEL_207"     : "Guacamole-servern kan inte nås just nu. Kontrollera nätverket och försök igen.",
+        "ERROR_TUNNEL_208"     : "Guacamole-servern tar inte emot anslutningar. Kontrollera nätverket och försök igen.",
+        "ERROR_TUNNEL_301"     : "Du har inte behörighet att använda anslutningen eftersom du inte är inloggad. Logga in och försök igen.",
+        "ERROR_TUNNEL_303"     : "Du har inte behörighet att använda anslutningen. Be systemadministratören att lägga till dig i listan över tillåtna användare eller kontrollera systeminställningarna om du behöver åtkomst.",
+        "ERROR_TUNNEL_308"     : "Guacamole-servern har stängt anslutningen eftersom webbläsaren inte har svarat på så länge att den verkade vara frånkopplad. Detta beror ofta på nätverksproblem, till exempel en svag trådlös signal eller mycket låg nätverkshastighet. Kontrollera nätverket och försök igen.",
+        "ERROR_TUNNEL_31D"     : "Guacamole-servern nekar åtkomst till anslutningen eftersom du har nått gränsen för antalet samtidiga anslutningar per användare. Stäng en eller flera anslutningar och försök igen.",
+        "ERROR_TUNNEL_DEFAULT" : "Ett internt fel har inträffat på Guacamole-servern och anslutningen har avslutats. Kontakta systemadministratören eller kontrollera systemloggarna om problemet kvarstår.",
+
+        "ERROR_UPLOAD_100"     : "Filöverföring stöds inte eller är inte aktiverad. Kontakta systemadministratören eller kontrollera systemloggarna.",
+        "ERROR_UPLOAD_201"     : "För många filer överförs just nu. Vänta tills de pågående överföringarna är klara och försök sedan igen.",
+        "ERROR_UPLOAD_202"     : "Filen kan inte överföras eftersom fjärrskrivbordsservern tar för lång tid på sig att svara. Försök igen eller kontakta systemadministratören.",
+        "ERROR_UPLOAD_203"     : "Ett fel inträffade på fjärrskrivbordsservern under överföringen. Försök igen eller kontakta systemadministratören.",
+        "ERROR_UPLOAD_204"     : "Målet för filöverföringen finns inte. Kontrollera att målet finns och försök igen.",
+        "ERROR_UPLOAD_205"     : "Målet för filöverföringen är låst just nu. Vänta tills pågående åtgärder är klara och försök igen.",
+        "ERROR_UPLOAD_301"     : "Du har inte behörighet att ladda upp filen eftersom du inte är inloggad. Logga in och försök igen.",
+        "ERROR_UPLOAD_303"     : "Du har inte behörighet att ladda upp filen. Kontrollera systeminställningarna eller kontakta systemadministratören om du behöver åtkomst.",
+        "ERROR_UPLOAD_308"     : "Filöverföringen har stannat. Detta beror ofta på nätverksproblem, till exempel en svag trådlös signal eller mycket låg nätverkshastighet. Kontrollera nätverket och försök igen.",
+        "ERROR_UPLOAD_31D"     : "För många filer överförs just nu. Vänta tills de pågående överföringarna är klara och försök sedan igen.",
+        "ERROR_UPLOAD_DEFAULT" : "Ett internt fel har inträffat på Guacamole-servern och anslutningen har avslutats. Kontakta systemadministratören eller kontrollera systemloggarna om problemet kvarstår.",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CLIPBOARD"           : "Text som kopieras eller klipps ut i Guacamole visas här. Ändringar av texten nedan påverkar urklippet på fjärrdatorn.",
+        "HELP_INPUT_METHOD_NONE"   : "Ingen inmatningsmetod används. Tangentbordsinmatning tas emot från ett anslutet fysiskt tangentbord.",
+        "HELP_INPUT_METHOD_OSK"    : "Visa och ta emot inmatning från Guacamoles inbyggda skärmtangentbord. Skärmtangentbordet gör det möjligt att ange tangentkombinationer som annars kanske inte går att använda, till exempel Ctrl-Alt-Del.",
+        "HELP_INPUT_METHOD_TEXT"   : "Tillåt textinmatning och emulera tangentbordshändelser utifrån den inmatade texten. Detta behövs för enheter som saknar fysiskt tangentbord, till exempel mobiltelefoner.",
+        "HELP_MOUSE_MODE"          : "Anger hur musen på fjärrdatorn reagerar på pekgester.",
+        "HELP_MOUSE_MODE_ABSOLUTE" : "Tryck för att klicka. Klicket sker där du trycker.",
+        "HELP_MOUSE_MODE_RELATIVE" : "Dra för att flytta muspekaren och tryck för att klicka. Klicket sker där pekaren befinner sig.",
+        "HELP_SHARE_LINK"          : "Den aktuella anslutningen delas och kan användas av alla som har följande {LINKS, plural, one{länk} other{länkar}}:",
+
+        "INFO_ANONYMOUS_USER_COUNT" : "Anonym{COUNT, plural, one{} other{ (#)}}",
+        "INFO_CONNECTION_SHARED"    : "Anslutningen delas nu.",
+        "INFO_NO_FILE_TRANSFERS"    : "Inga filöverföringar.",
+        "INFO_USER_COUNT"           : "{USERNAME}{COUNT, plural, one{} other{ (#)}}",
+
+        "NAME_INPUT_METHOD_NONE"   : "Ingen",
+        "NAME_INPUT_METHOD_OSK"    : "Skärmtangentbord",
+        "NAME_INPUT_METHOD_TEXT"   : "Textinmatning",
+        "NAME_KEY_CTRL"            : "Ctrl",
+        "NAME_KEY_ALT"             : "Alt",
+        "NAME_KEY_ESC"             : "Esc",
+        "NAME_KEY_TAB"             : "Tab",
+        "NAME_MOUSE_MODE_ABSOLUTE" : "Pekskärm",
+        "NAME_MOUSE_MODE_RELATIVE" : "Styrplatta",
+
+        "SECTION_HEADER_CLIENT_MESSAGES" : "Meddelanden",
+        "SECTION_HEADER_CLIPBOARD"       : "Urklipp",
+        "SECTION_HEADER_DEVICES"         : "Enheter",
+        "SECTION_HEADER_DISPLAY"         : "Bildskärm",
+        "SECTION_HEADER_FILE_TRANSFERS"  : "Filöverföringar",
+        "SECTION_HEADER_INPUT_METHOD"    : "Inmatningsmetod",
+
+        "SECTION_HEADER_MOUSE_MODE"     : "Musemuleringsläge",
+
+        "TEXT_ANONYMOUS_USER_JOINED"      : "En anonym användare har anslutit.",
+        "TEXT_ANONYMOUS_USER_LEFT"        : "En anonym användare har lämnat anslutningen.",
+        "TEXT_ZOOM_AUTO_FIT"              : "Anpassa automatiskt till webbläsarfönstret",
+        "TEXT_CLIENT_STATUS_IDLE"         : "Inaktiv.",
+        "TEXT_CLIENT_STATUS_CONNECTING"   : "Ansluter till Guacamole...",
+        "TEXT_CLIENT_STATUS_DISCONNECTED" : "Du har kopplats från.",
+        "TEXT_CLIENT_STATUS_UNSTABLE"     : "Nätverksanslutningen till Guacamole-servern verkar vara instabil.",
+        "TEXT_CLIENT_STATUS_WAITING"      : "Ansluten till Guacamole. Väntar på svar...",
+        "TEXT_USER_JOINED"                : "{USERNAME} har anslutit.",
+        "TEXT_USER_LEFT"                  : "{USERNAME} har lämnat anslutningen.",
+        "TEXT_RECONNECT_COUNTDOWN"        : "Återansluter om {REMAINING} {REMAINING, plural, one{sekund} other{sekunder}}...",
+        "TEXT_FILE_TRANSFER_PROGRESS"     : "{PROGRESS} {UNIT, select, b{B} kb{KB} mb{MB} gb{GB} other{}}",
+
+        "URL_OSK_LAYOUT" : "layouts/en-us-qwerty.json"
+
+    },
+
+    "COLOR_SCHEME" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_HIDE_DETAILS" : "Dölj",
+        "ACTION_SAVE"         : "@:APP.ACTION_SAVE",
+        "ACTION_SHOW_DETAILS" : "Visa",
+
+        "FIELD_HEADER_BACKGROUND" : "Bakgrund",
+        "FIELD_HEADER_FOREGROUND" : "Förgrund",
+
+        "FIELD_OPTION_CUSTOM" : "Anpassat...",
+
+        "SECTION_HEADER_DETAILS" : "Detaljer:"
+
+    },
+
+    "IMPORT": {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_BROWSE"             : "Välj fil",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_CLEAR"              : "@:APP.ACTION_CLEAR",
+        "ACTION_VIEW_FORMAT_HELP"   : "Visa formattips",
+        "ACTION_IMPORT"             : "@:APP.ACTION_IMPORT",
+        "ACTION_IMPORT_CONNECTIONS" : "Importera anslutningar",
+
+        "DIALOG_HEADER_ERROR"   : "@:APP.DIALOG_HEADER_ERROR",
+        "DIALOG_HEADER_SUCCESS" : "Klart",
+
+        "ERROR_AMBIGUOUS_CSV_HEADER"         : "Den tvetydiga CSV-rubriken \"{HEADER}\" kan vara antingen ett anslutningsattribut eller en parameter",
+        "ERROR_AMBIGUOUS_PARENT_GROUP"       : "group och parentIdentifier får inte anges samtidigt",
+        "ERROR_ARRAY_REQUIRED"               : "Den angivna filen måste innehålla en lista över anslutningar",
+        "ERROR_DETECTED_INVALID_TYPE"        : "Filtypen stöds inte. Kontrollera att filen innehåller giltig CSV, JSON eller YAML.",
+        "ERROR_DUPLICATE_CONNECTION_IN_FILE" : "Dubblett av anslutningen \"{NAME}\" under \"{PATH}\" i importfilen",
+        "ERROR_DUPLICATE_CSV_HEADER"         : "Duplicerad CSV-rubrik: {HEADER}",
+        "ERROR_EMPTY_FILE"                   : "Den angivna filen är tom",
+        "ERROR_INVALID_CSV_HEADER"           : "Den ogiltiga CSV-rubriken \"{HEADER}\" är varken ett attribut eller en parameter",
+        "ERROR_INVALID_MIME_TYPE"            : "Filtypen stöds inte: \"{TYPE}\"",
+        "ERROR_INVALID_GROUP"                : "Ingen grupp som matchar \"{GROUP}\" hittades",
+        "ERROR_INVALID_GROUP_IDENTIFIER"     : "Ingen anslutningsgrupp med identifieraren \"{IDENTIFIER}\" hittades",
+        "ERROR_INVALID_GROUP_TYPE"           : "Ogiltig grupp – måste vara en sträng.",
+        "ERROR_INVALID_PROTOCOL"             : "Ogiltigt protokoll \"{PROTOCOL}\"",
+        "ERROR_INVALID_USER_GROUPS_TYPE"     : "Ogiltiga användargrupper – måste vara en lista över användargruppsidentifierare.",
+        "ERROR_INVALID_USERS_TYPE"           : "Ogiltiga användare – måste vara en lista över användaridentifierare.",
+        "ERROR_NO_FILE_SUPPLIED"             : "Välj en fil att importera",
+        "ERROR_PARSE_FAILURE_CSV"            : "Kontrollera att filen innehåller giltig CSV. Tolkningen misslyckades med felet \"{ERROR}\".",
+        "ERROR_PARSE_FAILURE_JSON"           : "Kontrollera att filen innehåller giltig JSON. Tolkningen misslyckades med felet \"{ERROR}\".",
+        "ERROR_PARSE_FAILURE_YAML"           : "Kontrollera att filen innehåller giltig YAML. Tolkningen misslyckades med felet \"{ERROR}\".",
+        "ERROR_REJECT_UPDATE_CONNECTION"     : "Anslutningen \"{NAME}\" finns redan under \"{PATH}\"",
+        "ERROR_REQUIRED_NAME_CONNECTION"     : "Anslutningens namn måste anges",
+        "ERROR_REQUIRED_PROTOCOL_CONNECTION" : "Anslutningens protokoll måste anges",
+        "ERROR_REQUIRED_NAME_FILE"           : "Inget anslutningsnamn hittades i den angivna filen",
+        "ERROR_REQUIRED_PROTOCOL_FILE"       : "Inget anslutningsprotokoll hittades i den angivna filen",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FIELD_HEADER_CREATE_MISSING_GROUPS"    : "Skapa grupper automatiskt",
+        "FIELD_HEADER_EXISTING_CONNECTION_MODE" : "Ersätt/uppdatera befintliga anslutningar",
+        "FIELD_HEADER_EXISTING_PERMISSION_MODE" : "Återställ behörigheter",
+
+        "HELP_CSV_DESCRIPTION"              : "En CSV-fil för anslutningsimport innehåller en anslutning per rad. Varje kolumn anger ett anslutningsfält. Minst anslutningens namn och protokoll måste anges.",
+        "HELP_CSV_EXAMPLE"                  : "name,protocol,username,password,hostname,group,users,groups,guacd-encryption (attribute)\nconn1,vnc,alice,pass1,conn1.web.com,ROOT,guac user 1;guac user 2,Connection 1 Users,none\nconn2,rdp,bob,pass2,conn2.web.com,ROOT/Parent Group,guac user 1,,ssl\nconn3,ssh,carol,pass3,conn3.web.com,ROOT/Parent Group/Child Group,guac user 2;guac user 3,,\nconn4,kubernetes,,,,,,,",
+        "HELP_CSV_MORE_DETAILS"             : "CSV-rubriken anger anslutningsfältet för varje rad. ID:t för anslutningsgruppen som anslutningen ska importeras till kan anges direkt med \"parentIdentifier\", eller så kan sökvägen till den överordnade gruppen anges med \"group\", som nedan. Vanligtvis uppstår inga konflikter mellan fält, men vid behov kan suffixet \" (attribute)\" eller \" (parameter)\" läggas till för att skilja dem åt. Listor över användar- eller användargruppsidentifierare måste avgränsas med semikolon.¹",
+        "HELP_FILE_TYPE_DESCRIPTION"        : "Tre filtyper stöds för anslutningsimport: CSV, JSON och YAML. Samma data kan anges i alla tre filtyperna. Anslutningens namn och protokoll måste ingå. Du kan också ange en anslutningsgrupp, en lista över användare och/eller användargrupper som ska få åtkomst, anslutningsparametrar eller anslutningsprotokoll. Användare och användargrupper som inte finns i den aktuella datakällan skapas automatiskt. Befintliga anslutningsbehörigheter tas inte bort för uppdaterade anslutningar om inte \"Återställ behörigheter\" är markerat.",
+        "HELP_FILE_TYPE_HEADER"             : "Filtyper",
+        "HELP_JSON_DESCRIPTION"             : "En JSON-fil för anslutningsimport innehåller en lista över anslutningsobjekt. Minst anslutningens namn och protokoll måste anges i varje objekt.",
+        "HELP_JSON_EXAMPLE"                 : "[\n  \\{\n    \"name\": \"conn1\",\n    \"protocol\": \"vnc\",\n    \"parameters\": \\{ \"username\": \"alice\", \"password\": \"pass1\", \"hostname\": \"conn1.web.com\" \\},\n    \"parentIdentifier\": \"ROOT\",\n    \"users\": [ \"guac user 1\", \"guac user 2\" ],\n    \"groups\": [ \"Connection 1 Users\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn2\",\n    \"protocol\": \"rdp\",\n    \"parameters\": \\{ \"username\": \"bob\", \"password\": \"pass2\", \"hostname\": \"conn2.web.com\" \\},\n    \"group\": \"ROOT/Parent Group\",\n    \"users\": [ \"guac user 1\" ],\n    \"attributes\": \\{ \"guacd-encryption\": \"none\" \\}\n  \\},\n  \\{\n    \"name\": \"conn3\",\n    \"protocol\": \"ssh\",\n    \"parameters\": \\{ \"username\": \"carol\", \"password\": \"pass3\", \"hostname\": \"conn3.web.com\" \\},\n    \"group\": \"ROOT/Parent Group/Child Group\",\n    \"users\": [ \"guac user 2\", \"guac user 3\" ]\n  \\},\n  \\{\n    \"name\": \"conn4\",\n    \"protocol\": \"kubernetes\"\n  \\}\n]",
+        "HELP_JSON_MORE_DETAILS"            : "ID:t för anslutningsgruppen som anslutningen ska importeras till kan anges direkt i fältet \"parentIdentifier\", eller så kan sökvägen till den överordnade gruppen anges i fältet \"group\", som nedan. För varje anslutning kan en lista över identifierare för användare och användargrupper som ska få åtkomst anges.",
+        "HELP_CREATE_MISSING_GROUPS"        : "Skapa automatiskt de anslutningsgrupper som anges i importfilen och som inte redan finns. Om alternativet inte är markerat betraktas anslutningar som hänvisar till en överordnad grupp som inte finns som felaktiga och importeras inte. Om skapandet avbryts av ett fel behålls redan skapade grupper och återanvänds vid nästa import.",
+        "HELP_EXISTING_CONNECTION_MODE"     : "Ersätt/uppdatera befintliga anslutningar helt om deras namn och överordnade anslutningsgrupper matchar värdena i den angivna filen. Om alternativet inte är markerat betraktas försök att importera en anslutning med samma namn och överordnade anslutningsgrupp som en befintlig anslutning som ett fel.",
+        "HELP_EXISTING_PERMISSION_MODE"     : "Återställ behörigheterna för alla anslutningar i den angivna filen till exakt de behörigheter som anges i filen. Om inga behörigheter anges återkallas alla berörda anslutningsbehörigheter. Om alternativet inte är markerat behålls befintliga behörigheter och de behörigheter som anges i filen läggs till.",
+        "HELP_SEMICOLON_FOOTNOTE"           : "Semikolon kan skyddas med ett omvänt snedstreck, till exempel \"first\\\\;last\"",
+        "HELP_UPLOAD_DROP_TITLE"            : "Släpp en fil här",
+        "HELP_UPLOAD_FILE_TYPES"            : "CSV, JSON eller YAML",
+        "HELP_YAML_DESCRIPTION"             : "En YAML-fil för anslutningsimport innehåller en lista över anslutningsobjekt med exakt samma struktur som JSON-formatet.",
+        "HELP_YAML_EXAMPLE"                 : "---\n  - name: conn1\n    protocol: vnc\n    parameters:\n      username: alice\n      password: pass1\n      hostname: conn1.web.com\n    group: ROOT\n    users:\n      - guac user 1\n      - guac user 2\n    groups:\n    - Connection 1 Users\n    attributes:\n      guacd-encryption: none\n  - name: conn2\n    protocol: rdp\n    parameters:\n      username: bob\n      password: pass2\n      hostname: conn2.web.com\n    group: ROOT/Parent Group\n    users:\n      - guac user 1\n    attributes:\n      guacd-encryption: none\n  - name: conn3\n    protocol: ssh\n    parameters:\n      username: carol\n      password: pass3\n      hostname: conn3.web.com\n    group: ROOT/Parent Group/Child Group\n    users:\n      - guac user 2\n      - guac user 3\n  - name: conn4\n    protocol: kubernetes",
+
+        "INFO_CONNECTIONS_IMPORTED_SUCCESS" : "{NUMBER} {NUMBER, plural, one{anslutning har importerats} other{anslutningar har importerats}}.",
+
+        "SECTION_HEADER_CONNECTION_IMPORT"           : "Anslutningsimport",
+        "SECTION_HEADER_HELP_CONNECTION_IMPORT_FILE" : "Filformat för anslutningsimport",
+        "SECTION_HEADER_CSV"                         : "CSV-format",
+        "SECTION_HEADER_JSON"                        : "JSON-format",
+        "SECTION_HEADER_YAML"                        : "YAML-format",
+
+        "TABLE_HEADER_ERRORS"     : "Fel",
+        "TABLE_HEADER_GROUP"      : "Grupp",
+        "TABLE_HEADER_NAME"       : "Namn",
+        "TABLE_HEADER_PROTOCOL"   : "Protokoll",
+        "TABLE_HEADER_ROW_NUMBER" : "Radnr"
+    },
+
+    "DATA_SOURCE_DEFAULT" : {
+        "NAME" : "Standard (XML)"
+    },
+
+    "FORM" : {
+
+        "FIELD_PLACEHOLDER_DATE" : "ÅÅÅÅ-MM-DD",
+        "FIELD_PLACEHOLDER_TIME" : "HH:MM:SS",
+
+        "HELP_SHOW_PASSWORD" : "Klicka för att visa lösenordet",
+        "HELP_HIDE_PASSWORD" : "Klicka för att dölja lösenordet"
+
+    },
+
+    "HOME" : {
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+        "INFO_AVAILABLE_CONNECTIONS"   : "{AVAILABLE} av {TOTAL} {TOTAL, plural, one{anslutning tillgänglig} other{anslutningar tillgängliga}}",
+
+        "INFO_NO_RECENT_CONNECTIONS" : "Inga nyligen använda anslutningar.",
+
+        "PASSWORD_CHANGED" : "Lösenordet har ändrats.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"    : "Alla anslutningar",
+        "SECTION_HEADER_RECENT_CONNECTIONS" : "Senaste anslutningar"
+
+    },
+
+    "LIST" : {
+
+        "TEXT_ANONYMOUS_USER" : "Anonym"
+
+    },
+
+    "LOGIN": {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CONTINUE"    : "@:APP.ACTION_CONTINUE",
+        "ACTION_LOGIN"       : "@:APP.ACTION_LOGIN",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_INVALID_LOGIN" : "Ogiltig inloggning",
+
+        "FIELD_HEADER_USERNAME" : "Användarnamn",
+        "FIELD_HEADER_PASSWORD" : "Lösenord"
+
+    },
+
+    "MANAGE_CONNECTION" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"               : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"                : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"               : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"                 : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Ta bort anslutning",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Plats:",
+        "FIELD_HEADER_NAME"     : "Namn:",
+        "FIELD_HEADER_PROTOCOL" : "Protokoll:",
+
+        "FORMAT_HISTORY_START" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_CONNECTION_ACTIVE_NOW"       : "Aktiv nu",
+        "INFO_CONNECTION_NOT_USED"         : "Anslutningen har inte använts ännu.",
+
+        "SECTION_HEADER_EDIT_CONNECTION" : "Redigera anslutning",
+        "SECTION_HEADER_HISTORY"         : "Användningshistorik",
+        "SECTION_HEADER_PARAMETERS"      : "Parametrar",
+
+        "TABLE_HEADER_HISTORY_USERNAME"   : "Användarnamn",
+        "TABLE_HEADER_HISTORY_START"      : "Starttid",
+        "TABLE_HEADER_HISTORY_DURATION"   : "Varaktighet",
+        "TABLE_HEADER_HISTORY_REMOTEHOST" : "Fjärrvärd",
+
+        "TEXT_CONFIRM_DELETE"   : "Anslutningar kan inte återställas efter att de har tagits bort. Vill du verkligen ta bort anslutningen?",
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "MANAGE_CONNECTION_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Ta bort anslutningsgrupp",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_LOCATION" : "Plats:",
+        "FIELD_HEADER_NAME"     : "Namn:",
+        "FIELD_HEADER_TYPE"     : "Typ:",
+
+        "NAME_TYPE_BALANCING"       : "Lastbalansering",
+        "NAME_TYPE_ORGANIZATIONAL"  : "Organisering",
+
+        "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Redigera anslutningsgrupp",
+
+        "TEXT_CONFIRM_DELETE" : "Anslutningsgrupper kan inte återställas efter att de har tagits bort. Vill du verkligen ta bort anslutningsgruppen?"
+
+    },
+
+    "MANAGE_SHARING_PROFILE" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"       : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"      : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"        : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Ta bort delningsprofil",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_NAME"               : "Namn:",
+        "FIELD_HEADER_PRIMARY_CONNECTION" : "Primär anslutning:",
+
+        "SECTION_HEADER_EDIT_SHARING_PROFILE" : "Redigera delningsprofil",
+        "SECTION_HEADER_PARAMETERS"           : "Parametrar",
+
+        "TEXT_CONFIRM_DELETE" : "Delningsprofiler kan inte återställas efter att de har tagits bort. Vill du verkligen ta bort delningsprofilen?"
+
+    },
+
+    "MANAGE_USER" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Ta bort användare",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "Administrera systemet:",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "Granska systemet:",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "Ändra eget lösenord:",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "Skapa nya användare:",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "Skapa nya användargrupper:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "Skapa nya anslutningar:",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "Skapa nya anslutningsgrupper:",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "Skapa nya delningsprofiler:",
+        "FIELD_HEADER_PASSWORD"                      : "@:APP.FIELD_HEADER_PASSWORD",
+        "FIELD_HEADER_PASSWORD_AGAIN"                : "@:APP.FIELD_HEADER_PASSWORD_AGAIN",
+        "FIELD_HEADER_USER_DISABLED"                 : "Inloggning inaktiverad:",
+        "FIELD_HEADER_USERNAME"                      : "Användarnamn:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS" : "Användaren tillhör inga grupper. Expandera avsnittet för att lägga till grupper.",
+
+        "INFO_READ_ONLY"                : "Det här användarkontot kan inte redigeras.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "Inga grupper tillgängliga.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "Alla anslutningar",
+        "SECTION_HEADER_CONNECTIONS"         : "Anslutningar",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "Aktuella anslutningar",
+        "SECTION_HEADER_EDIT_USER"           : "Redigera användare",
+        "SECTION_HEADER_PERMISSIONS"         : "Behörigheter",
+        "SECTION_HEADER_USER_GROUPS"         : "Grupper",
+
+        "TEXT_CONFIRM_DELETE" : "Användare kan inte återställas efter att de har tagits bort. Vill du verkligen ta bort användaren?"
+
+    },
+
+    "MANAGE_USER_GROUP" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"        : "@:APP.ACTION_CANCEL",
+        "ACTION_CLONE"         : "@:APP.ACTION_CLONE",
+        "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
+        "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Ta bort grupp",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_HEADER_ADMINISTER_SYSTEM"             : "@:MANAGE_USER.FIELD_HEADER_ADMINISTER_SYSTEM",
+        "FIELD_HEADER_AUDIT_SYSTEM"                  : "@:MANAGE_USER.FIELD_HEADER_AUDIT_SYSTEM",
+        "FIELD_HEADER_CHANGE_OWN_PASSWORD"           : "@:MANAGE_USER.FIELD_HEADER_CHANGE_OWN_PASSWORD",
+        "FIELD_HEADER_CREATE_NEW_USERS"              : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
+        "FIELD_HEADER_CREATE_NEW_USER_GROUPS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_USER_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTIONS"        : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTIONS",
+        "FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS"  : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_CONNECTION_GROUPS",
+        "FIELD_HEADER_CREATE_NEW_SHARING_PROFILES"   : "@:MANAGE_USER.FIELD_HEADER_CREATE_NEW_SHARING_PROFILES",
+        "FIELD_HEADER_USER_GROUP_DISABLED"           : "Inaktiverad:",
+        "FIELD_HEADER_USER_GROUP_NAME"               : "Gruppnamn:",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_NO_USER_GROUPS"        : "Gruppen tillhör inga grupper. Expandera avsnittet för att lägga till grupper.",
+        "HELP_NO_MEMBER_USER_GROUPS" : "Gruppen innehåller inga grupper. Expandera avsnittet för att lägga till grupper.",
+        "HELP_NO_MEMBER_USERS"       : "Gruppen innehåller inga användare. Expandera avsnittet för att lägga till användare.",
+
+        "INFO_READ_ONLY"                : "Den här gruppen kan inte redigeras.",
+        "INFO_NO_USER_GROUPS_AVAILABLE" : "@:MANAGE_USER.INFO_NO_USER_GROUPS_AVAILABLE",
+        "INFO_NO_USERS_AVAILABLE"       : "Inga användare tillgängliga.",
+
+        "SECTION_HEADER_ALL_CONNECTIONS"     : "@:MANAGE_USER.SECTION_HEADER_ALL_CONNECTIONS",
+        "SECTION_HEADER_CONNECTIONS"         : "@:MANAGE_USER.SECTION_HEADER_CONNECTIONS",
+        "SECTION_HEADER_CURRENT_CONNECTIONS" : "@:MANAGE_USER.SECTION_HEADER_CURRENT_CONNECTIONS",
+        "SECTION_HEADER_EDIT_USER_GROUP"     : "Redigera grupp",
+        "SECTION_HEADER_MEMBER_USERS"        : "Användare i gruppen",
+        "SECTION_HEADER_MEMBER_USER_GROUPS"  : "Grupper i gruppen",
+        "SECTION_HEADER_PERMISSIONS"         : "@:MANAGE_USER.SECTION_HEADER_PERMISSIONS",
+        "SECTION_HEADER_USER_GROUPS"         : "Överordnade grupper",
+
+        "TEXT_CONFIRM_DELETE" : "Grupper kan inte återställas efter att de har tagits bort. Vill du verkligen ta bort gruppen?"
+
+    },
+
+    "PLAYER" : {
+
+        "ACTION_CANCEL"       : "@:APP.ACTION_CANCEL",
+        "ACTION_CLOSE"        : "Stäng",
+        "ACTION_PAUSE"        : "@:APP.ACTION_PAUSE",
+        "ACTION_PLAY"         : "@:APP.ACTION_PLAY",
+        "ACTION_SHOW_KEY_LOG" : "Tangenttryckningslogg",
+
+        "INFO_FRAME_EVENTS_LEGEND" : "Skärmaktivitet",
+        "INFO_KEY_EVENTS_LEGEND"   : "Tangentbordsaktivitet",
+        "INFO_LOADING_RECORDING"   : "Inspelningen läses in. Vänta...",
+        "INFO_NO_KEY_LOG"          : "Tangenttryckningsloggen är inte tillgänglig",
+        "INFO_NUMBER_OF_RESULTS"   : "{RESULTS} {RESULTS, plural, one{träff} other{träffar}}",
+        "INFO_SEEK_IN_PROGRESS"    : "Söker till den begärda positionen. Vänta...",
+
+        "FIELD_PLACEHOLDER_TEXT_BATCH_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER"
+
+    },
+
+    "PROTOCOL_KUBERNETES" : {
+
+        "FIELD_HEADER_BACKSPACE"       : "Backstegstangenten skickar:",
+        "FIELD_HEADER_CA_CERT"         : "Certifikatutfärdarens certifikat:",
+        "FIELD_HEADER_CLIENT_CERT"     : "Klientcertifikat:",
+        "FIELD_HEADER_CLIENT_KEY"      : "Klientnyckel:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Storleksgräns för urklippsdata:",
+        "FIELD_HEADER_COLOR_SCHEME"    : "Färgschema:",
+        "FIELD_HEADER_CONTAINER"       : "Containernamn:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH"  : "Skapa inspelningssökväg automatiskt:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Skapa sökväg för textinspelning automatiskt:",
+        "FIELD_HEADER_DISABLE_COPY"    : "Inaktivera kopiering från terminalen:",
+        "FIELD_HEADER_DISABLE_PASTE"   : "Inaktivera inklistring från klienten:",
+        "FIELD_HEADER_EXEC_COMMAND"    : "Kommando (exec):",
+        "FIELD_HEADER_FONT_NAME"       : "Typsnitt:",
+        "FIELD_HEADER_FONT_SIZE"       : "Teckenstorlek:",
+        "FIELD_HEADER_FUNC_KEYS_AND_KEYPAD" : "Funktionstangenternas och det numeriska tangentbordets beteende:",
+        "FIELD_HEADER_HOSTNAME"        : "Värdnamn:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Ignorera servercertifikat:",
+        "FIELD_HEADER_NAMESPACE"       : "Namnrymd:",
+        "FIELD_HEADER_POD"             : "Poddnamn:",
+        "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_READ_ONLY"       : "Skrivskyddad:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Utelämna mus:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Utelämna grafik/strömmar:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Inkludera tangenthändelser:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Inkludera urklippshändelser:",
+        "FIELD_HEADER_RECORDING_NAME"  : "Inspelningsnamn:",
+        "FIELD_HEADER_RECORDING_PATH"  : "Inspelningssökväg:",
+        "FIELD_HEADER_SCROLLBACK"      : "Maximal storlek på rullningshistorik:",
+        "FIELD_HEADER_TERMINAL_TYPE"        : "Terminaltyp (tillgänglig som $TERM i kommandot):",
+        "FIELD_HEADER_TERMINAL_TYPE_ATTACH" : "Terminaltyp (anges manuellt i sessionen):",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Textinspelningens namn:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Textinspelningens sökväg:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
+        "FIELD_HEADER_USE_SSL"         : "Använd SSL/TLS",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backsteg (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Svart på vitt",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grått på svart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grönt på svart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Vitt på svart",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_EMPTY" : "",
+        "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_ESC"   : "ESC[n~",
+        "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_VT100" : "VT100",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "Kubernetes",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autentisering",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminalbeteende",
+        "SECTION_HEADER_CLIPBOARD"      : "Urklipp",
+        "SECTION_HEADER_CONTAINER"      : "Container",
+        "SECTION_HEADER_DISPLAY"        : "Bildskärm",
+        "SECTION_HEADER_RECORDING"      : "Skärminspelning",
+        "SECTION_HEADER_TYPESCRIPT"     : "Textinspelning (terminalsession)",
+        "SECTION_HEADER_NETWORK"        : "Nätverk"
+
+    },
+
+    "PROTOCOL_RDP" : {
+
+        "FIELD_HEADER_CERT_TOFU"             : "Lita på värdcertifikatet vid första användningen:",
+        "FIELD_HEADER_CERT_FINGERPRINTS"     : "Fingeravtryck för betrodda värdcertifikat:",
+        "FIELD_HEADER_CLIENT_NAME"           : "Klientnamn:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Storleksgräns för urklippsdata:",
+        "FIELD_HEADER_COLOR_DEPTH"           : "Färgdjup:",
+        "FIELD_HEADER_CONSOLE"               : "Administratörskonsol:",
+        "FIELD_HEADER_CONSOLE_AUDIO"         : "Stöd för ljud i konsolen:",
+        "FIELD_HEADER_CREATE_DRIVE_PATH"     : "Skapa enhet automatiskt:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Skapa inspelningssökväg automatiskt:",
+        "FIELD_HEADER_DISABLE_AUDIO"    : "Inaktivera ljud:",
+        "FIELD_HEADER_DISABLE_AUTH"     : "Inaktivera autentisering:",
+        "FIELD_HEADER_DISABLE_COPY"     : "Inaktivera kopiering från fjärrskrivbordet:",
+        "FIELD_HEADER_DISABLE_DOWNLOAD" : "Inaktivera filhämtning:",
+        "FIELD_HEADER_DISABLE_PASTE"    : "Inaktivera inklistring från klienten:",
+        "FIELD_HEADER_DISABLE_UPLOAD"   : "Inaktivera filuppladdning:",
+        "FIELD_HEADER_DOMAIN"           : "Domän:",
+        "FIELD_HEADER_DPI"              : "Upplösning (DPI):",
+        "FIELD_HEADER_DRIVE_NAME"       : "Enhetsnamn:",
+        "FIELD_HEADER_DRIVE_PATH"       : "Enhetssökväg:",
+        "FIELD_HEADER_ENABLE_AUDIO_INPUT"         : "Aktivera ljudinmatning (mikrofon):",
+        "FIELD_HEADER_ENABLE_DESKTOP_COMPOSITION" : "Aktivera skrivbordskomposition (Aero):",
+        "FIELD_HEADER_ENABLE_DRIVE"               : "Aktivera enhet:",
+        "FIELD_HEADER_ENABLE_FONT_SMOOTHING"      : "Aktivera teckenutjämning (ClearType):",
+        "FIELD_HEADER_ENABLE_FULL_WINDOW_DRAG"    : "Visa fönsterinnehåll vid dragning:",
+        "FIELD_HEADER_ENABLE_MENU_ANIMATIONS"     : "Aktivera menyanimeringar:",
+        "FIELD_HEADER_DISABLE_BITMAP_CACHING"     : "Inaktivera bitmappscache:",
+        "FIELD_HEADER_DISABLE_OFFSCREEN_CACHING"  : "Inaktivera cache för bildytor utanför skärmen:",
+        "FIELD_HEADER_DISABLE_GLYPH_CACHING"      : "Inaktivera teckencache:",
+        "FIELD_HEADER_DISABLE_GFX"                : "Inaktivera Graphics Pipeline Extension:",
+        "FIELD_HEADER_ENABLE_PRINTING"            : "Aktivera utskrift:",
+        "FIELD_HEADER_ENABLE_SFTP"     : "Aktivera SFTP:",
+        "FIELD_HEADER_ENABLE_THEMING"             : "Aktivera teman:",
+        "FIELD_HEADER_ENABLE_TOUCH"               : "Aktivera flerpunktstryck:",
+        "FIELD_HEADER_ENABLE_WALLPAPER"           : "Aktivera skrivbordsbakgrund:",
+        "FIELD_HEADER_FORCE_LOSSLESS"             : "Tvinga förlustfri komprimering:",
+        "FIELD_HEADER_GATEWAY_DOMAIN"   : "Domän:",
+        "FIELD_HEADER_GATEWAY_HOSTNAME" : "Värdnamn:",
+        "FIELD_HEADER_GATEWAY_PASSWORD" : "Lösenord:",
+        "FIELD_HEADER_GATEWAY_PORT"     : "Port:",
+        "FIELD_HEADER_GATEWAY_USERNAME" : "Användarnamn:",
+        "FIELD_HEADER_HEIGHT"          : "Höjd:",
+        "FIELD_HEADER_HOSTNAME"        : "Värdnamn:",
+        "FIELD_HEADER_IGNORE_CERT"     : "Ignorera servercertifikat:",
+        "FIELD_HEADER_INITIAL_PROGRAM" : "Startprogram:",
+        "FIELD_HEADER_LOAD_BALANCE_INFO" : "Lastbalanseringsinformation/cookie:",
+        "FIELD_HEADER_NORMALIZE_CLIPBOARD" : "Radslut:",
+        "FIELD_HEADER_PASSWORD"        : "Lösenord:",
+        "FIELD_HEADER_PORT"            : "Port:",
+        "FIELD_HEADER_PRINTER_NAME"    : "Namn på omdirigerad skrivare:",
+        "FIELD_HEADER_PRECONNECTION_BLOB" : "BLOB för föranslutning (VM-ID):",
+        "FIELD_HEADER_PRECONNECTION_ID"   : "RDP-käll-ID:",
+        "FIELD_HEADER_READ_ONLY"      : "Skrivskyddad:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Utelämna mus:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Utelämna grafik/strömmar:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_TOUCH"  : "Utelämna pekhändelser:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Inkludera tangenthändelser:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Inkludera urklippshändelser:",
+        "FIELD_HEADER_RECORDING_NAME" : "Inspelningsnamn:",
+        "FIELD_HEADER_RECORDING_PATH" : "Inspelningssökväg:",
+        "FIELD_HEADER_RESIZE_METHOD" : "Metod för storleksändring:",
+        "FIELD_HEADER_REMOTE_APP_ARGS" : "Parametrar:",
+        "FIELD_HEADER_REMOTE_APP_DIR"  : "Arbetskatalog:",
+        "FIELD_HEADER_REMOTE_APP"      : "Program:",
+        "FIELD_HEADER_SECURITY"        : "Säkerhetsläge:",
+        "FIELD_HEADER_SERVER_LAYOUT"   : "Tangentbordslayout:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Standardkatalog för uppladdning:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Inaktivera filhämtning:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Inaktivera filuppladdning:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Offentlig värdnyckel (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Värdnamn:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Intervall för SFTP-keepalive:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Lösenfras:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Lösenord:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privat nyckel:",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "Offentlig nyckel:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Filbläddrarens rotkatalog:",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "Tidsgräns för SFTP-anslutning:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Användarnamn:",
+        "FIELD_HEADER_STATIC_CHANNELS" : "Namn på statiska kanaler:",
+        "FIELD_HEADER_TIMEOUT"         : "Tidsgräns för anslutning",
+        "FIELD_HEADER_TIMEZONE"        : "Tidszon:",
+        "FIELD_HEADER_USERNAME"        : "Användarnamn:",
+        "FIELD_HEADER_WIDTH"           : "Bredd:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcastadress för WoL-paket:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Fjärrvärdens MAC-adress:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Skicka WoL-paket:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-port för WoL-paket:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Väntetid för värdens uppstart:",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
+
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_EMPTY"    : "",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_PRESERVE" : "Behåll oförändrat",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_UNIX"     : "Linux/Mac/Unix (LF)",
+        "FIELD_OPTION_NORMALIZE_CLIPBOARD_WINDOWS"  : "Windows (CRLF)",
+
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Lågt färgdjup (16 bitar)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Fullfärg (24 bitar)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Fullfärg (32 bitar)",
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 färger",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_RESIZE_METHOD_DISPLAY_UPDATE" : "Virtuell kanal för bildskärmsuppdatering (RDP 8.1+)",
+        "FIELD_OPTION_RESIZE_METHOD_EMPTY"          : "",
+        "FIELD_OPTION_RESIZE_METHOD_RECONNECT"      : "Återanslut",
+
+        "FIELD_OPTION_SECURITY_ANY"   : "Valfritt",
+        "FIELD_OPTION_SECURITY_EMPTY" : "",
+        "FIELD_OPTION_SECURITY_NLA"   : "NLA (autentisering på nätverksnivå)",
+        "FIELD_OPTION_SECURITY_RDP"   : "RDP-kryptering",
+        "FIELD_OPTION_SECURITY_TLS"   : "TLS-kryptering",
+        "FIELD_OPTION_SECURITY_VMCONNECT" : "Hyper-V / VMConnect",
+
+        "FIELD_OPTION_SERVER_LAYOUT_CS_CZ_QWERTZ" : "Tjeckiska (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DA_DK_QWERTY" : "Danska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_CH_QWERTZ" : "Schweizertyska (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_DE_DE_QWERTZ" : "Tyska (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_EMPTY"        : "",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_GB_QWERTY" : "Brittisk engelska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_EN_US_QWERTY" : "Amerikansk engelska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_ES_QWERTY" : "Spanska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_ES_LATAM_QWERTY" : "Latinamerikanska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FAILSAFE"     : "Unicode",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_BE_AZERTY" : "Belgisk franska (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CA_QWERTY" : "Kanadensisk franska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_CH_QWERTZ" : "Schweizisk franska (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_FR_FR_AZERTY" : "Franska (Azerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_HU_HU_QWERTZ" : "Ungerska (Qwertz)",
+        "FIELD_OPTION_SERVER_LAYOUT_IT_IT_QWERTY" : "Italienska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_JA_JP_QWERTY" : "Japanska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NB_NO_QWERTY" : "Norskt bokmål (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_NO_NO_QWERTY" : "Norsk nynorska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Brasiliansk portugisiska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portugisiska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Rumänska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Svenska (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turkiska-Q (Qwerty)",
+
+        "NAME" : "RDP",
+
+        "SECTION_HEADER_AUTHENTICATION"     : "Autentisering",
+        "SECTION_HEADER_BASIC_PARAMETERS"   : "Grundinställningar",
+        "SECTION_HEADER_CLIPBOARD"          : "Urklipp",
+        "SECTION_HEADER_DEVICE_REDIRECTION" : "Enhetsomdirigering",
+        "SECTION_HEADER_DISPLAY"            : "Bildskärm",
+        "SECTION_HEADER_GATEWAY"            : "Fjärrskrivbordsgateway",
+        "SECTION_HEADER_LOAD_BALANCING"     : "Lastbalansering",
+        "SECTION_HEADER_NETWORK"            : "Nätverk",
+        "SECTION_HEADER_PERFORMANCE"        : "Prestanda",
+        "SECTION_HEADER_PRECONNECTION_PDU"  : "PDU för föranslutning / Hyper-V",
+        "SECTION_HEADER_RECORDING"          : "Skärminspelning",
+        "SECTION_HEADER_REMOTEAPP"          : "RemoteApp",
+        "SECTION_HEADER_SFTP"               : "SFTP",
+        "SECTION_HEADER_WOL"                : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_SSH" : {
+
+        "FIELD_HEADER_BACKSPACE"    : "Backstegstangenten skickar:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Storleksgräns för urklippsdata:",
+        "FIELD_HEADER_COLOR_SCHEME" : "Färgschema:",
+        "FIELD_HEADER_COMMAND"      : "Kör kommando:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Skapa inspelningssökväg automatiskt:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Skapa sökväg för textinspelning automatiskt:",
+        "FIELD_HEADER_DISABLE_COPY"  : "Inaktivera kopiering från terminalen:",
+        "FIELD_HEADER_DISABLE_PASTE" : "Inaktivera inklistring från klienten:",
+        "FIELD_HEADER_FONT_NAME"     : "Typsnitt:",
+        "FIELD_HEADER_FONT_SIZE"     : "Teckenstorlek:",
+        "FIELD_HEADER_FUNC_KEYS_AND_KEYPAD" : "Funktionstangenternas och det numeriska tangentbordets beteende:",
+        "FIELD_HEADER_ENABLE_SFTP"   : "Aktivera SFTP:",
+        "FIELD_HEADER_HOST_KEY"      : "Offentlig värdnyckel (Base64):",
+        "FIELD_HEADER_HOSTNAME"      : "Värdnamn:",
+        "FIELD_HEADER_LOCALE"        : "Språk/lokal ($LANG):",
+        "FIELD_HEADER_USERNAME"      : "Användarnamn:",
+        "FIELD_HEADER_PASSWORD"      : "Lösenord:",
+        "FIELD_HEADER_PASSPHRASE"    : "Lösenfras:",
+        "FIELD_HEADER_PORT"          : "Port:",
+        "FIELD_HEADER_PRIVATE_KEY"   : "Privat nyckel:",
+        "FIELD_HEADER_PUBLIC_KEY"    : "Offentlig nyckel:",
+        "FIELD_HEADER_SCROLLBACK"    : "Maximal storlek på rullningshistorik:",
+        "FIELD_HEADER_READ_ONLY"     : "Skrivskyddad:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Utelämna mus:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Utelämna grafik/strömmar:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Inkludera tangenthändelser:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Inkludera urklippshändelser:",
+        "FIELD_HEADER_RECORDING_NAME" : "Inspelningsnamn:",
+        "FIELD_HEADER_RECORDING_PATH" : "Inspelningssökväg:",
+        "FIELD_HEADER_SERVER_ALIVE_INTERVAL" : "Intervall för server-keepalive:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD" : "Inaktivera filhämtning:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"   : "Filbläddrarens rotkatalog:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"   : "Inaktivera filuppladdning:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "Terminaltyp:",
+        "FIELD_HEADER_TIMEOUT"         : "Tidsgräns för anslutning:",
+        "FIELD_HEADER_TIMEZONE"        : "Tidszon ($TZ):",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Textinspelningens namn:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Textinspelningens sökväg:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcastadress för WoL-paket:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Fjärrvärdens MAC-adress:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Skicka WoL-paket:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-port för WoL-paket:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Väntetid för värdens uppstart:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backsteg (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Svart på vitt",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grått på svart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grönt på svart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Vitt på svart",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_EMPTY" : "",
+        "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_ESC"   : "ESC[n~",
+        "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_VT100" : "VT100",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "SSH",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autentisering",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminalbeteende",
+        "SECTION_HEADER_CLIPBOARD"      : "Urklipp",
+        "SECTION_HEADER_DISPLAY"        : "Bildskärm",
+        "SECTION_HEADER_NETWORK"        : "Nätverk",
+        "SECTION_HEADER_RECORDING"      : "Skärminspelning",
+        "SECTION_HEADER_SESSION"        : "Session / miljö",
+        "SECTION_HEADER_TYPESCRIPT"     : "Textinspelning (terminalsession)",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_TELNET" : {
+
+        "FIELD_HEADER_BACKSPACE"      : "Backstegstangenten skickar:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE" : "Storleksgräns för urklippsdata:",
+        "FIELD_HEADER_COLOR_SCHEME"   : "Färgschema:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Skapa inspelningssökväg automatiskt:",
+        "FIELD_HEADER_CREATE_TYPESCRIPT_PATH" : "Skapa sökväg för textinspelning automatiskt:",
+        "FIELD_HEADER_DISABLE_COPY"   : "Inaktivera kopiering från terminalen:",
+        "FIELD_HEADER_DISABLE_PASTE"  : "Inaktivera inklistring från klienten:",
+        "FIELD_HEADER_FONT_NAME"      : "Typsnitt:",
+        "FIELD_HEADER_FONT_SIZE"      : "Teckenstorlek:",
+        "FIELD_HEADER_FUNC_KEYS_AND_KEYPAD" : "Funktionstangenternas och det numeriska tangentbordets beteende:",
+        "FIELD_HEADER_HOSTNAME"       : "Värdnamn:",
+        "FIELD_HEADER_LOGIN_FAILURE_REGEX" : "Reguljärt uttryck för misslyckad inloggning:",
+        "FIELD_HEADER_LOGIN_SUCCESS_REGEX" : "Reguljärt uttryck för lyckad inloggning:",
+        "FIELD_HEADER_USERNAME"       : "Användarnamn:",
+        "FIELD_HEADER_USERNAME_REGEX" : "Reguljärt uttryck för användarnamn:",
+        "FIELD_HEADER_PASSWORD"       : "Lösenord:",
+        "FIELD_HEADER_PASSWORD_REGEX" : "Reguljärt uttryck för lösenord:",
+        "FIELD_HEADER_PORT"           : "Port:",
+        "FIELD_HEADER_READ_ONLY"      : "Skrivskyddad:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Utelämna mus:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Utelämna grafik/strömmar:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Inkludera tangenthändelser:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Inkludera urklippshändelser:",
+        "FIELD_HEADER_RECORDING_NAME" : "Inspelningsnamn:",
+        "FIELD_HEADER_RECORDING_PATH" : "Inspelningssökväg:",
+        "FIELD_HEADER_SCROLLBACK"     : "Maximal storlek på rullningshistorik:",
+        "FIELD_HEADER_TERMINAL_TYPE"   : "Terminaltyp:",
+        "FIELD_HEADER_TIMEOUT"         : "Tidsgräns för anslutning:",
+        "FIELD_HEADER_TYPESCRIPT_NAME" : "Textinspelningens namn:",
+        "FIELD_HEADER_TYPESCRIPT_PATH" : "Textinspelningens sökväg:",
+        "FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING" : "@:APP.FIELD_HEADER_TYPESCRIPT_WRITE_EXISTING",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcastadress för WoL-paket:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Fjärrvärdens MAC-adress:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Skicka WoL-paket:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-port för WoL-paket:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Väntetid för värdens uppstart:",
+
+        "FIELD_OPTION_BACKSPACE_EMPTY" : "",
+        "FIELD_OPTION_BACKSPACE_8"     : "Backsteg (Ctrl-H)",
+        "FIELD_OPTION_BACKSPACE_127"   : "Delete (Ctrl-?)",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+
+        "FIELD_OPTION_COLOR_SCHEME_BLACK_WHITE" : "Svart på vitt",
+        "FIELD_OPTION_COLOR_SCHEME_EMPTY"       : "",
+        "FIELD_OPTION_COLOR_SCHEME_GRAY_BLACK"  : "Grått på svart",
+        "FIELD_OPTION_COLOR_SCHEME_GREEN_BLACK" : "Grönt på svart",
+        "FIELD_OPTION_COLOR_SCHEME_WHITE_BLACK" : "Vitt på svart",
+
+        "FIELD_OPTION_FONT_SIZE_8"     : "8",
+        "FIELD_OPTION_FONT_SIZE_9"     : "9",
+        "FIELD_OPTION_FONT_SIZE_10"    : "10",
+        "FIELD_OPTION_FONT_SIZE_11"    : "11",
+        "FIELD_OPTION_FONT_SIZE_12"    : "12",
+        "FIELD_OPTION_FONT_SIZE_14"    : "14",
+        "FIELD_OPTION_FONT_SIZE_18"    : "18",
+        "FIELD_OPTION_FONT_SIZE_24"    : "24",
+        "FIELD_OPTION_FONT_SIZE_30"    : "30",
+        "FIELD_OPTION_FONT_SIZE_36"    : "36",
+        "FIELD_OPTION_FONT_SIZE_48"    : "48",
+        "FIELD_OPTION_FONT_SIZE_60"    : "60",
+        "FIELD_OPTION_FONT_SIZE_72"    : "72",
+        "FIELD_OPTION_FONT_SIZE_96"    : "96",
+        "FIELD_OPTION_FONT_SIZE_EMPTY" : "",
+
+        "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_EMPTY" : "",
+        "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_ESC"   : "ESC[n~",
+        "FIELD_OPTION_FUNC_KEYS_AND_KEYPAD_VT100" : "VT100",
+
+        "FIELD_OPTION_TERMINAL_TYPE_ANSI"           : "ansi",
+        "FIELD_OPTION_TERMINAL_TYPE_EMPTY"          : "",
+        "FIELD_OPTION_TERMINAL_TYPE_LINUX"          : "linux",
+        "FIELD_OPTION_TERMINAL_TYPE_VT100"          : "vt100",
+        "FIELD_OPTION_TERMINAL_TYPE_VT220"          : "vt220",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM"          : "xterm",
+        "FIELD_OPTION_TERMINAL_TYPE_XTERM_256COLOR" : "xterm-256color",
+
+        "NAME" : "Telnet",
+
+        "SECTION_HEADER_AUTHENTICATION" : "Autentisering",
+        "SECTION_HEADER_BEHAVIOR"       : "Terminalbeteende",
+        "SECTION_HEADER_CLIPBOARD"      : "Urklipp",
+        "SECTION_HEADER_DISPLAY"        : "Bildskärm",
+        "SECTION_HEADER_RECORDING"      : "Skärminspelning",
+        "SECTION_HEADER_TYPESCRIPT"     : "Textinspelning (terminalsession)",
+        "SECTION_HEADER_NETWORK"        : "Nätverk",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "PROTOCOL_VNC" : {
+
+        "FIELD_HEADER_AUDIO_SERVERNAME" : "Ljudserverns namn:",
+        "FIELD_HEADER_CLIPBOARD_BUFFER_SIZE"  : "Storleksgräns för urklippsdata:",
+        "FIELD_HEADER_CLIPBOARD_ENCODING" : "Teckenkodning:",
+        "FIELD_HEADER_COLOR_DEPTH"      : "Färgdjup:",
+        "FIELD_HEADER_COMPRESS_LEVEL"   : "Komprimeringsnivå:",
+        "FIELD_HEADER_CREATE_RECORDING_PATH" : "Skapa inspelningssökväg automatiskt:",
+        "FIELD_HEADER_CURSOR"           : "Muspekare:",
+        "FIELD_HEADER_DEST_HOST"        : "Målvärd:",
+        "FIELD_HEADER_DEST_PORT"        : "Målport:",
+        "FIELD_HEADER_DISABLE_COPY"           : "Inaktivera kopiering från fjärrskrivbordet:",
+        "FIELD_HEADER_DISABLE_DISPLAY_RESIZE" : "Inaktivera storleksändring av fjärrskärmen:",
+        "FIELD_HEADER_DISABLE_PASTE"          : "Inaktivera inklistring från klienten:",
+        "FIELD_HEADER_DISABLE_SERVER_INPUT"   : "Inaktivera inmatning på servern när klienten är ansluten:",
+        "FIELD_HEADER_ENABLE_AUDIO"     : "Aktivera ljud:",
+        "FIELD_HEADER_ENABLE_SFTP"      : "Aktivera SFTP:",
+        "FIELD_HEADER_ENCODINGS"        : "Bildkodningar:",
+        "FIELD_HEADER_FORCE_LOSSLESS"   : "Tvinga förlustfri komprimering:",
+        "FIELD_HEADER_HOSTNAME"         : "Värdnamn:",
+        "FIELD_HEADER_USERNAME"         : "Användarnamn:",
+        "FIELD_HEADER_PASSWORD"         : "Lösenord:",
+        "FIELD_HEADER_PORT"             : "Port:",
+        "FIELD_HEADER_QUALITY_LEVEL"    : "Bildkvalitet:",
+        "FIELD_HEADER_READ_ONLY"        : "Skrivskyddad:",
+        "FIELD_HEADER_RECORDING_WRITE_EXISTING" : "@:APP.FIELD_HEADER_RECORDING_WRITE_EXISTING",
+        "FIELD_HEADER_RECORDING_EXCLUDE_MOUSE"  : "Utelämna mus:",
+        "FIELD_HEADER_RECORDING_EXCLUDE_OUTPUT" : "Utelämna grafik/strömmar:",
+        "FIELD_HEADER_RECORDING_INCLUDE_KEYS"   : "Inkludera tangenthändelser:",
+        "FIELD_HEADER_RECORDING_INCLUDE_CLIPBOARD" : "Inkludera urklippshändelser:",
+        "FIELD_HEADER_RECORDING_NAME" : "Inspelningsnamn:",
+        "FIELD_HEADER_RECORDING_PATH" : "Inspelningssökväg:",
+        "FIELD_HEADER_SFTP_DIRECTORY"             : "Standardkatalog för uppladdning:",
+        "FIELD_HEADER_SFTP_DISABLE_DOWNLOAD"      : "Inaktivera filhämtning:",
+        "FIELD_HEADER_SFTP_DISABLE_UPLOAD"        : "Inaktivera filuppladdning:",
+        "FIELD_HEADER_SFTP_HOST_KEY"              : "Offentlig värdnyckel (Base64):",
+        "FIELD_HEADER_SFTP_HOSTNAME"              : "Värdnamn:",
+        "FIELD_HEADER_SFTP_SERVER_ALIVE_INTERVAL" : "Intervall för SFTP-keepalive:",
+        "FIELD_HEADER_SFTP_PASSPHRASE"            : "Lösenfras:",
+        "FIELD_HEADER_SFTP_PASSWORD"              : "Lösenord:",
+        "FIELD_HEADER_SFTP_PORT"                  : "Port:",
+        "FIELD_HEADER_SFTP_PRIVATE_KEY"           : "Privat nyckel:",
+        "FIELD_HEADER_SFTP_PUBLIC_KEY"            : "Offentlig nyckel:",
+        "FIELD_HEADER_SFTP_ROOT_DIRECTORY"        : "Filbläddrarens rotkatalog:",
+        "FIELD_HEADER_SFTP_TIMEOUT"               : "Tidsgräns för SFTP-anslutning:",
+        "FIELD_HEADER_SFTP_USERNAME"              : "Användarnamn:",
+        "FIELD_HEADER_SWAP_RED_BLUE"    : "Byt plats på röda/blå komponenter:",
+        "FIELD_HEADER_WOL_BROADCAST_ADDR" : "Broadcastadress för WoL-paket:",
+        "FIELD_HEADER_WOL_MAC_ADDR"       : "Fjärrvärdens MAC-adress:",
+        "FIELD_HEADER_WOL_SEND_PACKET"    : "Skicka WoL-paket:",
+        "FIELD_HEADER_WOL_UDP_PORT"       : "UDP-port för WoL-paket:",
+        "FIELD_HEADER_WOL_WAIT_TIME"      : "Väntetid för värdens uppstart:",
+
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_EMPTY"    : "",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_262144"   : "256KB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_1048576"  : "1MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_10485760" : "10MB",
+        "FIELD_OPTION_CLIPBOARD_BUFFER_SIZE_52428800" : "50MB",
+
+        "FIELD_OPTION_COLOR_DEPTH_8"     : "256 färger",
+        "FIELD_OPTION_COLOR_DEPTH_16"    : "Lågt färgdjup (16 bitar)",
+        "FIELD_OPTION_COLOR_DEPTH_24"    : "Fullfärg (24 bitar)",
+        "FIELD_OPTION_COLOR_DEPTH_32"    : "Fullfärg (32 bitar)",
+        "FIELD_OPTION_COLOR_DEPTH_EMPTY" : "",
+
+        "FIELD_OPTION_COMPRESS_LEVEL_0"     : "0",
+        "FIELD_OPTION_COMPRESS_LEVEL_1"     : "1",
+        "FIELD_OPTION_COMPRESS_LEVEL_2"     : "2",
+        "FIELD_OPTION_COMPRESS_LEVEL_3"     : "3",
+        "FIELD_OPTION_COMPRESS_LEVEL_4"     : "4",
+        "FIELD_OPTION_COMPRESS_LEVEL_5"     : "5",
+        "FIELD_OPTION_COMPRESS_LEVEL_6"     : "6",
+        "FIELD_OPTION_COMPRESS_LEVEL_7"     : "7",
+        "FIELD_OPTION_COMPRESS_LEVEL_8"     : "8",
+        "FIELD_OPTION_COMPRESS_LEVEL_9"     : "9",
+        "FIELD_OPTION_COMPRESS_LEVEL_EMPTY" : "",
+
+        "FIELD_OPTION_CURSOR_EMPTY"  : "",
+        "FIELD_OPTION_CURSOR_LOCAL"  : "Lokal",
+        "FIELD_OPTION_CURSOR_REMOTE" : "Fjärr",
+
+        "FIELD_OPTION_CLIPBOARD_ENCODING_CP1252"    : "CP1252",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_EMPTY"     : "",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_ISO8859_1" : "ISO 8859-1",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_MACROMAN"  : "Mac OS Roman",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_8"     : "UTF-8",
+        "FIELD_OPTION_CLIPBOARD_ENCODING_UTF_16"    : "UTF-16",
+
+        "FIELD_OPTION_QUALITY_LEVEL_0"     : "0",
+        "FIELD_OPTION_QUALITY_LEVEL_1"     : "1",
+        "FIELD_OPTION_QUALITY_LEVEL_2"     : "2",
+        "FIELD_OPTION_QUALITY_LEVEL_3"     : "3",
+        "FIELD_OPTION_QUALITY_LEVEL_4"     : "4",
+        "FIELD_OPTION_QUALITY_LEVEL_5"     : "5",
+        "FIELD_OPTION_QUALITY_LEVEL_6"     : "6",
+        "FIELD_OPTION_QUALITY_LEVEL_7"     : "7",
+        "FIELD_OPTION_QUALITY_LEVEL_8"     : "8",
+        "FIELD_OPTION_QUALITY_LEVEL_9"     : "9",
+        "FIELD_OPTION_QUALITY_LEVEL_EMPTY" : "",
+
+        "NAME" : "VNC",
+
+        "SECTION_HEADER_AUDIO"          : "Ljud",
+        "SECTION_HEADER_AUTHENTICATION" : "Autentisering",
+        "SECTION_HEADER_CLIPBOARD"      : "Urklipp",
+        "SECTION_HEADER_DISPLAY"        : "Bildskärm",
+        "SECTION_HEADER_NETWORK"        : "Nätverk",
+        "SECTION_HEADER_RECORDING"      : "Skärminspelning",
+        "SECTION_HEADER_REPEATER"       : "VNC-repeater",
+        "SECTION_HEADER_SFTP"           : "SFTP",
+        "SECTION_HEADER_WOL"            : "Wake-on-LAN (WoL)"
+
+    },
+
+    "SETTINGS" : {
+
+        "SECTION_HEADER_SETTINGS" : "Inställningar"
+
+    },
+
+    "SETTINGS_CONNECTION_HISTORY" : {
+
+        "ACTION_DOWNLOAD"       : "@:APP.ACTION_DOWNLOAD",
+        "ACTION_SEARCH"         : "@:APP.ACTION_SEARCH",
+        "ACTION_VIEW_RECORDING" : "@:APP.ACTION_VIEW_RECORDING",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FILENAME_HISTORY_CSV" : "historik.csv",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_CONNECTION_HISTORY" : "Här visas historik över tidigare anslutningar. Klicka på kolumnrubrikerna för att sortera. Ange en filtertext och klicka på \"Sök\" för att hitta specifika poster. Endast poster som matchar filtertexten visas.",
+
+        "INFO_CONNECTION_DURATION_UNKNOWN" : "--",
+        "INFO_NO_HISTORY"                  : "Inga matchande poster",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Anslutningsnamn",
+        "TABLE_HEADER_SESSION_DURATION"        : "Varaktighet",
+        "TABLE_HEADER_SESSION_LOGS"            : "Loggar",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Fjärrvärd",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Starttid",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Användarnamn",
+
+        "TEXT_HISTORY_DURATION" : "@:APP.TEXT_HISTORY_DURATION"
+
+    },
+
+    "SETTINGS_CONNECTIONS" : {
+
+        "ACTION_ACKNOWLEDGE"          : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_IMPORT"               : "@:APP.ACTION_IMPORT",
+        "ACTION_NEW_CONNECTION"       : "Ny anslutning",
+        "ACTION_NEW_CONNECTION_GROUP" : "Ny grupp",
+        "ACTION_NEW_SHARING_PROFILE"  : "Ny delningsprofil",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "HELP_CONNECTIONS"   : "Klicka eller tryck på en anslutning nedan för att hantera den. Beroende på din behörighet kan du lägga till och ta bort anslutningar och ändra deras egenskaper, till exempel protokoll, värdnamn och port.",
+
+        "INFO_ACTIVE_USER_COUNT" : "@:APP.INFO_ACTIVE_USER_COUNT",
+
+        "SECTION_HEADER_CONNECTIONS"     : "Anslutningar"
+
+    },
+
+    "SETTINGS_PREFERENCES" : {
+
+        "ACTION_ACKNOWLEDGE"        : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"             : "@:APP.ACTION_CANCEL",
+        "ACTION_SAVE"               : "@:APP.ACTION_SAVE",
+        "ACTION_UPDATE_PASSWORD"    : "@:APP.ACTION_UPDATE_PASSWORD",
+
+        "DIALOG_HEADER_ERROR"    : "@:APP.DIALOG_HEADER_ERROR",
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_LANGUAGE"                  : "Visningsspråk:",
+        "FIELD_HEADER_NUMBER_RECENT_CONNECTIONS" : "Antal senaste anslutningar som ska visas:",
+        "FIELD_HEADER_PASSWORD"                  : "Lösenord:",
+        "FIELD_HEADER_PASSWORD_OLD"              : "Nuvarande lösenord:",
+        "FIELD_HEADER_PASSWORD_NEW"              : "Nytt lösenord:",
+        "FIELD_HEADER_PASSWORD_NEW_AGAIN"        : "Bekräfta nytt lösenord:",
+        "FIELD_HEADER_SHOW_RECENT_CONNECTIONS"   : "Visa senaste anslutningar:",
+        "FIELD_HEADER_TIMEZONE"                  : "Tidszon:",
+        "FIELD_HEADER_USERNAME"                  : "Användarnamn:",
+
+        "HELP_APPEARANCE"           : "Här kan du välja om avsnittet \"Senaste anslutningar\" ska visas på startsidan och ange hur många senaste anslutningar som ska ingå.",
+        "HELP_DEFAULT_INPUT_METHOD" : "Standardmetoden för inmatning anger hur Guacamole tar emot tangentbordshändelser. Du kan behöva ändra inställningen när du använder en mobil enhet eller skriver med en IME. Inställningen kan åsidosättas för varje anslutning i Guacamole-menyn.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "Standardläget för musemulering anger hur musen på fjärrdatorn reagerar på pekgester i nya anslutningar. Inställningen kan åsidosättas för varje anslutning i Guacamole-menyn.",
+        "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
+        "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
+        "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
+        "HELP_LOCALE"               : "Alternativen nedan gäller användarens språk och region och påverkar hur olika delar av gränssnittet visas.",
+        "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
+        "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
+        "HELP_UPDATE_PASSWORD"      : "För att ändra lösenordet anger du ditt nuvarande lösenord och det önskade nya lösenordet nedan och klickar på \"Uppdatera lösenord\". Ändringen gäller omedelbart.",
+
+        "INFO_PASSWORD_CHANGED" : "Lösenordet har ändrats.",
+        "INFO_PREFERENCE_ATTRIBUTES_CHANGED" : "Användarinställningarna har sparats.",
+
+        "NAME_INPUT_METHOD_NONE" : "@:CLIENT.NAME_INPUT_METHOD_NONE",
+        "NAME_INPUT_METHOD_OSK"  : "@:CLIENT.NAME_INPUT_METHOD_OSK",
+        "NAME_INPUT_METHOD_TEXT" : "@:CLIENT.NAME_INPUT_METHOD_TEXT",
+
+        "SECTION_HEADER_APPEARANCE"           : "Utseende",
+        "SECTION_HEADER_DEFAULT_INPUT_METHOD" : "Standardmetod för inmatning",
+        "SECTION_HEADER_DEFAULT_MOUSE_MODE"   : "Standardläge för musemulering",
+        "SECTION_HEADER_UPDATE_PASSWORD"      : "Ändra lösenord"
+
+    },
+
+    "SETTINGS_USERS" : {
+
+        "ACTION_ACKNOWLEDGE"   : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER"      : "Ny användare",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USERS" : "Klicka eller tryck på en användare nedan för att hantera användaren. Beroende på din behörighet kan du lägga till och ta bort användare och ändra deras lösenord.",
+
+        "SECTION_HEADER_USERS"       : "Användare",
+
+        "TABLE_HEADER_FULL_NAME"   : "Fullständigt namn",
+        "TABLE_HEADER_LAST_ACTIVE" : "Senast aktiv",
+        "TABLE_HEADER_ORGANIZATION" : "Organisation",
+        "TABLE_HEADER_USERNAME"    : "Användarnamn"
+
+    },
+
+    "SETTINGS_USER_GROUPS" : {
+
+        "ACTION_ACKNOWLEDGE"    : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_NEW_USER_GROUP" : "Ny grupp",
+
+        "DIALOG_HEADER_ERROR" : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_DATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_USER_GROUPS" : "Klicka eller tryck på en grupp nedan för att hantera gruppen. Beroende på din behörighet kan du lägga till och ta bort grupper och ändra vilka användare och grupper som ingår i dem.",
+
+        "SECTION_HEADER_USER_GROUPS" : "Grupper",
+
+        "TABLE_HEADER_USER_GROUP_NAME" : "Gruppnamn"
+
+    },
+
+    "SETTINGS_SESSIONS" : {
+
+        "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
+        "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
+        "ACTION_DELETE"      : "Avsluta sessioner",
+
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Avsluta sessioner",
+        "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
+
+        "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
+
+        "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
+
+        "HELP_SESSIONS" : "Den här sidan visar aktiva anslutningar. Vilka anslutningar som visas och vilka du kan avsluta beror på din behörighet. För att avsluta en eller flera sessioner markerar du rutorna bredvid dem och klickar på \"Avsluta sessioner\". När en session avslutas kopplas användaren omedelbart från den tillhörande anslutningen.",
+
+        "INFO_NO_SESSIONS" : "Inga aktiva sessioner",
+
+        "SECTION_HEADER_SESSIONS" : "Aktiva sessioner",
+
+        "TABLE_HEADER_SESSION_CONNECTION_NAME" : "Anslutningsnamn",
+        "TABLE_HEADER_SESSION_REMOTEHOST"      : "Fjärrvärd",
+        "TABLE_HEADER_SESSION_STARTDATE"       : "Aktiv sedan",
+        "TABLE_HEADER_SESSION_USERNAME"        : "Användarnamn",
+
+        "TEXT_CONFIRM_DELETE" : "Vill du verkligen avsluta alla markerade sessioner? Användarna av dessa sessioner kopplas omedelbart från."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_EMAIL_ADDRESS"       : "E-postadress:",
+        "FIELD_HEADER_GUAC_FULL_NAME"           : "Fullständigt namn:",
+        "FIELD_HEADER_GUAC_ORGANIZATION"        : "Organisation:",
+        "FIELD_HEADER_GUAC_ORGANIZATIONAL_ROLE" : "Roll:"
+
+    },
+
+    "USER_MENU" : {
+
+        "ACTION_LOGOUT"             : "@:APP.ACTION_LOGOUT",
+        "ACTION_MANAGE_CONNECTIONS" : "@:APP.ACTION_MANAGE_CONNECTIONS",
+        "ACTION_MANAGE_PREFERENCES" : "@:APP.ACTION_MANAGE_PREFERENCES",
+        "ACTION_MANAGE_SESSIONS"    : "@:APP.ACTION_MANAGE_SESSIONS",
+        "ACTION_MANAGE_SETTINGS"    : "@:APP.ACTION_MANAGE_SETTINGS",
+        "ACTION_MANAGE_USERS"       : "@:APP.ACTION_MANAGE_USERS",
+        "ACTION_MANAGE_USER_GROUPS" : "@:APP.ACTION_MANAGE_USER_GROUPS",
+        "ACTION_NAVIGATE_HOME"      : "@:APP.ACTION_NAVIGATE_HOME",
+        "ACTION_VIEW_HISTORY"       : "@:APP.ACTION_VIEW_HISTORY"
+
+    }
+
+}
