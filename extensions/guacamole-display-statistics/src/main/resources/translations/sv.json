@@ -1,0 +1,12 @@
+{
+    "CLIENT" : {
+
+        "FIELD_HEADER_CLIENT_FRAMERATE"  : "Guacamole (klient):",
+        "FIELD_HEADER_DESKTOP_FRAMERATE" : "Fjärrskrivbord:",
+        "FIELD_HEADER_DROP_FRAMERATE"    : "Bortfall:",
+        "FIELD_HEADER_SERVER_FRAMERATE"  : "Guacamole (server):",
+
+        "INFO_FRAMERATE" : "{VALUE} bilder/s"
+
+    }
+}
