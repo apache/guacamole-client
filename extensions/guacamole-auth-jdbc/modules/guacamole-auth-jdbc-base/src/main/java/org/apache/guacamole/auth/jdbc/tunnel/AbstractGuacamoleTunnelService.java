@@ -511,7 +511,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 activeConnectionGroups.remove(parentIdentifier, activeConnection);
 
                 // Remove this tunnel from the cluster as well
-                clusterHeartbeat.remove(activeConnection.getUUID().toString());
+                clusterHeartbeat.remove(activeConnection.getClusterSeatToken());
 
                 TunnelRegistration registration = activeConnection.getClusterRegistration();
                 if (registration != null) {
@@ -673,7 +673,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             // Publish this tunnel to the cluster, making it visible to other
             // replicas and routable by its guacd connection ID
             TunnelRegistration registration = new TunnelRegistration(
-                    activeConnection.getUUID().toString(),
+                    activeConnection.getClusterSeatToken(),
                     clusterStore.getNodeId(),
                     socket.getConnectionID(),
                     endpoint,

@@ -22,7 +22,11 @@ package org.apache.guacamole.cluster.redis;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;
 import java.util.Collections;
+import java.util.Arrays;
 import org.apache.guacamole.cluster.ClusterKeys;
+import org.apache.guacamole.cluster.SeatKey;
+import org.apache.guacamole.cluster.SeatRequest;
+import org.apache.guacamole.cluster.SeatResult;
 import org.apache.guacamole.cluster.TunnelRegistration;
 import org.apache.guacamole.cluster.guacd.GuacdEndpoint;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration.EncryptionMethod;
@@ -191,6 +195,27 @@ public class TunnelRegistrationTest {
 
         // The route key must not be allowed to expire while the tunnel lives
         assertEquals(true, connection.sync().ttl(ClusterKeys.route("$abc")) > 0);
+
+    }
+
+    @Test
+    public void registrationAndSeatShareOneMemberPerConnection() throws Exception {
+
+        // A seat taken for a tunnel, then that same tunnel registered, must
+        // occupy exactly one member of the connection index -- not two. If
+        // these ever diverge, every connection counts double against its own
+        // max-connections limit.
+        String token = "seat-token-1";
+
+        store.acquireSeats(new SeatRequest(token, Arrays.asList(
+                new SeatKey(ClusterKeys.connectionIndex("conn-1"), 5,
+                        SeatResult.CONNECTION_LIMIT))));
+
+        store.registerTunnel(new TunnelRegistration(token, "node-1", "$abc",
+                GUACD_A, "conn-1", null, null, "alice", "10.0.0.5",
+                System.currentTimeMillis()));
+
+        assertEquals(1L, connection.sync().zcard(ClusterKeys.connectionIndex("conn-1")));
 
     }
 
