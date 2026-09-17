@@ -48,8 +48,29 @@ public class NoOpClusterStoreTest {
     }
 
     @Test
-    public void reportsUnavailableSoCallersDegradeLocally() {
+    public void reportsUnavailableSoTheServiceFallsBackToLocalCounters() {
+
+        // RestrictedGuacamoleTunnelService checks isAvailable() before every
+        // acquire. False here is what routes it to the in-memory path, which
+        // is the documented behavior both when clustering is disabled and when
+        // Redis is unreachable.
         assertFalse(new NoOpClusterStore().isAvailable());
+
+    }
+
+    @Test
+    public void disabledClusteringGrantsEverySeatRegardlessOfLimit() throws Exception {
+
+        // With cluster-enabled=false the bound store is NoOpClusterStore. A
+        // max-connections of 1 must not be enforced here at all -- enforcement
+        // belongs to the in-memory counters, exactly as upstream.
+        NoOpClusterStore store = new NoOpClusterStore();
+
+        assertEquals(SeatResult.SUCCESS, store.acquireSeats(
+                SeatRequestBuilder.forConnection("t1", "alice", "conn-1", 1, 1)));
+        assertEquals(SeatResult.SUCCESS, store.acquireSeats(
+                SeatRequestBuilder.forConnection("t2", "alice", "conn-1", 1, 1)));
+
     }
 
     @Test
