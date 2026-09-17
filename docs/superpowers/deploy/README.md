@@ -229,11 +229,14 @@ zcount guac:idx:guacd:<endpoint> (cutoff +inf -> 0     (not counted as live)
 
 Correctness is unaffected: `countTunnels` filters by score, so a dead member is
 never counted and never influences selection. But nothing physically removes it.
-The only pruning is the `ZREMRANGEBYSCORE` inside the seat script, and **the seat
-script is not wired up until P2** — so in a P1-only deployment these tombstones
-accumulate, one per tunnel lost to an ungraceful replica death. Gracefully closed
-tunnels are removed properly by `unregisterTunnel`, so this grows with crashes,
-not with traffic. Worth a P2 note rather than a P1 fix.
+The only pruning is the `ZREMRANGEBYSCORE` inside the seat script. Gracefully
+closed tunnels are removed properly by `unregisterTunnel`, so this grows with
+crashes, not with traffic.
+
+**As of P2 the seat script runs on every acquire**, and its `ZREMRANGEBYSCORE`
+removes these tombstones — see `SeatPruningTest`. A connection index that is
+never acquired again still keeps its tombstones, which is harmless: nothing reads
+it, and `countTunnels` filters by score regardless.
 
 ### 6. Autoscaling
 
@@ -273,9 +276,6 @@ Stated so a later phase's gap is not mistaken for a bug in this one:
 - **Auth tokens are still replica-local**, so a replica death forces re-login.
   That is P4.
 - **Brute-force ban counts are still per-replica.** That is P4.
-- **Dead index members are never pruned**, because the only pruner is the seat
-  script and that is P2. See section 5 — harmless to correctness, unbounded over
-  a long-lived P1-only deployment.
 
 Sticky sessions are what make P1 correct in the meantime: every user stays on
 one replica, so the replica-local state above stays consistent for that user.
