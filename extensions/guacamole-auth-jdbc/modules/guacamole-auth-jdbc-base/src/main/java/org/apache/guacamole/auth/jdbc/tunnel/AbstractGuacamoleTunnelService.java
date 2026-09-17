@@ -686,11 +686,23 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                     activeConnection.getUser().getRemoteHost(),
                     activeConnection.getStartDate().getTime());
 
-            clusterStore.registerTunnel(registration);
-            clusterHeartbeat.add(registration);
+            // Publishing is best-effort. A cluster that cannot be reached must
+            // not cost the user their connection -- it degrades to a
+            // replica-local view (spec 6.1), losing cross-replica join and
+            // cluster-wide admin visibility for this tunnel only.
+            try {
+                clusterStore.registerTunnel(registration);
+                clusterHeartbeat.add(registration);
 
-            // Retain the registration so cleanup removes exactly what was added
-            activeConnection.setClusterRegistration(registration);
+                // Retained only on success, so cleanup never tries to remove
+                // something that was never added
+                activeConnection.setClusterRegistration(registration);
+            }
+            catch (GuacamoleException e) {
+                logger.warn("Unable to publish tunnel to the cluster. This "
+                        + "connection will work, but is not visible to other "
+                        + "replicas and cannot be joined from one.", e);
+            }
 
             // Assign and return new tunnel
             if (interceptErrors)
