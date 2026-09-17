@@ -261,6 +261,53 @@ but an HPA cannot read it without a custom metrics adapter. Scaling on that
 number directly (KEDA's Redis scaler, or a prometheus-adapter external metric)
 would be strictly better, and belongs with the P5 hardening work rather than here.
 
+### 7. Cluster-wide concurrency limits (P2)
+
+**Measured on devqa, 2026-09-17**, two replicas, one connection with
+`max-connections=1`.
+
+**The limit holds across replicas.** This is the defect P2 exists to prevent, and
+it cannot be reproduced in a single JVM:
+
+```
+replica A  POST /tunnel?connect  ->  200  (tunnel opened)
+replica B  POST /tunnel?connect  ->  409  "Cannot connect. This connection is in use."
+redis      zcard guac:idx:conn:<id>  ->  1
+```
+
+Closing the session on A frees the seat cluster-wide; B's retry then succeeds.
+
+**A Redis outage degrades, it does not block.** With Redis scaled to zero, both
+replicas grant the same connection — per-replica enforcement, which is exactly
+upstream behaviour:
+
+```
+replica A -> 200 in 0.27s
+replica B -> 200 in 0.16s
+ERROR: Cluster seat acquisition failed for connection "<id>".
+       Concurrency limits are now enforced per replica only.
+```
+
+**Redis returning needs no restart.** After scaling Redis back up and waiting out
+the 10 s re-probe window, the cluster-wide limit is enforced again — A `200`,
+B `409` — with the same pods still running.
+
+#### Three defects this test found, all inherited from P1
+
+Every one of them was invisible until the degraded path was exercised deliberately,
+and all three made a Redis outage into a connection outage:
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| First connect after Redis died hung **over 180 s** | Lettuce buffers commands while disconnected and waits out a long timeout, so the first caller absorbs all of it | Reject commands while disconnected; 2 s command timeout |
+| Connections then failed `500 Unable to register tunnel with cluster` | `registerTunnel` was called unguarded on the connect path | Publication is best-effort; the connection survives, only its cluster visibility is lost |
+| A replica **started** during an outage came up dead — no authentication at all | `RedisClusterStore` connected in its constructor; Lettuce throws a `RuntimeException`, which `ClusterModule` does not catch, so Guice could not build the injector and the whole JDBC auth provider failed to load | Connect lazily on first use; re-probe every 10 s |
+
+The last one is worth dwelling on: the symptom was
+`Authentication attempt ignored because the relevant authentication provider could
+not be loaded`, which names neither Redis nor clustering. It only appeared because
+pods happened to restart while Redis was down.
+
 ## What P1 does NOT do
 
 Stated so a later phase's gap is not mistaken for a bug in this one:
