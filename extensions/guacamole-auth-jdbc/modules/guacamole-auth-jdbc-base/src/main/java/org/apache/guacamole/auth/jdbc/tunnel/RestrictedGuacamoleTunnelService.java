@@ -30,6 +30,10 @@ import org.apache.guacamole.GuacamoleClientTooManyException;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceConflictException;
+import org.apache.guacamole.cluster.ClusterStore;
+import org.apache.guacamole.cluster.SeatRequest;
+import org.apache.guacamole.cluster.SeatRequestBuilder;
+import org.apache.guacamole.cluster.SeatResult;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ModeledConnectionGroup;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
@@ -56,6 +60,14 @@ public class RestrictedGuacamoleTunnelService
      */
     @Inject
     private JDBCEnvironment environment;
+
+    /**
+     * Cluster-wide seat accounting. Bound to NoOpClusterStore when clustering
+     * is disabled, in which case every acquire falls through to the in-memory
+     * counters below.
+     */
+    @Inject
+    private ClusterStore clusterStore;
 
     /**
      * Set of all currently-active user/connection pairs (seats).
@@ -125,6 +137,50 @@ public class RestrictedGuacamoleTunnelService
 
             // Try again if unsuccessful
 
+        }
+
+    }
+
+    /**
+     * Attempts to take cluster-wide seats for one connection.
+     *
+     * @param seatToken
+     *     Identifier for the seats.
+     *
+     * @param username
+     *     The user connecting.
+     *
+     * @param connection
+     *     The connection being acquired.
+     *
+     * @return
+     *     The outcome, or null if the cluster store is unavailable and the
+     *     caller must fall back to replica-local accounting.
+     *
+     * @throws GuacamoleException
+     *     If the connection's configured limits cannot be read.
+     */
+    private SeatResult tryClusterAcquire(String seatToken, String username,
+            ModeledConnection connection) throws GuacamoleException {
+
+        if (!clusterStore.isAvailable())
+            return null;
+
+        SeatRequest request = SeatRequestBuilder.forConnection(seatToken, username,
+                connection.getIdentifier(), connection.getMaxConnections(),
+                connection.getMaxConnectionsPerUser());
+
+        try {
+            return clusterStore.acquireSeats(request);
+        }
+
+        // A Redis outage must not become a connection outage. Limits degrade to
+        // per-replica, which is exactly upstream behavior (spec 6.1).
+        catch (GuacamoleException e) {
+            logger.error("Cluster seat acquisition failed for connection \"{}\". "
+                    + "Concurrency limits are now enforced per replica only.",
+                    connection.getIdentifier(), e);
+            return null;
         }
 
     }
@@ -229,7 +285,23 @@ public class RestrictedGuacamoleTunnelService
             if (!includeFailoverOnly && connection.isFailoverOnly())
                 continue;
 
-            // Attempt to aquire connection according to per-user limits
+            // Cluster-wide decision first; null means Redis could not answer
+            SeatResult result = tryClusterAcquire(seatToken, username, connection);
+
+            if (result == SeatResult.SUCCESS)
+                return connection;
+
+            if (result == SeatResult.CONNECTION_LIMIT) {
+                // Busy, but not because of this user -- try the next child
+                userSpecificFailure = false;
+                continue;
+            }
+
+            if (result == SeatResult.USER_CONNECTION_LIMIT)
+                continue;
+
+            // Redis unavailable: fall back to replica-local accounting, which
+            // is exactly upstream behavior
             Seat seat = new Seat(username, connection.getIdentifier());
             if (tryAdd(activeSeats, seat,
                     connection.getMaxConnectionsPerUser())) {
@@ -265,9 +337,27 @@ public class RestrictedGuacamoleTunnelService
     @Override
     protected void release(RemoteAuthenticatedUser user,
             ModeledConnection connection, String seatToken) {
+
+        // Release cluster seats first; the local counters are the fallback and
+        // are always safe to decrement
+        try {
+            if (clusterStore.isAvailable())
+                clusterStore.releaseSeats(SeatRequestBuilder.forConnection(
+                        seatToken, user.getIdentifier(), connection.getIdentifier(),
+                        connection.getMaxConnections(),
+                        connection.getMaxConnectionsPerUser()));
+        }
+
+        // Not fatal: the seat ages out of every index within the stale window
+        catch (GuacamoleException e) {
+            logger.warn("Unable to release cluster seats for connection \"{}\". "
+                    + "They will expire on their own.", connection.getIdentifier(), e);
+        }
+
         activeSeats.remove(new Seat(user.getIdentifier(), connection.getIdentifier()));
         activeConnections.remove(connection.getIdentifier());
         totalActiveConnections.decrementAndGet();
+
     }
 
     @Override
