@@ -171,7 +171,8 @@ public class RestrictedGuacamoleTunnelService
 
     @Override
     protected ModeledConnection acquire(RemoteAuthenticatedUser user,
-            List<ModeledConnection> connections, boolean includeFailoverOnly)
+            List<ModeledConnection> connections, boolean includeFailoverOnly,
+            String seatToken)
             throws GuacamoleException {
 
         // Do not acquire connection unless within overall limits
@@ -262,7 +263,8 @@ public class RestrictedGuacamoleTunnelService
     }
 
     @Override
-    protected void release(RemoteAuthenticatedUser user, ModeledConnection connection) {
+    protected void release(RemoteAuthenticatedUser user,
+            ModeledConnection connection, String seatToken) {
         activeSeats.remove(new Seat(user.getIdentifier(), connection.getIdentifier()));
         activeConnections.remove(connection.getIdentifier());
         totalActiveConnections.decrementAndGet();
@@ -270,7 +272,8 @@ public class RestrictedGuacamoleTunnelService
 
     @Override
     protected void acquire(RemoteAuthenticatedUser user,
-            ModeledConnectionGroup connectionGroup) throws GuacamoleException {
+            ModeledConnectionGroup connectionGroup, String seatToken)
+            throws GuacamoleException {
 
         // Get username
         String username = user.getIdentifier();
@@ -300,7 +303,7 @@ public class RestrictedGuacamoleTunnelService
 
     @Override
     protected void release(RemoteAuthenticatedUser user,
-            ModeledConnectionGroup connectionGroup) {
+            ModeledConnectionGroup connectionGroup, String seatToken) {
         activeGroupSeats.remove(new Seat(user.getIdentifier(), connectionGroup.getIdentifier()));
         activeGroups.remove(connectionGroup.getIdentifier());
     }

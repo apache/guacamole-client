@@ -95,6 +95,22 @@ public class ActiveConnectionRecord extends ModeledConnectionRecord {
     }
 
     /**
+     * Identifies this connection's cluster seats. Minted before the seats are
+     * acquired, which is necessarily before this record's own UUID exists --
+     * that is derived from the database record ID and is null until connection
+     * history is written.
+     */
+    private String clusterSeatToken;
+
+    public String getClusterSeatToken() {
+        return clusterSeatToken;
+    }
+
+    public void setClusterSeatToken(String clusterSeatToken) {
+        this.clusterSeatToken = clusterSeatToken;
+    }
+
+    /**
      * Map of all currently-shared connections.
      */
     private final SharedConnectionMap connectionMap;
