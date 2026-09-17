@@ -368,7 +368,33 @@ public class RestrictedGuacamoleTunnelService
         // Get username
         String username = user.getIdentifier();
 
-        // Attempt to aquire connection group according to per-user limits
+        SeatResult result = null;
+        if (clusterStore.isAvailable()) {
+            try {
+                result = clusterStore.acquireSeats(SeatRequestBuilder.forGroup(
+                        seatToken, username, connectionGroup.getIdentifier(),
+                        connectionGroup.getMaxConnections(),
+                        connectionGroup.getMaxConnectionsPerUser()));
+            }
+
+            // A Redis outage must not become a connection outage (spec 6.1)
+            catch (GuacamoleException e) {
+                logger.error("Cluster seat acquisition failed for group \"{}\". "
+                        + "Group limits are now enforced per replica only.",
+                        connectionGroup.getIdentifier(), e);
+            }
+        }
+
+        if (result == SeatResult.SUCCESS)
+            return;
+
+        if (result == SeatResult.GROUP_LIMIT)
+            throw new GuacamoleResourceConflictException("Cannot connect. This connection group is in use.");
+
+        if (result == SeatResult.USER_GROUP_LIMIT)
+            throw new GuacamoleClientTooManyException("Cannot connect. Connection group already in use by this user.");
+
+        // Redis unavailable: replica-local accounting, as upstream
         Seat seat = new Seat(username, connectionGroup.getIdentifier());
         if (tryAdd(activeGroupSeats, seat,
                 connectionGroup.getMaxConnectionsPerUser())) {
@@ -394,8 +420,26 @@ public class RestrictedGuacamoleTunnelService
     @Override
     protected void release(RemoteAuthenticatedUser user,
             ModeledConnectionGroup connectionGroup, String seatToken) {
+
+        try {
+            if (clusterStore.isAvailable())
+                clusterStore.releaseSeats(SeatRequestBuilder.forGroup(
+                        seatToken, user.getIdentifier(),
+                        connectionGroup.getIdentifier(),
+                        connectionGroup.getMaxConnections(),
+                        connectionGroup.getMaxConnectionsPerUser()));
+        }
+
+        // Not fatal: the seat ages out of every index within the stale window
+        catch (GuacamoleException e) {
+            logger.warn("Unable to release cluster seats for group \"{}\". "
+                    + "They will expire on their own.",
+                    connectionGroup.getIdentifier(), e);
+        }
+
         activeGroupSeats.remove(new Seat(user.getIdentifier(), connectionGroup.getIdentifier()));
         activeGroups.remove(connectionGroup.getIdentifier());
+
     }
 
 }
