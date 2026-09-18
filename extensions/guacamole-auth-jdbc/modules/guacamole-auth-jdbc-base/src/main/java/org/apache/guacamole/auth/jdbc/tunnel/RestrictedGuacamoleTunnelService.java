@@ -22,9 +22,12 @@ package org.apache.guacamole.auth.jdbc.tunnel;
 import com.google.common.collect.ConcurrentHashMultiset;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.guacamole.GuacamoleClientTooManyException;
 import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
@@ -181,8 +184,13 @@ public class RestrictedGuacamoleTunnelService
         // Get username
         String username = user.getIdentifier();
 
-        // Sort connections in ascending order of usage
-        ModeledConnection[] sortedConnections = connections.toArray(new ModeledConnection[connections.size()]);
+        // Shuffle a copy so that connections with equal load are selected at random
+        // rather than always in the same database-driven order. Arrays.sort() for
+        // objects is stable (TimSort), so equal-load connections maintain their
+        // randomized relative order after sorting.
+        List<ModeledConnection> shuffledConnections = new ArrayList<>(connections);
+        Collections.shuffle(shuffledConnections, ThreadLocalRandom.current());
+        ModeledConnection[] sortedConnections = shuffledConnections.toArray(new ModeledConnection[0]);
         Arrays.sort(sortedConnections, new Comparator<ModeledConnection>() {
 
             @Override
