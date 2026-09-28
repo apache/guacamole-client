@@ -35,6 +35,42 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
         startTimestamp = 0;
 
     /**
+     * Resource budgets for parsing clipboard streams. A hostile/compromised
+     * remote guest (whose clipboard is recorded) or a crafted recording could
+     * otherwise stream unbounded clipboard data into the in-browser player,
+     * exhausting the operator's browser memory/CPU. Any payload exceeding a
+     * budget is dropped rather than retained, and counted toward the
+     * incomplete-transfer total so the UI can flag it.
+     *
+     * @private
+     */
+    var MAX_ACTIVE_STREAMS    = 128;                // concurrent open streams
+    var MAX_STREAM_BYTES      = 8  * 1024 * 1024;   // decoded bytes per transfer
+    var MAX_TOTAL_BYTES       = 64 * 1024 * 1024;   // decoded bytes, whole recording
+    var MAX_EVENTS            = 10000;              // parsed clipboard events
+    var MAX_MIME_LENGTH       = 255;               // characters of a mimetype
+    var MAX_PENDING_DIRECTIONS = 256;              // buffered direction annotations
+
+    /**
+     * Running total of decoded clipboard bytes retained across all streams,
+     * used to enforce MAX_TOTAL_BYTES.
+     *
+     * @private
+     * @type {number}
+     */
+    var totalBytes = 0;
+
+    /**
+     * Number of clipboard transfers dropped because they exceeded a resource
+     * budget. Surfaced (together with unterminated streams) via
+     * getIncompleteCount() so the player can warn that data is missing.
+     *
+     * @private
+     * @type {number}
+     */
+    var droppedStreams = 0;
+
+    /**
      * All clipboard events parsed so far.
      *
      * @private
@@ -50,6 +86,18 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
      * @type {Object.<string, {mimetype: string, data: string, timestamp: number}>}
      */
     var activeStreams = {};
+
+    /**
+     * Clipboard transfer directions parsed from server-emitted "log"
+     * instructions, keyed by stream index, awaiting the clipboard stream they
+     * annotate. The server writes the direction log immediately before the
+     * corresponding clipboard stream, so it is buffered here until the
+     * matching clipboard instruction arrives.
+     *
+     * @private
+     * @type {Object.<string, string>}
+     */
+    var pendingDirections = {};
 
     /**
      * The timestamp of the most recent instruction, used for events
@@ -80,11 +128,54 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
         var streamIndex = args[0];
         var mimetype = args[1];
 
+        // Budget: cap the number of concurrent streams (F-08). Drop the
+        // annotation for this stream too so it cannot linger.
+        if (Object.keys(activeStreams).length >= MAX_ACTIVE_STREAMS) {
+            droppedStreams++;
+            delete pendingDirections[streamIndex];
+            return;
+        }
+
+        // Budget: bound the retained mimetype length (F-08)
+        if (mimetype && mimetype.length > MAX_MIME_LENGTH)
+            mimetype = mimetype.substring(0, MAX_MIME_LENGTH);
+
         activeStreams[streamIndex] = {
             mimetype: mimetype,
             data: '',
+            bytes: 0,
+            direction: pendingDirections[streamIndex] || null,
             timestamp: lastTimestamp
         };
+
+        // The buffered direction, if any, has now been consumed
+        delete pendingDirections[streamIndex];
+    };
+
+    /**
+     * Handles a log instruction. When the log carries a clipboard direction
+     * annotation ("clipboard stream=N direction=... mimetype=... [bytes=...]"),
+     * the direction is buffered against its stream index so it can be attached
+     * to the clipboard event once that stream arrives. All other log
+     * instructions are ignored.
+     *
+     * @param {!string[]} args
+     *     The arguments: [message]
+     */
+    this.handleLog = function handleLog(args) {
+        var message = args[0];
+        if (!message)
+            return;
+
+        var match = /^clipboard stream=(\d+) direction=(\S+)/.exec(message);
+        if (match) {
+            // Budget: cap buffered direction annotations awaiting their stream
+            // (F-08) so a flood of direction logs cannot grow unbounded.
+            if (!pendingDirections.hasOwnProperty(match[1])
+                    && Object.keys(pendingDirections).length >= MAX_PENDING_DIRECTIONS)
+                return;
+            pendingDirections[match[1]] = match[2];
+        }
     };
 
     /**
@@ -99,8 +190,46 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
         var base64Data = args[1];
 
         var stream = activeStreams[streamIndex];
-        if (stream)
-            stream.data += base64Data;
+        if (!stream)
+            return;
+
+        // Budget: drop the whole transfer if appending this chunk would exceed
+        // the per-stream or aggregate byte budget (F-08). Deleting the stream
+        // means later blobs/end for this index are ignored, and it is counted
+        // as an incomplete (data-missing) transfer.
+        var incoming = base64ByteLength(base64Data);
+        if (stream.bytes + incoming > MAX_STREAM_BYTES
+                || totalBytes + incoming > MAX_TOTAL_BYTES) {
+            delete activeStreams[streamIndex];
+            droppedStreams++;
+            return;
+        }
+
+        stream.data += base64Data;
+        stream.bytes += incoming;
+        totalBytes += incoming;
+    };
+
+    /**
+     * Returns the number of decoded bytes represented by the given base64
+     * string, without actually decoding it. Handles both padded and unpadded
+     * base64; Guacamole blob payloads are newline-free, so length arithmetic
+     * is exact.
+     *
+     * @private
+     * @param {string} base64
+     *     The base64-encoded string to measure.
+     *
+     * @returns {number}
+     *     The size, in bytes, of the decoded data.
+     */
+    var base64ByteLength = function base64ByteLength(base64) {
+        if (!base64)
+            return 0;
+        var padding = 0;
+        if (base64.charAt(base64.length - 1) === '=') padding++;
+        if (base64.charAt(base64.length - 2) === '=') padding++;
+        return Math.max(0, Math.floor(base64.length * 3 / 4) - padding);
     };
 
     /**
@@ -115,18 +244,46 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
 
         var stream = activeStreams[streamIndex];
         if (stream) {
-            // Decode the base64 data
+
+            // Budget: cap the number of retained clipboard events (F-08)
+            if (parsedEvents.length >= MAX_EVENTS) {
+                delete activeStreams[streamIndex];
+                droppedStreams++;
+                return;
+            }
+
+            var isImage = /^image\//i.test(stream.mimetype || '');
+
             var decodedData = '';
-            try {
-                decodedData = atob(stream.data);
-                // Handle UTF-8 decoding
-                decodedData = decodeURIComponent(escape(decodedData));
-            } catch (e) {
-                // If decoding fails, use raw decoded data or mark as binary
+            var dataURL = null;
+            var size = 0;
+
+            // Image clipboard: keep the base64 payload intact and expose it
+            // as a data: URL for inline preview. Do NOT run the text/UTF-8
+            // decode used below - binary image bytes are not valid UTF-8 and
+            // would otherwise collapse to the literal string '[Binary data]'.
+            if (isImage) {
+                // Lowercase the mimetype in the data: scheme - AngularJS's
+                // img-src sanitizer whitelists "data:image/" case-sensitively,
+                // so an uppercase mimetype would be rewritten to "unsafe:" and
+                // silently fail to render.
+                dataURL = 'data:' + (stream.mimetype || '').toLowerCase()
+                        + ';base64,' + stream.data;
+                size = base64ByteLength(stream.data);
+            }
+
+            // Text clipboard: decode the base64 data, then interpret as UTF-8
+            else {
                 try {
                     decodedData = atob(stream.data);
-                } catch (e2) {
-                    decodedData = '[Binary data]';
+                    decodedData = decodeURIComponent(escape(decodedData));
+                } catch (e) {
+                    // If decoding fails, use raw decoded data or mark as binary
+                    try {
+                        decodedData = atob(stream.data);
+                    } catch (e2) {
+                        decodedData = '[Binary data]';
+                    }
                 }
             }
 
@@ -139,6 +296,10 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
             parsedEvents.push(new Guacamole.ClipboardEventInterpreter.ClipboardEvent({
                 mimetype: stream.mimetype,
                 data: decodedData,
+                isImage: isImage,
+                dataURL: dataURL,
+                size: size,
+                direction: stream.direction || null,
                 timestamp: Math.max(0, stream.timestamp - startTimestamp)
             }));
 
@@ -155,6 +316,19 @@ Guacamole.ClipboardEventInterpreter = function ClipboardEventInterpreter(startTi
      */
     this.getEvents = function getEvents() {
         return parsedEvents;
+    };
+
+    /**
+     * Returns the number of clipboard transfers whose data is missing: streams
+     * opened but never terminated by an "end" instruction (e.g. a truncated
+     * recording), plus any transfer dropped for exceeding a resource budget
+     * (see F-08 limits above).
+     *
+     * @returns {!number}
+     *     The number of incomplete or dropped clipboard transfers.
+     */
+    this.getIncompleteCount = function getIncompleteCount() {
+        return Object.keys(activeStreams).length + droppedStreams;
     };
 
 };
@@ -178,11 +352,46 @@ Guacamole.ClipboardEventInterpreter.ClipboardEvent = function ClipboardEvent(tem
     this.mimetype = template.mimetype || 'text/plain';
 
     /**
-     * The clipboard content (decoded from base64).
+     * The clipboard content (decoded from base64). Empty for image clipboard
+     * events, whose payload is exposed via dataURL instead.
      *
      * @type {!string}
      */
     this.data = template.data || '';
+
+    /**
+     * Whether this clipboard event carries image data (mimetype image/*)
+     * rather than text.
+     *
+     * @type {!boolean}
+     */
+    this.isImage = template.isImage || false;
+
+    /**
+     * For image clipboard events, a data: URL suitable for direct use as an
+     * <img> source. Null for text clipboard events.
+     *
+     * @type {string}
+     */
+    this.dataURL = template.dataURL || null;
+
+    /**
+     * The size, in bytes, of the clipboard payload. Only meaningful for
+     * image clipboard events; 0 for text.
+     *
+     * @type {!number}
+     */
+    this.size = template.size || 0;
+
+    /**
+     * The direction of this clipboard transfer as annotated by the server,
+     * either "guest-to-client" (data copied out of the guest) or
+     * "client-to-guest" (data pasted into the guest), or null if the
+     * recording carries no direction annotation.
+     *
+     * @type {string}
+     */
+    this.direction = template.direction || null;
 
     /**
      * The timestamp when this clipboard event occurred, relative to

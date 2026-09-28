@@ -27,6 +27,7 @@ angular.module('player').directive('guacPlayerTextView',
 
     // Required services
     const playerTimeService = $injector.get('playerTimeService');
+    const clipboardMediaService = $injector.get('clipboardMediaService');
 
     const config = {
         restrict : 'E',
@@ -117,11 +118,67 @@ angular.module('player').directive('guacPlayerTextView',
 
         };
 
-        // Reapply the current filter to the updated text batches
-        $scope.$watch('textBatches', () => applyFilter($scope.searchPhrase));
+        /**
+         * The set of image loads currently in flight for thumbnail generation,
+         * tracked so their callbacks can be detached on teardown.
+         *
+         * @type {!Set.<Image>}
+         */
+        const pendingImages = new Set();
+
+        /**
+         * Generate a downscaled thumbnail for the given image clipboard
+         * metadata via the shared clipboardMediaService, tracking the in-flight
+         * image load so it can be aborted when the directive is destroyed.
+         *
+         * @param {Object} clipboard
+         *     The image clipboard metadata to enrich in place.
+         */
+        const generateThumbnail = clipboard => {
+            const image = clipboardMediaService.generateThumbnail(clipboard,
+                fn => $scope.$evalAsync(fn),
+                loaded => pendingImages.delete(loaded));
+            if (image)
+                pendingImages.add(image);
+        };
+
+        // Abort any in-flight thumbnail loads when the directive is destroyed
+        // so their callbacks don't run against a detached scope and their
+        // closures don't outlive the viewer
+        $scope.$on('$destroy', function abortPendingThumbnails() {
+            pendingImages.forEach(function detach(image) {
+                image.onload = null;
+                image.onerror = null;
+                image.src = '';
+            });
+            pendingImages.clear();
+        });
+
+        /**
+         * Kick off thumbnail generation for every image clipboard event across
+         * all current text batches that has not yet been processed.
+         */
+        const generateThumbnails = () => {
+            ($scope.textBatches || []).forEach(batch =>
+                (batch.events || []).forEach(event => {
+                    if (event.clipboard && event.clipboard.isImage)
+                        generateThumbnail(event.clipboard);
+                }));
+        };
+
+        // Reapply the current filter and refresh thumbnails when batches change
+        $scope.$watch('textBatches', () => {
+            applyFilter($scope.searchPhrase);
+            generateThumbnails();
+        });
 
         // Reapply the filter whenever the search phrase is updated
         $scope.$watch('searchPhrase', applyFilter);
+
+        // Wire up the clipboard-image lightbox (openImage/closeImage/
+        // lightboxImage + Escape handling + focus management), shared with the
+        // clipboard-activity viewer via clipboardMediaService.
+        clipboardMediaService.attachLightbox($scope, $element);
 
         /**
          * @borrows playerTimeService.formatTime

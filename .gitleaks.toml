@@ -1,0 +1,39 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+# gitleaks configuration for the Guacamole client repository.
+#
+# Extends the default gitleaks ruleset and allowlists known non-secrets so the
+# scanner does not report them (F-04 in the SPICE branch security assessment).
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Documentation examples and local assessment artifacts, not live secrets"
+paths = [
+    # Upstream example auth config: the "password" attributes are MD5/SHA-256
+    # digests of demonstration passwords shipped for documentation, not real
+    # credentials.
+    '''guacamole/doc/example/user-mapping\.xml''',
+
+    # Local (untracked) security-assessment output, which quotes the example
+    # digests above when documenting the scan; not committed source.
+    '''assessment-[^/]+/.*''',
+]

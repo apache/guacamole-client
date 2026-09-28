@@ -51,11 +51,13 @@ angular.module('client').directive('guacClient', [function guacClient() {
         function guacClientController($scope, $injector, $element) {
 
         // Required types
-        const ManagedClient = $injector.get('ManagedClient');
+        const ManagedClient     = $injector.get('ManagedClient');
             
         // Required services
-        const $rootScope = $injector.get('$rootScope');
-        const $window = $injector.get('$window');
+        const $rootScope        = $injector.get('$rootScope');
+        const $window           = $injector.get('$window');
+        const guacManageMonitor = $injector.get('guacManageMonitor');
+        const $timeout          = $injector.get('$timeout');
             
         /**
          * Whether the local, hardware mouse cursor is in use.
@@ -425,6 +427,15 @@ angular.module('client').directive('guacClient', [function guacClient() {
 
         // Update scale when display is resized
         $scope.$watch('client.managedDisplay.size', function setDisplaySize() {
+
+            // A remote (server-initiated) display resize rescales the display
+            // element, which changes the measured size of the container and
+            // fires the element-resize sensor. Forwarding that echoed size back
+            // to the server produces a resize feedback loop (the display never
+            // settles, and with multiple monitors the guest thrashes). Suppress
+            // outbound resize requests briefly so the echo is absorbed.
+            suppressSendUntil = Date.now() + 700;
+
             $scope.$evalAsync(updateDisplayScale);
         });
 
@@ -501,6 +512,32 @@ angular.module('client').directive('guacClient', [function guacClient() {
          * function may need to be invoked multiple times until the size is
          * known and the client may be connected.
          */
+        /**
+         * Promise representing the pending resize timeout.
+         */
+        let resizePromise = null;
+
+        /**
+         * Timestamp (in milliseconds) before which outbound resize requests are
+         * suppressed because the remote display was just resized. Element-resize
+         * events fired during this window are echoes of that remote resize (the
+         * display rescale changes the container's measured size) rather than
+         * genuine user intent, and forwarding them back to the server produces a
+         * resize feedback loop.
+         *
+         * @type Number
+         */
+        let suppressSendUntil = 0;
+
+        /**
+         * Sends the current size of the main element (the display container)
+         * to the Guacamole server, requesting that the remote display be
+         * resized. If the Guacamole client is not yet connected, it will be
+         * connected and the current size will sent through the initial
+         * handshake. If the size of the main element is not yet known, this
+         * function may need to be invoked multiple times until the size is
+         * known and the client may be connected.
+         */
         $scope.mainElementResized = function mainElementResized() {
 
             // Send new display size, if changed
@@ -509,12 +546,41 @@ angular.module('client').directive('guacClient', [function guacClient() {
                 // Connect, if not already connected
                 ManagedClient.connect($scope.client, main.offsetWidth, main.offsetHeight);
 
-                const pixelDensity = $window.devicePixelRatio || 1;
-                const width  = main.offsetWidth  * pixelDensity;
-                const height = main.offsetHeight * pixelDensity;
+                if (resizePromise) {
+                    $timeout.cancel(resizePromise);
+                }
 
-                if (display.getWidth() !== width || display.getHeight() !== height)
-                    client.sendSize(width, height);
+                resizePromise = $timeout(function() {
+                    if (!client || !display || !main.offsetWidth || !main.offsetHeight)
+                        return;
+
+                    // Ignore element-resize echoes triggered by a recent remote
+                    // display resize; re-check once the suppression window has
+                    // elapsed so a genuine pending resize is not lost.
+                    const now = Date.now();
+                    if (now < suppressSendUntil) {
+                        resizePromise = $timeout($scope.mainElementResized,
+                                suppressSendUntil - now);
+                        return;
+                    }
+
+                    const pixelDensity = $window.devicePixelRatio ?? 1;
+                    const width    = main.offsetWidth  * pixelDensity;
+                    const height   = main.offsetHeight * pixelDensity;
+                    const top      = window.screenY;
+                    const left     = window.screenX;
+
+                    // Window resized
+                    if (display.getWidth() !== width || display.getHeight() !== height) {
+                        guacManageMonitor.sendSize(client, {
+                            width: width,
+                            height: height,
+                            monitorId: 0,
+                            top: top,
+                            left: left,
+                        });
+                    }
+                }, 250);
 
             }
 
