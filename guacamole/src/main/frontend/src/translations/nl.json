@@ -59,44 +59,44 @@
         "DIALOG_HEADER_DISCONNECTED"     : "Niet Verbonden",
 
         "ERROR_CLIENT_201"     : "Deze verbinding is gesloten omdat de server druk is. Wacht een paar minuten en probeer het opnieuw.",
-        "ERROR_CLIENT_202"     : "De Guacamole server heeft de verbinding gesloten omdat het externe bureaublad te lang niet heeft gereageerd. Probeer het altublieft opnieuw of neem contact op met uw systeembeheerder.",
-        "ERROR_CLIENT_203"     : "Er is een fout opgetreden bij de externe bureaublad server en heeft de verbinding gesloten. Probeer het alstublieft opnieuw of neem contact op met uw systeembeheerder.",
-        "ERROR_CLIENT_205"     : "Deze verbinding is beeindigd omdat het conflicteerd met een andere verbinding. Probeer het alstublieft later nog eens.",
+        "ERROR_CLIENT_202"     : "De Guacamole server heeft de verbinding gesloten omdat het externe bureaublad te lang niet heeft gereageerd. Probeer het alstublieft opnieuw of neem contact op met uw systeembeheerder.",
+        "ERROR_CLIENT_203"     : "Er is een fout opgetreden bij de externe bureaubladserver en heeft de verbinding gesloten. Probeer het alstublieft opnieuw of neem contact op met uw systeembeheerder.",
+        "ERROR_CLIENT_205"     : "Deze verbinding is beëindigd omdat het conflicteert met een andere verbinding. Probeer het alstublieft later nog eens.",
         "ERROR_CLIENT_301"     : "Inloggen is mislukt. Verbind opnieuw en probeer het nog eens.",
-        "ERROR_CLIENT_303"     : "U heeft geen toestemming om deze verbinding tot stand te brengen. Heeft u toegang nodig, vraag dan aan uw systeembeheerder om u toe te voegen aan de lijst van geauthoriseerde gebruikers of controleer uw systeem instellingen.",
-        "ERROR_CLIENT_308"     : "De Guacamole server heeft de sessie gesloten omdat uw browser zo lang niet heeft gereageerd dat het er op leek dat uw verbinding verbroken was. Dit komt in de regel door netwerk problemen zoals een slecht draadloos signaal of een erg langzame netwerk snelheid. Controleer uw netwerk en probeer het opnieuw.",
+        "ERROR_CLIENT_303"     : "U heeft geen toestemming om deze verbinding tot stand te brengen. Heeft u toegang nodig, vraag dan aan uw systeembeheerder om u toe te voegen aan de lijst van geautoriseerde gebruikers of controleer uw systeeminstellingen.",
+        "ERROR_CLIENT_308"     : "De Guacamole server heeft de sessie gesloten omdat uw browser zo lang niet heeft gereageerd dat het er op leek dat uw verbinding verbroken was. Dit komt in de regel door netwerkproblemen zoals een slecht draadloos signaal of een erg langzame netwerksnelheid. Controleer uw netwerk en probeer het opnieuw.",
         "ERROR_CLIENT_31D"     : "De Guacamole server geeft geen toegang tot deze verbinding omdat u de limiet heeft bereikt van het aantal toegestane gelijktijdige verbindingen door een individuele gebruiker. Sluit u alstublieft een of meer verbindingen en probeer het opnieuw.",
-        "ERROR_CLIENT_DEFAULT" : "Een interne fout is opgetreden op de Guacamole server en de connectie is beeindigd. Als dit probleem zich voor blijft doen, neem dan contact op met uw systeembeheerder of controleer uw systeem logs.",
+        "ERROR_CLIENT_DEFAULT" : "Een interne fout is opgetreden op de Guacamole server en de connectie is beëindigd. Als dit probleem zich voor blijft doen, neem dan contact op met uw systeembeheerder of controleer uw systeemlogs.",
 
         "ERROR_TUNNEL_201"     : "De Guacamole server heeft deze verbinding geweigerd omdat er al te veel actieve verbindingen zijn. Wacht u alstublieft een paar minuten en probeer het opnieuw.",
-        "ERROR_TUNNEL_202"     : "De verbinding is gesloten omdat de server niet op tijd reageerd. Dit komt in de regel door netwerk problemen zoals een slecht draadloos signaal of langzame netwerk snelheden. Controleer alstublieft uw netwerk verbinding en probeer het opnieuw of neem contact op met uw systeembeheerde.",
-        "ERROR_TUNNEL_203"     : "Er heeft een fout plaats gevonden op de server en deze heeft de verbinding gesloten. Probeert u het nog eens of neem contact op met uw systeembeheerder.",
-        "ERROR_TUNNEL_204"     : "De gevraagde verbinding bestaat niet. Controleert u altublieft de verbindingsnaam en probeer het nog eens.",
+        "ERROR_TUNNEL_202"     : "De verbinding is gesloten omdat de server niet op tijd reageert. Dit komt in de regel door netwerkproblemen zoals een slecht draadloos signaal of langzame netwerksnelheden. Controleer alstublieft uw netwerkverbinding en probeer het opnieuw of neem contact op met uw systeembeheerder.",
+        "ERROR_TUNNEL_203"     : "Er heeft een fout plaatsgevonden op de server en deze heeft de verbinding gesloten. Probeert u het nog eens of neem contact op met uw systeembeheerder.",
+        "ERROR_TUNNEL_204"     : "De gevraagde verbinding bestaat niet. Controleert u alstublieft de verbindingsnaam en probeer het nog eens.",
         "ERROR_TUNNEL_205"     : "Deze verbinding is op dit moment in gebruik en gelijktijdige toegang is niet toegestaan. Probeert u het later nog eens.",
         "ERROR_TUNNEL_301"     : "U heeft geen toestemming deze verbinding te gebruiken omdat u niet ingelogd bent. Log eerst in en probeer het nog eens.",
-        "ERROR_TUNNEL_303"     : "U heeft geen toestemming deze verbinding te gebruiken. Als u toegang nodig heeft, vraag dan aan de systeembeheerder om u toe te voegen aan de lijst van geauthoriseerde gebruikers of controleer uw systeem instellingen.",
-        "ERROR_TUNNEL_308"     : "De Guacamole server heeft de sessie gesloten omdat uw browser zo lang niet heeft gereageerd dat het er op leek dat uw verbinding verbroken was. Dit komt in de regel door netwerk problemen zoals een slecht draadloos signaal of een erg langzame netwerk snelheid. Controleer uw netwerk en probeer het opnieuw.",
+        "ERROR_TUNNEL_303"     : "U heeft geen toestemming deze verbinding te gebruiken. Als u toegang nodig heeft, vraag dan aan de systeembeheerder om u toe te voegen aan de lijst van geautoriseerde gebruikers of controleer uw systeeminstellingen.",
+        "ERROR_TUNNEL_308"     : "De Guacamole server heeft de sessie gesloten omdat uw browser zo lang niet heeft gereageerd dat het er op leek dat uw verbinding verbroken was. Dit komt in de regel door netwerkproblemen zoals een slecht draadloos signaal of een erg langzame netwerksnelheid. Controleer uw netwerk en probeer het opnieuw.",
         "ERROR_TUNNEL_31D"     : "De Guacamole server geeft geen toegang tot deze verbinding omdat u de limiet heeft bereikt van het aantal toegestane gelijktijdige verbindingen door een individuele gebruiker. Sluit u alstublieft een of meer verbindingen en probeer het opnieuw.",
-        "ERROR_TUNNEL_DEFAULT" : "Een interne fout is opgetreden op de Guacamole server en de connectie is beeindigd. Als dit probleem zich voor blijft doen, neem dan contact op met uw systeembeheerder of controleer uw systeem logs.",
+        "ERROR_TUNNEL_DEFAULT" : "Een interne fout is opgetreden op de Guacamole server en de connectie is beëindigd. Als dit probleem zich voor blijft doen, neem dan contact op met uw systeembeheerder of controleer uw systeemlogs.",
 
-        "ERROR_UPLOAD_100"     : "Bestandsoverdracht is ofwel niet ondersteund of niet ingeschakeld. Neem contact op met uw systeembeheerder of kijk in uw systeem logs.",
-        "ERROR_UPLOAD_201"     : "Er worden momenteel te veel bestanden overdragen. Gelieve te wachten tot de bestaande bestandsoverdracht is voltooid, en probeer het opnieuw.",
-        "ERROR_UPLOAD_202"     : "Het bestand kan niet worden overgedragen, omdat de extern bureaublad server te lang niet reageert. Probeer het opnieuw of neem contact op met uw systeembeheerder.",
-        "ERROR_UPLOAD_203"     : "Er is een fout opgetreden op de extern bureaublad server tijdens de overdracht. Probeer het opnieuw of neem contact op met uw systeembeheerder.",
+        "ERROR_UPLOAD_100"     : "Bestandsoverdracht is ofwel niet ondersteund of niet ingeschakeld. Neem contact op met uw systeembeheerder of kijk in uw systeemlogs.",
+        "ERROR_UPLOAD_201"     : "Er worden momenteel te veel bestanden overgedragen. Gelieve te wachten tot de bestaande bestandsoverdracht is voltooid, en probeer het opnieuw.",
+        "ERROR_UPLOAD_202"     : "Het bestand kan niet worden overgedragen, omdat de externe bureaubladserver te lang niet reageert. Probeer het opnieuw of neem contact op met uw systeembeheerder.",
+        "ERROR_UPLOAD_203"     : "Er is een fout opgetreden op de externe bureaubladserver tijdens de overdracht. Probeer het opnieuw of neem contact op met uw systeembeheerder.",
         "ERROR_UPLOAD_204"     : "De bestemming voor de overdracht van bestanden bestaat niet. Controleer of de bestemming bestaat en probeer het opnieuw.",
         "ERROR_UPLOAD_205"     : "De bestemming voor de overdracht van bestanden is momenteel vergrendeld. Gelieve te wachten tot alle taken zijn voltooid en probeer het opnieuw.",
         "ERROR_UPLOAD_301"     : "U heeft geen toestemming om dit bestand te uploaden, omdat u niet ingelogd bent. Gelieve in te loggen en probeer het opnieuw.",
         "ERROR_UPLOAD_303"     : "U heeft geen toestemming om dit bestand te uploaden. Als u toegang nodig heeft, controleer dan uw systeeminstellingen of neem contact op met uw systeembeheerder.",
         "ERROR_UPLOAD_308"     : "De bestandsoverdracht is vastgelopen. Dit wordt meestal veroorzaakt door netwerkproblemen, zoals een instabiel draadloos signaal of gewoon een erg trage netwerkverbinding. Controleer uw netwerk en probeer het opnieuw.",
-        "ERROR_UPLOAD_31D"     : "Er worden momenteel te veel bestanden overdragen. Gelieve te wachten tot de bestaande bestandsoverdracht is voltooid, en probeer het opnieuw.",
-        "ERROR_UPLOAD_DEFAULT" : "Er is een interne fout opgetreden op de Guacamole server, en de verbinding is beëindigd. Als het probleem aanhoudt, neem dan contact op met uw systeembeheerder of kijk in uw systeem logs.",
+        "ERROR_UPLOAD_31D"     : "Er worden momenteel te veel bestanden overgedragen. Gelieve te wachten tot de bestaande bestandsoverdracht is voltooid, en probeer het opnieuw.",
+        "ERROR_UPLOAD_DEFAULT" : "Er is een interne fout opgetreden op de Guacamole server, en de verbinding is beëindigd. Als het probleem aanhoudt, neem dan contact op met uw systeembeheerder of kijk in uw systeemlogs.",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
-        "HELP_CLIPBOARD"           : "Tekst gekopieerd / geknipt binnen Guacamole zal hier verschijnen. Wijzigingen in onderstaande tekst zal externe klembord beïnvloeden.",
-        "HELP_INPUT_METHOD_NONE"   : "Geen invoer methode gebruiken. Toetsenbord invoer wordt geaccepteerd van een aangesloten, fysiek toetsenbord.",
+        "HELP_CLIPBOARD"           : "Tekst gekopieerd / geknipt binnen Guacamole zal hier verschijnen. Wijzigingen in onderstaande tekst zullen het externe klembord beïnvloeden.",
+        "HELP_INPUT_METHOD_NONE"   : "Geen invoermethode gebruiken. Toetsenbordinvoer wordt geaccepteerd van een aangesloten, fysiek toetsenbord.",
         "HELP_INPUT_METHOD_OSK"    : "Weergave en accepteren van invoer via het ingebouwde Guacamole on-screen toetsenbord. Dit toetsenbord op het scherm maakt toetscombinaties mogelijk die anders onmogelijk zijn (zoals Ctrl-Alt-Del).",
-        "HELP_INPUT_METHOD_TEXT"   : "Laat het typen van tekst en het emuleren toetsenbord gebeurtenissen toe gebaseerd op de getypte tekst. Dit is nodig voor apparaten zoals mobiele telefoons die geen fysiek toetsenbord hebben.",
+        "HELP_INPUT_METHOD_TEXT"   : "Laat het typen van tekst en het emuleren van toetsenbordgebeurtenissen toe gebaseerd op de getypte tekst. Dit is nodig voor apparaten zoals mobiele telefoons die geen fysiek toetsenbord hebben.",
         "HELP_MOUSE_MODE"          : "Bepaalt hoe de muis met aanraak-klikken omgaat.",
         "HELP_MOUSE_MODE_ABSOLUTE" : "Tik om te klikken. De klik vindt plaats op de locatie van de tik.",
         "HELP_MOUSE_MODE_RELATIVE" : "Sleep om de aanwijzer te bewegen en tik om te klikken. De klik vindt plaats op de locatie van de aanwijzer.",
@@ -105,7 +105,7 @@
 
         "NAME_INPUT_METHOD_NONE"   : "Geen",
         "NAME_INPUT_METHOD_OSK"    : "Scherm toetsenbord",
-        "NAME_INPUT_METHOD_TEXT"   : "Text invoer",
+        "NAME_INPUT_METHOD_TEXT"   : "Tekstinvoer",
         "NAME_KEY_CTRL"            : "Ctrl",
         "NAME_KEY_ALT"             : "Alt",
         "NAME_KEY_ESC"             : "Esc",
@@ -117,8 +117,8 @@
         "SECTION_HEADER_DEVICES"        : "Apparaten",
         "SECTION_HEADER_DISPLAY"        : "Scherm",
         "SECTION_HEADER_FILE_TRANSFERS" : "Bestandsoverdrachten",
-        "SECTION_HEADER_INPUT_METHOD"   : "Invoer methode",
-        "SECTION_HEADER_MOUSE_MODE"     : "Muis emulatie modus",
+        "SECTION_HEADER_INPUT_METHOD"   : "Invoermethode",
+        "SECTION_HEADER_MOUSE_MODE"     : "Muisemulatiemodus",
 
         "TEXT_ZOOM_AUTO_FIT"              : "Automatisch aan browser venster aanpassen",
         "TEXT_CLIENT_STATUS_IDLE"         : "Inactief.",
@@ -225,7 +225,7 @@
         "FIELD_HEADER_TYPE"     : "Soort:",
 
         "NAME_TYPE_BALANCING"       : "Verdeling",
-        "NAME_TYPE_ORGANIZATIONAL"  : "Organizatorisch",
+        "NAME_TYPE_ORGANIZATIONAL"  : "Organisatorisch",
 
         "SECTION_HEADER_EDIT_CONNECTION_GROUP" : "Bewerk Verbindingsgroep",
 
@@ -610,12 +610,12 @@
         "FIELD_HEADER_PASSWORD_NEW_AGAIN" : "Bevestig Nieuw Wachtwoord:",
         "FIELD_HEADER_USERNAME"           : "Gebruikersnaam:",
 
-        "HELP_DEFAULT_INPUT_METHOD" : "De standaard invoer methode bepaalt hoe toetsenbord gebeurtenissen ontvangen worden door Guacamole. Het veranderen van deze instelling kan nodig zijn bij gebruik van een mobiel apparaat of wanneer er via een IME getypt wordt. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
-        "HELP_DEFAULT_MOUSE_MODE"   : "De standaard muis emulatie modus bepaalt hoe de externe muis in nieuwe verbindingen omgaat met touch. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
+        "HELP_DEFAULT_INPUT_METHOD" : "De standaard invoermethode bepaalt hoe toetsenbordgebeurtenissen ontvangen worden door Guacamole. Het veranderen van deze instelling kan nodig zijn bij gebruik van een mobiel apparaat of wanneer er via een IME getypt wordt. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
+        "HELP_DEFAULT_MOUSE_MODE"   : "De standaard muisemulatiemodus bepaalt hoe de externe muis in nieuwe verbindingen omgaat met touch. Deze instelling kan per verbinding worden overschreven via het Guacamole menu.",
         "HELP_INPUT_METHOD_NONE"    : "@:CLIENT.HELP_INPUT_METHOD_NONE",
         "HELP_INPUT_METHOD_OSK"     : "@:CLIENT.HELP_INPUT_METHOD_OSK",
         "HELP_INPUT_METHOD_TEXT"    : "@:CLIENT.HELP_INPUT_METHOD_TEXT",
-        "HELP_LANGUAGE"             : "Selecteer onderstaand een andere taal om alle text in Guacamole hieraan aan te passen. De beschikbare keuzes zijn afhankelijk van welke talen er geinstalleerd zijn.",
+        "HELP_LANGUAGE"             : "Selecteer onderstaand een andere taal om alle tekst in Guacamole hieraan aan te passen. De beschikbare keuzes zijn afhankelijk van welke talen er geïnstalleerd zijn.",
         "HELP_MOUSE_MODE_ABSOLUTE"  : "@:CLIENT.HELP_MOUSE_MODE_ABSOLUTE",
         "HELP_MOUSE_MODE_RELATIVE"  : "@:CLIENT.HELP_MOUSE_MODE_RELATIVE",
         "HELP_UPDATE_PASSWORD"      : "Als u uw wachtwoord wilt wijzigen, voer dan uw huidige wachtwoord en uw nieuwe wachtwoord hieronder in en klik op \"Wijzig Wachtwoord\". Deze wijziging zal meteen actief zijn.",
@@ -655,16 +655,16 @@
 
         "ACTION_ACKNOWLEDGE" : "@:APP.ACTION_ACKNOWLEDGE",
         "ACTION_CANCEL"      : "@:APP.ACTION_CANCEL",
-        "ACTION_DELETE"      : "Beeindig Sessies",
+        "ACTION_DELETE"      : "Beëindig Sessies",
 
-        "DIALOG_HEADER_CONFIRM_DELETE" : "Beeindig Sessie",
+        "DIALOG_HEADER_CONFIRM_DELETE" : "Beëindig Sessie",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 
         "FIELD_PLACEHOLDER_FILTER" : "@:APP.FIELD_PLACEHOLDER_FILTER",
 
         "FORMAT_STARTDATE" : "@:APP.FORMAT_DATE_TIME_PRECISE",
 
-        "HELP_SESSIONS" : "Deze pagina wordt gevuld met momenteel actieve verbindingen. De vermelde verbindingen en de mogelijkheid om die verbindingen te doden, zijn afhankelijk van uw toegangsniveau. Als u een of meerdere sessies wilt beeindigen, vink die sessie(s) dan aan en klik op \"Beeindig Sessies\". Door het verbreken van een sessie verliest de gebruiker ogenblikkelijk het contact met die sessie(s).",
+        "HELP_SESSIONS" : "Deze pagina wordt gevuld met momenteel actieve verbindingen. De vermelde verbindingen en de mogelijkheid om die verbindingen te doden, zijn afhankelijk van uw toegangsniveau. Als u een of meerdere sessies wilt beëindigen, vink die sessie(s) dan aan en klik op \"Beëindig Sessies\". Door het verbreken van een sessie verliest de gebruiker ogenblikkelijk het contact met die sessie(s).",
 
         "INFO_NO_SESSIONS" : "Geen actieve sessies",
 
@@ -675,7 +675,7 @@
         "TABLE_HEADER_SESSION_STARTDATE"       : "Actief sinds",
         "TABLE_HEADER_SESSION_USERNAME"        : "Gebruikersnaam",
 
-        "TEXT_CONFIRM_DELETE" : "Weet u zeker dat u alle geselecteerde sessies wilt beeindigen? De gebruikers van deze sessies zullen ogenblikkelijk hun verbinding met deze sessies verliezen."
+        "TEXT_CONFIRM_DELETE" : "Weet u zeker dat u alle geselecteerde sessies wilt beëindigen? De gebruikers van deze sessies zullen ogenblikkelijk hun verbinding met deze sessies verliezen."
 
     },
 
