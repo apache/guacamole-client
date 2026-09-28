@@ -487,7 +487,7 @@ CREATE TABLE [guacamole_connection_parameter] (
 
     [connection_id]   [int]            NOT NULL,
     [parameter_name]  [nvarchar](128)  NOT NULL,
-    [parameter_value] [nvarchar](4000) NOT NULL,
+    [parameter_value] [varchar](8000) NOT NULL,
 
     CONSTRAINT [PK_guacamole_connection_parameter]
         PRIMARY KEY CLUSTERED ([connection_id], [parameter_name]),
