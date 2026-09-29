@@ -151,6 +151,31 @@ angular.module('client').directive('guacClientNotification', [function guacClien
         };
 
         /**
+         * Returns the debug details to display within an error notification,
+         * currently consisting of the guacd connection ID. If the connection
+         * ID is not known or is not exposed to the current user, null is
+         * returned and no debug details are displayed.
+         *
+         * @returns {TranslatableMessage}
+         *     A message describing the guacd connection ID of the current
+         *     connection, or null if that ID is not available.
+         */
+        const getDebugDetails = function getDebugDetails() {
+
+            const connectionID = $scope.client.connectionID;
+            if (!connectionID)
+                return null;
+
+            return {
+                key       : "CLIENT.TEXT_CONNECTION_ID",
+                variables : {
+                    CONNECTION_ID : connectionID
+                }
+            };
+
+        };
+
+        /**
          * Displays a notification at the end of a Guacamole connection, whether
          * that connection is ending normally or due to an error. As the end of
          * a Guacamole connection may be due to changes in authentication status,
@@ -235,6 +260,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
                         text      : {
                             key : translationResult.id
                         },
+                        details   : getDebugDetails(),
                         countdown : countdown,
                         actions   : actions
                     })
@@ -264,6 +290,7 @@ angular.module('client').directive('guacClientNotification', [function guacClien
                         text      : {
                             key : translationResult.id
                         },
+                        details   : getDebugDetails(),
                         countdown : countdown,
                         actions   : actions
                     })

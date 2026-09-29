@@ -13,6 +13,13 @@
            translate="{{notification.text.key}}"
            translate-values="{{notification.text.variables}}"></p>
 
+        <!-- Debug details (hidden until expanded) -->
+        <details ng-if="notification.details" class="debug-details">
+            <summary>{{'APP.ACTION_SHOW_DEBUG_DETAILS' | translate}}</summary>
+            <p translate="{{notification.details.key}}"
+               translate-values="{{notification.details.variables}}"></p>
+        </details>
+
         <!-- Arbitrary parameters -->
         <div class="parameters" ng-show="notification.forms">
             <guac-form

@@ -102,6 +102,32 @@
     position: relative;
 }
 
+.notification .debug-details {
+    font-size: 0.8em;
+    margin: 0.5em 0;
+}
+
+.notification .debug-details summary {
+    display: inline;
+    list-style: none;
+    cursor: pointer;
+    text-decoration: underline;
+    opacity: 0.75;
+}
+
+.notification .debug-details summary::-webkit-details-marker {
+    display: none;
+}
+
+.notification .debug-details p {
+    font-family: monospace;
+    word-break: break-all;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+}
+
 .notification .parameters {
     width: 100%;
 }

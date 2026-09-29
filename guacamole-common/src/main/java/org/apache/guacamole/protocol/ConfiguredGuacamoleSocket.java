@@ -332,9 +332,11 @@ public class ConfiguredGuacamoleSocket extends DelegatingGuacamoleSocket {
      * Returns the unique ID associated with the Guacamole connection
      * negotiated by this ConfiguredGuacamoleSocket. The ID is provided by
      * the "ready" instruction returned by the Guacamole proxy.
-     * 
-     * @return The ID of the negotiated Guacamole connection.
+     *
+     * @return
+     *     The ID of the negotiated Guacamole connection.
      */
+    @Override
     public String getConnectionID() {
         return id;
     }
