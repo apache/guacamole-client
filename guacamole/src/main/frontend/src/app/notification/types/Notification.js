@@ -58,6 +58,15 @@ angular.module('notification').factory('Notification', [function defineNotificat
         this.text = template.text;
 
         /**
+         * Optional debug details for the notification, such as identifiers
+         * useful for correlating log messages. If present, these details are
+         * hidden by default and displayed only upon request.
+         *
+         * @type TranslatableMessage
+         */
+        this.details = template.details;
+
+        /**
          * The translation namespace of the translation strings that will
          * be generated for all fields within the notification. This namespace
          * is absolutely required if form fields will be included in the

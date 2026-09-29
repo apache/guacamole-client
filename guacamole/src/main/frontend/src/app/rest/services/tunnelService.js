@@ -106,6 +106,31 @@ angular.module('rest').factory('tunnelService', ['$injector',
     };
 
     /**
+     * Makes a request to the REST API to retrieve the unique ID assigned by
+     * guacd to the connection associated with a particular tunnel, returning
+     * a promise that provides an object containing that ID within its
+     * "identifier" property if successful. The ID is not exposed for tunnels
+     * which joined an existing connection via a sharing profile.
+     *
+     * @param {String} tunnel
+     *     The UUID of the tunnel associated with the Guacamole connection
+     *     whose guacd connection ID is being retrieved.
+     *
+     * @returns {Promise.<Object.<String, String>>}
+     *     A promise which will resolve with an object containing the guacd
+     *     connection ID within its "identifier" property upon success.
+     */
+    service.getConnectionID = function getConnectionID(tunnel) {
+
+        return authenticationService.request({
+            method  : 'GET',
+            url     : 'api/session/tunnels/' + encodeURIComponent(tunnel)
+                        + '/connectionID'
+        });
+
+    };
+
+    /**
      * Retrieves the set of sharing profiles that the current user can use to
      * share the active connection of the given tunnel.
      *
