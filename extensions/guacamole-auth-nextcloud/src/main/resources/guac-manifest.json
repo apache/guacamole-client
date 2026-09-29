@@ -1,0 +1,12 @@
+{
+
+    "guacamoleVersion" : "1.5.5",
+
+    "name"      : "Encrypted Nextcloud Authentication",
+    "namespace" : "nextcloud",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.nextcloud.NextcloudJwtAuthenticationProvider"
+    ]
+
+}
