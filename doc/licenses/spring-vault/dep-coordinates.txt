@@ -1,0 +1,1 @@
+org.springframework.vault:spring-vault-core:jar:*

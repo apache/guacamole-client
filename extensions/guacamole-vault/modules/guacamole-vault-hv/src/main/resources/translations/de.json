@@ -1,0 +1,28 @@
+{
+
+    "CONNECTION_ATTRIBUTES": {
+        "FIELD_HEADER_HV_USER_CONFIG_ENABLED": "Benutzerdefinierte Vault-Konfiguration erlauben",
+        "SECTION_HEADER_HV_CONFIG": "OpenBao oder Hashicorp Vault"
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES": {
+        "FIELD_HEADER_HV_URI": "Vault-Server-URL",
+        "FIELD_HEADER_HV_TOKEN": "Vault-Zugriffstoken oder Sink-Datei",
+        "FIELD_HEADER_HV_USERNAME": "Vault-Benutzername",
+        "FIELD_HEADER_HV_PASSWORD": "Vault-Passwort",
+        "SECTION_HEADER_HV_CONFIG": "OpenBao oder Hashicorp Vault"
+    },
+
+    "DATA_SOURCE_HASHICORP_VAULT": {
+        "NAME": "OpenBao oder Hashicorp Vault"
+    },
+
+    "USER_ATTRIBUTES": {
+        "FIELD_HEADER_HV_URI": "Vault-Server-URL",
+        "FIELD_HEADER_HV_TOKEN": "Vault-Zugriffstoken oder Sink-Datei",
+        "FIELD_HEADER_HV_USERNAME": "Vault-Benutzername",
+        "FIELD_HEADER_HV_PASSWORD": "Vault-Passwort",
+        "SECTION_HEADER_HV_CONFIG": "OpenBao oder Hashicorp Vault"
+    }
+
+}
