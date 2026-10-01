@@ -23,7 +23,7 @@ var Guacamole = Guacamole || {};
  * Guacamole protocol client. Given a {@link Guacamole.Tunnel},
  * automatically handles incoming and outgoing Guacamole instructions via the
  * provided tunnel, updating its display using one or more canvas elements.
- * 
+ *
  * @constructor
  * @param {!Guacamole.Tunnel} tunnel
  *     The tunnel to use to send and receive Guacamole instructions.
@@ -540,6 +540,35 @@ Guacamole.Client = function(tunnel) {
     };
 
     /**
+     * Sends an auth-response instruction over the tunnel, announcing an
+     * output stream carrying the response body for a previously-received
+     * auth-challenge identified by the same challengeId.
+     *
+     * @param {!string} mimetype
+     *     The mimetype of the data which will be sent over the returned
+     *     stream.
+     *
+     * @param {!string} challengeId
+     *     The challenge identifier of the originating auth-challenge
+     *     being responded to.
+     *
+     * @return {Guacamole.OutputStream}
+     *     The created stream, or null if not connected.
+     */
+    this.sendAuthResponse = function(mimetype, challengeId) {
+
+        // Do not send if not connected
+        if (!isConnected())
+            return null;
+
+        var stream = guac_client.createOutputStream();
+        tunnel.sendMessage("auth-response", stream.index, mimetype,
+                challengeId);
+        return stream;
+
+    };
+
+    /**
      * Opens a new clipboard object for writing, having the given mimetype. The
      * instruction necessary to create this stream will automatically be sent.
      *
@@ -917,7 +946,26 @@ Guacamole.Client = function(tunnel) {
      *     The name of the pipe.
      */
     this.onpipe = null;
-    
+
+    /**
+     * Fired when an "auth-challenge" instruction is received from the
+     * server, announcing a stream carrying the challenge body for a
+     * pending authentication exchange. The handler is responsible for
+     * consuming the body from the given input stream and replying via
+     * sendAuthResponse() with the same challengeId.
+     *
+     * @event
+     * @param {!Guacamole.InputStream} stream
+     *     The input stream carrying the challenge body.
+     *
+     * @param {!string} mimetype
+     *     The mimetype of the challenge body. Identifies the auth flavor.
+     *
+     * @param {!string} challengeId
+     *     The challenge identifier carried by the auth-challenge.
+     */
+    this.onauthchallenge = null;
+
     /**
      * Fired when a "required" instruction is received. A required instruction
      * indicates that additional parameters are required for the connection to
@@ -1557,7 +1605,7 @@ Guacamole.Client = function(tunnel) {
             var mimetype = parameters[1];
             var name = parameters[2];
 
-            // Create stream 
+            // Create stream
             if (guac_client.onpipe) {
                 var stream = streams[stream_index] = new Guacamole.InputStream(guac_client, stream_index);
                 guac_client.onpipe(stream, mimetype, name);
@@ -1566,6 +1614,23 @@ Guacamole.Client = function(tunnel) {
             // Otherwise, unsupported
             else
                 guac_client.sendAck(stream_index, "Named pipes unsupported", 0x0100);
+
+        },
+
+        "auth-challenge": function(parameters) {
+
+            var stream_index = parseInt(parameters[0]);
+            var mimetype = parameters[1];
+            var challengeId = parameters[2];
+
+            if (guac_client.onauthchallenge) {
+                var stream = streams[stream_index] =
+                        new Guacamole.InputStream(guac_client, stream_index);
+                guac_client.onauthchallenge(stream, mimetype, challengeId);
+            }
+            else
+                guac_client.sendAck(stream_index,
+                        "Auth challenges unsupported", 0x0100);
 
         },
 

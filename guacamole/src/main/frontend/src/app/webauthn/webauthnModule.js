@@ -18,18 +18,9 @@
  */
 
 /**
- * The module for code used to connect to a connection or balancing group.
+ * The module for code used to relay WebAuthn ceremonies between a remote
+ * session and the user's local browser, allowing a WebAuthn authenticator
+ * connected to the user's local machine to satisfy WebAuthn requests
+ * originating from the remote session.
  */
-angular.module('client', [
-    'auth',
-    'clipboard',
-    'element',
-    'history',
-    'navigation',
-    'notification',
-    'osk',
-    'rest',
-    'textInput',
-    'touch',
-    'webauthn'
-]);
+angular.module('webauthn', []);

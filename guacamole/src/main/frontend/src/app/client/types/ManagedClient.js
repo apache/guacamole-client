@@ -36,6 +36,7 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
     const ManagedFilesystem      = $injector.get('ManagedFilesystem');
     const ManagedFileUpload      = $injector.get('ManagedFileUpload');
     const ManagedShareLink       = $injector.get('ManagedShareLink');
+    const ManagedWebAuthn        = $injector.get('ManagedWebAuthn');
 
     // Required services
     const $document               = $injector.get('$document');
@@ -293,6 +294,17 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
          */
         this.deferredPipeStreamHandlers = template.deferredPipeStreamHandlers || {};
 
+        /**
+         * State tracking the WebAuthn passthrough relay for this client.
+         * Ceremony requests arrive as inbound "auth-challenge" streams
+         * with WebAuthn-flavored mimetypes; responses are sent back as
+         * outbound "auth-response" streams carrying the credential or
+         * error.
+         *
+         * @type ManagedWebAuthn
+         */
+        this.managedWebAuthn = template.managedWebAuthn || null;
+
     };
 
     /**
@@ -443,6 +455,25 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
             tunnel : tunnel
         });
 
+        // Set up WebAuthn passthrough and dispatch inbound auth-challenge
+        // streams to it. Other mimetypes are not currently expected.
+        managedClient.managedWebAuthn = ManagedWebAuthn.getInstance(managedClient);
+
+        client.onauthchallenge = function clientAuthChallengeReceived(
+                stream, mimetype, challengeId) {
+            if (ManagedWebAuthn.handlesMimetype(mimetype))
+                ManagedWebAuthn.handleChallenge(
+                        managedClient.managedWebAuthn,
+                        stream, mimetype, challengeId);
+            else {
+                console.warn('[ManagedClient] no handler for auth-challenge '
+                        + 'mimetype "' + mimetype + '" (id=' + challengeId
+                        + ')');
+                stream.sendAck('Unsupported auth-challenge mimetype',
+                        Guacamole.Status.Code.UNSUPPORTED);
+            }
+        };
+
         // Fire events for tunnel errors
         tunnel.onerror = function tunnelError(status) {
             $rootScope.$apply(function handleTunnelError() {
@@ -485,6 +516,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
 
                     // Connection has closed
                     case Guacamole.Tunnel.State.CLOSED:
+                        // Dismiss any local authenticator UI left stranded
+                        // by the tunnel dropping mid-ceremony.
+                        if (managedClient.managedWebAuthn)
+                            ManagedWebAuthn.abortAll(
+                                    managedClient.managedWebAuthn);
                         ManagedClientState.setConnectionState(managedClient.clientState,
                             ManagedClientState.ConnectionState.DISCONNECTED);
                         break;
