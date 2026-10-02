@@ -36,6 +36,7 @@ import org.apache.guacamole.auth.jdbc.base.ActivityRecordModel;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSortPredicate;
 import org.apache.guacamole.auth.jdbc.base.EntityMapper;
+import org.apache.guacamole.auth.jdbc.base.EntityService;
 import org.apache.guacamole.auth.jdbc.base.ModeledActivityRecord;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionModel;
@@ -120,6 +121,14 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      */
     @Inject
     private EntityMapper entityMapper;
+
+    /**
+     * Service for resolving effective group memberships (including recursive
+     * expansion of parent groups in the database group hierarchy) for
+     * ModeledAuthenticatedUser instances created here.
+     */
+    @Inject
+    private EntityService entityService;
 
     /**
      * Mapper for accessing users.
@@ -413,7 +422,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
 
         // Create corresponding user object, set up cyclic reference
         ModeledUser user = getObjectInstance(null, userModel);
-        user.setCurrentUser(new ModeledAuthenticatedUser(authenticationProvider, user, credentials));
+        user.setCurrentUser(new ModeledAuthenticatedUser(authenticationProvider, user, credentials, entityService));
 
         // Return now-authenticated user
         return user.getCurrentUser();
@@ -451,7 +460,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         // Create corresponding user object, set up cyclic reference
         ModeledUser user = getObjectInstance(null, userModel);
         user.setCurrentUser(new ModeledAuthenticatedUser(authenticatedUser,
-                authenticationProvider, user));
+                authenticationProvider, user, entityService));
 
         // Return already-authenticated user
         return user;
@@ -488,7 +497,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
         
         // Create user object, and configure cyclic reference
         user.setCurrentUser(new ModeledAuthenticatedUser(authenticatedUser,
-                authenticationProvider, user));
+                authenticationProvider, user, entityService));
         
         // Return the new user.
         return user;
