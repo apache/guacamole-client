@@ -28,19 +28,33 @@ import java.util.Collection;
 public class TextField extends Field {
 
     /**
-     * Creates a new TextField with the given name.
+     * Creates a new TextField with the given name, having autocomplete
+     * enabled.
      *
      * @param name
      *     The unique name to associate with this field.
      */
     public TextField(String name) {
-        super(name, Field.Type.TEXT);
+        super(name, Field.Type.TEXT, Field.Autocomplete.ON);
+    }
+    
+    /**
+     * Creates a new TextField with the given name and autocomplete value.
+     * 
+     * @param name
+     *     The unique name to associate with this field.
+     * 
+     * @param autocomplete 
+     *     The autocomplete value to use for this field.
+     */
+    public TextField(String name, String autocomplete) {
+        super(name, Field.Type.TEXT, autocomplete);
     }
 
     /**
      * Creates a new TextField with the given name and possible values. As a
      * text field may contain any data by definition, any provided options are
-     * simply known-good values.
+     * simply known-good values. Autocomplete will be enabled for this field.
      *
      * @param name
      *     The unique name to associate with this field.
@@ -49,7 +63,25 @@ public class TextField extends Field {
      *     A set of known legal options for this field.
      */
     public TextField(String name, Collection<String> options) {
-        super(name, Field.Type.TEXT, options);
+        super(name, Field.Type.TEXT, Field.Autocomplete.ON, options);
+    }
+    
+    /**
+     * Creates a new TextField with the given name, autocomplete value, and
+     * possible option values. As a text field may contain any data by
+     * definition, any provided options are simply known-good values.
+     *
+     * @param name
+     *     The unique name to associate with this field.
+     *
+     * @param autocomplete
+     *     The autocomplete value for this field.
+     * 
+     * @param options
+     *     A set of known legal options for this field.
+     */
+    public TextField(String name, String autocomplete, Collection<String> options) {
+        super(name, Field.Type.TEXT, autocomplete, options);
     }
 
     /**

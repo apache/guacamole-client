@@ -89,7 +89,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * The password field to provide the user when their password is expired
      * and must be changed.
      */
-    private static final Field NEW_PASSWORD = new PasswordField(NEW_PASSWORD_PARAMETER);
+    private static final Field NEW_PASSWORD = new PasswordField(NEW_PASSWORD_PARAMETER, Field.Autocomplete.NEW_PASSWORD);
 
     /**
      * The name of the HTTP password confirmation parameter to expect if the
@@ -101,7 +101,7 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
      * The password confirmation field to provide the user when their password
      * is expired and must be changed.
      */
-    private static final Field CONFIRM_NEW_PASSWORD = new PasswordField(CONFIRM_NEW_PASSWORD_PARAMETER);
+    private static final Field CONFIRM_NEW_PASSWORD = new PasswordField(CONFIRM_NEW_PASSWORD_PARAMETER, Field.Autocomplete.NEW_PASSWORD);
 
     /**
      * Information describing the expected credentials if a user's password is

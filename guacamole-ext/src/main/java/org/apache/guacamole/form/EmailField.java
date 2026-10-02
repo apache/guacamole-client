@@ -31,7 +31,7 @@ public class EmailField extends Field {
      *     The unique name to associate with this field.
      */
     public EmailField(String name) {
-        super(name, Field.Type.EMAIL);
+        super(name, Field.Type.EMAIL, Field.Autocomplete.EMAIL);
     }
 
 }
