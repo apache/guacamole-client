@@ -52,6 +52,14 @@
             <artifactId>guacamole-ext</artifactId>
         </dependency>
 
+        <!-- Cluster coordination -->
+        <dependency>
+            <groupId>org.apache.guacamole</groupId>
+            <artifactId>guacamole-cluster</artifactId>
+            <version>${revision}</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- MyBatis -->
         <dependency>
             <groupId>org.mybatis</groupId>

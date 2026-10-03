@@ -1,0 +1,108 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# Cluster configuration.
+#
+# These are guacamole.properties keys written in the canonical environment-
+# variable form: the webapp enables "enable-environment-properties" by default
+# in the official image entrypoint, and TokenName.canonicalize() maps
+# "cluster-enabled" to CLUSTER_ENABLED, "guacd-cluster-dns" to
+# GUACD_CLUSTER_DNS, and so on. They are consumed below with envFrom, so no
+# file has to be mounted into GUACAMOLE_HOME.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: guacamole-cluster-config
+data:
+  # Cluster coordination
+  CLUSTER_ENABLED: "true"
+  CLUSTER_REDIS_URI: "redis://redis:6379"
+  CLUSTER_HEARTBEAT_INTERVAL: "10000"
+  CLUSTER_STALE_WINDOW: "30000"
+
+  # guacd pool: resolved from the headless Service, so membership follows
+  # Kubernetes readiness
+  GUACD_CLUSTER_DNS: "guacd"
+  GUACD_CLUSTER_PORT: "4822"
+  GUACD_CIRCUIT_BREAK_DURATION: "15000"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guacamole
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: guacamole
+  template:
+    metadata:
+      labels:
+        app: guacamole
+    spec:
+      containers:
+        - name: guacamole
+          # This MUST be an image built from this repository. The upstream
+          # guacamole/guacamole image contains no cluster code at all, so a
+          # stack running it will start, serve, and verify nothing -- see the
+          # README for the build command.
+          image: guacamole-cluster:1.6.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: guacamole-cluster-config
+          env:
+            # The JVM caches successful DNS lookups for 30s by default, which
+            # would delay observing guacd pod churn well past the pool's own
+            # 5s cache. This lowers the JVM-level cache to match.
+            - name: JAVA_OPTS
+              value: "-Dnetworkaddress.cache.ttl=5"
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          # Measured idle: ~2m CPU / 240-310Mi (JVM heap dominates memory).
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /guacamole/
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guacamole
+spec:
+  selector:
+    app: guacamole
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

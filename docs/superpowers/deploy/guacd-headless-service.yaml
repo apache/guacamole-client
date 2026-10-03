@@ -1,0 +1,79 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# Headless Service: DNS returns one A record per READY guacd pod. This is the
+# entire guacd membership and liveness mechanism -- Kubernetes removes pods that
+# fail the readiness probe, so Guacamole never sees them.
+apiVersion: v1
+kind: Service
+metadata:
+  name: guacd
+spec:
+  clusterIP: None
+  selector:
+    app: guacd
+  ports:
+    - name: guacd
+      port: 4822
+      targetPort: 4822
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guacd
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: guacd
+  template:
+    metadata:
+      labels:
+        app: guacd
+    spec:
+      containers:
+        - name: guacd
+          # 1.6.0 is the newest guacd published upstream; there is no 1.6.1
+          # tag. Safe to pair with a 1.6.1 webapp -- this work never touches
+          # guacamole-server, and the protocol is stable across patch releases.
+          image: guacamole/guacd:1.6.0
+          ports:
+            - containerPort: 4822
+          # Requests are what the HPA divides by; without them it cannot
+          # compute utilization and will not scale at all. Measured idle:
+          # ~1m CPU / ~10Mi. The ceiling is per-session encoding work.
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+          readinessProbe:
+            tcpSocket:
+              port: 4822
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            failureThreshold: 2
+          livenessProbe:
+            tcpSocket:
+              port: 4822
+            initialDelaySeconds: 10
+            periodSeconds: 10

@@ -51,6 +51,8 @@
         <jackson-databind.version>2.22.1</jackson-databind.version>
         <jersey.version>2.48</jersey.version>
         <junit.version>5.14.4</junit.version>
+        <lettuce.version>6.3.2.RELEASE</lettuce.version>
+        <testcontainers.version>1.21.3</testcontainers.version>
         <junit4.version>4.13.2</junit4.version>
         <logback.version>1.3.16</logback.version>
         <slf4j.version>2.0.18</slf4j.version>
@@ -89,6 +91,9 @@
 
         <!-- Guacamole webapp extension API -->
         <module>guacamole-ext</module>
+
+        <!-- Cluster coordination (Redis-backed HA support) -->
+        <module>guacamole-cluster</module>
 
         <!-- Guacamole JavaScript API -->
         <module>guacamole-common-js</module>
@@ -370,6 +375,27 @@
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
+            </dependency>
+
+            <!-- Redis client (cluster coordination) -->
+            <dependency>
+                <groupId>io.lettuce</groupId>
+                <artifactId>lettuce-core</artifactId>
+                <version>${lettuce.version}</version>
+            </dependency>
+
+            <!-- Testcontainers (integration testing against real services) -->
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${testcontainers.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- Guice dependency injection -->
