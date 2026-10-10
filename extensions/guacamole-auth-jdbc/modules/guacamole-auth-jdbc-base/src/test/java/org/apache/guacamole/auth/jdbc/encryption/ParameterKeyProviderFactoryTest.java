@@ -35,6 +35,7 @@ public class ParameterKeyProviderFactoryTest {
     private static class Env extends JDBCEnvironment {
 
         private final String keys, current, provider;
+        private String mode = "encrypt", extraNames;
 
         Env(String keys, String current, String provider) {
             this.keys = keys;
@@ -45,8 +46,8 @@ public class ParameterKeyProviderFactoryTest {
         @Override public String getParameterEncryptionKeys() { return keys; }
         @Override public String getParameterEncryptionCurrentKey() { return current; }
         @Override public String getParameterEncryptionProvider() { return provider; }
-        @Override public String getParameterEncryptionMode() { return "encrypt"; }
-        @Override public String getParameterEncryptionExtraNames() { return null; }
+        @Override public String getParameterEncryptionMode() { return mode; }
+        @Override public String getParameterEncryptionExtraNames() { return extraNames; }
         @Override public boolean isUserRequired() { return false; }
         @Override public int getAbsoluteMaxConnections() { return 0; }
         @Override public int getBatchSize() { return 100; }
@@ -92,6 +93,27 @@ public class ParameterKeyProviderFactoryTest {
                 () -> ParameterKeyProviderFactory.loadConfigured(new Env("", "k1", "property")));
         assertThrows(GuacamoleServerException.class,
                 () -> ParameterKeyProviderFactory.loadConfigured(new Env("  ", "k1", "property")));
+    }
+
+    @Test
+    public void refusesSettingsWithoutKeys() {
+        GuacamoleServerException e = assertThrows(GuacamoleServerException.class,
+                () -> ParameterKeyProviderFactory.loadConfigured(new Env(null, "k1", "property")));
+        assertTrue(e.getMessage().contains("current-key"), e.getMessage());
+        assertTrue(e.getMessage().contains("parameter-encryption-keys"), e.getMessage());
+
+        assertThrows(GuacamoleServerException.class,
+                () -> ParameterKeyProviderFactory.loadConfigured(new Env(null, null, "custom")));
+
+        Env decrypt = new Env(null, null, "property");
+        decrypt.mode = "decrypt";
+        assertThrows(GuacamoleServerException.class,
+                () -> ParameterKeyProviderFactory.loadConfigured(decrypt));
+
+        Env extra = new Env(null, null, "property");
+        extra.extraNames = "token";
+        assertThrows(GuacamoleServerException.class,
+                () -> ParameterKeyProviderFactory.loadConfigured(extra));
     }
 
 }

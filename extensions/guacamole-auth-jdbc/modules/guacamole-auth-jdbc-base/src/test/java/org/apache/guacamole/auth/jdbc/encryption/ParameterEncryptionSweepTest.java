@@ -163,4 +163,18 @@ public class ParameterEncryptionSweepTest {
         assertEquals("new", s.reveal(ParameterOwner.CONNECTION, "1", "password", db.rows.get(0).getValue(), "k1"));
     }
 
+    @Test
+    public void disabledCountsEncryptedRowsOnly() throws Exception {
+        InMemoryParameterEncryptionMapper db = new InMemoryParameterEncryptionMapper();
+        db.rows.add(InMemoryParameterEncryptionMapper.row("1", "password", "x", "k1"));
+        db.rows.add(InMemoryParameterEncryptionMapper.row("2", "password", "y", "k2"));
+        db.rows.add(InMemoryParameterEncryptionMapper.row("3", "password", "z", null));
+        ParameterEncryptionService disabled = new ParameterEncryptionService(
+            PropertyParameterKeyProvider.DISABLED, ParameterEncryptionServiceTest.policy(), false);
+        ParameterEncryptionSweep.SweepResult r = new ParameterEncryptionSweep(disabled, db).run();
+        assertEquals(2, r.remainingEncrypted);
+        assertEquals(0, r.encrypted + r.decrypted + r.rekeyed + r.failed);
+        assertEquals("x", db.rows.get(0).getValue());
+    }
+
 }

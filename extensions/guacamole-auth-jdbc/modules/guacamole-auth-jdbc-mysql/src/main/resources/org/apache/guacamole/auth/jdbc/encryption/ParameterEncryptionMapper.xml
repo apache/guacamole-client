@@ -88,4 +88,21 @@
           AND parameter_encryption &lt;=&gt; #{row.encryption,jdbcType=VARCHAR}
     </update>
 
+    <sql id="encryptedFilter">
+        parameter_encryption IS NOT NULL
+        <if test="otherThanKeyId != null">
+            AND parameter_encryption &lt;&gt; #{otherThanKeyId,jdbcType=VARCHAR}
+        </if>
+    </sql>
+
+    <select id="countConnectionEncrypted" resultType="int">
+        SELECT COUNT(*) FROM guacamole_connection_parameter
+        WHERE <include refid="encryptedFilter"/>
+    </select>
+
+    <select id="countSharingProfileEncrypted" resultType="int">
+        SELECT COUNT(*) FROM guacamole_sharing_profile_parameter
+        WHERE <include refid="encryptedFilter"/>
+    </select>
+
 </mapper>

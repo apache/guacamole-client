@@ -105,4 +105,28 @@ public interface ParameterEncryptionMapper {
     int updateSharingProfileParameter(@Param("row") ParameterRow row,
             @Param("newValue") String newValue, @Param("newEncryption") String newEncryption);
 
+    /**
+     * Counts encrypted connection parameters.
+     *
+     * @param otherThanKeyId
+     *     If non-null, only parameters encrypted under a key with a different
+     *     ID are counted.
+     *
+     * @return
+     *     The number of matching rows.
+     */
+    int countConnectionEncrypted(@Param("otherThanKeyId") String otherThanKeyId);
+
+    /**
+     * Same as countConnectionEncrypted(), for sharing profile parameters.
+     *
+     * @param otherThanKeyId
+     *     If non-null, only parameters encrypted under a key with a different
+     *     ID are counted.
+     *
+     * @return
+     *     The number of matching rows.
+     */
+    int countSharingProfileEncrypted(@Param("otherThanKeyId") String otherThanKeyId);
+
 }

@@ -58,7 +58,8 @@ public interface ParameterKeyProviderFactory {
 
     /**
      * Returns the configured provider, or PropertyParameterKeyProvider.DISABLED
-     * if no keys are configured.
+     * if no keys are configured and no other parameter encryption property
+     * is set.
      *
      * @param environment
      *     The environment supplying the configuration.
@@ -67,13 +68,34 @@ public interface ParameterKeyProviderFactory {
      *     The configured provider.
      *
      * @throws GuacamoleException
-     *     If the configuration is invalid or names an unknown provider.
+     *     If the configuration is invalid, names an unknown provider, or
+     *     sets other parameter encryption properties without any keys.
      */
     static ParameterKeyProvider loadConfigured(JDBCEnvironment environment)
             throws GuacamoleException {
 
-        if (environment.getParameterEncryptionKeys() == null)
+        if (environment.getParameterEncryptionKeys() == null) {
+
+            // Unset keys with other settings present is most likely a secret
+            // that failed to render; running unencrypted would be silent.
+            List<String> set = new ArrayList<>();
+            if (environment.getParameterEncryptionCurrentKey() != null)
+                set.add("*-parameter-encryption-current-key");
+            if (environment.getParameterEncryptionExtraNames() != null)
+                set.add("*-parameter-encryption-extra-names");
+            if (!"property".equals(environment.getParameterEncryptionProvider()))
+                set.add("*-parameter-encryption-provider");
+            if (!"encrypt".equals(environment.getParameterEncryptionMode()))
+                set.add("*-parameter-encryption-mode");
+
+            if (!set.isEmpty())
+                throw new GuacamoleServerException(String.join(", ", set)
+                        + " set but *-parameter-encryption-keys is not; "
+                        + "refusing to start with parameter encryption disabled.");
+
             return PropertyParameterKeyProvider.DISABLED;
+
+        }
 
         String name = environment.getParameterEncryptionProvider();
         List<String> available = new ArrayList<>();

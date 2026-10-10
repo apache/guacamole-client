@@ -86,4 +86,16 @@ public class KeyringTest {
         assertTrue(e.getMessage().contains("k1"));
     }
 
+    @Test
+    public void reversedEntryDoesNotEchoKey() {
+        byte[] raw = new byte[32];
+        java.util.Arrays.fill(raw, (byte) 7);
+        String key = Base64.getEncoder().encodeToString(raw);
+        GuacamoleServerException e = assertThrows(GuacamoleServerException.class,
+            () -> Keyring.parseBase64("k0:" + b64(32) + "," + key + ":k1"));
+        assertTrue(e.getMessage().contains("entry 2"), e.getMessage());
+        assertFalse(e.getMessage().contains(key.substring(0, key.length() - 1)),
+            "key material must not appear in errors");
+    }
+
 }

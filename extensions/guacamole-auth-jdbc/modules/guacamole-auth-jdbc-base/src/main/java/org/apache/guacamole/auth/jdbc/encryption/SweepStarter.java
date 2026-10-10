@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Starts the parameter encryption sweep once, in the background, when the
- * extension loads and encryption is configured. Never delays startup. Bound
+ * extension loads. When encryption is not configured, only counts encrypted
+ * rows and reports them at ERROR. Never delays startup. Bound
  * as an eager singleton, so an invalid encryption configuration fails the
  * extension at load rather than on first use.
  */
@@ -39,9 +40,6 @@ public class SweepStarter {
     public SweepStarter(ParameterEncryptionService service,
             ParameterEncryptionSweep sweep, SqlSessionManager sessions) {
 
-        if (!service.isEnabled())
-            return;
-
         Thread thread = new Thread(() -> {
 
             // A SIMPLE executor makes each update return its real row count
@@ -49,7 +47,15 @@ public class SweepStarter {
             try {
                 sessions.startManagedSession(ExecutorType.SIMPLE, true);
                 try {
-                    logger.info("Parameter encryption sweep finished: {}.", sweep.run());
+                    ParameterEncryptionSweep.SweepResult result = sweep.run();
+                    if (!service.isEnabled()) {
+                        if (result.remainingEncrypted > 0)
+                            logger.error("{} stored parameters are encrypted but "
+                                    + "parameter encryption is not configured; those "
+                                    + "connections cannot be used.", result.remainingEncrypted);
+                    }
+                    else
+                        logger.info("Parameter encryption sweep finished: {}.", result);
                 }
                 finally {
                     sessions.close();

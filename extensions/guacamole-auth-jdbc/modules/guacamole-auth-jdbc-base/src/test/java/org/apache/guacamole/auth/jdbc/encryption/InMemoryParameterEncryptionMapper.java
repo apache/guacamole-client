@@ -82,4 +82,18 @@ class InMemoryParameterEncryptionMapper implements ParameterEncryptionMapper {
         return 0;
     }
 
+    @Override
+    public synchronized int countConnectionEncrypted(String otherThanKeyId) {
+        int n = 0;
+        for (ParameterRow r : rows)
+            if (r.getEncryption() != null && !r.getEncryption().equals(otherThanKeyId))
+                n++;
+        return n;
+    }
+
+    @Override
+    public int countSharingProfileEncrypted(String otherThanKeyId) {
+        return 0;
+    }
+
 }

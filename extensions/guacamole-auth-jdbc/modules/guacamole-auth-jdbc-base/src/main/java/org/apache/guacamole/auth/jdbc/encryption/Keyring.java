@@ -82,18 +82,21 @@ public final class Keyring {
             throws GuacamoleServerException {
 
         Map<String, byte[]> keys = new LinkedHashMap<>();
-        for (String entry : spec.split(",", -1)) {
+        String[] entries = spec.split(",", -1);
+        for (int i = 0; i < entries.length; i++) {
 
-            String trimmed = entry.trim();
+            String trimmed = entries[i].trim();
             int colon = trimmed.indexOf(':');
             if (colon <= 0)
                 throw new GuacamoleServerException("Parameter encryption "
                         + "keyring entries must be \"keyId:value\".");
 
             String keyId = trimmed.substring(0, colon);
+            // Never echo an unvalidated ID: a reversed entry puts the key here.
             if (!KEY_ID.matcher(keyId).matches())
                 throw new GuacamoleServerException("Invalid parameter "
-                        + "encryption key identifier \"" + keyId + "\".");
+                        + "encryption key identifier in keyring entry "
+                        + (i + 1) + ".");
             if (keys.containsKey(keyId))
                 throw new GuacamoleServerException("Duplicate parameter "
                         + "encryption key identifier \"" + keyId + "\".");

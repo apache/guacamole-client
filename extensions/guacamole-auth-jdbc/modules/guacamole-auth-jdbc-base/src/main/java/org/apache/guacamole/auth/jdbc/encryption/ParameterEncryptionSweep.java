@@ -42,7 +42,7 @@ public class ParameterEncryptionSweep {
 
     /** Counts produced by one sweep. */
     public static class SweepResult {
-        public int encrypted, rekeyed, decrypted, skipped, failed, remaining;
+        public int encrypted, rekeyed, decrypted, skipped, failed, remaining, remainingEncrypted;
         @Override
         public String toString() {
             return "encrypted " + encrypted + ", re-keyed " + rekeyed
@@ -64,8 +64,10 @@ public class ParameterEncryptionSweep {
 
     public SweepResult run() {
         SweepResult result = new SweepResult();
-        if (!service.isEnabled())
+        if (!service.isEnabled()) {
+            result.remainingEncrypted = countEncrypted(null);
             return result;
+        }
         String kid = service.currentKeyId();
         boolean decrypt = service.isDecryptMode();
         Set<String> names = service.getPolicy().getSecretNames();
@@ -77,6 +79,12 @@ public class ParameterEncryptionSweep {
             result.remaining = countPlain(mapper.selectConnectionCandidates(names, kid, false))
                     + countPlain(mapper.selectSharingProfileCandidates(names, kid, false));
         return result;
+    }
+
+    /** Counts encrypted rows in both tables, optionally excluding one key ID. */
+    private int countEncrypted(String otherThanKeyId) {
+        return mapper.countConnectionEncrypted(otherThanKeyId)
+                + mapper.countSharingProfileEncrypted(otherThanKeyId);
     }
 
     /** Counts the rows still stored as plain text. */
