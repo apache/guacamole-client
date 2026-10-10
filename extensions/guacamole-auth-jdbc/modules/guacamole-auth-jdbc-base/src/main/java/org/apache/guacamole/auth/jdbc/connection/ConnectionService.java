@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.encryption.ParameterEncryptionService;
+import org.apache.guacamole.auth.jdbc.encryption.ParameterOwner;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.base.ActivityRecordSearchTerm;
@@ -62,6 +64,13 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
      */
     @Inject
     private ConnectionMapper connectionMapper;
+
+    /**
+     * Service for encrypting secret parameters on save and decrypting them on
+     * read.
+     */
+    @Inject
+    private ParameterEncryptionService parameterEncryptionService;
 
     /**
      * Mapper for manipulating connection permissions.
@@ -305,6 +314,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         // Insert new parameters, if any
         Collection<ConnectionParameterModel> parameterModels = getParameterModels(connection);
+        parameterEncryptionService.protectConnectionParameters(parameterModels);
         if (!parameterModels.isEmpty())
             parameterMapper.insert(parameterModels);
 
@@ -321,6 +331,7 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         // Replace existing parameters with new parameters, if any
         Collection<ConnectionParameterModel> parameterModels = getParameterModels(object);
+        parameterEncryptionService.protectConnectionParameters(parameterModels);
         parameterMapper.delete(object.getIdentifier());
         if (!parameterModels.isEmpty())
             parameterMapper.insert(parameterModels);
@@ -402,8 +413,13 @@ public class ConnectionService extends ModeledChildDirectoryObjectService<Modele
 
         // Populate parameter map if we have permission to do so
         if (canRetrieveParameters) {
-            for (ConnectionParameterModel parameter : parameterMapper.select(identifier))
-                parameterMap.put(parameter.getName(), parameter.getValue());
+            for (ConnectionParameterModel parameter : parameterMapper.select(identifier)) {
+                String value = parameterEncryptionService.revealOrOmit(
+                        ParameterOwner.CONNECTION, identifier, parameter.getName(),
+                        parameter.getValue(), parameter.getEncryption());
+                if (value != null)
+                    parameterMap.put(parameter.getName(), value);
+            }
         }
 
         return parameterMap;

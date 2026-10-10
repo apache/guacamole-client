@@ -43,6 +43,8 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionModel;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordModel;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionParameterModel;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.encryption.ParameterEncryptionService;
+import org.apache.guacamole.auth.jdbc.encryption.ParameterOwner;
 import org.apache.guacamole.GuacamoleResourceConflictException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -139,6 +141,13 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      */
     @Inject
     private ConnectionMapper connectionMapper;
+
+    /**
+     * Service for encrypting secret parameters on save and decrypting them on
+     * read.
+     */
+    @Inject
+    private ParameterEncryptionService parameterEncryptionService;
 
     /**
      * Provider for creating connections.
@@ -289,7 +298,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      */
     private GuacamoleConfiguration getGuacamoleConfiguration(
             ModeledConnection connection, String connectionID,
-            ModeledSharingProfile sharingProfile) {
+            ModeledSharingProfile sharingProfile) throws GuacamoleException {
 
         ConnectionModel model = connection.getModel();
 
@@ -302,12 +311,16 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         if (sharingProfile != null) {
             Collection<SharingProfileParameterModel> parameters = sharingProfileParameterMapper.select(sharingProfile.getIdentifier());
             for (SharingProfileParameterModel parameter : parameters)
-                config.setParameter(parameter.getName(), parameter.getValue());
+                config.setParameter(parameter.getName(), parameterEncryptionService.reveal(
+                        ParameterOwner.SHARING_PROFILE, sharingProfile.getIdentifier(),
+                        parameter.getName(), parameter.getValue(), parameter.getEncryption()));
         }
         else {
             Collection<ConnectionParameterModel> parameters = connectionParameterMapper.select(connection.getIdentifier());
             for (ConnectionParameterModel parameter : parameters)
-                config.setParameter(parameter.getName(), parameter.getValue());
+                config.setParameter(parameter.getName(), parameterEncryptionService.reveal(
+                        ParameterOwner.CONNECTION, connection.getIdentifier(),
+                        parameter.getName(), parameter.getValue(), parameter.getEncryption()));
         }
 
         return config;
