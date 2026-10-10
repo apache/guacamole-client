@@ -120,4 +120,26 @@ public class ParameterCipherTest {
             () -> ParameterCipher.encrypt(k, ParameterOwner.CONNECTION, "7", "private-key", new String(wide)));
     }
 
+    @Test
+    public void decryptRejectsWrongLengthKey() throws Exception {
+        byte[] k = key();
+        String stored = ParameterCipher.encrypt(k, ParameterOwner.CONNECTION, "7", "password", "x");
+        assertThrows(GeneralSecurityException.class,
+            () -> ParameterCipher.decrypt(new byte[0], ParameterOwner.CONNECTION, "7", "password", stored));
+        assertThrows(GeneralSecurityException.class,
+            () -> ParameterCipher.decrypt(new byte[16], ParameterOwner.CONNECTION, "7", "password", stored));
+    }
+
+    @Test
+    public void decryptRejectsOversizedAssociatedData() throws Exception {
+        byte[] k = key();
+        String stored = ParameterCipher.encrypt(k, ParameterOwner.CONNECTION, "7", "password", "x");
+        char[] oversized = new char[70000];
+        Arrays.fill(oversized, 'a');
+        String longOwnerId = new String(oversized);
+        GeneralSecurityException ex = assertThrows(GeneralSecurityException.class,
+            () -> ParameterCipher.decrypt(k, ParameterOwner.CONNECTION, longOwnerId, "password", stored));
+        assertFalse(ex.getMessage().contains("aaaa"), "Exception message should not contain plaintext");
+    }
+
 }

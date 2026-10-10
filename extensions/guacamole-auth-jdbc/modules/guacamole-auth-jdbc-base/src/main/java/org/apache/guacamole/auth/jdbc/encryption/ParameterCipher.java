@@ -54,9 +54,10 @@ public final class ParameterCipher {
     /**
      * Builds length-prefixed associated data so that no two distinct
      * (owner, id, name) triples share an encoding.
+     * The encoding is part of the stored format; never change it.
      */
     private static byte[] associatedData(ParameterOwner owner, String ownerId,
-            String name) {
+            String name) throws IllegalArgumentException {
         try {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(bytes);
@@ -66,7 +67,7 @@ public final class ParameterCipher {
             return bytes.toByteArray();
         }
         catch (IOException e) {
-            throw new IllegalStateException(e);
+            throw new IllegalArgumentException("Owner identifier or parameter name too long.");
         }
     }
 
@@ -121,6 +122,9 @@ public final class ParameterCipher {
             String ownerId, String name, String stored)
             throws GeneralSecurityException {
 
+        if (key == null || key.length != KEY_BYTES)
+            throw new GeneralSecurityException("Key must be " + KEY_BYTES + " bytes.");
+
         byte[] raw;
         try {
             raw = Base64.getDecoder().decode(stored);
@@ -131,12 +135,17 @@ public final class ParameterCipher {
         if (raw.length < IV_BYTES + TAG_BITS / 8)
             throw new GeneralSecurityException("Stored value is too short.");
 
-        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
-        cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"),
-                new GCMParameterSpec(TAG_BITS, raw, 0, IV_BYTES));
-        cipher.updateAAD(associatedData(owner, ownerId, name));
-        byte[] data = cipher.doFinal(raw, IV_BYTES, raw.length - IV_BYTES);
-        return new String(data, StandardCharsets.UTF_8);
+        try {
+            Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+            cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"),
+                    new GCMParameterSpec(TAG_BITS, raw, 0, IV_BYTES));
+            cipher.updateAAD(associatedData(owner, ownerId, name));
+            byte[] data = cipher.doFinal(raw, IV_BYTES, raw.length - IV_BYTES);
+            return new String(data, StandardCharsets.UTF_8);
+        }
+        catch (IllegalArgumentException e) {
+            throw new GeneralSecurityException(e.getMessage());
+        }
 
     }
 
