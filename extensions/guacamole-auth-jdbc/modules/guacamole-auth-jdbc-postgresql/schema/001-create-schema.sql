@@ -735,3 +735,30 @@ CREATE TABLE guacamole_user_password_history (
 CREATE INDEX guacamole_user_password_history_user_id
     ON guacamole_user_password_history(user_id);
 
+
+--
+-- Single-use password reset tokens. Only the SHA-256 hash of each token is
+-- stored; the token itself exists only in the e-mail sent to the user.
+--
+
+CREATE TABLE guacamole_user_password_reset (
+
+  token_hash bytea       NOT NULL,
+  user_id    integer     NOT NULL,
+  created    timestamptz NOT NULL,
+  expires    timestamptz NOT NULL,
+  used       timestamptz,
+
+  PRIMARY KEY (token_hash),
+
+  CONSTRAINT guacamole_user_password_reset_ibfk_1
+    FOREIGN KEY (user_id)
+    REFERENCES guacamole_user (user_id) ON DELETE CASCADE
+
+);
+
+CREATE INDEX guacamole_user_password_reset_user_id
+    ON guacamole_user_password_reset(user_id);
+
+CREATE INDEX guacamole_user_password_reset_created
+    ON guacamole_user_password_reset(created);

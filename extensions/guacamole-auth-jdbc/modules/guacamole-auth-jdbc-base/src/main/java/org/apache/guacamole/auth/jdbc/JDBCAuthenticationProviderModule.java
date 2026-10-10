@@ -39,6 +39,7 @@ import org.apache.guacamole.auth.jdbc.user.UserMapper;
 import org.apache.guacamole.auth.jdbc.connectiongroup.ConnectionGroupService;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionService;
 import org.apache.guacamole.auth.jdbc.tunnel.GuacamoleTunnelService;
+import org.apache.guacamole.auth.jdbc.reset.PasswordResetTokenMapper;
 import org.apache.guacamole.auth.jdbc.security.PasswordEncryptionService;
 import org.apache.guacamole.auth.jdbc.security.SHA256PasswordEncryptionService;
 import org.apache.guacamole.auth.jdbc.security.SaltService;
@@ -142,6 +143,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(ConnectionParameterMapper.class);
         addMapperClass(EntityMapper.class);
         addMapperClass(PasswordRecordMapper.class);
+        addMapperClass(PasswordResetTokenMapper.class);
         addMapperClass(SystemPermissionMapper.class);
         addMapperClass(SharingProfileMapper.class);
         addMapperClass(SharingProfileParameterMapper.class);
