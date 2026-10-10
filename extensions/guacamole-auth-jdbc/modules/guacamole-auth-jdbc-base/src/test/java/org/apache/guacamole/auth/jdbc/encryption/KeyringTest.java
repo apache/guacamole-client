@@ -65,6 +65,14 @@ public class KeyringTest {
     }
 
     @Test
+    public void rejectsIdsDifferingOnlyInCase() {
+        GuacamoleServerException e = assertThrows(GuacamoleServerException.class,
+            () -> Keyring.parseBase64("k1:" + b64(32) + ",K1:" + b64(32)));
+        assertEquals("Parameter encryption key identifiers must differ in more "
+                + "than letter case (\"K1\").", e.getMessage());
+    }
+
+    @Test
     public void rejectsEmptyEntries() {
         assertThrows(GuacamoleServerException.class, () -> Keyring.parseBase64("k1:" + b64(32) + ","));
         assertThrows(GuacamoleServerException.class, () -> Keyring.parseBase64(",k1:" + b64(32)));

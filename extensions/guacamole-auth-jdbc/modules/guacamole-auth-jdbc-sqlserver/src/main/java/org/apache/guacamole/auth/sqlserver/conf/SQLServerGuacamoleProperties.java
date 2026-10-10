@@ -247,6 +247,7 @@ public class SQLServerGuacamoleProperties {
 
     /**
      * The keyring used to encrypt secret connection parameters, as comma-separated "keyId:value" pairs, or null if unset (encryption disabled).
+     * Key identifiers are compared ignoring case.
      */
     public static final StringGuacamoleProperty SQLSERVER_PARAMETER_ENCRYPTION_KEYS =
             new StringGuacamoleProperty() {

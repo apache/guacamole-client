@@ -97,6 +97,11 @@ public final class Keyring {
             if (keys.containsKey(keyId))
                 throw new GuacamoleServerException("Duplicate parameter "
                         + "encryption key identifier \"" + keyId + "\".");
+            for (String existing : keys.keySet())
+                if (existing.equalsIgnoreCase(keyId))
+                    throw new GuacamoleServerException("Parameter encryption key "
+                            + "identifiers must differ in more than letter case (\""
+                            + keyId + "\").");
 
             byte[] key = decoder.decode(keyId, trimmed.substring(colon + 1).trim());
             if (key == null)

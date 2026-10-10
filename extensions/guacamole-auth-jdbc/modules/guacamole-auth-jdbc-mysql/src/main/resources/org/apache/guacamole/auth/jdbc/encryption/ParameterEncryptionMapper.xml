@@ -47,6 +47,7 @@
                     <foreach collection="names" item="name" open="(" separator="," close=")">
                         #{name,jdbcType=VARCHAR}
                     </foreach>
+                AND parameter_value &lt;&gt; ''
                 AND (parameter_encryption IS NULL
                      OR parameter_encryption &lt;&gt; #{currentKeyId,jdbcType=VARCHAR})
             </otherwise>
@@ -73,7 +74,7 @@
             parameter_encryption = #{newEncryption,jdbcType=VARCHAR}
         WHERE connection_id   = #{row.ownerIdentifier,jdbcType=INTEGER}
           AND parameter_name  = #{row.name,jdbcType=VARCHAR}
-          AND parameter_value = #{row.value,jdbcType=VARCHAR}
+          AND BINARY parameter_value = #{row.value,jdbcType=VARCHAR}
           AND parameter_encryption &lt;=&gt; #{row.encryption,jdbcType=VARCHAR}
     </update>
 
@@ -83,7 +84,7 @@
             parameter_encryption = #{newEncryption,jdbcType=VARCHAR}
         WHERE sharing_profile_id = #{row.ownerIdentifier,jdbcType=INTEGER}
           AND parameter_name     = #{row.name,jdbcType=VARCHAR}
-          AND parameter_value    = #{row.value,jdbcType=VARCHAR}
+          AND BINARY parameter_value = #{row.value,jdbcType=VARCHAR}
           AND parameter_encryption &lt;=&gt; #{row.encryption,jdbcType=VARCHAR}
     </update>
 

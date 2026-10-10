@@ -74,15 +74,26 @@ public class ParameterEncryptionSweep {
         sweep(ParameterOwner.SHARING_PROFILE,
                 mapper.selectSharingProfileCandidates(names, kid, decrypt), result);
         if (!decrypt)
-            result.remaining = mapper.selectConnectionCandidates(names, kid, false).size()
-                    + mapper.selectSharingProfileCandidates(names, kid, false).size()
-                    - result.failed;
+            result.remaining = countPlain(mapper.selectConnectionCandidates(names, kid, false))
+                    + countPlain(mapper.selectSharingProfileCandidates(names, kid, false));
         return result;
+    }
+
+    /** Counts the rows still stored as plain text. */
+    private static int countPlain(List<ParameterRow> rows) {
+        int plain = 0;
+        for (ParameterRow row : rows)
+            if (row.getEncryption() == null)
+                plain++;
+        return plain;
     }
 
     private void sweep(ParameterOwner owner, List<ParameterRow> rows, SweepResult result) {
         int handled = 0;
         for (ParameterRow row : rows) {
+            // Empty values are never encrypted (see shouldEncrypt); the query already excludes them.
+            if (!service.isDecryptMode() && row.getValue().isEmpty())
+                continue;
             try {
                 String plain = service.reveal(owner, row.getOwnerIdentifier(),
                         row.getName(), row.getValue(), row.getEncryption());

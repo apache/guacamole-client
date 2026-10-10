@@ -21,10 +21,11 @@ package org.apache.guacamole.auth.jdbc.encryption;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.Test;
 
 public class ParameterEncryptionSweepTest {
@@ -90,17 +91,64 @@ public class ParameterEncryptionSweepTest {
         for (int i = 0; i < 500; i++)
             db.rows.add(InMemoryParameterEncryptionMapper.row(Integer.toString(i), "password", "v" + i, null));
         ParameterEncryptionService s = svc("k1", false, "k1");
-        CountDownLatch start = new CountDownLatch(1);
+
+        // Each thread waits at its first update until the other has also
+        // finished selecting, so both sweeps work from the same candidates.
+        CyclicBarrier barrier = new CyclicBarrier(2);
+        ThreadLocal<Boolean> waited = ThreadLocal.withInitial(() -> false);
+        db.beforeUpdate = () -> {
+            if (waited.get())
+                return;
+            waited.set(true);
+            try {
+                barrier.await(10, TimeUnit.SECONDS);
+            }
+            catch (Exception e) {
+                throw new IllegalStateException("sweeps did not overlap", e);
+            }
+        };
+
         ExecutorService pool = Executors.newFixedThreadPool(2);
-        Future<ParameterEncryptionSweep.SweepResult> a = pool.submit(() -> { start.await(); return new ParameterEncryptionSweep(s, db).run(); });
-        Future<ParameterEncryptionSweep.SweepResult> b = pool.submit(() -> { start.await(); return new ParameterEncryptionSweep(s, db).run(); });
-        start.countDown();
-        int total = a.get().encrypted + b.get().encrypted;
-        pool.shutdown();
-        assertEquals(500, total, "each row encrypted exactly once across both sweeps");
+        try {
+            Future<ParameterEncryptionSweep.SweepResult> a = pool.submit(() -> new ParameterEncryptionSweep(s, db).run());
+            Future<ParameterEncryptionSweep.SweepResult> b = pool.submit(() -> new ParameterEncryptionSweep(s, db).run());
+            ParameterEncryptionSweep.SweepResult ra = a.get(30, TimeUnit.SECONDS);
+            ParameterEncryptionSweep.SweepResult rb = b.get(30, TimeUnit.SECONDS);
+            assertEquals(500, ra.encrypted + rb.encrypted, "each row encrypted exactly once across both sweeps");
+            assertEquals(500, ra.skipped + rb.skipped, "every row lost the compare-and-set in one sweep");
+        }
+        finally {
+            pool.shutdownNow();
+        }
         for (int i = 0; i < 500; i++)
             assertEquals("v" + i, s.reveal(ParameterOwner.CONNECTION, Integer.toString(i), "password",
                 db.rows.get(i).getValue(), "k1"));
+    }
+
+    @Test
+    public void oversizedPlainSecretFailsAndRemains() throws Exception {
+        InMemoryParameterEncryptionMapper db = new InMemoryParameterEncryptionMapper();
+        StringBuilder big = new StringBuilder();
+        for (int i = 0; i < 6001; i++)
+            big.append('x');
+        db.rows.add(InMemoryParameterEncryptionMapper.row("1", "password", big.toString(), null));
+        db.rows.add(InMemoryParameterEncryptionMapper.row("2", "password", "b", null));
+        ParameterEncryptionSweep.SweepResult r = new ParameterEncryptionSweep(svc("k1", false, "k1"), db).run();
+        assertEquals(1, r.encrypted);
+        assertEquals(1, r.failed);
+        assertEquals(1, r.remaining);
+        assertNull(db.rows.get(0).getEncryption());
+    }
+
+    @Test
+    public void emptyValueIsNeitherEncryptedNorCounted() throws Exception {
+        InMemoryParameterEncryptionMapper db = new InMemoryParameterEncryptionMapper();
+        db.rows.add(InMemoryParameterEncryptionMapper.row("1", "password", "", null));
+        ParameterEncryptionSweep.SweepResult r = new ParameterEncryptionSweep(svc("k1", false, "k1"), db).run();
+        assertEquals("encrypted 0, re-keyed 0, decrypted 0, skipped 0, failed 0, "
+                + "remaining plain-text secrets 0", r.toString());
+        assertEquals("", db.rows.get(0).getValue());
+        assertNull(db.rows.get(0).getEncryption());
     }
 
     @Test
