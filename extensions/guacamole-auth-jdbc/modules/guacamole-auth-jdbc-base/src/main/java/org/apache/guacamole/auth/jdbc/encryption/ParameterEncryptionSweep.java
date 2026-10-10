@@ -42,13 +42,18 @@ public class ParameterEncryptionSweep {
 
     /** Counts produced by one sweep. */
     public static class SweepResult {
-        public int encrypted, rekeyed, decrypted, skipped, failed, remaining, remainingEncrypted;
+        public boolean decrypt;
+        public int encrypted, rekeyed, decrypted, skipped, failed, remaining, remainingEncrypted, remainingNonCurrent;
         @Override
         public String toString() {
+            if (decrypt)
+                return "decrypted " + decrypted + ", skipped " + skipped
+                        + ", failed " + failed + ", remaining encrypted "
+                        + remainingEncrypted;
             return "encrypted " + encrypted + ", re-keyed " + rekeyed
-                    + ", decrypted " + decrypted + ", skipped " + skipped
-                    + ", failed " + failed + ", remaining plain-text secrets "
-                    + remaining;
+                    + ", skipped " + skipped + ", failed " + failed
+                    + ", remaining plain-text secrets " + remaining
+                    + ", remaining on non-current keys " + remainingNonCurrent;
         }
     }
 
@@ -70,14 +75,19 @@ public class ParameterEncryptionSweep {
         }
         String kid = service.currentKeyId();
         boolean decrypt = service.isDecryptMode();
+        result.decrypt = decrypt;
         Set<String> names = service.getPolicy().getSecretNames();
         sweep(ParameterOwner.CONNECTION,
                 mapper.selectConnectionCandidates(names, kid, decrypt), result);
         sweep(ParameterOwner.SHARING_PROFILE,
                 mapper.selectSharingProfileCandidates(names, kid, decrypt), result);
-        if (!decrypt)
+        if (decrypt)
+            result.remainingEncrypted = countEncrypted(null);
+        else {
             result.remaining = countPlain(mapper.selectConnectionCandidates(names, kid, false))
                     + countPlain(mapper.selectSharingProfileCandidates(names, kid, false));
+            result.remainingNonCurrent = countEncrypted(kid);
+        }
         return result;
     }
 
@@ -130,6 +140,13 @@ public class ParameterEncryptionSweep {
             catch (GuacamoleException e) {
                 result.failed++;
                 logger.warn("Parameter encryption sweep skipped a row: {}", e.getMessage());
+            }
+            catch (RuntimeException e) {
+                // Class only: a driver message can quote the row's value.
+                result.failed++;
+                logger.warn("Parameter encryption sweep skipped parameter \"{}\" of {} {}: {}",
+                        row.getName(), owner.getType(), row.getOwnerIdentifier(),
+                        e.getClass().getName());
             }
             if (++handled % BATCH_SIZE == 0)
                 logger.info("Parameter encryption sweep: {} {} rows processed.", handled, owner.getType());

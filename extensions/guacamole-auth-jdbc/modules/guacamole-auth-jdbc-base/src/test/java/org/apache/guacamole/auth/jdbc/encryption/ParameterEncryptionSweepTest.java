@@ -145,8 +145,8 @@ public class ParameterEncryptionSweepTest {
         InMemoryParameterEncryptionMapper db = new InMemoryParameterEncryptionMapper();
         db.rows.add(InMemoryParameterEncryptionMapper.row("1", "password", "", null));
         ParameterEncryptionSweep.SweepResult r = new ParameterEncryptionSweep(svc("k1", false, "k1"), db).run();
-        assertEquals("encrypted 0, re-keyed 0, decrypted 0, skipped 0, failed 0, "
-                + "remaining plain-text secrets 0", r.toString());
+        assertEquals("encrypted 0, re-keyed 0, skipped 0, failed 0, "
+                + "remaining plain-text secrets 0, remaining on non-current keys 0", r.toString());
         assertEquals("", db.rows.get(0).getValue());
         assertNull(db.rows.get(0).getEncryption());
     }
@@ -175,6 +175,67 @@ public class ParameterEncryptionSweepTest {
         assertEquals(2, r.remainingEncrypted);
         assertEquals(0, r.encrypted + r.decrypted + r.rekeyed + r.failed);
         assertEquals("x", db.rows.get(0).getValue());
+    }
+
+    @Test
+    public void rekeysRowWhoseNameIsNoLongerSecret() throws Exception {
+        InMemoryParameterEncryptionMapper db = new InMemoryParameterEncryptionMapper();
+        String old = svc("k1", false, "k1").encryptValue(ParameterOwner.CONNECTION, "1", "oldsecret", "v");
+        db.rows.add(InMemoryParameterEncryptionMapper.row("1", "oldsecret", old, "k1"));
+        ParameterEncryptionService rotated = svc("k2", false, "k1", "k2");
+        ParameterEncryptionSweep.SweepResult r = new ParameterEncryptionSweep(rotated, db).run();
+        assertEquals(1, r.rekeyed);
+        assertEquals(0, r.remainingNonCurrent);
+        assertEquals("k2", db.rows.get(0).getEncryption());
+        assertEquals("v", rotated.reveal(ParameterOwner.CONNECTION, "1", "oldsecret", db.rows.get(0).getValue(), "k2"));
+    }
+
+    @Test
+    public void reportsRowsLeftOnNonCurrentKeys() throws Exception {
+        InMemoryParameterEncryptionMapper db = new InMemoryParameterEncryptionMapper();
+        db.rows.add(InMemoryParameterEncryptionMapper.row("1", "password", "a", null));
+        new ParameterEncryptionSweep(svc("k1", false, "k1"), db).run();
+        ParameterEncryptionSweep.SweepResult full = new ParameterEncryptionSweep(svc("k2", false, "k1", "k2"), db).run();
+        assertEquals(0, full.remainingNonCurrent);
+
+        db.rows.add(InMemoryParameterEncryptionMapper.row("2", "password", "garbage", "gone"));
+        ParameterEncryptionSweep.SweepResult partial = new ParameterEncryptionSweep(svc("k2", false, "k1", "k2"), db).run();
+        assertEquals(1, partial.failed);
+        assertEquals(1, partial.remainingNonCurrent);
+        assertTrue(partial.toString().endsWith("remaining on non-current keys 1"), partial.toString());
+    }
+
+    @Test
+    public void decryptModeReportsRemainingEncrypted() throws Exception {
+        InMemoryParameterEncryptionMapper db = new InMemoryParameterEncryptionMapper();
+        db.rows.add(InMemoryParameterEncryptionMapper.row("1", "password", "a", null));
+        new ParameterEncryptionSweep(svc("k1", false, "k1"), db).run();
+        db.rows.add(InMemoryParameterEncryptionMapper.row("2", "password", "garbage", "gone"));
+        ParameterEncryptionSweep.SweepResult r = new ParameterEncryptionSweep(svc("k1", true, "k1"), db).run();
+        assertEquals(1, r.decrypted);
+        assertEquals(1, r.failed);
+        assertEquals(1, r.remainingEncrypted);
+        assertEquals("decrypted 1, skipped 0, failed 1, remaining encrypted 1", r.toString());
+    }
+
+    @Test
+    public void rowRuntimeFailureIsCountedAndSweepContinues() throws Exception {
+        InMemoryParameterEncryptionMapper db = new InMemoryParameterEncryptionMapper();
+        db.rows.add(InMemoryParameterEncryptionMapper.row("1", "password", "a", null));
+        db.rows.add(InMemoryParameterEncryptionMapper.row("2", "password", "b", null));
+        boolean[] thrown = { false };
+        db.beforeUpdate = () -> {
+            if (!thrown[0]) {
+                thrown[0] = true;
+                throw new IllegalStateException("simulated driver failure");
+            }
+        };
+        ParameterEncryptionSweep.SweepResult r = new ParameterEncryptionSweep(svc("k1", false, "k1"), db).run();
+        assertEquals(1, r.failed);
+        assertEquals(1, r.encrypted);
+        assertEquals(1, r.remaining);
+        assertNull(db.rows.get(0).getEncryption());
+        assertEquals("k1", db.rows.get(1).getEncryption());
     }
 
 }

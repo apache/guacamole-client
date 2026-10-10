@@ -54,6 +54,11 @@ public class SweepStarter {
                                     + "parameter encryption is not configured; those "
                                     + "connections cannot be used.", result.remainingEncrypted);
                     }
+                    else if (service.isDecryptMode())
+                        logger.warn("Parameter encryption sweep finished: {}. "
+                                + "Downgrading to a version without parameter "
+                                + "encryption is safe only when remaining encrypted "
+                                + "is 0 and no other node runs in encrypt mode.", result);
                     else
                         logger.info("Parameter encryption sweep finished: {}.", result);
                 }

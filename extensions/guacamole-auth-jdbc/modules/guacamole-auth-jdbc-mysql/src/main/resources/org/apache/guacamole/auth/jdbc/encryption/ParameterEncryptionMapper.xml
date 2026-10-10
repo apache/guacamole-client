@@ -43,13 +43,14 @@
                 parameter_encryption IS NOT NULL
             </when>
             <otherwise>
-                parameter_name IN
-                    <foreach collection="names" item="name" open="(" separator="," close=")">
-                        #{name,jdbcType=VARCHAR}
-                    </foreach>
-                AND parameter_value &lt;&gt; ''
-                AND (parameter_encryption IS NULL
-                     OR parameter_encryption &lt;&gt; #{currentKeyId,jdbcType=VARCHAR})
+                (parameter_encryption IS NOT NULL
+                 AND parameter_encryption &lt;&gt; #{currentKeyId,jdbcType=VARCHAR})
+                OR (parameter_encryption IS NULL
+                    AND parameter_name IN
+                        <foreach collection="names" item="name" open="(" separator="," close=")">
+                            #{name,jdbcType=VARCHAR}
+                        </foreach>
+                    AND parameter_value &lt;&gt; '')
             </otherwise>
         </choose>
     </sql>
@@ -74,7 +75,7 @@
             parameter_encryption = #{newEncryption,jdbcType=VARCHAR}
         WHERE connection_id   = #{row.ownerIdentifier,jdbcType=INTEGER}
           AND parameter_name  = #{row.name,jdbcType=VARCHAR}
-          AND BINARY parameter_value = #{row.value,jdbcType=VARCHAR}
+          AND CAST(parameter_value AS BINARY) = CAST(#{row.value,jdbcType=VARCHAR} AS BINARY)
           AND parameter_encryption &lt;=&gt; #{row.encryption,jdbcType=VARCHAR}
     </update>
 
@@ -84,7 +85,7 @@
             parameter_encryption = #{newEncryption,jdbcType=VARCHAR}
         WHERE sharing_profile_id = #{row.ownerIdentifier,jdbcType=INTEGER}
           AND parameter_name     = #{row.name,jdbcType=VARCHAR}
-          AND BINARY parameter_value = #{row.value,jdbcType=VARCHAR}
+          AND CAST(parameter_value AS BINARY) = CAST(#{row.value,jdbcType=VARCHAR} AS BINARY)
           AND parameter_encryption &lt;=&gt; #{row.encryption,jdbcType=VARCHAR}
     </update>
 

@@ -43,13 +43,14 @@
                 parameter_encryption IS NOT NULL
             </when>
             <otherwise>
-                parameter_name IN
-                    <foreach collection="names" item="name" open="(" separator="," close=")">
-                        #{name,jdbcType=VARCHAR}
-                    </foreach>
-                AND parameter_value &lt;&gt; ''
-                AND (parameter_encryption IS NULL
-                     OR parameter_encryption &lt;&gt; #{currentKeyId,jdbcType=VARCHAR})
+                (parameter_encryption IS NOT NULL
+                 AND parameter_encryption &lt;&gt; #{currentKeyId,jdbcType=VARCHAR})
+                OR (parameter_encryption IS NULL
+                    AND parameter_name IN
+                        <foreach collection="names" item="name" open="(" separator="," close=")">
+                            #{name,jdbcType=VARCHAR}
+                        </foreach>
+                    AND parameter_value &lt;&gt; '')
             </otherwise>
         </choose>
     </sql>

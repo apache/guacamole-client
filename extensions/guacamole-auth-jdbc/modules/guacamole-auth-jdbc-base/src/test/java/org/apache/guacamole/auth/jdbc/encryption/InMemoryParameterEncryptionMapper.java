@@ -48,8 +48,8 @@ class InMemoryParameterEncryptionMapper implements ParameterEncryptionMapper {
         List<ParameterRow> out = new ArrayList<>();
         for (ParameterRow r : rows) {
             boolean match = decrypt ? r.getEncryption() != null
-                    : names.contains(r.getName()) && !r.getValue().isEmpty()
-                        && !Objects.equals(r.getEncryption(), currentKeyId);
+                    : r.getEncryption() != null ? !r.getEncryption().equals(currentKeyId)
+                    : names.contains(r.getName()) && !r.getValue().isEmpty();
             if (match) out.add(copy(r));
         }
         return out;
