@@ -93,6 +93,13 @@
             <artifactId>guice</artifactId>
         </dependency>
 
+        <!-- Jakarta Mail (javax.mail namespace, Java 8) for password reset mail -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>jakarta.mail</artifactId>
+            <version>1.6.8</version>
+        </dependency>
+
         <!-- Guava - Utility Library -->
         <dependency>
             <groupId>com.google.guava</groupId>
