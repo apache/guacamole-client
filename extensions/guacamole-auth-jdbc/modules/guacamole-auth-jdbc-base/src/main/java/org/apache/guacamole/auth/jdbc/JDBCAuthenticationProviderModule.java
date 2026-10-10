@@ -93,10 +93,12 @@ import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserMapper;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
+import org.apache.guacamole.auth.jdbc.encryption.ParameterEncryptionMapper;
 import org.apache.guacamole.auth.jdbc.encryption.ParameterEncryptionService;
 import org.apache.guacamole.auth.jdbc.encryption.ParameterKeyProvider;
 import org.apache.guacamole.auth.jdbc.encryption.ParameterKeyProviderFactory;
 import org.apache.guacamole.auth.jdbc.encryption.SecretParameterPolicy;
+import org.apache.guacamole.auth.jdbc.encryption.SweepStarter;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupService;
 import org.mybatis.guice.MyBatisModule;
@@ -163,6 +165,7 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         addMapperClass(UserParentUserGroupMapper.class);
         addMapperClass(UserPermissionMapper.class);
         addMapperClass(UserRecordMapper.class);
+        addMapperClass(ParameterEncryptionMapper.class);
         
         // Bind core implementations of guacamole-ext classes
         bind(ActiveConnectionDirectory.class);
@@ -202,6 +205,9 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
         bind(PasswordPolicyService.class);
         bind(SaltService.class).to(SecureRandomSaltService.class);
+        // Eager: loads (and validates) the encryption configuration at startup
+        bind(SweepStarter.class).asEagerSingleton();
+
         bind(SharedConnectionMap.class).to(HashSharedConnectionMap.class).in(Scopes.SINGLETON);
         bind(ShareKeyGenerator.class).to(SecureRandomShareKeyGenerator.class).in(Scopes.SINGLETON);
         bind(SharingProfilePermissionService.class);

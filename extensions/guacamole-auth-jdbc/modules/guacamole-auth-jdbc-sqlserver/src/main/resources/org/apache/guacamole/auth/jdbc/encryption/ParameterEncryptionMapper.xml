@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+
+<mapper namespace="org.apache.guacamole.auth.jdbc.encryption.ParameterEncryptionMapper">
+
+    <resultMap id="ConnectionRow" type="org.apache.guacamole.auth.jdbc.encryption.ParameterRow">
+        <result column="connection_id"        property="ownerIdentifier" jdbcType="INTEGER"/>
+        <result column="parameter_name"       property="name"            jdbcType="VARCHAR"/>
+        <result column="parameter_value"      property="value"           jdbcType="VARCHAR"/>
+        <result column="parameter_encryption" property="encryption"      jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="SharingProfileRow" type="org.apache.guacamole.auth.jdbc.encryption.ParameterRow">
+        <result column="sharing_profile_id"   property="ownerIdentifier" jdbcType="INTEGER"/>
+        <result column="parameter_name"       property="name"            jdbcType="VARCHAR"/>
+        <result column="parameter_value"      property="value"           jdbcType="VARCHAR"/>
+        <result column="parameter_encryption" property="encryption"      jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="candidateFilter">
+        <choose>
+            <when test="decrypt">
+                parameter_encryption IS NOT NULL
+            </when>
+            <otherwise>
+                parameter_name IN
+                    <foreach collection="names" item="name" open="(" separator="," close=")">
+                        #{name,jdbcType=VARCHAR}
+                    </foreach>
+                AND (parameter_encryption IS NULL
+                     OR parameter_encryption &lt;&gt; #{currentKeyId,jdbcType=VARCHAR})
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="selectConnectionCandidates" resultMap="ConnectionRow">
+        SELECT connection_id, parameter_name, parameter_value, parameter_encryption
+        FROM guacamole_connection_parameter
+        WHERE <include refid="candidateFilter"/>
+        ORDER BY connection_id, parameter_name
+    </select>
+
+    <select id="selectSharingProfileCandidates" resultMap="SharingProfileRow">
+        SELECT sharing_profile_id, parameter_name, parameter_value, parameter_encryption
+        FROM guacamole_sharing_profile_parameter
+        WHERE <include refid="candidateFilter"/>
+        ORDER BY sharing_profile_id, parameter_name
+    </select>
+
+    <update id="updateConnectionParameter">
+        UPDATE guacamole_connection_parameter
+        SET parameter_value      = #{newValue,jdbcType=VARCHAR},
+            parameter_encryption = #{newEncryption,jdbcType=VARCHAR}
+        WHERE connection_id   = #{row.ownerIdentifier,jdbcType=INTEGER}
+          AND parameter_name  = #{row.name,jdbcType=VARCHAR}
+          AND parameter_value = #{row.value,jdbcType=VARCHAR}
+          AND (parameter_encryption = #{row.encryption,jdbcType=VARCHAR}
+               OR (parameter_encryption IS NULL AND #{row.encryption,jdbcType=VARCHAR} IS NULL))
+    </update>
+
+    <update id="updateSharingProfileParameter">
+        UPDATE guacamole_sharing_profile_parameter
+        SET parameter_value      = #{newValue,jdbcType=VARCHAR},
+            parameter_encryption = #{newEncryption,jdbcType=VARCHAR}
+        WHERE sharing_profile_id = #{row.ownerIdentifier,jdbcType=INTEGER}
+          AND parameter_name     = #{row.name,jdbcType=VARCHAR}
+          AND parameter_value    = #{row.value,jdbcType=VARCHAR}
+          AND (parameter_encryption = #{row.encryption,jdbcType=VARCHAR}
+               OR (parameter_encryption IS NULL AND #{row.encryption,jdbcType=VARCHAR} IS NULL))
+    </update>
+
+</mapper>
