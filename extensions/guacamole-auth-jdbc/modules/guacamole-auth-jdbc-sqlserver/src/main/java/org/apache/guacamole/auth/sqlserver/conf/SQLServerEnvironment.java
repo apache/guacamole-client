@@ -139,6 +139,31 @@ public class SQLServerEnvironment extends JDBCEnvironment {
     }    
 
     @Override
+    public String getParameterEncryptionKeys() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_PARAMETER_ENCRYPTION_KEYS);
+    }
+
+    @Override
+    public String getParameterEncryptionCurrentKey() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_PARAMETER_ENCRYPTION_CURRENT_KEY);
+    }
+
+    @Override
+    public String getParameterEncryptionProvider() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_PARAMETER_ENCRYPTION_PROVIDER, "property");
+    }
+
+    @Override
+    public String getParameterEncryptionMode() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_PARAMETER_ENCRYPTION_MODE, "encrypt");
+    }
+
+    @Override
+    public String getParameterEncryptionExtraNames() throws GuacamoleException {
+        return getProperty(SQLServerGuacamoleProperties.SQLSERVER_PARAMETER_ENCRYPTION_EXTRA_NAMES);
+    }
+
+    @Override
     public int getDefaultMaxConnections() throws GuacamoleException {
         return getProperty(
             SQLServerGuacamoleProperties.SQLSERVER_DEFAULT_MAX_CONNECTIONS,

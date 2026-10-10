@@ -314,6 +314,61 @@ public class PostgreSQLGuacamoleProperties {
         public String getName() { return "postgresql-batch-size"; }
 
     };
+
+    /**
+     * The keyring used to encrypt secret connection parameters, as comma-separated "keyId:value" pairs, or null if unset (encryption disabled).
+     */
+    public static final StringGuacamoleProperty POSTGRESQL_PARAMETER_ENCRYPTION_KEYS =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-parameter-encryption-keys"; }
+
+    };
+
+    /**
+     * The identifier of the keyring key used to encrypt newly written values, or null if unset.
+     */
+    public static final StringGuacamoleProperty POSTGRESQL_PARAMETER_ENCRYPTION_CURRENT_KEY =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-parameter-encryption-current-key"; }
+
+    };
+
+    /**
+     * The name of the key provider supplying the keyring. Defaults to "property".
+     */
+    public static final StringGuacamoleProperty POSTGRESQL_PARAMETER_ENCRYPTION_PROVIDER =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-parameter-encryption-provider"; }
+
+    };
+
+    /**
+     * The parameter encryption mode, "encrypt" or "decrypt". Defaults to "encrypt".
+     */
+    public static final StringGuacamoleProperty POSTGRESQL_PARAMETER_ENCRYPTION_MODE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-parameter-encryption-mode"; }
+
+    };
+
+    /**
+     * Comma-separated names of additional connection parameters to treat as secret, or null if unset.
+     */
+    public static final StringGuacamoleProperty POSTGRESQL_PARAMETER_ENCRYPTION_EXTRA_NAMES =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "postgresql-parameter-encryption-extra-names"; }
+
+    };
     
     /**
      * A property used to configure whether or not usernames within the Postgres
