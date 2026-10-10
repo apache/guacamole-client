@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
+import org.apache.guacamole.auth.jdbc.reset.PasswordResetService;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
@@ -58,6 +59,12 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
     private UserService userService;
 
     /**
+     * Service for redeeming password reset links.
+     */
+    @Inject
+    private PasswordResetService passwordResetService;
+
+    /**
      * Service for enforcing password complexity policies.
      */
     @Inject
@@ -78,6 +85,11 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
     @Override
     public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
             Credentials credentials) throws GuacamoleException {
+
+        // Redeem a password reset link, if one is being used
+        AuthenticatedUser resetUser = passwordResetService.redeem(authenticationProvider, credentials);
+        if (resetUser != null)
+            return resetUser;
 
         // Authenticate user
         AuthenticatedUser user = userService.retrieveAuthenticatedUser(authenticationProvider, credentials);

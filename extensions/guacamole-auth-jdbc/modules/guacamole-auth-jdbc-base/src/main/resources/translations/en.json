@@ -109,6 +109,21 @@
 
     "CONNECTION_PARAMETERS": {
         "DATABASE_PARAMETER_VALUE_TOO_LONG": "The value provided for connection parameter {PARAMETER_NAME} exceeds the maximum allowed length of {MAX_SIZE} {MAX_SIZE, plural, one{character} other{characters}}."
-    } 
+    },
+
+    "PASSWORD_RESET" : {
+
+        "ACTION_SEND_LINK" : "Send password reset link",
+
+        "DIALOG_HEADER_SENT" : "Password Reset",
+
+        "ERROR_NO_EMAIL"      : "This user has no e-mail address. Set one before sending a reset link.",
+        "ERROR_NO_SUCH_USER"  : "No such user.",
+        "ERROR_TOO_MANY"      : "Too many password reset links were sent to this user. Please try again later.",
+
+        "INFO_CHOOSE_PASSWORD" : "Please choose a new password.",
+        "INFO_LINK_SENT"       : "A password reset link was sent to the e-mail address of \"{USERNAME}\"."
+
+    }
 
 }

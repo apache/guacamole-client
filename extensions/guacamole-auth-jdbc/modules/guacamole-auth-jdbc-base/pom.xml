@@ -93,6 +93,14 @@
             <artifactId>guice</artifactId>
         </dependency>
 
+        <!-- JAX-RS annotations for the password reset REST resource -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>jsr311-api</artifactId>
+            <version>1.1.1</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Jakarta Mail (javax.mail namespace, Java 8) for password reset mail -->
         <dependency>
             <groupId>com.sun.mail</groupId>
