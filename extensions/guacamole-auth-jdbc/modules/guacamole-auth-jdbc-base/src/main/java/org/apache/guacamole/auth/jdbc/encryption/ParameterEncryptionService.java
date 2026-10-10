@@ -41,6 +41,19 @@ public class ParameterEncryptionService {
     private final SecretParameterPolicy policy;
     private final boolean decryptMode;
 
+    /**
+     * Creates a service using the given keys and secret parameter policy.
+     *
+     * @param keys
+     *     The key provider. May be disabled.
+     *
+     * @param policy
+     *     The policy deciding which parameter names hold secrets.
+     *
+     * @param decryptMode
+     *     Whether new values are stored as plain text and the sweep restores
+     *     encrypted values to plain text.
+     */
     public ParameterEncryptionService(ParameterKeyProvider keys,
             SecretParameterPolicy policy, boolean decryptMode) {
         this.keys = keys;
@@ -48,17 +61,86 @@ public class ParameterEncryptionService {
         this.decryptMode = decryptMode;
     }
 
-    public boolean isEnabled() { return keys.isEnabled(); }
-    public boolean isDecryptMode() { return decryptMode; }
-    public String currentKeyId() { return keys.currentKeyId(); }
-    public SecretParameterPolicy getPolicy() { return policy; }
+    /**
+     * Returns whether a keyring is configured.
+     *
+     * @return
+     *     true if a keyring is configured, false otherwise.
+     */
+    public boolean isEnabled() {
+        return keys.isEnabled();
+    }
 
+    /**
+     * Returns whether the service runs in decrypt mode.
+     *
+     * @return
+     *     true if new values are stored as plain text and encrypted values
+     *     are being restored to plain text, false otherwise.
+     */
+    public boolean isDecryptMode() {
+        return decryptMode;
+    }
+
+    /**
+     * Returns the identifier of the key used for new encryption. Valid only
+     * if isEnabled() returns true.
+     *
+     * @return
+     *     The identifier of the current key.
+     */
+    public String currentKeyId() {
+        return keys.currentKeyId();
+    }
+
+    /**
+     * Returns the policy deciding which parameter names hold secrets.
+     *
+     * @return
+     *     The secret parameter policy.
+     */
+    public SecretParameterPolicy getPolicy() {
+        return policy;
+    }
+
+    /**
+     * Returns whether a value about to be stored must be encrypted.
+     *
+     * @param name
+     *     The parameter name.
+     *
+     * @param value
+     *     The plain value.
+     *
+     * @return
+     *     true if the value must be encrypted, false otherwise.
+     */
     private boolean shouldEncrypt(String name, String value) {
         return keys.isEnabled() && !decryptMode && value != null
                 && !value.isEmpty() && policy.isSecret(name);
     }
 
-    /** Encrypts with the current key. Valid only when enabled. */
+    /**
+     * Encrypts a value with the current key. Valid only when enabled.
+     *
+     * @param owner
+     *     The kind of object owning the parameter.
+     *
+     * @param ownerId
+     *     The identifier of the owning object.
+     *
+     * @param name
+     *     The parameter name.
+     *
+     * @param plaintext
+     *     The value to encrypt.
+     *
+     * @return
+     *     The stored form of the encrypted value.
+     *
+     * @throws GuacamoleClientException
+     *     If the value exceeds the plain-text limit for encrypted values.
+     */
     public String encryptValue(ParameterOwner owner, String ownerId,
             String name, String plaintext) throws GuacamoleClientException {
         try {
@@ -72,6 +154,17 @@ public class ParameterEncryptionService {
         }
     }
 
+    /**
+     * Prepares connection parameters for storage: encrypts secret values
+     * when enabled and not in decrypt mode, and sets each model's key ID
+     * (null for plain text).
+     *
+     * @param models
+     *     The parameters about to be stored. Modified in place.
+     *
+     * @throws GuacamoleException
+     *     If a secret value is too long to be stored encrypted.
+     */
     public void protectConnectionParameters(
             Collection<ConnectionParameterModel> models) throws GuacamoleException {
         for (ConnectionParameterModel model : models) {
@@ -84,6 +177,15 @@ public class ParameterEncryptionService {
         }
     }
 
+    /**
+     * Same as protectConnectionParameters(), for sharing profile parameters.
+     *
+     * @param models
+     *     The parameters about to be stored. Modified in place.
+     *
+     * @throws GuacamoleException
+     *     If a secret value is too long to be stored encrypted.
+     */
     public void protectSharingProfileParameters(
             Collection<SharingProfileParameterModel> models) throws GuacamoleException {
         for (SharingProfileParameterModel model : models) {
@@ -97,7 +199,26 @@ public class ParameterEncryptionService {
     }
 
     /**
-     * Returns the plain value of a stored parameter.
+     * Returns the plain value of a stored parameter. Used where a missing
+     * value must stop the operation, such as starting a session.
+     *
+     * @param owner
+     *     The kind of object owning the parameter.
+     *
+     * @param ownerId
+     *     The identifier of the owning object.
+     *
+     * @param name
+     *     The parameter name.
+     *
+     * @param value
+     *     The stored value.
+     *
+     * @param keyId
+     *     The stored key ID, or null if the value is plain text.
+     *
+     * @return
+     *     The plain value.
      *
      * @throws GuacamoleServerException
      *     If the value is encrypted and cannot be decrypted.
@@ -127,7 +248,25 @@ public class ParameterEncryptionService {
 
     /**
      * Like reveal(), but returns null and logs an ERROR on failure. For read
-     * paths that cannot throw.
+     * paths that cannot throw, such as the administrative interface.
+     *
+     * @param owner
+     *     The kind of object owning the parameter.
+     *
+     * @param ownerId
+     *     The identifier of the owning object.
+     *
+     * @param name
+     *     The parameter name.
+     *
+     * @param value
+     *     The stored value.
+     *
+     * @param keyId
+     *     The stored key ID, or null if the value is plain text.
+     *
+     * @return
+     *     The plain value, or null if it cannot be decrypted.
      */
     public String revealOrOmit(ParameterOwner owner, String ownerId,
             String name, String value, String keyId) {

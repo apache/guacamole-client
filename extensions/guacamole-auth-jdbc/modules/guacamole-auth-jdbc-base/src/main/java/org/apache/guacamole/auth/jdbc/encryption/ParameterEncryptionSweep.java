@@ -35,15 +35,67 @@ import org.slf4j.LoggerFactory;
  */
 public class ParameterEncryptionSweep {
 
+    /**
+     * Logger for this class.
+     */
     private static final Logger logger = LoggerFactory.getLogger(ParameterEncryptionSweep.class);
 
-    /** Rows handled between progress log lines. */
+    /**
+     * Rows handled between progress log lines.
+     */
     public static final int BATCH_SIZE = 100;
 
-    /** Counts produced by one sweep. */
+    /**
+     * Counts produced by one sweep.
+     */
     public static class SweepResult {
+
+        /**
+         * Whether the sweep ran in decrypt mode.
+         */
         public boolean decrypt;
-        public int encrypted, rekeyed, decrypted, skipped, failed, remaining, remainingEncrypted, remainingNonCurrent;
+
+        /**
+         * Plain-text secrets encrypted with the current key.
+         */
+        public int encrypted;
+
+        /**
+         * Rows moved from a non-current key to the current key.
+         */
+        public int rekeyed;
+
+        /**
+         * Rows restored to plain text (decrypt mode).
+         */
+        public int decrypted;
+
+        /**
+         * Rows changed by another writer between read and write.
+         */
+        public int skipped;
+
+        /**
+         * Rows that could not be processed and were left unchanged.
+         */
+        public int failed;
+
+        /**
+         * Plain-text secrets left after the sweep (encrypt mode).
+         */
+        public int remaining;
+
+        /**
+         * Encrypted rows left after the sweep (decrypt mode), or, when encryption
+         * is not configured, every encrypted row.
+         */
+        public int remainingEncrypted;
+
+        /**
+         * Rows left on a non-current key after the sweep (encrypt mode).
+         */
+        public int remainingNonCurrent;
+
         @Override
         public String toString() {
             if (decrypt)
@@ -57,9 +109,25 @@ public class ParameterEncryptionSweep {
         }
     }
 
+    /**
+     * The service performing encryption and decryption.
+     */
     private final ParameterEncryptionService service;
+
+    /**
+     * The mapper reading and rewriting stored parameters.
+     */
     private final ParameterEncryptionMapper mapper;
 
+    /**
+     * Creates a sweep using the given service and mapper.
+     *
+     * @param service
+     *     The service performing encryption and decryption.
+     *
+     * @param mapper
+     *     The mapper reading and rewriting stored parameters.
+     */
     @Inject
     public ParameterEncryptionSweep(ParameterEncryptionService service,
             ParameterEncryptionMapper mapper) {
@@ -67,6 +135,13 @@ public class ParameterEncryptionSweep {
         this.mapper = mapper;
     }
 
+    /**
+     * Runs the sweep once over connection and sharing profile parameters.
+     * When encryption is not configured, only counts encrypted rows.
+     *
+     * @return
+     *     The counts produced by the sweep.
+     */
     public SweepResult run() {
         SweepResult result = new SweepResult();
         if (!service.isEnabled()) {
@@ -106,6 +181,18 @@ public class ParameterEncryptionSweep {
         return plain;
     }
 
+    /**
+     * Processes the given candidate rows, adding to the given counts.
+     *
+     * @param owner
+     *     The kind of object owning the rows.
+     *
+     * @param rows
+     *     The candidate rows.
+     *
+     * @param result
+     *     The counts to update.
+     */
     private void sweep(ParameterOwner owner, List<ParameterRow> rows, SweepResult result) {
         int handled = 0;
         for (ParameterRow row : rows) {

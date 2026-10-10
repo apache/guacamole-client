@@ -35,12 +35,27 @@ import org.apache.guacamole.protocols.ProtocolInfo;
  */
 public class SecretParameterPolicy {
 
-    /** Secret parameters that protocol descriptors do not type as PASSWORD. */
+    /**
+     * Secret parameters that protocol descriptors do not type as PASSWORD.
+     */
     public static final List<String> BUILT_IN = Collections.unmodifiableList(
             Arrays.asList("private-key", "sftp-private-key", "client-key"));
 
+    /**
+     * Every secret parameter name.
+     */
     private final Set<String> names;
 
+    /**
+     * Creates a policy treating as secret the built-in names, every field
+     * of type PASSWORD in the given protocols, and the given extra names.
+     *
+     * @param protocols
+     *     The protocols whose PASSWORD fields are secret.
+     *
+     * @param extraNames
+     *     Comma-separated additional secret names, or null.
+     */
     public SecretParameterPolicy(Collection<ProtocolInfo> protocols,
             String extraNames) {
 
@@ -59,6 +74,15 @@ public class SecretParameterPolicy {
 
     }
 
+    /**
+     * Adds the name of every PASSWORD field in the given forms.
+     *
+     * @param secret
+     *     The set receiving the names.
+     *
+     * @param forms
+     *     The forms to inspect, or null.
+     */
     private static void addPasswordFields(Set<String> secret, Collection<Form> forms) {
         if (forms == null)
             return;
@@ -68,12 +92,25 @@ public class SecretParameterPolicy {
                     secret.add(field.getName());
     }
 
-    /** Returns whether the parameter with the given name holds a secret. */
+    /**
+     * Returns whether the parameter with the given name holds a secret.
+     *
+     * @param name
+     *     The parameter name.
+     *
+     * @return
+     *     true if the parameter is secret, false otherwise.
+     */
     public boolean isSecret(String name) {
         return names.contains(name);
     }
 
-    /** Returns every secret parameter name. */
+    /**
+     * Returns every secret parameter name.
+     *
+     * @return
+     *     An unmodifiable set of secret parameter names.
+     */
     public Set<String> getSecretNames() {
         return names;
     }

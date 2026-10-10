@@ -32,8 +32,9 @@ public interface ParameterEncryptionMapper {
 
     /**
      * Returns the connection parameters the sweep must handle: in encrypt
-     * mode, secret parameters that are plain text or on a non-current key;
-     * in decrypt mode, every encrypted parameter.
+     * mode, non-empty plain-text secret parameters and every parameter on a
+     * non-current key, whether or not its name is secret; in decrypt mode,
+     * every encrypted parameter.
      *
      * @param names
      *     The secret parameter names. Never empty.

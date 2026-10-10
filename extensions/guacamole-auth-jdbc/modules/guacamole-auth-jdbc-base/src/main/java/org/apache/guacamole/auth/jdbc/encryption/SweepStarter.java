@@ -34,8 +34,23 @@ import org.slf4j.LoggerFactory;
  */
 public class SweepStarter {
 
+    /**
+     * Logger for this class.
+     */
     private static final Logger logger = LoggerFactory.getLogger(SweepStarter.class);
 
+    /**
+     * Starts the sweep on a daemon thread with its own session.
+     *
+     * @param service
+     *     The parameter encryption service.
+     *
+     * @param sweep
+     *     The sweep to run.
+     *
+     * @param sessions
+     *     The session manager providing the sweep's auto-commit session.
+     */
     @Inject
     public SweepStarter(ParameterEncryptionService service,
             ParameterEncryptionSweep sweep, SqlSessionManager sessions) {

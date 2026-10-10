@@ -61,6 +61,9 @@ public final class Keyring {
 
     }
 
+    /**
+     * This class is a utility class and cannot be instantiated.
+     */
     private Keyring() {}
 
     /**

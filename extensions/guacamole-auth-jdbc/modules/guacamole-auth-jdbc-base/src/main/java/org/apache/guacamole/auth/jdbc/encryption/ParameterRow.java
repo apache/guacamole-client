@@ -37,16 +37,84 @@ public class ParameterRow {
     /** The ID of the key that encrypted the value, or null if plain text. */
     private String encryption;
 
-    public String getOwnerIdentifier() { return ownerIdentifier; }
-    public void setOwnerIdentifier(String ownerIdentifier) { this.ownerIdentifier = ownerIdentifier; }
+    /**
+     * Returns the identifier of the connection or sharing profile owning the row.
+     *
+     * @return
+     *     The identifier of the connection or sharing profile owning the row.
+     */
+    public String getOwnerIdentifier() {
+        return ownerIdentifier;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    /**
+     * Sets the identifier of the connection or sharing profile owning the row.
+     *
+     * @param ownerIdentifier
+     *     The identifier of the connection or sharing profile owning the row.
+     */
+    public void setOwnerIdentifier(String ownerIdentifier) {
+        this.ownerIdentifier = ownerIdentifier;
+    }
 
-    public String getValue() { return value; }
-    public void setValue(String value) { this.value = value; }
+    /**
+     * Returns the parameter name.
+     *
+     * @return
+     *     The parameter name.
+     */
+    public String getName() {
+        return name;
+    }
 
-    public String getEncryption() { return encryption; }
-    public void setEncryption(String encryption) { this.encryption = encryption; }
+    /**
+     * Sets the parameter name.
+     *
+     * @param name
+     *     The parameter name.
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * Returns the stored value: plain text, or ciphertext if encryption is set.
+     *
+     * @return
+     *     The stored value: plain text, or ciphertext if encryption is set.
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Sets the stored value: plain text, or ciphertext if encryption is set.
+     *
+     * @param value
+     *     The stored value: plain text, or ciphertext if encryption is set.
+     */
+    public void setValue(String value) {
+        this.value = value;
+    }
+
+    /**
+     * Returns the ID of the key that encrypted the value, or null if plain text.
+     *
+     * @return
+     *     The ID of the key that encrypted the value, or null if plain text.
+     */
+    public String getEncryption() {
+        return encryption;
+    }
+
+    /**
+     * Sets the ID of the key that encrypted the value, or null if plain text.
+     *
+     * @param encryption
+     *     The ID of the key that encrypted the value, or null if plain text.
+     */
+    public void setEncryption(String encryption) {
+        this.encryption = encryption;
+    }
 
 }
