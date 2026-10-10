@@ -82,7 +82,7 @@ public final class Keyring {
             throws GuacamoleServerException {
 
         Map<String, byte[]> keys = new LinkedHashMap<>();
-        for (String entry : spec.split(",")) {
+        for (String entry : spec.split(",", -1)) {
 
             String trimmed = entry.trim();
             int colon = trimmed.indexOf(':');
@@ -99,6 +99,9 @@ public final class Keyring {
                         + "encryption key identifier \"" + keyId + "\".");
 
             byte[] key = decoder.decode(keyId, trimmed.substring(colon + 1).trim());
+            if (key == null)
+                throw new GuacamoleServerException("Parameter encryption key \""
+                        + keyId + "\" could not be decoded.");
             if (key.length != ParameterCipher.KEY_BYTES)
                 throw new GuacamoleServerException("Parameter encryption key \""
                         + keyId + "\" must be " + ParameterCipher.KEY_BYTES

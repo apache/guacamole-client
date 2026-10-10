@@ -64,4 +64,18 @@ public class KeyringTest {
             () -> Keyring.parseBase64(longId + ":" + b64(32)));
     }
 
+    @Test
+    public void rejectsEmptyEntries() {
+        assertThrows(GuacamoleServerException.class, () -> Keyring.parseBase64("k1:" + b64(32) + ","));
+        assertThrows(GuacamoleServerException.class, () -> Keyring.parseBase64(",k1:" + b64(32)));
+        assertThrows(GuacamoleServerException.class, () -> Keyring.parseBase64("k1:" + b64(32) + ",,k2:" + b64(32)));
+    }
+
+    @Test
+    public void rejectsNullDecoderResult() {
+        GuacamoleServerException e = assertThrows(GuacamoleServerException.class,
+            () -> Keyring.parse("k1:x", (id, v) -> null));
+        assertTrue(e.getMessage().contains("k1"));
+    }
+
 }

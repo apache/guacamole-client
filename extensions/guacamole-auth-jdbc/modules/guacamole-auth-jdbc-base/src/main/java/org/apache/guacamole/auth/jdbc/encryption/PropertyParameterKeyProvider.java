@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.encryption;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import org.apache.guacamole.GuacamoleServerException;
 
@@ -63,16 +64,25 @@ public class PropertyParameterKeyProvider implements ParameterKeyProvider {
      */
     public PropertyParameterKeyProvider(Map<String, byte[]> keys,
             String currentKeyId) throws GuacamoleServerException {
-        if (currentKeyId == null || !keys.containsKey(currentKeyId))
+        if (currentKeyId == null)
+            throw new GuacamoleServerException("The parameter encryption "
+                    + "current key must be set when keys are configured.");
+        if (!keys.containsKey(currentKeyId))
             throw new GuacamoleServerException("The current parameter "
                     + "encryption key \"" + currentKeyId + "\" is not in the "
                     + "keyring.");
-        this.keys = Collections.unmodifiableMap(keys);
+        Map<String, byte[]> copy = new LinkedHashMap<>();
+        for (Map.Entry<String, byte[]> entry : keys.entrySet())
+            copy.put(entry.getKey(), entry.getValue().clone());
+        this.keys = Collections.unmodifiableMap(copy);
         this.currentKeyId = currentKeyId;
     }
 
     @Override public boolean isEnabled() { return true; }
     @Override public String currentKeyId() { return currentKeyId; }
-    @Override public byte[] keyFor(String keyId) { return keys.get(keyId); }
+    @Override public byte[] keyFor(String keyId) {
+        byte[] key = keys.get(keyId);
+        return key == null ? null : key.clone();
+    }
 
 }
