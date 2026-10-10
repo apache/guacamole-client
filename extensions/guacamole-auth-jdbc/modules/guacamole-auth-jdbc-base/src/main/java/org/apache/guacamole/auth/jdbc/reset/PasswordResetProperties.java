@@ -145,4 +145,24 @@ public class PasswordResetProperties {
         public String getName() { return "password-reset-max-per-hour"; }
     };
 
+    /**
+     * Whether users may request a reset link for themselves from the login
+     * page. Defaults to false, which also hides the "Forgot password?" link.
+     */
+    public static final BooleanGuacamoleProperty PASSWORD_RESET_SELF_SERVICE_ENABLED =
+            new BooleanGuacamoleProperty() {
+        @Override
+        public String getName() { return "password-reset-self-service-enabled"; }
+    };
+
+    /**
+     * The maximum number of self-service reset requests accepted from a
+     * single source address per hour. Defaults to 10.
+     */
+    public static final IntegerGuacamoleProperty PASSWORD_RESET_MAX_PER_IP_PER_HOUR =
+            new IntegerGuacamoleProperty() {
+        @Override
+        public String getName() { return "password-reset-max-per-ip-per-hour"; }
+    };
+
 }
