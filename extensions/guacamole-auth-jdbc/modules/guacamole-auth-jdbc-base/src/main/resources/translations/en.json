@@ -113,7 +113,9 @@
 
     "PASSWORD_RESET" : {
 
-        "ACTION_SEND_LINK" : "Send password reset link",
+        "ACTION_FORGOT_PASSWORD" : "Forgot password?",
+        "ACTION_SEND_LINK"       : "Send password reset link",
+        "ACTION_SEND_REQUEST"    : "Send reset link",
 
         "DIALOG_HEADER_SENT" : "Password Reset",
 
@@ -121,7 +123,10 @@
         "ERROR_NO_SUCH_USER"  : "No such user.",
         "ERROR_TOO_MANY"      : "Too many password reset links were sent to this user. Please try again later.",
 
-        "INFO_CHOOSE_PASSWORD" : "Please choose a new password.",
+        "HELP_FORGOT_PASSWORD" : "Enter your username. If the account has an e-mail address, a link to reset its password will be sent there.",
+
+        "INFO_CHOOSE_PASSWORD"   : "Please choose a new password.",
+        "INFO_REQUEST_ACCEPTED"  : "If the account exists and has an e-mail address, a link was sent.",
         "INFO_LINK_SENT"       : "A password reset link was sent to the e-mail address of \"{USERNAME}\"."
 
     }
