@@ -96,6 +96,11 @@ public class PasswordResetService {
      */
     private static final int DEFAULT_MAX_PER_HOUR = 3;
 
+    /**
+     * Default product name used in reset mails.
+     */
+    static final String DEFAULT_SERVICE_NAME = "Guacamole";
+
     @Inject
     private JDBCEnvironment environment;
 
@@ -215,14 +220,51 @@ public class PasswordResetService {
         String token = tokenStore.issue(model.getObjectID(), ttl, maxPerHour, new Date());
         String link = baseUrl.replaceAll("/+$", "") + "/#/?" + TOKEN_PARAMETER + "=" + token;
 
-        mailer.send(email.trim(), "Guacamole password reset",
-                "A password reset was requested for the Guacamole account \""
-                + user.getIdentifier() + "\".\n\n"
+        String serviceName = environment.getProperty(
+                PasswordResetProperties.PASSWORD_RESET_SERVICE_NAME, DEFAULT_SERVICE_NAME);
+        mailer.send(email.trim(), mailSubject(serviceName),
+                mailBody(serviceName, user.getIdentifier(), ttl, link));
+
+    }
+
+    /**
+     * Returns the subject of a reset mail.
+     *
+     * @param serviceName
+     *     The product name, as configured.
+     *
+     * @return
+     *     The subject line.
+     */
+    static String mailSubject(String serviceName) {
+        return serviceName + " password reset";
+    }
+
+    /**
+     * Returns the body of a reset mail.
+     *
+     * @param serviceName
+     *     The product name, as configured.
+     *
+     * @param username
+     *     The user whose password may be reset.
+     *
+     * @param ttl
+     *     How long the link stays valid, in minutes.
+     *
+     * @param link
+     *     The reset link.
+     *
+     * @return
+     *     The plain text body.
+     */
+    static String mailBody(String serviceName, String username, int ttl, String link) {
+        return "A password reset was requested for the " + serviceName + " account \""
+                + username + "\".\n\n"
                 + "To choose a new password, open this link within " + ttl
                 + " minutes:\n\n" + link + "\n\n"
                 + "The link can be used once. If you did not expect this "
-                + "message, you can ignore it; your password is unchanged.\n");
-
+                + "message, you can ignore it; your password is unchanged.\n";
     }
 
     /**

@@ -127,6 +127,16 @@ public class PasswordResetProperties {
     };
 
     /**
+     * The product name used in reset mails, as in "the Guacamole account".
+     * Defaults to "Guacamole".
+     */
+    public static final StringGuacamoleProperty PASSWORD_RESET_SERVICE_NAME =
+            new StringGuacamoleProperty() {
+        @Override
+        public String getName() { return "password-reset-service-name"; }
+    };
+
+    /**
      * How long a reset link stays valid, in minutes. Defaults to 30.
      */
     public static final IntegerGuacamoleProperty PASSWORD_RESET_TOKEN_TTL =
