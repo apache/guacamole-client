@@ -72,7 +72,9 @@ angular.module('guacJdbcPasswordReset').config(['$provide', function resetLinkCo
             if (!token)
                 return $delegate.authenticate(parameters);
 
-            $injector.get('localStorageService').removeItem('GUAC_AUTH_TOKEN');
+            // Data cached for the previous user must not be shown to the next.
+            // guacLogout is not broadcast, as SSO modules redirect on it.
+            $injector.get('cacheService').clearCaches();
             return $delegate.revokeToken(token)['catch'](angular.noop)
             .then(function sessionDropped() {
                 return $delegate.authenticate(parameters);
