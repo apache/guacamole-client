@@ -114,6 +114,7 @@ public class PasswordResetRedeemTest {
                 TranslatableGuacamoleInvalidCredentialsException.class,
                 () -> service.redeem(null, credentials));
         assertEquals("PASSWORD_RESET.ERROR_LINK_INVALID", e.getTranslatableMessage().getKey());
+        assertNull(e.getTranslatableMessage().getVariables(), "no account details for a bad link");
     }
 
     @Test
@@ -138,6 +139,7 @@ public class PasswordResetRedeemTest {
                 TranslatableGuacamoleInsufficientCredentialsException.class,
                 () -> service.redeem(null, credentials(null, token(token))));
         assertEquals("PASSWORD_RESET.INFO_CHOOSE_PASSWORD", e.getTranslatableMessage().getKey());
+        assertEquals(Collections.singletonMap("USERNAME", "user1"), e.getTranslatableMessage().getVariables());
         assertEquals(2, e.getCredentialsInfo().getFields().size());
         for (org.apache.guacamole.form.Field field : e.getCredentialsInfo().getFields())
             assertEquals(Type.PASSWORD, field.getType());

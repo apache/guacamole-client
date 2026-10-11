@@ -126,7 +126,7 @@
 
         "HELP_FORGOT_PASSWORD" : "Enter your username. If the account has an e-mail address, a link to reset its password will be sent there.",
 
-        "INFO_CHOOSE_PASSWORD"   : "Please choose a new password.",
+        "INFO_CHOOSE_PASSWORD"   : "Please choose a new password for \"{USERNAME}\".",
         "INFO_REQUEST_ACCEPTED"  : "If the account exists and has an e-mail address, a link was sent.",
         "INFO_LINK_SENT"       : "A password reset link was sent to the e-mail address of \"{USERNAME}\"."
 

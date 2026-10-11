@@ -22,6 +22,7 @@ package org.apache.guacamole.auth.jdbc.reset;
 
 import com.google.inject.Inject;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
@@ -37,6 +38,7 @@ import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
 import org.apache.guacamole.language.TranslatableGuacamoleInvalidCredentialsException;
 import org.apache.guacamole.language.TranslatableGuacamoleResourceNotFoundException;
+import org.apache.guacamole.language.TranslatableMessage;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.Permissions;
@@ -311,7 +313,8 @@ public class PasswordResetService {
         String confirmNewPassword = credentials.getParameter(CONFIRM_NEW_PASSWORD_PARAMETER);
         if (newPassword == null || confirmNewPassword == null)
             throw new TranslatableGuacamoleInsufficientCredentialsException(
-                    "Password reset", "PASSWORD_RESET.INFO_CHOOSE_PASSWORD", RESET_PASSWORD);
+                    "Password reset", new TranslatableMessage("PASSWORD_RESET.INFO_CHOOSE_PASSWORD",
+                    Collections.singletonMap("USERNAME", username)), RESET_PASSWORD);
 
         if (newPassword.isEmpty())
             throw new TranslatableGuacamoleClientException("Passwords may not "
