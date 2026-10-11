@@ -31,6 +31,117 @@ angular.module('guacJdbcPasswordReset', ['auth', 'notification', 'rest']);
 angular.module('index').requires.push('guacJdbcPasswordReset');
 
 /**
+ * The page parameter carrying a password reset token. Reset links put it in
+ * the query of the URL fragment, where the web application already forwards
+ * it with every authentication request.
+ */
+var JDBC_RESET_TOKEN_PARAMETER = 'password-reset-token';
+
+/**
+ * The key of the message the server returns for a reset link that is
+ * invalid, expired or already used.
+ */
+var JDBC_RESET_LINK_INVALID = 'PASSWORD_RESET.ERROR_LINK_INVALID';
+
+/**
+ * Whether the most recent failed authentication was a rejected reset link.
+ */
+angular.module('guacJdbcPasswordReset').value('guacJdbcResetLinkState', { invalid : false });
+
+/**
+ * A reset link always wins over an existing session. Without this, the
+ * stored auth token is sent along with the reset token, the server merely
+ * re-validates the existing session, and the reset token is never looked at.
+ */
+angular.module('guacJdbcPasswordReset').config(['$provide', function resetLinkConfig($provide) {
+
+    $provide.decorator('authenticationService', ['$delegate', '$injector',
+            function decorateAuthenticationService($delegate, $injector) {
+
+        var updateCurrentToken = $delegate.updateCurrentToken;
+
+        $delegate.updateCurrentToken = function updateCurrentTokenForResetLink(parameters) {
+
+            if (!parameters || !parameters[JDBC_RESET_TOKEN_PARAMETER])
+                return updateCurrentToken.apply(this, arguments);
+
+            // Log out of any existing session, then authenticate afresh with
+            // the reset token alone. The failure or success of that attempt
+            // replaces the cached authentication result either way.
+            var token = $delegate.getCurrentToken();
+            if (!token)
+                return $delegate.authenticate(parameters);
+
+            $injector.get('localStorageService').removeItem('GUAC_AUTH_TOKEN');
+            return $delegate.revokeToken(token)['catch'](angular.noop)
+            .then(function sessionDropped() {
+                return $delegate.authenticate(parameters);
+            });
+
+        };
+
+        return $delegate;
+
+    }]);
+
+}]);
+
+/**
+ * Tracks rejected reset links, and removes the reset token from the URL once
+ * a login succeeds, so that a refresh or back navigation does not resend it.
+ */
+angular.module('guacJdbcPasswordReset').run(['$injector', function resetLinkRun($injector) {
+
+    var $location              = $injector.get('$location');
+    var $rootScope             = $injector.get('$rootScope');
+    var guacJdbcResetLinkState = $injector.get('guacJdbcResetLinkState');
+
+    $rootScope.$on('guacLoginFailed', function resetLinkLoginFailed(event, parameters, error) {
+        guacJdbcResetLinkState.invalid = !!(error && error.translatableMessage
+                && error.translatableMessage.key === JDBC_RESET_LINK_INVALID);
+    });
+
+    $rootScope.$on('guacLogin', function resetLinkLogin() {
+        guacJdbcResetLinkState.invalid = false;
+        if ($location.search()[JDBC_RESET_TOKEN_PARAMETER])
+            $location.search(JDBC_RESET_TOKEN_PARAMETER, null).replace();
+    });
+
+}]);
+
+/**
+ * Shows the rejected reset link message on the login page in place of the
+ * generic invalid login message. Shares the scope of the login directive, so
+ * it sets that directive's own error message.
+ */
+angular.module('guacJdbcPasswordReset').directive('guacJdbcResetLinkError', [
+        function guacJdbcResetLinkError() {
+
+    return {
+        restrict : 'E',
+        controller : ['$scope', '$injector', function resetLinkErrorController($scope, $injector) {
+
+            var $rootScope             = $injector.get('$rootScope');
+            var guacJdbcResetLinkState = $injector.get('guacJdbcResetLinkState');
+
+            var showError = function showError() {
+                if (guacJdbcResetLinkState.invalid)
+                    $scope.loginError = { key : JDBC_RESET_LINK_INVALID };
+            };
+
+            // The link may have been rejected before the login page existed
+            showError();
+
+            // Registered after the login directive's own handler, so this
+            // replaces its generic message
+            $scope.$on('$destroy', $rootScope.$on('guacLoginFailed', showError));
+
+        }]
+    };
+
+}]);
+
+/**
  * Button on the manage user page which mails the user a password reset link.
  * Shown only for existing users of a JDBC data source.
  */
