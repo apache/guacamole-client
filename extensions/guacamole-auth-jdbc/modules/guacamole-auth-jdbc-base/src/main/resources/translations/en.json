@@ -119,6 +119,7 @@
 
         "DIALOG_HEADER_SENT" : "Password Reset",
 
+        "ERROR_LINK_INVALID"  : "This password reset link is invalid, expired or has already been used.",
         "ERROR_NO_EMAIL"      : "This user has no e-mail address. Set one before sending a reset link.",
         "ERROR_NO_SUCH_USER"  : "No such user.",
         "ERROR_TOO_MANY"      : "Too many password reset links were sent to this user. Please try again later.",

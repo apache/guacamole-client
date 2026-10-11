@@ -35,12 +35,12 @@ import org.apache.guacamole.auth.jdbc.user.UserService;
 import org.apache.guacamole.form.PasswordField;
 import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.language.TranslatableGuacamoleInsufficientCredentialsException;
+import org.apache.guacamole.language.TranslatableGuacamoleInvalidCredentialsException;
 import org.apache.guacamole.language.TranslatableGuacamoleResourceNotFoundException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.Permissions;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
-import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.net.auth.permission.ObjectPermission;
 import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.mybatis.guice.transactional.Transactional;
@@ -113,6 +113,20 @@ public class PasswordResetService {
 
     @Inject
     private PasswordPolicyService passwordPolicyService;
+
+    /**
+     * Returns the error for a reset link that is invalid, expired or used.
+     * It is an ordinary invalid login to the server, so failure accounting
+     * is unchanged; only the message key differs, so the login page can say
+     * why. The token is opaque, so this reveals nothing about any account.
+     *
+     * @return
+     *     The error to throw.
+     */
+    private static TranslatableGuacamoleInvalidCredentialsException invalidLink() {
+        return new TranslatableGuacamoleInvalidCredentialsException("Invalid login",
+                "PASSWORD_RESET.ERROR_LINK_INVALID", CredentialsInfo.USERNAME_PASSWORD);
+    }
 
     /**
      * Verifies that the holder of the given effective permissions may send a
@@ -248,8 +262,7 @@ public class PasswordResetService {
         if (user == null || user.isDisabled() || !user.isAccountValid()) {
             logger.info("Rejected an invalid, expired or used password reset "
                     + "link from {}.", credentials.getRemoteAddress());
-            throw new GuacamoleInvalidCredentialsException("Invalid login",
-                    CredentialsInfo.USERNAME_PASSWORD);
+            throw invalidLink();
         }
 
         String newPassword = credentials.getParameter(NEW_PASSWORD_PARAMETER);
@@ -301,8 +314,7 @@ public class PasswordResetService {
             Date now) throws GuacamoleException {
 
         if (!tokenStore.consume(token, now))
-            throw new GuacamoleInvalidCredentialsException("Invalid login",
-                    CredentialsInfo.USERNAME_PASSWORD);
+            throw invalidLink();
 
         passwordPolicyService.recordPassword(user);
         user.setPassword(newPassword);
