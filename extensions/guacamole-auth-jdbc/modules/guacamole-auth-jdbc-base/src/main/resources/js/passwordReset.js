@@ -46,7 +46,7 @@ var JDBC_RESET_LINK_INVALID = 'PASSWORD_RESET.ERROR_LINK_INVALID';
 /**
  * Whether the most recent failed authentication was a rejected reset link.
  */
-angular.module('guacJdbcPasswordReset').value('guacJdbcResetLinkState', { invalid : false });
+angular.module('guacJdbcPasswordReset').value('guacJdbcResetLinkState', { invalid : false, keep : false });
 
 /**
  * A reset link always wins over an existing session. Without this, the
@@ -90,7 +90,8 @@ angular.module('guacJdbcPasswordReset').config(['$provide', function resetLinkCo
 
 /**
  * Tracks rejected reset links, and removes the reset token from the URL once
- * a login succeeds, so that a refresh or back navigation does not resend it.
+ * it has been used or rejected, so that a refresh or back navigation does not
+ * resend it.
  */
 angular.module('guacJdbcPasswordReset').run(['$injector', function resetLinkRun($injector) {
 
@@ -98,15 +99,39 @@ angular.module('guacJdbcPasswordReset').run(['$injector', function resetLinkRun(
     var $rootScope             = $injector.get('$rootScope');
     var guacJdbcResetLinkState = $injector.get('guacJdbcResetLinkState');
 
+    /**
+     * Removes the reset token from the URL, if present.
+     *
+     * @returns {Boolean}
+     *     true if the token was present.
+     */
+    var stripToken = function stripToken() {
+        if (!$location.search()[JDBC_RESET_TOKEN_PARAMETER])
+            return false;
+        $location.search(JDBC_RESET_TOKEN_PARAMETER, null).replace();
+        return true;
+    };
+
     $rootScope.$on('guacLoginFailed', function resetLinkLoginFailed(event, parameters, error) {
-        guacJdbcResetLinkState.invalid = !!(error && error.translatableMessage
-                && error.translatableMessage.key === JDBC_RESET_LINK_INVALID);
+
+        // Stripping the token re-authenticates without it; that follow-up
+        // failure must keep the rejected link message
+        if (error && error.translatableMessage
+                && error.translatableMessage.key === JDBC_RESET_LINK_INVALID) {
+            guacJdbcResetLinkState.invalid = true;
+            guacJdbcResetLinkState.keep = stripToken();
+        }
+        else if (guacJdbcResetLinkState.keep)
+            guacJdbcResetLinkState.keep = false;
+        else
+            guacJdbcResetLinkState.invalid = false;
+
     });
 
     $rootScope.$on('guacLogin', function resetLinkLogin() {
         guacJdbcResetLinkState.invalid = false;
-        if ($location.search()[JDBC_RESET_TOKEN_PARAMETER])
-            $location.search(JDBC_RESET_TOKEN_PARAMETER, null).replace();
+        guacJdbcResetLinkState.keep = false;
+        stripToken();
     });
 
 }]);
