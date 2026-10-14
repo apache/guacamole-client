@@ -355,17 +355,20 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * to reflect the addition of the given connection permission.
          *
          * @param {String} identifier
-         *     The identifier of the connection to add READ permission for.
+         *     The identifier of the connection to add a permission for.
+         *     
+         * @param {ObjectPermissionType} permission
+         *     The permission to add.
          */
-        var addConnectionPermission = function addConnectionPermission(identifier) {
+        var addConnectionPermission = function addConnectionPermission(identifier, permission) {
 
             // If permission was previously removed, simply un-remove it
-            if (PermissionSet.hasConnectionPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeConnectionPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+            if (PermissionSet.hasConnectionPermission($scope.permissionsRemoved, permission, identifier))
+                PermissionSet.removeConnectionPermission($scope.permissionsRemoved, permission, identifier);
 
             // Otherwise, explicitly add the permission
             else
-                PermissionSet.addConnectionPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+                PermissionSet.addConnectionPermission($scope.permissionsAdded, permission, identifier);
 
         };
 
@@ -374,17 +377,20 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * to reflect the removal of the given connection permission.
          *
          * @param {String} identifier
-         *     The identifier of the connection to remove READ permission for.
+         *     The identifier of the connection to remove a permission for.
+         *     
+         * @param {ObjectPermissionType} permission
+         *     The permission to remove.
          */
-        var removeConnectionPermission = function removeConnectionPermission(identifier) {
+        var removeConnectionPermission = function removeConnectionPermission(identifier, permission) {
 
             // If permission was previously added, simply un-add it
-            if (PermissionSet.hasConnectionPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeConnectionPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+            if (PermissionSet.hasConnectionPermission($scope.permissionsAdded, permission, identifier))
+                PermissionSet.removeConnectionPermission($scope.permissionsAdded, permission, identifier);
 
             // Otherwise, explicitly remove the permission
             else
-                PermissionSet.addConnectionPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+                PermissionSet.addConnectionPermission($scope.permissionsRemoved, permission, identifier);
 
         };
 
@@ -393,18 +399,20 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * to reflect the addition of the given connection group permission.
          *
          * @param {String} identifier
-         *     The identifier of the connection group to add READ permission
-         *     for.
+         *     The identifier of the connection group to add a permission for.
+         *     
+         * @param {ObjectPermissionType} permission
+         *     The permission to add.
          */
-        var addConnectionGroupPermission = function addConnectionGroupPermission(identifier) {
+        var addConnectionGroupPermission = function addConnectionGroupPermission(identifier, permission) {
 
             // If permission was previously removed, simply un-remove it
-            if (PermissionSet.hasConnectionGroupPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeConnectionGroupPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+            if (PermissionSet.hasConnectionGroupPermission($scope.permissionsRemoved, permission, identifier))
+                PermissionSet.removeConnectionGroupPermission($scope.permissionsRemoved, permission, identifier);
 
             // Otherwise, explicitly add the permission
             else
-                PermissionSet.addConnectionGroupPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+                PermissionSet.addConnectionGroupPermission($scope.permissionsAdded, permission, identifier);
 
         };
 
@@ -413,18 +421,20 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * to reflect the removal of the given connection group permission.
          *
          * @param {String} identifier
-         *     The identifier of the connection group to remove READ permission
-         *     for.
+         *     The identifier of the connection group to remove a permission for.
+         *     
+         * @param {ObjectPermissionType} permission
+         *     The permission to remove.
          */
-        var removeConnectionGroupPermission = function removeConnectionGroupPermission(identifier) {
+        var removeConnectionGroupPermission = function removeConnectionGroupPermission(identifier, permission) {
 
             // If permission was previously added, simply un-add it
-            if (PermissionSet.hasConnectionGroupPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeConnectionGroupPermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+            if (PermissionSet.hasConnectionGroupPermission($scope.permissionsAdded, permission, identifier))
+                PermissionSet.removeConnectionGroupPermission($scope.permissionsAdded, permission, identifier);
 
             // Otherwise, explicitly remove the permission
             else
-                PermissionSet.addConnectionGroupPermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+                PermissionSet.addConnectionGroupPermission($scope.permissionsRemoved, permission, identifier);
 
         };
 
@@ -433,17 +443,20 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * to reflect the addition of the given sharing profile permission.
          *
          * @param {String} identifier
-         *     The identifier of the sharing profile to add READ permission for.
+         *     The identifier of the sharing profile to add a permission for.
+         *     
+         * @param {ObjectPermissionType} permission
+         *     The permission to add.
          */
-        var addSharingProfilePermission = function addSharingProfilePermission(identifier) {
+        var addSharingProfilePermission = function addSharingProfilePermission(identifier, permission) {
 
             // If permission was previously removed, simply un-remove it
-            if (PermissionSet.hasSharingProfilePermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeSharingProfilePermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+            if (PermissionSet.hasSharingProfilePermission($scope.permissionsRemoved, permission, identifier))
+                PermissionSet.removeSharingProfilePermission($scope.permissionsRemoved, permission, identifier);
 
             // Otherwise, explicitly add the permission
             else
-                PermissionSet.addSharingProfilePermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+                PermissionSet.addSharingProfilePermission($scope.permissionsAdded, permission, identifier);
 
         };
 
@@ -452,18 +465,20 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
          * to reflect the removal of the given sharing profile permission.
          *
          * @param {String} identifier
-         *     The identifier of the sharing profile to remove READ permission
-         *     for.
+         *     The identifier of the sharing profile to remove a permission for.
+         *     
+         * @param {ObjectPermissionType} permission
+         *     The permission to remove.
          */
-        var removeSharingProfilePermission = function removeSharingProfilePermission(identifier) {
+        var removeSharingProfilePermission = function removeSharingProfilePermission(identifier, permission) {
 
             // If permission was previously added, simply un-add it
-            if (PermissionSet.hasSharingProfilePermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier))
-                PermissionSet.removeSharingProfilePermission($scope.permissionsAdded, PermissionSet.ObjectPermissionType.READ, identifier);
+            if (PermissionSet.hasSharingProfilePermission($scope.permissionsAdded, permission, identifier))
+                PermissionSet.removeSharingProfilePermission($scope.permissionsAdded, permission, identifier);
 
             // Otherwise, explicitly remove the permission
             else
-                PermissionSet.addSharingProfilePermission($scope.permissionsRemoved, PermissionSet.ObjectPermissionType.READ, identifier);
+                PermissionSet.addSharingProfilePermission($scope.permissionsRemoved, permission, identifier);
 
         };
 
@@ -493,14 +508,14 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
              */
             connectionPermissionChanged : function connectionPermissionChanged(identifier) {
 
-                // Determine current permission setting
-                var granted = $scope.permissionFlags.connectionPermissions.READ[identifier];
+                // Loop through permissions to add or remove them as required.
+                for (const [key, value] of Object.entries($scope.permissionFlags.connectionPermissions)) {
+                    if (value[identifier])
+                        addConnectionPermission(identifier, PermissionSet.ObjectPermissionType[key]);
+                    else
+                        removeConnectionPermission(identifier, PermissionSet.ObjectPermissionType[key]);
 
-                // Add/remove permission depending on flag state
-                if (granted)
-                    addConnectionPermission(identifier);
-                else
-                    removeConnectionPermission(identifier);
+                }
 
             },
 
@@ -515,14 +530,14 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
              */
             connectionGroupPermissionChanged : function connectionGroupPermissionChanged(identifier) {
 
-                // Determine current permission setting
-                var granted = $scope.permissionFlags.connectionGroupPermissions.READ[identifier];
+                // Loop through permissions and add or remove them as required.
+                for (const [key, value] of Object.entries($scope.permissionFlags.connectionGroupPermissions)) {
+                    if (value[identifier])
+                        addConnectionGroupPermission(identifier, PermissionSet.ObjectPermissionType[key]);
+                    else
+                        removeConnectionGroupPermission(identifier, PermissionSet.ObjectPermissionType[key]);
 
-                // Add/remove permission depending on flag state
-                if (granted)
-                    addConnectionGroupPermission(identifier);
-                else
-                    removeConnectionGroupPermission(identifier);
+                }
 
             },
 
@@ -537,14 +552,14 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
              */
             sharingProfilePermissionChanged : function sharingProfilePermissionChanged(identifier) {
 
-                // Determine current permission setting
-                var granted = $scope.permissionFlags.sharingProfilePermissions.READ[identifier];
+                // Loop through permissions and add or remove them as required.
+                for (const [key, value] of Object.entries($scope.permissionFlags.sharingProfilePermissions)) {
+                    if (value[identifier])
+                        addSharingProfilePermission(identifier, PermissionSet.ObjectPermissionType[key]);
+                    else
+                        removeSharingProfilePermission(identifier, PermissionSet.ObjectPermissionType[key]);
 
-                // Add/remove permission depending on flag state
-                if (granted)
-                    addSharingProfilePermission(identifier);
-                else
-                    removeSharingProfilePermission(identifier);
+                }
 
             }
 
