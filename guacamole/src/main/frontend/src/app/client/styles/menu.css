@@ -144,3 +144,10 @@
     left: 0px;
     opacity: 1;
 }
+
+/* Camera active indicator */
+.active-indicator {
+    color: #28a745;
+    font-weight: 500;
+    margin-left: 0.5em;
+}
