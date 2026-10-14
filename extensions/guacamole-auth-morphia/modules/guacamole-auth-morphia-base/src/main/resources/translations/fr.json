@@ -1,0 +1,27 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Mot de passe",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Répéter mot de passe"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_DISABLED"            : "Identifiant désactivé:",
+        "FIELD_HEADER_EXPIRED"             : "Mot de passe expiré:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Interdire l'accès après:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Autoriser l'accès après:",
+        "FIELD_HEADER_TIMEZONE"            : "Fuseau horaire de l'utilisateur:",
+        "FIELD_HEADER_VALID_FROM"          : "Activer le compte après:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Désactiver le compte après:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Restrictions de comptes"
+
+    }
+
+}
