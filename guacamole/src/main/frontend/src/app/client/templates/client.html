@@ -15,6 +15,10 @@
                     emulate-absolute-mouse="menu.emulateAbsoluteMouse">
                 </guac-tiled-clients>
 
+                <!-- Azure AD sign-in prompt -->
+                <guac-aad-signin ng-if="focusedClient.managedAAD"
+                    client="focusedClient"></guac-aad-signin>
+
             </div>
 
             <!-- Bottom portion of view -->
