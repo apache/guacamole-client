@@ -33,3 +33,15 @@
     font-weight: bold;
 
 }
+
+.jdbc-forgot-password {
+    text-align: center;
+    padding: 0.5em 0;
+}
+
+.jdbc-forgot-password input[type="text"] {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0.5em 0;
+}

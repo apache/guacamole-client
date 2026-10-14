@@ -23,6 +23,10 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionRecordMapper;
+import org.apache.guacamole.auth.jdbc.reset.PasswordResetProperties;
+import org.apache.guacamole.auth.jdbc.reset.PasswordResetService;
+import org.apache.guacamole.auth.jdbc.reset.SelfServicePasswordResetResource;
+import org.apache.guacamole.auth.jdbc.reset.SelfServicePasswordResetService;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.user.SharedAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
@@ -58,6 +62,18 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
     private UserService userService;
 
     /**
+     * Service for redeeming password reset links.
+     */
+    @Inject
+    private PasswordResetService passwordResetService;
+
+    /**
+     * Service for self-service password reset requests.
+     */
+    @Inject
+    private SelfServicePasswordResetService selfServicePasswordResetService;
+
+    /**
      * Service for enforcing password complexity policies.
      */
     @Inject
@@ -78,6 +94,11 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
     @Override
     public AuthenticatedUser authenticateUser(AuthenticationProvider authenticationProvider,
             Credentials credentials) throws GuacamoleException {
+
+        // Redeem a password reset link, if one is being used
+        AuthenticatedUser resetUser = passwordResetService.redeem(authenticationProvider, credentials);
+        if (resetUser != null)
+            return resetUser;
 
         // Authenticate user
         AuthenticatedUser user = userService.retrieveAuthenticatedUser(authenticationProvider, credentials);
@@ -180,6 +201,19 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         }
 
         return context;
+
+    }
+
+    @Override
+    public Object getResource(AuthenticationProvider authenticationProvider)
+            throws GuacamoleException {
+
+        if (!environment.getProperty(PasswordResetProperties.PASSWORD_RESET_SELF_SERVICE_ENABLED, false))
+            return null;
+
+        return new SelfServicePasswordResetResource(selfServicePasswordResetService,
+                authenticationProvider, environment.getProperty(
+                        PasswordResetProperties.PASSWORD_RESET_MAX_PER_IP_PER_HOUR, 10));
 
     }
 

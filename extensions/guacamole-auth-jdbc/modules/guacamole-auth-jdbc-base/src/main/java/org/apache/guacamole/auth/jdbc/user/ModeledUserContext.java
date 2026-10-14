@@ -28,6 +28,8 @@ import com.google.inject.Provider;
 import java.util.Collection;
 import java.util.Date;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.reset.PasswordResetResource;
+import org.apache.guacamole.auth.jdbc.reset.PasswordResetService;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
 import org.apache.guacamole.auth.jdbc.JDBCEnvironment;
 import org.apache.guacamole.auth.jdbc.activeconnection.ActiveConnectionDirectory;
@@ -70,6 +72,12 @@ public class ModeledUserContext extends RestrictedObject
      * User directory restricted by the permissions of the user associated
      * with this context.
      */
+    /**
+     * Service for sending password reset links.
+     */
+    @Inject
+    private PasswordResetService passwordResetService;
+
     @Inject
     private UserDirectory userDirectory;
 
@@ -212,7 +220,7 @@ public class ModeledUserContext extends RestrictedObject
 
     @Override
     public Object getResource() throws GuacamoleException {
-        return null;
+        return new PasswordResetResource(getCurrentUser(), passwordResetService);
     }
 
     @Override

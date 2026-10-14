@@ -109,6 +109,27 @@
 
     "CONNECTION_PARAMETERS": {
         "DATABASE_PARAMETER_VALUE_TOO_LONG": "The value provided for connection parameter {PARAMETER_NAME} exceeds the maximum allowed length of {MAX_SIZE} {MAX_SIZE, plural, one{character} other{characters}}."
-    } 
+    },
+
+    "PASSWORD_RESET" : {
+
+        "ACTION_FORGOT_PASSWORD" : "Forgot password?",
+        "ACTION_SEND_LINK"       : "Send password reset link",
+        "ACTION_SEND_REQUEST"    : "Send reset link",
+
+        "DIALOG_HEADER_SENT" : "Password Reset",
+
+        "ERROR_LINK_INVALID"  : "This password reset link is invalid, expired or has already been used.",
+        "ERROR_NO_EMAIL"      : "This user has no e-mail address. Set one before sending a reset link.",
+        "ERROR_NO_SUCH_USER"  : "No such user.",
+        "ERROR_TOO_MANY"      : "Too many password reset links were sent to this user. Please try again later.",
+
+        "HELP_FORGOT_PASSWORD" : "Enter your username. If the account has an e-mail address, a link to reset its password will be sent there.",
+
+        "INFO_CHOOSE_PASSWORD"   : "Please choose a new password for \"{USERNAME}\".",
+        "INFO_REQUEST_ACCEPTED"  : "If the account exists and has an e-mail address, a link was sent.",
+        "INFO_LINK_SENT"       : "A password reset link was sent to the e-mail address of \"{USERNAME}\"."
+
+    }
 
 }
