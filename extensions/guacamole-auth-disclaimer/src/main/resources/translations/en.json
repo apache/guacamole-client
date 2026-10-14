@@ -1,0 +1,17 @@
+{
+
+    "DATA_SOURCE_DISLCLAIMER" : {
+        "NAME" : "Disclaimer"
+    },
+
+    "LOGIN" : {
+        
+        "FIELD_HEADER_GUAC_ACKNOWLEDGED" : "",
+        "FIELD_HEADER_GUAC_DISCLAIMER"   : "",
+        
+        "FIELD_PLACEHOLDER_ACKNOWLEDGE"  : "I accept the above conditions",
+        
+        "INFO_DISCLAIMER_ACKNOWLEDGEMENT_REQUIRED" : ""
+    }
+
+}
