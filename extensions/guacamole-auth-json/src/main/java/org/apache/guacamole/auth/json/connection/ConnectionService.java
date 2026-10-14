@@ -40,6 +40,7 @@ import org.apache.guacamole.net.InetGuacamoleSocket;
 import org.apache.guacamole.net.SSLGuacamoleSocket;
 import org.apache.guacamole.net.SimpleGuacamoleTunnel;
 import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration;
+import org.apache.guacamole.net.auth.GuacamoleProxyConfiguration.EncryptionMethod;
 import org.apache.guacamole.protocol.ConfiguredGuacamoleSocket;
 import org.apache.guacamole.protocol.GuacamoleClientInformation;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
@@ -176,6 +177,21 @@ public class ConnectionService {
         String hostname = proxyConfig.getHostname();
         int port = proxyConfig.getPort();
 
+        // handle guacd-[hostname/port/ssl] overrides
+        String overrideGuacdHostname = connection.getGuacdHostname();
+        if (overrideGuacdHostname != null && !overrideGuacdHostname.isEmpty()) {
+            hostname = overrideGuacdHostname;
+        }
+        Integer overrideGuacdPort = connection.getGuacdPort();
+        if (overrideGuacdPort != null) {
+            port = overrideGuacdPort;
+        }
+        EncryptionMethod proxyMethod = proxyConfig.getEncryptionMethod();
+        Boolean overrideGuacdSSL = connection.getGuacdSsl();
+        if (overrideGuacdSSL != null) {
+            proxyMethod = overrideGuacdSSL ? EncryptionMethod.SSL : EncryptionMethod.NONE;
+        }
+
         // Generate and verify connection configuration
         GuacamoleConfiguration filteredConfig = getConfiguration(connection);
         if (filteredConfig == null) {
@@ -190,7 +206,7 @@ public class ConnectionService {
 
         // Determine socket type based on required encryption method
         final ConfiguredGuacamoleSocket socket;
-        switch (proxyConfig.getEncryptionMethod()) {
+        switch (proxyMethod) {
 
             // If guacd requires SSL, use it
             case SSL:
