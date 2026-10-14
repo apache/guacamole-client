@@ -104,6 +104,23 @@ public class SAMLAuthenticatedUser extends SSOAuthenticatedUser {
 
     }
 
+    private String getUser(AssertedIdentity identity)
+            throws GuacamoleException {
+
+        String samlUserAttribute = confService.getUserAttribute();
+        List<String> samlUser = null;
+
+        if (samlUserAttribute == null || samlUserAttribute.isEmpty())
+            return identity.getUsername();
+
+        samlUser = identity.getAttributes().get(samlUserAttribute);
+        if (samlUser == null || samlUser.isEmpty())
+            return identity.getUsername();
+
+        return samlUser.get(0);
+
+    }
+
     /**
      * Initializes this AuthenticatedUser using the given
      * {@link AssertedIdentity} and credentials.
@@ -121,7 +138,7 @@ public class SAMLAuthenticatedUser extends SSOAuthenticatedUser {
      */
     public void init(AssertedIdentity identity, Credentials credentials)
             throws GuacamoleException {
-        super.init(identity.getUsername(), credentials, getGroups(identity), getTokens(identity));
+        super.init(getUser(identity), credentials, getGroups(identity), getTokens(identity));
     }
     
 }
