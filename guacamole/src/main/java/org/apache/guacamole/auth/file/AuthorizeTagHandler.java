@@ -77,6 +77,10 @@ public class AuthorizeTagHandler implements TagHandler {
             else if (encoding.equals("sha256"))
                 authorization.setEncoding(Authorization.Encoding.SHA_256);
 
+            // If "pbkdf2", use salted PBKDF2-HMAC-SHA256
+            else if (encoding.equals("pbkdf2"))
+                authorization.setEncoding(Authorization.Encoding.PBKDF2);
+
             // If "plain", use plain text
             else if (encoding.equals("plain"))
                 authorization.setEncoding(Authorization.Encoding.PLAIN_TEXT);

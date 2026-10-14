@@ -24,7 +24,10 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 import java.util.TreeMap;
+import org.apache.guacamole.net.auth.PBKDF2PasswordHasher;
 import org.apache.guacamole.protocol.GuacamoleConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Mapping of username/password pair to configuration set. In addition to basic
@@ -51,9 +54,20 @@ public class Authorization {
         /**
          * Passwords hashed with SHA256.
          */
-        SHA_256
+        SHA_256,
+
+        /**
+         * Passwords hashed with salted PBKDF2-HMAC-SHA256, stored as
+         * "pbkdf2-sha256$iterations$salt$hash" with base64 salt and hash.
+         */
+        PBKDF2
 
     }
+
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(Authorization.class);
 
     /**
      * The username being authorized.
@@ -222,6 +236,21 @@ public class Authorization {
                     }
                     catch (NoSuchAlgorithmException e) {
                         throw new UnsupportedOperationException("Unexpected lack of SHA-256 support.", e);
+                    }
+
+                // If hashed with PBKDF2, verify against the salt and
+                // iteration count stored within the hash itself
+                case PBKDF2:
+
+                    try {
+                        return PBKDF2PasswordHasher.verifyEncoded(password, this.password);
+                    }
+                    catch (IllegalArgumentException e) {
+                        logger.warn("Password of user \"{}\" is not a valid "
+                                + "PBKDF2 hash. The user cannot log in until "
+                                + "it is corrected.", this.username);
+                        logger.debug("Invalid PBKDF2 hash.", e);
+                        return false;
                     }
             }
 
