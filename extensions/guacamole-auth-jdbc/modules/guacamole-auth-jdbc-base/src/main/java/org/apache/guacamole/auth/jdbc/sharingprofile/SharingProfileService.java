@@ -29,6 +29,8 @@ import org.apache.guacamole.auth.jdbc.user.ModeledAuthenticatedUser;
 import org.apache.guacamole.auth.jdbc.base.ModeledDirectoryObjectMapper;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.encryption.ParameterEncryptionService;
+import org.apache.guacamole.auth.jdbc.encryption.ParameterOwner;
 import org.apache.guacamole.auth.jdbc.base.ModeledChildDirectoryObjectService;
 import org.apache.guacamole.auth.jdbc.permission.SharingProfilePermissionMapper;
 import org.apache.guacamole.auth.jdbc.permission.ObjectPermissionMapper;
@@ -51,6 +53,13 @@ public class SharingProfileService
      */
     @Inject
     private SharingProfileMapper sharingProfileMapper;
+
+    /**
+     * Service for encrypting secret parameters on save and decrypting them on
+     * read.
+     */
+    @Inject
+    private ParameterEncryptionService parameterEncryptionService;
 
     /**
      * Mapper for manipulating sharing profile permissions.
@@ -230,6 +239,7 @@ public class SharingProfileService
 
         // Insert new parameters, if any
         Collection<SharingProfileParameterModel> parameterModels = getParameterModels(sharingProfile);
+        parameterEncryptionService.protectSharingProfileParameters(parameterModels);
         if (!parameterModels.isEmpty())
             parameterMapper.insert(parameterModels);
 
@@ -246,6 +256,7 @@ public class SharingProfileService
 
         // Replace existing parameters with new parameters, if any
         Collection<SharingProfileParameterModel> parameterModels = getParameterModels(object);
+        parameterEncryptionService.protectSharingProfileParameters(parameterModels);
         parameterMapper.delete(object.getIdentifier());
         if (!parameterModels.isEmpty())
             parameterMapper.insert(parameterModels);
@@ -288,8 +299,13 @@ public class SharingProfileService
 
         // Populate parameter map if we have permission to do so
         if (canRetrieveParameters) {
-            for (SharingProfileParameterModel parameter : parameterMapper.select(identifier))
-                parameterMap.put(parameter.getName(), parameter.getValue());
+            for (SharingProfileParameterModel parameter : parameterMapper.select(identifier)) {
+                String value = parameterEncryptionService.revealOrOmit(
+                        ParameterOwner.SHARING_PROFILE, identifier, parameter.getName(),
+                        parameter.getValue(), parameter.getEncryption());
+                if (value != null)
+                    parameterMap.put(parameter.getName(), value);
+            }
         }
 
         return parameterMap;

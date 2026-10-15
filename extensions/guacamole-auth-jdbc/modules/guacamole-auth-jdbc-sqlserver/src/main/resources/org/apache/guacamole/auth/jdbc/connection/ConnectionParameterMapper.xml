@@ -28,6 +28,7 @@
         <result column="connection_id"   property="connectionIdentifier" jdbcType="INTEGER"/>
         <result column="parameter_name"  property="name"                 jdbcType="VARCHAR"/>
         <result column="parameter_value" property="value"                jdbcType="VARCHAR"/>
+        <result column="parameter_encryption" property="encryption" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- Select all parameters of a given connection -->
@@ -35,7 +36,8 @@
         SELECT
             connection_id,
             parameter_name,
-            parameter_value
+            parameter_value,
+            parameter_encryption
         FROM [guacamole_connection_parameter]
         WHERE
             connection_id = #{identifier,jdbcType=INTEGER}
@@ -53,13 +55,15 @@
         INSERT INTO [guacamole_connection_parameter] (
             connection_id,
             parameter_name,
-            parameter_value
+            parameter_value,
+            parameter_encryption
         )
         VALUES 
             <foreach collection="parameters" item="parameter" separator=",">
                 (#{parameter.connectionIdentifier,jdbcType=INTEGER},
                  #{parameter.name,jdbcType=VARCHAR},
-                 #{parameter.value,jdbcType=VARCHAR})
+                 #{parameter.value,jdbcType=VARCHAR},
+                 #{parameter.encryption,jdbcType=VARCHAR})
             </foreach>
 
     </insert>
