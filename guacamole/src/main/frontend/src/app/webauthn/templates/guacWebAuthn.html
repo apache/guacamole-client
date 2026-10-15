@@ -1,0 +1,49 @@
+<div class="menu-section webauthn"
+     ng-show="client.managedWebAuthn
+              && (client.managedWebAuthn.policyBlocked
+                  || client.managedWebAuthn.notSupported
+                  || client.managedWebAuthn.inFlight > 0
+                  || client.managedWebAuthn.lastStatus)">
+    <h3>{{'WEBAUTHN.SECTION_HEADER_WEBAUTHN' | translate}}</h3>
+    <div class="content">
+
+        <!-- Browser refused our origin override due to policy -->
+        <p class="hint warn"
+           ng-if="client.managedWebAuthn.policyBlocked"
+           translate="WEBAUTHN.INFO_POLICY_BLOCKED"
+           translate-values="{ORIGIN: webAuthnOrigin}"></p>
+
+        <!-- Browser reported no WebAuthn support -->
+        <p class="hint warn"
+           ng-if="!client.managedWebAuthn.policyBlocked
+                  && client.managedWebAuthn.notSupported">
+            {{'WEBAUTHN.INFO_NOT_SUPPORTED' | translate}}
+        </p>
+
+        <!-- Ceremony in progress -->
+        <p ng-if="!client.managedWebAuthn.policyBlocked
+                  && !client.managedWebAuthn.notSupported
+                  && client.managedWebAuthn.inFlight > 0">
+            {{'WEBAUTHN.STATUS_AWAITING' | translate}}
+        </p>
+
+        <!-- Last ceremony succeeded -->
+        <p class="ok"
+           ng-if="!client.managedWebAuthn.policyBlocked
+                  && !client.managedWebAuthn.notSupported
+                  && client.managedWebAuthn.inFlight === 0
+                  && client.managedWebAuthn.lastStatus === 'completed'">
+            {{'WEBAUTHN.STATUS_COMPLETED' | translate}}
+        </p>
+
+        <!-- Last ceremony failed -->
+        <p class="hint warn"
+           ng-if="!client.managedWebAuthn.policyBlocked
+                  && !client.managedWebAuthn.notSupported
+                  && client.managedWebAuthn.inFlight === 0
+                  && client.managedWebAuthn.lastStatus === 'failed'">
+            {{'WEBAUTHN.STATUS_FAILED' | translate}}
+        </p>
+
+    </div>
+</div>
