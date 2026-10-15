@@ -45,15 +45,19 @@ angular.module('client').directive('guacClientNotification', [function guacClien
         function guacClientNotificationController($scope, $injector, $element) {
 
         // Required types
+        const ClientIdentifier   = $injector.get('ClientIdentifier');
         const ManagedClient      = $injector.get('ManagedClient');
         const ManagedClientState = $injector.get('ManagedClientState');
         const Protocol           = $injector.get('Protocol');
 
         // Required services
+        const $interval              = $injector.get('$interval');
         const $location              = $injector.get('$location');
         const authenticationService  = $injector.get('authenticationService');
         const guacClientManager      = $injector.get('guacClientManager');
         const guacTranslate          = $injector.get('guacTranslate');
+        const connectionReachabilityService = $injector.get('connectionReachabilityService');
+        const connectionService      = $injector.get('connectionService');
         const requestService         = $injector.get('requestService');
         const userPageService        = $injector.get('userPageService');
 
@@ -65,6 +69,36 @@ angular.module('client').directive('guacClientNotification', [function guacClien
          * @type {Notification|Object|Boolean}
          */
         $scope.status = false;
+
+        $scope.wolCountdown = 0;
+        $scope.wolCountdownActive = false;
+        $scope.wolMachineWasOff = false;
+        var wolTimer = null;
+
+        var cancelWolTimer = function cancelWolTimer() {
+            if (wolTimer) {
+                $interval.cancel(wolTimer);
+                wolTimer = null;
+            }
+            $scope.wolCountdownActive = false;
+            // NOTE: wolMachineWasOff is intentionally NOT reset here.
+            // cancelWolTimer() is called from inside startWolCountdown() before
+            // wolMachineWasOff is set to true, so resetting it here would
+            // immediately clear the flag. Visibility is already controlled by
+            // wolCountdownActive via ng-show.
+        };
+
+        var startWolCountdown = function startWolCountdown(waitSeconds) {
+            cancelWolTimer();
+            $scope.wolCountdown = waitSeconds;
+            $scope.wolCountdownActive = true;
+            wolTimer = $interval(function() {
+                $scope.wolCountdown--;
+                if ($scope.wolCountdown <= 0) {
+                    cancelWolTimer();
+                }
+            }, 1000);
+        };
 
         /**
          * All error codes for which automatic reconnection is appropriate when a
@@ -211,6 +245,28 @@ angular.module('client').directive('guacClientNotification', [function guacClien
                         key : "CLIENT.TEXT_CLIENT_STATUS_" + connectionState.toUpperCase()
                     }
                 };
+
+                // Start WoL countdown only in the WAITING state
+                if (connectionState === ManagedClientState.ConnectionState.WAITING) {
+                    try {
+                        var clientId = ClientIdentifier.fromString($scope.client.id);
+                        if (clientId.type === ClientIdentifier.Types.CONNECTION) {
+                            // !== true covers both false (confirmed off) and undefined (not yet polled)
+                            var wasOff = connectionReachabilityService.reachable[clientId.id] !== true;
+                            connectionService.getConnectionParameters(clientId.dataSource, clientId.id)
+                            ['then'](function(params) {
+                                var waitTime = parseInt(params['wol-wait-time'], 10);
+                                if (waitTime > 0 && wasOff) {
+                                    $scope.wolMachineWasOff = true;
+                                    startWolCountdown(waitTime);
+                                }
+                            })
+                            ['catch'](requestService.IGNORE);
+                        }
+                    } catch(e) { /* ignore if connection ID cannot be parsed */ }
+                } else {
+                    cancelWolTimer();
+                }
             }
 
             // Client error
@@ -283,8 +339,10 @@ angular.module('client').directive('guacClientNotification', [function guacClien
             }
 
             // Hide status for all other states
-            else
+            else {
+                cancelWolTimer();
                 $scope.status = false;
+            }
 
         };
 
@@ -401,6 +459,9 @@ angular.module('client').directive('guacClientNotification', [function guacClien
         // notification is visible
         $scope.$on('guacBeforeKeydown', preventDefaultDuringNotification);
         $scope.$on('guacBeforeKeyup', preventDefaultDuringNotification);
+
+        // Cancel the WoL timer on scope destruction to prevent interval leaks
+        $scope.$on('$destroy', cancelWolTimer);
 
     }];
 

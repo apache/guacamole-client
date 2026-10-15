@@ -1,5 +1,9 @@
 <div class="client-status-modal" ng-class="{ shown: status }">
     <guac-modal>
         <guac-notification notification="status"></guac-notification>
+        <div class="wol-countdown" ng-show="wolMachineWasOff && wolCountdownActive && wolCountdown > 0">
+            <p class="wol-status" translate="CLIENT.INFO_WOL_MACHINE_OFF"></p>
+            <p class="wol-timer" translate="CLIENT.INFO_WOL_CONNECTING" translate-values="{SECONDS: wolCountdown}"></p>
+        </div>
     </guac-modal>
 </div>
