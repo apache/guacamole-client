@@ -143,6 +143,11 @@ angular.module('rest').factory('PermissionSet', [function definePermissionSet() 
         AUDIT : "AUDIT",
 
         /**
+         * Permission to view active connection users for the entire system.
+         */
+        VIEW_ACTIVE_CONNECTION_USERS : "VIEW_ACTIVE_CONNECTION_USERS",
+
+        /**
          * Permission to create new users.
          */
         CREATE_USER : "CREATE_USER",

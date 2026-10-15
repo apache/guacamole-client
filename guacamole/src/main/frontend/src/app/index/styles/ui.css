@@ -115,10 +115,15 @@ div.section {
     opacity: 0.5;
 }
 
-.caption .activeUserCount {
+.caption .activeUsers {
     font-style: italic;
     margin-right: 1em;
     float: right;
+}
+
+.caption .activeUserList {
+    margin: 0;
+    padding: 0 0 0 25px;
 }
 
 .list-item:not(.selected) .caption:hover {

@@ -460,6 +460,7 @@ CREATE TABLE `guacamole_system_permission` (
                     'CREATE_USER',
                     'CREATE_USER_GROUP',
                     'AUDIT',
+                    'VIEW_ACTIVE_CONNECTION_USERS',
                     'ADMINISTER') NOT NULL,
 
   PRIMARY KEY (`entity_id`,`permission`),

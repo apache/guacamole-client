@@ -126,6 +126,10 @@ angular.module('manage').directive('systemPermissionEditor', ['$injector',
                 value: PermissionSet.SystemPermissionType.AUDIT
             },
             {
+                label: "MANAGE_USER.FIELD_HEADER_VIEW_ACTIVE_CONNECTION_USERS",
+                value: PermissionSet.SystemPermissionType.VIEW_ACTIVE_CONNECTION_USERS
+            },
+            {
                 label: "MANAGE_USER.FIELD_HEADER_CREATE_NEW_USERS",
                 value: PermissionSet.SystemPermissionType.CREATE_USER
             },

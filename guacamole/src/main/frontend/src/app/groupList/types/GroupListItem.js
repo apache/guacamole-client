@@ -125,6 +125,17 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
         });
 
         /**
+         * Returns an object mapping the usernames of all users currently using
+         * this connection to the duration (value and unit) of their usage, if
+         * known. If unknown, an empty object may be returned.
+         *
+         * @returns {Object.<string, {value: number, unit: string}>}
+         */
+        this.getActiveUsers = template.getActiveUsers || (function getActiveUsers() {
+            return {};
+        });
+
+        /**
          * Returns the number of available connections for this connection
          * group.
          *
@@ -202,6 +213,16 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
         });
 
         /**
+         * Returns whether there are any currently visible active users for this
+         * connection. If unknown, false may be returned.
+         *
+         * @returns {Boolean}
+         */
+        this.showActiveUsers = template.showActiveUsers || (function showActiveUsers() {
+            return false;
+        });
+
+        /**
          * The connection, connection group, or sharing profile whose data is
          * exposed within this GroupListItem. If the type of this GroupListItem
          * is not one of the types defined by GroupListItem.Type, then this
@@ -245,11 +266,19 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
      *     function will be passed, in order, the data source identifier and
      *     the connection in question.
      *
+     * @param {Function} [getActiveUsersMap]
+     *     A getter which returns an object mapping the usernames of all users
+     *     currently using the given connection to the duration (value and unit)
+     *     of their usage, if known. If unknown, an empty object may be returned.
+     *     This function will be passed, in order, the data source identifier and
+     *     the connection in question.
+     *
      * @returns {GroupListItem}
      *     A new GroupListItem which represents the given connection.
      */
     GroupListItem.fromConnection = function fromConnection(dataSource,
-        connection, includeSharingProfiles, countActiveConnections) {
+        connection, includeSharingProfiles, countActiveConnections,
+        getActiveUsersMap) {
 
         var children = [];
 
@@ -286,6 +315,21 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
 
                 return connection.activeConnections;
 
+            },
+
+            // Returns the usernames of all currently active users for this connection
+            getActiveUsers : function getActiveUsers() {
+                if (getActiveUsersMap)
+                    return getActiveUsersMap(dataSource, connection)
+
+                return {};
+            },
+
+            // Returns whether there are any currently visible active users for this connection
+            showActiveUsers : function showActiveUsers() {
+                if (getActiveUsersMap)
+                    return Object.keys(getActiveUsersMap(dataSource, connection) ?? {}).length > 0;
+                return false;
             },
 
             // Wrapped item
@@ -336,7 +380,7 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
     GroupListItem.fromConnectionGroup = function fromConnectionGroup(dataSource,
         connectionGroup, includeConnections, includeSharingProfiles,
         countActiveConnections, countActiveConnectionGroups, 
-        countUserActiveConnectionGroups) {
+        countUserActiveConnectionGroups, getActiveUsersMap) {
 
         var children = [];
 
@@ -344,7 +388,7 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
         if (connectionGroup.childConnections && includeConnections !== false) {
             connectionGroup.childConnections.forEach(function addChildConnection(child) {
                 children.push(GroupListItem.fromConnection(dataSource, child,
-                    includeSharingProfiles, countActiveConnections));
+                    includeSharingProfiles, countActiveConnections, getActiveUsersMap));
             });
         }
 
@@ -354,7 +398,7 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
                 children.push(GroupListItem.fromConnectionGroup(dataSource,
                     child, includeConnections, includeSharingProfiles,
                     countActiveConnections, countActiveConnectionGroups,
-                    countUserActiveConnectionGroups));
+                    countUserActiveConnectionGroups, getActiveUsersMap));
             });
         }
 

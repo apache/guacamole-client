@@ -78,6 +78,7 @@ CREATE RULE [guacamole_system_permission_list] AS @list IN (
     'CREATE_USER',
     'CREATE_USER_GROUP',
     'AUDIT',
+    'VIEW_ACTIVE_CONNECTION_USERS',
     'ADMINISTER'
 );
 GO
