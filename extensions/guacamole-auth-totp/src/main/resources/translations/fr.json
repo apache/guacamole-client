@@ -20,12 +20,12 @@
 
         "FIELD_PLACEHOLDER_CODE" : "Code d'authentification",
 
+        "HELP_ENROLL_BARCODE" : "Pour terminer votre processus d'inscription, scannez le code-barre ci-dessous avec l'application deux-facteurs sur votre téléphone ou votre appareil",
+        "HELP_ENROLL_VERIFY"  : "Après avoir scanné le code-barre, saisissez les {DIGITS} chiffres du code d'authentification affichés pour terminer votre inscription.",
+
         "INFO_CODE_REQUIRED"       : "Veuillez entrer le code d'authentification pour vérifier votre identité.",
         "INFO_ENROLL_REQUIRED"     : "L'authentification multi-facteurs a été activée pour votre compte.",
         "INFO_VERIFICATION_FAILED" : "La vérification a échoué. Veuillez réessayer.",
-
-        "HELP_ENROLL_BARCODE" : "Pour terminer votre processus d'inscription, scannez le code-barre ci-dessous avec l'application deux-facteurs sur votre téléphone ou votre appareil",
-        "HELP_ENROLL_VERIFY"  : "Après avoir scanné le code-barre, saisissez les {DIGITS} chiffres du code d'authentification affichés pour terminer votre inscription.",
 
         "SECTION_HEADER_DETAILS" : "Détails:"
 
