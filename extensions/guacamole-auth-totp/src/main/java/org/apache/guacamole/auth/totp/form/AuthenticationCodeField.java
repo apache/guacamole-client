@@ -84,7 +84,7 @@ public class AuthenticationCodeField extends Field {
      * generated via TOTP. The user's TOTP key is not exposed for enrollment.
      */
     public AuthenticationCodeField() {
-        super(PARAMETER_NAME, FIELD_TYPE_NAME);
+        super(PARAMETER_NAME, FIELD_TYPE_NAME, Field.Autocomplete.ONE_TIME_PASSWORD);
     }
 
     /**

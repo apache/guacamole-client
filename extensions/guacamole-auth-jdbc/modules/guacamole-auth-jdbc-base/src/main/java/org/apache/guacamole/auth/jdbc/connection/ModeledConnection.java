@@ -98,7 +98,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
      * connection.
      */
     public static final Form GUACD_PARAMETERS = new Form("guacd", Arrays.<Field>asList(
-        new TextField(GUACD_HOSTNAME_NAME),
+        new TextField(GUACD_HOSTNAME_NAME, Field.Autocomplete.ON),
         new NumericField(GUACD_PORT_NAME),
         new EnumField(GUACD_ENCRYPTION_NAME, Arrays.asList(
             "",
