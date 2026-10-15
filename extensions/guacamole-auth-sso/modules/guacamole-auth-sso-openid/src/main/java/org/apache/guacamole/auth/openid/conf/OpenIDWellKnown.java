@@ -126,7 +126,7 @@ public class OpenIDWellKnown {
         }
         catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new IllegalStateException("Initialization interrupted", e);
+            logger.error("Unexpected interuption of OpenID Well Known data initialization");
         }
     }
 
