@@ -114,3 +114,109 @@
     color: dimgray;
 
 }
+
+/* Clipboard events (both text and image) are rendered as distinct chips
+   rather than blending into the surrounding typed text. */
+.text-batches .text .clipboard-event {
+
+    color: #555;
+    font-style: italic;
+
+}
+
+/* Directional annotation badge shown before a clipboard event. */
+.text-batches .text .clipboard-direction {
+
+    display: inline-block;
+    vertical-align: middle;
+    font-size: 0.75em;
+    font-style: normal;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 0.05em 0.4em;
+    margin-right: 0.35em;
+    border-radius: 3px;
+    color: #fff;
+
+}
+
+/* Copied out of the guest - highlighted as the exfiltration-relevant case. */
+.text-batches .text .clipboard-direction.from-guest {
+
+    background-color: #b25f00;
+
+}
+
+/* Pasted into the guest - neutral. */
+.text-batches .text .clipboard-direction.to-guest {
+
+    background-color: #4a6f8a;
+
+}
+
+/* Image clipboard chip: a small inline thumbnail with type/size metadata. */
+.text-batches .text .clipboard-image-event {
+
+    font-style: normal;
+
+}
+
+.text-batches .text .clipboard-image {
+
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+    gap: 0.4em;
+    margin: 0.1em 0.2em;
+    padding: 0.15em 0.35em;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    background-color: #f4f4f4;
+    cursor: zoom-in;
+
+}
+
+.text-batches .text .clipboard-image .clipboard-thumb {
+
+    max-height: 48px;
+    max-width: 96px;
+    display: block;
+    border: 1px solid #ccc;
+    background-color: #fff;
+
+}
+
+.text-batches .text .clipboard-image .clipboard-meta {
+
+    font-size: 0.85em;
+    color: #333;
+    white-space: nowrap;
+
+}
+
+/* Full-size preview overlay shown when a thumbnail is clicked. */
+.clipboard-lightbox {
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    cursor: zoom-out;
+    z-index: 1000;
+
+}
+
+.clipboard-lightbox img {
+
+    max-width: 90%;
+    max-height: 90%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    background-color: #fff;
+
+}

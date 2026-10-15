@@ -215,6 +215,16 @@ angular.module('index').config(['$routeProvider', '$locationProvider',
             resolve       : { updateCurrentToken: updateCurrentToken }
         })
 
+        // Secondary monitor view (:channel namespaces the per-connection
+        // broadcast channel shared with the opening primary window)
+        .when('/secondaryMonitor/:id/:channel?', {
+            bodyClassName : 'secondaryMonitor',
+            templateUrl   : 'app/client/templates/secondaryMonitor.html',
+            controller    : 'secondaryMonitorController',
+            reloadOnUrl   : false,
+            resolve       : { updateCurrentToken: updateCurrentToken }
+        })
+
         // Redirect to home screen if page not found
         .otherwise({
             resolve : { routeToUserHomePage: routeToUserHomePage }

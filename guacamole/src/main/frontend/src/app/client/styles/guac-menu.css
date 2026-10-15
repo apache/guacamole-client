@@ -115,7 +115,7 @@
     text-align: center;
 }
 
-#guac-menu #devices .device {
+#guac-menu #devices .device, #guac-menu #multi-monitor .add-monitor {
 
     padding: 1em;
     border: 1px solid rgba(0, 0, 0, 0.125);
@@ -132,13 +132,22 @@
 
 }
 
-#guac-menu #devices .device:hover {
+#guac-menu #devices .device:hover, #guac-menu #multi-monitor .add-monitor:hover {
     cursor: pointer;
     border-color: black;
 }
 
 #guac-menu #devices .device.filesystem {
     background-image: url('images/drive.svg');
+}
+
+#guac-menu #multi-monitor .add-monitor {
+    background-image: url('images/protocol-icons/guac-monitor.svg');
+}
+
+#guac-menu #multi-monitor .add-monitor.disabled {
+    pointer-events: none;
+    color: grey;
 }
 
 #guac-menu #share-links {
