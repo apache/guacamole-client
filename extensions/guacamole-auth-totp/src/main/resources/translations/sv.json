@@ -1,0 +1,52 @@
+{
+
+    "DATA_SOURCE_TOTP" : {
+        "NAME" : "TOTP-tjänst för tvåfaktorsautentisering"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_GUAC_TOTP" : ""
+    },
+
+    "TOTP" : {
+
+        "ACTION_HIDE_DETAILS" : "Dölj",
+        "ACTION_SHOW_DETAILS" : "Visa",
+
+        "FIELD_HEADER_ALGORITHM"  : "Algoritm:",
+        "FIELD_HEADER_DIGITS"     : "Antal siffror:",
+        "FIELD_HEADER_INTERVAL"   : "Intervall:",
+        "FIELD_HEADER_SECRET_KEY" : "Hemlig nyckel:",
+
+        "FIELD_PLACEHOLDER_CODE" : "Autentiseringskod",
+
+        "INFO_CODE_REQUIRED"       : "Ange din autentiseringskod för att verifiera din identitet.",
+        "INFO_ENROLL_REQUIRED"     : "Flerfaktorsautentisering har aktiverats för ditt konto.",
+        "INFO_VERIFICATION_FAILED" : "Verifieringen misslyckades. Försök igen.",
+
+        "HELP_ENROLL_BARCODE" : "Slutför registreringen genom att skanna QR-koden nedan med appen för tvåfaktorsautentisering på din telefon eller enhet.",
+        "HELP_ENROLL_VERIFY"  : "När du har skannat QR-koden anger du autentiseringskoden med {DIGITS} siffror som visas för att verifiera att registreringen lyckades.",
+
+        "SECTION_HEADER_DETAILS" : "Detaljer:"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_TOTP_DISABLED"      : "Inaktivera TOTP:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_GENERATED" : "Hemlig nyckel genererad:",
+        "FIELD_HEADER_GUAC_TOTP_KEY_CONFIRMED" : "Autentiseringsenhet bekräftad:",
+
+        "SECTION_HEADER_TOTP_ENROLLMENT_STATUS" : "Registreringsstatus för TOTP"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_TOTP_DISABLED" : "Inaktivera TOTP:",
+
+        "SECTION_HEADER_TOTP_USER_GROUP_CONFIG" : "TOTP-konfiguration"
+
+    }
+
+}

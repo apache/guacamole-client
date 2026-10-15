@@ -1,0 +1,14 @@
+{
+
+    "DATA_SOURCE_RECORDING_STORAGE" : {
+        "NAME" : "Lagring av sessionsinspelningar"
+    },
+
+    "RECORDING_STORAGE" : {
+        "INFO_GUACAMOLE_SESSION_RECORDING" :  "Grafisk inspelning av fjärrskrivbordssession",
+        "INFO_SERVER_LOG" :  "Server-/systemlogg",
+        "INFO_TYPESCRIPT" :  "Textinspelning av terminalsession",
+        "INFO_TYPESCRIPT_TIMING" :  "Tidsinformation för textinspelning av terminalsession"
+    }
+
+}

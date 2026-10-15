@@ -1,0 +1,18 @@
+{
+
+    "DATA_SOURCE_QUICKCONNECT" : {
+        "NAME" : "QuickConnect"
+    },
+
+    "QUICKCONNECT" : {
+        "ACTION_CONNECT"        : "Anslut",
+
+        "ERROR_INVALID_URI"      : "Ogiltig URI angiven",
+        "ERROR_NO_HOST"          : "Ingen värd angiven",
+        "ERROR_NO_PROTOCOL"      : "Inget protokoll angivet",
+        "ERROR_NOT_ABSOLUTE_URI" : "URI:n är inte absolut",
+
+        "FIELD_PLACEHOLDER_URI" : "Ange anslutningens URI"
+    }
+
+}

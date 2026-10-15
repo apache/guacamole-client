@@ -1,0 +1,114 @@
+{
+
+    "LOGIN" : {
+
+        "ERROR_PASSWORD_BLANK"    : "@:APP.ERROR_PASSWORD_BLANK",
+        "ERROR_PASSWORD_SAME"     : "Det nya lösenordet måste skilja sig från det utgångna lösenordet.",
+        "ERROR_PASSWORD_MISMATCH" : "@:APP.ERROR_PASSWORD_MISMATCH",
+        "ERROR_NOT_VALID"         : "Användarkontot är inte giltigt just nu.",
+        "ERROR_NOT_ACCESSIBLE"    : "Åtkomst till kontot är inte tillåten just nu. Försök igen senare.",
+
+        "INFO_PASSWORD_EXPIRED" : "Ditt lösenord har gått ut och måste återställas. Ange ett nytt lösenord för att fortsätta.",
+
+        "FIELD_HEADER_NEW_PASSWORD"         : "Nytt lösenord",
+        "FIELD_HEADER_CONFIRM_NEW_PASSWORD" : "Bekräfta nytt lösenord"
+
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximalt antal anslutningar:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximalt antal anslutningar per användare:",
+
+        "FIELD_HEADER_FAILOVER_ONLY"            : "Använd endast vid redundansväxling:",
+        "FIELD_HEADER_WEIGHT"                   : "Anslutningsvikt:",
+
+        "FIELD_HEADER_GUACD_HOSTNAME"   : "Värdnamn:",
+        "FIELD_HEADER_GUACD_ENCRYPTION" : "Kryptering:",
+        "FIELD_HEADER_GUACD_PORT"       : "Port:",
+
+        "FIELD_OPTION_GUACD_ENCRYPTION_EMPTY" : "",
+        "FIELD_OPTION_GUACD_ENCRYPTION_NONE"  : "Ingen (okrypterad)",
+        "FIELD_OPTION_GUACD_ENCRYPTION_SSL"   : "SSL / TLS",
+
+        "SECTION_HEADER_CONCURRENCY"    : "Gränser för samtidiga anslutningar",
+        "SECTION_HEADER_LOAD_BALANCING" : "Lastbalansering",
+        "SECTION_HEADER_GUACD"          : "Parametrar för Guacamole-proxyn (guacd)"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_ENABLE_SESSION_AFFINITY"  : "Aktivera sessionsaffinitet:",
+        "FIELD_HEADER_MAX_CONNECTIONS"          : "Maximalt antal anslutningar:",
+        "FIELD_HEADER_MAX_CONNECTIONS_PER_USER" : "Maximalt antal anslutningar per användare:",
+
+        "SECTION_HEADER_CONCURRENCY" : "Gränser för samtidiga anslutningar (lastbalanseringsgrupper)"
+
+    },
+
+    "DATA_SOURCE_MYSQL" : {
+        "NAME" : "MySQL"
+    },
+
+    "DATA_SOURCE_MYSQL_SHARED" : {
+        "NAME" : "Delade anslutningar (MySQL)"
+    },
+
+    "DATA_SOURCE_POSTGRESQL" : {
+        "NAME" : "PostgreSQL"
+    },
+
+    "DATA_SOURCE_POSTGRESQL_SHARED" : {
+        "NAME" : "Delade anslutningar (PostgreSQL)"
+    },
+
+    "DATA_SOURCE_SQLSERVER" : {
+        "NAME" : "SQL Server"
+    },
+
+    "DATA_SOURCE_SQLSERVER_SHARED" : {
+        "NAME" : "Delade anslutningar (SQL Server)"
+    },
+
+    "HOME" : {
+        "INFO_SHARED_BY" : "Delas av {USERNAME}"
+    },
+
+    "PASSWORD_POLICY" : {
+
+        "ERROR_CONTAINS_USERNAME"      : "Lösenord får inte innehålla användarnamnet.",
+        "ERROR_REQUIRES_DIGIT"         : "Lösenord måste innehålla minst en siffra.",
+        "ERROR_REQUIRES_MULTIPLE_CASE" : "Lösenord måste innehålla både stora och små bokstäver.",
+        "ERROR_REQUIRES_NON_ALNUM"     : "Lösenord måste innehålla minst ett specialtecken.",
+        "ERROR_REUSED"                 : "Lösenordet har redan använts. {HISTORY_SIZE, plural, one{Det senaste lösenordet får inte återanvändas} other{De senaste {HISTORY_SIZE} lösenorden får inte återanvändas}}.",
+        "ERROR_TOO_SHORT"              : "Lösenord måste vara minst {LENGTH} {LENGTH, plural, one{tecken} other{tecken}} långa.",
+        "ERROR_TOO_YOUNG"              : "Lösenordet för kontot har redan återställts. Vänta minst {WAIT} {WAIT, plural, one{dag} other{dagar}} till innan du ändrar lösenordet igen."
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_EXPIRED"             : "Lösenordet har gått ut:",
+        "FIELD_HEADER_ACCESS_WINDOW_END"   : "Tillåt inte åtkomst efter:",
+        "FIELD_HEADER_ACCESS_WINDOW_START" : "Tillåt åtkomst efter:",
+        "FIELD_HEADER_TIMEZONE"            : "Användarens tidszon:",
+        "FIELD_HEADER_VALID_FROM"          : "Aktivera kontot efter:",
+        "FIELD_HEADER_VALID_UNTIL"         : "Inaktivera kontot efter:",
+
+        "SECTION_HEADER_RESTRICTIONS" : "Kontobegränsningar",
+        "SECTION_HEADER_PROFILE"      : "Profil"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "SECTION_HEADER_RESTRICTIONS" : "Gruppbegränsningar"
+
+    },
+
+    "CONNECTION_PARAMETERS": {
+        "DATABASE_PARAMETER_VALUE_TOO_LONG": "Värdet för anslutningsparametern {PARAMETER_NAME} överskrider den maximala längden på {MAX_SIZE} {MAX_SIZE, plural, one{tecken} other{tecken}}."
+    }
+
+}
