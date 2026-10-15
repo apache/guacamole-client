@@ -93,6 +93,11 @@
                     "options" : [ "true" ]
                 },
                 {
+                    "name"    : "text-output",
+                    "type"    : "ENUM",
+                    "options" : [ "", "true", "raw" ]
+                },
+                {
                     "name"    : "disable-paste",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
