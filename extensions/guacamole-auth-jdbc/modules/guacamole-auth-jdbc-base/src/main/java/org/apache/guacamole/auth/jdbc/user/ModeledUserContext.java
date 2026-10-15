@@ -26,6 +26,7 @@ import org.apache.guacamole.auth.jdbc.connection.ConnectionDirectory;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.jdbc.base.RestrictedObject;
@@ -281,6 +282,11 @@ public class ModeledUserContext extends RestrictedObject
     @Override
     public Collection<Form> getUserAttributes() {
         return ModeledUser.ATTRIBUTES;
+    }
+
+    @Override
+    public Collection<Form> getUserPreferenceAttributes() {
+        return Collections.singletonList(ModeledUser.PROFILE);
     }
 
     @Override
