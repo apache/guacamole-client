@@ -1,0 +1,16 @@
+# Name:    Apache Mina SSHD
+# URL:     https://mina.apache.org/sshd-project
+# From:    'Apache Software Foundation' (https://www.apache.org/)
+# License: Apache v2.0
+# Source:  https://raw.githubusercontent.com/apache/mina-sshd/refs/tags/sshd-${VERSION}/NOTICE.txt
+#
+# --- BEGIN LICENSE FILE [2.17.1] ---
+Apache MINA SSHD
+Copyright 2008-2021 The Apache Software Foundation
+
+This product includes software developed at
+The Apache Software Foundation (http://www.apache.org/).
+
+Please refer to each LICENSE.<component>.txt file for the
+license terms of the components that Apache MINA depends on.
+# --- END LICENSE FILE [2.17.1] ---
