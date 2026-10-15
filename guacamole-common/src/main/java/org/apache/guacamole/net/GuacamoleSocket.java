@@ -48,6 +48,23 @@ public interface GuacamoleSocket {
     }
 
     /**
+     * Returns the unique ID assigned to the underlying Guacamole connection
+     * by the Guacamole proxy (guacd). If the ID is not known or the
+     * implementation refuses to reveal it, null is returned.
+     *
+     * <p>As this ID can be used to join the underlying connection, it
+     * <strong>should not</strong> be exposed to users who have not been
+     * granted full access to that connection.
+     *
+     * @return
+     *     The unique ID of the underlying Guacamole connection, or null if
+     *     this information is not available.
+     */
+    public default String getConnectionID() {
+        return null;
+    }
+
+    /**
      * Returns a GuacamoleReader which can be used to read from the
      * Guacamole instruction stream associated with the connection
      * represented by this GuacamoleSocket.

@@ -21,6 +21,8 @@ package org.apache.guacamole.rest.tunnel;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import java.util.Collections;
+import java.util.Map;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -156,6 +158,41 @@ public class TunnelResource {
 
         // All protocol information for this tunnel is known
         return info;
+
+    }
+
+    /**
+     * Retrieves the unique ID assigned by guacd to the connection associated
+     * with this tunnel. As this ID can be used to join that connection, it is
+     * only exposed for tunnels which correspond to an active connection
+     * readable by the current user and which did not themselves join an
+     * existing connection via a sharing profile.
+     *
+     * @return
+     *     A map containing the guacd connection ID under the key
+     *     "identifier".
+     *
+     * @throws GuacamoleException
+     *     If the guacd connection ID is not known or may not be exposed to
+     *     the current user.
+     */
+    @GET
+    @Path("connectionID")
+    public Map<String, String> getConnectionID() throws GuacamoleException {
+
+        // Refuse to expose the connection ID for any tunnel that cannot be
+        // verified as the original (non-shared) connection
+        ActiveConnection activeConnection = tunnel.getActiveConnection();
+        if (activeConnection == null
+                || activeConnection.getSharingProfileIdentifier() != null)
+            throw new GuacamoleResourceNotFoundException("Connection ID of tunnel is not known/exposed.");
+
+        // Pull connection ID from underlying socket
+        String connectionID = tunnel.getSocket().getConnectionID();
+        if (connectionID == null)
+            throw new GuacamoleResourceNotFoundException("Connection ID of tunnel is not known/exposed.");
+
+        return Collections.singletonMap("identifier", connectionID);
 
     }
 

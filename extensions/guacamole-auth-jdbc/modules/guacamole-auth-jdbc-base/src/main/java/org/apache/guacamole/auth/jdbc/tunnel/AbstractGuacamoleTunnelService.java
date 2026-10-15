@@ -553,6 +553,14 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 getUnconfiguredGuacamoleSocket(connection.getGuacamoleProxyConfiguration(),
                         cleanupTask), config, info);
 
+            // Log guacd connection ID so that guacd log messages can be
+            // cross-referenced with guacamole-client log messages
+            logger.info("Connection \"{}\" (user: \"{}\") established with"
+                    + " guacd connection ID \"{}\".",
+                    activeConnection.getConnectionName(),
+                    activeConnection.getUser().getIdentifier(),
+                    socket.getConnectionID());
+
             // Assign and return new tunnel
             if (interceptErrors)
                 return activeConnection.assignGuacamoleTunnel(new FailoverGuacamoleSocket(socket), socket.getConnectionID());
