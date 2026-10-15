@@ -52,6 +52,12 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
     private final Set<String> effectiveGroups;
 
     /**
+     * The URI that was originally used to the first call to the authentication
+     * providers authenticateUser method.
+     */
+    private String originalUri;
+
+    /**
      * Creates a new RemoteAuthenticatedUser, deriving the associated remote
      * host from the given credentials.
      *
@@ -101,6 +107,16 @@ public abstract class RemoteAuthenticatedUser implements AuthenticatedUser {
     @Override
     public void invalidate() {
         // Nothing to invalidate
+    }
+
+    @Override
+    public void setOriginalUri(String originalUri) {
+        this.originalUri = originalUri;
+    }
+
+    @Override
+    public String getOriginalUri() {
+        return this.originalUri;
     }
 
 }

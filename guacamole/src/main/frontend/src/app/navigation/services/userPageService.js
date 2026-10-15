@@ -61,13 +61,30 @@ angular.module('navigation').factory('userPageService', ['$injector',
      * @param {Object.<String, PermissionSet>} permissions
      *     A map of all permissions granted to the current user, where each
      *     key is the identifier of the corresponding data source.
+     * 
+     * @param {String} redirection
+     *     A url of a proposed redirection supplied by the server
      *
      * @returns {PageDefinition}
      *     The user's home page.
      */
-    var generateHomePage = function generateHomePage(rootGroups, permissions) {
+    var generateHomePage = function generateHomePage(rootGroups, permissions, redirection = null) {
 
         var settingsPages = generateSettingsPages(permissions);
+
+        // On initial login allow redirection back to requested page
+        // If the user doesn't have the permission for this page they
+        // will be directed back to SYSTEM_HOME_PAGE or a missing
+        // connection error thrown
+        var redirectionPage = null;
+        if (redirection) {
+            const url = new URL(redirection);
+            const p = url.hash.split('?')[0].substring(1);
+            // Only respect the hash path without the search parameters of
+            // the redirection to avoid spoofing attacks
+            if (SYSTEM_HOME_PAGE.url != p)
+                redirectionPage = new PageDefinition({name : 'USER_MENU.ACTION_NAVIGATE_HOME', url: p});
+        }
 
         // If user has access to settings pages, return home page and skip
         // evaluation for automatic connections.  The Preferences page is
@@ -76,12 +93,13 @@ angular.module('navigation').factory('userPageService', ['$injector',
         // own session.  We look for more than those two pages to determine
         // if we should go to the home page.
         if (settingsPages.length > 2)
-            return SYSTEM_HOME_PAGE;
+            return redirectionPage ? redirectionPage : SYSTEM_HOME_PAGE;
 
         // If exactly one connection or balancing group is available, use
         // that as the home page
         var clientPages = service.getClientPages(rootGroups);
-        return (clientPages.length === 1) ? clientPages[0] : SYSTEM_HOME_PAGE;
+        return (clientPages.length === 1) ? clientPages[0] : 
+                redirectionPage ? redirectionPage : SYSTEM_HOME_PAGE;
 
     };
 
@@ -165,11 +183,14 @@ angular.module('navigation').factory('userPageService', ['$injector',
     /**
      * Returns a promise which resolves with an appropriate home page for the
      * current user. The promise will not be rejected.
+     * 
+     * @param redirection
+     *     A url of a proposed redirection supplied by the server
      *
      * @returns {Promise.<Page>}
      *     A promise which resolves with the user's default home page.
      */
-    service.getHomePage = function getHomePage() {
+    service.getHomePage = function getHomePage(redirection = null) {
 
         var deferred = $q.defer();
 
@@ -190,7 +211,7 @@ angular.module('navigation').factory('userPageService', ['$injector',
             permissionsSets : getPermissionSets
         })
         .then(function rootConnectionGroupsPermissionsRetrieved(data) {
-            deferred.resolve(generateHomePage(data.rootGroups,data.permissionsSets));
+            deferred.resolve(generateHomePage(data.rootGroups,data.permissionsSets, redirection));
         }, requestService.DIE);
 
         return deferred.promise;

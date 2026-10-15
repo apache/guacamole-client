@@ -32,6 +32,12 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
         implements AuthenticatedUser {
 
     /**
+     * The URI that was originally used to the first call to the authentication
+     * providers authenticateUser method.
+     */
+    private String originalUri;
+
+    /**
      * Creates a new AbstractAuthenticatedUser that considers usernames to be
      * case-sensitive or case-insensitive based on the provided case sensitivity
      * flag.
@@ -78,6 +84,16 @@ public abstract class AbstractAuthenticatedUser extends AbstractIdentifiable
     @Override
     public void invalidate() {
         // Nothing to invalidate
+    }
+
+    @Override
+    public void setOriginalUri(String originalUri) {
+        this.originalUri = originalUri;
+    }
+
+    @Override
+    public String getOriginalUri() {
+        return this.originalUri;
     }
 
 }
