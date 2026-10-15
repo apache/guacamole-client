@@ -29,6 +29,7 @@ import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionMap;
 import org.apache.guacamole.auth.jdbc.sharing.SharedObjectManager;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
+import org.apache.guacamole.cluster.TunnelRegistration;
 import org.apache.guacamole.net.AbstractGuacamoleTunnel;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -77,6 +78,21 @@ public class ActiveConnectionRecord extends ModeledConnectionRecord {
      * connection record.
      */
     private GuacamoleTunnel tunnel;
+
+    /**
+     * The cluster registration published for this connection, or null if this
+     * connection was never published (clustering disabled, or the connection
+     * failed before a socket was established).
+     */
+    private TunnelRegistration clusterRegistration;
+
+    public TunnelRegistration getClusterRegistration() {
+        return clusterRegistration;
+    }
+
+    public void setClusterRegistration(TunnelRegistration clusterRegistration) {
+        this.clusterRegistration = clusterRegistration;
+    }
 
     /**
      * Map of all currently-shared connections.

@@ -89,6 +89,7 @@ import org.apache.guacamole.auth.jdbc.usergroup.UserGroupDirectory;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserMapper;
+import org.apache.guacamole.cluster.ClusterModule;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupService;
 import org.mybatis.guice.MyBatisModule;
@@ -194,6 +195,9 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
         bind(PasswordPolicyService.class);
         bind(SaltService.class).to(SecureRandomSaltService.class);
+        // Cluster coordination (no-op unless cluster-enabled is true)
+        install(new ClusterModule(environment));
+
         bind(SharedConnectionMap.class).to(HashSharedConnectionMap.class).in(Scopes.SINGLETON);
         bind(ShareKeyGenerator.class).to(SecureRandomShareKeyGenerator.class).in(Scopes.SINGLETON);
         bind(SharingProfilePermissionService.class);

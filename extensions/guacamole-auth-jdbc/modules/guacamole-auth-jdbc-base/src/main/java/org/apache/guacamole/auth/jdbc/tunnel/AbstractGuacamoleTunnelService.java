@@ -49,6 +49,11 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUpstreamException;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionMapper;
+import org.apache.guacamole.cluster.ClusterHeartbeat;
+import org.apache.guacamole.cluster.ClusterStore;
+import org.apache.guacamole.cluster.TunnelRegistration;
+import org.apache.guacamole.cluster.guacd.GuacdEndpoint;
+import org.apache.guacamole.cluster.guacd.GuacdSelector;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
@@ -175,6 +180,25 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      */
     @Inject
     private JDBCEnvironment environment;
+
+    /**
+     * Selects which guacd instance each connection should be established
+     * against.
+     */
+    @Inject
+    private GuacdSelector guacdSelector;
+
+    /**
+     * Cluster-wide state shared with every other Guacamole replica.
+     */
+    @Inject
+    private ClusterStore clusterStore;
+
+    /**
+     * Heartbeat keeping this replica's tunnels alive in the cluster indexes.
+     */
+    @Inject
+    private ClusterHeartbeat clusterHeartbeat;
 
     /**
      * All active connections through the tunnel having a given UUID.
@@ -315,6 +339,49 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     }
 
     /**
+     * Determines which guacd instance the given active connection should be
+     * established against.
+     *
+     * Selection is ordered deliberately:
+     *
+     *   1. If an existing guacd connection is being joined, the join MUST go to
+     *      the guacd instance already hosting it. If that instance is no longer
+     *      known, this fails rather than silently opening a new session.
+     *   2. If the connection pins a specific guacd in the database, that pin is
+     *      honored, preserving upstream behavior for deliberately pinned
+     *      connections.
+     *   3. Otherwise the least-loaded instance in the pool is chosen.
+     *
+     * @param activeConnection
+     *     The connection record being established.
+     *
+     * @param connection
+     *     The connection being established.
+     *
+     * @return
+     *     The guacd instance to connect to.
+     *
+     * @throws GuacamoleException
+     *     If a join target has vanished, or no guacd instance is available.
+     */
+    private GuacdEndpoint selectGuacdEndpoint(ActiveConnectionRecord activeConnection,
+            ModeledConnection connection) throws GuacamoleException {
+
+        // Joining an existing guacd connection: route to its owner
+        String joinId = activeConnection.getConnectionID();
+        if (joinId != null)
+            return guacdSelector.selectForJoin(joinId);
+
+        // Explicitly pinned to a specific guacd in the database
+        if (connection.getModel().getProxyHostname() != null)
+            return GuacdEndpoint.from(connection.getGuacamoleProxyConfiguration());
+
+        // Otherwise balance across the pool
+        return guacdSelector.selectForNew();
+
+    }
+
+    /**
      * Returns an unconfigured GuacamoleSocket that is already connected to
      * guacd as specified in guacamole.properties, using SSL if necessary.
      *
@@ -422,6 +489,22 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 // Release connection
                 activeConnections.remove(identifier, activeConnection);
                 activeConnectionGroups.remove(parentIdentifier, activeConnection);
+
+                // Remove this tunnel from the cluster as well
+                clusterHeartbeat.remove(activeConnection.getUUID().toString());
+
+                TunnelRegistration registration = activeConnection.getClusterRegistration();
+                if (registration != null) {
+                    try {
+                        clusterStore.unregisterTunnel(registration);
+                    }
+                    catch (GuacamoleException e) {
+                        // Not fatal: the entry ages out of every cluster index
+                        // within the stale window even if this call fails
+                        logger.warn("Unable to unregister tunnel from cluster. It will "
+                                + "expire on its own.", e);
+                    }
+                }
                 release(user, connection);
 
             }
@@ -548,10 +631,45 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             // Filter the configuration
             tokenFilter.filterValues(config.getParameters());
 
+            // Select the guacd instance which should host this connection
+            GuacdEndpoint endpoint = selectGuacdEndpoint(activeConnection, connection);
+
             // Obtain socket which will automatically run the cleanup task
-            ConfiguredGuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-                getUnconfiguredGuacamoleSocket(connection.getGuacamoleProxyConfiguration(),
-                        cleanupTask), config, info);
+            ConfiguredGuacamoleSocket socket;
+            try {
+                socket = new ConfiguredGuacamoleSocket(
+                    getUnconfiguredGuacamoleSocket(endpoint.toProxyConfiguration(),
+                            cleanupTask), config, info);
+            }
+
+            // Record the failure so a dying guacd is not selected again
+            // immediately, then let the existing handling take over
+            catch (GuacamoleException e) {
+                guacdSelector.markFailed(endpoint);
+                throw e;
+            }
+
+            // Publish this tunnel to the cluster, making it visible to other
+            // replicas and routable by its guacd connection ID
+            TunnelRegistration registration = new TunnelRegistration(
+                    activeConnection.getUUID().toString(),
+                    clusterStore.getNodeId(),
+                    socket.getConnectionID(),
+                    endpoint,
+                    connection.getIdentifier(),
+                    activeConnection.hasBalancingGroup()
+                            ? activeConnection.getBalancingGroup().getIdentifier() : null,
+                    activeConnection.getSharingProfile() != null
+                            ? activeConnection.getSharingProfile().getIdentifier() : null,
+                    activeConnection.getUser().getIdentifier(),
+                    activeConnection.getUser().getRemoteHost(),
+                    activeConnection.getStartDate().getTime());
+
+            clusterStore.registerTunnel(registration);
+            clusterHeartbeat.add(registration);
+
+            // Retain the registration so cleanup removes exactly what was added
+            activeConnection.setClusterRegistration(registration);
 
             // Assign and return new tunnel
             if (interceptErrors)

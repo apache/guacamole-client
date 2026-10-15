@@ -1,0 +1,105 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+
+---
+# Autoscaling for the two-replica cluster stack.
+#
+# Scaling DOWN is the dangerous direction here, and both policies below are
+# deliberately slow because of it:
+#
+#   * Removing a guacd pod kills every session on it. guacd session state is
+#     never replicated -- that is a design decision of this work, not an
+#     oversight -- so a scale-down event is a disconnect for those users.
+#   * Removing a webapp replica forces its users to reconnect, and its tunnels
+#     linger in the cluster indexes until the stale window elapses.
+#
+# Scaling up is cheap and safe, so the up and down policies are asymmetric.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: guacd
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: guacd
+  minReplicas: 2
+  maxReplicas: 8
+  metrics:
+    # CPU only. guacd memory is tiny and flat (~10Mi idle), so a memory target
+    # would never fire and would only add noise.
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 60
+    scaleDown:
+      # 15 minutes of sustained low load before shedding a pod, and never more
+      # than one pod at a time. Each removal disconnects real sessions.
+      stabilizationWindowSeconds: 900
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 300
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: guacamole
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: guacamole
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
+  behavior:
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+        - type: Percent
+          value: 100
+          periodSeconds: 60
+    scaleDown:
+      stabilizationWindowSeconds: 600
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 300
