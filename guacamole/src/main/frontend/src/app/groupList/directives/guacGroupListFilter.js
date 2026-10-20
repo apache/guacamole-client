@@ -107,13 +107,34 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
             $scope.searchString = null;
 
             /**
+             * Prepends the given connection group name to the path of each of
+             * the given objects, recording the connection group that contained
+             * them before they were copied out of it while flattening.
+             *
+             * @param {Object[]} objects
+             *     The connections, connection groups, or GroupListItems copied
+             *     out of the connection group having the given name.
+             *
+             * @param {String} name
+             *     The name of the connection group that contained the given
+             *     objects.
+             */
+            var prependPath = function prependPath(objects, name) {
+                angular.forEach(objects, function prependName(object) {
+                    object.path = [name].concat(object.path || []);
+                });
+            };
+
+            /**
              * Flattens the connection group hierarchy of the given connection
              * group such that all descendants are copied as immediate
              * children. The hierarchy of nested connection groups is otherwise
              * completely preserved. A connection or connection group nested
              * two or more levels deep within the hierarchy will thus appear
              * within the returned connection group in two places: in its
-             * original location AND as an immediate child.
+             * original location AND as an immediate child. Each copy made
+             * from a nested connection group has its "path" property set to
+             * the names of the connection groups that contained it.
              *
              * @param {ConnectionGroup} connectionGroup
              *     The connection group whose descendents should be copied as
@@ -137,6 +158,10 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
                 angular.forEach(connectionGroup.childConnectionGroups, function flattenChild(child) {
 
                     var flattenedChild = flattenConnectionGroup(child);
+
+                    // Record the group the copied descendants came from
+                    prependPath(flattenedChild.childConnections, child.name);
+                    prependPath(flattenedChild.childConnectionGroups, child.name);
 
                     // Merge all child connections
                     Array.prototype.push.apply(
@@ -187,6 +212,9 @@ angular.module('groupList').directive('guacGroupListFilter', [function guacGroup
                     if (child.type === GroupListItem.Type.CONNECTION_GROUP) {
 
                         var flattenedChild = flattenGroupListItem(child);
+
+                        // Record the group the copied descendants came from
+                        prependPath(flattenedChild.children, child.name);
 
                         // Merge all children
                         Array.prototype.push.apply(

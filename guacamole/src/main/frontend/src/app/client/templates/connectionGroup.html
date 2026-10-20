@@ -6,5 +6,6 @@
     <a ng-href="{{ item.getClientURL() }}">
         <div ng-show="item.balancing" class="icon type balancer"></div>
         <span class="name">{{item.name}}</span>
+        <span class="path" ng-if="item.path.length">{{ item.path.join(' / ') }}</span>
     </a>
 </div>
