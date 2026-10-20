@@ -467,6 +467,133 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
 
         };
 
+        /**
+         * Grants or revokes READ permission for the connection, connection
+         * group, or sharing profile represented by the given GroupListItem,
+         * updating permissionsAdded and permissionsRemoved accordingly. If the
+         * permission is already in the requested state, nothing is changed.
+         *
+         * @param {GroupListItem} item
+         *     The item to grant or revoke READ permission for.
+         *
+         * @param {Boolean} granted
+         *     true if READ permission should be granted, false if it should
+         *     be revoked.
+         */
+        var setReadPermission = function setReadPermission(item, granted) {
+
+            var flags = $scope.permissionFlags;
+
+            switch (item.type) {
+
+                case GroupListItem.Type.CONNECTION:
+                    if (!!flags.connectionPermissions.READ[item.identifier] === granted)
+                        return;
+                    flags.connectionPermissions.READ[item.identifier] = granted;
+                    if (granted)
+                        addConnectionPermission(item.identifier);
+                    else
+                        removeConnectionPermission(item.identifier);
+                    break;
+
+                case GroupListItem.Type.CONNECTION_GROUP:
+                    if (!!flags.connectionGroupPermissions.READ[item.identifier] === granted)
+                        return;
+                    flags.connectionGroupPermissions.READ[item.identifier] = granted;
+                    if (granted)
+                        addConnectionGroupPermission(item.identifier);
+                    else
+                        removeConnectionGroupPermission(item.identifier);
+                    break;
+
+                case GroupListItem.Type.SHARING_PROFILE:
+                    if (!!flags.sharingProfilePermissions.READ[item.identifier] === granted)
+                        return;
+                    flags.sharingProfilePermissions.READ[item.identifier] = granted;
+                    if (granted)
+                        addSharingProfilePermission(item.identifier);
+                    else
+                        removeSharingProfilePermission(item.identifier);
+                    break;
+
+            }
+
+        };
+
+        /**
+         * Grants or revokes READ permission for the given GroupListItem and
+         * its descendants. The contents of balancing connection groups are
+         * never affected, as those contents are not normally exposed to users
+         * having access to the balancing group itself.
+         *
+         * @param {GroupListItem} item
+         *     The item to grant or revoke READ permission for.
+         *
+         * @param {Boolean} granted
+         *     true if READ permission should be granted, false if it should
+         *     be revoked.
+         *
+         * @param {Boolean} recurseGroups
+         *     true if the contents of connection groups should also be
+         *     affected, false if only the connection groups themselves should
+         *     be affected.
+         */
+        var setReadPermissionRecursively = function setReadPermissionRecursively(item,
+                granted, recurseGroups) {
+
+            setReadPermission(item, granted);
+
+            // Do not descend into balancing groups, nor into any group if
+            // descending into groups is not desired
+            if (item.type === GroupListItem.Type.CONNECTION_GROUP
+                    && (item.balancing || !recurseGroups))
+                return;
+
+            angular.forEach(item.children, function setChildReadPermission(child) {
+                setReadPermissionRecursively(child, granted, recurseGroups);
+            });
+
+        };
+
+        /**
+         * Returns whether the displayed connections are currently being
+         * filtered, in which case the connection group hierarchy has been
+         * flattened and only matching items are displayed.
+         *
+         * @returns {Boolean}
+         *     true if the displayed connections are currently filtered, false
+         *     otherwise.
+         */
+        $scope.isFiltered = function isFiltered() {
+            var rootGroups = $scope.getRootGroups();
+            return !!rootGroups && !!$scope.filteredRootGroups
+                && $scope.filteredRootGroups[$scope.dataSource] !== rootGroups[$scope.dataSource];
+        };
+
+        /**
+         * Grants or revokes READ permission for every displayed connection,
+         * connection group, and sharing profile. If the displayed connections
+         * are currently filtered, only the items matching the filter are
+         * affected.
+         *
+         * @param {Boolean} granted
+         *     true if READ permission should be granted, false if it should
+         *     be revoked.
+         */
+        $scope.setAllPermissions = function setAllPermissions(granted) {
+
+            var rootGroup = $scope.filteredRootGroups && $scope.filteredRootGroups[$scope.dataSource];
+            if (!rootGroup || !$scope.permissionFlags)
+                return;
+
+            // The root group itself cannot be granted, only its contents
+            var recurseGroups = !$scope.isFiltered();
+            angular.forEach(rootGroup.children, function setChildReadPermission(child) {
+                setReadPermissionRecursively(child, granted, recurseGroups);
+            });
+
+        };
+
         // Expose permission query and modification functions to group list template
         $scope.groupListContext = {
 
@@ -480,6 +607,34 @@ angular.module('manage').directive('connectionPermissionEditor', ['$injector',
              */
             getPermissionFlags : function getPermissionFlags() {
                 return $scope.permissionFlags;
+            },
+
+            /**
+             * Returns whether the displayed connections are currently being
+             * filtered.
+             *
+             * @returns {Boolean}
+             *     true if the displayed connections are currently filtered,
+             *     false otherwise.
+             */
+            isFiltered : function isFiltered() {
+                return $scope.isFiltered();
+            },
+
+            /**
+             * Grants or revokes READ permission for the given connection
+             * group and everything within it, excluding the contents of any
+             * balancing connection groups.
+             *
+             * @param {GroupListItem} item
+             *     The connection group to grant or revoke READ permission for.
+             *
+             * @param {Boolean} granted
+             *     true if READ permission should be granted, false if it
+             *     should be revoked.
+             */
+            setGroupPermissions : function setGroupPermissions(item, granted) {
+                setReadPermissionRecursively(item, granted, true);
             },
 
             /**
