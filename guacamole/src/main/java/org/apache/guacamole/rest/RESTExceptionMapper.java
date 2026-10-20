@@ -50,13 +50,15 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
     private final Logger logger = LoggerFactory.getLogger(RESTExceptionMapper.class);
     
     /**
-     * The ContainerRequest representing the HTTP request that resulted in the
-     * Throwable being intercepted. Despite this class being a Singleton, this
-     * object will always be scoped with the current request for the Throwable
-     * that is being processed by this class.
+     * Provider of the ContainerRequest representing the HTTP request that
+     * resulted in the Throwable being intercepted. As this class is a
+     * Singleton, the request must be retrieved through a Provider each time
+     * a Throwable is processed. ContainerRequest is a class, not an
+     * interface, and so cannot be injected directly as a proxy: a direct
+     * injection would forever refer to the first request processed.
      */
     @Context
-    private ContainerRequest request;
+    private javax.inject.Provider<ContainerRequest> requestProvider;
     
     /**
      * The authentication service associated with the currently active session.
@@ -73,7 +75,7 @@ public class RESTExceptionMapper implements ExceptionMapper<Throwable> {
         
         // Ensure any associated session is invalidated if unauthorized 
         if (t instanceof GuacamoleUnauthorizedException) {
-            String token = authenticationService.getAuthenticationToken(request);
+            String token = authenticationService.getAuthenticationToken(requestProvider.get());
             if (authenticationService.destroyGuacamoleSession(token))
                 logger.debug("Implicitly invalidated session for token \"{}\"", token, t);
         }
