@@ -10,10 +10,6 @@
                     "type"  : "TEXT"
                 },
                 {
-                    "name"  : "port",
-                    "type"  : "NUMERIC"
-                },
-                {
                     "name"  : "timeout",
                     "type"  : "NUMERIC"
                 }
@@ -95,6 +91,14 @@
                     "name"    : "boot-device-persistent",
                     "type"    : "BOOLEAN",
                     "options" : [ "true" ]
+                },
+                {
+                    "name"  : "chassis-timeout",
+                    "type"  : "NUMERIC"
+                },
+                {
+                    "name"  : "chassis-retransmission-timeout",
+                    "type"  : "NUMERIC"
                 }
             ]
         },
