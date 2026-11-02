@@ -20,7 +20,7 @@
 package org.apache.guacamole.auth.jdbc.user;
 
 import com.google.common.collect.Sets;
-import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.guacamole.GuacamoleException;
@@ -48,15 +48,16 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
     private final AuthenticationProvider modelAuthenticationProvider;
 
     /**
-     * The connections which have been committed for use by this user in the
-     * context of a balancing connection group. Balancing connection groups
-     * will preferentially choose connections within this set, unless those
-     * connections are not children of the group in question. If a group DOES
-     * have at least one child connection within this set, no connections that
-     * are not in this set will be used.
+     * Map of balancing connection group identifier to the preferred child
+     * connection identifier for that group. At most one connection is stored
+     * per group so that a failover within a session (A → B) replaces the
+     * stale preference rather than accumulating both entries. Balancing groups
+     * will preferentially use a connection found here when it is a child of
+     * that group; if no preferred connection exists for the group, or the
+     * preferred connection is unavailable, normal load-balancing applies.
      */
-    private final Set<String> preferredConnections =
-            Collections.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+    private final Map<String, String> preferredConnectionsByGroup =
+            new ConcurrentHashMap<>();
 
     /**
      * Creates a copy of the given AuthenticatedUser which is associated with
@@ -145,20 +146,35 @@ public class ModeledAuthenticatedUser extends RemoteAuthenticatedUser {
      *     as preferred, false otherwise.
      */
     public boolean isPreferredConnection(String identifier) {
-        return preferredConnections.contains(identifier);
+        return preferredConnectionsByGroup.containsValue(identifier);
     }
 
     /**
-     * Marks the connection having the given identifier as preferred for this
-     * user's current Guacamole session. A preferred connection is always chosen
-     * in favor of other connections when it is a child of a balancing
-     * connection group.
+     * Marks the given connection as preferred for the given balancing
+     * connection group. Any previously preferred connection for that group is
+     * replaced, ensuring that at most one connection per group is tracked.
      *
-     * @param identifier
+     * @param groupIdentifier
+     *     The identifier of the balancing connection group.
+     *
+     * @param connectionIdentifier
      *     The identifier of the connection to prefer.
      */
-    public void preferConnection(String identifier) {
-        preferredConnections.add(identifier);
+    public void preferConnection(String groupIdentifier, String connectionIdentifier) {
+        preferredConnectionsByGroup.put(groupIdentifier, connectionIdentifier);
+    }
+
+    /**
+     * Copies all per-group connection preferences from the given user into
+     * this user. Called when a new ModeledAuthenticatedUser is created to
+     * replace an existing one (e.g. on token refresh) so that session affinity
+     * preferences established earlier in the session are not lost.
+     *
+     * @param other
+     *     The ModeledAuthenticatedUser whose preferences should be copied.
+     */
+    public void copyPreferencesFrom(ModeledAuthenticatedUser other) {
+        preferredConnectionsByGroup.putAll(other.preferredConnectionsByGroup);
     }
 
     @Override

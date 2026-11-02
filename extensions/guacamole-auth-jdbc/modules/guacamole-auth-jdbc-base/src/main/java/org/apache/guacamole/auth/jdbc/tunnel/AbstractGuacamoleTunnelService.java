@@ -729,6 +729,10 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         // Track failures in upstream (remote desktop) connections
         boolean upstreamHasFailed = false;
 
+        // Track which connections have already been attempted, so the
+        // session-affinity fallback pass can skip them
+        Set<String> failedIdentifiers = new HashSet<String>();
+
         // If group has no associated balanced connections, cannot connect
         List<ModeledConnection> connections = getBalancedConnections(user, connectionGroup);
         if (connections.isEmpty())
@@ -754,14 +758,21 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
             try {
 
-                // Connect to acquired child
+                // Always intercept upstream errors within a balancing group so
+                // that any failed candidate—including the last remaining one—
+                // throws GuacamoleUpstreamException and is caught below, giving
+                // consistent failover behavior and a clean
+                // GuacamoleResourceConflictException when all candidates are
+                // exhausted.  Without interception the last candidate's error
+                // would bypass the catch block and reach the client as a raw
+                // guacd error instruction.
                 ActiveConnectionRecord connectionRecord = new ActiveConnectionRecord(connectionMap, user, connectionGroup, connection);
                 GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord,
-                        info, tokens, connections.size() > 1);
+                        info, tokens, true);
 
                 // If session affinity is enabled, prefer this connection going forward
                 if (connectionGroup.isSessionAffinityEnabled())
-                    user.preferConnection(connection.getIdentifier());
+                    user.preferConnection(connectionGroup.getIdentifier(), connection.getIdentifier());
 
                 // Warn if we are connecting to a failover-only connection
                 if (connection.isFailoverOnly())
@@ -782,7 +793,25 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                         + "Failing over to next connection in group...",
                         connection.getIdentifier(), e);
                 connections.remove(connection);
+                failedIdentifiers.add(connection.getIdentifier());
                 upstreamHasFailed = true;
+
+                // If session affinity narrowed the candidate list to only the
+                // preferred connection and that connection has now failed, fall
+                // back to the remaining connections in the group so that the
+                // user is not left with no viable candidates
+                if (connections.isEmpty() && connectionGroup.isSessionAffinityEnabled()) {
+                    Collection<String> allIdentifiers = connectionMapper.selectIdentifiersWithin(
+                            connectionGroup.getIdentifier());
+                    Collection<ConnectionModel> allModels = connectionMapper.select(
+                            allIdentifiers, environment.getCaseSensitivity());
+                    for (ConnectionModel model : allModels) {
+                        ModeledConnection candidate = connectionProvider.get();
+                        candidate.init(user, model);
+                        if (!failedIdentifiers.contains(candidate.getIdentifier()))
+                            connections.add(candidate);
+                    }
+                }
             }
 
         } while (!connections.isEmpty());
