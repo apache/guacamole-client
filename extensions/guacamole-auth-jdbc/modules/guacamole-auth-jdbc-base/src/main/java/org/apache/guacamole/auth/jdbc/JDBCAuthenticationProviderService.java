@@ -165,7 +165,18 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
             Credentials credentials) throws GuacamoleException {
 
         // Refresh the user context
-        return getUserContext(authenticationProvider, authenticatedUser);
+        ModeledUserContext newContext = getUserContext(authenticationProvider, authenticatedUser);
+
+        // Transfer per-group connection preferences so that session affinity
+        // established before this token refresh is not lost
+        if (context instanceof ModeledUserContext && newContext != null) {
+            ModeledAuthenticatedUser oldUser = ((ModeledUserContext) context).getCurrentUser();
+            ModeledAuthenticatedUser newUser = newContext.getCurrentUser();
+            if (oldUser != null && newUser != null)
+                newUser.copyPreferencesFrom(oldUser);
+        }
+
+        return newContext;
 
     }
 

@@ -156,6 +156,7 @@ public class FailoverGuacamoleSocket extends DelegatingGuacamoleSocket {
         super(socket);
 
         int totalQueueSize = 0;
+        boolean connectionEstablished = false;
 
         GuacamoleInstruction instruction;
         GuacamoleReader reader = socket.getReader();
@@ -166,25 +167,39 @@ public class FailoverGuacamoleSocket extends DelegatingGuacamoleSocket {
             // Add instruction to tail of instruction queue
             instructionQueue.add(instruction);
 
-            // If instruction is a "sync" instruction, stop reading
+            // If instruction is a "sync" instruction, the connection is established
             String opcode = instruction.getOpcode();
-            if (opcode.equals("sync"))
+            if (opcode.equals("sync")) {
+                connectionEstablished = true;
                 break;
+            }
 
             // If instruction is an "error" instruction, parse its contents and
             // stop reading
             if (opcode.equals("error")) {
                 handleUpstreamErrors(instruction);
+                // Non-upstream errors are left in the queue to be relayed to
+                // the client; treat this as an established connection state
+                connectionEstablished = true;
                 break;
             }
 
             // Otherwise, track total data parsed, and assume connection is
             // successful if no error encountered within reasonable space
             totalQueueSize += instruction.toString().length();
-            if (totalQueueSize >= instructionQueueLimit)
+            if (totalQueueSize >= instructionQueueLimit) {
+                connectionEstablished = true;
                 break;
+            }
 
         }
+
+        // If the socket was closed (EOF) before any connection signal arrived,
+        // treat this as an upstream failure so that the balancing group can
+        // attempt to fail over to the next candidate connection.
+        if (!connectionEstablished)
+            throw new GuacamoleUpstreamUnavailableException("Upstream connection"
+                    + " closed before the connection could be established.");
 
     }
 
