@@ -6,8 +6,9 @@
 ## Reporting a Vulnerability
 
 `apache/guacamole-client` follows the [Apache Software Foundation security process](https://www.apache.org/security/). Please report suspected
-vulnerabilities privately to `security@apache.org`; do not open public
-GitHub issues or pull requests for security reports.
+vulnerabilities privately to the Apache Guacamole security list,
+`security@guacamole.apache.org` (see <https://guacamole.apache.org/security/>);
+do not open public GitHub issues or pull requests for security reports.
 
 ## Threat Model
 
