@@ -947,7 +947,8 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      * Sends the given out-of-band control command (e.g. "break", "dtr-on",
      * "rts-off") to the serial device associated with the given
      * ManagedClient, over the dedicated "serial-control" pipe stream. Has no
-     * effect if the underlying Guacamole client is not yet connected.
+     * effect if the connection is not yet established, or if the connection
+     * is not using the serial protocol.
      *
      * @param {ManagedClient} managedClient
      *     The ManagedClient of the serial connection to send the command to.
@@ -957,7 +958,11 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
      */
     ManagedClient.sendSerialControl = function sendSerialControl(managedClient, command) {
 
-        if (!managedClient.client)
+        // Serial control commands are only meaningful for an established
+        // serial connection
+        if (managedClient.protocol !== 'serial'
+                || managedClient.clientState.connectionState
+                    !== ManagedClientState.ConnectionState.CONNECTED)
             return;
 
         var stream = managedClient.client.createPipeStream('text/plain', SERIAL_CONTROL_PIPE_NAME);
