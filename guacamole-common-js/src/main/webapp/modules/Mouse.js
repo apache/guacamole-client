@@ -96,7 +96,9 @@ Guacamole.Mouse = function Mouse(element) {
     var MOUSE_BUTTONS = [
         Guacamole.Mouse.State.Buttons.LEFT,
         Guacamole.Mouse.State.Buttons.MIDDLE,
-        Guacamole.Mouse.State.Buttons.RIGHT
+        Guacamole.Mouse.State.Buttons.RIGHT,
+        Guacamole.Mouse.State.Buttons.BACK,
+        Guacamole.Mouse.State.Buttons.FORWARD
     ];
 
     /**
@@ -454,6 +456,22 @@ Guacamole.Mouse.State = function State(template) {
      */
     this.down = template.down || false;
 
+    /**
+     * Whether the back mouse button (DOM button 3) is currently pressed.
+     *
+     * @type {!boolean}
+     * @default false
+     */
+    this.back = template.back || false;
+
+    /**
+     * Whether the forward mouse button (DOM button 4) is currently pressed.
+     *
+     * @type {!boolean}
+     * @default false
+     */
+    this.forward = template.forward || false;
+
 };
 
 /**
@@ -510,7 +528,25 @@ Guacamole.Mouse.State.Buttons = {
      * @constant
      * @type {!string}
      */
-    DOWN : 'down'
+    DOWN : 'down',
+
+    /**
+     * The name of the {@link Guacamole.Mouse.State} property representing the
+     * back mouse button.
+     *
+     * @constant
+     * @type {!string}
+     */
+    BACK : 'back',
+
+    /**
+     * The name of the {@link Guacamole.Mouse.State} property representing the
+     * forward mouse button.
+     *
+     * @constant
+     * @type {!string}
+     */
+    FORWARD : 'forward'
 
 };
 
