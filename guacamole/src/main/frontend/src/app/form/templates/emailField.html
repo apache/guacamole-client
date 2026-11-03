@@ -7,6 +7,7 @@
            ng-hide="readOnly"
            guac-focus="focused"
            autocorrect="off"
-           autocapitalize="off">
+           autocapitalize="off"
+           autocomplete="{{ field.autocomplete }}"/>
     <a href="mailto:{{model}}" ng-show="readOnly">{{model}}</a>
 </div>
