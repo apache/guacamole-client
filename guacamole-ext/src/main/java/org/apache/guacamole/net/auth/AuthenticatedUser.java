@@ -75,4 +75,20 @@ public interface AuthenticatedUser extends Identifiable {
      */
     void invalidate();
 
+    /**
+     * A function to set the originalUri value
+     * 
+     * @param originalUri
+     *      Store a URI for later recovery
+     */
+    public void setOriginalUri(String originalUri);
+
+    /**
+     * A function to get the originalUri value
+     * 
+     * @return
+     *      A String with the original Uri value previously set 
+     */
+    public String getOriginalUri();
+
 }
