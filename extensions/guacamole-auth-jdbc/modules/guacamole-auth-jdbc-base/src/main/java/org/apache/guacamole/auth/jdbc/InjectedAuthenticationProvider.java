@@ -24,6 +24,9 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AbstractAuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
+import org.apache.guacamole.cluster.ClusterHeartbeat;
+import org.apache.guacamole.cluster.ClusterStore;
+import org.apache.guacamole.cluster.RehydratableAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 
 /**
@@ -34,13 +37,22 @@ import org.apache.guacamole.net.auth.AuthenticatedUser;
  * AuthenticationProvider, even though it is the AuthenticationProvider that
  * serves as the entry point.
  */
-public abstract class InjectedAuthenticationProvider extends AbstractAuthenticationProvider {
+public abstract class InjectedAuthenticationProvider
+        extends AbstractAuthenticationProvider
+        implements RehydratableAuthenticationProvider {
 
     /**
      * The AuthenticationProviderService to which all AuthenticationProvider
      * calls will be delegated.
      */
     private final AuthenticationProviderService authProviderService;
+
+    /**
+     * The injector this provider was built from, retained so that the cluster
+     * resources it holds (the cluster heartbeat and the connection to the
+     * cluster store) can be released when this provider is shut down.
+     */
+    private final Injector injector;
 
     /**
      * Creates a new AuthenticationProvider that delegates all calls to an
@@ -65,7 +77,7 @@ public abstract class InjectedAuthenticationProvider extends AbstractAuthenticat
             Class<? extends AuthenticationProviderService> authProviderServiceClass)
         throws GuacamoleException {
 
-        Injector injector = injectorProvider.get();
+        injector = injectorProvider.get();
         authProviderService = injector.getInstance(authProviderServiceClass);
 
     }
@@ -74,6 +86,14 @@ public abstract class InjectedAuthenticationProvider extends AbstractAuthenticat
     public AuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
         return authProviderService.authenticateUser(this, credentials);
+    }
+
+    @Override
+    public AuthenticatedUser rehydrate(String username, Credentials skeleton)
+            throws GuacamoleException {
+        // Delegate to the service, which decides whether this provider
+        // supports rebuilding a session authenticated on another replica
+        return authProviderService.rehydrate(this, username, skeleton);
     }
 
     @Override
@@ -96,6 +116,17 @@ public abstract class InjectedAuthenticationProvider extends AbstractAuthenticat
             throws GuacamoleException {
         return authProviderService.decorateUserContext(this, context,
                 authenticatedUser, credentials);
+    }
+
+
+    @Override
+    public void shutdown() {
+
+        // Heartbeat first: closing the store first would leave the heartbeat
+        // writing to a closed connection for up to one interval
+        injector.getInstance(ClusterHeartbeat.class).shutdown();
+        injector.getInstance(ClusterStore.class).shutdown();
+
     }
 
 }

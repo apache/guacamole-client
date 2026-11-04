@@ -34,6 +34,7 @@ import org.apache.guacamole.language.TranslatableGuacamoleClientException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
+import org.mybatis.guice.transactional.Transactional;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
 import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
@@ -87,6 +88,16 @@ public class JDBCAuthenticationProviderService implements AuthenticationProvider
         // Otherwise, unauthorized
         throw new GuacamoleInvalidCredentialsException("Invalid login", CredentialsInfo.USERNAME_PASSWORD);
 
+    }
+
+    @Override
+    @Transactional
+    public AuthenticatedUser rehydrate(AuthenticationProvider authenticationProvider,
+            String username, Credentials skeleton) throws GuacamoleException {
+        // The user is rebuilt purely from the database, as no credentials
+        // other than the username are available on this replica
+        return userService.retrieveRehydratedUser(authenticationProvider, username,
+                skeleton);
     }
 
     @Override

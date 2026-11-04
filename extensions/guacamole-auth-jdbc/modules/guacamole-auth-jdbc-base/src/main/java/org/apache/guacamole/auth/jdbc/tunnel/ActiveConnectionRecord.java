@@ -29,6 +29,7 @@ import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionMap;
 import org.apache.guacamole.auth.jdbc.sharing.SharedObjectManager;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.user.RemoteAuthenticatedUser;
+import org.apache.guacamole.cluster.TunnelRegistration;
 import org.apache.guacamole.net.AbstractGuacamoleTunnel;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
@@ -77,6 +78,73 @@ public class ActiveConnectionRecord extends ModeledConnectionRecord {
      * connection record.
      */
     private GuacamoleTunnel tunnel;
+
+    /**
+     * The cluster registration published for this connection, or null if this
+     * connection was never published (clustering disabled, or the connection
+     * failed before a socket was established).
+     */
+    private TunnelRegistration clusterRegistration;
+
+    /**
+     * The token identifying the cluster seats held by this connection. It is
+     * minted before the seats are acquired, which is necessarily before this
+     * record's own UUID exists -- that is derived from the database record ID
+     * and is null until connection history is written. The same token also
+     * keys this connection's tunnel registration, so that other replicas can
+     * determine whether the session is still live.
+     */
+    private String clusterSeatToken;
+
+    /**
+     * Returns the registration which was published to the cluster for this
+     * connection, describing it to other replicas.
+     *
+     * @return
+     *     The cluster registration published for this connection, or null if
+     *     this connection was never published (clustering is disabled, or
+     *     the connection failed before a socket was established).
+     */
+    public TunnelRegistration getClusterRegistration() {
+        return clusterRegistration;
+    }
+
+    /**
+     * Sets the registration which was published to the cluster for this
+     * connection, so that it can be refreshed while the connection is active
+     * and removed when the connection ends.
+     *
+     * @param clusterRegistration
+     *     The cluster registration published for this connection, or null if
+     *     this connection has not been published.
+     */
+    public void setClusterRegistration(TunnelRegistration clusterRegistration) {
+        this.clusterRegistration = clusterRegistration;
+    }
+
+    /**
+     * Returns the token identifying the cluster seats held by this
+     * connection.
+     *
+     * @return
+     *     The token identifying the cluster seats held by this connection, or
+     *     null if no token has been minted yet.
+     */
+    public String getClusterSeatToken() {
+        return clusterSeatToken;
+    }
+
+    /**
+     * Sets the token identifying the cluster seats held by this connection.
+     * This must be the same token that was used to acquire those seats, as
+     * it is the token used to release them.
+     *
+     * @param clusterSeatToken
+     *     The token identifying the cluster seats held by this connection.
+     */
+    public void setClusterSeatToken(String clusterSeatToken) {
+        this.clusterSeatToken = clusterSeatToken;
+    }
 
     /**
      * Map of all currently-shared connections.
@@ -269,6 +337,42 @@ public class ActiveConnectionRecord extends ModeledConnectionRecord {
             ModeledSharingProfile sharingProfile) {
         this(connectionMap, user, null, activeConnection.getConnection(), sharingProfile);
         this.connectionID = activeConnection.getConnectionID();
+    }
+
+    /**
+     * Creates a new ActiveConnectionRecord describing a join of an existing
+     * session, identified by the connection ID guacd issued for that session
+     * rather than by a local record of it. This is what allows a share key to
+     * be redeemed on a replica which does not own the session being shared.
+     *
+     * @param connectionMap
+     *     The SharedConnectionMap instance tracking all active shared
+     *     connections.
+     *
+     * @param user
+     *     The user that connected to the connection associated with this
+     *     connection record.
+     *
+     * @param connection
+     *     The connection being joined.
+     *
+     * @param guacdConnectionId
+     *     The connection ID issued by guacd for the session being joined.
+     *
+     * @param sharingProfile
+     *     The sharing profile that was used to share access to the given
+     *     connection, or null if no sharing profile should be used (access to
+     *     the connection is unrestricted).
+     */
+    public ActiveConnectionRecord(SharedConnectionMap connectionMap,
+            RemoteAuthenticatedUser user,
+            ModeledConnection connection,
+            String guacdConnectionId,
+            ModeledSharingProfile sharingProfile) {
+        // There is no local record of the session being joined; only the guacd
+        // connection ID is needed to join it
+        this(connectionMap, user, null, connection, sharingProfile);
+        this.connectionID = guacdConnectionId;
     }
 
     /**

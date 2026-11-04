@@ -1,0 +1,7 @@
+io.netty:netty-buffer:jar:*
+io.netty:netty-codec:jar:*
+io.netty:netty-common:jar:*
+io.netty:netty-handler:jar:*
+io.netty:netty-resolver:jar:*
+io.netty:netty-transport:jar:*
+io.netty:netty-transport-native-unix-common:jar:*

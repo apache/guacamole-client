@@ -49,6 +49,12 @@ import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.GuacamoleUpstreamException;
 import org.apache.guacamole.auth.jdbc.connection.ConnectionMapper;
+import org.apache.guacamole.cluster.ClusterHeartbeat;
+import org.apache.guacamole.cluster.ClusterKillHandler;
+import org.apache.guacamole.cluster.ClusterStore;
+import org.apache.guacamole.cluster.TunnelRegistration;
+import org.apache.guacamole.cluster.guacd.GuacdEndpoint;
+import org.apache.guacamole.cluster.guacd.GuacdSelector;
 import org.apache.guacamole.net.GuacamoleSocket;
 import org.apache.guacamole.net.GuacamoleTunnel;
 import org.apache.guacamole.net.auth.Connection;
@@ -177,6 +183,33 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
     private JDBCEnvironment environment;
 
     /**
+     * The selector which chooses the guacd instance each new connection is
+     * established against, and which routes a join to the guacd instance
+     * already hosting the session being joined. With clustering disabled it
+     * selects from a pool containing only the default guacd.
+     */
+    @Inject
+    private GuacdSelector guacdSelector;
+
+    /**
+     * The cluster store, holding state shared with every other Guacamole
+     * replica: the registrations of all active tunnels, and the channel over
+     * which requests to close a tunnel are delivered. With clustering
+     * disabled this is a no-op store.
+     */
+    @Inject
+    private ClusterStore clusterStore;
+
+    /**
+     * The heartbeat which periodically refreshes the cluster registrations of
+     * all tunnels owned by this replica. A registration which stops being
+     * refreshed (for example, because this replica died) ages out of the
+     * cluster within the stale window.
+     */
+    @Inject
+    private ClusterHeartbeat clusterHeartbeat;
+
+    /**
      * All active connections through the tunnel having a given UUID.
      */
     private final Map<String, ActiveConnectionRecord> activeTunnels =
@@ -207,6 +240,10 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     Whether connections which have been designated for use in failover
      *     situations only (hot spares) may be considered.
      *
+     * @param seatToken
+     *     Opaque identifier for the cluster seats held by this connection.
+     *     Must be the same value on the matching acquire and release.
+     *
      * @return
      *     The connection that has been acquired on behalf of the given user.
      *
@@ -214,7 +251,8 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *     If access is denied to the given user for any reason.
      */
     protected abstract ModeledConnection acquire(RemoteAuthenticatedUser user,
-            List<ModeledConnection> connections, boolean includeFailoverOnly)
+            List<ModeledConnection> connections, boolean includeFailoverOnly,
+            String seatToken)
             throws GuacamoleException;
 
     /**
@@ -227,9 +265,13 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *
      * @param connection
      *     The connection being released.
+     *
+     * @param seatToken
+     *     Opaque identifier for the cluster seats held by this connection.
+     *     Must be the same value on the matching acquire and release.
      */
     protected abstract void release(RemoteAuthenticatedUser user,
-            ModeledConnection connection);
+            ModeledConnection connection, String seatToken);
 
     /**
      * Acquires possibly-exclusive access to the given connection group on
@@ -242,11 +284,16 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      * @param connectionGroup
      *     The connection group being accessed.
      *
+     * @param seatToken
+     *     Opaque identifier for the cluster seats held by this connection.
+     *     Must be the same value on the matching acquire and release.
+     *
      * @throws GuacamoleException
      *     If access is denied to the given user for any reason.
      */
     protected abstract void acquire(RemoteAuthenticatedUser user,
-            ModeledConnectionGroup connectionGroup) throws GuacamoleException;
+            ModeledConnectionGroup connectionGroup, String seatToken)
+            throws GuacamoleException;
 
     /**
      * Releases possibly-exclusive access to the given connection group on
@@ -258,9 +305,13 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
      *
      * @param connectionGroup
      *     The connection group being released.
+     *
+     * @param seatToken
+     *     Opaque identifier for the cluster seats held by this connection.
+     *     Must be the same value on the matching acquire and release.
      */
     protected abstract void release(RemoteAuthenticatedUser user,
-            ModeledConnectionGroup connectionGroup);
+            ModeledConnectionGroup connectionGroup, String seatToken);
 
     /**
      * Returns a GuacamoleConfiguration which connects to the given connection.
@@ -311,6 +362,53 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         }
 
         return config;
+
+    }
+
+    /**
+     * Determines which guacd instance the given active connection should be
+     * established against.
+     *
+     * Selection is ordered deliberately:
+     *
+     *   1. If an existing guacd connection is being joined, the join MUST go to
+     *      the guacd instance already hosting it. If that instance is no longer
+     *      known, this fails rather than silently opening a new session.
+     *   2. If the connection pins a specific guacd in the database, that pin is
+     *      honored, so that deliberately pinned connections behave exactly as
+     *      they would without clustering.
+     *   3. Otherwise the least-loaded instance in the pool is chosen.
+     *
+     * @param activeConnection
+     *     The connection record being established.
+     *
+     * @param connection
+     *     The connection being established.
+     *
+     * @return
+     *     The guacd instance to connect to.
+     *
+     * @throws GuacamoleException
+     *     If a join target has vanished, or no guacd instance is available.
+     */
+    private GuacdEndpoint selectGuacdEndpoint(ActiveConnectionRecord activeConnection,
+            ModeledConnection connection) throws GuacamoleException {
+
+        // Joining an existing guacd connection: route to its owner. Only the
+        // cluster knows which guacd that is; with clustering off there is no
+        // route table, and falling through selects the single configured guacd
+        // exactly as it would without clustering -- the join still happens,
+        // because the guacd connection ID travels in the configuration.
+        String joinId = activeConnection.getConnectionID();
+        if (joinId != null && clusterStore.isClustered())
+            return guacdSelector.selectForJoin(joinId);
+
+        // Explicitly pinned to a specific guacd in the database
+        if (connection.getModel().getProxyHostname() != null)
+            return GuacdEndpoint.from(connection.getGuacamoleProxyConfiguration());
+
+        // Otherwise balance across the pool
+        return guacdSelector.selectForNew();
 
     }
 
@@ -422,13 +520,37 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 // Release connection
                 activeConnections.remove(identifier, activeConnection);
                 activeConnectionGroups.remove(parentIdentifier, activeConnection);
-                release(user, connection);
 
+                release(user, connection, activeConnection.getClusterSeatToken());
+
+            }
+
+            // Every tunnel is published to the cluster, including a share-key
+            // join, so every tunnel is withdrawn here. Only seats are primary-
+            // only, because a join never acquired one.
+            //
+            // The heartbeat is stopped before the registration is removed, as
+            // a heartbeat running in between would otherwise re-publish the
+            // entry that was just deleted.
+            clusterHeartbeat.remove(activeConnection.getClusterSeatToken());
+
+            TunnelRegistration registration = activeConnection.getClusterRegistration();
+            if (registration != null) {
+                try {
+                    clusterStore.unregisterTunnel(registration);
+                }
+                catch (GuacamoleException e) {
+                    // Not fatal: the entry ages out of every cluster index
+                    // within the stale window even if this call fails
+                    logger.warn("Unable to unregister tunnel from cluster. It will "
+                            + "expire on its own.", e);
+                }
             }
 
             // Release any associated group
             if (activeConnection.hasBalancingGroup())
-                release(user, activeConnection.getBalancingGroup());
+                release(user, activeConnection.getBalancingGroup(),
+                        activeConnection.getClusterSeatToken());
 
             // Update history record with end date
             ConnectionRecordModel recordModel = activeConnection.getModel();
@@ -548,10 +670,62 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             // Filter the configuration
             tokenFilter.filterValues(config.getParameters());
 
+            // Select the guacd instance which should host this connection
+            GuacdEndpoint endpoint = selectGuacdEndpoint(activeConnection, connection);
+
             // Obtain socket which will automatically run the cleanup task
-            ConfiguredGuacamoleSocket socket = new ConfiguredGuacamoleSocket(
-                getUnconfiguredGuacamoleSocket(connection.getGuacamoleProxyConfiguration(),
-                        cleanupTask), config, info);
+            ConfiguredGuacamoleSocket socket;
+            try {
+                socket = new ConfiguredGuacamoleSocket(
+                    getUnconfiguredGuacamoleSocket(endpoint.toProxyConfiguration(),
+                            cleanupTask), config, info);
+            }
+
+            // Record the failure so a dying guacd is not selected again
+            // immediately, then let the existing handling take over
+            catch (GuacamoleException e) {
+                guacdSelector.markFailed(endpoint);
+                throw e;
+            }
+
+            // Publish this tunnel to the cluster, making it visible to other
+            // replicas and routable by its guacd connection ID
+            TunnelRegistration registration = new TunnelRegistration(
+                    activeConnection.getClusterSeatToken(),
+                    clusterStore.getNodeId(),
+                    socket.getConnectionID(),
+                    endpoint,
+                    connection.getIdentifier(),
+                    activeConnection.hasBalancingGroup()
+                            ? activeConnection.getBalancingGroup().getIdentifier() : null,
+                    activeConnection.getSharingProfile() != null
+                            ? activeConnection.getSharingProfile().getIdentifier() : null,
+                    activeConnection.getUser().getIdentifier(),
+                    activeConnection.getUser().getRemoteHost(),
+                    activeConnection.getStartDate().getTime(),
+                    activeConnection.getUUID() != null
+                            ? activeConnection.getUUID().toString() : null);
+
+            // Publishing is best-effort. A cluster that cannot be reached must
+            // not cost the user their connection -- it degrades to a
+            // replica-local view, losing cross-replica join and cluster-wide
+            // administrative visibility for this tunnel only. (A join to a
+            // guacd that cannot be located, by contrast, fails closed in
+            // selectGuacdEndpoint(), as it would otherwise open a new
+            // session instead of joining the existing one.)
+            try {
+                clusterStore.registerTunnel(registration);
+                clusterHeartbeat.add(registration);
+
+                // Retained only on success, so cleanup never tries to remove
+                // something that was never added
+                activeConnection.setClusterRegistration(registration);
+            }
+            catch (GuacamoleException e) {
+                logger.warn("Unable to publish tunnel to the cluster. This "
+                        + "connection will work, but is not visible to other "
+                        + "replicas and cannot be joined from one.", e);
+            }
 
             // Assign and return new tunnel
             if (interceptErrors)
@@ -604,6 +778,63 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
         // No preferred connections were found
         return identifiers;
 
+    }
+
+    /**
+     * Closes the tunnel with the given history record UUID, if this replica
+     * owns it. This is invoked when any replica asks the cluster to close a
+     * tunnel; every replica receives the request, and only the owner acts on
+     * it.
+     *
+     * @param recordUuid
+     *     The UUID of the history record identifying the tunnel.
+     *
+     * @return
+     *     true if this replica owned the tunnel and closed it, false if the
+     *     tunnel is not here.
+     */
+    public boolean closeLocalTunnel(String recordUuid) {
+
+        // Ignore requests for tunnels owned by other replicas
+        ActiveConnectionRecord record = activeTunnels.get(recordUuid);
+        if (record == null)
+            return false;
+
+        GuacamoleTunnel tunnel = record.getTunnel();
+        if (tunnel == null || !tunnel.isOpen())
+            return false;
+
+        // Closing the tunnel runs its cleanup task, which withdraws it from
+        // the cluster; the requesting replica observes that removal
+        try {
+            tunnel.close();
+            return true;
+        }
+
+        catch (GuacamoleException e) {
+            logger.warn("Unable to close tunnel \"{}\" on behalf of the cluster.",
+                    recordUuid, e);
+            return false;
+        }
+
+    }
+
+    /**
+     * Subscribes this replica to cluster kill requests, so that a tunnel owned
+     * by this replica can be closed by an administrator connected to any
+     * other replica. Invoked by Guice once this service has been constructed
+     * and its dependencies injected.
+     */
+    @Inject
+    public void registerClusterKillHandler() {
+        clusterStore.onKillRequest(new ClusterKillHandler() {
+
+            @Override
+            public void killLocalTunnel(String recordUuid) {
+                closeLocalTunnel(recordUuid);
+            }
+
+        });
     }
 
     /**
@@ -705,11 +936,16 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             final ModeledConnection connection, GuacamoleClientInformation info,
             Map<String, String> tokens) throws GuacamoleException {
 
+        // Minted here because no identifier for this connection exists yet --
+        // the record's UUID comes from the database record ID, written later.
+        String seatToken = UUID.randomUUID().toString();
+
         // Acquire access to single connection, ignoring the failover-only flag
-        acquire(user, Collections.singletonList(connection), true);
+        acquire(user, Collections.singletonList(connection), true, seatToken);
 
         // Connect only if the connection was successfully acquired
         ActiveConnectionRecord connectionRecord = new ActiveConnectionRecord(connectionMap, user, connection);
+        connectionRecord.setClusterSeatToken(seatToken);
         return assignGuacamoleTunnel(connectionRecord, info, tokens, false);
 
     }
@@ -740,19 +976,22 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
 
         do {
 
+            // Minted before any seat is taken; see the single-connection path
+            String seatToken = UUID.randomUUID().toString();
+
             // Acquire group
-            acquire(user, connectionGroup);
+            acquire(user, connectionGroup, seatToken);
 
             // Attempt to acquire to any child, including failover-only
             // connections only if at least one upstream failure has occurred
             ModeledConnection connection;
             try {
-                connection = acquire(user, connections, upstreamHasFailed);
+                connection = acquire(user, connections, upstreamHasFailed, seatToken);
             }
 
             // Ensure connection group is always released if child acquire fails
             catch (GuacamoleException e) {
-                release(user, connectionGroup);
+                release(user, connectionGroup, seatToken);
                 throw e;
             }
 
@@ -767,6 +1006,7 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
                 // would bypass the catch block and reach the client as a raw
                 // guacd error instruction.
                 ActiveConnectionRecord connectionRecord = new ActiveConnectionRecord(connectionMap, user, connectionGroup, connection);
+                connectionRecord.setClusterSeatToken(seatToken);
                 GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord,
                         info, tokens, true);
 
@@ -839,9 +1079,17 @@ public abstract class AbstractGuacamoleTunnelService implements GuacamoleTunnelS
             GuacamoleClientInformation info, Map<String, String> tokens)
             throws GuacamoleException {
 
-        // Create a connection record which describes the shared connection
+        // Create a connection record which describes the shared connection,
+        // built from the definition's own facts rather than from a live record,
+        // so a key shared on another replica can be redeemed here.
         ActiveConnectionRecord connectionRecord = new ActiveConnectionRecord(connectionMap,
-                user, definition.getActiveConnection(), definition.getSharingProfile());
+                user, definition.getConnection(), definition.getGuacdConnectionId(),
+                definition.getSharingProfile());
+
+        // A joining user consumes no seat -- the session it joins already holds
+        // one -- but the tunnel still needs an identity in the cluster, both to
+        // key its registration and to be killable from another replica.
+        connectionRecord.setClusterSeatToken(UUID.randomUUID().toString());
 
         // Connect to shared connection described by the created record
         GuacamoleTunnel tunnel = assignGuacamoleTunnel(connectionRecord, info, tokens, false);

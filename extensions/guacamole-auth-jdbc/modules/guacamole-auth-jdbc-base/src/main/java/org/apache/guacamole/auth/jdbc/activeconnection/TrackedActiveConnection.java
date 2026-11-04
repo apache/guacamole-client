@@ -131,7 +131,12 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
         super.init(currentUser);
         this.connectionRecord = activeConnectionRecord;
         this.connectable      = connectable;
-        
+
+        // A session owned by another replica has no local record; every field
+        // is supplied by the caller through the setters below
+        if (activeConnectionRecord == null)
+            return;
+
         // Copy all non-sensitive data from given record
         this.connection               = activeConnectionRecord.getConnection();
         this.sharingProfileIdentifier = activeConnectionRecord.getSharingProfileIdentifier();
@@ -167,6 +172,19 @@ public class TrackedActiveConnection extends RestrictedObject implements ActiveC
      */
     public ModeledConnection getConnection() {
         return connection;
+    }
+
+    /**
+     * Sets the connection this active connection is using. Required for
+     * sessions owned by another replica, which are described by cluster state
+     * rather than by a local record but must still expose the connection the
+     * administrative view reads through getConnectionIdentifier().
+     *
+     * @param connection
+     *     The connection being actively used.
+     */
+    public void setConnection(ModeledConnection connection) {
+        this.connection = connection;
     }
 
     @Override

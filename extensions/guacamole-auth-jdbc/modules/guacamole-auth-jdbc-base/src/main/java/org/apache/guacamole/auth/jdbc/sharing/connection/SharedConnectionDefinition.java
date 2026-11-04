@@ -20,6 +20,7 @@
 package org.apache.guacamole.auth.jdbc.sharing.connection;
 
 import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.connection.ModeledConnection;
 import org.apache.guacamole.auth.jdbc.sharing.SharedObjectManager;
 import org.apache.guacamole.auth.jdbc.sharingprofile.ModeledSharingProfile;
 import org.apache.guacamole.auth.jdbc.tunnel.ActiveConnectionRecord;
@@ -57,6 +58,23 @@ public class SharedConnectionDefinition {
      * The unique key with which a user may access the shared connection.
      */
     private final String shareKey;
+
+    /**
+     * The connection being shared. Held directly so that a definition
+     * reconstructed from cluster state, whose originating session lives on
+     * another replica, can answer without a local record.
+     */
+    private final ModeledConnection connection;
+
+    /**
+     * The connection ID issued by guacd for the session being shared.
+     */
+    private final String guacdConnectionId;
+
+    /**
+     * The identifier of the user who shared the connection.
+     */
+    private final String sharedBy;
 
     /**
      * Manager which tracks all tunnels associated with this shared connection
@@ -101,17 +119,90 @@ public class SharedConnectionDefinition {
         this.activeConnection = activeConnection;
         this.sharingProfile = sharingProfile;
         this.shareKey = shareKey;
+
+        // Copied out of the record so that callers can read them the same
+        // way whether or not the session is owned by this replica
+        this.connection = activeConnection.getConnection();
+        this.guacdConnectionId = activeConnection.getConnectionID();
+        this.sharedBy = activeConnection.getUser().getIdentifier();
+    }
+
+    /**
+     * Creates a new SharedConnectionDefinition describing a session owned by
+     * another replica, described entirely by cluster state rather than by a
+     * record of that session, which exists only on the replica owning it.
+     *
+     * @param connection
+     *     The connection being shared.
+     *
+     * @param guacdConnectionId
+     *     The connection ID issued by guacd for the session being shared.
+     *
+     * @param sharedBy
+     *     The identifier of the user who shared the connection.
+     *
+     * @param sharingProfile
+     *     A sharing profile whose associated parameters dictate the level of
+     *     access provided to the shared connection, or null if the connection
+     *     should be given full access.
+     *
+     * @param shareKey
+     *     The unique key with which a user may access the shared connection.
+     */
+    public SharedConnectionDefinition(ModeledConnection connection,
+            String guacdConnectionId, String sharedBy,
+            ModeledSharingProfile sharingProfile, String shareKey) {
+        // No local record exists for a session owned by another replica
+        this.activeConnection = null;
+        this.sharingProfile = sharingProfile;
+        this.shareKey = shareKey;
+        this.connection = connection;
+        this.guacdConnectionId = guacdConnectionId;
+        this.sharedBy = sharedBy;
     }
 
     /**
      * Returns the ActiveConnectionRecord of the actual in-progress connection
-     * being shared.
+     * being shared, if that session is owned by this replica.
      *
      * @return
-     *     The ActiveConnectionRecord being shared.
+     *     The ActiveConnectionRecord being shared, or null if the session being
+     *     shared is owned by another replica. Callers needing the connection,
+     *     the guacd connection ID or the sharing user must use getConnection(),
+     *     getGuacdConnectionId() and getSharedBy(), which answer in both cases.
      */
     public ActiveConnectionRecord getActiveConnection() {
         return activeConnection;
+    }
+
+    /**
+     * Returns the connection being shared.
+     *
+     * @return
+     *     The connection being shared.
+     */
+    public ModeledConnection getConnection() {
+        return connection;
+    }
+
+    /**
+     * Returns the connection ID issued by guacd for the session being shared.
+     *
+     * @return
+     *     The connection ID issued by guacd for the session being shared.
+     */
+    public String getGuacdConnectionId() {
+        return guacdConnectionId;
+    }
+
+    /**
+     * Returns the identifier of the user who shared the connection.
+     *
+     * @return
+     *     The identifier of the user who shared the connection.
+     */
+    public String getSharedBy() {
+        return sharedBy;
     }
 
     /**

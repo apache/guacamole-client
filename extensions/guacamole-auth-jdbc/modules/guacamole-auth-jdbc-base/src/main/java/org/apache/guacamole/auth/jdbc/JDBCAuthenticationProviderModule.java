@@ -73,6 +73,7 @@ import org.apache.guacamole.auth.jdbc.permission.UserGroupPermissionSet;
 import org.apache.guacamole.auth.jdbc.security.PasswordPolicyService;
 import org.apache.guacamole.auth.jdbc.sharing.ConnectionSharingService;
 import org.apache.guacamole.auth.jdbc.sharing.HashSharedConnectionMap;
+import org.apache.guacamole.auth.jdbc.sharing.RedisSharedConnectionMap;
 import org.apache.guacamole.auth.jdbc.sharing.SecureRandomShareKeyGenerator;
 import org.apache.guacamole.auth.jdbc.sharing.ShareKeyGenerator;
 import org.apache.guacamole.auth.jdbc.sharing.SharedConnectionMap;
@@ -89,6 +90,8 @@ import org.apache.guacamole.auth.jdbc.usergroup.UserGroupDirectory;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupMemberUserMapper;
+import org.apache.guacamole.GuacamoleException;
+import org.apache.guacamole.auth.jdbc.cluster.ClusterModule;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupParentUserGroupMapper;
 import org.apache.guacamole.auth.jdbc.usergroup.UserGroupService;
 import org.mybatis.guice.MyBatisModule;
@@ -194,7 +197,26 @@ public class JDBCAuthenticationProviderModule extends MyBatisModule {
         bind(PasswordEncryptionService.class).to(SHA256PasswordEncryptionService.class);
         bind(PasswordPolicyService.class);
         bind(SaltService.class).to(SecureRandomSaltService.class);
-        bind(SharedConnectionMap.class).to(HashSharedConnectionMap.class).in(Scopes.SINGLETON);
+        // Bind cluster coordination services (no-op unless cluster-enabled is
+        // true)
+        install(new ClusterModule(environment));
+
+        // Share keys cross replicas only when clustering is on. A property that
+        // cannot be read is reported as a configuration error, which Guice
+        // raises once configuration completes; until then, the single-replica
+        // map is bound so the remaining bindings can still be configured.
+        boolean clusterEnabled = false;
+        try {
+            clusterEnabled = ClusterModule.isEnabled(environment);
+        }
+        catch (GuacamoleException e) {
+            addError(e);
+        }
+
+        if (clusterEnabled)
+            bind(SharedConnectionMap.class).to(RedisSharedConnectionMap.class).in(Scopes.SINGLETON);
+        else
+            bind(SharedConnectionMap.class).to(HashSharedConnectionMap.class).in(Scopes.SINGLETON);
         bind(ShareKeyGenerator.class).to(SecureRandomShareKeyGenerator.class).in(Scopes.SINGLETON);
         bind(SharingProfilePermissionService.class);
         bind(SharingProfileService.class);

@@ -421,6 +421,52 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     /**
+     * Retrieves the user with the given username, without verifying any
+     * password, for the purpose of rebuilding a session which was
+     * authenticated on another replica.
+     *
+     * The absent password check is the entire point: the session token is the
+     * credential, and it was verified when the session was created.
+     * Authorization is not granted here -- it is re-derived by getUserContext(),
+     * which also rejects a disabled account.
+     *
+     * @param authenticationProvider
+     *     The AuthenticationProvider on behalf of which the user is being
+     *     retrieved.
+     *
+     * @param username
+     *     The identifier of the user whose session is being rebuilt.
+     *
+     * @param credentials
+     *     Credentials carrying the request's remote address and hostname.
+     *
+     * @return
+     *     An AuthenticatedUser for the named user, or null if no such user
+     *     exists.
+     *
+     * @throws GuacamoleException
+     *     If the user cannot be retrieved.
+     */
+    public ModeledAuthenticatedUser retrieveRehydratedUser(
+            AuthenticationProvider authenticationProvider, String username,
+            Credentials credentials) throws GuacamoleException {
+
+        // A user deleted since the session was created cannot be rebuilt
+        UserModel userModel = userMapper.selectOne(username, getCaseSensitivity());
+        if (userModel == null)
+            return null;
+
+        // Wrap the model as a user acting as itself, exactly as
+        // retrieveAuthenticatedUser() does after a successful password check
+        ModeledUser user = getObjectInstance(null, userModel);
+        user.setCurrentUser(new ModeledAuthenticatedUser(authenticationProvider,
+                user, credentials));
+
+        return user.getCurrentUser();
+
+    }
+
+    /**
      * Retrieves the user corresponding to the given AuthenticatedUser from the
      * database.
      *

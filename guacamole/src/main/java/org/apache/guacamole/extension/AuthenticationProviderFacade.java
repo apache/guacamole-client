@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.apache.guacamole.GuacamoleClientException;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.net.auth.AuthenticatedUser;
+import org.apache.guacamole.cluster.RehydratableAuthenticationProvider;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.net.auth.Credentials;
 import org.apache.guacamole.net.auth.UserContext;
@@ -35,7 +36,8 @@ import org.slf4j.LoggerFactory;
  * authentication attempts can cleanly fail, and errors can be properly logged,
  * even if the AuthenticationProvider cannot be instantiated.
  */
-public class AuthenticationProviderFacade implements AuthenticationProvider {
+public class AuthenticationProviderFacade
+        implements AuthenticationProvider, RehydratableAuthenticationProvider {
 
     /**
      * Logger for this class.
@@ -333,6 +335,25 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
     public void shutdown() {
         if (authProvider != null)
             authProvider.shutdown();
+    }
+
+    @Override
+    public AuthenticatedUser rehydrate(String username, Credentials skeleton)
+            throws GuacamoleException {
+
+        // Every provider is wrapped in this facade, so the facade must
+        // implement the interface for any provider to be rehydratable at all.
+        // Default-deny is preserved here instead: a provider which does not
+        // declare itself rehydratable yields null, and the caller falls back
+        // to a real login.
+        if (!(authProvider instanceof RehydratableAuthenticationProvider))
+            return null;
+
+        // Otherwise, let the wrapped provider decide whether the user may
+        // have their session rebuilt
+        return ((RehydratableAuthenticationProvider) authProvider)
+                .rehydrate(username, skeleton);
+
     }
 
 }

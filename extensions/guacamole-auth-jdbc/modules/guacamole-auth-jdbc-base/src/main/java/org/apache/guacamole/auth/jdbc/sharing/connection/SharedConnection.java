@@ -92,7 +92,7 @@ public class SharedConnection implements Connection {
 
     @Override
     public String getName() {
-        return definition.getActiveConnection().getConnection().getName();
+        return definition.getConnection().getName();
     }
 
     @Override
@@ -114,7 +114,7 @@ public class SharedConnection implements Connection {
     public GuacamoleConfiguration getConfiguration() {
 
         // Pull the connection being shared
-        Connection primaryConnection = definition.getActiveConnection().getConnection();
+        Connection primaryConnection = definition.getConnection();
 
         // Construct a skeletal configuration that exposes only the protocol in use
         GuacamoleConfiguration config = new GuacamoleConfiguration();
@@ -136,7 +136,7 @@ public class SharedConnection implements Connection {
 
     @Override
     public Map<String, String> getAttributes() {
-        String sharedBy = definition.getActiveConnection().getUser().getIdentifier();
+        String sharedBy = definition.getSharedBy();
         return Collections.<String, String>singletonMap(CONNECTION_OWNER, sharedBy);
     }
 
