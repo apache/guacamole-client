@@ -353,7 +353,20 @@ Guacamole.Layer = function(width, height) {
      *     The image to draw. Note that this is not a URL.
      */
     this.drawImage = function(x, y, image) {
-        if (layer.autosize) fitRect(x, y, image.width, image.height);
+
+        if (layer.autosize) {
+
+            // VideoFrame objects (such as those produced by ImageDecoder)
+            // expose their dimensions through displayWidth and displayHeight
+            // rather than width and height
+            var isVideoFrame = window.VideoFrame && image instanceof window.VideoFrame;
+            var width  = isVideoFrame ? image.displayWidth  : image.width;
+            var height = isVideoFrame ? image.displayHeight : image.height;
+
+            fitRect(x, y, width, height);
+
+        }
+
         context.drawImage(image, x, y);
         empty = false;
     };

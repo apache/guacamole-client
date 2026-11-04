@@ -920,14 +920,26 @@ Guacamole.Display = function() {
 
             var decodedFrame = null;
 
-            // Draw image once loaded
+            // Draw image once loaded, releasing the decoded frame afterward
+            // (VideoFrames hold decoder resources until explicitly closed)
             var task = scheduleTask(function drawImageBitmap() {
-                layer.drawImage(x, y, decodedFrame);
+                if (decodedFrame) {
+                    layer.drawImage(x, y, decodedFrame);
+                    decodedFrame.close();
+                }
             }, true);
 
             imageDecoder.decode({ completeFramesOnly: true }).then(function bitmapLoaded(result) {
                 decodedFrame = result.image;
+                imageDecoder.close();
                 task.unblock();
+            }, function bitmapFailed() {
+
+                // Skip images that cannot be decoded, as with the Image-based
+                // fallback below, rather than blocking all further rendering
+                imageDecoder.close();
+                task.unblock();
+
             });
 
         }
