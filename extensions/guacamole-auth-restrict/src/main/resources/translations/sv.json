@@ -1,0 +1,73 @@
+{
+
+    "DATA_SOURCE_LOGIN_RESTRICTIONS" : {
+        "NAME" : "Ytterligare begränsningar"
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Värdar som anslutningen får användas från:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Värdar som anslutningen inte får användas från:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_AFTER"    : "Datum och tid efter vilka anslutningen får användas:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Tider då anslutningen får användas:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_BEFORE"   : "Datum och tid före vilka anslutningen får användas:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Tider då anslutningen inte får användas:",
+
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Ytterligare anslutningsbegränsningar"
+
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Värdar som anslutningsgruppen får användas från:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Värdar som anslutningsgruppen inte får användas från:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_AFTER"    : "Datum och tid efter vilka anslutningsgruppen får användas:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Tider då anslutningsgruppen får användas:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_BEFORE"   : "Datum och tid före vilka anslutningsgruppen får användas:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Tider då anslutningsgruppen inte får användas:",
+
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Ytterligare anslutningsbegränsningar"
+
+    },
+
+    "RESTRICT" : {
+
+        "ACTION_ADD_ENTRY" : "Lägg till post",
+
+        "ERROR_CONNECTION_NOT_ALLOWED_NOW"       : "Anslutningen är inte tillgänglig vid den här tidpunkten.",
+        "ERROR_CONNECTION_NOT_ALLOWED_FROM_HOST" : "Anslutningen får inte användas från den här värden.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_NOW"       : "Användaren får inte logga in vid den här tidpunkten.",
+        "ERROR_USER_LOGIN_NOT_ALLOWED_FROM_HOST" : "Användaren får inte logga in från den här värden.",
+
+        "FIELD_PLACEHOLDER_DATE_TIME_RESTRICTION" : "ÅÅÅÅ-MM-DD HH:MM:SS",
+
+        "TABLE_HEADER_DAY"        : "Dag",
+        "TABLE_HEADER_END_TIME"   : "Sluttid",
+        "TABLE_HEADER_HOST"       : "Värd",
+        "TABLE_HEADER_START_TIME" : "Starttid"
+
+    },
+
+    "USER_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Värdar som användaren får logga in från:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Värdar som användaren inte får logga in från:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Tider då användaren får logga in:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Tider då användaren inte får logga in:",
+
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Ytterligare inloggningsbegränsningar"
+
+    },
+
+    "USER_GROUP_ATTRIBUTES" : {
+
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_ALLOWED" : "Värdar som medlemmar får logga in från:",
+        "FIELD_HEADER_GUAC_RESTRICT_HOSTS_DENIED"  : "Värdar som medlemmar inte får logga in från:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_ALLOWED"  : "Tider då medlemmar får logga in:",
+        "FIELD_HEADER_GUAC_RESTRICT_TIME_DENIED"   : "Tider då medlemmar inte får logga in:",
+
+        "SECTION_HEADER_RESTRICT_LOGIN_FORM" : "Ytterligare inloggningsbegränsningar"
+
+    }
+
+}

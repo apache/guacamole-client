@@ -49,3 +49,36 @@
     width: 0;
     white-space: nowrap;
 }
+
+/* Allow translated labels and controls to fit narrow screens. */
+@media (max-width: 600px) {
+
+    .connection-parameters .form .fields,
+    .connection-parameters .form .fields .labeled-field,
+    .connection-parameters .form .fields .field-header,
+    .connection-parameters .form .fields .form-field {
+        display: block;
+        box-sizing: border-box;
+        width: 100%;
+    }
+
+    .connection-parameters .form .fields .labeled-field {
+        margin-bottom: .5em;
+    }
+
+    .connection-parameters .form .fields .field-header {
+        white-space: normal;
+    }
+
+    .connection-parameters .form-field input,
+    .connection-parameters .form-field select,
+    .connection-parameters .form-field textarea {
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+
+    .connection-parameters .password-field input {
+        max-width: calc(100% - 1.5em);
+    }
+
+}

@@ -1,0 +1,32 @@
+{
+
+    "DATA_SOURCE_CAS" : {
+        "NAME" : "CAS-tjänst för enkel inloggning"
+    },
+
+    "DATA_SOURCE_OPENID" : {
+        "NAME" : "OpenID-tjänst för enkel inloggning"
+    },
+
+    "DATA_SOURCE_SAML" : {
+        "NAME" : "SAML-tjänst för enkel inloggning"
+    },
+
+    "DATA_SOURCE_SSL" : {
+        "NAME" : "SSL/TLS-tjänst för enkel inloggning"
+    },
+
+    "LOGIN" : {
+        "FIELD_HEADER_ID_TOKEN"      : "",
+        "FIELD_HEADER_STATE"         : "",
+        "FIELD_HEADER_TICKET"        : "",
+        "INFO_IDP_REDIRECT_PENDING"  : "Vänta, du omdirigeras till identitetsleverantören...",
+        "INFO_REDIRECT_PENDING"      : "Vänta medan du omdirigeras...",
+        "NAME_IDP_CAS"               : "CAS",
+        "NAME_IDP_OPENID"            : "OpenID",
+        "NAME_IDP_SAML"              : "SAML",
+        "NAME_IDP_SSL"               : "Certifikat / smartkort",
+        "SECTION_HEADER_SSO_OPTIONS" : "Logga in med:"
+    }
+
+}
