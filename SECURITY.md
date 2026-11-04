@@ -1,0 +1,17 @@
+<!-- SPDX-License-Identifier: Apache-2.0
+     https://www.apache.org/legal/release-policy.html -->
+
+# Security Policy
+
+## Reporting a Vulnerability
+
+`apache/guacamole-client` follows the [Apache Software Foundation security process](https://www.apache.org/security/). Please report suspected
+vulnerabilities privately to the Apache Guacamole security list,
+`security@guacamole.apache.org` (see <https://guacamole.apache.org/security/>);
+do not open public GitHub issues or pull requests for security reports.
+
+## Threat Model
+
+What the project treats as in scope and out of scope, the security
+properties it provides and disclaims, the adversary model, and how
+findings are triaged are documented in [THREAT_MODEL.md](./THREAT_MODEL.md).
