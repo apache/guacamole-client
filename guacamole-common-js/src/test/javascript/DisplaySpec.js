@@ -17,7 +17,7 @@
  * under the License.
  */
 
-/* global Guacamole, VideoFrame, expect, pending */
+/* global Guacamole, ImageDecoder, VideoFrame, expect, pending */
 
 describe('Guacamole.Display', function() {
 
@@ -180,6 +180,66 @@ describe('Guacamole.Display', function() {
                 expect(getPixel(layer, 10 + IMAGE_WIDTH - 1, 10 + IMAGE_HEIGHT - 1)).toEqual([ 255, 0, 0, 255 ]);
                 expect(getPixel(layer, 10 + IMAGE_WIDTH, 10)).toEqual([ 0, 0, 0, 0 ]);
                 done();
+            });
+
+        });
+
+        it('should continue rendering if the received image cannot be decoded', function(done) {
+
+            var display = new Guacamole.Display();
+            var buffer = display.createBuffer();
+
+            // Invalid PNG data ("This is not a PNG")
+            drawStream(display, buffer, 'VGhpcyBpcyBub3QgYSBQTkc=');
+
+            // Operations following the broken image must still be performed
+            display.resize(buffer, 8, 8);
+
+            display.flush(function frameComplete() {
+                expect(buffer.width).toBe(8);
+                expect(buffer.height).toBe(8);
+                done();
+            });
+
+        });
+
+        it('should close decoded VideoFrames once they have been drawn', function(done) {
+
+            if (!window.ImageDecoder || !window.VideoFrame)
+                pending('ImageDecoder is not supported by this browser');
+
+            var frame = new VideoFrame(createTestCanvas(), { 'timestamp' : 0 });
+
+            // Substitute an ImageDecoder that produces a known VideoFrame
+            var originalImageDecoder = window.ImageDecoder;
+            window.ImageDecoder = function FakeImageDecoder() {
+                this.decode = function decode() {
+                    return Promise.resolve({ 'image' : frame, 'complete' : true });
+                };
+                this.close = function close() {};
+            };
+
+            var display = new Guacamole.Display();
+            var buffer = display.createBuffer();
+
+            try {
+                drawStream(display, buffer, createTestPNG());
+            }
+            finally {
+                window.ImageDecoder = originalImageDecoder;
+            }
+
+            display.flush(function frameComplete() {
+
+                expect(buffer.width).toBe(IMAGE_WIDTH);
+                expect(buffer.height).toBe(IMAGE_HEIGHT);
+
+                // A closed VideoFrame has no format and zero dimensions
+                expect(frame.format).toBeNull();
+                expect(frame.displayWidth).toBe(0);
+
+                done();
+
             });
 
         });
