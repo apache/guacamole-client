@@ -61,6 +61,7 @@ public class LocalEnvironment implements Environment {
     private static final String[] KNOWN_PROTOCOLS = new String[] {
         "kubernetes",
         "rdp",
+        "serial",
         "ssh",
         "telnet",
         "vnc",
