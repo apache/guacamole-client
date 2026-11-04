@@ -135,3 +135,11 @@ body.client {
 .client .drop-pending .display > *{
     opacity: 0.5;
 }
+
+#consent-fullscreen-button {
+    z-index: 1;
+
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+}
