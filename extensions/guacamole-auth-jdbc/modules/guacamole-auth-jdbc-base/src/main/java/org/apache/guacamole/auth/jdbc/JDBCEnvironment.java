@@ -81,6 +81,61 @@ public abstract class JDBCEnvironment extends DelegatingEnvironment {
     public abstract int getBatchSize() throws GuacamoleException;
 
     /**
+     * The keyring used to encrypt secret connection parameters, as comma-separated "keyId:value" pairs, or null if unset (encryption disabled).
+     *
+     * @return
+     *     The configured value, as described above.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public abstract String getParameterEncryptionKeys() throws GuacamoleException;
+
+    /**
+     * The identifier of the keyring key used to encrypt newly written values, or null if unset.
+     *
+     * @return
+     *     The configured value, as described above.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public abstract String getParameterEncryptionCurrentKey() throws GuacamoleException;
+
+    /**
+     * The name of the key provider supplying the keyring. Defaults to "property".
+     *
+     * @return
+     *     The configured value, as described above.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public abstract String getParameterEncryptionProvider() throws GuacamoleException;
+
+    /**
+     * The parameter encryption mode, "encrypt" or "decrypt". Defaults to "encrypt".
+     *
+     * @return
+     *     The configured value, as described above.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public abstract String getParameterEncryptionMode() throws GuacamoleException;
+
+    /**
+     * Comma-separated names of additional connection parameters to treat as secret, or null if unset.
+     *
+     * @return
+     *     The configured value, as described above.
+     *
+     * @throws GuacamoleException
+     *     If guacamole.properties cannot be parsed.
+     */
+    public abstract String getParameterEncryptionExtraNames() throws GuacamoleException;
+
+    /**
      * Returns the default maximum number of concurrent connections to allow to
      * any one connection, unless specified differently on an individual
      * connection. Zero denotes unlimited.

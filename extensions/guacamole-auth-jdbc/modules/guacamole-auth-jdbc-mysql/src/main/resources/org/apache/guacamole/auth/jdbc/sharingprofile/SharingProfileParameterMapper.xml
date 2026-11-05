@@ -28,6 +28,7 @@
         <result column="sharing_profile_id" property="sharingProfileIdentifier" jdbcType="INTEGER"/>
         <result column="parameter_name"     property="name"                     jdbcType="VARCHAR"/>
         <result column="parameter_value"    property="value"                    jdbcType="VARCHAR"/>
+        <result column="parameter_encryption" property="encryption" jdbcType="VARCHAR"/>
     </resultMap>
 
     <!-- Select all parameters of a given sharing profile -->
@@ -35,7 +36,8 @@
         SELECT
             sharing_profile_id,
             parameter_name,
-            parameter_value
+            parameter_value,
+            parameter_encryption
         FROM guacamole_sharing_profile_parameter
         WHERE
             sharing_profile_id = #{identifier,jdbcType=VARCHAR}
@@ -53,13 +55,15 @@
         INSERT INTO guacamole_sharing_profile_parameter (
             sharing_profile_id,
             parameter_name,
-            parameter_value
+            parameter_value,
+            parameter_encryption
         )
         VALUES 
             <foreach collection="parameters" item="parameter" separator=",">
                 (#{parameter.sharingProfileIdentifier,jdbcType=VARCHAR},
                  #{parameter.name,jdbcType=VARCHAR},
-                 #{parameter.value,jdbcType=VARCHAR})
+                 #{parameter.value,jdbcType=VARCHAR},
+                 #{parameter.encryption,jdbcType=VARCHAR})
             </foreach>
 
     </insert>

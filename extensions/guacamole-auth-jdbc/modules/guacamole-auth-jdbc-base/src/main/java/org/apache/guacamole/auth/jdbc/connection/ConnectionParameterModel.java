@@ -40,6 +40,32 @@ public class ConnectionParameterModel {
     private String value;
 
     /**
+     * The identifier of the key the value is encrypted with, or null if the
+     * value is stored as plain text.
+     */
+    private String encryption;
+
+    /**
+     * Returns the identifier of the key the value is encrypted with.
+     *
+     * @return
+     *     The key identifier, or null if the value is plain text.
+     */
+    public String getEncryption() {
+        return encryption;
+    }
+
+    /**
+     * Sets the identifier of the key the value is encrypted with.
+     *
+     * @param encryption
+     *     The key identifier, or null if the value is plain text.
+     */
+    public void setEncryption(String encryption) {
+        this.encryption = encryption;
+    }
+
+    /**
      * Returns the identifier of the connection associated with this parameter.
      *
      * @return

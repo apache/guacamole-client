@@ -304,6 +304,62 @@ public class MySQLGuacamoleProperties {
     };
 
     /**
+     * The keyring used to encrypt secret connection parameters, as comma-separated "keyId:value" pairs, or null if unset (encryption disabled).
+     * Key identifiers are compared ignoring case.
+     */
+    public static final StringGuacamoleProperty MYSQL_PARAMETER_ENCRYPTION_KEYS =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-parameter-encryption-keys"; }
+
+    };
+
+    /**
+     * The identifier of the keyring key used to encrypt newly written values, or null if unset.
+     */
+    public static final StringGuacamoleProperty MYSQL_PARAMETER_ENCRYPTION_CURRENT_KEY =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-parameter-encryption-current-key"; }
+
+    };
+
+    /**
+     * The name of the key provider supplying the keyring. Defaults to "property".
+     */
+    public static final StringGuacamoleProperty MYSQL_PARAMETER_ENCRYPTION_PROVIDER =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-parameter-encryption-provider"; }
+
+    };
+
+    /**
+     * The parameter encryption mode, "encrypt" or "decrypt". Defaults to "encrypt".
+     */
+    public static final StringGuacamoleProperty MYSQL_PARAMETER_ENCRYPTION_MODE =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-parameter-encryption-mode"; }
+
+    };
+
+    /**
+     * Comma-separated names of additional connection parameters to treat as secret, or null if unset.
+     */
+    public static final StringGuacamoleProperty MYSQL_PARAMETER_ENCRYPTION_EXTRA_NAMES =
+            new StringGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "mysql-parameter-encryption-extra-names"; }
+
+    };
+
+    /**
      * The absolute path to the public key for the server being connected to, if any.
      */
     public static final StringGuacamoleProperty MYSQL_SERVER_RSA_PUBLIC_KEY_FILE =
