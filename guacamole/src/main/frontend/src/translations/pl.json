@@ -601,6 +601,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_PT_BR_QWERTY" : "Portugalski Brazylijski (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portugalski (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Szwecki (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SK_SK_QWERTY" : "Słowacki (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turecki-Q (Qwerty)",
 
         "NAME" : "RDP",

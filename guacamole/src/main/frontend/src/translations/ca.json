@@ -604,6 +604,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Romanès (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Suec (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Q-Turc (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SK_SK_QWERTY" : "Eslovac (Qwerty)",
 
         "NAME" : "RDP",
 
