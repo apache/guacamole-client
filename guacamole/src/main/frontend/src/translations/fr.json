@@ -709,6 +709,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_PT_PT_QWERTY" : "Portugais (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_RO_RO_QWERTY" : "Roumain (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Suédois (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SK_SK_QWERTY" : "Slovaque (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_TR_TR_QWERTY" : "Turque (Qwerty)",
 
         "NAME" : "RDP",

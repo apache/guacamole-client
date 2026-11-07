@@ -348,6 +348,7 @@
         "FIELD_OPTION_SERVER_LAYOUT_N0_NO_QWERTY" : "Norsk Nynorsk (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_PL_PL_QWERTY" : "Polsk (Qwerty)",
         "FIELD_OPTION_SERVER_LAYOUT_SV_SE_QWERTY" : "Svensk (Qwerty)",
+        "FIELD_OPTION_SERVER_LAYOUT_SK_SK_QWERTY" : "Slovakisk (Qwerty)",
 
         "NAME" : "RDP",
 
