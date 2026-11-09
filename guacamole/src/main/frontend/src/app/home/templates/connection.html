@@ -8,9 +8,18 @@
     <!-- Connection name -->
     <span class="name">{{item.name}}</span>
 
-    <!-- Active user count -->
-    <span class="activeUserCount" ng-show="item.getActiveConnections()"
-        translate="HOME.INFO_ACTIVE_USER_COUNT"
-        translate-values="{USERS: item.getActiveConnections()}"></span>
+    <div class="activeUsers">
+        <!-- Active user count -->
+        <span class="activeUserCount" ng-show="item.getActiveConnections()"
+            translate="HOME.INFO_ACTIVE_USER_COUNT"
+            translate-values="{USERS: item.getActiveConnections()}"></span>
 
+        <!-- Usernames of currently connected users -->
+        <ul class="activeUserList" ng-show="item.showActiveUsers()">
+            <li ng-repeat="(username, start) in item.getActiveUsers()"
+                translate="HOME.INFO_ACTIVE_USER_DETAILS"
+                translate-values="{USERNAME: username, SINCE: start.value, UNIT: start.unit}"></li>
+        </ul>
+    </div>
+    
 </a>

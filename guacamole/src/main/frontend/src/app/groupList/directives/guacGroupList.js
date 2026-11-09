@@ -99,6 +99,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
 
             // Required types
             var GroupListItem = $injector.get('GroupListItem');
+            var ConnectionHistoryEntry = $injector.get('ConnectionHistoryEntry');
 
             /**
              * Map of data source identifier to the number of active
@@ -109,6 +110,16 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
              * @type Object.<String, Object.<String, Number>>
              */
             var connectionCount = {};
+
+            /**
+             * Map of data source identifier to the users currently using a
+             * given connection identifier, along with the duration of their
+             * usage. If this information is unknown, or there are no active
+             * connections for a given identifier, no users will be stored.
+             *
+             * @type {Object.<string, {value: number, unit: string}>}
+             */
+            var connectionUsers = {};
 
             /**
              * Like connectionCount, but restricted to the connections owned
@@ -179,6 +190,26 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
             };
 
             /**
+             * Returns the usernames of all users currently using a given
+             * connection, along with the start date of their usage.
+             *
+             * @param {String} dataSource
+             *     The identifier of the data source containing the given
+             *     connection.
+             *
+             * @param {Connection} connection
+             *     The connection whose active users should be retrieved.
+             *
+             * @returns {Object.<string, {value: number, unit: string}>}
+             *     An object mapping the usernames of all users currently using
+             *     the given connection to the duration of their usage, or an
+             *     empty object if there are no active users.
+             */
+            var getActiveUsersMap = function getActiveUsersMap(dataSource, connection) {
+                return connectionUsers[dataSource][connection.identifier] ?? {};
+            };
+
+            /**
              * Returns whether a @link{GroupListItem} of the given type can be
              * displayed. If there is no template associated with the given
              * type, then a @link{GroupListItem} of that type cannot be
@@ -202,6 +233,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                 var dataSources = [];
                 $scope.rootItems = [];
                 connectionCount = {};
+                connectionUsers = {};
 
                 // If connection groups are given, add them to the interface
                 if (connectionGroups) {
@@ -214,6 +246,7 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                         // Prepare data source for active connection counting
                         dataSources.push(dataSource);
                         connectionCount[dataSource] = {};
+                        connectionUsers[dataSource] = {};
 
                         // If the provided connection group is already a
                         // GroupListItem, no need to create a new item
@@ -225,7 +258,8 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                             rootItem = GroupListItem.fromConnectionGroup(dataSource, connectionGroup,
                                 $scope.isVisible(GroupListItem.Type.CONNECTION),
                                 $scope.isVisible(GroupListItem.Type.SHARING_PROFILE),
-                                countActiveConnections, null, countUserActiveConnectionGroups);
+                                countActiveConnections, null, countUserActiveConnectionGroups,
+                                getActiveUsersMap);
 
                         // If root group is to be shown, add it as a root item
                         if ($scope.showRootGroup)
@@ -269,6 +303,20 @@ angular.module('groupList').directive('guacGroupList', [function guacGroupList()
                                 if (activeConnection.username === currentUsername) {
                                     userConnectionCount[dataSource][identifier] ??= 0;
                                     userConnectionCount[dataSource][identifier]++;
+                                }
+
+                                // Store usernames and duration of active connections for each
+                                // connection identifier
+                                if (activeConnection.username) {
+                                    const username = activeConnection.username;
+                                    const startDate = activeConnection.startDate;
+                                    const duration = new ConnectionHistoryEntry.Duration(Date.now() - startDate);
+
+                                    connectionUsers[dataSource][identifier] ??= {};
+                                    connectionUsers[dataSource][identifier][username] = {
+                                        value: duration.value,
+                                        unit: duration.unit,
+                                    };
                                 }
 
                             });
