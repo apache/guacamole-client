@@ -421,6 +421,46 @@ public class UserService extends ModeledDirectoryObjectService<ModeledUser, User
     }
 
     /**
+     * Retrieves the user having the given username WITHOUT verifying any
+     * password. This is intended only for flows in which the identity of the
+     * user has already been established by other means, such as a valid
+     * password reset token.
+     *
+     * @param authenticationProvider
+     *     The AuthenticationProvider on behalf of which the user is being
+     *     retrieved.
+     *
+     * @param username
+     *     The username of the user to retrieve.
+     *
+     * @param credentials
+     *     The credentials of the request on behalf of which the user is being
+     *     retrieved.
+     *
+     * @return
+     *     An AuthenticatedUser containing the existing ModeledUser object, or
+     *     null if no such user exists.
+     *
+     * @throws GuacamoleException
+     *     If a ModeledUser object for the user cannot be created.
+     */
+    public ModeledAuthenticatedUser retrieveUserForPasswordReset(
+            AuthenticationProvider authenticationProvider, String username,
+            Credentials credentials) throws GuacamoleException {
+
+        UserModel userModel = userMapper.selectOne(username, getCaseSensitivity());
+        if (userModel == null)
+            return null;
+
+        ModeledUser user = getObjectInstance(null, userModel);
+        user.setCurrentUser(new ModeledAuthenticatedUser(authenticationProvider,
+                user, credentials));
+
+        return user.getCurrentUser();
+
+    }
+
+    /**
      * Retrieves the user corresponding to the given AuthenticatedUser from the
      * database.
      *

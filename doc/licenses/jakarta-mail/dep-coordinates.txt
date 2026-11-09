@@ -1,0 +1,1 @@
+com.sun.mail:jakarta.mail:jar:*

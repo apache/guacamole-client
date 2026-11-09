@@ -844,6 +844,36 @@ CREATE NONCLUSTERED INDEX [IX_guacamole_user_password_history_user_id]
 GO
 
 --
+-- Single-use password reset tokens. Only the SHA-256 hash of each token is
+-- stored; the token itself exists only in the e-mail sent to the user.
+--
+
+CREATE TABLE [guacamole_user_password_reset] (
+
+    [token_hash] [binary](32) NOT NULL,
+    [user_id]    [int]        NOT NULL,
+    [created]    [datetime]   NOT NULL,
+    [expires]    [datetime]   NOT NULL,
+    [used]       [datetime],
+
+    CONSTRAINT [PK_guacamole_user_password_reset]
+        PRIMARY KEY CLUSTERED ([token_hash]),
+
+    CONSTRAINT [FK_guacamole_user_password_reset_user_id]
+        FOREIGN KEY ([user_id])
+        REFERENCES [guacamole_user] ([user_id])
+        ON DELETE CASCADE
+
+);
+
+CREATE NONCLUSTERED INDEX [IX_guacamole_user_password_reset_user_id]
+    ON [guacamole_user_password_reset] ([user_id]);
+
+CREATE NONCLUSTERED INDEX [IX_guacamole_user_password_reset_created]
+    ON [guacamole_user_password_reset] ([created]);
+GO
+
+--
 -- Handle cascading deletion/updates of records in response to deletion of
 -- guacamole_entity records, where such deletion is not already covered by
 -- ON DELETE CASCADE or ON DELETE SET NULL.

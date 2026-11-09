@@ -15,7 +15,13 @@
     ],
 
     "html" : [
-        "html/shared-connection.html"
+        "html/shared-connection.html",
+        "html/password-reset-button.html",
+        "html/forgot-password-link.html"
+    ],
+
+    "js" : [
+        "js/passwordReset.js"
     ],
 
     "translations" : [

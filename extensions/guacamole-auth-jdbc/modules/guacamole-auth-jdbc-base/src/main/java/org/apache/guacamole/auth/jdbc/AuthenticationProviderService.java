@@ -140,4 +140,22 @@ public interface AuthenticationProviderService  {
             UserContext context, AuthenticatedUser authenticatedUser,
             Credentials credentials) throws GuacamoleException;
 
+    /**
+     * Returns the REST resource exposed at /api/ext/{provider}/, which is
+     * reachable without authentication. Returns null by default.
+     *
+     * @param authenticationProvider
+     *     The AuthenticationProvider exposing the resource.
+     *
+     * @return
+     *     The resource, or null if there is none.
+     *
+     * @throws GuacamoleException
+     *     If the resource cannot be created.
+     */
+    default Object getResource(AuthenticationProvider authenticationProvider)
+            throws GuacamoleException {
+        return null;
+    }
+
 }

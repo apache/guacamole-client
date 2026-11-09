@@ -613,3 +613,26 @@ CREATE TABLE guacamole_user_password_history (
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+--
+-- Single-use password reset tokens. Only the SHA-256 hash of each token is
+-- stored; the token itself exists only in the e-mail sent to the user.
+--
+
+CREATE TABLE guacamole_user_password_reset (
+
+  `token_hash` binary(32) NOT NULL,
+  `user_id`    int(11)    NOT NULL,
+  `created`    datetime   NOT NULL,
+  `expires`    datetime   NOT NULL,
+  `used`       datetime,
+
+  PRIMARY KEY (`token_hash`),
+  KEY `user_id` (`user_id`),
+  KEY `created` (`created`),
+
+  CONSTRAINT `guacamole_user_password_reset_ibfk_1`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `guacamole_user` (`user_id`) ON DELETE CASCADE
+
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
