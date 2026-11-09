@@ -47,10 +47,14 @@ public class UserDataConnection implements Connection {
     private ConnectionService connectionService;
 
     /**
-     * A human-readable value which both uniquely identifies this connection
-     * and serves as the connection display name.
+     * The unique identifier of this connection.
      */
     private String identifier;
+
+    /**
+     * The human-readable name of this connection.
+     */
+    private String name;
 
     /**
      * The UserData associated with this connection. This UserData will be
@@ -65,8 +69,8 @@ public class UserDataConnection implements Connection {
 
     /**
      * Initializes this UserDataConnection with the given data, unique
-     * identifier, and connection information. This function MUST be invoked
-     * before any particular UserDataConnection is actually used.
+     * identifier, display name, and connection information. This function MUST
+     * be invoked before any particular UserDataConnection is actually used.
      *
      * @param data
      *     The UserData that this connection should manage.
@@ -74,6 +78,9 @@ public class UserDataConnection implements Connection {
      * @param identifier
      *     The identifier associated with this connection within the given
      *     UserData.
+     *
+     * @param name
+     *     The human-readable name of this connection.
      *
      * @param connection
      *     The connection data associated with this connection within the given
@@ -83,9 +90,10 @@ public class UserDataConnection implements Connection {
      *     A reference to this UserDataConnection.
      */
     public UserDataConnection init(UserData data, String identifier,
-            UserData.Connection connection) {
+            String name, UserData.Connection connection) {
 
         this.identifier = identifier;
+        this.name = name;
         this.data = data;
         this.connection = connection;
 
@@ -105,7 +113,7 @@ public class UserDataConnection implements Connection {
 
     @Override
     public String getName() {
-        return identifier;
+        return name;
     }
 
     @Override
