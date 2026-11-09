@@ -21,6 +21,7 @@
         "jquery": "^3.7.1",
         "jstz": "^2.1.1",
         "lodash": "^4.18.1",
+        "qrcode-generator": "^2.0.4",
         "yaml": "^2.9.0"
     },
     "devDependencies": {

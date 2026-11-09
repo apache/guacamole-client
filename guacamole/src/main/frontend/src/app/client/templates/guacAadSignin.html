@@ -1,0 +1,45 @@
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<div class="aad-signin" ng-show="client.managedAAD.prompt">
+    <div class="aad-signin-dialog">
+
+        <p class="aad-signin-text">{{'CLIENT.HELP_AAD_SIGN_IN' | translate}}</p>
+
+        <img class="aad-signin-qr" ng-src="{{client.managedAAD.prompt.qrCode}}"
+            alt="{{'CLIENT.HELP_AAD_SIGN_IN' | translate}}"/>
+
+        <p class="aad-signin-instructions">
+            {{'CLIENT.INFO_AAD_SIGN_IN_INSTRUCTIONS' | translate}}
+            <a ng-href="{{client.managedAAD.prompt.verificationUri}}"
+                target="_blank" rel="noopener noreferrer">{{client.managedAAD.prompt.verificationUri}}</a>
+        </p>
+
+        <p class="aad-signin-code">
+            {{'CLIENT.INFO_AAD_SIGN_IN_CODE' | translate}}
+            <span class="aad-signin-user-code">{{client.managedAAD.prompt.userCode}}</span>
+        </p>
+
+        <div class="buttons">
+            <button ng-click="cancel()">
+                {{'APP.ACTION_CANCEL' | translate}}
+            </button>
+        </div>
+
+    </div>
+</div>
