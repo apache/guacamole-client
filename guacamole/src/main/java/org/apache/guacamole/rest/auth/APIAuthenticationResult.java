@@ -53,6 +53,23 @@ public class APIAuthenticationResult {
     private final List<String> availableDataSources;
 
     /**
+     * The baseUrl injected by the requester to be returned for load balancing purposes. 
+     */
+    private final String baseUrl;
+
+
+    /**
+     * Returns the baseUrl that should be used by the client for subsequent requests,
+     * if any. This is typically used for load balancing or redirection.
+     *
+     * @return
+     *     The baseUrl to be used, or null if no specific baseUrl is required.
+     */
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    /**
      * Returns the unique authentication token which identifies the current
      * session.
      *
@@ -118,10 +135,39 @@ public class APIAuthenticationResult {
      */
     public APIAuthenticationResult(String authToken, String username,
             String dataSource, List<String> availableDataSources) {
+        // Chain to the new constructor with null for baseUrl
+        this(authToken, username, dataSource, availableDataSources, null);
+    }
+
+    /**
+     * Create a new APIAuthenticationResult object containing the given data.
+     *
+     * @param authToken
+     *     The unique token generated for the user that authenticated, to be
+     *     used for the duration of their session.
+     *
+     * @param username
+     *     The username of the user owning the given token.
+     *
+     * @param dataSource
+     *     The unique identifier of the AuthenticationProvider which
+     *     authenticated the user.
+     *
+     * @param availableDataSources
+     *     The unique identifier of all AuthenticationProviders to which the
+     *     user now has access.
+     *
+     * @param baseUrl
+     *     The base URL that the client should use for subsequent requests,
+     *     or null if the standard URL should be used.
+     */
+    public APIAuthenticationResult(String authToken, String username,
+            String dataSource, List<String> availableDataSources, String baseUrl) {
         this.authToken = authToken;
         this.username = username;
         this.dataSource = dataSource;
         this.availableDataSources = Collections.unmodifiableList(availableDataSources);
+        this.baseUrl = baseUrl;
     }
 
 }
