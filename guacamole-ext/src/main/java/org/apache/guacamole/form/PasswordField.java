@@ -26,13 +26,28 @@ package org.apache.guacamole.form;
 public class PasswordField extends Field {
 
     /**
-     * Creates a new PasswordField with the given name.
+     * Creates a new PasswordField with the given name and the default autocomplete
+     * value of a current user password.
      *
      * @param name
      *     The unique name to associate with this field.
      */
     public PasswordField(String name) {
-        super(name, Field.Type.PASSWORD);
+        super(name, Field.Type.PASSWORD, Field.Autocomplete.CURRENT_PASSWORD);
+    }
+    
+    /**
+     * Creates a new password field, allowing the autocomplete value to be
+     * overridden for the field.
+     * 
+     * @param name
+     *     The unique name of the field.
+     * 
+     * @param autocomplete 
+     *     The autocomplete value to use for this field rather than the default.
+     */
+    public PasswordField(String name, String autocomplete) {
+        super(name, Field.Type.PASSWORD, autocomplete);
     }
 
 }
