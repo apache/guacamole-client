@@ -2,8 +2,9 @@
    ng-href="{{ item.getClientURL() }}"
    ng-class="{active: item.getActiveConnections()}">
 
-    <!-- Connection icon -->
-    <div class="icon type" ng-class="item.protocol"></div>
+    <div class="icon type" ng-class="[item.protocol,
+        {'vm-running': reachabilityService.reachable[item.identifier] === true,
+         'vm-stopped': reachabilityService.reachable[item.identifier] === false}]"></div>
 
     <!-- Connection name -->
     <span class="name">{{item.name}}</span>
