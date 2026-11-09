@@ -100,6 +100,13 @@ public class UserDataService {
      * HMAC/SHA-256.
      */
     public static final String ENCRYPTED_DATA_PARAMETER = "data";
+    
+    /**
+     * The name of the HTTP parameter from which the cryptographic IV should be
+     * read, if provided with the query. If this parameter is not provided, the
+     * {@link CryptoService#NULL_IV} will be used.
+     */
+    public static final String ENCRYPTED_IV_PARAMETER = "iv";
 
     /**
      * Derives a new UserData object from the data contained within the given
@@ -129,6 +136,9 @@ public class UserDataService {
         String base64 = credentials.getParameter(ENCRYPTED_DATA_PARAMETER);
         if (base64 == null)
             return null;
+        
+        // Get the IV string from the credentials
+        String ivStr = credentials.getParameter(ENCRYPTED_IV_PARAMETER);
 
         // Decrypt base64-encoded parameter
         try {
@@ -136,7 +146,8 @@ public class UserDataService {
             // Decrypt using defined encryption key
             byte[] decrypted = cryptoService.decrypt(
                 cryptoService.createEncryptionKey(confService.getSecretKey()),
-                BaseEncoding.base64().decode(base64)
+                BaseEncoding.base64().decode(base64),
+                ivStr
             );
 
             // Abort if decrypted value cannot possibly have a signature AND data
