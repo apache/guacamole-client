@@ -62,6 +62,11 @@ public class DelegatingGuacamoleSocket implements GuacamoleSocket {
     }
 
     @Override
+    public String getConnectionID() {
+        return socket.getConnectionID();
+    }
+
+    @Override
     public GuacamoleReader getReader() {
         return socket.getReader();
     }

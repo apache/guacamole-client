@@ -169,6 +169,17 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
         this.protocol = template.protocol || null;
 
         /**
+         * The unique ID assigned to the connection by guacd, used to
+         * correlate guacd and guacamole-client log messages. If the ID is
+         * not yet known or is not exposed to the current user, such as when
+         * an existing connection has been joined via a sharing profile, this
+         * will be null.
+         *
+         * @type {String}
+         */
+        this.connectionID = template.connectionID || null;
+
+        /**
          * An array of forms describing all known parameters for the connection
          * in use, including those which may not be editable.
          *
@@ -459,6 +470,12 @@ angular.module('client').factory('ManagedClient', ['$rootScope', '$injector',
                 managedClient.protocol = protocol.name;
                 managedClient.forms = protocol.connectionForms;
             }, requestService.WARN);
+
+            // Retrieve guacd connection ID for debugging purposes, if exposed
+            tunnelService.getConnectionID(uuid).then(function connectionIDRetrieved(connectionID) {
+                managedClient.connectionID = connectionID.identifier;
+            }, requestService.IGNORE);
+
         };
 
         // Update connection state as tunnel state changes
