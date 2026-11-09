@@ -40,6 +40,7 @@ angular.module('guacSsoSsl').factory('clientAuthService', ['$injector',
         authenticationService.authenticate(
             requestService({
                 method: 'GET',
+                withCredentials: true, // Explicitly tells modern browsers to send the client certificate in the XHR request
                 headers : {
                     'Cache-Control' : undefined, // Avoid sending headers that would result in a pre-flight OPTIONS request for CORS
                     'Pragma'        : undefined
