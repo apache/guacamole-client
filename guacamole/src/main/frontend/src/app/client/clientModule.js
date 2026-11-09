@@ -30,5 +30,6 @@ angular.module('client', [
     'osk',
     'rest',
     'textInput',
-    'touch'
+    'touch',
+    "usb"
 ]);
