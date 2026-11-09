@@ -6,6 +6,10 @@
             placeholder="'MANAGE_USER.FIELD_PLACEHOLDER_FILTER' | translate"
             connection-properties="filteredConnectionProperties"
             connection-group-properties="filteredConnectionGroupProperties"></guac-group-list-filter>
+        <div class="connection-permission-actions">
+            <button class="select-all" ng-click="setAllPermissions(true)">{{'MANAGE_USER.ACTION_SELECT_ALL' | translate}}</button>
+            <button class="select-none" ng-click="setAllPermissions(false)">{{'MANAGE_USER.ACTION_SELECT_NONE' | translate}}</button>
+        </div>
     </div>
     <guac-section-tabs namespace="MANAGE_USER" current="currentTab" tabs="tabs"></guac-section-tabs>
     <div class="section">

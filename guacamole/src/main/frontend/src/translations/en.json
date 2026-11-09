@@ -406,6 +406,11 @@
         "ACTION_DELETE"        : "@:APP.ACTION_DELETE",
         "ACTION_SAVE"          : "@:APP.ACTION_SAVE",
 
+        "ACTION_SELECT_ALL"           : "Select All",
+        "ACTION_SELECT_ALL_IN_GROUP"  : "All",
+        "ACTION_SELECT_NONE"          : "Clear All",
+        "ACTION_SELECT_NONE_IN_GROUP" : "None",
+
         "DIALOG_HEADER_CONFIRM_DELETE" : "Delete User",
         "DIALOG_HEADER_ERROR"          : "@:APP.DIALOG_HEADER_ERROR",
 

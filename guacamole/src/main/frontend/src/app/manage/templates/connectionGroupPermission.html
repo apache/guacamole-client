@@ -10,4 +10,10 @@
     <!-- Connection group name -->
     <span class="name">{{item.name}}</span>
 
+    <!-- Grant/revoke everything within this group -->
+    <span class="group-permission-actions" ng-if="!item.balancing && !context.isFiltered()">
+        <a href="" class="select-all" ng-click="context.setGroupPermissions(item, true)">{{'MANAGE_USER.ACTION_SELECT_ALL_IN_GROUP' | translate}}</a>
+        <a href="" class="select-none" ng-click="context.setGroupPermissions(item, false)">{{'MANAGE_USER.ACTION_SELECT_NONE_IN_GROUP' | translate}}</a>
+    </span>
+
 </div>
