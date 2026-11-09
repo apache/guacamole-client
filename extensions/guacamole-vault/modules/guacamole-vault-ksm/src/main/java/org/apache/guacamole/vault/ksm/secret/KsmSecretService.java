@@ -520,6 +520,11 @@ public class KsmSecretService implements VaultSecretService {
             GuacamoleConfiguration config, TokenFilter filter) throws GuacamoleException {
 
         Map<String, Future<String>> tokens = new HashMap<>();
+
+        // Connection groups have no GuacamoleConfiguration — nothing to resolve
+        if (config == null)
+            return tokens;
+
         Map<String, String> parameters = config.getParameters();
 
         // Only use the user-specific KSM config if explicitly enabled in the global
