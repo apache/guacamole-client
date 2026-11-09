@@ -3,11 +3,51 @@
     <!-- Sharing profile icon -->
     <div class="icon type"></div>
 
-    <!-- Permission checkbox -->
-    <input type="checkbox" ng-model="context.getPermissionFlags().sharingProfilePermissions.READ[item.identifier]"
-                           ng-change="context.sharingProfilePermissionChanged(item.identifier)">
-
     <!-- Sharing profile name -->
     <span class="name">{{item.name}}</span>
 
+    <div class="permission-container">
+    
+        <!-- Sharing Profile Read (Connect) Permission -->
+        <input type="checkbox"
+               id="readShringProfile-{{item.identifier}}"
+               class="permission-toggle"
+               ng-model="context.getPermissionFlags().sharingProfilePermissions.READ[item.identifier]"
+               ng-change="context.sharingProfilePermissionChanged(item.identifier)">
+        <label for="readSharingProfile-{{item.identifier}}" class="permission-toggle label">
+            <div>{{'PERMISSIONS.TOGGLE_PERMISSION_CONNECT' | translate}}</div>
+        </label>
+
+        <!-- Sharing Profile Update Permission -->
+        <input type="checkbox"
+               id="updateSharingProfile-{{item.identifier}}"
+               class="permission-toggle"
+               ng-model="context.getPermissionFlags().sharingProfilePermissions.UPDATE[item.identifier]"
+               ng-change="context.sharingProfilePermissionChanged(item.identifier)">
+        <label for="updateSharingProfile-{{item.identifier}}" class="permission-toggle label">
+            <div>{{'PERMISSIONS.TOGGLE_PERMISSION_UPDATE' | translate}}</div>
+        </label>
+
+        <!-- Sharing Profile Delete Permission -->
+        <input type="checkbox" 
+               id="deletingSharingProfile-{{item.identifier}}"
+               class="permission-toggle"
+               ng-model="context.getPermissionFlags().sharingProfilePermissions.DELETE[item.identifier]"
+               ng-change="context.sharingProfilePermissionChanged(item.identifier)">
+        <label for="deletingSharingProfile-{{item.identifier}}" class="permission-toggle label">
+            <div>{{'PERMISSIONS.TOGGLE_PERMISSION_DELETE' | translate}}</div>
+        </label>
+
+        <!-- Sharing Profile Administer Permission -->
+        <input type="checkbox"
+               id="adminSharingProfile-{{item.identifier}}"
+               class="permission-toggle"
+               ng-model="context.getPermissionFlags().sharingProfilePermissions.ADMINISTER[item.identifier]"
+               ng-change="context.sharingProfilePermissionChanged(item.identifier)">
+        <label for="adminSharingProfile-{{item.identifier}}" class="permission-toggle label">
+            <div>{{'PERMISSIONS.TOGGLE_PERMISSION_ADMINISTER' | translate}}</div>
+        </label>
+    
+    </div>
+    
 </div>
