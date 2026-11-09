@@ -121,4 +121,12 @@ public interface GuacamoleTunnel {
      */
     boolean isOpen();
 
+    /**
+     * Returns the creation time of this GuacamoleTunnel.
+     *
+     * @return 
+     *     The creation time of this GuacamoleTunnel.
+     */
+    long getCreationTime();
+
 }

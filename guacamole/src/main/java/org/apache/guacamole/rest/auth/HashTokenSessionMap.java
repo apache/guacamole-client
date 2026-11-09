@@ -67,6 +67,18 @@ public class HashTokenSessionMap implements TokenSessionMap {
     };
 
     /**
+     * The connection timeout for individual Guacamole connections, in minutes.
+     * If 0, connections will not be automatically terminated based on age.
+     */
+    private final IntegerGuacamoleProperty MAXIMUM_CONNECTION_DURATION =
+            new IntegerGuacamoleProperty() {
+
+        @Override
+        public String getName() { return "maximum-connection-duration"; }
+
+    };
+
+    /**
      * Create a new HashTokenSessionMap configured using the given environment.
      *
      * @param environment
@@ -75,6 +87,7 @@ public class HashTokenSessionMap implements TokenSessionMap {
     public HashTokenSessionMap(Environment environment) {
         
         int sessionTimeoutValue;
+        int connectionTimeoutValue;
 
         // Read session timeout from guacamole.properties
         try {
@@ -84,10 +97,26 @@ public class HashTokenSessionMap implements TokenSessionMap {
             logger.error("Unable to read guacamole.properties: {}", e.getMessage(), e);
             sessionTimeoutValue = 60;
         }
+
+        // Read connection timeout from guacamole.properties
+        try {
+            connectionTimeoutValue = environment.getProperty(MAXIMUM_CONNECTION_DURATION, 0); // Disabled by default
+        }
+        catch (GuacamoleException e) {
+            logger.error("Unable to read guacamole.properties: {}", e.getMessage());
+            logger.debug("Error while reading connection timeout value.", e);
+            connectionTimeoutValue = 0;
+        }
         
         // Check for expired sessions every minute
         logger.info("Sessions will expire after {} minutes of inactivity.", sessionTimeoutValue);
-        executor.scheduleAtFixedRate(new SessionEvictionTask(sessionTimeoutValue * 60000l), 1, 1, TimeUnit.MINUTES);
+        if (connectionTimeoutValue > 0) {
+            logger.info("Connections will be terminated after {} minutes regardless of activity.", connectionTimeoutValue);
+        }
+        else {
+            logger.info("Connection timeout disabled (set to 0).");
+        }
+        executor.scheduleAtFixedRate(new SessionEvictionTask(sessionTimeoutValue * 60000l, connectionTimeoutValue * 60000l), 1, 1, TimeUnit.MINUTES);
         
     }
 
@@ -104,15 +133,25 @@ public class HashTokenSessionMap implements TokenSessionMap {
         private final long sessionTimeout;
 
         /**
+         * The maximum allowed age of any connection, in milliseconds.
+         * If 0, connections will not be terminated based on age.
+         */
+        private final long connectionTimeout;
+
+        /**
          * Creates a new task which automatically evicts sessions which are
          * older than the specified timeout, or are marked as invalid by an
          * extension.
          * 
-         * @param sessionTimeout The maximum age of any session, in
-         *                       milliseconds.
+         * @param sessionTimeout 
+         *     The maximum age of any session, in milliseconds.
+         * @param connectionTimeout 
+         *     The maximum age of any connection, in milliseconds. If 0, 
+         *     connections will not be terminated based on age.
          */
-        public SessionEvictionTask(long sessionTimeout) {
+        public SessionEvictionTask(long sessionTimeout, long connectionTimeout) {
             this.sessionTimeout = sessionTimeout;
+            this.connectionTimeout = connectionTimeout;
         }
 
         /**
@@ -144,6 +183,16 @@ public class HashTokenSessionMap implements TokenSessionMap {
                                 entry.getKey());
                         entries.remove();
                         session.invalidate();
+                        continue;
+                    }
+
+                    // Close any connections that have exceeded the connection timeout
+                    if (connectionTimeout > 0) {
+                        int closedConnections = session.closeExpiredTunnels(connectionTimeout);
+                        if (closedConnections > 0) {
+                            logger.debug("Closed {} expired connection(s) in session \"{}\".", 
+                                    closedConnections, entry.getKey());
+                        }
                     }
 
                     // Do not expire sessions which are active
