@@ -104,7 +104,7 @@ encrypt() {
     # Encrypt STDIN
     #
 
-    openssl enc -aes-128-cbc -K "$KEY" -iv "$NULL_IV" -nosalt -a
+    openssl enc -aes-128-cbc -K "$KEY" -iv "$NULL_IV" -nosalt -a -A
 
 }
 
@@ -113,4 +113,4 @@ encrypt() {
 #
 
 sign "$SECRET_KEY" "$JSON_FILENAME" | encrypt "$SECRET_KEY"
-
+echo
