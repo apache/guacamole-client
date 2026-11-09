@@ -36,6 +36,12 @@
  *      Authentication was successful and a new token was created. This event
  *      receives the authentication token as its sole parameter.
  *
+ *  "guacLoginUpdated"
+ *      An existing authentication session has been renewed or extended, and
+ *      the same token was re-issued by the server. This distinguishes token
+ *      renewal from new login events. This event receives the authentication
+ *      token as its sole parameter.
+ *
  *  "guacLogout"
  *      An existing token is being destroyed. This event receives the
  *      authentication token as its sole parameter. If the existing token for
@@ -166,15 +172,15 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * authentication data can be retrieved later via getCurrentToken() or
      * getCurrentUsername(). Invoking this function will affect the UI,
      * including the login screen if visible.
-     * 
+     *
      * The provided parameters can be virtually any object, as each property
      * will be sent as an HTTP parameter in the authentication request.
      * Standard parameters include "username" for the user's username,
      * "password" for the user's associated password, and "token" for the
      * auth token to check/update.
-     * 
+     *
      * If a token is provided, it will be reused if possible.
-     * 
+     *
      * @param {Object|Promise} parameters
      *     Arbitrary parameters to authenticate with. If a Promise is provided,
      *     that Promise must resolve with the parameters to be submitted when
@@ -233,9 +239,11 @@ angular.module('auth').factory('authenticationService', ['$injector',
                 }
 
                 // Update cached authentication result, even if the token remains
-                // the same
-                else
+                // the same, and notify listeners of the token renewal
+                else {
                     setAuthenticationResult(new AuthenticationResult(data));
+                    $rootScope.$broadcast('guacLoginUpdated', data.authToken);
+                }
 
                 // Authentication was successful
                 return data;
@@ -257,7 +265,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
                 clearAuthenticationResult();
             }
 
-            // Request more credentials if provided credentials were not enough 
+            // Request more credentials if provided credentials were not enough
             else if (error.type === Error.Type.INSUFFICIENT_CREDENTIALS) {
                 $rootScope.$broadcast('guacInsufficientCredentials', parameters, error);
                 clearAuthenticationResult();
@@ -281,10 +289,10 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * This function returns a promise that succeeds only if the authentication
      * operation was successful. The resulting authentication data can be
      * retrieved later via getCurrentToken() or getCurrentUsername().
-     * 
+     *
      * If there is no current auth token, this function behaves identically to
      * authenticate(), and makes a general authentication request.
-     * 
+     *
      * @param {Object} [parameters]
      *     Arbitrary parameters to authenticate with, if any.
      *
@@ -367,12 +375,12 @@ angular.module('auth').factory('authenticationService', ['$injector',
 
     /**
      * Makes a request to authenticate a user using the token REST API endpoint
-     * with a username and password, ignoring any currently-stored token, 
+     * with a username and password, ignoring any currently-stored token,
      * returning a promise that succeeds only if the login operation was
      * successful. The resulting authentication data can be retrieved later
      * via getCurrentToken() or getCurrentUsername(). Invoking this function
      * will affect the UI, including the login screen if visible.
-     * 
+     *
      * @param {String} username
      *     The username to log in with.
      *
@@ -395,7 +403,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * successful. Invoking this function will affect the UI, causing the
      * visible components of the application to be replaced with a status
      * message noting that the user has been logged out.
-     * 
+     *
      * @returns {Promise}
      *     A promise which succeeds only if the logout operation was
      *     successful.
