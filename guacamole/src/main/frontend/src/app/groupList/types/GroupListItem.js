@@ -202,6 +202,17 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
         });
 
         /**
+         * The names of the connection groups that contain this item, from
+         * outermost to innermost, if this item has been copied out of its
+         * original location within the connection group hierarchy (as is done
+         * when the hierarchy is flattened for filtering). If the item is
+         * within its original location, this will be an empty array.
+         *
+         * @type String[]
+         */
+        this.path = template.path || [];
+
+        /**
          * The connection, connection group, or sharing profile whose data is
          * exposed within this GroupListItem. If the type of this GroupListItem
          * is not one of the types defined by GroupListItem.Type, then this
@@ -269,6 +280,7 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
             identifier : connection.identifier,
             protocol   : connection.protocol,
             dataSource : dataSource,
+            path       : connection.path,
 
             // Type information
             expandable : includeSharingProfiles !== false,
@@ -365,6 +377,7 @@ angular.module('groupList').factory('GroupListItem', ['$injector', function defi
             name       : connectionGroup.name,
             identifier : connectionGroup.identifier,
             dataSource : dataSource,
+            path       : connectionGroup.path,
 
             // Type information
             type       : GroupListItem.Type.CONNECTION_GROUP,

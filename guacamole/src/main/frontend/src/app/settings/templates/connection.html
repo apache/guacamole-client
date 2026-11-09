@@ -7,6 +7,7 @@
 
     <!-- Connection name -->
     <span class="name">{{item.name}}</span>
+    <span class="path" ng-if="item.path.length">{{ item.path.join(' / ') }}</span>
 
     <!-- Active user count -->
     <span class="activeUserCount" ng-show="item.getActiveConnections()"
