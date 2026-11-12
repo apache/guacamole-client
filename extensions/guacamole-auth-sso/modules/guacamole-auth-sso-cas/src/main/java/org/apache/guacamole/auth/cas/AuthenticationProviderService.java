@@ -35,6 +35,8 @@ import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.form.RedirectField;
 import org.apache.guacamole.language.TranslatableMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service that authenticates Guacamole users by processing CAS tickets.
@@ -64,6 +66,11 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     @Inject
     private TicketValidationService ticketService;
 
+    /**
+     * Logger for this class.
+     */
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationProviderService.class);
+
     @Override
     public SSOAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
@@ -71,19 +78,51 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         // Pull CAS ticket from request if present
         String ticket = credentials.getParameter(TICKET_PARAMETER_NAME);
         if (ticket != null) {
-            return ticketService.validateTicket(ticket, credentials);
+            try {
+                return ticketService.validateTicket(ticket, credentials);
+            }
+
+            // The ticket was rejected by CAS. This happens when the web
+            // application resubmits an already consumed ticket that is still
+            // present in the URL (for example when a tab on the home page
+            // reloads after its session has expired). Instead of failing with
+            // an internal error, which leaves the stale auth token in place
+            // and makes the tab retry forever, request a fresh ticket from
+            // CAS exactly as if no ticket had been provided.
+            catch (GuacamoleInvalidCredentialsException e) {
+                logger.info("CAS ticket rejected, redirecting to CAS for a "
+                        + "new ticket: {}", e.getMessage());
+                logger.debug("CAS ticket validation failed.", e);
+                throw getTicketRequest();
+            }
         }
 
         // Request CAS ticket (will automatically redirect the user to the
         // CAS authorization page via JavaScript)
-        throw new GuacamoleInvalidCredentialsException("Invalid login.",
+        throw getTicketRequest();
+
+    }
+
+    /**
+     * Returns an exception which, when thrown during authentication, causes
+     * the Guacamole web application to redirect the user to the CAS login
+     * page to obtain a new ticket.
+     *
+     * @return
+     *     A GuacamoleInvalidCredentialsException requesting a CAS ticket.
+     *
+     * @throws GuacamoleException
+     *     If the CAS login URI cannot be built from guacamole.properties.
+     */
+    private GuacamoleInvalidCredentialsException getTicketRequest()
+            throws GuacamoleException {
+        return new GuacamoleInvalidCredentialsException("Invalid login.",
             new CredentialsInfo(Arrays.asList(new Field[] {
                 new RedirectField(TICKET_PARAMETER_NAME, getLoginURI(),
                         new TranslatableMessage("LOGIN.INFO_IDP_REDIRECT_PENDING"))
 
             }))
         );
-
     }
 
     @Override

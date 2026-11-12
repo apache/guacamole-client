@@ -43,6 +43,8 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.cas.conf.ConfigurationService;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.net.auth.Credentials;
+import org.apache.guacamole.net.auth.credentials.CredentialsInfo;
+import org.apache.guacamole.net.auth.credentials.GuacamoleInvalidCredentialsException;
 import org.apache.guacamole.token.TokenName;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.validation.Assertion;
@@ -78,6 +80,25 @@ public class TicketValidationService {
      */
     @Inject
     private Provider<SSOAuthenticatedUser> authenticatedUserProvider;
+
+    /**
+     * Thrown when the CAS server explicitly rejects a ticket by answering the
+     * validation request with an authenticationFailure element, as opposed to
+     * other validation failures such as the CAS server being unreachable.
+     */
+    private static class TicketRejectedException extends TicketValidationException {
+
+        /**
+         * Creates a new TicketRejectedException with the given message.
+         *
+         * @param message
+         *     The failure message returned by the CAS server.
+         */
+        public TicketRejectedException(String message) {
+            super(message);
+        }
+
+    }
 
     /**
      * Converts the given CAS attribute value object (whose type is variable)
@@ -137,7 +158,24 @@ public class TicketValidationService {
 
         // Create a ticket validator that uses the configured CAS URL
         URI casServerUrl = confService.getAuthorizationEndpoint();
-        Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerUrl.toString());
+        Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerUrl.toString()) {
+
+            @Override
+            protected Assertion parseResponseFromServer(String response)
+                    throws TicketValidationException {
+
+                // Distinguish an explicit rejection of the ticket by the CAS
+                // server (<cas:authenticationFailure>) from other validation
+                // failures, such as the CAS server being unreachable
+                String error = parseAuthenticationFailureFromResponse(response);
+                if (error != null && !error.trim().isEmpty())
+                    throw new TicketRejectedException(error.trim());
+
+                return super.parseResponseFromServer(response);
+
+            }
+
+        };
         validator.setAcceptAnyProxy(true);
         validator.setEncoding("UTF-8");
 
@@ -147,6 +185,21 @@ public class TicketValidationService {
             URI confRedirectURI = confService.getRedirectURI();
             assertion = validator.validate(ticket, confRedirectURI.toString());
         }
+
+        // The CAS server rejected the ticket, for example an already consumed
+        // ticket that the web application resubmits from the URL after the
+        // session has expired. This is invalid credentials, not an internal
+        // error, which lets the caller send the user back to CAS for a fresh
+        // ticket.
+        catch (TicketRejectedException e) {
+            throw new GuacamoleInvalidCredentialsException(
+                    "Ticket rejected by CAS: " + e.getMessage(), e,
+                    CredentialsInfo.EMPTY);
+        }
+
+        // Any other failure (CAS server unreachable, TLS or configuration
+        // problems) remains an internal error. Redirecting to CAS in that case
+        // would only produce a new ticket that fails in the same way.
         catch (TicketValidationException e) {
             throw new GuacamoleException("Ticket validation failed.", e);
         }
