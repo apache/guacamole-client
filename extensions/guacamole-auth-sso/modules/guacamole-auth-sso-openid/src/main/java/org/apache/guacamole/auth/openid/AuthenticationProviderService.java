@@ -30,12 +30,13 @@ import java.util.Map;
 import java.util.Set;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
-import org.apache.guacamole.auth.openid.OpenIDAuthenticationSessionManager;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
 import org.apache.guacamole.auth.openid.util.PKCEUtil;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.sso.NonceService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSession;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSessionManager;
 import org.apache.guacamole.auth.sso.user.SSOAuthenticatedUser;
 import org.apache.guacamole.form.Field;
 import org.apache.guacamole.form.RedirectField;
@@ -89,7 +90,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
      * Manager of active OpenID authentication attempts.
      */
     @Inject
-    private OpenIDAuthenticationSessionManager sessionManager;
+    private SSOAuthenticationSessionManager sessionManager;
 
     /**
      * Service for validating and generating unique nonce values.
@@ -142,6 +143,10 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
                   confService.getClientSecret(),
                   confService.isPKCERequired());
 
+        // Recover session
+        String identifier = getSessionIdentifier(credentials);
+        SSOAuthenticationSession session = sessionManager.resume(identifier);
+
         if (confService.isImplicitFlow()) {
             String token = credentials.getParameter(IMPLICIT_TOKEN_PARAMETER_NAME);
             if (token != null) {
@@ -155,13 +160,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         }
         else {
             String verifier = null;
-            if (confService.isPKCERequired()) {
-                // Recover session
-                String identifier = getSessionIdentifier(credentials);
-                if (identifier != null) {
-                    verifier = sessionManager.getVerifier(identifier);
-                }
-            }
+            if (session != null && confService.isPKCERequired())
+                verifier = session.getString("verifier");
+
             String code = credentials.getParameter("code");
             if (code != null && (confService.isPKCERequired() == false || verifier != null)) {
                 JwtClaims claims = tokenService.validateTokenOrCode(code, verifier);
@@ -202,6 +203,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
                 .queryParam("redirect_uri", confService.getRedirectURI())
                 .queryParam("nonce", nonceService.generate(confService.getMaxNonceValidity() * 60000L));
 
+        SSOAuthenticationSession session = new SSOAuthenticationSession(
+                    confService.getMaxPKCEVerifierValidity() * 60000L);
+
         if (! confService.isImplicitFlow() && confService.isPKCERequired()) {
             String codeVerifier = PKCEUtil.generateCodeVerifier();
             String codeChallenge;
@@ -214,15 +218,15 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
             }
 
             // Store verifier for authenticateUser
-            OpenIDAuthenticationSession session = new OpenIDAuthenticationSession(codeVerifier,
-                        confService.getMaxPKCEVerifierValidity() * 60000L);
-            String identifier = IdentifierGenerator.generateIdentifier();
-            sessionManager.defer(session, identifier);
-
             builder.queryParam("code_challenge", codeChallenge)
-                    .queryParam("code_challenge_method", "S256")
-                    .queryParam(AUTH_SESSION_QUERY_PARAM, identifier);
+                    .queryParam("code_challenge_method", "S256");
+
+            session.put("verifier", codeVerifier);
         }
+
+        String identifier = IdentifierGenerator.generateIdentifier();
+        sessionManager.defer(session, identifier);
+        builder.queryParam(AUTH_SESSION_QUERY_PARAM, identifier);
 
         return builder.build();
     }

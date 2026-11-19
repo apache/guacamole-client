@@ -17,34 +17,20 @@
  * under the License.
  */
 
-package org.apache.guacamole.auth.openid;
+package org.apache.guacamole.auth.sso;
 
 import com.google.inject.Singleton;
 import org.apache.guacamole.net.auth.AuthenticationSessionManager;
 
 /**
- * Manager service that temporarily stores OpenID authentication attempts while
- * the authentication flow is underway.
+ * Manager service that temporarily stores authentication attempts while
+ * authenication flow is underway.
  */
 @Singleton
-public class OpenIDAuthenticationSessionManager
-        extends AuthenticationSessionManager<OpenIDAuthenticationSession> {
+public class SSOAuthenticationSessionManager
+        extends AuthenticationSessionManager<SSOAuthenticationSession> {
 
-   /**
-     * Returns the stored PKCE verifier used with the identity provider
-     *
-     * @param identifier
-     *     The unique string returned by the call to defer(). For convenience,
-     *     this value may safely be null.
-     *
-     * @return
-     *     The PKCE verifier used with the identity provider
-     */
-    public String getVerifier(String identifier) {
-        OpenIDAuthenticationSession session = resume(identifier);
-        if (session != null)
-            return session.getVerifier();
-        return null;
-    }
+    // Intentionally empty (the default functions inherited from the
+    // AuthenticationSessionManager base class are sufficient for our needs)
+
 }
-
