@@ -328,13 +328,7 @@ angular.module('index').controller('indexController', ['$scope', '$injector',
     $scope.reAuthenticate = function reAuthenticate() {
 
         $scope.reAuthenticating = true;
-
-        // Clear out URL state to conveniently bring user back to home screen
-        // upon relogin
-        if ($location.path() !== '/')
-            $location.url('/');
-        else
-            $route.reload();
+        $route.reload();
 
     };
 

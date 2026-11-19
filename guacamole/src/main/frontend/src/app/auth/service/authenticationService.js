@@ -72,6 +72,7 @@ angular.module('auth').factory('authenticationService', ['$injector',
     var $rootScope          = $injector.get('$rootScope');
     var localStorageService = $injector.get('localStorageService');
     var requestService      = $injector.get('requestService');
+    var $window             = $injector.get('$window');
 
     var service = {};
 
@@ -90,6 +91,14 @@ angular.module('auth').factory('authenticationService', ['$injector',
      * @type String
      */
     var AUTH_TOKEN_STORAGE_KEY = 'GUAC_AUTH_TOKEN';
+
+    /**
+     * To avoid stale copies of the originalUri to persist over long or timed
+     * out IdP redirections, we limit their validity to 10 minutes.
+     * 
+     * @type Number
+     */
+    var MAX_ORIGINAL_URI_AGE = 600000;
 
     /**
      * Retrieves the authentication result cached in memory. If the user has not
@@ -202,6 +211,30 @@ angular.module('auth').factory('authenticationService', ['$injector',
             // particularly problematic, as it is self-referential and explodes
             // the stack when fed to $.param().
             requestParams = _.omitBy(requestParams, (value, key) => key.startsWith('$'));
+
+            // Preserve originally requested Angular route while
+            // authentication is underway. sessionStorage is scoped
+            // to the current browser tab and survives full-page
+            // redirects to external identity providers. Can't use
+            // the guacamole sessionStorageFactory as it doesn't
+            // persist over an IdP redirection
+            var route = $window.location.hash.split('?')[0];
+            if (route && route !== '#/login' && route !== '#/logout'
+                    && /^#\/[A-Za-z0-9_.-][A-Za-z0-9_./-]*$/.test(route)) {
+                try {
+                    var existing = JSON.parse($window.sessionStorage.getItem('guacOriginalUri'));
+                    if (!existing || !existing.timestamp
+                            || (Date.now() - existing.timestamp) > MAX_ORIGINAL_URI_AGE) {
+                        $window.sessionStorage.setItem('guacOriginalUri',
+                            JSON.stringify({route : route, timestamp : Date.now()}));
+                    }
+                }
+                catch (e) {
+                    // Silently fail as this is either a QuotaExceededError or a
+                    // SyntaxError in the JSON.parse. The first case we can't use
+                    // setItem and the second the user/attacker has edited the value.
+                }
+            }
 
             return requestService({
                 method: 'POST',

@@ -37,7 +37,9 @@ angular.module('navigation').factory('userPageService', ['$injector',
     var permissionService        = $injector.get('permissionService');
     var requestService           = $injector.get('requestService');
     var translationStringService = $injector.get('translationStringService');
-    
+
+    var $window             = $injector.get('$window');
+
     var service = {};
     
     /**
@@ -69,6 +71,23 @@ angular.module('navigation').factory('userPageService', ['$injector',
 
         var settingsPages = generateSettingsPages(permissions);
 
+        // Restore the originally requested route if one was saved
+        // before authentication was initiated.
+        var redirectionPage = SYSTEM_HOME_PAGE;
+        try {
+            var stored = JSON.parse($window.sessionStorage.getItem('guacOriginalUri'));
+            if (stored && stored.route && stored.route.startsWith('#/')) {
+                // Ensure removal of query string and secondary fragments
+                const p = stored.route.substring(1).split('?')[0].split('#')[0];
+                $window.sessionStorage.removeItem('guacOriginalUri');
+                if (SYSTEM_HOME_PAGE.url != p)
+                    redirectionPage = new PageDefinition({name : 'USER_MENU.ACTION_NAVIGATE_HOME', url: p});
+            }
+        }
+        catch (e){
+            // Ignore invalid sessionStorage content 
+        }
+
         // If user has access to settings pages, return home page and skip
         // evaluation for automatic connections.  The Preferences page is
         // a Settings page and is always visible, and the Session management
@@ -76,12 +95,12 @@ angular.module('navigation').factory('userPageService', ['$injector',
         // own session.  We look for more than those two pages to determine
         // if we should go to the home page.
         if (settingsPages.length > 2)
-            return SYSTEM_HOME_PAGE;
+            return redirectionPage;
 
         // If exactly one connection or balancing group is available, use
         // that as the home page
         var clientPages = service.getClientPages(rootGroups);
-        return (clientPages.length === 1) ? clientPages[0] : SYSTEM_HOME_PAGE;
+        return (clientPages.length === 1) ? clientPages[0] : redirectionPage;
 
     };
 
