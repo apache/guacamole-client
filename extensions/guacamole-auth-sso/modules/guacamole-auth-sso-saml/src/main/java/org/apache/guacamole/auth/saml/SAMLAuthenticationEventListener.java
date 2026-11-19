@@ -19,8 +19,8 @@
 
 package org.apache.guacamole.auth.saml;
 
-import org.apache.guacamole.auth.saml.acs.SAMLAuthenticationSessionManager;
 import org.apache.guacamole.auth.sso.SSOAuthenticationEventListener;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSessionManager;
 import org.apache.guacamole.net.auth.Credentials;
 
 import com.google.inject.Inject;
@@ -46,7 +46,7 @@ public class SAMLAuthenticationEventListener extends SSOAuthenticationEventListe
      * extension, regardless of singleton configuration for the service.
      */
     @Inject
-    protected static SAMLAuthenticationSessionManager sessionManager;
+    protected static SSOAuthenticationSessionManager sessionManager;
 
     @Override
     protected String getSessionIdentifier(Credentials credentials) {

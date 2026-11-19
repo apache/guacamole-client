@@ -24,6 +24,7 @@ import com.google.inject.Scopes;
 import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
 import org.apache.guacamole.auth.ssl.conf.SSLEnvironment;
 import org.apache.guacamole.auth.sso.NonceService;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSessionManager;
 import org.apache.guacamole.environment.Environment;
 
 /**
@@ -41,7 +42,7 @@ public class SSLAuthenticationProviderModule extends AbstractModule {
     protected void configure() {
         bind(ConfigurationService.class);
         bind(NonceService.class).in(Scopes.SINGLETON);
-        bind(SSLAuthenticationSessionManager.class);
+        bind(SSOAuthenticationSessionManager.class);
 
         bind(Environment.class).toInstance(environment);
         
