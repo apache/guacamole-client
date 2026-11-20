@@ -125,7 +125,6 @@ export class PlayerDisplayComponent implements AfterViewInit, OnChanges {
             // Clear out old display, if any
             if (oldDisplay) {
                 this.container.nativeElement.innerHTML = '';
-                // @ts-ignore
                 oldDisplay.onresize = null;
             }
 

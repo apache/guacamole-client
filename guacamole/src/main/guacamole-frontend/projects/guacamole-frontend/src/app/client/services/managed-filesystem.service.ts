@@ -49,7 +49,6 @@ export class ManagedFilesystemService {
      */
     refresh(filesystem: ManagedFilesystem, file: ManagedFilesystem.File): void {
 
-        // @ts-ignore
         // Do not attempt to refresh the contents of directories
         if (file.mimetype !== Guacamole.Object.STREAM_INDEX_MIMETYPE)
             return;
@@ -57,7 +56,6 @@ export class ManagedFilesystemService {
         // Request contents of given file
         filesystem.object.requestInputStream(file.streamName, (stream: Guacamole.InputStream, mimetype: string) => {
 
-            // @ts-ignore
             // Ignore stream if mimetype is wrong
             if (mimetype !== Guacamole.Object.STREAM_INDEX_MIMETYPE) {
                 stream.sendAck('Unexpected mimetype', Guacamole.Status.Code.UNSUPPORTED);
@@ -87,7 +85,7 @@ export class ManagedFilesystemService {
                     expectedPrefix += '/';
 
                 // For each received stream name
-                const mimetypes = reader.getJSON();
+                const mimetypes = reader.getJSON() as Record<string, string>;
                 for (const name in mimetypes) {
 
                     // Assert prefix is correct
@@ -99,14 +97,12 @@ export class ManagedFilesystemService {
 
                     // Deduce type from mimetype
                     let type = ManagedFilesystem.File.Type.NORMAL;
-                    // @ts-ignore
                     if (mimetypes[name] === Guacamole.Object.STREAM_INDEX_MIMETYPE)
                         type = ManagedFilesystem.File.Type.DIRECTORY;
 
                     // Add file entry
                     file.files.update(files => {
                         files[filename] = new ManagedFilesystem.File({
-                            // @ts-ignore
                             mimetype  : mimetypes[name],
                             streamName: name,
                             type      : type,
@@ -150,9 +146,7 @@ export class ManagedFilesystemService {
             object: object,
             name  : name,
             root  : new ManagedFilesystem.File({
-                // @ts-ignore
                 mimetype: Guacamole.Object.STREAM_INDEX_MIMETYPE,
-                // @ts-ignore
                 streamName: Guacamole.Object.ROOT_STREAM,
                 type      : ManagedFilesystem.File.Type.DIRECTORY
             })

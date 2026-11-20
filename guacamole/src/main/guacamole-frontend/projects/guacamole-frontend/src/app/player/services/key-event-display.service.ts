@@ -51,7 +51,7 @@ import _ from 'lodash';
  * A set of all keysyms corresponding to modifier keys.
  * @type{Object.<Number, Boolean>}
  */
-const MODIFIER_KEYS = {
+const MODIFIER_KEYS: Record<number, boolean> = {
     0xFE03: true, // AltGr
     0xFFE1: true, // Left Shift
     0xFFE2: true, // Right Shift
@@ -208,7 +208,6 @@ export class KeyEventDisplayService {
      *     should be consolidated into a single ConsolidatedKeyEvent object for
      *     display performance reasons.
      */
-    // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
     parseEvents(rawEvents: Guacamole.KeyEventInterpreter.KeyEvent[], batchSeperation = 5000, consolidateEvents = false): TextBatch[] {
 
         // Default to 5 seconds if the batch separation was not provided
@@ -221,7 +220,7 @@ export class KeyEventDisplayService {
          * are necessarily tracked within this map - only those that are
          * explicitly tracked.
          */
-        const pressedKeys = {};
+        const pressedKeys: Record<number, Guacamole.KeyEventInterpreter.KeyDefinition> = {};
 
         // The timestamp of the most recent key event processed
         let lastKeyEvent = 0;
@@ -245,7 +244,7 @@ export class KeyEventDisplayService {
             if (newBatch)
                 batches.push(new TextBatch());
 
-            const currentBatch = _.last(batches);
+            const currentBatch = batches[batches.length - 1];
 
             /**
              * Either push the a new event constructed using the provided fields
@@ -260,36 +259,29 @@ export class KeyEventDisplayService {
              *     the key that produced the event.
              */
             const pushEvent = (text: string, typed: boolean) => {
-                // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
                 const latestEvent = _.last(currentBatch.events);
 
                 // Only consolidate the event if configured to do so and it
                 // matches the type of the previous event
                 if (consolidateEvents && latestEvent && latestEvent.typed === typed) {
                     latestEvent.text += text;
-                    // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
                     currentBatch.simpleValue += text;
                 }
 
                 // Otherwise, push a new event
                 else {
-                    // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
                     currentBatch.events.push(new ConsolidatedKeyEvent({
                         text, typed, timestamp
                     }));
-                    // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
                     currentBatch.simpleValue += text;
                 }
             };
 
-            // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
             // Track modifier state
             if (MODIFIER_KEYS[keysym]) {
                 if (pressed)
-                    // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
                     pressedKeys[keysym] = definition;
                 else
-                    // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
                     delete pressedKeys[keysym];
             }
 
@@ -298,8 +290,7 @@ export class KeyEventDisplayService {
             else if (pressed) {
 
                 // If any shorcut keys are currently pressed
-                // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
-                if (_.some(pressedKeys, (def, key) => SHORTCUT_KEYS[key])) {
+                if (_.some(pressedKeys, (def, key) => SHORTCUT_KEYS[Number(key)])) {
 
                     let shortcutText = '<';
 
@@ -307,10 +298,7 @@ export class KeyEventDisplayService {
 
                     // Compose entry by inspecting the state of each tracked key.
                     // At least one key must be pressed when in a shortcut.
-                    for (const pressedKeysym in pressedKeys) {
-
-                        // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
-                        const pressedKeyDefinition = pressedKeys[pressedKeysym];
+                    for (const pressedKeyDefinition of Object.values(pressedKeys)) {
 
                         // Print name of key
                         if (firstKey) {

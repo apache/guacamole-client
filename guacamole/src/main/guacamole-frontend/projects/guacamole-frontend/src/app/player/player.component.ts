@@ -459,7 +459,6 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                     this.guacEventService.broadcast('guacPlayerPause');
                 };
 
-                // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
                 // Extract key events from the recording
                 this.recording.onkeyevents = (events) => {
 
@@ -467,7 +466,6 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                     this.textBatches = (
                         this.keyEventDisplayService.parseEvents(events));
 
-                    // @ts-ignore TODO: Remove when guacamole-common-js 1.6.0 is released and the types are updated
                     this.keyTimestamps = events.map(event => event.timestamp);
 
                 };

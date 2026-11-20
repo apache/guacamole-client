@@ -21,3 +21,4 @@
  * Augment the global scope with the Guacamole types.
  */
 import 'guacamole-common-js';
+import './guacamole-common-js-1.6';
