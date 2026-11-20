@@ -1,0 +1,32 @@
+diff --git a/guacamole/src/main/frontend/src/app/auth/service/authenticationService.js b/guacamole/src/main/frontend/src/app/auth/service/authenticationService.js
+index 7f28459da..0e20017fd 100644
+--- a/guacamole/src/main/frontend/src/app/auth/service/authenticationService.js
++++ b/guacamole/src/main/frontend/src/app/auth/service/authenticationService.js
+@@ -230,8 +230,9 @@ angular.module('auth').factory('authenticationService', ['$injector',
+                     }
+                 }
+                 catch (e) {
+-                    $window.sessionStorage.setItem('guacOriginalUri',
+-                        JSON.stringify({route : route, timestamp : Date.now()}));
++                    // Silently fail as this is either a QuotaExceededError or a
++                    // SyntaxError in the JSON.parse. The first case we can't use
++                    // setItem and the second the user/attacker has edited the value.
+                 }
+             }
+ 
+diff --git a/guacamole/src/main/frontend/src/app/navigation/services/userPageService.js b/guacamole/src/main/frontend/src/app/navigation/services/userPageService.js
+index 14559bf32..e77422d9f 100644
+--- a/guacamole/src/main/frontend/src/app/navigation/services/userPageService.js
++++ b/guacamole/src/main/frontend/src/app/navigation/services/userPageService.js
+@@ -76,8 +76,9 @@ angular.module('navigation').factory('userPageService', ['$injector',
+         var redirectionPage = SYSTEM_HOME_PAGE;
+         try {
+             var stored = JSON.parse($window.sessionStorage.getItem('guacOriginalUri'));
+-            if (stored && stored.route) {
+-                const p = stored.route.substring(1).split('?')[0];            
++            if (stored && stored.route && stored.route.startsWith('#/')) {
++                // Ensure removal of query string and secondary fragments
++                const p = stored.route.substring(1).split('?')[0].split('#')[0];
+                 $window.sessionStorage.removeItem('guacOriginalUri');
+                 if (SYSTEM_HOME_PAGE.url != p)
+                     redirectionPage = new PageDefinition({name : 'USER_MENU.ACTION_NAVIGATE_HOME', url: p});
