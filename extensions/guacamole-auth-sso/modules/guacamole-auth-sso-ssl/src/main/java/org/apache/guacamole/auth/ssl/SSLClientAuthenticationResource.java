@@ -29,6 +29,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
@@ -47,6 +48,8 @@ import org.apache.guacamole.GuacamoleResourceNotFoundException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
 import org.apache.guacamole.auth.sso.NonceService;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSession;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSessionManager;
 import org.apache.guacamole.auth.sso.SSOResource;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.RFC4519Style;
@@ -105,7 +108,7 @@ public class SSLClientAuthenticationResource extends SSOResource {
      * and complete the authentication process.
      */
     @Inject
-    private SSLAuthenticationSessionManager sessionManager;
+    private SSOAuthenticationSessionManager sessionManager;
 
     /**
      * Service for validating and generating unique nonce values. Here, these
@@ -347,7 +350,7 @@ public class SSLClientAuthenticationResource extends SSOResource {
 
             String username = getUsername(decode(certificate));
             long validityDuration = TimeUnit.MINUTES.toMillis(confService.getMaxTokenValidity());
-            return sessionManager.defer(new SSLAuthenticationSession(username, validityDuration));
+            return sessionManager.defer(new SSOAuthenticationSession(Map.of("identity", username), validityDuration));
 
         }
         catch (GuacamoleClientException e) {

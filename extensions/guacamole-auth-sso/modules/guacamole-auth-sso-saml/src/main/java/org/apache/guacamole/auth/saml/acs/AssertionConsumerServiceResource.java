@@ -31,6 +31,8 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.AuthenticationProviderService;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 import org.apache.guacamole.auth.sso.SSOResource;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSession;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +58,7 @@ public class AssertionConsumerServiceResource extends SSOResource {
      * Manager of active SAML authentication attempts.
      */
     @Inject
-    private SAMLAuthenticationSessionManager sessionManager;
+    private SSOAuthenticationSessionManager sessionManager;
 
     /**
      * Service for processing SAML requests/responses.
@@ -107,7 +109,7 @@ public class AssertionConsumerServiceResource extends SSOResource {
         try {
 
             // Validate and parse identity asserted by SAML IdP
-            SAMLAuthenticationSession session = saml.processResponse(
+            SSOAuthenticationSession session = saml.processResponse(
                     consumedRequest.getRequestURL().toString(),
                     relayState, samlResponse);
 

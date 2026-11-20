@@ -36,6 +36,8 @@ import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.saml.conf.ConfigurationService;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSession;
+import org.apache.guacamole.auth.sso.SSOAuthenticationSessionManager;
 import org.apache.guacamole.net.auth.IdentifierGenerator;
 import org.xml.sax.SAXException;
 
@@ -56,7 +58,7 @@ public class SAMLService {
      * Manager of active SAML authentication attempts.
      */
     @Inject
-    private SAMLAuthenticationSessionManager sessionManager;
+    private SSOAuthenticationSessionManager sessionManager;
 
     /**
      * Creates a new SAML request, beginning the overall authentication flow
@@ -93,9 +95,12 @@ public class SAMLService {
 
             // Create a new authentication session to represent this attempt while
             // it is in progress, using the request ID that was just issued
-            SAMLAuthenticationSession session = new SAMLAuthenticationSession(
-                    auth.getLastRequestId(),
+            SSOAuthenticationSession session = new SSOAuthenticationSession(
                     confService.getAuthenticationTimeout() * 60000L);
+            session.put("RequestID", auth.getLastRequestId());
+            session.setValidCallback(map ->
+                map.get("identity") instanceof AssertedIdentity
+                && ((AssertedIdentity) map.get("identity")).isValid());
 
             // Save the session with the unique relay state ID
             sessionManager.defer(session, identifier);
@@ -151,14 +156,14 @@ public class SAMLService {
      *     information required to validate or decrypt the response cannot be
      *     read.
      */
-    public SAMLAuthenticationSession processResponse(String url, String relayState,
+    public SSOAuthenticationSession processResponse(String url, String relayState,
             String encodedResponse) throws GuacamoleException {
 
         if (relayState == null)
             throw new GuacamoleSecurityException("\"RelayState\" value "
                     + "is missing from SAML response.");
 
-        SAMLAuthenticationSession session = sessionManager.resume(relayState);
+        SSOAuthenticationSession session = sessionManager.resume(relayState);
         if (session == null)
             throw new GuacamoleSecurityException("\"RelayState\" value "
                     + "included with SAML response is not valid.");
@@ -170,7 +175,7 @@ public class SAMLService {
                     url, encodedResponse);
 
             // Validate SAML response timestamp, signature, etc.
-            if (!response.isValid(session.getRequestID())) {
+            if (!response.isValid(session.getString("RequestID"))) {
                 Exception validationException = response.getValidationException();
                 throw new GuacamoleSecurityException("SAML response did not "
                         + "pass validation: " + validationException.getMessage(),
@@ -178,7 +183,7 @@ public class SAMLService {
             }
 
             // Parse identity asserted by SAML IdP
-            session.setIdentity(new AssertedIdentity(response));
+            session.put("identity", new AssertedIdentity(response));
             return session;
 
         }
