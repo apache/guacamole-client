@@ -88,7 +88,7 @@
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
-                <version>1.11.3</version>
+                <version>1.12.1</version>
                 <configuration>
                     <installDirectory>${project.build.directory}</installDirectory>
                     <workingDirectory>src/main/guacamole-frontend</workingDirectory>
@@ -107,7 +107,8 @@
                             <goal>install-node-and-npm</goal>
                         </goals>
                         <configuration>
-                            <nodeVersion>v22.13.0</nodeVersion>
+                            <nodeVersion>v24.22.3</nodeVersion>
+                            <npmVersion>11.19.1</npmVersion>
                         </configuration>
                     </execution>
 
