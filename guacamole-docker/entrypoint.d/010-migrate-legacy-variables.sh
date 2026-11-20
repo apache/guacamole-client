@@ -93,9 +93,10 @@ deprecate_variable_prefix() {
 # the database is being replaced with "*_USERNAME" such that all environment
 # variables exactly correspond to the names of configuration properties from
 # guacamole.properties.
-deprecate_variable "MYSQL_USER"     "MYSQL_USERNAME"
-deprecate_variable "POSTGRES_USER"  "POSTGRESQL_USERNAME"
-deprecate_variable "SQLSERVER_USER" "SQLSERVER_USERNAME"
+deprecate_variable "MYSQL_USER"      "MYSQL_USERNAME"
+deprecate_variable "POSTGRES_USER"   "POSTGRESQL_USERNAME"
+deprecate_variable "POSTGRESQL_USER" "POSTGRESQL_USERNAME"
+deprecate_variable "SQLSERVER_USER"  "SQLSERVER_USERNAME"
 
 # The old "POSTGRES_" prefix for configuring usage of PostgreSQL is being
 # replaced with "POSTGRESQL_" such that all environment variables exactly

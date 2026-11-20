@@ -196,8 +196,7 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
 
         }
         catch (GuacamoleException e) {
-            logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage());
-            logger.debug("Error connecting WebSocket tunnel.", e);
+            logger.error("Creation of WebSocket tunnel to guacd failed: {}", e.getMessage(), e);
             closeConnection(session, e.getStatus().getGuacamoleStatusCode(), e.getWebSocketCode());
             return;
         }
@@ -245,8 +244,7 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
                     // to pass within the WebSocket connection, logging
                     // each error appropriately.
                     catch (GuacamoleClientException e) {
-                        logger.info("WebSocket connection terminated: {}", e.getMessage());
-                        logger.debug("WebSocket connection terminated due to client error.", e);
+                        logger.info("WebSocket connection terminated: {}", e.getMessage(), e);
                         closeConnection(session, e.getStatus().getGuacamoleStatusCode(),
                                 e.getWebSocketCode());
                     }
@@ -255,8 +253,7 @@ public abstract class GuacamoleWebSocketTunnelListener implements WebSocketListe
                         closeConnection(session, GuacamoleStatus.SUCCESS);
                     }
                     catch (GuacamoleException e) {
-                        logger.error("Connection to guacd terminated abnormally: {}", e.getMessage());
-                        logger.debug("Internal error during connection to guacd.", e);
+                        logger.error("Connection to guacd terminated abnormally: {}", e.getMessage(), e);
                         closeConnection(session, e.getStatus().getGuacamoleStatusCode(),
                                 e.getWebSocketCode());
                     }

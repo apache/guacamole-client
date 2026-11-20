@@ -1,4 +1,4 @@
-<dl class="client-statistics">
+<dl class="client-statistics" ng-show="isVisible">
 
     <dt class="client-statistic desktop-fps">
         {{ 'CLIENT.FIELD_HEADER_DESKTOP_FRAMERATE' | translate }}
@@ -37,3 +37,8 @@
     </dd>
 
 </dl>
+
+<div class="buttons-statistics"
+     ng-click="isVisible = !isVisible"
+     ng-class="{ 'hide-statistics' : isVisible, 'show-statistics' : !isVisible }">
+</div>

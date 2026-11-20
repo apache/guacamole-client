@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.json.ConfigurationService;
 import org.apache.guacamole.auth.json.CryptoService;
@@ -121,18 +120,13 @@ public class UserDataService {
         String json;
         byte[] correctSignature;
 
-        // Pull HTTP request, if available
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
-
         // Abort if the request itself is not allowed
-        if (!requestService.isAuthenticationAllowed(request))
+        if (!requestService.isAuthenticationAllowed(credentials))
             return null;
 
         // Pull base64-encoded, encrypted JSON data from HTTP request, if any
         // such data is present
-        String base64 = request.getParameter(ENCRYPTED_DATA_PARAMETER);
+        String base64 = credentials.getParameter(ENCRYPTED_DATA_PARAMETER);
         if (base64 == null)
             return null;
 
@@ -174,22 +168,19 @@ public class UserDataService {
 
         // Fail if base64 data is not valid
         catch (IllegalArgumentException e) {
-            logger.warn("Submitted data is not proper base64.");
-            logger.debug("Invalid base64 data.", e);
+            logger.warn("Submitted data is not proper base64: {}", e.getMessage(), e);
             return null;
         }
 
         // Handle lack of standard UTF-8 support (should never happen)
         catch (UnsupportedEncodingException e) {
-            logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage());
-            logger.debug("Unable to decode base64 data as UTF-8.", e);
+            logger.error("Unexpected lack of support for UTF-8: {}", e.getMessage(), e);
             return null;
         }
 
         // Fail if decryption or key retrieval fails for any reason
         catch (GuacamoleException e) {
-            logger.error("Decryption of received data failed: {}", e.getMessage());
-            logger.debug("Unable to decrypt received data.", e);
+            logger.error("Decryption of received data failed: {}", e.getMessage(), e);
             return null;
         }
 
@@ -211,8 +202,7 @@ public class UserDataService {
 
         // Fail UserData creation if JSON is invalid/unreadable
         catch (IOException e) {
-            logger.error("Received JSON is invalid: {}", e.getMessage());
-            logger.debug("Error parsing UserData JSON.", e);
+            logger.error("Received JSON is invalid: {}", e.getMessage(), e);
             return null;
         }
 

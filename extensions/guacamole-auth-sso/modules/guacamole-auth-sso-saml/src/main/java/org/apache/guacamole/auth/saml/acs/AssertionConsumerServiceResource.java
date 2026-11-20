@@ -125,8 +125,7 @@ public class AssertionConsumerServiceResource extends SSOResource {
 
         // If invalid, redirect back to main page to re-attempt authentication
         catch (GuacamoleException e) {
-            logger.warn("Authentication attempted with an invalid SAML response: {}", e.getMessage());
-            logger.debug("Received SAML response failed validation.", e);
+            logger.warn("Authentication attempted with an invalid SAML response: {}", e.getMessage(), e);
             return Response.seeOther(guacBase).build();
         }
 

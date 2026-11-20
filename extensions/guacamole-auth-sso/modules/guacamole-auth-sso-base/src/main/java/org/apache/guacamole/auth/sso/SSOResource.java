@@ -19,9 +19,11 @@
 package org.apache.guacamole.auth.sso;
 
 import com.google.inject.Inject;
+import java.net.URI;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.QueryParam;
 import org.apache.guacamole.GuacamoleException;
 
 /**
@@ -53,6 +55,35 @@ public class SSOResource {
     @Path("login")
     public Response redirectToIdentityProvider() throws GuacamoleException {
         return Response.seeOther(authService.getLoginURI()).build();
+    }
+
+    /**
+     * Redirects the user to the identity provider's logout endpoint, if
+     * configured. This allows the user to log out from both Guacamole and the
+     * SSO identity provider. If no logout endpoint is configured, a 204 No
+     * Content response is returned.
+     *
+     * @param idToken
+     *     The ID token from the user's authentication session, if available.
+     *     This will be included as the id_token_hint parameter in the logout
+     *     request. May be null.
+     *
+     * @return
+     *     An HTTP Response that will redirect the user to the IdP logout
+     *     endpoint if configured, or a 204 No Content response otherwise.
+     *
+     * @throws GuacamoleException
+     *     If an error occurs preventing the redirect from being created.
+     */
+    @GET
+    @Path("logout")
+    public Response getLogoutRedirect(
+            @QueryParam("id_token") String idToken) throws GuacamoleException {
+        URI logoutURI = authService.getLogoutURI(idToken);
+        if (logoutURI != null)
+            return Response.seeOther(logoutURI).build();
+        else
+            return Response.noContent().build();
     }
 
 }

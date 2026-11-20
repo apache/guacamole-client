@@ -355,8 +355,9 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
     }
 
     /**
-     * Filter and sanitize the provided external object, translate to the
-     * internal type, and return the translated internal object.
+     * Filter and sanitize the provided external object that is being created
+     * (does not already exist), translate to the internal type, and return the
+     * translated internal object.
      *
      * @param object
      *     The external object to filter and translate.
@@ -368,11 +369,11 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
      *     If an error occurs while filtering or translating the external
      *     object.
      */
-    private InternalType filterAndTranslate(ExternalType object)
+    private InternalType filterAndTranslateNewObject(ExternalType object)
             throws GuacamoleException {
 
         // Filter and sanitize the external object
-        translator.filterExternalObject(userContext, object);
+        translator.filterExternalObject(userContext, null, object);
 
         // Translate to the internal type
         return translator.toInternalObject(object);
@@ -599,7 +600,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
                     if (op == APIPatch.Operation.add) {
 
                         // Filter/sanitize object contents
-                        InternalType internal = filterAndTranslate(patch.getValue());
+                        InternalType internal = filterAndTranslateNewObject(patch.getValue());
 
                         try {
 
@@ -823,7 +824,7 @@ public abstract class DirectoryResource<InternalType extends Identifiable, Exter
             throw new GuacamoleClientException("Data must be submitted when creating objects.");
 
         // Filter/sanitize object contents
-        InternalType internal = filterAndTranslate(object);
+        InternalType internal = filterAndTranslateNewObject(object);
 
         // Create the new object within the directory
         try {

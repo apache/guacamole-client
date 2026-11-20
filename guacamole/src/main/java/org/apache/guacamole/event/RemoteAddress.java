@@ -20,7 +20,6 @@
 package org.apache.guacamole.event;
 
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.net.auth.Credentials;
 
 /**
@@ -78,17 +77,15 @@ public class RemoteAddress implements LoggableDetail {
     @Override
     public String toString() {
 
-        HttpServletRequest request = creds.getRequest();
-        if (request == null)
-            return creds.getRemoteAddress();
+        String remoteAddress = creds.getRemoteAddress();
 
         // Log X-Forwarded-For, if present and valid
-        String header = request.getHeader("X-Forwarded-For");
+        String header = creds.getHeader("X-Forwarded-For");
         if (header != null && X_FORWARDED_FOR.matcher(header).matches())
-            return "[" + header + ", " + request.getRemoteAddr() + "]";
+            return "[" + header + ", " + remoteAddress + "]";
 
         // If header absent or invalid, just use source IP
-        return request.getRemoteAddr();
+        return remoteAddress;
 
     }
 

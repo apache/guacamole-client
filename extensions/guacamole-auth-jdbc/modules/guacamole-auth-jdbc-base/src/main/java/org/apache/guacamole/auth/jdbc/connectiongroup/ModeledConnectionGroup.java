@@ -200,15 +200,13 @@ public class ModeledConnectionGroup extends ModeledChildDirectoryObject<Connecti
         // Translate connection limit attribute
         try { getModel().setMaxConnections(NumericField.parse(attributes.get(MAX_CONNECTIONS_NAME))); }
         catch (NumberFormatException e) {
-            logger.warn("Not setting maximum connections: {}", e.getMessage());
-            logger.debug("Unable to parse numeric attribute.", e);
+            logger.warn("Not setting maximum connections: {}", e.getMessage(), e);
         }
 
         // Translate per-user connection limit attribute
         try { getModel().setMaxConnectionsPerUser(NumericField.parse(attributes.get(MAX_CONNECTIONS_PER_USER_NAME))); }
         catch (NumberFormatException e) {
-            logger.warn("Not setting maximum connections per user: {}", e.getMessage());
-            logger.debug("Unable to parse numeric attribute.", e);
+            logger.warn("Not setting maximum connections per user: {}", e.getMessage(), e);
         }
 
         // Translate session affinity attribute

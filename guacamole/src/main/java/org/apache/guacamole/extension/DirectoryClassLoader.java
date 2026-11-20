@@ -32,7 +32,7 @@ import org.apache.guacamole.GuacamoleException;
  * A ClassLoader implementation which finds classes within .jar files within a
  * given directory.
  */
-public class DirectoryClassLoader extends URLClassLoader {
+public class DirectoryClassLoader extends URLClassLoader implements LoggerContextProvider {
 
     /**
      * Returns all .jar files within the given directory as an array of URLs.
@@ -103,6 +103,11 @@ public class DirectoryClassLoader extends URLClassLoader {
 
     public DirectoryClassLoader(File dir) throws GuacamoleException {
         super(getJarURLs(dir), DirectoryClassLoader.class.getClassLoader());
+    }
+
+    @Override
+    public String getLoggerContext() {
+        return "lib";
     }
 
 }

@@ -145,8 +145,10 @@ Guacamole.Mouse = function Mouse(element) {
         }
 
         var button = MOUSE_BUTTONS[e.button];
-        if (button)
+        if (button) {
+            guac_mouse.move(Guacamole.Position.fromClientPosition(element, e.clientX, e.clientY), e);
             guac_mouse.press(button, e);
+        }
 
     }, false);
 
@@ -159,8 +161,10 @@ Guacamole.Mouse = function Mouse(element) {
         }
 
         var button = MOUSE_BUTTONS[e.button];
-        if (button)
+        if (button) {
+            guac_mouse.move(Guacamole.Position.fromClientPosition(element, e.clientX, e.clientY), e);
             guac_mouse.release(button, e);
+        }
 
     }, false);
 
@@ -227,7 +231,7 @@ Guacamole.Mouse = function Mouse(element) {
 
             // Repeatedly click the up button until insufficient delta remains
             do {
-                guac_mouse.click(Guacamole.Mouse.State.Buttons.UP);
+                guac_mouse.click(Guacamole.Mouse.State.Buttons.UP, e);
                 scroll_delta += guac_mouse.scrollThreshold;
             } while (scroll_delta <= -guac_mouse.scrollThreshold);
 
@@ -241,7 +245,7 @@ Guacamole.Mouse = function Mouse(element) {
 
             // Repeatedly click the down button until insufficient delta remains
             do {
-                guac_mouse.click(Guacamole.Mouse.State.Buttons.DOWN);
+                guac_mouse.click(Guacamole.Mouse.State.Buttons.DOWN, e);
                 scroll_delta -= guac_mouse.scrollThreshold;
             } while (scroll_delta >= guac_mouse.scrollThreshold);
 
@@ -542,10 +546,28 @@ Guacamole.Mouse.Event = function MouseEvent(type, state, events) {
 
     /**
      * The current mouse state at the time this event was fired.
+     * The state object is cloned so as not to be affected by subsequent events
+     * that will have their own dedicated Guacamole.Mouse.Event instance.
      *
      * @type {!Guacamole.Mouse.State}
      */
-    this.state = state;
+    this.state = { ...state };
+
+    /**
+     * The first DOM event related to this event, if any.
+     *
+     * @private
+     * @type {Event}
+     */
+    var firstRelatedEvent = Array.isArray(events) ? events[0] : events;
+
+    /**
+     * The state of all keyboard modifiers at the time this event was
+     * received.
+     *
+     * @type {!Guacamole.Keyboard.ModifierState}
+     */
+    this.modifiers = Guacamole.Keyboard.ModifierState.fromEvent(firstRelatedEvent || {});
 
     /**
      * @inheritdoc

@@ -311,7 +311,7 @@ public abstract class DirectoryObjectResource<InternalType extends Identifiable,
             throw new GuacamoleClientException("Data must be submitted when updating objects.");
 
         // Filter/sanitize object contents
-        translator.filterExternalObject(userContext, modifiedObject);
+        translator.filterExternalObject(userContext, object, modifiedObject);
 
         // Perform update
         translator.applyExternalChanges(object, modifiedObject);

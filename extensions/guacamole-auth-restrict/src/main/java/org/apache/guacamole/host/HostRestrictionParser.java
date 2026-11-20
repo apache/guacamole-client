@@ -64,8 +64,7 @@ public class HostRestrictionParser {
                 addressList.add(hostName);
             }
             catch (HostNameException e) {
-                LOGGER.warn("Invalid host name or IP: {}", host);
-                LOGGER.debug("HostNameException.", e.getMessage());
+                LOGGER.warn("Invalid host name or IP: {}", host, e);
             }
             
         }

@@ -409,7 +409,7 @@ public class Extension {
             }
 
             // Create isolated classloader for this extension
-            classLoader = new ExtensionClassLoader(file, temporaryFiles, parent);
+            classLoader = new ExtensionClassLoader(manifest, file, temporaryFiles, parent);
 
         }
 

@@ -40,7 +40,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
     /**
      * Logger for this class.
      */
-    private Logger logger = LoggerFactory.getLogger(AuthenticationProviderFacade.class);
+    private final Logger logger = LoggerFactory.getLogger(AuthenticationProviderFacade.class);
 
     /**
      * The underlying authentication provider, or null if the authentication
@@ -86,9 +86,11 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
     public AuthenticationProviderFacade(
             Class<? extends AuthenticationProvider> authProviderClass,
             Set<String> tolerateFailures) {
+
         this.tolerateFailures = tolerateFailures;
         this.authProvider = ProviderFactory.newInstance("authentication provider",
             authProviderClass);
+
     }
 
     @Override
@@ -155,15 +157,11 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
      *     authentication provider being skipped.
      */
     private void warnAuthProviderSkipped(Throwable e) {
-
         logger.warn("The \"{}\" authentication provider has been skipped due "
                 + "to an internal error. If this is unexpected or you are the "
                 + "developer of this authentication provider, you may wish to "
                 + "enable debug-level logging: {}",
-                getIdentifier(), e.getMessage());
-
-        logger.debug("Authentication provider skipped due to an internal failure.", e);
-
+                getIdentifier(), e.getMessage(), e);
     }
 
     /**
@@ -299,7 +297,7 @@ public class AuthenticationProviderFacade implements AuthenticationProvider {
 
         // Delegate to underlying auth provider
         return authProvider.updateUserContext(context, authenticatedUser, credentials);
-        
+
     }
 
     @Override

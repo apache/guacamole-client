@@ -442,8 +442,7 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         if (attributes.containsKey(ACCESS_WINDOW_START_ATTRIBUTE_NAME)) {
             try { getModel().setAccessWindowStart(parseTime(attributes.get(ACCESS_WINDOW_START_ATTRIBUTE_NAME))); }
             catch (ParseException e) {
-                logger.warn("Not setting start time of user access window: {}", e.getMessage());
-                logger.debug("Unable to parse time attribute.", e);
+                logger.warn("Not setting start time of user access window: {}", e.getMessage(), e);
             }
         }
 
@@ -451,8 +450,7 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         if (attributes.containsKey(ACCESS_WINDOW_END_ATTRIBUTE_NAME)) {
             try { getModel().setAccessWindowEnd(parseTime(attributes.get(ACCESS_WINDOW_END_ATTRIBUTE_NAME))); }
             catch (ParseException e) {
-                logger.warn("Not setting end time of user access window: {}", e.getMessage());
-                logger.debug("Unable to parse time attribute.", e);
+                logger.warn("Not setting end time of user access window: {}", e.getMessage(), e);
             }
         }
 
@@ -460,8 +458,7 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         if (attributes.containsKey(VALID_FROM_ATTRIBUTE_NAME)) {
             try { getModel().setValidFrom(parseDate(attributes.get(VALID_FROM_ATTRIBUTE_NAME))); }
             catch (ParseException e) {
-                logger.warn("Not setting user validity start date: {}", e.getMessage());
-                logger.debug("Unable to parse date attribute.", e);
+                logger.warn("Not setting user validity start date: {}", e.getMessage(), e);
             }
         }
 
@@ -469,8 +466,7 @@ public class ModeledUser extends ModeledPermissions<UserModel> implements User {
         if (attributes.containsKey(VALID_UNTIL_ATTRIBUTE_NAME)) {
             try { getModel().setValidUntil(parseDate(attributes.get(VALID_UNTIL_ATTRIBUTE_NAME))); }
             catch (ParseException e) {
-                logger.warn("Not setting user validity end date: {}", e.getMessage());
-                logger.debug("Unable to parse date attribute.", e);
+                logger.warn("Not setting user validity end date: {}", e.getMessage(), e);
             }
         }
 

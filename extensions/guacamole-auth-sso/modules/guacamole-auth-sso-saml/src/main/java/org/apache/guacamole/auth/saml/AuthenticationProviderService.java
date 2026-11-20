@@ -24,10 +24,11 @@ import com.google.inject.Provider;
 import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
-import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.saml.user.SAMLAuthenticatedUser;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.auth.saml.acs.AssertedIdentity;
+import org.apache.guacamole.auth.saml.conf.ConfigurationService;
 import org.apache.guacamole.auth.saml.acs.SAMLAuthenticationSessionManager;
 import org.apache.guacamole.auth.saml.acs.SAMLService;
 import org.apache.guacamole.auth.sso.SSOAuthenticationProviderService;
@@ -70,6 +71,12 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     private SAMLService saml;
 
     /**
+     * Service for retrieving SAML configuration information.
+     */
+    @Inject
+    private ConfigurationService confService;
+
+    /**
      * Return the value of the session identifier associated with the given
      * credentials, or null if no session identifier is found in the
      * credentials.
@@ -85,35 +92,21 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
         // Return the session identifier from the request params, if set, or
         // null otherwise
-        return credentials != null && credentials.getRequest() != null
-                ? credentials.getRequest().getParameter(AUTH_SESSION_QUERY_PARAM)
-                : null;
+        return credentials != null ? credentials.getParameter(AUTH_SESSION_QUERY_PARAM) : null;
     }
 
     @Override
     public SAMLAuthenticatedUser authenticateUser(Credentials credentials)
             throws GuacamoleException {
 
-        // No authentication can be attempted without a corresponding HTTP
-        // request
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
-
         // Use established SAML identity if already provided by the SAML IdP
         AssertedIdentity identity = sessionManager.getIdentity(
                 getSessionIdentifier(credentials));
 
         if (identity != null) {
-
-            // Back-port the username to the credentials
-            credentials.setUsername(identity.getUsername());
-
-            // Configure the AuthenticatedUser and return it
             SAMLAuthenticatedUser authenticatedUser = authenticatedUserProvider.get();
             authenticatedUser.init(identity, credentials);
             return authenticatedUser;
-
         }
 
         // Redirect to SAML IdP if no SAML identity is associated with the
@@ -133,8 +126,24 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     }
 
     @Override
+    public URI getLogoutURI(String idToken) throws GuacamoleException {
+
+        // If no logout endpoint is configured, return null
+        URI logoutEndpoint = confService.getLogoutEndpoint();
+        if (logoutEndpoint == null)
+            return null;
+
+        // Build the logout URI with post-logout redirect
+        UriBuilder logoutUriBuilder = UriBuilder.fromUri(logoutEndpoint);
+        logoutUriBuilder.queryParam("RelayState",
+                confService.getPostLogoutRedirectURI());
+
+        return logoutUriBuilder.build();
+    }
+
+    @Override
     public void shutdown() {
         sessionManager.shutdown();
     }
-    
+
 }

@@ -1,0 +1,37 @@
+{
+
+    "guacamoleVersion" : "${project.version}",
+
+    "name"      : "MySQL Authentication",
+    "namespace" : "mysql",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.mysql.MySQLAuthenticationProvider",
+        "org.apache.guacamole.auth.mysql.MySQLSharedAuthenticationProvider"
+    ],
+
+    "css" : [
+        "styles/jdbc.css"
+    ],
+
+    "html" : [
+        "html/shared-connection.html"
+    ],
+
+    "translations" : [
+        "translations/ca.json",
+        "translations/de.json",
+        "translations/en.json",
+        "translations/es.json",
+        "translations/fr.json",
+        "translations/ja.json",
+        "translations/ko.json",
+        "translations/pl.json",
+        "translations/pt.json",
+        "translations/ru.json",
+        "translations/tr.json",
+        "translations/zh.json"
+    ]
+
+}
+

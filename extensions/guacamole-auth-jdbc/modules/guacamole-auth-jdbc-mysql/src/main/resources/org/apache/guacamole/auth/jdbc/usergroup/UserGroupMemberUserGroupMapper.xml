@@ -96,7 +96,7 @@
             guacamole_entity.type = 'USER_GROUP'
             AND
             <choose>
-                <when test="caseSensitivity.caesSensitiveGroupNames()">
+                <when test="caseSensitivity.caseSensitiveGroupNames()">
                     guacamole_entity.name
                 </when>
                 <otherwise>

@@ -138,7 +138,7 @@ public class UserResource
         try {
             User currentUser = getUserContext().self();
             if (
-                    currentUser.getIdentifier().equals(modifiedObject.getUsername())
+                    currentUser.getIdentifier().equals(getInternalObject().getIdentifier())
                     && modifiedObject.getPassword() != null) {
                 throw new GuacamoleSecurityException(
                         "Permission denied. The password update endpoint must"

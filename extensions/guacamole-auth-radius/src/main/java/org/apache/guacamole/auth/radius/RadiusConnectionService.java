@@ -245,18 +245,15 @@ public class RadiusConnectionService {
             
         }
         catch (RadiusException e) {
-            logger.error("Unable to complete authentication.", e.getMessage());
-            logger.debug("Authentication with RADIUS failed.", e);
+            logger.error("Unable to complete authentication: {}", e.getMessage(), e);
             return null;
         }
         catch (NoSuchAlgorithmException e) {
-            logger.error("No such RADIUS algorithm: {}", e.getMessage());
-            logger.debug("Unknown RADIUS algorithm.", e);
+            logger.error("No such RADIUS algorithm: {}", e.getMessage(), e);
             return null;
         }
         catch (UnknownHostException e) {
-            logger.error("Could not resolve address: {}", e.getMessage());
-            logger.debug("Exception resolving host address.", e);
+            logger.error("Could not resolve address: {}", e.getMessage(), e);
             return null;
         }
         finally {

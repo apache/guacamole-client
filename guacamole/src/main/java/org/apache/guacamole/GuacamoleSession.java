@@ -320,8 +320,7 @@ public class GuacamoleSession {
             });
         }
         catch (GuacamoleException e) {
-            logger.error("An extension listening for session invalidation failed: {}", e.getMessage());
-            logger.debug("Extension failed internally while handling the session invalidation event.", e);
+            logger.error("An extension listening for session invalidation failed: {}", e.getMessage(), e);
         }
 
     }

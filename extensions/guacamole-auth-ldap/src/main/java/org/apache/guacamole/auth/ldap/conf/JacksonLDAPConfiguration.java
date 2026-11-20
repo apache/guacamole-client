@@ -205,6 +205,13 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     private String memberAttributeType;
 
     /**
+     * The raw YAML value of {@link LDAPGuacamoleProperties#LDAP_NESTED_GROUPS}.
+     * If not set within the YAML, this will be false.
+     */
+    @JsonProperty("nested-groups")
+    private Boolean nestedGroups;
+
+    /**
      * The default configuration options for all parameters.
      */
     private LDAPConfiguration defaultConfig = new DefaultLDAPConfiguration();
@@ -432,6 +439,11 @@ public class JacksonLDAPConfiguration implements LDAPConfiguration {
     @Override
     public String getMemberAttribute() throws GuacamoleException {
         return withDefault(memberAttribute, defaultConfig::getMemberAttribute);
+    }
+
+    @Override
+    public boolean getNestedGroups() throws GuacamoleException {
+        return withDefault(nestedGroups, defaultConfig::getNestedGroups);
     }
 
     @Override

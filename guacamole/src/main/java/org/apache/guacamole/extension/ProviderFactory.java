@@ -61,35 +61,29 @@ class ProviderFactory {
         catch (NoSuchMethodException e) {
             logger.error("The {} extension in use is not properly defined. "
                     + "Please contact the developers of the extension or, if you "
-                    + "are the developer, turn on debug-level logging.", typeName);
-            logger.debug("{} is missing a default constructor.",
-                    providerClass.getName(), e);
+                    + "are the developer, turn on debug-level logging.",
+                    typeName, e);
         }
         catch (SecurityException e) {
             logger.error("The Java security manager is preventing extensions "
                     + "from being loaded. Please check the configuration of Java or your "
-                    + "servlet container.");
-            logger.debug("Creation of {} disallowed by security manager.",
-                    providerClass.getName(), e);
+                    + "servlet container.", e);
         }
         catch (InstantiationException e) {
             logger.error("The {} extension in use is not properly defined. "
                     + "Please contact the developers of the extension or, if you "
-                    + "are the developer, turn on debug-level logging.", typeName);
-            logger.debug("{} cannot be instantiated.", providerClass.getName(), e);
+                    + "are the developer, turn on debug-level logging.",
+                    typeName, e);
         }
         catch (IllegalAccessException e) {
             logger.error("The {} extension in use is not properly defined. "
                     + "Please contact the developers of the extension or, if you "
-                    + "are the developer, turn on debug-level logging.");
-            logger.debug("Default constructor of {} is not public.", typeName, e);
+                    + "are the developer, turn on debug-level logging.", e);
         }
         catch (IllegalArgumentException e) {
             logger.error("The {} extension in use is not properly defined. "
                     + "Please contact the developers of the extension or, if you "
-                    + "are the developer, turn on debug-level logging.", typeName);
-            logger.debug("Default constructor of {} cannot accept zero arguments.",
-                    providerClass.getName(), e);
+                    + "are the developer, turn on debug-level logging.", typeName, e);
         }
         catch (InvocationTargetException e) {
             // Obtain causing error - create relatively-informative stub error if cause is unknown
@@ -97,8 +91,7 @@ class ProviderFactory {
             if (cause == null)
                 cause = new GuacamoleException("Error encountered during initialization.");
 
-            logger.error("{} extension failed to start: {}", typeName, cause.getMessage());
-            logger.debug("{} instantiation failed.", providerClass.getName(), e);
+            logger.error("{} extension failed to start: {}", typeName, cause.getMessage(), cause);
         }
 
         return instance;

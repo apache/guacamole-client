@@ -28,6 +28,14 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
+    <!-- Ensure that our own ServletContainerInitializer is used to initialize
+    logging, and that Logback does not potentially initialize SLF4J first (which
+    would prevent our custom logging from taking effect) -->
+    <context-param>
+        <param-name>logbackDisableServletContainerInitializer</param-name>
+        <param-value>true</param-value>
+    </context-param>
+
     <!-- Request that the browser always revalidate its cached copy of index.html -->
     <filter>
         <filter-name>cacheRevalidationFilter</filter-name>

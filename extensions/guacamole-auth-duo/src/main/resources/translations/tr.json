@@ -1,0 +1,13 @@
+{
+
+    "DATA_SOURCE_DUO" : {
+        "NAME" : "Duo TFA Altyapısı"
+    },
+
+    "LOGIN" : {
+        "INFO_DUO_AUTH_REQUIRED"                : "Devam etmek için lütfen Duo ile kimlik doğrulayın.",
+        "INFO_DUO_REDIRECT_PENDING"             : "Lütfen bekleyin, Duo'ya yönlendiriliyor...",
+        "INFO_DUO_VALIDATION_CODE_INCORRECT"    : "Duo doğrulama kodu yanlış."
+    }
+
+}

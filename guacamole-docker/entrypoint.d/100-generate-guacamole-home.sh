@@ -74,12 +74,16 @@ EOF
 if [ -e "$GUACAMOLE_HOME_TEMPLATE" ]; then
 
     # Create links for any libraries provided in the template GUACAMOLE_HOME
-    find "$GUACAMOLE_HOME_TEMPLATE/lib" -mindepth 1 -maxdepth 1 \
-        -exec ln -sv "{}" "$GUACAMOLE_HOME/lib/" ";"
+    if [ -e "$GUACAMOLE_HOME_TEMPLATE/lib" ]; then
+        find "$GUACAMOLE_HOME_TEMPLATE/lib" -mindepth 1 -maxdepth 1 \
+            -exec ln -sv "{}" "$GUACAMOLE_HOME/lib/" ";"
+    fi
 
     # Create links for any extensions provided in the template GUACAMOLE_HOME
-    find "$GUACAMOLE_HOME_TEMPLATE/extensions" -mindepth 1 -maxdepth 1 \
-        -exec ln -sv "{}" "$GUACAMOLE_HOME/extensions/" ";"
+    if [ -e "$GUACAMOLE_HOME_TEMPLATE/extensions" ]; then
+        find "$GUACAMOLE_HOME_TEMPLATE/extensions" -mindepth 1 -maxdepth 1 \
+            -exec ln -sv "{}" "$GUACAMOLE_HOME/extensions/" ";"
+    fi
 
     # Create links for all other files directly within the template
     # GUACAMOLE_HOME
@@ -109,3 +113,18 @@ enable-environment-properties: true
 EOF
 fi
 
+# Enable reading of environment variables that pull values for properties
+# from files, unless overridden
+if ! is_property_set "enable-file-environment-properties"; then
+    cat >> "$GUACAMOLE_HOME/guacamole.properties" <<'EOF'
+#
+# NOTE: The following was automatically added by the container entrypoint to
+# allow Guacamole configuration property values to be automatically read from
+# files specified by environment variables ending in _FILE. If this is not
+# desired, you can override this behavior by specifying the
+# "enable-file-environment-properties" variable yourself in your
+# own guacamole.properties file.
+#
+enable-file-environment-properties: true
+EOF
+fi

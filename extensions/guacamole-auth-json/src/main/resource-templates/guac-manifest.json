@@ -1,0 +1,16 @@
+{
+
+    "guacamoleVersion" : "${project.version}",
+
+    "name"      : "Encrypted JSON Authentication",
+    "namespace" : "json",
+
+    "authProviders" : [
+        "org.apache.guacamole.auth.json.JSONAuthenticationProvider"
+    ],
+
+    "translations" : [
+        "translations/en.json"
+    ]
+
+}

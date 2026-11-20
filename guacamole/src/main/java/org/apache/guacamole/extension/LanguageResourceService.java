@@ -125,8 +125,7 @@ public class LanguageResourceService {
         // Warn of failure to parse
         catch (GuacamoleException e) {
             parsedAllowedLanguages = null;
-            logger.error("Unable to parse list of allowed languages: {}", e.getMessage());
-            logger.debug("Error parsing list of allowed languages.", e);
+            logger.error("Unable to parse list of allowed languages: {}", e.getMessage(), e);
         }
 
         this.allowedLanguages = parsedAllowedLanguages;
@@ -308,8 +307,7 @@ public class LanguageResourceService {
 
             }
             catch (IOException e) {
-                logger.error("Unable to merge language resource \"{}\": {}", key, e.getMessage());
-                logger.debug("Error merging language resource.", e);
+                logger.error("Unable to merge language resource \"{}\": {}", key, e.getMessage(), e);
             }
 
         }
@@ -437,8 +435,7 @@ public class LanguageResourceService {
 
             // Continue with next language if unable to read
             catch (IOException e) {
-                logger.warn("Unable to read language resource \"{}\".", languageKey);
-                logger.debug("Error reading language resource.", e);
+                logger.warn("Unable to read language resource \"{}\".", languageKey, e);
             }
 
         }

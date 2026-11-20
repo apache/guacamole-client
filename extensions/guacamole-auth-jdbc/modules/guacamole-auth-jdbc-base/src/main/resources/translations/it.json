@@ -32,7 +32,7 @@
 
         "SECTION_HEADER_CONCURRENCY"    : "Limiti di concorrenza",
         "SECTION_HEADER_LOAD_BALANCING" : "Load Balancing",
-        "SECTION_HEADER_GUACD"          : "Guacamole Proxy Parameters (guacd)"
+        "SECTION_HEADER_GUACD"          : "Parametri Proxy Guacamole (guacd)"
 
     },
 

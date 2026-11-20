@@ -214,7 +214,7 @@
                         JOIN [guacamole_entity] ON [guacamole_user].entity_id = [guacamole_entity].entity_id
                         WHERE
                             <choose>
-                                <hen test="caseSensitivity.caseSensitiveUsernames()">
+                                <when test="caseSensitivity.caseSensitiveUsernames()">
                                     CHARINDEX(#{term.term,jdbcType=VARCHAR} IN [guacamole_entity].name) > 0
                                 </when>
                                 <otherwise>

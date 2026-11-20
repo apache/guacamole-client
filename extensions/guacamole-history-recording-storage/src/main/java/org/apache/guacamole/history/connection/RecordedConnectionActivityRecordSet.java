@@ -40,6 +40,11 @@ public class RecordedConnectionActivityRecordSet extends DecoratingActivityRecor
      * Whether the current user is an administrator.
      */
     private final boolean isAdmin;
+    
+    /**
+     * Whether the current user is an auditor.
+     */
+    private final boolean isAuditor;
 
     /**
      * The overall set of connection permissions defined for the current user.
@@ -69,9 +74,10 @@ public class RecordedConnectionActivityRecordSet extends DecoratingActivityRecor
         // Determine whether current user is an administrator
         Permissions perms = currentUser.getEffectivePermissions();
         isAdmin = perms.getSystemPermissions().hasPermission(SystemPermission.Type.ADMINISTER);
+        isAuditor = perms.getSystemPermissions().hasPermission(SystemPermission.Type.AUDIT);
 
-        // If not an admin, additionally pull specific connection permissions
-        if (isAdmin)
+        // If not an admin or auditor, additionally pull specific connection permissions
+        if (isAdmin || isAuditor)
             connectionPermissions = Collections.emptySet();
         else
             connectionPermissions = perms.getConnectionPermissions().getPermissions();
@@ -95,8 +101,8 @@ public class RecordedConnectionActivityRecordSet extends DecoratingActivityRecor
      */
     private boolean canViewLogs(ConnectionRecord record) {
 
-        // Administrator can always view
-        if (isAdmin)
+        // Administrator or Auditor can always view
+        if (isAdmin || isAuditor)
             return true;
 
         // Non-administrator CANNOT view if permissions cannot be verified

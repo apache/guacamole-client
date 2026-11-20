@@ -179,7 +179,7 @@
                     LOWER([guacamole_entity].name) IN
                     <foreach collection="identifiers" item="identifier"
                              open="(" separator="," close=")">
-                        LOOWER(#{identifier,jdbcType=VARCHAR})
+                        LOWER(#{identifier,jdbcType=VARCHAR})
                     </foreach>
                 </otherwise>
             </choose>

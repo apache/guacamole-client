@@ -25,7 +25,6 @@ import com.google.inject.Singleton;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.auth.ssl.conf.ConfigurationService;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleResourceNotFoundException;
@@ -89,9 +88,7 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
 
         // Return the session identifier from the request params, if set, or
         // null otherwise
-        return credentials != null && credentials.getRequest() != null
-                ? credentials.getRequest().getParameter(AUTH_SESSION_PARAMETER_NAME)
-                : null;
+        return credentials != null ? credentials.getParameter(AUTH_SESSION_PARAMETER_NAME) : null;
     }
 
     /**
@@ -154,15 +151,9 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         // was signed by the expected CA.
         //
 
-        // We can't authenticate using SSL/TLS client auth unless there's an
-        // associated HTTP request
-        HttpServletRequest request = credentials.getRequest();
-        if (request == null)
-            return null;
-
         // We MUST have the domain associated with the request to ensure we
         // always get fresh SSL sessions when validating client certificates
-        String host = request.getHeader("Host");
+        String host = credentials.getHeader("Host");
         if (host == null)
             return null;
 

@@ -322,8 +322,7 @@ public class LDAPConnectionService {
             ldapConnection.close();
             logger.error("Binding with the LDAP server at \"{}\" as user "
                     + "\"{}\" failed: {}", config.getLdapHost(), bindUser,
-                    e.getMessage());
-            logger.debug("Unable to bind to LDAP server.", e);
+                    e.getMessage(), e);
             return null;
         }
 
@@ -369,8 +368,8 @@ public class LDAPConnectionService {
         }
         catch (LdapInvalidDnException e) {
             logger.error("Credentials of existing connection cannot be used. "
-                    + "The username used (\"{}\") is not a valid DN.", username);
-            logger.debug("Cannot bind using invalid DN.", e);
+                    + "The username used (\"{}\") is not a valid DN.",
+                    username, e);
             ldapConnection.close();
             return null;
         }

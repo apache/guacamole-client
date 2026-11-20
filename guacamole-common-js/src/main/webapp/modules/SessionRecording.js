@@ -335,8 +335,50 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     };
 
     /**
+     * Calculates the size in bytes of the given UTF8 string.
+     *
+     * @private
+     * @param {!string} str
+     *     The string to calculate the size in bytes.
+     *
+     * @returns {!number}
+     *     The size in bytes of the given string.
+     */
+    var getUtf8StringByteSize = function(str) {
+
+        var byteSize = str.length;
+        for (var i = str.length - 1; i >= 0; i--) {
+            var code = str.charCodeAt(i);
+            // A UTF8 character with such a code will be stored
+            // using two bytes. So we add one byte to the
+            // original string length to get the byte size.
+            if (code > 0x7F && code <= 0x7FF)
+                byteSize++;
+            // This is either a 3 byte UTF8 character or a low
+            // surrogate of a character which JavaSript
+            // interprets as two separate codes. More details:
+            // https://mathiasbynens.be/notes/javascript-encoding
+            else if (code > 0x7FF && code <= 0xFFFF)
+                byteSize += 2;
+            // If this is the low (trail) surrogate, we must skip
+            // the high surrogate code (i - 1). We already have
+            // the original length for two separate codes (this is
+            // how JavaScript interprets the character) plus
+            // we added two bytes at the previous step.
+            // Overall, 4 bytes for the character.
+            if (code >= 0xDC00 && code <= 0xDFFF)
+                i--;
+        }
+        return byteSize;
+
+    };
+
+    /**
      * Calculates the size of the given Guacamole instruction element, in
-     * Unicode characters. The size returned includes the characters which
+     * bytes. This is necessary because the recording is stored as a Blob
+     * and we need to know the start and end positions of a frame (i.e.
+     * all the instructions which make up the frame).
+     * The size returned includes the characters which
      * make up the length, the "." separator between the length and the
      * element itself, and the "," or ";" terminator which follows the
      * element.
@@ -347,25 +389,26 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
      *     the initial length, "." separator, and "," or ";" terminator).
      *
      * @returns {!number}
-     *     The number of Unicode characters which would make up the given
-     *     element within a Guacamole instruction.
+     *     The number of bytes which would make up the given
+     *     element within a Guacamole instruction to be stored in Blob.
      */
     var getElementSize = function getElementSize(value) {
 
-        var valueLength = value.length;
-
         // Calculate base size, assuming at least one digit, the "."
         // separator, and the "," or ";" terminator
-        var protocolSize = valueLength + 3;
+        var byteSize = getUtf8StringByteSize(value) + 3;
+
+        // We need this to calculate the size of the length substring.
+        var valueLength = Guacamole.Parser.codePointCount(value);
 
         // Add one character for each additional digit that would occur
         // in the element length prefix
         while (valueLength >= 10) {
-            protocolSize++;
+            byteSize++;
             valueLength = Math.floor(valueLength / 10);
         }
 
-        return protocolSize;
+        return byteSize;
 
     };
 
@@ -385,16 +428,24 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
     var keyEventInterpreter = null;
 
     /**
-     * Initialize the key interpreter. This function should be called only once
-     * with the first timestamp in the recording as an argument.
+     * A clipboard event interpreter to extract all clipboard events from
+     * this recording.
+     *
+     * @type {Guacamole.ClipboardEventInterpreter}
+     */
+    var clipboardEventInterpreter = null;
+
+    /**
+     * Initialize the key and clipboard interpreters. This function should be
+     * called only once with the first timestamp in the recording.
      *
      * @private
      * @param {!number} startTimestamp
-     *     The timestamp of the first frame in the recording, i.e. the start of
-     *     the recording.
+     *     The timestamp of the first frame in the recording.
      */
-    function initializeKeyInterpreter(startTimestamp) {
+    function initializeInterpreters(startTimestamp) {
         keyEventInterpreter = new Guacamole.KeyEventInterpreter(startTimestamp);
+        clipboardEventInterpreter = new Guacamole.ClipboardEventInterpreter(startTimestamp);
     }
 
     /**
@@ -423,6 +474,12 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
             // Parse frame timestamp from sync instruction
             var timestamp = parseInt(args[0]);
 
+            // Update the clipboard interpreter's timestamp so clipboard events
+            // are recorded with the correct time. Clipboard events don't have 
+            // their own timestamps
+            if (clipboardEventInterpreter)
+                clipboardEventInterpreter.setTimestamp(timestamp);
+
             // Add a new frame containing the instructions read since last frame
             var frame = new Guacamole.SessionRecording._Frame(timestamp, frameStart, frameEnd);
             frames.push(frame);
@@ -431,7 +488,7 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
             // If this is the first frame, intialize the key event interpreter
             // with the timestamp of the first frame
             if (frames.length === 1)
-                initializeKeyInterpreter(timestamp);
+                initializeInterpreters(timestamp);
 
             // This frame should eventually become a keyframe if enough data
             // has been processed and enough recording time has elapsed, or if
@@ -449,8 +506,27 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
         }
 
-        else if (opcode === 'key')
+        else if (opcode === 'key') {
             keyEventInterpreter.handleKeyEvent(args);
+            // The clipboard gets updated on Ctrl+C key events so we update the 
+            // clipboard interpreter's timestamp to match the timestamp as
+            // clipboard events don't have own timestamps
+            if (clipboardEventInterpreter) {
+                var keyTimestamp = parseInt(args[2]);
+                clipboardEventInterpreter.setTimestamp(keyTimestamp);
+            }
+        }
+
+        else if (opcode === 'clipboard' && clipboardEventInterpreter)
+            clipboardEventInterpreter.handleClipboard(args);
+
+        // Handle blob data (may be clipboard data)
+        else if (opcode === 'blob' && clipboardEventInterpreter)
+            clipboardEventInterpreter.handleBlob(args);
+
+        // Handle stream end (may complete clipboard stream)
+        else if (opcode === 'end' && clipboardEventInterpreter)
+            clipboardEventInterpreter.handleEnd(args);
     };
 
     /**
@@ -519,8 +595,13 @@ Guacamole.SessionRecording = function SessionRecording(source, refreshInterval) 
 
                 // Now that the recording is fully processed, and all key events
                 // have been extracted, call the onkeyevents handler if defined
-                if (recording.onkeyevents)
+                if (recording.onkeyevents && keyEventInterpreter)
                     recording.onkeyevents(keyEventInterpreter.getEvents());
+
+                // call the onclipboardevents handler if defined with extracted
+                // clipboard events
+                if (recording.onclipboardevents && clipboardEventInterpreter)
+                    recording.onclipboardevents(clipboardEventInterpreter.getEvents());
 
                 // Consider recording loaded if tunnel has closed without errors
                 if (!errorEncountered)

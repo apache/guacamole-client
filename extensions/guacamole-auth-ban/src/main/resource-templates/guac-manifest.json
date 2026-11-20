@@ -1,0 +1,18 @@
+{
+
+    "guacamoleVersion" : "${project.version}",
+
+    "name"      : "Brute-force Authentication Detection/Prevention",
+    "namespace" : "ban",
+
+    "listeners" : [
+        "org.apache.guacamole.auth.ban.BanningAuthenticationListener"
+    ],
+
+    "translations" : [
+        "translations/en.json",
+        "translations/pl.json",
+        "translations/tr.json"
+    ]
+
+}

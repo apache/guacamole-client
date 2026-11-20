@@ -291,7 +291,6 @@
     <delete id="delete">
         DELETE FROM guacamole_entity
         WHERE
-            type = 'USER_GROUP'
             <choose>
                 <when test="caseSensitivity.caseSensitiveGroupNames()">
                     name = #{identifier,jdbcType=VARCHAR}
@@ -300,6 +299,7 @@
                     LOWER(name) = LOWER(#{identifier,jdbcType=VARCHAR})
                 </otherwise>
             </choose>
+            AND type = 'USER_GROUP'
     </delete>
 
     <!-- Insert single group -->

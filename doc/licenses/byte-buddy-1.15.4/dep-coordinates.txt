@@ -1,1 +1,0 @@
-net.bytebuddy:byte-buddy:jar:1.15.4

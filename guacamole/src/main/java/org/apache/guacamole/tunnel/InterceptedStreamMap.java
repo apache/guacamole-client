@@ -69,8 +69,7 @@ public class InterceptedStreamMap<T extends Closeable> {
             stream.close();
         }
         catch (IOException e) {
-            logger.warn("Unable to close intercepted stream: {}", e.getMessage());
-            logger.debug("I/O error prevented closure of intercepted stream.", e);
+            logger.warn("Unable to close intercepted stream: {}", e.getMessage(), e);
         }
 
         // Notify waiting threads that the stream has ended

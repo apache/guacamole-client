@@ -163,10 +163,6 @@ public class TicketValidationService {
         // Canonicalize username as lowercase
         username = username.toLowerCase();
 
-        // Update credentials with username provided by CAS for sake of
-        // ${GUAC_USERNAME} token
-        credentials.setUsername(username);
-
         // Retrieve password, attempt decryption, and set credentials.
         Object credObj = ticketAttrs.remove("credential");
         if (credObj != null) {

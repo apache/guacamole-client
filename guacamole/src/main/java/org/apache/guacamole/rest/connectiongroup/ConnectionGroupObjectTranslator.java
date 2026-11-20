@@ -56,7 +56,8 @@ public class ConnectionGroupObjectTranslator
 
     @Override
     public void filterExternalObject(UserContext userContext,
-            APIConnectionGroup object) throws GuacamoleException {
+            ConnectionGroup existingObject, APIConnectionGroup object)
+            throws GuacamoleException {
 
         // Filter object attributes by defined schema
         object.setAttributes(filterAttributes(

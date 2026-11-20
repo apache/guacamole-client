@@ -39,7 +39,6 @@ import org.apache.guacamole.language.TranslatableGuacamoleSecurityException;
 import org.apache.guacamole.net.auth.User;
 import org.apache.guacamole.net.auth.UserContext;
 import org.apache.guacamole.net.auth.UserGroup;
-import org.apache.guacamole.net.auth.permission.SystemPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -301,13 +300,6 @@ public class RestrictionVerificationService {
         // Get the current user
         User currentUser = context.self();
         
-        // Admins always have access.
-        if (currentUser.getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.ADMINISTER)) {
-            LOGGER.warn("User \"{}\" has System Administration permissions; additional restrictions will be bypassed.", 
-                    currentUser.getIdentifier());
-            return;
-        }
-        
         // Get user's attributes
         Map<String, String> userAttributes = currentUser.getAttributes();
         
@@ -442,13 +434,6 @@ public class RestrictionVerificationService {
         
         // Retrieve the current User object associated with the UserContext
         User currentUser = context.self();
-        
-        // Admins always have access.
-        if (currentUser.getEffectivePermissions().getSystemPermissions().hasPermission(SystemPermission.Type.ADMINISTER)) {
-            LOGGER.warn("User \"{}\" has System Administration permissions; additional restrictions will be bypassed.", 
-                    currentUser.getIdentifier());
-            return;
-        }
         
         // Get user's attributes
         Map<String, String> userAttributes = currentUser.getAttributes();

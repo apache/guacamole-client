@@ -26,15 +26,13 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-sso</artifactId>
     <packaging>pom</packaging>
-    <version>1.6.0</version>
     <name>guacamole-auth-sso</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>extensions</artifactId>
-        <version>1.6.0</version>
-        <relativePath>../</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <modules>
@@ -56,19 +54,11 @@
     <dependencyManagement>
         <dependencies>
 
-            <!-- Guacamole Extension API -->
-            <dependency>
-                <groupId>org.apache.guacamole</groupId>
-                <artifactId>guacamole-ext</artifactId>
-                <version>1.6.0</version>
-                <scope>provided</scope>
-            </dependency>
-
             <!-- Core SSO support -->
             <dependency>
                 <groupId>org.apache.guacamole</groupId>
                 <artifactId>guacamole-auth-sso-base</artifactId>
-                <version>1.6.0</version>
+                <version>${revision}</version>
             </dependency>
 
             <!-- Java servlet API -->

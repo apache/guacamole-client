@@ -158,9 +158,8 @@ class DefaultEnvironment extends DelegatingEnvironment {
             logger.error("Defaulting to case-sensitive handling of "
                     + "usernames and group names as the desired case "
                     + "sensitivity configuration could not be read: {}",
-                    e.getMessage());
+                    e.getMessage(), e);
 
-            logger.debug("Error reading case sensitivity configuration.", e);
             return CaseSensitivity.ENABLED;
 
         }

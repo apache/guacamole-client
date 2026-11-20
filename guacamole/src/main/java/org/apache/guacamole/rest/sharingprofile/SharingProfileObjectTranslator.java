@@ -56,7 +56,8 @@ public class SharingProfileObjectTranslator
 
     @Override
     public void filterExternalObject(UserContext userContext,
-            APISharingProfile object) throws GuacamoleException {
+            SharingProfile existingObject, APISharingProfile object)
+            throws GuacamoleException {
 
         // Filter object attributes by defined schema
         object.setAttributes(filterAttributes(

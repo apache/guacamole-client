@@ -39,6 +39,14 @@ import org.apache.guacamole.GuacamoleException;
 @Deprecated
 public abstract class StringListProperty implements GuacamoleProperty<List<String>> {
 
+    /**
+     * A pattern which matches against the delimiters between values. This is
+     * currently either a comma or a semicolon and any following whitespace.
+     * Parts of the input string which match this pattern will not be included
+     * in the parsed result.
+     */
+    static final Pattern DELIMITER_PATTERN = Pattern.compile("[,;]\\s*");
+    
     @Override
     public List<String> parseValue(String values) throws GuacamoleException {
 

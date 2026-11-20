@@ -26,7 +26,7 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-client</artifactId>
     <packaging>pom</packaging>
-    <version>1.6.0</version>
+    <version>${revision}</version>
     <name>guacamole-client</name>
     <url>http://guacamole.apache.org/</url>
 
@@ -35,18 +35,26 @@
         <!-- Core properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
+        <!-- The Guacamole version for the entirety of guacamole-client (this is
+        referenced by this and all other pom.xml files within guacamole-client,
+        and is a special case within Maven as one of the few properties allowed
+        within the pom.xml version and intended for this purpose) -->
+        <revision>1.6.1</revision>
+
         <!-- Dependency versions -->
         <guava.version>32.1.3-jre</guava.version>
         <guice.version>5.1.0</guice.version>
         <hk2.version>2.6.1</hk2.version>
-        <ipaddress.version>5.5.1</ipaddress.version>
-        <jackson.version>2.18.2</jackson.version>
-        <jackson-databind.version>2.18.2</jackson-databind.version>
-        <jersey.version>2.46</jersey.version>
-        <junit.version>5.11.4</junit.version>
+        <ipaddress.version>5.6.2</ipaddress.version>
+        <jackson.version>2.22.3</jackson.version>
+        <jackson-annotations.version>2.22</jackson-annotations.version>
+        <jackson-databind.version>2.22.3</jackson-databind.version>
+        <jersey.version>2.48</jersey.version>
+        <junit.version>5.14.4</junit.version>
         <junit4.version>4.13.2</junit4.version>
-        <logback.version>1.3.14</logback.version>
-        <slf4j.version>2.0.16</slf4j.version>
+        <logback.version>1.3.16</logback.version>
+        <mina.version>2.2.9</mina.version>
+        <slf4j.version>2.0.18</slf4j.version>
 
         <!-- The directory that should receive all generated dependency lists
             (for LICENSE generation) -->
@@ -57,6 +65,11 @@
             well as errors that occur during the RAT check (such as incorrect
             or missing license headers). -->
         <ignoreLicenseErrors>false</ignoreLicenseErrors>
+
+        <!-- Set to "true" to automatically download license information
+            for any files that have "Source" headers but lack specific
+            information for the current version of that dependency. -->
+        <downloadMissingLicenses>false</downloadMissingLicenses>
 
         <!-- Set to "true" to perform automated checks for available dependency
             updates, including whether the declared versions of any
@@ -189,7 +202,7 @@
                 <version>3.0.0-M3</version>
                 <executions>
                     <execution>
-                        <id>enforce</id>
+                        <id>enforce-dependency-consistency</id>
                         <configuration>
                             <rules>
                                 <dependencyConvergence/>
@@ -198,6 +211,36 @@
                         </configuration>
                         <goals>
                             <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Bake-in properties like ${revision} so that downstream users of
+            libraries can freely use these properties for their own purposes.
+            This also removes the need to publish the guacamole-client parent
+            pom.xml to Maven Central. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.7.3</version>
+                <configuration>
+                    <flattenMode>oss</flattenMode>
+                    <updatePomFile>true</updatePomFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -244,6 +287,7 @@
                                 </arguments>
                                 <environmentVariables>
                                     <IGNORE_LICENSE_ERRORS>${ignoreLicenseErrors}</IGNORE_LICENSE_ERRORS>
+                                    <DOWNLOAD_MISSING_LICENSES>${downloadMissingLicenses}</DOWNLOAD_MISSING_LICENSES>
                                 </environmentVariables>
                             </configuration>
                             <goals>
@@ -390,7 +434,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-annotations</artifactId>
-                <version>${jackson.version}</version>
+                <version>${jackson-annotations.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
@@ -411,6 +455,14 @@
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-jaxb-annotations</artifactId>
                 <version>${jackson.version}</version>
+            </dependency>
+
+            <!-- Apache MINA (transitive dependency of jradius-core, pinned here
+                 to force a version without known CVEs) -->
+            <dependency>
+                <groupId>org.apache.mina</groupId>
+                <artifactId>mina-core</artifactId>
+                <version>${mina.version}</version>
             </dependency>
 
             <!-- Logging -->
@@ -489,6 +541,50 @@
                         </executions>
                     </plugin>
                 </plugins>
+            </build>
+        </profile>
+
+        <!-- Automatically filter Java source if located within src/main/java-templates -->
+        <profile>
+            <id>filter-java-source</id>
+            <activation>
+                <file><exists>src/main/java-templates</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>templating-maven-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>filter-java-source</id>
+                                <goals>
+                                    <goal>filter-sources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- Automatically filter resources if located within src/main/resource-templates -->
+        <profile>
+            <id>filter-resources</id>
+            <activation>
+                <file><exists>src/main/resource-templates</exists></file>
+            </activation>
+            <build>
+                <resources>
+                    <resource>
+                        <directory>src/main/resources</directory>
+                    </resource>
+                    <resource>
+                        <directory>src/main/resource-templates</directory>
+                        <filtering>true</filtering>
+                    </resource>
+                </resources>
             </build>
         </profile>
 

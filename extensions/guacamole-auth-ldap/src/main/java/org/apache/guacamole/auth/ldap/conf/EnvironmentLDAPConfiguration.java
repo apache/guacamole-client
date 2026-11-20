@@ -234,4 +234,12 @@ public class EnvironmentLDAPConfiguration implements LDAPConfiguration {
         );
     }
 
+    @Override
+    public boolean getNestedGroups() throws GuacamoleException {
+        return environment.getProperty(
+            LDAPGuacamoleProperties.LDAP_NESTED_GROUPS,
+            DEFAULT.getNestedGroups()
+        );
+    }
+
 }

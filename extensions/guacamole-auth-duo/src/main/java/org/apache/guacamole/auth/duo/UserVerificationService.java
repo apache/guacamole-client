@@ -30,7 +30,6 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.auth.duo.conf.ConfigurationService;
@@ -113,8 +112,7 @@ public class UserVerificationService {
 
         // Pull the original HTTP request used to authenticate
         Credentials credentials = authenticatedUser.getCredentials();
-        HttpServletRequest request = credentials.getRequest();
-        IPAddress clientAddr = new IPAddressString(request.getRemoteAddr()).getAddress();
+        IPAddress clientAddr = new IPAddressString(credentials.getRemoteAddress()).getAddress();
 
         // Ignore anonymous users
         String username = authenticatedUser.getIdentifier();
@@ -176,8 +174,8 @@ public class UserVerificationService {
         // Retrieve signed Duo authentication code and session state from the
         // request (these will be absent if this is an initial authentication
         // attempt and not a redirect back from Duo)
-        String duoCode = request.getParameter(DUO_CODE_PARAMETER_NAME);
-        String duoState = request.getParameter(DUO_STATE_PARAMETER_NAME);
+        String duoCode = credentials.getParameter(DUO_CODE_PARAMETER_NAME);
+        String duoState = credentials.getParameter(DUO_STATE_PARAMETER_NAME);
 
         // Redirect to Duo to obtain an authentication code if that redirect
         // has not yet occurred

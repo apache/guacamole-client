@@ -79,7 +79,7 @@ public class KsmAttributeService implements VaultAttributeService {
                     SecretsManager.KEY_CLIENT_KEY,
                     SecretsManager.KEY_APP_KEY,
                     SecretsManager.KEY_OWNER_PUBLIC_KEY,
-                    SecretsManager.KEY_SERVER_PUBIC_KEY_ID
+                    SecretsManager.KEY_SERVER_PUBLIC_KEY_ID
     )));
 
     /**
@@ -155,15 +155,12 @@ public class KsmAttributeService implements VaultAttributeService {
 
         catch (GuacamoleException e) {
 
-            logger.warn(
-                    "Unable to determine if KSM user attributes "
-                    + "should be exposed due to config parsing error: {}.", e.getMessage());
-            logger.debug(
-                    "Config parsing error prevented checking user attribute configuration",
-                    e);
-
-            // If the configuration can't be parsed, default to not exposing the attributes
+            // If the configuration can't be parsed, default to not exposing
+            // the attributes
+            logger.warn("Unable to determine if KSM user attributes should be "
+                    + "exposed due to config parsing error: {}.", e.getMessage(), e);
             return Collections.emptyList();
+
         }
 
     }

@@ -30,7 +30,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleSecurityException;
 import org.apache.guacamole.GuacamoleUnsupportedException;
@@ -129,8 +128,7 @@ public class UserVerificationService {
         // If key is not valid base32, warn but otherwise pretend the key does
         // not exist
         catch (IllegalArgumentException e) {
-            logger.warn("TOTP key of user \"{}\" is not valid base32.", self.getIdentifier());
-            logger.debug("TOTP key is not valid base32.", e);
+            logger.warn("TOTP key of user \"{}\" is not valid base32.", self.getIdentifier(), e);
             return null;
         }
 
@@ -219,9 +217,7 @@ public class UserVerificationService {
                     + "lack permission to update their own account and the "
                     + "TOTP extension was unable to obtain privileged access. "
                     + "TOTP will be disabled for this user.",
-                    self.getIdentifier());
-            logger.debug("Permission denied to set TOTP key of user "
-                    + "account.", e);
+                    self.getIdentifier(), e);
             return false;
         }
         catch (GuacamoleUnsupportedException e) {
@@ -317,10 +313,9 @@ public class UserVerificationService {
 
         // Pull the original HTTP request used to authenticate
         Credentials credentials = authenticatedUser.getCredentials();
-        HttpServletRequest request = credentials.getRequest();
         
         // Get the current client address
-        IPAddress clientAddr = new IPAddressString(request.getRemoteAddr()).getAddress();
+        IPAddress clientAddr = new IPAddressString(credentials.getRemoteAddress()).getAddress();
 
         // Ignore anonymous users
         if (authenticatedUser.getIdentifier().equals(AuthenticatedUser.ANONYMOUS_IDENTIFIER))
@@ -369,7 +364,7 @@ public class UserVerificationService {
             return;
 
         // Retrieve TOTP from request
-        String code = request.getParameter(AuthenticationCodeField.PARAMETER_NAME);
+        String code = credentials.getParameter(AuthenticationCodeField.PARAMETER_NAME);
 
         // If no TOTP provided, request one
         if (code == null) {
@@ -424,8 +419,7 @@ public class UserVerificationService {
 
         }
         catch (InvalidKeyException e) {
-            logger.warn("User \"{}\" is associated with an invalid TOTP key.", username);
-            logger.debug("TOTP key is not valid.", e);
+            logger.warn("User \"{}\" is associated with an invalid TOTP key.", username, e);
         }
 
         // Provided code is not valid

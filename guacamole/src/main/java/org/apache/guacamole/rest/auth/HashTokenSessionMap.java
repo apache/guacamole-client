@@ -81,8 +81,7 @@ public class HashTokenSessionMap implements TokenSessionMap {
             sessionTimeoutValue = environment.getProperty(API_SESSION_TIMEOUT, 60);
         }
         catch (GuacamoleException e) {
-            logger.error("Unable to read guacamole.properties: {}", e.getMessage());
-            logger.debug("Error while reading session timeout value.", e);
+            logger.error("Unable to read guacamole.properties: {}", e.getMessage(), e);
             sessionTimeoutValue = 60;
         }
         

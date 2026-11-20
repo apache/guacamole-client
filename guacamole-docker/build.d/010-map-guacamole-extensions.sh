@@ -110,7 +110,7 @@ map_extensions <<'EOF'
     guacamole-auth-sso/cas......................CAS_
     guacamole-auth-sso/openid...................OPENID_
     guacamole-auth-sso/saml.....................SAML_
-    guacamole-auth-sso/ssl......................SSL_
+    guacamole-auth-sso/ssl......................SSL_AUTH_
     guacamole-auth-totp.........................TOTP_
     guacamole-display-statistics................DISPLAY_STATISTICS_
     guacamole-history-recording-storage.........RECORDING_

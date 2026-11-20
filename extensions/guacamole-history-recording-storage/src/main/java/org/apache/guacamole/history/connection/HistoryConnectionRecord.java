@@ -147,8 +147,8 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
         }
         catch (IOException e) {
             logger.warn("Possible session recording \"{}\" could not be "
-                    + "identified as it cannot be read: {}", file, e.getMessage());
-            logger.debug("Possible session recording \"{}\" could not be read.", file, e);
+                    + "identified as it cannot be read: {}",
+                    file, e.getMessage(), e);
         }
         finally {
 
@@ -161,9 +161,7 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
 
                 catch (IOException e) {
                     logger.warn("Unexpected error closing recording file \"{}\": {}",
-                            file, e.getMessage());
-                    logger.debug("Session recording file \"{}\" could not be closed.",
-                            file, e);
+                            file, e.getMessage(), e);
                 }
 
             }
@@ -297,8 +295,9 @@ public class HistoryConnectionRecord extends DelegatingConnectionRecord {
                     .array());
         }
         catch (MalformedURLException e) {
-            logger.warn("Ignoring file \"{}\" as a unique URL and UUID for that file could not be generated: {}", e.getMessage());
-            logger.debug("URL for file \"{}\" could not be determined.", file, e);
+            logger.warn("Ignoring file \"{}\" as a unique URL and UUID for "
+                    + "that file could not be generated: {}",
+                    e.getMessage(), e);
             return;
         }
 

@@ -343,15 +343,13 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         // Translate connection limit attribute
         try { getModel().setMaxConnections(NumericField.parse(attributes.get(MAX_CONNECTIONS_NAME))); }
         catch (NumberFormatException e) {
-            logger.warn("Not setting maximum connections: {}", e.getMessage());
-            logger.debug("Unable to parse numeric attribute.", e);
+            logger.warn("Not setting maximum connections: {}", e.getMessage(), e);
         }
 
         // Translate per-user connection limit attribute
         try { getModel().setMaxConnectionsPerUser(NumericField.parse(attributes.get(MAX_CONNECTIONS_PER_USER_NAME))); }
         catch (NumberFormatException e) {
-            logger.warn("Not setting maximum connections per user: {}", e.getMessage());
-            logger.debug("Unable to parse numeric attribute.", e);
+            logger.warn("Not setting maximum connections per user: {}", e.getMessage(), e);
         }
 
         // Translate guacd hostname
@@ -360,8 +358,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         // Translate guacd port
         try { getModel().setProxyPort(NumericField.parse(attributes.get(GUACD_PORT_NAME))); }
         catch (NumberFormatException e) {
-            logger.warn("Not setting guacd port: {}", e.getMessage());
-            logger.debug("Unable to parse numeric attribute.", e);
+            logger.warn("Not setting guacd port: {}", e.getMessage(), e);
         }
 
         // Translate guacd encryption method
@@ -382,8 +379,7 @@ public class ModeledConnection extends ModeledChildDirectoryObject<ConnectionMod
         // Translate connection weight attribute
         try { getModel().setConnectionWeight(NumericField.parse(attributes.get(CONNECTION_WEIGHT))); }
         catch (NumberFormatException e) {
-            logger.warn("Not setting the connection weight: {}", e.getMessage());
-            logger.debug("Unable to parse numeric attribute.", e);
+            logger.warn("Not setting the connection weight: {}", e.getMessage(), e);
         }
 
         // Translate failover-only attribute

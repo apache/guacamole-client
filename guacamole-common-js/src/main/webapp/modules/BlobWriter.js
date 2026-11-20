@@ -109,6 +109,8 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
 
         var offset = 0;
         var reader = new FileReader();
+        var inFlight = false;
+        var ackHandled = false;
 
         /**
          * Reads the next chunk of the blob provided to
@@ -119,6 +121,10 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
          * @private
          */
         var readNextChunk = function readNextChunk() {
+
+            // Prevent concurrent chunk operations
+            if (inFlight)
+                return;
 
             // If no further chunks remain, inform of completion and stop
             if (offset >= blob.size) {
@@ -131,6 +137,10 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
                 return;
 
             }
+
+            // Mark that a chunk operation is now in progress
+            inFlight = true;
+            ackHandled = false;
 
             // Obtain reference to next chunk as a new blob
             var chunk = slice(blob, offset, offset + arrayBufferWriter.blobLength);
@@ -145,15 +155,19 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
         // Send each chunk over the stream, continue reading the next chunk
         reader.onload = function chunkLoadComplete() {
 
-            // Send the successfully-read chunk
-            arrayBufferWriter.sendData(reader.result);
-
-            // Continue sending more chunks after the latest chunk is
-            // acknowledged
+            // Register ACK handler BEFORE sending data to prevent race condition
             arrayBufferWriter.onack = function sendMoreChunks(status) {
+
+                // Prevent duplicate ACK handling
+                if (ackHandled)
+                    return;
+                ackHandled = true;
 
                 if (guacWriter.onack)
                     guacWriter.onack(status);
+
+                // Clear in-flight flag now that ACK is received
+                inFlight = false;
 
                 // Abort transfer if an error occurs
                 if (status.isError())
@@ -163,15 +177,23 @@ Guacamole.BlobWriter = function BlobWriter(stream) {
                 if (guacWriter.onprogress)
                     guacWriter.onprogress(blob, offset - arrayBufferWriter.blobLength);
 
-                // Queue the next chunk for reading
-                readNextChunk();
+                // Schedule the next chunk for reading (avoid deep recursion)
+                setTimeout(function() {
+                    readNextChunk();
+                }, 0);
 
             };
+
+            // Send the successfully-read chunk
+            arrayBufferWriter.sendData(reader.result);
 
         };
 
         // If an error prevents further reading, inform of error and stop
         reader.onerror = function chunkLoadFailed() {
+
+            // Clear in-flight flag on error
+            inFlight = false;
 
             // Fire error event, including the context of the error
             if (guacWriter.onerror)

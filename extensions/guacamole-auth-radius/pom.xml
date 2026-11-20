@@ -26,15 +26,13 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole-auth-radius</artifactId>
     <packaging>jar</packaging>
-    <version>1.6.0</version>
     <name>guacamole-auth-radius</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>extensions</artifactId>
-        <version>1.6.0</version>
-        <relativePath>../</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <build>
@@ -115,8 +113,6 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>1.6.0</version>
-            <scope>provided</scope>
         </dependency>
         
         <!-- Guava - Utility Library -->
@@ -131,13 +127,6 @@
             <artifactId>guice</artifactId>
         </dependency>
 
-        <!-- Java servlet API -->
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <scope>provided</scope>
-        </dependency>
 
         <!-- JRadius Core Library -->
         <dependency>
@@ -145,16 +134,6 @@
             <artifactId>jradius-core</artifactId>
             <version>1.1.5</version>
             <exclusions>
-
-                <!-- Force consistent versions of Apache Commons libraries (see below) -->
-                <exclusion>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>commons-collections</groupId>
-                    <artifactId>commons-collections</artifactId>
-                </exclusion>
 
                 <!-- Rely on Guacamole's existing use of logback rather than log4j -->
                 <exclusion>
@@ -164,6 +143,23 @@
                 <exclusion>
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
+                </exclusion>
+
+                <exclusion>
+                    <groupId>commons-beanutils</groupId>
+                    <artifactId>commons-beanutils-core</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-configuration</groupId>
+                    <artifactId>commons-configuration</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-context</artifactId>
                 </exclusion>
 
             </exclusions>
@@ -181,19 +177,52 @@
             <groupId>net.jradius</groupId>
             <artifactId>jradius-extended</artifactId>
             <version>1.1.5</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bouncycastle</groupId>
+                    <artifactId>bcprov-jdk15</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- Force single, specific versions of Apache Commons libraries
-            (multiple dependencies reference multiple versions of these). -->
+        <!-- Manual overrides to force consistent, non-vulnerable versions of
+        transitive dependencies (see exclusions) -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk18on</artifactId>
+            <version>1.86</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.11.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>1.2</version>
+            <version>1.4.0</version>
         </dependency>
         <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>3.2.2</version>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>7.0.8</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
     </dependencies>

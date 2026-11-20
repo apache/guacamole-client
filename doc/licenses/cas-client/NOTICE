@@ -1,0 +1,11 @@
+# Name:    Java Apereo CAS Client
+# URL:     https://www.apereo.org/projects/cas
+# From:    'Apereo Foundation' (https://www.apereo.org/)
+# License: Apache v2.0
+# Source:  https://raw.githubusercontent.com/apereo/java-cas-client/refs/tags/v${VERSION}/cas-client-core/NOTICE
+# Source:  https://raw.githubusercontent.com/apereo/java-cas-client/refs/tags/cas-client-${VERSION}/cas-client-core/NOTICE
+#
+# --- BEGIN LICENSE FILE [3.6.4] ---
+This project includes:
+  Jasig CAS Client for Java - Core under Apache License Version 2.0
+# --- END LICENSE FILE [3.6.4] ---

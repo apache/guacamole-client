@@ -87,13 +87,10 @@ import com.google.inject.assistedinject.AssistedInject;
         boolean userKsmConfigEnabled = false;
         try {
             userKsmConfigEnabled = configurationService.getAllowUserConfig();
-        } catch (GuacamoleException e) {
-
-            logger.warn(
-                    "Disabling user KSM config due to exception: {}"
-                    , e.getMessage());
-            logger.debug("Error looking up if user KSM config is enabled.", e);
-
+        }
+        catch (GuacamoleException e) {
+            logger.warn("Disabling user KSM config due to exception: {}",
+                    e.getMessage(), e);
         }
 
         // If user-specific KSM configuration is not enabled, do not expose the

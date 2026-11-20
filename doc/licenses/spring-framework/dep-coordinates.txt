@@ -1,0 +1,6 @@
+org.springframework:spring-aop:jar:*
+org.springframework:spring-asm:jar:*
+org.springframework:spring-beans:jar:*
+org.springframework:spring-context:jar:*
+org.springframework:spring-core:jar:*
+org.springframework:spring-expression:jar:*

@@ -26,15 +26,13 @@
     <groupId>org.apache.guacamole</groupId>
     <artifactId>guacamole</artifactId>
     <packaging>war</packaging>
-    <version>1.6.0</version>
     <name>guacamole</name>
     <url>http://guacamole.apache.org/</url>
 
     <parent>
         <groupId>org.apache.guacamole</groupId>
         <artifactId>guacamole-client</artifactId>
-        <version>1.6.0</version>
-        <relativePath>../</relativePath>
+        <version>${revision}</version>
     </parent>
 
     <description>
@@ -328,14 +326,14 @@
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-ext</artifactId>
-            <version>1.6.0</version>
+            <version>${revision}</version>
         </dependency>
 
         <!-- Guacamole JavaScript API -->
         <dependency>
             <groupId>org.apache.guacamole</groupId>
             <artifactId>guacamole-common-js</artifactId>
-            <version>1.6.0</version>
+            <version>${revision}</version>
             <type>zip</type>
             <scope>runtime</scope>
         </dependency>
@@ -414,17 +412,6 @@
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
-            <exclusions>
-
-                <!-- Resolve version conflict (see below - transitive
-                    dependencies of jersey-media-json-jackson disagree on
-                    1.2.1 vs. 1.2.2) -->
-                <exclusion>
-                    <groupId>jakarta.activation</groupId>
-                    <artifactId>jakarta.activation-api</artifactId>
-                </exclusion>
-
-            </exclusions>
         </dependency>
 
         <!-- JSR-250 annotations -->
@@ -440,12 +427,12 @@
             <artifactId>guava</artifactId>
         </dependency>
 
-        <!-- Force use of version 1.2.2 (transitive dependencies of
-            jersey-media-json-jackson disagree on 1.2.1 vs. 1.2.2) -->
+
+        <!-- JUnit for unit testing -->
         <dependency>
-            <groupId>jakarta.activation</groupId>
-            <artifactId>jakarta.activation-api</artifactId>
-            <version>1.2.2</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>

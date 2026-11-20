@@ -34,6 +34,14 @@ public abstract class TimeZoneGuacamoleProperty
         implements GuacamoleProperty<TimeZone> {
     
     /**
+     * A pattern which matches against the delimiters between values. This is
+     * currently either a comma or a semicolon and any following whitespace.
+     * Parts of the input string which match this pattern will not be included
+     * in the parsed result.
+     */
+    static final Pattern DELIMITER_PATTERN = Pattern.compile("[,;]\\s*");
+    
+    /**
      * A regex that matches valid variants of GMT timezones.
      */
     public static final Pattern GMT_REGEX =

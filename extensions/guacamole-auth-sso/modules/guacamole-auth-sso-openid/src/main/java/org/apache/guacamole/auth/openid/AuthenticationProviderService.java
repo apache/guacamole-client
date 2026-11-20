@@ -27,7 +27,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import org.apache.guacamole.auth.openid.conf.ConfigurationService;
 import org.apache.guacamole.auth.openid.token.TokenValidationService;
@@ -88,16 +87,13 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
         Map<String,String> tokens = Collections.emptyMap();
 
         // Validate OpenID token in request, if present, and derive username
-        HttpServletRequest request = credentials.getRequest();
-        if (request != null) {
-            String token = request.getParameter(TOKEN_PARAMETER_NAME);
-            if (token != null) {
-                JwtClaims claims = tokenService.validateToken(token);
-                if (claims != null) {
-                    username = tokenService.processUsername(claims);
-                    groups = tokenService.processGroups(claims);
-                    tokens = tokenService.processAttributes(claims);
-                }
+        String token = credentials.getParameter(TOKEN_PARAMETER_NAME);
+        if (token != null) {
+            JwtClaims claims = tokenService.validateToken(token);
+            if (claims != null) {
+                username = tokenService.processUsername(claims);
+                groups = tokenService.processGroups(claims);
+                tokens = tokenService.processAttributes(claims);
             }
         }
 
@@ -135,8 +131,32 @@ public class AuthenticationProviderService implements SSOAuthenticationProviderS
     }
 
     @Override
+    public URI getLogoutURI(String idToken) throws GuacamoleException {
+
+        // If no logout endpoint is configured, return null
+        URI logoutEndpoint = confService.getLogoutEndpoint();
+        if (logoutEndpoint == null)
+            return null;
+
+        // Build the logout URI with appropriate parameters
+        UriBuilder logoutUriBuilder = UriBuilder.fromUri(logoutEndpoint);
+
+        // Add post_logout_redirect_uri parameter
+        logoutUriBuilder.queryParam("post_logout_redirect_uri",
+                confService.getPostLogoutRedirectURI());
+
+        // Add id_token_hint if available, otherwise add client_id
+        if (idToken != null && !idToken.isEmpty())
+            logoutUriBuilder.queryParam("id_token_hint", idToken);
+        else
+            logoutUriBuilder.queryParam("client_id", confService.getClientID());
+
+        return logoutUriBuilder.build();
+    }
+
+    @Override
     public void shutdown() {
         // Nothing to clean up
     }
-    
+
 }

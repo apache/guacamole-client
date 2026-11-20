@@ -24,6 +24,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 import org.apache.guacamole.GuacamoleException;
 import org.apache.guacamole.GuacamoleServerException;
 
@@ -31,6 +32,13 @@ import org.apache.guacamole.GuacamoleServerException;
  * A GuacamoleProperty whose value is a URI.
  */
 public abstract class URIGuacamoleProperty implements GuacamoleProperty<URI> {
+    
+    /**
+     * A pattern which matches against the delimiters between values. For the
+     * URIGuacamoleProperty, this is set to one or more spaces, as commas and
+     * semicolons are valid in URIs while white space is not.
+     */
+    static final Pattern DELIMITER_PATTERN = Pattern.compile("\\s+");
     
     @Override
     public URI parseValue(String value) throws GuacamoleException {

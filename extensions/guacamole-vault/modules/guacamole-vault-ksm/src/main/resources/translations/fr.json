@@ -1,0 +1,25 @@
+{
+
+    "DATA_SOURCE_KEEPER_SECRETS_MANAGER" : {
+        "NAME"  : "Keeper Gestionnaire de secrets"
+    },
+
+    "CONNECTION_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG"             : "Keeper Gestionnaire de secrets",
+        "FIELD_HEADER_KSM_USER_CONFIG_ENABLED"  : "Permettre une configuration KSM fournie par l'utilisateur"
+    },
+
+    "CONNECTION_GROUP_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG"  : "Keeper Gestionnaire de secrets",
+        "FIELD_HEADER_KSM_CONFIG"    : "Configuration du service KSM",
+
+        "ERROR_INVALID_KSM_CONFIG_BLOB"     : "La configuration KSM encodée de base64 n'est pas valide. Veuillez vous assurer que vous avez copié le blob entier.",
+        "ERROR_INVALID_KSM_ONE_TIME_TOKEN"  : "La configuration fournie n'est pas un jeton KSM valide une fois ou blob de configuration codée base64. Assurez-vous d'avoir copié toute la valeur du jeton."
+    },
+
+    "USER_ATTRIBUTES" : {
+        "SECTION_HEADER_KSM_CONFIG"  : "Keeper Gestionnaire de secrets",
+        "FIELD_HEADER_KSM_CONFIG"    : "Configuration du service KSM"
+    }
+
+}

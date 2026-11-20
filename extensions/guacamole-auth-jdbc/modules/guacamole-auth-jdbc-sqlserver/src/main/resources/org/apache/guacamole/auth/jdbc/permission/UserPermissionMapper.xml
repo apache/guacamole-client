@@ -141,7 +141,7 @@
                         affected_entity.name = #{permission.objectIdentifier,jdbcType=VARCHAR}
                     </when>
                     <otherwise>
-                        LOWER(affected_entity.name = LOWER(#{permission.objectIdentifier,jdbcType=VARCHAR})
+                        LOWER(affected_entity.name) = LOWER(#{permission.objectIdentifier,jdbcType=VARCHAR})
                     </otherwise>
                 </choose>
                 AND

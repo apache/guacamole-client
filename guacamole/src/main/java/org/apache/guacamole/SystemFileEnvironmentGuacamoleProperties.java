@@ -51,8 +51,8 @@ public class SystemFileEnvironmentGuacamoleProperties implements GuacamoleProper
                 return Files.asCharSource(new File(filename), StandardCharsets.UTF_8).read();
             }
             catch (IOException e) {
-                logger.error("Property \"{}\" could not be read from file \"{}\": {}", name, filename, e.getMessage());
-                logger.debug("Error reading property value from file.", e);
+                logger.error("Property \"{}\" could not be read from file \"{}\": {}", name,
+                        filename, e.getMessage(), e);
             }
         }
 

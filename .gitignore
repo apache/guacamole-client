@@ -6,3 +6,4 @@ target/
 
 # MacOS
 .DS_Store
+.flattened-pom.xml

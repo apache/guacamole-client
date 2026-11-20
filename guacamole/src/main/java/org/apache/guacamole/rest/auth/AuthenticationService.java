@@ -433,12 +433,12 @@ public class AuthenticationService {
             // This line SHOULD be unreachable unless a bug causes
             // rethrowCause() to not actually rethrow the underlying failure
             Throwable cause = e.getCause();
-            if (cause != null) {
-                logger.warn("An underlying internal error was not correctly rethrown by rethrowCause(): {}", cause.getMessage());
-                logger.debug("Internal error not rethrown by rethrowCause().", cause);
-            }
+            if (cause != null)
+                logger.warn("An underlying internal error was not correctly "
+                        + "rethrown by rethrowCause(): {}", cause.getMessage(), cause);
             else
-                logger.warn("An underlying internal error was not correctly rethrown by rethrowCause().");
+                logger.warn("An underlying internal error was not correctly "
+                        + "rethrown by rethrowCause().");
 
             throw e.getCauseAsGuacamoleException();
 

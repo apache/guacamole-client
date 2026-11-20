@@ -106,13 +106,13 @@ public class FileAuthenticationProvider extends SimpleAuthenticationProvider {
                 parser = SAXParserFactory.newInstance().newSAXParser();
             }
             catch (ParserConfigurationException e) {
-                logger.error("Unable to create XML parser for reading \"{}\": {}", USER_MAPPING_FILENAME, e.getMessage());
-                logger.debug("An instance of SAXParser could not be created.", e);
+                logger.error("Unable to create XML parser for reading \"{}\": {}",
+                        USER_MAPPING_FILENAME, e.getMessage(), e);
                 return null;
             }
             catch (SAXException e) {
-                logger.error("Unable to create XML parser for reading \"{}\": {}", USER_MAPPING_FILENAME, e.getMessage());
-                logger.debug("An instance of SAXParser could not be created.", e);
+                logger.error("Unable to create XML parser for reading \"{}\": {}",
+                        USER_MAPPING_FILENAME, e.getMessage(), e);
                 return null;
             }
 
@@ -138,15 +138,13 @@ public class FileAuthenticationProvider extends SimpleAuthenticationProvider {
 
             // If the file is unreadable, return no mapping
             catch (IOException e) {
-                logger.warn("Unable to read user mapping file \"{}\": {}", userMappingFile, e.getMessage());
-                logger.debug("Error reading user mapping file.", e);
+                logger.warn("Unable to read user mapping file \"{}\": {}", userMappingFile, e.getMessage(), e);
                 return null;
             }
 
             // If the file cannot be parsed, return no mapping
             catch (SAXException e) {
-                logger.warn("User mapping file \"{}\" is not valid: {}", userMappingFile, e.getMessage());
-                logger.debug("Error parsing user mapping file.", e);
+                logger.warn("User mapping file \"{}\" is not valid: {}", userMappingFile, e.getMessage(), e);
                 return null;
             }
 
