@@ -72,7 +72,7 @@ public final class JsonUrlReader {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest.Builder requestBuilder = HttpRequest.newBuilder().uri(uri);
-            if (method != "GET") {
+            if (!method.equals("GET")) {
                 // FIXME: If this function is ever used to post json bodies this header
                 // will need to be configurable
                 requestBuilder.header("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
