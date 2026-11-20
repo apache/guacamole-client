@@ -18,7 +18,7 @@
  */
 
 import { TestBed } from '@angular/core/testing';
-import { TRANSLOCO_MISSING_HANDLER, TranslocoService, TranslocoTestingModule } from '@ngneat/transloco';
+import { TRANSLOCO_MISSING_HANDLER, TranslocoService, TranslocoTestingModule } from '@jsverse/transloco';
 import { TestScheduler } from 'rxjs/testing';
 import { GuacMissingHandler } from '../../locale/locale.module';
 import { getTestScheduler } from '../../util/test-helper';

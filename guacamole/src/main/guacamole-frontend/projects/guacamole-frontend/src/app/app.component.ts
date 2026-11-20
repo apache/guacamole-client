@@ -23,7 +23,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, NavigationStart, Router, RoutesRecognized } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { distinctUntilChanged, filter, map, pairwise, startWith, take } from 'rxjs';
 import { AuthenticationService } from './auth/service/authentication.service';

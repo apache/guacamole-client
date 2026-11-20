@@ -19,7 +19,7 @@
 
 import { Injectable } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { getBrowserLang } from '@ngneat/transloco';
+import { getBrowserLang } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { filter } from 'rxjs';
 import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';

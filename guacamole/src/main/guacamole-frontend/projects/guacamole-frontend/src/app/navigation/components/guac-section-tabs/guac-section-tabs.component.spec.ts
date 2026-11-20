@@ -20,7 +20,7 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { TranslocoTestingModule } from '@ngneat/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { LocaleModule } from '../../../locale/locale.module';
 
 import { GuacSectionTabsComponent } from './guac-section-tabs.component';

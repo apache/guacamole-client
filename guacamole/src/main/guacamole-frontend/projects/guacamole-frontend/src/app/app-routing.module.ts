@@ -19,7 +19,7 @@
 
 import { inject, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, ResolveFn, Route, Router, RouterModule, Routes } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { catchError, map, Observable, of, switchMap, take } from 'rxjs';
 import { AuthenticationService } from './auth/service/authentication.service';
 import { AuthenticationResult } from './auth/types/AuthenticationResult';

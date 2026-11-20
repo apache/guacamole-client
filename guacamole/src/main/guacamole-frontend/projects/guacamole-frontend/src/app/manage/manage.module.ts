@@ -20,7 +20,7 @@
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { FormModule } from '../form/form.module';
 import { GroupListModule } from '../group-list/group-list.module';
 import { ListModule } from '../list/list.module';

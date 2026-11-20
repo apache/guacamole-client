@@ -18,8 +18,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
-import { HashMap } from '@ngneat/transloco/lib/types';
+import { TranslocoService } from '@jsverse/transloco';
 import { Observable, of, switchMap, take } from 'rxjs';
 import { translationValueIfMissing } from '../../locale/locale.module';
 import { TranslationResult } from '../types/TranslationResult';
@@ -59,7 +58,7 @@ export class GuacTranslateService {
     translateWithFallback(translationId: string, defaultTranslationId: string): Observable<TranslationResult> {
 
         // Use null as a fallback value to detect missing translations more easily
-        const params: HashMap = translationValueIfMissing(null);
+        const params: Record<string, unknown> = translationValueIfMissing(null);
 
         // Attempt to translate the requested translation ID
         return this.translocoService.selectTranslate<string | null>(translationId, params)

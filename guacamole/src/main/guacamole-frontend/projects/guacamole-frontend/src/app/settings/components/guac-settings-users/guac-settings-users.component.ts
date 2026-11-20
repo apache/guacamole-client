@@ -19,7 +19,7 @@
 
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import _ from 'lodash';
 import { BehaviorSubject, take } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';

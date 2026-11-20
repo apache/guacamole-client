@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { translate } from '@ngneat/transloco';
+import { translate } from '@jsverse/transloco';
 import _ from 'lodash';
 import { ActivityLog } from '../../rest/types/ActivityLog';
 import { ConnectionHistoryEntry } from '../../rest/types/ConnectionHistoryEntry';

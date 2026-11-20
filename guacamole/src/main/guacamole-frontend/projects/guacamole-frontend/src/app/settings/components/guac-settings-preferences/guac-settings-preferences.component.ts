@@ -20,7 +20,7 @@
 import { Component, DestroyRef, OnInit, ViewEncapsulation } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { EMPTY, forkJoin } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { FormService } from '../../../form/service/form.service';

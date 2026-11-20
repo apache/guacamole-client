@@ -18,7 +18,7 @@
  */
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { TranslocoTestingModule } from '@ngneat/transloco';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { KeyComponent } from './key.component';

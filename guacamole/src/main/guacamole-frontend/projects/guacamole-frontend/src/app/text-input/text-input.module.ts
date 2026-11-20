@@ -19,7 +19,7 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { KeyComponent } from './guac-key/key.component';
 import { TextInputComponent } from './guac-text-input/text-input.component';
 

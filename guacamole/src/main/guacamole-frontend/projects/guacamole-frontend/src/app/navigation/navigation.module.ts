@@ -20,7 +20,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { GuacMenuComponent } from './components/guac-menu/guac-menu.component';
 import { GuacPageListComponent } from './components/guac-page-list/guac-page-list.component';
 import { GuacSectionTabsComponent } from './components/guac-section-tabs/guac-section-tabs.component';

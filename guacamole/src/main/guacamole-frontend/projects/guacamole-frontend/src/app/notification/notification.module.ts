@@ -20,7 +20,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { FormModule } from '../form/form.module';
 import { GuacModalComponent } from './components/guac-modal/guac-modal.component';
 import { GuacNotificationComponent } from './components/guac-notification/guac-notification.component';

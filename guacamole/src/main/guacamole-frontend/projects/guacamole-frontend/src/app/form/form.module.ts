@@ -21,7 +21,7 @@ import { CommonModule } from '@angular/common';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ElementModule } from 'guacamole-frontend-lib';
 import { OrderByPipe } from '../util/order-by.pipe';
 import { CheckboxFieldComponent } from './components/checkbox-field/checkbox-field.component';

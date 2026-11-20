@@ -21,7 +21,7 @@ import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ClientLibModule } from 'guacamole-frontend-lib';
 import { FormModule } from '../form/form.module';
 import { GroupListModule } from '../group-list/group-list.module';

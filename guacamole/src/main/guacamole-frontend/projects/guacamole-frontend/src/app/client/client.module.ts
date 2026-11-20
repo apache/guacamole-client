@@ -21,7 +21,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ClientLibModule, ElementModule, OskModule, TouchModule } from 'guacamole-frontend-lib';
 import { ClipboardModule } from '../clipboard/clipboard.module';
 import { FormModule } from '../form/form.module';

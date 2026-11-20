@@ -19,7 +19,7 @@
 
 import { formatDate } from '@angular/common';
 import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import FileSaver from 'file-saver';
 import { BehaviorSubject, combineLatest, take } from 'rxjs';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';

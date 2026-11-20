@@ -18,7 +18,7 @@
  */
 
 import { Injectable, isDevMode } from '@angular/core';
-import { translocoConfig, TranslocoConfig } from '@ngneat/transloco';
+import { translocoConfig, TranslocoConfig } from '@jsverse/transloco';
 import { map, Observable, tap } from 'rxjs';
 import { LanguageService } from '../../rest/service/language.service';
 import { PreferenceService } from '../../settings/services/preference.service';

@@ -18,7 +18,7 @@
  */
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import _ from 'lodash';
 import { firstValueFrom, of } from 'rxjs';
 import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';

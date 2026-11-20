@@ -19,7 +19,7 @@
 
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import Pickr from '@simonwep/pickr';
 import { forkJoin, take } from 'rxjs';
 import HSVaColor = Pickr.HSVaColor;

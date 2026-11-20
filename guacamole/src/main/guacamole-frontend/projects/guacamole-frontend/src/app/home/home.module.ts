@@ -20,7 +20,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ClientModule } from '../client/client.module';
 import { GroupListModule } from '../group-list/group-list.module';
 import { NavigationModule } from '../navigation/navigation.module';

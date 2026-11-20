@@ -19,15 +19,18 @@
 
 import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import {
+    DefaultFallbackStrategy,
+    DefaultInterceptor,
+    provideTranslocoFallbackStrategy,
+    provideTranslocoInterceptor,
     TRANSLOCO_CONFIG,
     TRANSLOCO_LOADER,
     TRANSLOCO_MISSING_HANDLER,
     TranslocoConfig,
     TranslocoMissingHandler,
     TranslocoModule
-} from '@ngneat/transloco';
-import { TranslocoMessageFormatModule } from '@ngneat/transloco-messageformat';
-import { HashMap } from '@ngneat/transloco/lib/types';
+} from '@jsverse/transloco';
+import { provideTranslocoMessageformat } from '@jsverse/transloco-messageformat';
 import { Observable } from 'rxjs';
 import { TranslationLoaderService } from './service/translation-loader.service';
 import { TranslationService } from './service/translation.service';
@@ -56,14 +59,14 @@ const translocoConfigFactory = (translationService: TranslationService): Translo
 export const VALUE_IF_MISSING_PROPERTY = 'valueIfMissing';
 
 /**
- * Returns a HashMap which can be passed to translate() functions of Transloco as additional
+ * Returns a parameter object which can be passed to translate() functions of Transloco as additional
  * parameter. Allows the caller to specify a default value to be returned if the requested
  * translation is not available.
  *
  * @param value
  *     The value to return if the requested translation is not available.
  */
-export const translationValueIfMissing = (value: any): HashMap => {
+export const translationValueIfMissing = (value: any): Record<string, unknown> => {
     return { [VALUE_IF_MISSING_PROPERTY]: value };
 };
 
@@ -83,7 +86,7 @@ export class GuacMissingHandler implements TranslocoMissingHandler {
      * @see VALUE_IF_MISSING_PROPERTY
      * @see translationValueIfMissing
      */
-    handle(key: string, config: TranslocoConfig, params?: HashMap) {
+    handle(key: string, config: TranslocoConfig, params?: Record<string, unknown>) {
 
         if (params && params[VALUE_IF_MISSING_PROPERTY] !== undefined)
             return params[VALUE_IF_MISSING_PROPERTY];
@@ -115,10 +118,12 @@ export class GuacMissingHandler implements TranslocoMissingHandler {
         {
             provide : TRANSLOCO_MISSING_HANDLER,
             useClass: GuacMissingHandler
-        }
-    ],
-    imports  : [
-        TranslocoMessageFormatModule.forRoot()
+        },
+        provideTranslocoMessageformat(),
+
+        // Required by TranslocoService; TranslocoModule does not provide them
+        provideTranslocoInterceptor(DefaultInterceptor),
+        provideTranslocoFallbackStrategy(DefaultFallbackStrategy)
     ]
 })
 export class LocaleModule {

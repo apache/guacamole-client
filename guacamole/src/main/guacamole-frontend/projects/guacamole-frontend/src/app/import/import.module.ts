@@ -21,7 +21,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ElementModule } from 'guacamole-frontend-lib';
 import { ListModule } from '../list/list.module';
 import { NavigationModule } from '../navigation/navigation.module';

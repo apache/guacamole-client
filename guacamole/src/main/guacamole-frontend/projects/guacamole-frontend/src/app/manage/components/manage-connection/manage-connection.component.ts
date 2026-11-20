@@ -21,7 +21,7 @@ import { Component, DestroyRef, Input, OnInit, ViewChild, ViewEncapsulation } fr
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { forkJoin, map, Observable, of, Subscription } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { FormService } from '../../../form/service/form.service';

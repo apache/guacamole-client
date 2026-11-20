@@ -19,8 +19,7 @@
 
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Translation, TranslocoLoader } from '@ngneat/transloco';
-import { TranslocoLoaderData } from '@ngneat/transloco/lib/transloco.loader';
+import { Translation, TranslocoLoader, TranslocoLoaderData } from '@jsverse/transloco';
 import { LanguageService } from '../../rest/service/language.service';
 import { SKIP_ALL_INTERCEPTORS } from '../../util/interceptor.service';
 

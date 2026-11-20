@@ -47,7 +47,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { TranslocoModule } from '@ngneat/transloco';
+import { TranslocoModule } from '@jsverse/transloco';
 import { ElementModule } from 'guacamole-frontend-lib';
 import { PlayerDisplayComponent } from './player-display/player-display.component';
 import { PlayerTextViewComponent } from './player-text-view/player-text-view.component';

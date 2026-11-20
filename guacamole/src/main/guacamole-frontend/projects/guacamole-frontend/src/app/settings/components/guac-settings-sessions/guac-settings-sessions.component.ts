@@ -19,7 +19,7 @@
 
 import { formatDate } from '@angular/common';
 import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { TranslocoService } from '@ngneat/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, forkJoin, Observable, take } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { GuacFilterComponent } from '../../../list/components/guac-filter/guac-filter.component';
