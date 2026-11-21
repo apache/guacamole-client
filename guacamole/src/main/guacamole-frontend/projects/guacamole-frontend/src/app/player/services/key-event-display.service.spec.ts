@@ -30,6 +30,12 @@ describe('KeyEventDisplayService', () => {
     const SHIFT_LEFT = 0xFFE1;
 
     /**
+     * The X11 keysym of the left Control key, a modifier commonly used in
+     * shortcuts.
+     */
+    const CONTROL_LEFT = 0xFFE3;
+
+    /**
      * Returns a raw key event as produced by KeyEventInterpreter.
      *
      * @param keysym
@@ -119,6 +125,41 @@ describe('KeyEventDisplayService', () => {
 
         expect(batches[0].events.length).toBe(1);
         expect(batches[0].events[0].text).toBe('ab');
+    });
+
+    it('should print keys in the order they were pressed, not released', () => {
+        // "b" is pressed while "a" is still held, and released first
+        const events = [
+            keyEvent(0x61, 'a', true, 0, 'a'),
+            keyEvent(0x62, 'b', true, 50, 'b'),
+            keyEvent(0x62, 'b', false, 100, 'b'),
+            keyEvent(0x61, 'a', false, 150, 'a')
+        ];
+
+        const batches = service.parseEvents(events);
+
+        expect(batches.map(batch => batch.simpleValue)).toEqual(['ab']);
+    });
+
+    it('should print a shortcut only once, without the key itself', () => {
+        const events = [
+            ...typeKey('a', 0),
+            keyEvent(CONTROL_LEFT, 'Ctrl', true, 1000),
+            ...typeKey('c', 1100),
+            keyEvent(CONTROL_LEFT, 'Ctrl', false, 1300)
+        ];
+
+        const batches = service.parseEvents(events);
+
+        expect(batches.map(batch => batch.simpleValue)).toEqual(['a<Ctrl+c>']);
+    });
+
+    it('should use the time a key was pressed as the time of its event', () => {
+        const events = [keyEvent(0x61, 'a', true, 1000, 'a'), keyEvent(0x61, 'a', false, 1500, 'a')];
+
+        const batches = service.parseEvents(events);
+
+        expect(batches[0].events.map(event => event.timestamp)).toEqual([1000]);
     });
 
 });
