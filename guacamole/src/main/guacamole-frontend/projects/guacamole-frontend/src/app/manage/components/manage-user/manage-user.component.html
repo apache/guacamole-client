@@ -31,7 +31,7 @@
             </div>
             <data-source-tabs [hidden]="cloneSourceUsername"
                               [permissions]="managementPermissions"
-                              [url]="getUserURL">
+                              [url]="getUserURL.bind(this)">
             </data-source-tabs>
 
             <!-- Warn if user is read-only -->

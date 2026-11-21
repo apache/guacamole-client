@@ -77,7 +77,7 @@ export class ManageUserGroupComponent implements OnInit {
      * The identifier of the original user group from which this user group is
      * being cloned. Only valid if this is a new user group.
      */
-    private cloneSourceIdentifier: string | null = null;
+    cloneSourceIdentifier: string | null = null;
 
     /**
      * All user groups associated with the same identifier as the group being
@@ -214,7 +214,9 @@ export class ManageUserGroupComponent implements OnInit {
     attributes: Form[] | null = null;
 
     /**
-     * The form group for editing user group attributes.
+     * The form group for editing user group attributes. It holds the current
+     * attribute values of the user group and updates them when its values
+     * change.
      */
     attributesFormGroup: FormGroup = new FormGroup({});
 
@@ -251,7 +253,11 @@ export class ManageUserGroupComponent implements OnInit {
 
                     this.attributes = attributes;
 
+                    // Populate the form group with the attributes of the user group
                     this.attributesFormGroup = this.formService.getFormGroup(this.attributes);
+                    this.attributesFormGroup.patchValue(this.userGroup!.attributes);
+
+                    // Update the attributes of the user group when the form group is updated
                     this.attributesFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
                         .subscribe((value) => {
                             this.userGroup!.attributes = value;
@@ -497,7 +503,13 @@ export class ManageUserGroupComponent implements OnInit {
      *     edited under the given data source.
      */
     getUserGroupURL(dataSource: string): string {
-        return '/manage/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(this.identifier || '');
+
+        // The router drops trailing slashes, so the URL for a new user group
+        // must not end with one for its tab to be recognized as the current
+        // page
+        const url = '/manage/' + encodeURIComponent(dataSource) + '/userGroups';
+        return this.identifier ? url + '/' + encodeURIComponent(this.identifier) : url;
+
     }
 
     /**

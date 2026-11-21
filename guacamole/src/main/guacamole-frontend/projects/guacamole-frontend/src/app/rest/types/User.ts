@@ -34,7 +34,7 @@ export class User {
      * possible for the authentication layer to retrieve the user's true
      * password.
      */
-    password: string;
+    password?: string;
 
     /**
      * The time that this user was last logged in, in milliseconds since
@@ -66,7 +66,7 @@ export class User {
      */
     constructor(template: Partial<User> = {}) {
         this.username = template.username || '';
-        this.password = template.password || '';
+        this.password = template.password;
         this.lastActive = template.lastActive;
         this.disabled = template.disabled;
         this.attributes = template.attributes || {};

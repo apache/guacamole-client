@@ -84,4 +84,18 @@ describe('UserService', () => {
 
     });
 
+    describe('updateUserPassword', () => {
+
+        it('should send the old and the new password', async () => {
+            const result = firstValueFrom(service.updateUserPassword('postgresql', 'alice', 'old', 'new'));
+
+            const request = httpMock.expectOne(`${USERS_URL}/alice/password`);
+            expect(request.request.method).toBe('PUT');
+            expect(JSON.parse(request.request.serializeBody() as string)).toEqual({ oldPassword: 'old', newPassword: 'new' });
+            request.flush(null);
+            await result;
+        });
+
+    });
+
 });

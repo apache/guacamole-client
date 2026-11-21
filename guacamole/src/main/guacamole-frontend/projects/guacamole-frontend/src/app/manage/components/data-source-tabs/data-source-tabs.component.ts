@@ -45,10 +45,9 @@ export class DataSourceTabsComponent implements OnChanges {
 
     /**
      * A function which returns the URL of the object within a given
-     * data source. The relevant data source will be made available to
-     * the Angular expression defining this function as the
-     * "dataSource" variable. No other values will be made available,
-     * including values from the scope.
+     * data source. The function receives the identifier of the relevant
+     * data source as its only argument. A method must be bound to its own
+     * component before it is passed, as this component invokes it.
      */
     @Input() url?: (dataSource: string) => string;
 

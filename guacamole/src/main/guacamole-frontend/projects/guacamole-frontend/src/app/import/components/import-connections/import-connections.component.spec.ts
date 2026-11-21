@@ -94,7 +94,8 @@ describe('ImportConnectionsComponent', () => {
                 { provide: HTTP_INTERCEPTORS, useClass: ErrorHandlingInterceptor, multi: true },
                 provideHttpClient(withInterceptorsFromDi()),
                 provideHttpClientTesting(),
-                { provide: AuthenticationService, useValue: {} },
+                // Granting a user access asks whether that user is the current one
+                { provide: AuthenticationService, useValue: { getCurrentUsername: () => 'guacadmin' } },
                 { provide: GuacNotificationService, useValue: { showStatus } }
             ]
         });
@@ -297,6 +298,27 @@ describe('ImportConnectionsComponent', () => {
         expect(fixture.componentInstance.fileName).toBeNull();
         expect(await getErrorRows()).toEqual([]);
         httpMock.expectNone(request => request.method === 'PATCH');
+    });
+
+    it('should create the new users of the file without a password', async () => {
+        await importFile([{ name: 'conn', protocol: 'ssh', group: 'Existing', users: ['alice', 'bob'] }], false);
+
+        const { request } = await expectConnectionsPatched();
+        request.flush({ patches: [{ identifier: '20' }] });
+
+        // Only "alice" is new; "bob" exists and is granted access only
+        (await expectRequest('GET', `${API}/users`)).flush({ bob: { username: 'bob', attributes: {} } });
+        (await expectRequest('GET', `${API}/userGroups`)).flush({});
+        const users = await expectRequest('PATCH', `${API}/users`);
+        expect(JSON.parse(users.request.serializeBody() as string)).toEqual([
+            { op: 'add', path: '/', value: { username: 'alice', attributes: {} } }
+        ]);
+        users.flush(null);
+        (await expectRequest('PATCH', `${API}/userGroups`)).flush(null);
+
+        (await expectRequest('PATCH', `${API}/users/alice/permissions`)).flush(null);
+        (await expectRequest('PATCH', `${API}/users/bob/permissions`)).flush(null);
+        await vi.waitFor(() => expect(showStatus).toHaveBeenCalledWith(expect.objectContaining({ className: 'success' })));
     });
 
     it('should display the errors of a failed import for each connection of the file', async () => {

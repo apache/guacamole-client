@@ -477,7 +477,12 @@ export class ManageUserComponent implements OnInit {
      *     edited under the given data source.
      */
     getUserURL(dataSource: string): string {
-        return '/manage/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(this.username || '');
+
+        // The router drops trailing slashes, so the URL for a new user must
+        // not end with one for its tab to be recognized as the current page
+        const url = '/manage/' + encodeURIComponent(dataSource) + '/users';
+        return this.username ? url + '/' + encodeURIComponent(this.username) : url;
+
     }
 
     /**
