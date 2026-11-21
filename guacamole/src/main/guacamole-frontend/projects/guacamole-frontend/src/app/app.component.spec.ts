@@ -197,6 +197,29 @@ describe('AppComponent', () => {
         expect(getLoginClasses()).not.toContain('initial');
     });
 
+    it('should show all expected fields, filled with the submitted values, when the login continues', async () => {
+        const username = new Field({ name: 'username', type: Field.Type.USERNAME });
+        const password = new Field({ name: 'password', type: Field.Type.PASSWORD });
+        const newPassword = new Field({ name: 'new-password', type: Field.Type.PASSWORD });
+
+        // The password has expired: the server expects the submitted
+        // credentials again, together with a new password
+        eventService.broadcast('guacInsufficientCredentials', {
+            parameters: Promise.resolve({ username: 'alice', password: 'secret' }),
+            error: new Error({
+                type: Error.Type.INSUFFICIENT_CREDENTIALS,
+                translatableMessage: { key: 'LOGIN.INFO_PASSWORD_EXPIRED' },
+                expected: [username, password, newPassword]
+            })
+        });
+        await settle();
+        fixture.detectChanges();
+
+        const form = fixture.debugElement.query(By.directive(GuacFormStubComponent)).componentInstance as GuacFormStubComponent;
+        expect(form.content).toEqual([username, password, newPassword]);
+        expect(form.modelFormGroup?.value).toEqual({ username: 'alice', password: 'secret', 'new-password': '' });
+    });
+
     it('should reset the title and the body class when the login screen is shown', async () => {
         const title = TestBed.inject(Title);
 

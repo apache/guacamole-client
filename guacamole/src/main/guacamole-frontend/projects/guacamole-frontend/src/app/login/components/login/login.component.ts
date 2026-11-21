@@ -89,7 +89,8 @@ export class LoginComponent implements OnInit, OnChanges {
     enteredValues: FormGroup = new FormGroup({});
 
     /**
-     * All form fields which have not yet been filled by the user.
+     * All form fields to display, including those whose values were already
+     * provided.
      */
     remainingFields: Field[] = [];
 
@@ -160,10 +161,10 @@ export class LoginComponent implements OnInit, OnChanges {
                 return;
             }
 
-            // Filter provided fields against provided values
-            this.remainingFields = fields.filter((field) => {
-                return this.values && !(field.name in this.values);
-            });
+            // Display all expected fields, including those whose values were
+            // already provided (they show those values), as the AngularJS
+            // frontend does
+            this.remainingFields = fields;
 
             // Set default values for all unset fields
             this.remainingFields.forEach((field) => {
