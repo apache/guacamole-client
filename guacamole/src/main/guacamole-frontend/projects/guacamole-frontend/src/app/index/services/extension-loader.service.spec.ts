@@ -17,16 +17,25 @@
  * under the License.
  */
 
-import { provideHttpClient, withXhr } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { Injector } from '@angular/core';
+import { Component, Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router, Routes } from '@angular/router';
 import { BootstrapExtensionFunction } from 'guacamole-frontend-ext-lib';
-import { appRoutes, fallbackRoute, titleResolver } from '../../app-routing.module';
+import { appRoutes, authGuard, fallbackRoute, titleResolver } from '../../app-routing.module';
+import { ErrorHandlingInterceptor } from '../../rest/interceptor/error-handling.interceptor';
+import { Error as RestError } from '../../rest/types/Error';
 import { LogService } from '../../util/log.service';
 import { LOAD_REMOTE_MODULE, LoadRemoteModule } from '../types/LoadRemoteModule';
 import { ExtensionLoaderService } from './extension-loader.service';
+
+/**
+ * Stub for the component of a route of an extension.
+ */
+@Component({ template: '' })
+class ExtensionPageStubComponent {
+}
 
 describe('ExtensionLoaderService', () => {
     let service: ExtensionLoaderService;
@@ -41,7 +50,9 @@ describe('ExtensionLoaderService', () => {
         TestBed.configureTestingModule({
             providers: [
                 provideRouter([]),
-                provideHttpClient(withXhr()),
+                // The real AuthenticationService against a fake REST API
+                { provide: HTTP_INTERCEPTORS, useClass: ErrorHandlingInterceptor, multi: true },
+                provideHttpClient(withXhr(), withInterceptorsFromDi()),
                 provideHttpClientTesting(),
                 { provide: LOAD_REMOTE_MODULE, useValue: loadRemoteModule }
             ]
@@ -67,7 +78,12 @@ describe('ExtensionLoaderService', () => {
             expect(bootstrapExtension).toHaveBeenCalledWith(TestBed.inject(Injector));
             expect(routes).toEqual([
                 ...appRoutes,
-                { path: 'angular-extension', children: extensionRoutes, title: 'Angular Extension' },
+                {
+                    path: 'angular-extension',
+                    children: extensionRoutes,
+                    canActivate: [authGuard],
+                    title: 'Angular Extension'
+                },
                 fallbackRoute
             ]);
         });
@@ -88,9 +104,77 @@ describe('ExtensionLoaderService', () => {
             expect(routes).toContainEqual({
                 path: 'other',
                 children: [],
+                canActivate: [authGuard],
                 data: { titleKey: 'APP.NAME' },
                 title: titleResolver
             });
+        });
+
+    });
+
+    describe('routes of an extension', () => {
+        let router: Router;
+        let httpMock: HttpTestingController;
+
+        beforeEach(async () => {
+            router = TestBed.inject(Router);
+            httpMock = TestBed.inject(HttpTestingController);
+            loadRemoteModule.mockResolvedValue({
+                bootstrapExtension: () => [{ path: 'about', component: ExtensionPageStubComponent }]
+            });
+            router.resetConfig(await service.buildRoutes({
+                'guacamole-frontend-extension-example': {
+                    routePath: 'angular-extension',
+                    pageTitle: 'Angular Extension'
+                }
+            }));
+        });
+
+        afterEach(() => {
+            localStorage.removeItem('GUAC_AUTH_TOKEN');
+            httpMock.verify();
+        });
+
+        /**
+         * Navigates to a route of the extension and answers the request to
+         * the token REST API endpoint which the navigation triggers.
+         *
+         * @param body
+         *     The body of the response to the token request.
+         *
+         * @param status
+         *     The HTTP status of the response to the token request.
+         *
+         * @returns
+         *     A promise which resolves with the result of the navigation.
+         */
+        const navigateAndAuthenticate = async (body: object, status: number): Promise<boolean> => {
+            const navigated = router.navigateByUrl('/angular-extension/about');
+            await new Promise(resolve => setTimeout(resolve));
+            httpMock.expectOne('api/tokens').flush(body, { status, statusText: status === 200 ? 'OK' : 'Forbidden' });
+            return navigated;
+        };
+
+        it('should not open the routes of an extension without a valid session', async () => {
+            const navigated = await navigateAndAuthenticate({
+                type   : RestError.Type.INVALID_CREDENTIALS,
+                message: 'Permission Denied.'
+            }, 403);
+
+            expect(navigated).toBe(false);
+            expect(router.url).toBe('/');
+        });
+
+        it('should open the routes of an extension after updating the session', async () => {
+            const navigated = await navigateAndAuthenticate({
+                authToken           : 'TOKEN',
+                username            : 'guacadmin',
+                dataSource          : 'postgresql',
+                availableDataSources: ['postgresql']
+            }, 200);
+
+            expect(navigated).toBe(true);
+            expect(router.url).toBe('/angular-extension/about');
         });
 
     });

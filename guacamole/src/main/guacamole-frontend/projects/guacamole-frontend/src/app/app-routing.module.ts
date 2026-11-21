@@ -147,7 +147,7 @@ const updateCurrentToken = (route: ActivatedRouteSnapshot): Observable<Authentic
  *     An observable which emits true if the user is authenticated, or false
  *     if the user is not authenticated.
  */
-const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean> => {
+export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot): Observable<boolean> => {
 
     return updateCurrentToken(route)
         .pipe(

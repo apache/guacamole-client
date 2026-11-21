@@ -68,6 +68,9 @@ The frontend adds the routes of the extension as children of a route at `routePa
 Links within the extension can be relative, such as `../` on the page `about`.
 Links from elsewhere must be absolute, such as `/angular-extension` in the link which the HTML patch inserts.
 
+As with the routes of the frontend, the routes of the extension require a valid session.
+Without one, the frontend shows the login form and opens the requested route after the login.
+
 While a route of the extension is active, the browser tab shows `pageTitle` of the Native Federation configuration, or the title of Guacamole if it is not set.
 A route with its own `title`, such as `about`, overrides it.
 

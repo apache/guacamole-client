@@ -23,7 +23,7 @@ import { Route, Router, Routes } from '@angular/router';
 import { BootstrapExtensionFunction } from 'guacamole-frontend-ext-lib';
 import _ from 'lodash';
 import { lastValueFrom } from 'rxjs';
-import { appRoutes, fallbackRoute, titleResolver } from '../../app-routing.module';
+import { appRoutes, authGuard, fallbackRoute, titleResolver } from '../../app-routing.module';
 import { LogService } from '../../util/log.service';
 import { DEFAULT_BOOTSTRAP_FUNCTION_NAME, FederationRouteConfig } from '../types/FederationRouteConfig';
 import { LOAD_REMOTE_MODULE, LoadRemoteModule } from '../types/LoadRemoteModule';
@@ -108,10 +108,12 @@ export class ExtensionLoaderService {
             const bootstrapFunction: BootstrapExtensionFunction = module[bootstrapFunctionName];
             const moduleRoutes = bootstrapFunction(this.injector);
 
-            // Add the routes of the extension to the routes of the main application
+            // Add the routes of the extension to the routes of the main
+            // application, requiring a valid session like those routes
             const extensionRoute: Route = {
                 path: entry.routePath,
-                children: moduleRoutes
+                children: moduleRoutes,
+                canActivate: [authGuard]
             };
 
             // Use the title of the extension if set, otherwise fall back to the
