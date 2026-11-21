@@ -29,7 +29,27 @@ describe('LocalStorageService', () => {
         service = TestBed.inject(LocalStorageService);
     });
 
+    afterEach(() => {
+        localStorage.clear();
+    });
+
     it('should be created', () => {
         expect(service).toBeTruthy();
+    });
+
+    it('should return null for a key that is not set', () => {
+        expect(service.getItem('missing')).toBeNull();
+    });
+
+    it('should return the deserialized value of a valid JSON entry', () => {
+        localStorage.setItem('valid', '{"name":"value"}');
+
+        expect(service.getItem('valid')).toEqual({ name: 'value' });
+    });
+
+    it('should treat invalid JSON in localStorage as missing', () => {
+        localStorage.setItem('invalid', '{not valid json');
+
+        expect(service.getItem('invalid')).toBeNull();
     });
 });

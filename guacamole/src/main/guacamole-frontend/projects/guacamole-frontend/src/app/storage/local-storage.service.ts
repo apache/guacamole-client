@@ -118,8 +118,13 @@ export class LocalStorageService {
 
         // Pull and parse value from internal storage, if present
         const data = this.storedItems[key];
-        if (data)
-            return JSON.parse(data);
+        if (data) {
+            try {
+                return JSON.parse(data);
+            } catch {
+                return null;
+            }
+        }
 
         // No value defined for given key
         return null;
