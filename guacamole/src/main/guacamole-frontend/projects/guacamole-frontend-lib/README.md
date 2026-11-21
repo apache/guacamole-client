@@ -1,7 +1,7 @@
-# GuacamoleFrontendLib
+# guacamole-frontend-lib
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.1.
+This library contains the building blocks of the Guacamole client that the application uses: the viewport, the on-screen keyboard, directives for elements and touch gestures, the event service, and services that check which audio, image and video formats the browser supports.
+It also ships guacamole-common-js, the on-screen keyboard layouts and the styles of its components as assets.
+The application imports the library from `dist/guacamole-frontend-lib/`, so rebuild it after every change.
 
-## Build
-
-Run `ng build guacamole-frontend-lib` to build the project. The build artifacts will be stored in the `dist/` directory.
+Build and tests are described in the [README of the frontend](../../README.md).

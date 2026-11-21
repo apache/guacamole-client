@@ -1,8 +1,7 @@
-# GuacamoleFrontendExtLib
+# guacamole-frontend-ext-lib
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.1.1.
+This library is the API between the Guacamole frontend and its extensions: the type of the bootstrap function through which the frontend loads an extension, and the form field types that extensions register with `FieldTypeService`.
+The application shares the library with extensions through Native Federation, so that both use the same instance of its services.
+Extensions build against `dist/guacamole-frontend-ext-lib/`; the example extension is in `doc/guacamole-frontend-extension-example/`.
 
-## Build
-
-Run `ng build guacamole-frontend-ext-lib` to build the project. The build artifacts will be stored in the `dist/`
-directory.
+The build is described in the [README of the frontend](../../README.md).

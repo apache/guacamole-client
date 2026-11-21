@@ -149,6 +149,26 @@
 						},
 						"testing": {
 							"aot": false
+						},
+						"serve": {
+							"assets": [
+								{
+									"glob": "**/*",
+									"input": "projects/guacamole-frontend/src/images",
+									"output": "images"
+								},
+								{
+									"glob": "**/*",
+									"input": "projects/guacamole-frontend/src/fonts",
+									"output": "fonts"
+								},
+								"projects/guacamole-frontend/src/manifest.json",
+								{
+									"glob": "**/*.json",
+									"input": "dist/guacamole-frontend-lib/assets/layouts",
+									"output": "layouts"
+								}
+							]
 						}
 					},
 					"defaultConfiguration": "production"
@@ -157,15 +177,16 @@
 					"builder": "@angular/build:dev-server",
 					"configurations": {
 						"production": {
-							"buildTarget": "guacamole-frontend:esbuild:production"
+							"buildTarget": "guacamole-frontend:esbuild:production,serve"
 						},
 						"development": {
-							"buildTarget": "guacamole-frontend:esbuild:development"
+							"buildTarget": "guacamole-frontend:esbuild:development,serve"
 						}
 					},
 					"defaultConfiguration": "development",
 					"options": {
-						"port": 4200
+						"port": 4200,
+						"proxyConfig": "projects/guacamole-frontend/src/proxy.conf.json"
 					}
 				}
 			}

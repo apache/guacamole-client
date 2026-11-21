@@ -1,0 +1,35 @@
+{
+    "/api": {
+        "target": "http://localhost:8080",
+        "pathRewrite": { "^/": "/guacamole/" }
+    },
+    "/tunnel": {
+        "target": "http://localhost:8080",
+        "pathRewrite": { "^/": "/guacamole/" }
+    },
+    "/websocket-tunnel": {
+        "target": "http://localhost:8080",
+        "pathRewrite": { "^/": "/guacamole/" },
+        "ws": true
+    },
+    "/native-federation-manifest.json": {
+        "target": "http://localhost:8080",
+        "pathRewrite": { "^/": "/guacamole/" }
+    },
+    "/native-federation-config.json": {
+        "target": "http://localhost:8080",
+        "pathRewrite": { "^/": "/guacamole/" }
+    },
+    "/app.css": {
+        "target": "http://localhost:8080",
+        "pathRewrite": { "^/": "/guacamole/" }
+    },
+    "/app/ext": {
+        "target": "http://localhost:8080",
+        "pathRewrite": { "^/": "/guacamole/" }
+    },
+    "/translations": {
+        "target": "http://localhost:8080",
+        "pathRewrite": { "^/": "/guacamole/" }
+    }
+}
