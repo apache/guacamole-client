@@ -19,23 +19,63 @@
 
 import { Injectable } from '@angular/core';
 
+/**
+ * A service for writing messages to the browser console at the levels info,
+ * error, warn and debug.
+ */
 @Injectable({
     providedIn: 'root'
 })
 export class LogService {
 
+    /**
+     * Writes an informational message to the browser console.
+     *
+     * @param message
+     *     The message to write.
+     *
+     * @param optionalParams
+     *     Further values to write after the message.
+     */
     info(message: any, ...optionalParams: any[]) {
         console.log(message, optionalParams);
     }
 
+    /**
+     * Writes an error message to the browser console.
+     *
+     * @param message
+     *     The message to write.
+     *
+     * @param optionalParams
+     *     Further values to write after the message.
+     */
     error(message: any, ...optionalParams: any[]) {
         console.error(message, optionalParams);
     }
 
+    /**
+     * Writes a warning to the browser console.
+     *
+     * @param message
+     *     The message to write.
+     *
+     * @param optionalParams
+     *     Further values to write after the message.
+     */
     warn(message: any, ...optionalParams: any[]) {
         console.warn(message, optionalParams);
     }
 
+    /**
+     * Writes a debug message to the browser console.
+     *
+     * @param message
+     *     The message to write.
+     *
+     * @param optionalParams
+     *     Further values to write after the message.
+     */
     debug(message: any, ...optionalParams: any[]) {
         console.debug(message, optionalParams);
     }

@@ -30,6 +30,13 @@ import { isDefined } from '../util/is-defined';
  */
 export type SessionStorageEntry<T> = (newValue?: T) => T;
 
+/**
+ * Factory for session-local storage. Creating session-local storage creates a
+ * getter/setter with semantics tied to the user's session. If a user is logged
+ * in, the storage is consistent. If the user logs out, the storage will not
+ * persist new values, and attempts to retrieve the existing value will result
+ * only in the default value.
+ */
 @Injectable({
     providedIn: 'root'
 })

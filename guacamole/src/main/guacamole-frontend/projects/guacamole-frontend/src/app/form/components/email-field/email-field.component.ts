@@ -20,6 +20,9 @@
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
+/**
+ * Component for email address fields.
+ */
 @Component({
     selector: 'guac-email-field',
     templateUrl: './email-field.component.html',

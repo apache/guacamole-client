@@ -21,6 +21,11 @@ import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/c
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
+/**
+ * An HTTP interceptor which adds default headers to requests: GET requests
+ * ask for a response that is not cached, and PATCH requests declare JSON
+ * content.
+ */
 @Injectable()
 export class DefaultHeadersInterceptor implements HttpInterceptor {
 

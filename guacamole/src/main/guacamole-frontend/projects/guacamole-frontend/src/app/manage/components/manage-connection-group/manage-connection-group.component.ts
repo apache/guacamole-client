@@ -121,6 +121,12 @@ export class ManageConnectionGroupComponent implements OnInit {
                 private route: ActivatedRoute) {
     }
 
+    /**
+     * Load the connection group to edit, clone or create, the connection
+     * group attributes, the permissions of the current user and the tree of
+     * connection groups the user may choose as location, then prepare the
+     * attribute form and the management permissions.
+     */
     ngOnInit(): void {
         this.cloneSourceIdentifier = this.route.snapshot.queryParamMap.get('clone');
 

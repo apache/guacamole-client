@@ -93,6 +93,9 @@ export class FormComponent implements OnChanges {
      */
     forms: Form[] = [];
 
+    /**
+     * Inject required services.
+     */
     constructor(private formService: FormService) {
     }
 
@@ -140,6 +143,9 @@ export class FormComponent implements OnChanges {
         return this.formService.getClasses('form-', form);
     }
 
+    /**
+     * Produce the array of forms to display whenever the content changes.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Produce set of forms from any given content

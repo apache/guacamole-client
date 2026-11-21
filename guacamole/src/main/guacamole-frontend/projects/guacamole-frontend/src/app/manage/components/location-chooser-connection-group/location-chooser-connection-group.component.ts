@@ -21,6 +21,10 @@ import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@a
 import { GroupListItem } from '../../../group-list/types/GroupListItem';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 
+/**
+ * A component which displays a single connection group within the menu of
+ * guac-location-chooser and chooses that group when clicked.
+ */
 @Component({
     selector: 'guac-location-chooser-connection-group',
     templateUrl: './location-chooser-connection-group.component.html',
@@ -29,6 +33,16 @@ import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
     standalone: false
 })
 export class LocationChooserConnectionGroupComponent {
+
+    /**
+     * The context provided by guac-group-list, exposing the function of
+     * guac-location-chooser which chooses the given connection group.
+     */
     @Input({ required: true }) context!: { chooseGroup: (item: ConnectionGroup) => void };
+
+    /**
+     * The GroupListItem representing the connection group to display, as
+     * provided by guac-group-list for items of this type.
+     */
     @Input({ required: true }) item!: GroupListItem;
 }

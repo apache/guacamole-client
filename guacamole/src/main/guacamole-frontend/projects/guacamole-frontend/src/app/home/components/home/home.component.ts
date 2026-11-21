@@ -86,6 +86,11 @@ export class HomeComponent implements OnInit {
                 private filterService: FilterService) {
     }
 
+    /**
+     * Create the data source for the root connection groups, filtered by the
+     * search string of the filter component, and retrieve the root connection
+     * group of each available data source with all its descendants.
+     */
     ngOnInit(): void {
 
         // Create a new data source for the root connection groups

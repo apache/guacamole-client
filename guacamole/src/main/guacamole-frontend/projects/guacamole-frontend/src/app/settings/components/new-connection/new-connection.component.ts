@@ -32,5 +32,11 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
     standalone: false
 })
 export class NewConnectionComponent {
+
+    /**
+     * The GroupListItem of type "new-connection", as provided by
+     * guac-group-list. Its wrapped item is the connection group in which the
+     * new connection is created.
+     */
     @Input({ required: true }) item!: GroupListItem;
 }

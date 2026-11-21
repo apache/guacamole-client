@@ -34,6 +34,9 @@ import { Error } from '../../../rest/types/Error';
 import { Field } from '../../../rest/types/Field';
 import { TranslatableMessage } from '../../../rest/types/TranslatableMessage';
 
+/**
+ * A component for displaying an arbitrary login form.
+ */
 @Component({
     selector: 'guac-login',
     templateUrl: './login.component.html',
@@ -133,6 +136,11 @@ export class LoginComponent implements OnInit, OnChanges {
 
     }
 
+    /**
+     * Include the provided values within the entered values when values
+     * changes, and determine the remaining fields and the most relevant
+     * field when form changes.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Ensure provided values are included within entered values, even if
@@ -241,6 +249,14 @@ export class LoginComponent implements OnInit, OnChanges {
 
     }
 
+    /**
+     * Follow the progress of authentication attempts: flag a pending attempt,
+     * open the requested page again and reload the translations after a
+     * successful login, and end a failed attempt. Unless the failure only
+     * asks for further credentials, display its error and reset all remaining
+     * fields except usernames. Clear the entered values once a navigation has
+     * succeeded.
+     */
     ngOnInit(): void {
         // Update UI to reflect in-progress auth status (clear any previous
         // errors, flag as pending)

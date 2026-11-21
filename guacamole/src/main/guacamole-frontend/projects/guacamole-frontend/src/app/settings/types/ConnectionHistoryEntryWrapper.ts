@@ -24,6 +24,11 @@ import { ActivityLog } from '../../rest/types/ActivityLog';
 import { ConnectionHistoryEntry } from '../../rest/types/ConnectionHistoryEntry';
 
 declare namespace ConnectionHistoryEntryWrapper {
+
+    /**
+     * The instance type of ConnectionHistoryEntryWrapper.Log, which is a
+     * static class expression and thus cannot be used as a type itself.
+     */
     type Log = typeof ConnectionHistoryEntryWrapper.Log.prototype;
 }
 

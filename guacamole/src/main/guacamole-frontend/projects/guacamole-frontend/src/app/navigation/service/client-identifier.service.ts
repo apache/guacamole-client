@@ -78,6 +78,11 @@ const base64urlDecode = (value: string): string => {
     ));
 };
 
+/**
+ * A service for converting ClientIdentifiers to and from their String
+ * representation, which identifies a client within the URL of the client
+ * page.
+ */
 @Injectable({
     providedIn: 'root'
 })

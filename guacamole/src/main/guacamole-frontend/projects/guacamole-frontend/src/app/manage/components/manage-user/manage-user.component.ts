@@ -39,6 +39,9 @@ import { PermissionSet } from '../../../rest/types/PermissionSet';
 import { User } from '../../../rest/types/User';
 import { ManagementPermissions } from '../../types/ManagementPermissions';
 
+/**
+ * The component for editing users.
+ */
 @Component({
     selector: 'guac-manage-user',
     templateUrl: './manage-user.component.html',
@@ -178,6 +181,9 @@ export class ManageUserComponent implements OnInit {
      */
     passwordMatch?: string = undefined;
 
+    /**
+     * Inject required services.
+     */
     constructor(private router: Router,
                 private route: ActivatedRoute,
                 private http: HttpClient,
@@ -194,6 +200,12 @@ export class ManageUserComponent implements OnInit {
     ) {
     }
 
+    /**
+     * Load the user to edit, clone or create, the permissions of the current
+     * user in all data sources, the user groups the current user may update
+     * and the user attributes, then prepare the attribute form and the
+     * management permissions of each data source.
+     */
     ngOnInit(): void {
         this.dataSources = this.authenticationService.getAvailableDataSources();
         this.currentUsername = this.authenticationService.getCurrentUsername();
@@ -581,6 +593,15 @@ export class ManageUserComponent implements OnInit {
         return of(void (0));
     }
 
+    /**
+     * Returns whether the attribute form shows only the attributes already
+     * present on the user, because the current user cannot change all
+     * attributes within the selected data source.
+     *
+     * @returns
+     *     true if the attribute form should be restricted to attributes
+     *     present on the user, false otherwise.
+     */
     modelOnly(): boolean {
         return !this.managementPermissions?.[this.dataSource].canChangeAllAttributes;
     }

@@ -47,6 +47,9 @@ export class GuacUserItemComponent implements OnChanges {
      */
     displayName: string | null;
 
+    /**
+     * Inject required services.
+     */
     constructor(private translocoService: TranslocoService) {
         this.displayName = null;
     }
@@ -63,6 +66,10 @@ export class GuacUserItemComponent implements OnChanges {
         return this.username === AuthenticationResult.ANONYMOUS_USERNAME;
     }
 
+    /**
+     * Update the display name whenever the username changes. Anonymous users
+     * are listed under the translated name for anonymous users.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Update display name whenever provided username changes

@@ -157,6 +157,12 @@ export class GuacSettingsPreferencesComponent implements OnInit {
                 private destroyRef: DestroyRef) {
     }
 
+    /**
+     * Determine whether the current user may update their own password and
+     * preference attributes, load the user record with the preference
+     * attribute forms, and create the forms for the user attributes and the
+     * locale settings. Changes to the locale settings are applied at once.
+     */
     ngOnInit(): void {
 
         // Retrieve current permissions

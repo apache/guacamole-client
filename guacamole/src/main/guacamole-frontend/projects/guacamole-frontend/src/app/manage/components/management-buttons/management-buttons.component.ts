@@ -109,6 +109,10 @@ export class ManagementButtonsComponent implements OnInit {
     constructor(private notificationService: GuacNotificationService) {
     }
 
+    /**
+     * Create the actions of the delete confirmation dialog. Their names
+     * depend on the namespace input, which is bound only now.
+     */
     ngOnInit(): void {
 
         this.DELETE_ACTION = {

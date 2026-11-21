@@ -116,15 +116,31 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
         0xFFE1: true,
         0xFFE2: true
     };
+
+    /**
+     * The keysyms which count as Alt for the menu shortcut (Ctrl+Alt+Shift)
+     * and for Ctrl+Alt+End: left and right Alt, Meta and Hyper, and AltGr
+     * (ISO_Level3_Shift).
+     */
     private readonly ALT_KEYS: Record<number, boolean> = {
         0xFFE9: true, 0xFFEA: true, 0xFE03: true,
         0xFFE7: true, 0xFFE8: true,
         0xFFED: true, 0xFFEE: true
     };
+
+    /**
+     * The keysyms of the left and right Ctrl keys, for the menu shortcut
+     * (Ctrl+Alt+Shift) and for Ctrl+Alt+End.
+     */
     private readonly CTRL_KEYS: Record<number, boolean> = {
         0xFFE3: true,
         0xFFE4: true
     };
+
+    /**
+     * All keysyms which may be held for the menu shortcut (Ctrl+Alt+Shift).
+     * While any other key is held, the shortcut does not toggle the menu.
+     */
     private readonly MENU_KEYS: Record<number, boolean> = {
         ...this.SHIFT_KEYS,
         ...this.ALT_KEYS,
@@ -300,6 +316,13 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
     }
 
+    /**
+     * Attach the clients of the group named by the route, and load the
+     * connection groups for the connection list of the menu. Subscribe to the
+     * events which track the focused client, toggle the menu with
+     * Ctrl+Alt+Shift or on request, keep keys from the clients while the menu
+     * is shown, and send Ctrl+Alt+Del when Ctrl+Alt+End is pressed.
+     */
     ngOnInit(): void {
 
         // Init sets of clients based on current URL.
@@ -672,8 +695,39 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
     }
 
-    // Show menu if the user swipes from the left, hide menu when the user
-    // swipes from the right, scroll menu while visible
+    /**
+     * Shows the menu if the user swipes from the left edge, hides the menu
+     * if the user swipes from the right, and scrolls the menu while it is
+     * shown. The guacTouchDrag directive of the client body and of the menu
+     * calls this for each touch movement and once more when the gesture
+     * ends.
+     *
+     * @param inProgress
+     *     Whether the drag gesture is in progress. Not used by this
+     *     handler.
+     *
+     * @param startX
+     *     The X location at which the drag gesture began.
+     *
+     * @param startY
+     *     The Y location at which the drag gesture began.
+     *
+     * @param currentX
+     *     The current X location of the finger.
+     *
+     * @param currentY
+     *     The current Y location of the finger.
+     *
+     * @param deltaX
+     *     The change in X location caused by the latest touch movement.
+     *
+     * @param deltaY
+     *     The change in Y location caused by the latest touch movement.
+     *
+     * @returns
+     *     Always false, so that the default action of the touch event is
+     *     prevented.
+     */
     menuDrag(inProgress: boolean, startX: number, startY: number, currentX: number, currentY: number, deltaX: number, deltaY: number): boolean {
 
         if (this.menu.shown()) {
@@ -887,7 +941,10 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
         }
     };
 
-    // Set client-specific menu actions
+    /**
+     * The actions which the user menu within the Guacamole menu offers in
+     * addition to its own: disconnect and toggle fullscreen mode.
+     */
     clientMenuActions: NotificationAction[] = [this.DISCONNECT_MENU_ACTION, this.FULLSCREEN_MENU_ACTION];
 
     /**

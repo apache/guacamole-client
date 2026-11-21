@@ -102,7 +102,7 @@ const ZIP_SIGNATURES: string[] = [
     'PK\u0007\u0008'
 ];
 
-/*
+/**
  * All file types supported for connection import.
  */
 const LEGAL_MIME_TYPES: string[] = [CSV_MIME_TYPE, JSON_MIME_TYPE, ...YAML_MIME_TYPES];
@@ -217,15 +217,25 @@ export class ImportConnectionsComponent {
 
     }
 
-    // Indicate that data is currently being loaded / processed if the file
-    // has been provided but not yet fully uploaded, or if the file is
-    // fully loaded and is currently being processed.
+    /**
+     * Returns whether data is currently being loaded or processed: the file
+     * has been provided but not yet fully uploaded, or it is fully loaded and
+     * currently being processed.
+     *
+     * @returns
+     *     true if the file is being loaded or processed, false otherwise.
+     */
     isLoading = (): boolean => (
         (this.fileName && !this.dataReady && !this.patchFailure)
         || this.processing);
 
-    // There are errors to display if the parse result generated errors, or
-    // if the patch request failed
+    /**
+     * Returns whether there are errors to display: the parse result
+     * generated errors, or the patch request failed.
+     *
+     * @returns
+     *     true if there are errors to display, false otherwise.
+     */
     hasErrors = () =>
         !!_.get(this, 'parseResult.hasErrors') || !!this.patchFailure;
 

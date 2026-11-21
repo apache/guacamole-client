@@ -78,6 +78,9 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
      */
     private formValueSubscription: Subscription | null = null;
 
+    /**
+     * Inject required services.
+     */
     constructor(private formService: FormService,
                 private destroyRef: DestroyRef) {
     }
@@ -94,6 +97,10 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
 
     }
 
+    /**
+     * Build the form group for the fields of the notification and restart
+     * the countdown, if any, whenever the notification input changes.
+     */
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['notification']) {
             const forms = this.formService.asFormArray(this.notification.forms);

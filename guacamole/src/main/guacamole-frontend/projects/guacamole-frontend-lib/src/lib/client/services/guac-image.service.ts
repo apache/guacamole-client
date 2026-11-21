@@ -100,6 +100,10 @@ export class GuacImageService {
         return this.deferredSupportedMimetypes;
     }
 
+    /**
+     * Starts decoding each test image in the background. The promise returned
+     * by getSupportedMimetypes() resolves once all tests are complete.
+     */
     constructor() {
         // Test each possibly-supported image
         for (const mimetype in this.testImages) {

@@ -110,11 +110,21 @@ export class GuacTouchDragDirective {
      */
     element: Element;
 
+    /**
+     * Inject required services.
+     */
     constructor(private el: ElementRef) {
         this.element = el.nativeElement;
     }
 
-    // When there is exactly one touch, monitor the change in location
+    /**
+     * Tracks the location of the touch while exactly one touch moves, and
+     * calls guacTouchDrag with the start, current location and change of the
+     * drag gesture. The first such move starts the gesture.
+     *
+     * @param e
+     *     The touchmove event.
+     */
     @HostListener('touchmove', ['$event']) dragTouchMove(e: TouchEvent): void {
         if (e.touches.length === 1) {
 
@@ -152,6 +162,13 @@ export class GuacTouchDragDirective {
         }
     }
 
+    /**
+     * Calls guacTouchDrag a last time once all touches have ended, then
+     * resets the state of the drag gesture.
+     *
+     * @param e
+     *     The touchend event.
+     */
     @HostListener('touchend', ['$event']) dragTouchEnd(e: TouchEvent): void {
         if (this.startX && this.startY && e.touches.length === 0) {
 

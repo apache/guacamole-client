@@ -19,6 +19,10 @@
 
 import { Component, ElementRef, Inject, Input, OnInit, ViewEncapsulation, DOCUMENT, ChangeDetectionStrategy } from '@angular/core';
 
+/**
+ * A component which provides an arbitrary menu-style container. The contents
+ * of the component are displayed only when the menu is open.
+ */
 @Component({
     selector: 'guac-menu',
     templateUrl: './guac-menu.component.html',
@@ -50,10 +54,17 @@ export class GuacMenuComponent implements OnInit {
      */
     menuShown = false;
 
+    /**
+     * Inject required services.
+     */
     constructor(@Inject(DOCUMENT) private document: Document, private elementRef: ElementRef) {
         this.element = elementRef.nativeElement;
     }
 
+    /**
+     * Close the menu when the user clicks anywhere outside this specific
+     * menu.
+     */
     ngOnInit(): void {
 
         // Close menu when user clicks anywhere outside this specific menu

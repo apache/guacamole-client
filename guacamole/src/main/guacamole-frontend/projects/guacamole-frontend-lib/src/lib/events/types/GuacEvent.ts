@@ -36,6 +36,11 @@ export type GuacEventName<T extends GuacEventArguments> = keyof T;
  *     arguments.
  */
 export class GuacEvent<T extends GuacEventArguments> {
+
+    /**
+     * The name of the event, as passed to GuacEventService.broadcast().
+     * GuacEventService.on() selects events by this name.
+     */
     name: GuacEventName<T>;
 
     /**

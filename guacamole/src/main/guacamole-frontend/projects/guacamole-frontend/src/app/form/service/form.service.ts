@@ -58,8 +58,15 @@ import { UsernameFieldComponent } from '../components/username-field/username-fi
 })
 export class FormService {
 
+    /**
+     * The renderer which appends the element of each field component to its
+     * field container.
+     */
     private renderer: Renderer2;
 
+    /**
+     * Inject required services.
+     */
     constructor(private fieldTypeService: FieldTypeService, rendererFactory: RendererFactory2) {
         this.registerFieldTypes();
         this.renderer = rendererFactory.createRenderer(null, null);

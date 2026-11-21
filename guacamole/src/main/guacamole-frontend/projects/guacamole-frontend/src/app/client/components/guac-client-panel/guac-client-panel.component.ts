@@ -74,6 +74,10 @@ export class GuacClientPanelComponent implements AfterViewInit {
                 protected sortService: SortService) {
     }
 
+    /**
+     * Store the scrollable connection list of the panel, and make vertical
+     * mouse wheel movement scroll that list horizontally.
+     */
     ngAfterViewInit(): void {
         this.scrollableArea = this.scrollableAreaRef?.nativeElement;
 

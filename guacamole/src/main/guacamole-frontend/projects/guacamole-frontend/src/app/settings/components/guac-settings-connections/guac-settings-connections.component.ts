@@ -94,6 +94,9 @@ export class GuacSettingsConnectionsComponent implements OnInit {
         'name'
     ];
 
+    /**
+     * Inject required services.
+     */
     constructor(private authenticationService: AuthenticationService,
                 private connectionGroupService: ConnectionGroupService,
                 private dataSourceService: DataSourceService,
@@ -104,6 +107,12 @@ export class GuacSettingsConnectionsComponent implements OnInit {
                 private router: Router) {
     }
 
+    /**
+     * Create the data source for the root connection groups, then retrieve
+     * the permissions of the current user and all connections and connection
+     * groups which the user may update or delete. Return to the home page if
+     * the user cannot manage any connections.
+     */
     ngOnInit(): void {
 
         // Create a new data source for the root connection groups

@@ -26,10 +26,14 @@ import { ImportConnection } from '../types/ImportConnection';
 import { ParseError } from '../types/ParseError';
 import { TransformConfig } from '../types/TransformConfig';
 
-// A suffix that indicates that a particular header refers to a parameter
+/**
+ * A suffix that indicates that a particular header refers to a parameter.
+ */
 const PARAMETER_SUFFIX = ' (parameter)';
 
-// A suffix that indicates that a particular header refers to an attribute
+/**
+ * A suffix that indicates that a particular header refers to an attribute.
+ */
 const ATTRIBUTE_SUFFIX = ' (attribute)';
 
 /**
@@ -38,6 +42,9 @@ const ATTRIBUTE_SUFFIX = ' (attribute)';
 @Injectable()
 export class ConnectionCSVService {
 
+    /**
+     * Inject required services.
+     */
     constructor(private schemaService: SchemaService,
                 private route: ActivatedRoute) {
     }

@@ -419,6 +419,10 @@ export class PlayerComponent implements OnChanges, OnDestroy {
         this.router.navigate(['/settings', this.dataSource, 'history']);
     }
 
+    /**
+     * Automatically load the requested session recording whenever the src
+     * input changes, stopping the recording loaded before.
+     */
     ngOnChanges(changes: SimpleChanges) {
         if (changes['src']) {
 
@@ -571,10 +575,10 @@ export class PlayerComponent implements OnChanges, OnDestroy {
          */
         MOUSE_DEBOUNCE_DELAY);
 
-    /*
-     * When the mouse moves inside the player, add a CSS class signifying
-     * recent mouse movement, to be automatically cleaned up after a period
-     * of time with no detected mouse movement.
+    /**
+     * Adds the CSS class signifying recent mouse movement when the mouse
+     * moves inside the player. The class is automatically removed after a
+     * period of time with no detected mouse movement.
      */
     @HostListener('mousemove')
     onMouseMove() {

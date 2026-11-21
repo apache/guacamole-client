@@ -88,6 +88,9 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
     }) + '-' + new Date().getTime().toString(36);
 
 
+    /**
+     * Inject required services.
+     */
     constructor(private formService: FormService,
                 private log: LogService,
                 private cdr: ChangeDetectorRef) {
@@ -109,6 +112,11 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
         this.fieldComponent?.instance.ngOnChanges?.(changes);
     }
 
+    /**
+     * Insert the component for the type of the field, now that the element
+     * which holds the field content exists. Until then,
+     * insertFieldElement() returns without inserting anything.
+     */
     async ngAfterViewInit(): Promise<void> {
         this.fieldContent = this.fieldContentRef.nativeElement;
 

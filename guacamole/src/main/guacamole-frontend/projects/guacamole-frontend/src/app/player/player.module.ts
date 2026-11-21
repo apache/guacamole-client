@@ -54,6 +54,9 @@ import { PlayerTextViewComponent } from './player-text-view/player-text-view.com
 import { PlayerComponent } from './player.component';
 import { ProgressIndicatorComponent } from './progress-indicator/progress-indicator.component';
 
+/**
+ * Module providing in-browser playback of session recordings.
+ */
 @NgModule({
     declarations: [
         PlayerComponent,

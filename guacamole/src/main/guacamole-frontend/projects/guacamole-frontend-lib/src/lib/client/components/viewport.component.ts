@@ -54,9 +54,20 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
      * been called.
      */
     lastViewportHeight?: number = undefined;
+
+    /**
+     * The ID of the interval which calls fitVisibleArea() every 10
+     * milliseconds, in case the scroll event does not fire. Cleared when the
+     * component is destroyed.
+     */
     private pollArea?: number;
 
 
+    /**
+     * Fit the container element within the visible area whenever the window
+     * scrolls, and every 10 milliseconds in case the scroll event does not
+     * fire.
+     */
     ngAfterViewInit(): void {
         this.element = this.elementRef.nativeElement;
 

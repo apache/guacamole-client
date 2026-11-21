@@ -33,6 +33,9 @@ import { Error } from '../types/Error';
 })
 export class RequestService {
 
+    /**
+     * Inject required services.
+     */
     constructor(private log: LogService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>) {
     }
@@ -186,11 +189,29 @@ export class RequestService {
         return of(void (0));
     });
 
+    /**
+     * Promise error callback which replaces the content of the page with a
+     * generic error message warning that the page could not be displayed,
+     * like @link{DIE} does for Observables. All rejections are logged to the
+     * browser console as errors. This callback should be used in favor of
+     * @link{PROMISE_WARN} if REST errors will result in the page being
+     * unusable.
+     *
+     * @constant
+     */
     readonly PROMISE_DIE: ((reason: any) => (PromiseLike<never>) | null | undefined) = this.createPromiseErrorCallback((error: Error) => {
         this.guacEventService.broadcast('guacFatalPageError', { error });
         this.log.error(error.type, error.message || error.translatableMessage);
     });
 
+    /**
+     * Promise error callback which logs all rejections due to REST errors as
+     * warnings to the browser console, and logs all other rejections as
+     * errors, like @link{WARN} does for Observables. This callback should be
+     * used if REST errors are simply not expected.
+     *
+     * @constant
+     */
     readonly PROMISE_WARN: ((reason: any) => (PromiseLike<never>) | null | undefined) = this.createPromiseErrorCallback((error: any) => {
         this.log.warn(error.type, error.message || error.translatableMessage);
     });

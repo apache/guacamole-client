@@ -268,6 +268,10 @@ export class GuacPagerComponent implements OnChanges {
         return lastPageNumber !== this.lastPage;
     }
 
+    /**
+     * Update the available pages when length or pageSize changes, and the
+     * page numbers to choose from when length or pageCount changes.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Use default page size if none is specified

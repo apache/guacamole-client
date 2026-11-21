@@ -24,6 +24,12 @@ import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEv
 import { ClipboardService } from '../../services/clipboard.service';
 import { ClipboardData } from '../../types/ClipboardData';
 
+/**
+ * A component which provides an editor for the clipboard content maintained
+ * by ClipboardService. Changes to the clipboard by ClipboardService are
+ * reflected in the editor, and changes in the editor are reflected in the
+ * clipboard by ClipboardService.
+ */
 @Component({
     selector: 'guac-clipboard',
     templateUrl: './clipboard.component.html',
@@ -41,6 +47,9 @@ export class ClipboardComponent implements OnInit, AfterViewInit {
      */
     @ViewChild('activeClipboardTextarea') element!: ElementRef<HTMLTextAreaElement>;
 
+    /**
+     * Inject required services.
+     */
     constructor(private readonly clipboardService: ClipboardService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private destroyRef: DestroyRef) {
@@ -93,6 +102,10 @@ export class ClipboardComponent implements OnInit, AfterViewInit {
         // Ignore other data types for now
     }
 
+    /**
+     * Show the new clipboard contents in the editor whenever a
+     * "guacClipboard" event is broadcast.
+     */
     ngOnInit(): void {
         // Update remote clipboard if local clipboard changes
         this.guacEventService.on('guacClipboard')
@@ -102,6 +115,10 @@ export class ClipboardComponent implements OnInit, AfterViewInit {
             });
     }
 
+    /**
+     * Initialize the clipboard editor with the current clipboard contents,
+     * now that the textarea element is available.
+     */
     ngAfterViewInit(): void {
 
         // Init clipboard editor with current clipboard contents

@@ -48,10 +48,17 @@ export class LanguageFieldComponent extends FormFieldBaseComponent implements On
      */
     languages?: Record<string, string> = undefined;
 
+    /**
+     * Inject required services.
+     */
     constructor(private languageService: LanguageService) {
         super();
     }
 
+    /**
+     * Retrieve the available languages, and replace any undefined or null
+     * value written to the form control with an empty string.
+     */
     ngOnInit(): void {
 
         // Retrieve defined languages

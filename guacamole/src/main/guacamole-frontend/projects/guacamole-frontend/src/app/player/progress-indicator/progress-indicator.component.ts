@@ -78,6 +78,10 @@ export class ProgressIndicatorComponent implements OnChanges {
      */
     barTransform?: string = undefined;
 
+    /**
+     * Keep percentage and bar transform up-to-date with changes to the
+     * progress input.
+     */
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['progress']) {
             // Keep percentage and bar transform up-to-date with changes to

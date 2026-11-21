@@ -57,6 +57,11 @@ export class DataSourceTabsComponent implements OnChanges {
      */
     pages: PageDefinition[] = [];
 
+    /**
+     * Keep pages synchronized with permissions: one page for each data source
+     * in which the object exists or can be created, marked as read-only,
+     * linked or unlinked.
+     */
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['permissions']) {
             const permissions = changes['permissions'].currentValue as Record<string, ManagementPermissions>;

@@ -134,6 +134,12 @@ export class TextInputComponent implements AfterViewInit {
                 private destroyRef: DestroyRef) {
     }
 
+    /**
+     * Set up the text input target, now that it is available: track its
+     * focus, send typed text and deletions as keystrokes, prevent keydown and
+     * keyup events of all keys except ALLOWED_KEYS while it has focus, and
+     * focus it initially.
+     */
     ngAfterViewInit(): void {
         this.target = this.targetRef.nativeElement;
 
@@ -332,6 +338,16 @@ export class TextInputComponent implements AfterViewInit {
 
     }
 
+    /**
+     * Identifies each entry of the recently-sent text by its position, as
+     * the same text may be sent more than once.
+     *
+     * @param index
+     *     The position of the entry within sentText.
+     *
+     * @returns
+     *     The given position, used by the template to track the entry.
+     */
     trackByIndex(index: number): number {
         return index;
     }

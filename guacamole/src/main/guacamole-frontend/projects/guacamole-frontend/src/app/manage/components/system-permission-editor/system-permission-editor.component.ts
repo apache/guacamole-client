@@ -127,12 +127,19 @@ export class SystemPermissionEditorComponent implements OnInit {
     ];
 
 
+    /**
+     * Inject required services.
+     */
     constructor(private authenticationService: AuthenticationService,
                 private dataSourceService: DataSourceService,
                 private permissionService: PermissionService,
                 private requestService: RequestService) {
     }
 
+    /**
+     * Query the permissions granted to the current user in all available
+     * data sources.
+     */
     ngOnInit(): void {
         this.dataSources = this.authenticationService.getAvailableDataSources();
         this.currentUsername = this.authenticationService.getCurrentUsername();

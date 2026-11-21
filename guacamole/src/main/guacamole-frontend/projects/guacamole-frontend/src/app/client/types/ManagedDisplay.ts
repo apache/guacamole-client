@@ -20,9 +20,26 @@
 import { signal, WritableSignal } from '@angular/core';
 
 
+/**
+ * Type definition for the template parameter accepted by the ManagedDisplay
+ * constructor. All properties are optional.
+ */
 export type ManagedDisplayTemplate = {
+
+    /**
+     * The underlying Guacamole display.
+     */
     display?: Guacamole.Display;
+
+    /**
+     * The size of the Guacamole display. The constructor copies width and
+     * height into a new ManagedDisplayDimensions; both default to 0.
+     */
     size?: ManagedDisplayDimensions;
+
+    /**
+     * The current mouse cursor, if any.
+     */
     cursor?: ManagedDisplayCursor;
 }
 

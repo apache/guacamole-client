@@ -65,7 +65,9 @@ export class GuacFullscreenService {
         }
     }
 
-    // toggles current fullscreen mode (off if on, on if off)
+    /**
+     * Toggles fullscreen mode: off if it is on, on if it is off.
+     */
     toggleFullscreenMode(): void {
         if (!this.isInFullscreenMode())
             this.setFullscreenMode(true);

@@ -107,6 +107,10 @@ export class GuacUserMenuComponent implements OnInit {
     ) {
     }
 
+    /**
+     * Retrieve the profile attributes of the current user, if available, and
+     * the main pages available to the current user.
+     */
     ngOnInit(): void {
         // Display user profile attributes if available
         this.userService.getUser(this.authenticationService.getDataSource()!, this.username!)

@@ -167,6 +167,10 @@ export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
     ) {
     }
 
+    /**
+     * Create the data source for the root connection groups and retrieve all
+     * connections for which the current user has ADMINISTER permission.
+     */
     ngOnInit(): void {
 
         // Create a new data source for the root connection groups
@@ -193,6 +197,10 @@ export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
 
     }
 
+    /**
+     * Update the default expanded state and the views of all and of readable
+     * connections when permissionFlags changes.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Update default expanded state and the all / readable-only views

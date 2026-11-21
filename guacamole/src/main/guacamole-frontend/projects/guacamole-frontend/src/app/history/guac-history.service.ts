@@ -23,7 +23,9 @@ import { PreferenceService } from '../settings/services/preference.service';
 import { LocalStorageService } from '../storage/local-storage.service';
 import { HistoryEntry } from './HistoryEntry';
 
-// The parameter name for getting the history from local storage
+/**
+ * The key under which the connection history is stored in local storage.
+ */
 const GUAC_HISTORY_STORAGE_KEY = 'GUAC_HISTORY';
 
 /**

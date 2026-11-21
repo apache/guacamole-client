@@ -67,7 +67,10 @@ export class OskComponent implements OnChanges {
 
     }
 
-    // Size keyboard to same size as main element
+    /**
+     * Resizes the on-screen keyboard to the width of the main element. The
+     * template calls this whenever the main element is resized.
+     */
     keyboardResized(): void {
 
         // Resize keyboard, if defined

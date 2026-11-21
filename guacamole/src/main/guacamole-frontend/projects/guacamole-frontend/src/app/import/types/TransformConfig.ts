@@ -25,23 +25,55 @@ import { ParseError } from './ParseError';
  */
 export interface TransformConfig {
 
-    // Callbacks for required fields
+    /**
+     * Returns the connection name from a CSV row. Set if the CSV has a
+     * "name" column; the file cannot be imported without it.
+     */
     nameGetter?: (row: string[]) => any;
+
+    /**
+     * Returns the connection protocol from a CSV row. Set if the CSV has a
+     * "protocol" column; the file cannot be imported without it.
+     */
     protocolGetter?: (row: string[]) => any;
 
-    // Callbacks for a parent group ID or group path
+    /**
+     * Returns the path of the parent connection group from a CSV row. Set if
+     * the CSV has a "group" column.
+     */
     groupGetter?: (row: string[]) => any;
+
+    /**
+     * Returns the identifier of the parent connection group from a CSV row.
+     * Set if the CSV has a "parentIdentifier" column.
+     */
     parentIdentifierGetter?: (row: string[]) => any;
 
-    // Callbacks for user and user group identifiers
+    /**
+     * Returns the identifiers of the users who should be granted access to
+     * the connection, taken from the semicolon-separated "users" column of a
+     * CSV row. Returns an empty array if the CSV has no such column.
+     */
     usersGetter: (row: string[]) => string[];
+
+    /**
+     * Returns the identifiers of the user groups which should be granted
+     * access to the connection, taken from the semicolon-separated "groups"
+     * column of a CSV row. Returns an empty array if the CSV has no such
+     * column.
+     */
     userGroupsGetter: (row: string[]) => string[];
 
-    // Callbacks that will generate either connection attributes or
-    // parameters. These callbacks will return a {type, name, value}
-    // object containing the type ("parameter" or "attribute"),
-    // the name of the attribute or parameter, and the corresponding
-    // value.
+    /**
+     * One callback for each remaining column, which generates either a
+     * connection attribute or a connection parameter from a CSV row. Each
+     * callback returns an object containing the type ("attributes" or
+     * "parameters"), the name of the attribute or parameter, and its value.
+     * For a column whose header does not say which of the two it is, the
+     * callback determines the type from the protocol of the row and adds any
+     * errors; it returns an empty object if the column has no value in the
+     * row or the protocol is unknown.
+     */
     parameterOrAttributeGetters: ((row: string[]) => {
         type?: string;
         name?: string;

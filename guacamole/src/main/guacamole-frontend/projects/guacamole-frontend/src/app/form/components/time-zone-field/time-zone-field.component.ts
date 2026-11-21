@@ -67,6 +67,9 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
      */
     selectedTimeZone!: Record<string, string>;
 
+    /**
+     * Inject required services.
+     */
     constructor(private destroyRef: DestroyRef,
                 private sortService: SortService) {
         super();
@@ -152,6 +155,13 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
             this.control?.enable({ emitEvent: false });
     }
 
+    /**
+     * Lists the selectable regions, including a blank entry for no region.
+     *
+     * @returns
+     *     The blank entry and the names of all regions within timeZones,
+     *     sorted lexicographically.
+     */
     private getRegions(): string[] {
 
         // Start with blank entry
@@ -166,6 +176,13 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
     }
 
 
+    /**
+     * Maps each time zone ID within timeZones to the region containing it.
+     *
+     * @returns
+     *     A map of all time zone IDs to the name of the region containing
+     *     each ID.
+     */
     private getTimeZoneRegions(): Record<string, string> {
 
         const regions: Record<string, string> = {};
@@ -193,6 +210,13 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
 
     }
 
+    /**
+     * Selects the default time zone of each region: the time zone whose name
+     * comes first lexicographically.
+     *
+     * @returns
+     *     A map of each region to the ID of its default time zone.
+     */
     private getSelectedTimeZone(): Record<string, string> {
 
         const defaultTimeZone: Record<string, string> = {};

@@ -41,10 +41,18 @@ export class GuacScrollDirective implements OnChanges {
      */
     element: Element;
 
+    /**
+     * Inject required services.
+     */
     constructor(el: ElementRef) {
         this.element = el.nativeElement;
     }
 
+    /**
+     * Scroll the element to the left and top of guacScroll whenever either
+     * changes, and store the scroll position the element actually took back
+     * into guacScroll.
+     */
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['guacScroll']) {
             const currentValue = changes['guacScroll'].currentValue as ScrollState;

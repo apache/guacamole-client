@@ -88,6 +88,9 @@ export class AuthenticationService {
      */
     cachedResult: AuthenticationResult | null = null;
 
+    /**
+     * Inject required services.
+     */
     constructor(private localStorageService: LocalStorageService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private requestService: RequestService,

@@ -20,6 +20,10 @@
 import { Inject, Injectable, Renderer2, RendererFactory2, DOCUMENT } from '@angular/core';
 
 
+/**
+ * The prefix of the ID of each link element added by loadStyle(), followed
+ * by the name of the CSS file, so that each file is loaded only once.
+ */
 const STYLE_ELEMENT_ID = 'loaded-style-';
 
 /**

@@ -100,10 +100,18 @@ export class LocationChooserComponent implements OnInit, OnChanges {
         this.menuOpen = !this.menuOpen;
     }
 
+    /**
+     * Map the connection groups of the root group and determine the chosen
+     * connection group.
+     */
     ngOnInit(): void {
         this.onDataSourceChange();
     }
 
+    /**
+     * Update the root group map when dataSource or rootGroup changes, and
+     * map the connection groups again when dataSource changes.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Update the root group map when data source or root group change
@@ -125,6 +133,12 @@ export class LocationChooserComponent implements OnInit, OnChanges {
 
     }
 
+    /**
+     * Maps all connection groups within the root group by their identifiers
+     * and updates the name of the chosen connection group. If value is not
+     * set or is not the identifier of one of these groups, the root group
+     * is chosen.
+     */
     onDataSourceChange(): void {
         this.connectionGroups = {};
 

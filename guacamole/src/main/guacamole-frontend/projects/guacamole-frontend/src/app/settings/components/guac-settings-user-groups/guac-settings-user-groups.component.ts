@@ -121,6 +121,13 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
                 private router: Router) {
     }
 
+    /**
+     * Build the filtered, sorted and paginated view of the user groups, then
+     * retrieve the permissions of the current user and the user groups to
+     * list: all readable user groups if the user may create user groups,
+     * otherwise only those the user may update or delete. Return to the home
+     * page if the user cannot manage any user groups.
+     */
     ngOnInit(): void {
 
         // Build the data source for the user group list entries.

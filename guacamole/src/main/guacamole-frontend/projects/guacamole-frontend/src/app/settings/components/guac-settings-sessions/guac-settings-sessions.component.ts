@@ -150,6 +150,12 @@ export class GuacSettingsSessionsComponent implements OnInit {
                 private dataSourceBuilderService: DataSourceBuilderService) {
     }
 
+    /**
+     * Build the filtered, sorted and paginated view of the active sessions,
+     * then retrieve all connections, the active connections of all data
+     * sources and the date format, and wrap the active connections for
+     * display once all have arrived.
+     */
     ngOnInit(): void {
 
         // Build the data source for the connection list entries.

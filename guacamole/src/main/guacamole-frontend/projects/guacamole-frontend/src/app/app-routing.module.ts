@@ -342,6 +342,12 @@ export const fallbackRoute: Route = {
     path: '**', redirectTo: ''
 };
 
+/**
+ * Module for the routes of the application. Route parameters are bound to
+ * component inputs, URLs keep the route after the hash (#/...) like the
+ * AngularJS frontend, and routes reload when their parameters change, like
+ * ngRoute.
+ */
 @NgModule({
     imports: [RouterModule.forRoot([...appRoutes, fallbackRoute], {
         // Bind route parameters to component inputs

@@ -29,6 +29,15 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class EscapePipe implements PipeTransform {
 
+    /**
+     * URI-encodes the given string with encodeURIComponent().
+     *
+     * @param value
+     *     The string to encode.
+     *
+     * @returns
+     *     The URI-encoded string, or an empty string if no string is given.
+     */
     transform(value: string): string {
 
         if (value)

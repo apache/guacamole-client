@@ -51,17 +51,41 @@ export class GuacZoomCtrlDirective implements ControlValueAccessor {
      */
     private onTouched!: () => void;
 
+    /**
+     * Inject required services.
+     */
     constructor(private renderer: Renderer2, private el: ElementRef) {
     }
 
+    /**
+     * Stores the callback which passes the display scale to the form
+     * control. The directive calls it on each input.
+     *
+     * @param fn
+     *     The callback to call with the display scale.
+     */
     registerOnChange(fn: any): void {
         this.onChange = fn;
     }
 
+    /**
+     * Stores the callback which marks the form control as touched. The
+     * directive calls it on each input.
+     *
+     * @param fn
+     *     The callback to call on each input.
+     */
     registerOnTouched(fn: any): void {
         this.onTouched = fn;
     }
 
+    /**
+     * Disables or enables the input field when the form control is disabled
+     * or enabled.
+     *
+     * @param isDisabled
+     *     Whether the input field should be disabled.
+     */
     setDisabledState(isDisabled: boolean): void {
         this.renderer.setProperty(this.el.nativeElement, 'disabled', isDisabled);
     }

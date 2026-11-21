@@ -35,10 +35,34 @@ import { SortOrder } from './SortOrder';
  */
 export class DataSourceBuilder<T> {
 
+    /**
+     * The array on which the data operations are applied, as set by
+     * source(). build() fails if it is not set.
+     */
     private _source?: T[];
+
+    /**
+     * An Observable of the filter search string, as set by filter(), or null
+     * if the data source should not be filtered.
+     */
     private _searchString: Observable<string> | null = null;
+
+    /**
+     * The expressions to filter against, as set by filter(), or null if the
+     * data source should not be filtered.
+     */
     private _filterProperties: string[] | null = null;
+
+    /**
+     * An Observable of the sort order, as set by sort(), or null if the data
+     * source should not be sorted.
+     */
     private _sortOrder: Observable<SortOrder> | null = null;
+
+    /**
+     * An Observable of pager events, as set by paginate(), or null if the
+     * data source should not be paginated.
+     */
     private _pagerEvent: Observable<PagerEvent> | null = null;
 
     /**

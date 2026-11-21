@@ -101,6 +101,10 @@ export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {
                 private renderer: Renderer2) {
     }
 
+    /**
+     * Store the list element for the join and leave messages, which is
+     * available only once the view is initialized.
+     */
     ngAfterViewInit(): void {
         this.messages = this.messagesRef.nativeElement;
     }

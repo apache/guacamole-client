@@ -57,6 +57,9 @@ export class GuacResizeDirective {
      */
     lastHeight: number;
 
+    /**
+     * Inject required services.
+     */
     constructor(private el: ElementRef, @Inject(DOCUMENT) private document: Document) {
         this.element = el.nativeElement;
         this.lastWidth = this.element.offsetWidth;

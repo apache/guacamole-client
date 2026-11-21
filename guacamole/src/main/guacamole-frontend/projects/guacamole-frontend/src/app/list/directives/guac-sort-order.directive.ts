@@ -121,6 +121,10 @@ export class GuacSortOrderDirective implements OnInit, OnChanges {
         return !!this.guacSortOrder?.descending;
     }
 
+    /**
+     * Update the CSS classes of the associated element whenever
+     * guacSortOrder changes.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         if (changes['guacSortOrder']) {
@@ -129,6 +133,12 @@ export class GuacSortOrderDirective implements OnInit, OnChanges {
 
     }
 
+    /**
+     * Adds or removes the CSS classes "sort-primary" and "sort-descending"
+     * of the associated element, depending on whether the sort property is
+     * the primary property of the current sort order and whether that
+     * primary property is sorted in descending order.
+     */
     onSortOrderChange(): void {
         // Add/remove "sort-primary" class depending on sort order
         const primary = this.isPrimary();

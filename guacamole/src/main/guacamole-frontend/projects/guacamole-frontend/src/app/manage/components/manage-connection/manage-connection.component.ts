@@ -183,6 +183,13 @@ export class ManageConnectionComponent implements OnInit {
                 private destroyRef: DestroyRef) {
     }
 
+    /**
+     * Create the data source of the paginated connection history, then load
+     * the connection to edit, clone or create together with the connection
+     * attributes, the permissions of the current user, the available
+     * protocols and the tree of connection groups the user may choose as
+     * location, and prepare the forms and the management permissions.
+     */
     ngOnInit(): void {
         this.cloneSourceIdentifier = this.route.snapshot.queryParamMap.get('clone');
 

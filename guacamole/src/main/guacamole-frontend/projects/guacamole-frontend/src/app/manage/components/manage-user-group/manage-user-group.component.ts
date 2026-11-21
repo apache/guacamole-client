@@ -237,6 +237,12 @@ export class ManageUserGroupComponent implements OnInit {
                 private destroyRef: DestroyRef) {
     }
 
+    /**
+     * Load the user group to edit, clone or create, the permissions of the
+     * current user in all data sources, the user groups and users the current
+     * user may update and the user group attributes, then prepare the
+     * attribute form and the management permissions of each data source.
+     */
     ngOnInit(): void {
         this.cloneSourceIdentifier = this.route.snapshot.queryParamMap.get('clone');
 

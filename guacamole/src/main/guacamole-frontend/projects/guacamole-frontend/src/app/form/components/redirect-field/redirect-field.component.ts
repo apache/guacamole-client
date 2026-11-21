@@ -40,6 +40,9 @@ export class RedirectFieldComponent extends FormFieldBaseComponent implements On
      */
     @Input() fieldId?: string;
 
+    /**
+     * Inject required services.
+     */
     constructor(@Inject(DOCUMENT) private document: Document) {
         super();
     }

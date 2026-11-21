@@ -134,6 +134,14 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 private destroyRef: DestroyRef) {
     }
 
+    /**
+     * Load the extension styles and set up what spans the whole application:
+     * keyboard handling and its events, the periodic check of the session,
+     * resynchronization of the clipboard, the login, error and logout screens
+     * driven by authentication events, the page title and the body class of
+     * the current route. If a guard rejects a navigation, keep its URL so that
+     * logging in opens the requested page.
+     */
     ngOnInit(): void {
 
         // Load extension styles

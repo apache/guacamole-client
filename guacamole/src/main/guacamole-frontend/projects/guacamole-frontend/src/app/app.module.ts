@@ -40,6 +40,11 @@ import { CacheInterceptor } from './rest/interceptor/cache.interceptor';
 import { ErrorHandlingInterceptor } from './rest/interceptor/error-handling.interceptor';
 import { SettingsModule } from './settings/settings.module';
 
+/**
+ * The root module of the application. It bootstraps AppComponent, loads the
+ * extensions and sets the routes before the application starts, and
+ * registers the HTTP interceptors.
+ */
 @NgModule({ declarations: [
         AppComponent,
     ],

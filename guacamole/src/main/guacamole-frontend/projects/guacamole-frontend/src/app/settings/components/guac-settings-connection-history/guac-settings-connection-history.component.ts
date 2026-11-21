@@ -118,6 +118,10 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
                 private ds: DataSourceBuilderService) {
     }
 
+    /**
+     * Retrieve the date format, build the sorted and paginated view of the
+     * history entries and run the initial search.
+     */
     ngOnInit(): void {
 
         // Get session date format

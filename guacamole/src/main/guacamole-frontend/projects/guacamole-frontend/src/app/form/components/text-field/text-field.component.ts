@@ -46,6 +46,9 @@ export class TextFieldComponent extends FormFieldBaseComponent implements OnChan
      */
     dataListId: string | null = null;
 
+    /**
+     * Generate the ID of the datalist element if the field provides options.
+     */
     ngOnInit(): void {
         // Generate unique ID for datalist, if applicable
         if (this.field.options && this.field.options.length)

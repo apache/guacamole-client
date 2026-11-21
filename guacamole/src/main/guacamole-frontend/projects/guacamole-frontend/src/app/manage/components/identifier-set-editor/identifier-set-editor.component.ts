@@ -136,6 +136,11 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
                 private dataSourceBuilderService: DataSourceBuilderService) {
     }
 
+    /**
+     * Build the data sources for the available identifiers, filtered by
+     * filterString and paginated, and for the identifiers currently present
+     * in the set, filtered by filterString.
+     */
     ngOnInit(): void {
         // Build the data source for the available identifiers.
         this.identifiersAvailableDataSourceView = this.dataSourceBuilderService.getBuilder<string>()
@@ -151,6 +156,11 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
             .build();
     }
 
+    /**
+     * Keep identifierFlags and isEditable up to date when identifiers or
+     * identifiersAvailable is replaced, and pass the new arrays to the data
+     * sources.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Keep identifierFlags up to date when identifiers array is replaced

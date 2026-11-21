@@ -20,6 +20,10 @@
 import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
+/**
+ * Component for username fields, which work like text fields but hold a
+ * username.
+ */
 @Component({
     selector: 'guac-username-field',
     templateUrl: './username-field.component.html',

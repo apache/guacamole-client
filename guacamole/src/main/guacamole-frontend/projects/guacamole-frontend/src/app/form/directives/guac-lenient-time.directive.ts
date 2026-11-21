@@ -53,6 +53,9 @@ export class GuacLenientTimeDirective implements ControlValueAccessor {
      */
     private onTouched!: () => void;
 
+    /**
+     * Inject required services.
+     */
     constructor(private renderer: Renderer2, private el: ElementRef) {
     }
 
@@ -68,14 +71,36 @@ export class GuacLenientTimeDirective implements ControlValueAccessor {
         this.renderer.setProperty(this.el.nativeElement, 'value', formattedValue);
     }
 
+    /**
+     * Stores the callback which passes a parsed value of the input field to
+     * the form control. The directive calls it when the input field loses
+     * focus.
+     *
+     * @param fn
+     *     The callback to call with the parsed value.
+     */
     registerOnChange(fn: any): void {
         this.onChange = fn;
     }
 
+    /**
+     * Stores the callback which marks the form control as touched. The
+     * directive calls it when the input field loses focus.
+     *
+     * @param fn
+     *     The callback to call when the input field loses focus.
+     */
     registerOnTouched(fn: any): void {
         this.onTouched = fn;
     }
 
+    /**
+     * Disables or enables the input field when the form control is disabled
+     * or enabled.
+     *
+     * @param isDisabled
+     *     Whether the input field should be disabled.
+     */
     setDisabledState(isDisabled: boolean): void {
         this.renderer.setProperty(this.el.nativeElement, 'disabled', isDisabled);
     }

@@ -55,6 +55,9 @@ const ROOT_GROUP_IDENTIFIER: string = 'ROOT';
 @Injectable()
 export class ConnectionParseService {
 
+    /**
+     * Inject required services.
+     */
     constructor(private route: ActivatedRoute,
                 private schemaService: SchemaService,
                 private connectionCSVService: ConnectionCSVService,

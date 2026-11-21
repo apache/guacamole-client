@@ -60,8 +60,16 @@ export class KeyComponent implements OnChanges {
      * @default false
      */
     @Input() pressed = false;
+
+    /**
+     * Emits the new pressed state whenever a click toggles a sticky key, so
+     * that the parent can bind pressed two-way.
+     */
     @Output() pressedChange = new EventEmitter<boolean>();
 
+    /**
+     * Inject required services.
+     */
     constructor(private guacEventService: GuacEventService<GuacFrontendEventArguments>) {
     }
 
@@ -92,6 +100,10 @@ export class KeyComponent implements OnChanges {
         event.preventDefault();
     }
 
+    /**
+     * Send a synthetic keydown for the keysym when pressed changes to true,
+     * and a synthetic keyup when it changes from true to false.
+     */
     ngOnChanges(changes: SimpleChanges): void {
         // Send keyup/keydown when pressed state is altered
         if (changes['pressed']) {

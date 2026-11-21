@@ -89,12 +89,21 @@ export class GuacTouchPinchDirective {
      */
     element: Element;
 
+    /**
+     * Inject required services.
+     */
     constructor(private el: ElementRef) {
         this.element = el.nativeElement;
     }
 
-    // When there are exactly two touches, monitor the distance between
-    // them, firing zoom events as appropriate
+    /**
+     * Tracks the distance and center of the touches while exactly two touches
+     * move, and calls guacTouchPinch with the start and current distance and
+     * the current center. The first such move starts the gesture.
+     *
+     * @param e
+     *     The touchmove event.
+     */
     @HostListener('touchmove', ['$event']) pinchTouchMove(e: TouchEvent) {
         if (e.touches.length === 2) {
 
@@ -119,7 +128,14 @@ export class GuacTouchPinchDirective {
         }
     }
 
-    // Reset monitoring and fire end event when done
+    /**
+     * Ends the pinch gesture once fewer than two touches remain: calls
+     * guacTouchPinch a last time with inProgress set to false, then resets
+     * the start distance.
+     *
+     * @param e
+     *     The touchend event.
+     */
     @HostListener('touchend', ['$event']) pinchTouchEnd(e: TouchEvent) {
         if (this.startLength && e.touches.length < 2) {
 

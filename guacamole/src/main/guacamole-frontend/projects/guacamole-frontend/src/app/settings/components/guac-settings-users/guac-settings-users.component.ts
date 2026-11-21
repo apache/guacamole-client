@@ -150,6 +150,10 @@ export class GuacSettingsUsersComponent implements OnInit {
 
     }
 
+    /**
+     * Build the filtered, sorted and paginated view of the users, then
+     * retrieve the permissions of the current user and the users to list.
+     */
     ngOnInit(): void {
 
         // Build the data source for the users list entries.

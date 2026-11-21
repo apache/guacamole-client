@@ -58,6 +58,9 @@ export class IconService {
      */
     private largeIcons = $('link[rel=icon][href="' + this.DEFAULT_LARGE_ICON_URL + '"]');
 
+    /**
+     * Inject required services.
+     */
     constructor(private router: Router) {
 
         // Automatically reset page icons after navigation

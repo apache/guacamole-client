@@ -87,6 +87,11 @@ export class PlayerDisplayComponent implements AfterViewInit, OnChanges {
      */
     @ViewChild('guacPlayerDisplayContainer') container!: ElementRef<HTMLDivElement>;
 
+    /**
+     * Add the display, if any, to the container, which exists only once the
+     * view is initialized. ngOnChanges() runs before that point and cannot
+     * add the first display.
+     */
     ngAfterViewInit(): void {
         this.addDisplayToContainer(this.display);
     }
@@ -116,6 +121,10 @@ export class PlayerDisplayComponent implements AfterViewInit, OnChanges {
 
     }
 
+    /**
+     * Replace the display within the container whenever the display input
+     * changes.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         if (changes['display']) {

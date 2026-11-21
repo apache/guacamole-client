@@ -67,6 +67,9 @@ export class GuacDropDirective {
      */
     private element: HTMLElement;
 
+    /**
+     * Inject required services.
+     */
     constructor(el: ElementRef) {
         this.element = el.nativeElement;
 

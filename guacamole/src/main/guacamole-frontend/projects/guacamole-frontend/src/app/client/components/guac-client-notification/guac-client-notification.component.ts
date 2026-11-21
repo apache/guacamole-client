@@ -155,6 +155,10 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
                 private destroyRef: DestroyRef) {
     }
 
+    /**
+     * Prepare the action which returns the user to the home page, and keep
+     * key events from reaching the client while a notification is shown.
+     */
     ngOnInit(): void {
 
         // Assign home page action once user's home page has been determined

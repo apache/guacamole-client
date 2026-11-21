@@ -31,6 +31,10 @@ import { GuacRecentConnectionsComponent } from './components/guac-recent-connect
 import { HomeComponent } from './components/home/home.component';
 
 
+/**
+ * The module for the home page, which lists the connections and connection
+ * groups available to the current user and their recent connections.
+ */
 @NgModule({
     declarations: [
         GuacRecentConnectionsComponent,

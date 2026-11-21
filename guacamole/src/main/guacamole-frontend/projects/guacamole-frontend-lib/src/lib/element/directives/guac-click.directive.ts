@@ -69,20 +69,35 @@ export class GuacClickDirective {
      */
     ctrl = false;
 
-    // Fire provided callback for each mouse-initiated "click" event ...
+    /**
+     * Invokes the guacClick callback with the current modifier state for each
+     * mouse-initiated "click" event within the element.
+     *
+     * @param e
+     *     The click event.
+     */
     @HostListener('click', ['$event']) elementClicked(e: MouseEvent) {
         if (this.element.contains(e.target as Node)) {
             this.guacClick(this.shift, this.ctrl);
         }
     }
 
-    // ... and for touch-initiated click-like events
+    /**
+     * Invokes the guacClick callback with the current modifier state for each
+     * touch within the element, which counts as a click-like event.
+     *
+     * @param e
+     *     The touchstart event.
+     */
     @HostListener('touchstart', ['$event']) elementTouched(e: Event) {
         if (this.element.contains(e.target as Node)) {
             this.guacClick(this.shift, this.ctrl);
         }
     }
 
+    /**
+     * Inject required services.
+     */
     constructor(el: ElementRef,
                 private guacEventService: GuacEventService<GuacEventArguments>,
                 private destroyRef: DestroyRef) {

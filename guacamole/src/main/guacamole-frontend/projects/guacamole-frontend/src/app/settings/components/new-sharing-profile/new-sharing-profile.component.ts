@@ -32,5 +32,11 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
     standalone: false
 })
 export class NewSharingProfileComponent {
+
+    /**
+     * The GroupListItem of type "new-sharing-profile", as provided by
+     * guac-group-list. Its wrapped item is the connection for which the new
+     * sharing profile is created.
+     */
     @Input({ required: true }) item!: GroupListItem;
 }

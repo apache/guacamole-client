@@ -48,6 +48,9 @@ export class ClipboardService {
     private pendingRead: Promise<ClipboardData> | null = null;
 
 
+    /**
+     * Inject required services.
+     */
     constructor(private readonly sessionStorageFactory: SessionStorageFactory,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>) {
     }

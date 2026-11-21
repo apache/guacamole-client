@@ -128,6 +128,9 @@ export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent im
         return this.customColorSchemeFormGroup.get('colors')?.get(index.toString()) as FormControl<string>;
     }
 
+    /**
+     * Inject required services.
+     */
     constructor(private destroyRef: DestroyRef, private fb: FormBuilder) {
         super();
 

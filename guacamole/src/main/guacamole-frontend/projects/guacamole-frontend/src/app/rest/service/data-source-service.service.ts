@@ -31,6 +31,9 @@ import { RequestService } from './request.service';
 })
 export class DataSourceService {
 
+    /**
+     * Inject required services.
+     */
     constructor(private requestService: RequestService) {
     }
 

@@ -60,6 +60,9 @@ export class GuacUploadDirective implements OnInit {
      */
     readonly input: HTMLInputElement;
 
+    /**
+     * Inject required services.
+     */
     constructor(private el: ElementRef,
                 @Inject(DOCUMENT) private document: Document,
                 private cdr: ChangeDetectorRef) {
@@ -68,6 +71,11 @@ export class GuacUploadDirective implements OnInit {
         this.input = this.document.createElement('input');
     }
 
+    /**
+     * Set up the internal file input according to guacMultiple, and open its
+     * file dialog whenever the element is clicked. Chosen files go to the
+     * guacUpload callback.
+     */
     ngOnInit(): void {
         // Init input element
         this.input.type = 'file';

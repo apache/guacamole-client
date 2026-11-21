@@ -66,6 +66,9 @@ export class GuacPageListComponent implements OnInit, OnChanges {
     constructor(private router: Router, private route: ActivatedRoute) {
     }
 
+    /**
+     * Keep currentURL up to date with the URL of the current route.
+     */
     ngOnInit(): void {
 
         // Set the currentURL initially
@@ -211,6 +214,10 @@ export class GuacPageListComponent implements OnInit, OnChanges {
 
     }
 
+    /**
+     * Update the levels of the page list and the names of the current page
+     * whenever pages changes. Only levels with two or more pages are kept.
+     */
     ngOnChanges(changes: SimpleChanges): void {
         // Update page levels whenever pages changes
         if (changes['pages']) {
@@ -252,6 +259,17 @@ export class GuacPageListComponent implements OnInit, OnChanges {
         }
     }
 
+    /**
+     * Returns the value by which the template tracks each level of the page
+     * list. Levels are tracked by their position, as ngOnChanges() rebuilds
+     * all level objects whenever the pages change.
+     *
+     * @param index
+     *     The index of the level within levels.
+     *
+     * @returns
+     *     The given index.
+     */
     trackByIndex(index: number): number {
         return index;
     }

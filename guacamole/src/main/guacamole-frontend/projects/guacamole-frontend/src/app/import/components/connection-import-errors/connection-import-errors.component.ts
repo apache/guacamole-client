@@ -135,6 +135,11 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges, DoChe
                 private translocoService: TranslocoService) {
     }
 
+    /**
+     * Create the data source of the connection error list, which filters by
+     * the search string of the filter component, sorts by errorOrder and
+     * paginates with the pager component.
+     */
     ngOnInit(): void {
 
         this.connectionErrorsDataSource = this.dataSourceBuilderService
@@ -198,6 +203,9 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges, DoChe
         });
     };
 
+    /**
+     * Update the error list when a new connection patch failure is seen.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         if (changes['patchFailure']) {

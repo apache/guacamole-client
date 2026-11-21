@@ -191,6 +191,11 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
                 @Inject(DOCUMENT) private document: Document) {
     }
 
+    /**
+     * Create the mouse and touch handlers of the display, subscribe to the
+     * keyboard, clipboard and clipboard synchronization events, upload files
+     * dropped onto the client, and attach the given ManagedClient.
+     */
     ngOnInit(): void {
         this.main = this.mainRef.nativeElement;
         this.displayContainer = this.displayContainerRef.nativeElement;
@@ -572,6 +577,11 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         this.mainElementResized();
     }
 
+    /**
+     * Attach the new ManagedClient when the managedClient input changes. The
+     * first value is attached by ngOnInit(), once the display container is
+     * known.
+     */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Attach any given managed client
@@ -792,8 +802,39 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
 
     }
 
-    // Scroll client display if absolute mouse is in use (the same drag
-    // gesture is needed for moving the mouse pointer with relative mouse)
+    /**
+     * Scrolls the client display along with a drag gesture if absolute mouse
+     * emulation is in use. With relative mouse emulation, the same gesture
+     * moves the mouse pointer instead. The guacTouchDrag directive of the
+     * client calls this for each touch movement and once more when the
+     * gesture ends.
+     *
+     * @param inProgress
+     *     Whether the drag gesture is in progress. Not used by this
+     *     handler.
+     *
+     * @param startX
+     *     The X location at which the drag gesture began.
+     *
+     * @param startY
+     *     The Y location at which the drag gesture began.
+     *
+     * @param currentX
+     *     The current X location of the finger.
+     *
+     * @param currentY
+     *     The current Y location of the finger.
+     *
+     * @param deltaX
+     *     The change in X location caused by the latest touch movement.
+     *
+     * @param deltaY
+     *     The change in Y location caused by the latest touch movement.
+     *
+     * @returns
+     *     Always false, so that the default action of the touch event is
+     *     prevented.
+     */
     clientDrag(inProgress: boolean, startX: number, startY: number, currentX: number, currentY: number, deltaX: number, deltaY: number): boolean {
 
         if (this.emulateAbsoluteMouse) {

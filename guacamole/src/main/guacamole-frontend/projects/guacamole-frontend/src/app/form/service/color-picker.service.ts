@@ -71,9 +71,20 @@ export class ColorPickerService {
      */
     private activeRequestReject?: (reason?: any) => void = undefined;
 
+    /**
+     * The translated label of the save button of Pickr (APP.ACTION_SAVE).
+     */
     private saveString?: string;
+
+    /**
+     * The translated label of the cancel button of Pickr
+     * (APP.ACTION_CANCEL).
+     */
     private cancelString?: string;
 
+    /**
+     * Inject required services.
+     */
     constructor(@Inject(DOCUMENT) private document: Document, private translocoService: TranslocoService) {
 
         // Create container element for Pickr
@@ -97,6 +108,10 @@ export class ColorPickerService {
 
     }
 
+    /**
+     * Creates pickrPromise, which is resolved when Pickr initialization has
+     * completed and rejected if Pickr cannot be used.
+     */
     private createPickrPromise(): void {
         this.pickrPromise = new Promise<void>((resolve, reject) => {
 
@@ -138,6 +153,12 @@ export class ColorPickerService {
         }
     }
 
+    /**
+     * Creates the shared Pickr instance within pickerContainer, labels its
+     * buttons with the translated strings and completes the active request
+     * when the user saves or cancels. If Pickr cannot be created, pickr
+     * stays undefined and isAvailable() returns false.
+     */
     createPickr(): void {
         try {
 

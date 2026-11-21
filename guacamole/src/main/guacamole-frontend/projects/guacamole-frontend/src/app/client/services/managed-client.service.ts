@@ -61,6 +61,9 @@ export class ManagedClientService {
      */
     readonly THUMBNAIL_UPDATE_FREQUENCY: number = 5000;
 
+    /**
+     * Inject required services.
+     */
     constructor(
         @Inject(DOCUMENT) private document: Document,
         private authenticationService: AuthenticationService,

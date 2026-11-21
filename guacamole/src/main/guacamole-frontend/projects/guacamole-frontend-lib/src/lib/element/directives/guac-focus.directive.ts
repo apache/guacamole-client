@@ -39,14 +39,24 @@ export class GuacFocusDirective implements OnInit, OnChanges {
      */
     element: any;
 
+    /**
+     * Inject required services.
+     */
     constructor(private el: ElementRef) {
         this.element = el.nativeElement;
     }
 
+    /**
+     * Focus or blur the element according to the initial value of
+     * guacFocus.
+     */
     ngOnInit() {
         this.updateFocus();
     }
 
+    /**
+     * Focus or blur the element whenever guacFocus changes.
+     */
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['guacFocus'])
             this.updateFocus();

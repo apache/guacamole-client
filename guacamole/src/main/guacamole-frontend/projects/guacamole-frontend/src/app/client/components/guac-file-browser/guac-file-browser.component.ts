@@ -73,7 +73,8 @@ export class GuacFileBrowserComponent implements OnInit, OnChanges {
     }
 
     /**
-     * TOOD
+     * Refresh the current directory of the filesystem whenever an upload
+     * completes.
      */
     ngOnInit(): void {
 

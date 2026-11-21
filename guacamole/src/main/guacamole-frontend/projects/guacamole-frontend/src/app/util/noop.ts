@@ -17,5 +17,9 @@
  * under the License.
  */
 
+/**
+ * A function which does nothing, for callbacks that must not do anything,
+ * such as a rejection handler that ignores the rejection.
+ */
 export const NOOP = () => {
 };
