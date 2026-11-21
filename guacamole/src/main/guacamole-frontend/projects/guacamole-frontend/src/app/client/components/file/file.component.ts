@@ -19,14 +19,12 @@
 
 import {
     Component,
-    ElementRef,
     EventEmitter,
+    HostListener,
     Input,
     OnChanges,
-    OnInit,
     Output,
     SimpleChanges,
-    ViewChild,
     ViewEncapsulation,
     ChangeDetectionStrategy
 } from '@angular/core';
@@ -48,7 +46,7 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
-export class FileComponent implements OnInit, OnChanges {
+export class FileComponent implements OnChanges {
 
     /**
      * The file to be displayed by the component.
@@ -80,16 +78,6 @@ export class FileComponent implements OnInit, OnChanges {
     @Output() downloadFile: EventEmitter<ManagedFilesystem.File> = new EventEmitter<ManagedFilesystem.File>();
 
     /**
-     * Reference to the HTML element backing the component.
-     */
-    @ViewChild('listItem', { static: true }) elementRef?: ElementRef<HTMLDivElement>;
-
-    /**
-     * The HTML element backing the component.
-     */
-    element?: HTMLDivElement;
-
-    /**
      * The file action to execute when a focused file is clicked.
      */
     fileAction: (() => void) | null = null;
@@ -98,14 +86,6 @@ export class FileComponent implements OnInit, OnChanges {
      * The CSS class to apply to the file depending on its type.
      */
     clazz: string | null = null;
-
-    /**
-     * Initializes the component when it's created.
-     */
-    ngOnInit(): void {
-        this.element = this.elementRef?.nativeElement;
-        this.setupComponent();
-    }
 
     /**
      * Calls setupComponent() when the file changes.
@@ -123,11 +103,12 @@ export class FileComponent implements OnInit, OnChanges {
     }
 
     /**
-     * Sets up the component by adding event listeners and setting up the file action.
+     * Sets up the component by determining the CSS class and the file action
+     * for the current file.
      */
     setupComponent(): void {
 
-        if (!this.file || !this.element)
+        if (!this.file)
             return;
 
         // Double-clicking on unknown file types will do nothing
@@ -157,24 +138,35 @@ export class FileComponent implements OnInit, OnChanges {
 
         this.clazz = clazz;
         this.fileAction = fileAction;
+    }
 
-        // Mark file as focused upon click
-        this.element.addEventListener('click', () => {
+    /**
+     * Handles a click on the file. Executes the file action if the file is
+     * already focused, otherwise requests that the file be focused.
+     */
+    @HostListener('click')
+    handleClick(): void {
 
-            // Mark file as focused
+        // Fire file-specific action if already focused
+        if (this.fileAction && this.isFocused)
+            this.fileAction();
+
+        // Otherwise mark as focused
+        else
             this.focusFile.emit();
 
-            // Execute file action
-            if (this.fileAction && this.isFocused)
-                this.fileAction();
+    }
 
-        });
-
-        // Prevent text selection during navigation
-        this.element.addEventListener('selectstart', e => {
-            e.preventDefault();
-            e.stopPropagation();
-        });
+    /**
+     * Prevents text selection during navigation.
+     *
+     * @param e
+     *     The selectstart event.
+     */
+    @HostListener('selectstart', ['$event'])
+    handleSelectStart(e: Event): void {
+        e.preventDefault();
+        e.stopPropagation();
     }
 
     /**

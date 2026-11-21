@@ -25,11 +25,11 @@
 
             @for (file of files(); track trackByStreamName(i, file); let i = $index) {
                 <guac-file [file]="file"
-                           (focusFile)="focusFile(i)"
-                           [isFocused]="i === focusedFileIndex"
+                           (focusFile)="focusFile(file)"
+                           [isFocused]="file === focusedFile"
                            (changeDirectory)="changeDirectory(file)"
                            (downloadFile)="downloadFile(file)"
-                           [ngClass]="{ 'focused': i === focusedFileIndex }"
+                           [ngClass]="{ 'focused': file === focusedFile }"
                 ></guac-file>
             }
 

@@ -60,11 +60,11 @@ export class UserService {
      *          where each key is the identifier (username) of the corresponding user.
      */
     getUsers(dataSource: string, permissionTypes?: string[]): Observable<Record<string, User>> {
-        const httpParameters = new HttpParams();
+        let httpParameters = new HttpParams();
 
         // Add permission filter if specified
         if (permissionTypes) {
-            httpParameters.appendAll({ permission: permissionTypes });
+            httpParameters = httpParameters.appendAll({ permission: permissionTypes });
         }
 
         // Retrieve users

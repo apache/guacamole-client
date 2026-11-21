@@ -30,18 +30,6 @@ import _ from 'lodash';
 export class SortService {
 
     /**
-     * TODO Document
-     * @template T
-     *     The type of the elements in the target array.
-     *
-     * @param target
-     * @param iteratees
-     */
-    orderBy<T>(target: T[], iteratees?: (keyof T)[]): T[] {
-        return _.orderBy(target, iteratees);
-    }
-
-    /**
      * Sorts the given collection by the given predicate.
      * The predicate is a string (AngularJS expression) that can be compiled into a function.
      * This function will be evaluated against each item and the result will be used for sorting.

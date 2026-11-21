@@ -52,7 +52,7 @@
                                 <!-- Children of item (if any) -->
                                 @if (item.expanded) {
                                     <div class="children">
-                                        @for (child of sortService.orderBy(item.children, ['name']); track child) {
+                                        @for (child of sortService.orderByPredicate(item.children, ['name']); track child) {
                                             <div class="list-item">
                                                 <ng-container *ngTemplateOutlet="nestedItem; context: {$implicit: child}"/>
                                             </div>

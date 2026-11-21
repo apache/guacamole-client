@@ -43,7 +43,7 @@
 
         <!-- Current progress -->
         <div class="progress" [hidden]="!notification.progress">
-            <div class="bar" [hidden]="!progressPercent" [ngSwitch]="{'width': progressPercent + '%'}"></div>
+            <div class="bar" [hidden]="!progressPercent" [ngStyle]="{'width': progressPercent + '%'}"></div>
             <div
                 [hidden]="!notification.progress?.text"
                 [transloco]="$safeNavigationMigration(notification.progress?.text)"

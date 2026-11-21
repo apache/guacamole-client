@@ -59,9 +59,10 @@ export class GuacFileBrowserComponent implements OnInit, OnChanges {
     files: Signal<ManagedFilesystem.File[]> | null = null;
 
     /**
-     * The index of the file which is currently focused.
+     * The file which is currently focused, or null if no file is focused.
+     * Reloading a directory creates new file objects, which clears the focus.
      */
-    protected focusedFileIndex = -1;
+    protected focusedFile: ManagedFilesystem.File | null = null;
 
     /**
      * Inject required services.
@@ -129,6 +130,7 @@ export class GuacFileBrowserComponent implements OnInit, OnChanges {
      *     The directory to change to.
      */
     changeDirectory(file: ManagedFilesystem.File): void {
+        this.focusedFile = null;
         if (this.filesystem)
             this.managedFilesystemService.changeDirectory(this.filesystem, file);
     }
@@ -141,6 +143,7 @@ export class GuacFileBrowserComponent implements OnInit, OnChanges {
      *     The file to download.
      */
     downloadFile(file: ManagedFilesystem.File): void {
+        this.focusedFile = null;
         if (this.filesystem)
             this.managedFilesystemService.downloadFile(this.filesystem, file.streamName);
     }
@@ -148,11 +151,11 @@ export class GuacFileBrowserComponent implements OnInit, OnChanges {
     /**
      * Sets the given file as focused, such that it will be highlighted.
      *
-     * @param index
-     *     The index of the file to focus.
+     * @param file
+     *     The file to focus.
      */
-    focusFile(index: number): void {
-        this.focusedFileIndex = index;
+    focusFile(file: ManagedFilesystem.File): void {
+        this.focusedFile = file;
     }
 
     /**
