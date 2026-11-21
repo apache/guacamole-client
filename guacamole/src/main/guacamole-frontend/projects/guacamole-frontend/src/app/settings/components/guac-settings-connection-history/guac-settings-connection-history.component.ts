@@ -239,7 +239,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
                     // Wrap all history entries for sake of display
                     this.historyEntryWrappers = [];
                     historyEntries.forEach(historyEntry => {
-                        this.historyEntryWrappers!.push(new ConnectionHistoryEntryWrapper(this.dataSource, historyEntry));
+                        this.historyEntryWrappers!.push(new ConnectionHistoryEntryWrapper(this.dataSource, historyEntry, this.translocoService));
                     });
 
                     if (this.dataSourceView) {

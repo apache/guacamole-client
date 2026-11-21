@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy, OnInit } from '@angular/core';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 
 /**
@@ -30,7 +30,7 @@ import { AuthenticationService } from '../../../auth/service/authentication.serv
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
-export class ConnectionHistoryPlayerComponent {
+export class ConnectionHistoryPlayerComponent implements OnInit {
 
     /**
      * The data source of the session recording to play.
@@ -49,25 +49,34 @@ export class ConnectionHistoryPlayerComponent {
     @Input({ required: true }) name!: string;
 
     /**
-     * The URL of the REST API resource exposing the requested session
-     * recording.
-     */
-    private readonly recordingURL = 'api/session/data/' + encodeURIComponent(this.dataSource)
-        + '/history/connections/' + encodeURIComponent(this.identifier)
-        + '/logs/' + encodeURIComponent(this.name);
-
-    /**
      * The tunnel which should be used to download the Guacamole session
-     * recording.
+     * recording. Created in ngOnInit(), as the router binds the inputs only
+     * after construction.
      */
-    readonly tunnel: Guacamole.Tunnel = new Guacamole.StaticHTTPTunnel(this.recordingURL, false, {
-        'Guacamole-Token': this.authenticationService.getCurrentToken()!
-    });
+    tunnel!: Guacamole.Tunnel;
 
     /**
      * Inject required services.
      */
     constructor(private authenticationService: AuthenticationService) {
+    }
+
+    /**
+     * Creates the tunnel for the session recording selected by the route
+     * parameters, now that they are bound to the inputs.
+     */
+    ngOnInit(): void {
+
+        // The URL of the REST API resource exposing the requested session
+        // recording
+        const recordingURL = 'api/session/data/' + encodeURIComponent(this.dataSource)
+            + '/history/connections/' + encodeURIComponent(this.identifier)
+            + '/logs/' + encodeURIComponent(this.name);
+
+        this.tunnel = new Guacamole.StaticHTTPTunnel(recordingURL, false, {
+            'Guacamole-Token': this.authenticationService.getCurrentToken()!
+        });
+
     }
 
 }

@@ -17,8 +17,9 @@
  * under the License.
  */
 
-import { translate } from '@jsverse/transloco';
+import { TranslocoService } from '@jsverse/transloco';
 import _ from 'lodash';
+import { firstValueFrom } from 'rxjs';
 import { ActivityLog } from '../../rest/types/ActivityLog';
 import { ConnectionHistoryEntry } from '../../rest/types/ConnectionHistoryEntry';
 
@@ -74,10 +75,17 @@ export class ConnectionHistoryEntryWrapper {
      * Creates a new ConnectionHistoryEntryWrapper. This constructor initializes the properties of the
      * new ConnectionHistoryEntryWrapper with the corresponding properties of the given template.
      *
+     * @param dataSource
+     *     The data source associated with the history record.
+     *
      * @param historyEntry
      *     The ConnectionHistoryEntry that should be wrapped.
+     *
+     * @param translocoService
+     *     The service used to translate the description of the session
+     *     recording, once the translations are available.
      */
-    constructor(dataSource: string, historyEntry: ConnectionHistoryEntry) {
+    constructor(dataSource: string, historyEntry: ConnectionHistoryEntry, translocoService: TranslocoService) {
         this.dataSource = dataSource;
         this.entry = historyEntry;
         this.duration = historyEntry.endDate! - historyEntry.startDate!;
@@ -92,10 +100,21 @@ export class ConnectionHistoryEntryWrapper {
         if (!historyEntry.endDate)
             this.readableDurationText = 'SETTINGS_CONNECTION_HISTORY.INFO_CONNECTION_DURATION_UNKNOWN';
 
-        this.sessionRecording = this.getSessionRecording();
+        this.sessionRecording = this.getSessionRecording(translocoService);
     }
 
-    private getSessionRecording(): ConnectionHistoryEntryWrapper.Log | null {
+    /**
+     * Returns the graphical session recording associated with the wrapped
+     * history entry.
+     *
+     * @param translocoService
+     *     The service used to translate the description of the recording.
+     *
+     * @returns
+     *     The first graphical session recording of the wrapped entry, or null
+     *     if there is none.
+     */
+    private getSessionRecording(translocoService: TranslocoService): ConnectionHistoryEntryWrapper.Log | null {
 
         const identifier = this.entry.identifier;
         if (!identifier)
@@ -107,7 +126,9 @@ export class ConnectionHistoryEntryWrapper {
 
         const log: ActivityLog = (this.entry.logs as Record<string, ActivityLog>)[name];
 
-        const description = log.description && log.description.key ? translate(log.description.key, log.description.variables) : '';
+        const description = log.description && log.description.key
+            ? firstValueFrom(translocoService.selectTranslate<string>(log.description.key, log.description.variables))
+            : Promise.resolve('');
 
         return new ConnectionHistoryEntryWrapper.Log({
 

@@ -79,13 +79,16 @@ export class PlayerTimeService {
      * groups are zero-padded to two digits with the exception of the
      * left-most group.
      *
+     * This is an arrow function so that it stays bound to this service when
+     * components copy it into a field for use in their templates.
+     *
      * @param value
      *     The time to format, in milliseconds.
      *
      * @returns
      *     The given quantity of milliseconds formatted as "DD:HH:MM:SS".
      */
-    formatTime(value: number): string {
+    formatTime = (value: number): string => {
 
         // Round provided value down to whole seconds
         value = Math.floor((value || 0) / 1000);
@@ -105,6 +108,6 @@ export class PlayerTimeService {
         const formatted = groups.join(':');
         return /^[0:]*([0-9]{1,2}(?::[0-9]{2})+)$/.exec(formatted)![1];
 
-    }
+    };
 
 }
