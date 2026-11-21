@@ -88,7 +88,7 @@ describe('ExtensionLoaderService', () => {
             expect(routes).toContainEqual({
                 path: 'other',
                 children: [],
-                data: { title: 'APP.NAME' },
+                data: { titleKey: 'APP.NAME' },
                 title: titleResolver
             });
         });

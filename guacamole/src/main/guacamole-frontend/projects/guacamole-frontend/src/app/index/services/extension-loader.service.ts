@@ -119,7 +119,7 @@ export class ExtensionLoaderService {
             if (entry.pageTitle)
                 extensionRoute.title = entry.pageTitle;
             else {
-                extensionRoute.data = { title: 'APP.NAME' };
+                extensionRoute.data = { titleKey: 'APP.NAME' };
                 extensionRoute.title = titleResolver;
             }
 

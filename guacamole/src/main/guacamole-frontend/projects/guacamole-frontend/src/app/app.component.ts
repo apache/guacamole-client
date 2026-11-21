@@ -322,10 +322,15 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 this.reAuthenticating = false;
             });
 
-        // Set the initial title manually when the application starts
+        // Set the initial title manually when the application starts, unless
+        // the router has already set the title of the requested page by the
+        // time the translation arrives
         this.translocoService.selectTranslate('APP.NAME')
             .pipe(take(1))
-            .subscribe((title) => this.title.setTitle(title));
+            .subscribe((title) => {
+                if (!this.title.getTitle())
+                    this.title.setTitle(title);
+            });
 
         // Ensure new pages always start with clear keyboard state
         this.router.events

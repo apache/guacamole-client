@@ -25,9 +25,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { By, Title } from '@angular/platform-browser';
 import { provideRouter, Router, RouterOutlet, Routes, withHashLocation } from '@angular/router';
-import { TranslocoTestingModule } from '@jsverse/transloco';
+import { provideTransloco, TRANSLOCO_LOADER, Translation, TranslocoTestingModule } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app-routing.module';
 import { AuthenticationService } from './auth/service/authentication.service';
@@ -527,6 +527,93 @@ describe('AppComponent with the routes of the app', () => {
         expect(reauthentication.get('token')).toBe('TOKEN');
         expect(isPageShown()).toBe(true);
         expect(router.url).toBe('/?foo=bar');
+    });
+
+});
+
+describe('AppComponent with a translation which arrives late', () => {
+    let fixture: ComponentFixture<AppComponent>;
+    let router: Router;
+    let title: Title;
+
+    /**
+     * Emits the translation of the active language once the test lets the
+     * translation file "arrive".
+     */
+    let translationFile: Subject<Translation>;
+
+    /**
+     * Lets the translation file arrive and waits until the app has handled it.
+     *
+     * @returns
+     *     A promise which resolves once the translation has been handled.
+     */
+    const receiveTranslation = async (): Promise<void> => {
+        translationFile.next({ APP: { NAME: 'Guacamole' } });
+        translationFile.complete();
+        await settle();
+    };
+
+    beforeEach(() => {
+        translationFile = new Subject<Translation>();
+
+        TestBed.configureTestingModule({
+            declarations: [AppComponent, RouteStubComponent],
+            // Ignores the components of the other application states, which
+            // this spec does not exercise
+            schemas: [NO_ERRORS_SCHEMA],
+            providers: [
+                provideTransloco({ config: { availableLangs: ['en'], defaultLang: 'en' } }),
+                { provide: TRANSLOCO_LOADER, useValue: { getTranslation: () => translationFile } },
+                { provide: AuthenticationService, useValue: { getCurrentToken: () => null } },
+                { provide: GuacNotificationService, useValue: { getStatus: () => false } },
+                { provide: GuacClientManagerService, useValue: { getManagedClients: () => ({}) } },
+                { provide: ClipboardService, useValue: { resyncClipboard: vi.fn() } },
+                { provide: ApplyPatchesService, useValue: { applyPatches: vi.fn() } },
+                { provide: StyleLoaderService, useValue: { loadStyle: vi.fn() } },
+                { provide: RequestService, useValue: {} },
+                // The page of an extension, which sets its title without
+                // waiting for the translation
+                provideRouter([
+                    { path: 'extension', component: RouteStubComponent, title: 'Angular Extension' }
+                ])
+            ]
+        });
+
+        router = TestBed.inject(Router);
+        title = TestBed.inject(Title);
+        title.setTitle('');
+        fixture = TestBed.createComponent(AppComponent);
+        fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        fixture.destroy();
+        document.body.className = '';
+    });
+
+    it('should keep the title of the route if the translation arrives after the route was opened', async () => {
+        await router.navigateByUrl('/extension');
+        expect(title.getTitle()).toBe('Angular Extension');
+
+        await receiveTranslation();
+
+        expect(title.getTitle()).toBe('Angular Extension');
+    });
+
+    it('should show the title of the route if the translation arrives before the route is opened', async () => {
+        await receiveTranslation();
+        expect(title.getTitle()).toBe('Guacamole');
+
+        await router.navigateByUrl('/extension');
+
+        expect(title.getTitle()).toBe('Angular Extension');
+    });
+
+    it('should show the title of the app if no route has been opened when the translation arrives', async () => {
+        await receiveTranslation();
+
+        expect(title.getTitle()).toBe('Guacamole');
     });
 
 });
