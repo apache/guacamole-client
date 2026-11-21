@@ -24,7 +24,7 @@
             [name]="field.name"
             [guacFocus]="focused"
             [formControl]="control">
-            @for (option of field.options | orderBy; track option) {
+            @for (option of field.options; track option) {
                 <option [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}
                 </option>
             }
