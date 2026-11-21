@@ -21,10 +21,12 @@ import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEnc
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { TranslocoService } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { catchError, filter } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
+import { TranslationLoaderService } from '../../../locale/service/translation-loader.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { Error } from '../../../rest/types/Error';
 import { Field } from '../../../rest/types/Field';
@@ -107,6 +109,8 @@ export class LoginComponent implements OnInit, OnChanges {
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private router: Router,
                 private route: ActivatedRoute,
+                private translocoService: TranslocoService,
+                private translationLoaderService: TranslationLoaderService,
                 private destroyRef: DestroyRef) {
     }
 
@@ -190,6 +194,30 @@ export class LoginComponent implements OnInit, OnChanges {
     }
 
     /**
+     * Reloads the translations of the active language and of the fallback
+     * language from the server, replacing the translations loaded before the
+     * login. The server may provide different translations to authenticated
+     * users than to anonymous users.
+     *
+     * Transloco has no equivalent of refresh(), and load() would return an
+     * already loaded language from its cache. The translation files are
+     * therefore requested from the translation loader again and set directly.
+     */
+    private reloadTranslations(): void {
+
+        // Reload the active language and the fallback language(s), each only once
+        const fallbackLang = this.translocoService.config.fallbackLang ?? [];
+        const languages = new Set([this.translocoService.getActiveLang(), ...[fallbackLang].flat()]);
+
+        languages.forEach(language => {
+            this.translationLoaderService.getTranslation(language).then(translation => {
+                this.translocoService.setTranslation(translation, language, { merge: false });
+            });
+        });
+
+    }
+
+    /**
      * Returns the field most relevant to the user given the current state
      * of the login process. This will normally be the first empty field.
      *
@@ -221,10 +249,12 @@ export class LoginComponent implements OnInit, OnChanges {
 
         // Retry route upon success (entered values will be cleared only
         // after route change has succeeded as this can take time)
+        // and refresh the translation
         this.guacEventService.on('guacLogin')
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
                 this.router.navigate([this.router.url], { onSameUrlNavigation: 'reload' });
+                this.reloadTranslations();
             });
 
         // Reset upon failure
