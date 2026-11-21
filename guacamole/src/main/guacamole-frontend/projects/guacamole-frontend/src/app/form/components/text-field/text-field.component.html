@@ -18,18 +18,24 @@
   -->
 
 <div class="text-field">
-    <input *ngIf="control"
-           type="text"
-           [id]="fieldId"
-           [attr.list]="dataListId"
-           [name]="field.name"
-           [formControl]="control"
-           [guacFocus]="focused"
-           autocorrect="off"
-           autocapitalize="off">
-    <datalist *ngIf="dataListId" [id]="dataListId">
-        <option *ngFor="let option of field.options | orderBy" [value]="option">
-            {{ getFieldOption(field, namespace, option) | transloco }}
-        </option>
-    </datalist>
+    @if (control) {
+        <input
+            type="text"
+            [id]="fieldId"
+            [attr.list]="dataListId"
+            [name]="field.name"
+            [formControl]="control"
+            [guacFocus]="focused"
+            autocorrect="off"
+            autocapitalize="off">
+    }
+    @if (dataListId) {
+        <datalist [id]="dataListId">
+            @for (option of field.options | orderBy; track option) {
+                <option [value]="option">
+                    {{ getFieldOption(field, namespace, option) | transloco }}
+                </option>
+            }
+        </datalist>
+    }
 </div>

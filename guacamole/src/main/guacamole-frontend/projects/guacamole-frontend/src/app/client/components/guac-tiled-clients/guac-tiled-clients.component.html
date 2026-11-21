@@ -18,38 +18,47 @@
   -->
 
 <div class="tiled-client-grid">
-    <div class="tiled-client-row" *ngFor="let clientRow of getClientGrid(clientGroup)">
-        <div class="tiled-client-cell" *ngFor="let client of clientRow">
+    @for (clientRow of getClientGrid(clientGroup); track clientRow) {
+        <div class="tiled-client-row">
+            @for (client of clientRow; track client) {
+                <div class="tiled-client-cell">
 
-            <div class="client-tile" *ngIf="client"
-                 [ngClass]="{
-                    'focused' : client.clientProperties.focused,
-                    'shared'  : isShared(client),
-                    'joined'  : client.userCount
-                }"
-                 [guacClick]="getFocusAssignmentCallback(client)">
-                <h3 class="client-tile-header" *ngIf="hasMultipleClients(clientGroup)">
-                    <img class="client-tile-shared-indicator" src="images/share-white.svg">
-                    <span class="client-tile-name">{{ client.title }}</span>
-                    <guac-client-user-count [client]="client"></guac-client-user-count>
-                    <img (click)="onClose(client)"
-                         class="client-tile-disconnect"
-                         [alt]="'CLIENT.ACTION_DISCONNECT' | transloco"
-                         [title]="'CLIENT.ACTION_DISCONNECT' | transloco"
-                         src="images/x.svg">
-                </h3>
+                    @if (client) {
+                        <div class="client-tile"
+                             [ngClass]="{
+                                'focused' : client.clientProperties.focused,
+                                'shared'  : isShared(client),
+                                'joined'  : client.userCount
+                            }"
+                             [guacClick]="getFocusAssignmentCallback(client)">
+                            @if (hasMultipleClients(clientGroup)) {
+                                <h3 class="client-tile-header">
+                                    <img class="client-tile-shared-indicator" src="images/share-white.svg">
+                                    <span class="client-tile-name">{{ client.title }}</span>
+                                    <guac-client-user-count [client]="client"></guac-client-user-count>
+                                    <img (click)="onClose(client)"
+                                         class="client-tile-disconnect"
+                                         [alt]="'CLIENT.ACTION_DISCONNECT' | transloco"
+                                         [title]="'CLIENT.ACTION_DISCONNECT' | transloco"
+                                         src="images/x.svg">
+                                </h3>
+                            }
 
-                <guac-client [client]="client" [emulateAbsoluteMouse]="emulateAbsoluteMouse"
-                             class="client-tile"></guac-client>
+                            <guac-client [client]="client" [emulateAbsoluteMouse]="emulateAbsoluteMouse"
+                                         class="client-tile"></guac-client>
 
-                <!-- Client-specific status/error dialog -->
-                <guac-client-notification [client]="client"></guac-client-notification>
+                            <!-- Client-specific status/error dialog -->
+                            <guac-client-notification [client]="client"></guac-client-notification>
 
-                <guac-client-user-count [client]="client"
-                                        *ngIf="!hasMultipleClients(clientGroup)"></guac-client-user-count>
+                            @if (!hasMultipleClients(clientGroup)) {
+                                <guac-client-user-count [client]="client"></guac-client-user-count>
+                            }
 
-            </div>
+                        </div>
+                    }
 
+                </div>
+            }
         </div>
-    </div>
+    }
 </div>

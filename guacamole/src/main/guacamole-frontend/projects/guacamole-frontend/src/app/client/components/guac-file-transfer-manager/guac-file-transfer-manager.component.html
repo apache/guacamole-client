@@ -27,16 +27,18 @@
 
     <!-- Sent/received files -->
     <div class="transfer-manager-body">
-        <div class="transfer-manager-body-section" *ngFor="let client of clientGroup?.clients"
-             [hidden]="!hasTransfers(client)">
-            <h3 [hidden]="!hasMultipleClients(clientGroup)">{{ client.name }}</h3>
-            <div class="transfers">
-                <guac-file-transfer
-                    [transfer]="upload"
-                    *ngFor="let upload of client.uploads">
-                </guac-file-transfer>
+        @for (client of clientGroup?.clients; track client) {
+            <div class="transfer-manager-body-section"
+                 [hidden]="!hasTransfers(client)">
+                <h3 [hidden]="!hasMultipleClients(clientGroup)">{{ client.name }}</h3>
+                <div class="transfers">
+                    @for (upload of client.uploads; track upload) {
+                        <guac-file-transfer [transfer]="upload">
+                        </guac-file-transfer>
+                    }
+                </div>
             </div>
-        </div>
+        }
     </div>
 
 </div>

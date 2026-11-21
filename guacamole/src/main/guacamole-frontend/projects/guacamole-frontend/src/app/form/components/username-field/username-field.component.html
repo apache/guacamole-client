@@ -18,12 +18,14 @@
   -->
 
 <div class="username-field">
-    <input *ngIf="control"
-           type="text"
-           [id]="fieldId"
-           [name]="field.name"
-           [formControl]="control"
-           [guacFocus]="focused"
-           autocorrect="off"
-           autocapitalize="off">
+    @if (control) {
+        <input
+            type="text"
+            [id]="fieldId"
+            [name]="field.name"
+            [formControl]="control"
+            [guacFocus]="focused"
+            autocorrect="off"
+            autocapitalize="off">
+    }
 </div>

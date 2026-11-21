@@ -18,11 +18,15 @@
   -->
 
 <div class="language-field">
-    <select *ngIf="control"
+    @if (control) {
+        <select
             [guacFocus]="focused"
             [id]="fieldId"
             [name]="field.name"
             [formControl]="control">
-        <option *ngFor="let language of languages | keyvalue" [value]="language.key">{{ language.value }}</option>
-    </select>
+            @for (language of languages | keyvalue; track language) {
+                <option [value]="language.key">{{ language.value }}</option>
+            }
+        </select>
+    }
 </div>

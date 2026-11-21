@@ -25,27 +25,28 @@
 
     <!-- List of connection thumbnails -->
     <ul class="client-panel-connection-list" #clientPanelConnectionList>
-        <ng-container *ngFor="let clientGroup of sortService.orderByPredicate(clientGroups, ['-lastUsed'])">
+        @for (clientGroup of sortService.orderByPredicate(clientGroups, ['-lastUsed']); track clientGroup) {
+            @if (!clientGroup.attached) {
+                <li
+                    [ngClass]="{ 'needs-attention' : hasStatusUpdate(clientGroup) }"
+                    class="client-panel-connection">
 
-            <li *ngIf="!clientGroup.attached"
-                [ngClass]="{ 'needs-attention' : hasStatusUpdate(clientGroup) }"
-                class="client-panel-connection">
+                    <!-- Close connection -->
+                    <button class="close-other-connection" (click)="disconnect(clientGroup)">
+                        <img [alt]="'CLIENT.ACTION_DISCONNECT' | transloco"
+                             [title]="'CLIENT.ACTION_DISCONNECT' | transloco"
+                             src="images/x.svg">
+                    </button>
 
-                <!-- Close connection -->
-                <button class="close-other-connection" (click)="disconnect(clientGroup)">
-                    <img [alt]="'CLIENT.ACTION_DISCONNECT' | transloco"
-                         [title]="'CLIENT.ACTION_DISCONNECT' | transloco"
-                         src="images/x.svg">
-                </button>
+                    <!-- Thumbnail -->
+                    <a routerLink="/client/{{ getIdentifier(clientGroup) }}">
+                        <guac-tiled-thumbnails [clientGroup]="clientGroup"></guac-tiled-thumbnails>
+                        <div class="name">{{ getTitle(clientGroup) }}</div>
+                    </a>
 
-                <!-- Thumbnail -->
-                <a routerLink="/client/{{ getIdentifier(clientGroup) }}">
-                    <guac-tiled-thumbnails [clientGroup]="clientGroup"></guac-tiled-thumbnails>
-                    <div class="name">{{ getTitle(clientGroup) }}</div>
-                </a>
-
-            </li>
-        </ng-container>
+                </li>
+            }
+        }
     </ul>
 
 </div>

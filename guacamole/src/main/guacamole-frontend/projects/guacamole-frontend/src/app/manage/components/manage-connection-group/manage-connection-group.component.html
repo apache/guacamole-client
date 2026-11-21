@@ -17,65 +17,67 @@
   ~ under the License.
   -->
 
-<ng-template #loading>
+@if (isLoaded()) {
+    <div class="manage-connection-group view">
+
+        <!-- Main property editor -->
+        <div class="header">
+            <h2>{{ 'MANAGE_CONNECTION_GROUP.SECTION_HEADER_EDIT_CONNECTION_GROUP' | transloco }}</h2>
+            <guac-user-menu></guac-user-menu>
+        </div>
+        <div class="section">
+            <table class="properties">
+
+                <!-- Edit connection group name -->
+                <tr>
+                    <th>{{ 'MANAGE_CONNECTION_GROUP.FIELD_HEADER_NAME' | transloco }}</th>
+
+                    <td><input type="text" [(ngModel)]="connectionGroup.name" autocorrect="off" autocapitalize="off"></td>
+                </tr>
+
+                <!-- Edit connection group location -->
+                <tr>
+                    <th>{{ 'MANAGE_CONNECTION_GROUP.FIELD_HEADER_LOCATION' | transloco }}</th>
+
+                    <td>
+                        <guac-location-chooser
+                            [dataSource]="selectedDataSource" [rootGroup]="rootGroup"
+                            [value]="connectionGroup.parentIdentifier"></guac-location-chooser>
+                    </td>
+                </tr>
+
+
+                <!-- Edit connection group type -->
+                <tr>
+                    <th>{{ 'MANAGE_CONNECTION_GROUP.FIELD_HEADER_TYPE' | transloco }}</th>
+                    <td>
+                        <select [(ngModel)]="connectionGroup.type">
+                            @for (type of types; track type) {
+                                <option [value]="type.value">{{ type.label | transloco }}</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Connection group attributes section -->
+        <div class="attributes">
+            <guac-form namespace="CONNECTION_GROUP_ATTRIBUTES" [content]="attributes"
+                       [modelFormGroup]="connectionGroupAttributesFormGroup"
+                       [modelOnly]="!managementPermissions.canChangeAllAttributes"></guac-form>
+        </div>
+
+        <!-- Form action buttons -->
+        <management-buttons namespace="MANAGE_CONNECTION_GROUP"
+                            [permissions]="managementPermissions"
+                            [save]="saveConnectionGroup.bind(this)"
+                            [delete]="deleteConnectionGroup.bind(this)"
+                            [clone]="cloneConnectionGroup.bind(this)"
+                            [return]="returnToConnectionList.bind(this)">
+        </management-buttons>
+
+    </div>
+} @else {
     <div class="manage-connection-group view loading"></div>
-</ng-template>
-
-<div class="manage-connection-group view" *ngIf="isLoaded(); else loading">
-
-    <!-- Main property editor -->
-    <div class="header">
-        <h2>{{ 'MANAGE_CONNECTION_GROUP.SECTION_HEADER_EDIT_CONNECTION_GROUP' | transloco }}</h2>
-        <guac-user-menu></guac-user-menu>
-    </div>
-    <div class="section">
-        <table class="properties">
-
-            <!-- Edit connection group name -->
-            <tr>
-                <th>{{ 'MANAGE_CONNECTION_GROUP.FIELD_HEADER_NAME' | transloco }}</th>
-
-                <td><input type="text" [(ngModel)]="connectionGroup.name" autocorrect="off" autocapitalize="off"></td>
-            </tr>
-
-            <!-- Edit connection group location -->
-            <tr>
-                <th>{{ 'MANAGE_CONNECTION_GROUP.FIELD_HEADER_LOCATION' | transloco }}</th>
-
-                <td>
-                    <guac-location-chooser
-                        [dataSource]="selectedDataSource" [rootGroup]="rootGroup"
-                        [value]="connectionGroup.parentIdentifier"></guac-location-chooser>
-                </td>
-            </tr>
-
-
-            <!-- Edit connection group type -->
-            <tr>
-                <th>{{ 'MANAGE_CONNECTION_GROUP.FIELD_HEADER_TYPE' | transloco }}</th>
-                <td>
-                    <select [(ngModel)]="connectionGroup.type">
-                        <option *ngFor="let type of types" [value]="type.value">{{ type.label | transloco }}</option>
-                    </select>
-                </td>
-            </tr>
-        </table>
-    </div>
-
-    <!-- Connection group attributes section -->
-    <div class="attributes">
-        <guac-form namespace="CONNECTION_GROUP_ATTRIBUTES" [content]="attributes"
-                   [modelFormGroup]="connectionGroupAttributesFormGroup"
-                   [modelOnly]="!managementPermissions.canChangeAllAttributes"></guac-form>
-    </div>
-
-    <!-- Form action buttons -->
-    <management-buttons namespace="MANAGE_CONNECTION_GROUP"
-                        [permissions]="managementPermissions"
-                        [save]="saveConnectionGroup.bind(this)"
-                        [delete]="deleteConnectionGroup.bind(this)"
-                        [clone]="cloneConnectionGroup.bind(this)"
-                        [return]="returnToConnectionList.bind(this)">
-    </management-buttons>
-
-</div>
+}

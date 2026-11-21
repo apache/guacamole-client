@@ -30,11 +30,12 @@
 
     <!-- Page numbers -->
     <ul class="page-numbers">
-        <li class="set-page"
-            [ngClass]="{'current': isSelected(pageNumber)}"
-            *ngFor="let pageNumber of pageNumbers"
-            (click)="selectPage(pageNumber)">{{ pageNumber }}
-        </li>
+        @for (pageNumber of pageNumbers; track pageNumber) {
+            <li class="set-page"
+                [ngClass]="{'current': isSelected(pageNumber)}"
+                (click)="selectPage(pageNumber)">{{ pageNumber }}
+            </li>
+        }
     </ul>
 
     <!-- Indicator of the existence of pages beyond the last page number shown -->

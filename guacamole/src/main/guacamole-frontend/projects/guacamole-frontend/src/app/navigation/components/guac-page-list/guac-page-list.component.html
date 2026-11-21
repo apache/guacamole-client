@@ -20,23 +20,25 @@
 <div class="page-list" [hidden]="!levels.length">
 
     <!-- Navigation links -->
-    <ul class="page-list-level" *ngFor="let level of levels; trackBy: trackByIndex">
-        <li *ngFor="let page of getPages(level)" class="{{page.className}}">
-            <a class="home" (click)="navigateToPage(page)"
-               [ngClass]="{'current': isCurrentPage(page)}" [routerLink]="page.url">
+    @for (level of levels; track trackByIndex($index)) {
+        <ul class="page-list-level">
+            @for (page of getPages(level); track page) {
+                <li class="{{page.className}}">
+                    <a class="home" (click)="navigateToPage(page)"
+                       [ngClass]="{'current': isCurrentPage(page)}" [routerLink]="page.url">
 
-                <!-- If page.name is an array of translatable keys, translate all of them-->
-                <ng-container *ngIf="isArray(page.name); else singleName">
-                    <ng-container *ngFor="let name of page.name">
-                        {{ name | transloco }}
-                    </ng-container>
-                </ng-container>
-
-                <ng-template #singleName>
-                    {{ $any(page.name) | transloco }}
-                </ng-template>
-            </a>
-        </li>
-    </ul>
+                        <!-- If page.name is an array of translatable keys, translate all of them-->
+                        @if (isArray(page.name)) {
+                            @for (name of page.name; track name) {
+                                {{ name | transloco }}
+                            }
+                        } @else {
+                            {{ $any(page.name) | transloco }}
+                        }
+                    </a>
+                </li>
+            }
+        </ul>
+    }
 
 </div>

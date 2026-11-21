@@ -83,7 +83,7 @@ export class GuacZoomCtrlDirective implements ControlValueAccessor {
      * Form control will be updated on input.
      * The value is divided by 100.
      */
-    @HostListener('input', ['$event.target.value'])
+    @HostListener('input', ['$any($event.target).value'])
     onInput(value: string): void {
         const parsedValue = Math.round(Number(value)) / 100;
         this.onChange(parsedValue);

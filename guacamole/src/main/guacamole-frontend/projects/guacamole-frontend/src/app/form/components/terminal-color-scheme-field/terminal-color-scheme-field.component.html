@@ -26,9 +26,10 @@
     <select [id]="fieldId"
             [name]="field.name"
             [formControl]="selectedColorScheme">
-        <option *ngFor="let option of field.options | orderBy"
-                [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}
-        </option>
+        @for (option of field.options | orderBy; track option) {
+            <option [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}
+            </option>
+        }
         <option value="custom">{{ 'COLOR_SCHEME.FIELD_OPTION_CUSTOM' | transloco }}</option>
     </select>
 
@@ -58,26 +59,29 @@
 
         <!-- Low intensity portion of 16-color palette -->
         <div class="custom-color-scheme-section palette low-intensity">
-            <div *ngFor="let index of lowIntensity" class="guac-input-color">
-                <guac-input-color
-                    [control]="customColorSchemeColorFormControl(index)"
-                    [palette]="defaultPalette">
+            @for (index of lowIntensity; track index) {
+                <div class="guac-input-color">
+                    <guac-input-color
+                        [control]="customColorSchemeColorFormControl(index)"
+                        [palette]="defaultPalette">
 
-                    {{ index }}
-                </guac-input-color>
-            </div>
+                        {{ index }}
+                    </guac-input-color>
+                </div>
+            }
         </div>
 
         <!-- High intensity portion of 16-color palette -->
         <div class="custom-color-scheme-section palette high-intensity">
-            <div *ngFor="let index of highIntensity"
-                 class="guac-input-color">
-                <guac-input-color
-                    [control]="customColorSchemeColorFormControl(index)"
-                    [palette]="defaultPalette">
-                    {{ index }}
-                </guac-input-color>
-            </div>
+            @for (index of highIntensity; track index) {
+                <div class="guac-input-color">
+                    <guac-input-color
+                        [control]="customColorSchemeColorFormControl(index)"
+                        [palette]="defaultPalette">
+                        {{ index }}
+                    </guac-input-color>
+                </div>
+            }
         </div>
 
     </div>
@@ -92,11 +96,13 @@
     </h4>
 
     <!-- Custom color scheme details (internal representation -->
-    <textarea *ngIf="control"
-              class="custom-color-scheme-details"
-              spellcheck="false"
-              [formControl]="control"
-              [hidden]="isCustom()"
-    ></textarea>
+    @if (control) {
+        <textarea
+            class="custom-color-scheme-details"
+            spellcheck="false"
+            [formControl]="control"
+            [hidden]="isCustom()"
+  ></textarea>
+    }
 
 </div>

@@ -23,22 +23,24 @@
     <p class="placeholder" [hidden]="hasRecentConnections()">{{ 'HOME.INFO_NO_RECENT_CONNECTIONS' | transloco }}</p>
 
     <!-- All recent connections -->
-    <div *ngFor="let recentConnection of recentConnections" class="connection">
-        <a routerLink="/client/{{recentConnection.entry.id}}">
+    @for (recentConnection of recentConnections; track recentConnection) {
+        <div class="connection">
+            <a routerLink="/client/{{recentConnection.entry.id}}">
 
-            <!-- Connection thumbnail -->
-            <div class="thumbnail">
-                <img alt="{{recentConnection.name}}" [src]="recentConnection.entry.thumbnail"/>
-            </div>
+                <!-- Connection thumbnail -->
+                <div class="thumbnail">
+                    <img alt="{{recentConnection.name}}" [src]="recentConnection.entry.thumbnail"/>
+                </div>
 
-            <!-- Connection name -->
-            <div class="caption">
-                <span class="name">{{ recentConnection.name }}</span>
-            </div>
+                <!-- Connection name -->
+                <div class="caption">
+                    <span class="name">{{ recentConnection.name }}</span>
+                </div>
 
-        </a>
-        <!-- Remove thumbnail -->
-        <div class="remove-recent" (click)="removeRecentConnection(recentConnection)"></div>
-    </div>
+            </a>
+            <!-- Remove thumbnail -->
+            <div class="remove-recent" (click)="removeRecentConnection(recentConnection)"></div>
+        </div>
+    }
 
 </div>

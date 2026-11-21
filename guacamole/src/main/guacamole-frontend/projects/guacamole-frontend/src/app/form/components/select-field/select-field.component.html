@@ -18,13 +18,16 @@
   -->
 
 <div class="select-field">
-    <select *ngIf="control"
+    @if (control) {
+        <select
             [id]="fieldId"
             [name]="field.name"
             [guacFocus]="focused"
             [formControl]="control">
-        <option *ngFor="let option of field.options | orderBy"
-                [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}
-        </option>
-    </select>
+            @for (option of field.options | orderBy; track option) {
+                <option [value]="option">{{ getFieldOption(field, namespace, option) | transloco }}
+                </option>
+            }
+        </select>
+    }
 </div>

@@ -20,18 +20,20 @@
 <div class="file-browser">
 
     <!-- Current directory contents -->
-    <div class="current-directory-contents" *ngIf="files">
+    @if (files) {
+        <div class="current-directory-contents">
 
-        <ng-container *ngFor="let file of files(); let i = index; trackBy: trackByStreamName">
-            <guac-file [file]="file"
-                       (focusFile)="focusFile(i)"
-                       [isFocused]="i === focusedFileIndex"
-                       (changeDirectory)="changeDirectory(file)"
-                       (downloadFile)="downloadFile(file)"
-                       [ngClass]="{ 'focused': i === focusedFileIndex }"
-            ></guac-file>
-        </ng-container>
+            @for (file of files(); track trackByStreamName(i, file); let i = $index) {
+                <guac-file [file]="file"
+                           (focusFile)="focusFile(i)"
+                           [isFocused]="i === focusedFileIndex"
+                           (changeDirectory)="changeDirectory(file)"
+                           (downloadFile)="downloadFile(file)"
+                           [ngClass]="{ 'focused': i === focusedFileIndex }"
+                ></guac-file>
+            }
 
-    </div>
+        </div>
+    }
 
 </div>

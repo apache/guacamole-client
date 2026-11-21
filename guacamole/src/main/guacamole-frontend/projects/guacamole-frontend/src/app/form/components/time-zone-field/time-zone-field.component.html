@@ -25,18 +25,23 @@
             [id]="fieldId"
             [formControl]="region"
     >
-        <option *ngFor="let region of regions" [value]="region">{{ region }}</option>
+        @for (region of regions; track region) {
+            <option [value]="region">{{ region }}</option>
+        }
 
     </select>
 
     <!-- Time zones within selected region -->
-    <select *ngIf="control"
+    @if (control) {
+        <select
             class="time-zone"
             [attr.name]="field.name"
             [formControl]="control">
-        <option *ngFor="let timeZone of timeZones[region.value] | keyvalue"
-                [value]="timeZone.value">{{ timeZone.key }}
-        </option>
-    </select>
+            @for (timeZone of timeZones[region.value] | keyvalue; track timeZone) {
+                <option [value]="timeZone.value">{{ timeZone.key }}
+                </option>
+            }
+        </select>
+    }
 
 </div>

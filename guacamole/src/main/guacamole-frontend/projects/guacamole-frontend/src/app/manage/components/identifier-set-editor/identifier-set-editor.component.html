@@ -36,16 +36,19 @@
                  (click)="expand()" height="64" width="64">
             <img ngSrc="images/arrows/down.svg" alt="Collapse" class="collapse" [hidden]="!expanded"
                  (click)="collapse()" height="64" width="64">
-            <p *ngIf="!(identifiersDataSourceView?.totalLength | async)"
-               class="no-related-objects">{{ emptyPlaceholder | transloco }}</p>
+            @if (!(identifiersDataSourceView?.totalLength | async)) {
+                <p class="no-related-objects">{{ emptyPlaceholder | transloco }}</p>
+            }
             <ul>
-                <li *ngFor="let identifier of identifiersDataSourceView?.data | async">
-                    <label><img ngSrc="images/x-red.svg" alt="Remove" class="remove"
-                                (click)="removeIdentifierFromScope(identifier)"
-                                [hidden]="!isEditable[identifier]" height="64" width="64"><span
-                        class="identifier">{{ identifier }}</span>
-                    </label>
-                </li>
+                @for (identifier of identifiersDataSourceView?.data | async; track identifier) {
+                    <li>
+                        <label><img ngSrc="images/x-red.svg" alt="Remove" class="remove"
+                                    (click)="removeIdentifierFromScope(identifier)"
+                                    [hidden]="!isEditable[identifier]" height="64" width="64"><span
+                            class="identifier">{{ identifier }}</span>
+                        </label>
+                    </li>
+                }
             </ul>
         </div>
 
@@ -53,15 +56,19 @@
         <div class="all-related-objects" [hidden]="!expanded">
             <p [hidden]="identifiersAvailableDataSourceView?.totalLength | async"
                class="no-objects-available">{{ unavailablePlaceholder | transloco }}</p>
-            <ul *ngIf="identifiersAvailableDataSourceView !== null">
-                <li *ngFor="let identifier of identifiersAvailableDataSourceView.data | async">
-                    <label><input type="checkbox"
-                                  [(ngModel)]="identifierFlags[identifier]"
-                                  (ngModelChange)="identifierChanged(identifier)">
-                        <span class="identifier">{{ identifier }}</span>
-                    </label>
-                </li>
-            </ul>
+            @if (identifiersAvailableDataSourceView !== null) {
+                <ul>
+                    @for (identifier of identifiersAvailableDataSourceView.data | async; track identifier) {
+                        <li>
+                            <label><input type="checkbox"
+                                          [(ngModel)]="identifierFlags[identifier]"
+                                          (ngModelChange)="identifierChanged(identifier)">
+                                <span class="identifier">{{ identifier }}</span>
+                            </label>
+                        </li>
+                    }
+                </ul>
+            }
 
             <!-- Pager controls for user list-->
             <guac-pager [pageSize]="25" [length]="identifiersAvailableDataSourceView?.totalLength | async"></guac-pager>

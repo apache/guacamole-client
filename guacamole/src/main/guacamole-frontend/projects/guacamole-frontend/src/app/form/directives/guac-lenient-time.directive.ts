@@ -83,7 +83,7 @@ export class GuacLenientTimeDirective implements ControlValueAccessor {
     /**
      * Form control will be updated when the input loses focus.
      */
-    @HostListener('blur', ['$event.target.value'])
+    @HostListener('blur', ['$any($event.target).value'])
     onInput(value: string): void {
         const parsedValue = this.parse(value);
         this.onChange(parsedValue);

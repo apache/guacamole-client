@@ -26,9 +26,10 @@
               }"
               (input)="updateClipboardData()"
               (change)="updateClipboardData()"></textarea>
-    <div class="clipboard-contents-hidden-hint"
-         (click)="showContents()"
-         *ngIf="!contentsShown">
-        <p class="clipboard-contents-hidden-hint-text">{{ 'CLIENT.ACTION_SHOW_CLIPBOARD' | transloco }}</p>
-    </div>
+    @if (!contentsShown) {
+        <div class="clipboard-contents-hidden-hint"
+             (click)="showContents()">
+            <p class="clipboard-contents-hidden-hint-text">{{ 'CLIENT.ACTION_SHOW_CLIPBOARD' | transloco }}</p>
+        </div>
+    }
 </div>

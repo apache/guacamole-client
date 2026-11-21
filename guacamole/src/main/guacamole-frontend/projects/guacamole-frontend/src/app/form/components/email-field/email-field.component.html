@@ -18,14 +18,16 @@
   -->
 
 <div class="email-field">
-    <input *ngIf="control"
-           type="email"
-           [id]="fieldId"
-           [name]="field.name"
-           [formControl]="control"
-           [hidden]="readOnly"
-           [guacFocus]="focused"
-           autocorrect="off"
-           autocapitalize="off">
+    @if (control) {
+        <input
+            type="email"
+            [id]="fieldId"
+            [name]="field.name"
+            [formControl]="control"
+            [hidden]="readOnly"
+            [guacFocus]="focused"
+            autocorrect="off"
+            autocapitalize="off">
+    }
     <a href="mailto:{{control?.value}}" [hidden]="!readOnly">{{ control?.value }}</a>
 </div>

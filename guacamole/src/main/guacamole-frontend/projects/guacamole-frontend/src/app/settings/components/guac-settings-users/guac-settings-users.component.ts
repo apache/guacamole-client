@@ -339,8 +339,8 @@ export class GuacSettingsUsersComponent implements OnInit {
     }
 
     /**
-     * Track a user by their username. It is used in Angular's *ngFor
-     * directive to optimize performance.
+     * Track a user by their username. It is used in the track expression of
+     * Angular's @for block to optimize performance.
      *
      * @param index The index of the current item in the iterable.
      * @param manageableUser The current item being iterated.

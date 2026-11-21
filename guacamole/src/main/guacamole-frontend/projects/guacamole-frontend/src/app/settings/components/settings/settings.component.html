@@ -25,9 +25,11 @@
     </div>
 
     <!-- Available tabs -->
-    <div class="page-tabs" *ngIf="settingsPages !== null">
-        <guac-page-list [pages]="settingsPages"></guac-page-list>
-    </div>
+    @if (settingsPages !== null) {
+        <div class="page-tabs">
+            <guac-page-list [pages]="settingsPages"></guac-page-list>
+        </div>
+    }
 
     <!-- Selected tab -->
     <router-outlet></router-outlet>

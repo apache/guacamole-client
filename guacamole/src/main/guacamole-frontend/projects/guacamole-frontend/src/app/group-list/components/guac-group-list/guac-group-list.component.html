@@ -19,43 +19,54 @@
 
 <div class="group-list">
 
-    <div class="group-list-page" *ngIf="connectionGroupsDataSource !== null">
+    @if (connectionGroupsDataSource !== null) {
+        <div class="group-list-page">
 
-        <!-- Root-level connections / groups -->
-        <div class="list-item" *ngFor="let childPage of connectionGroupsDataSource.data | async">
-            <ng-container *ngTemplateOutlet="nestedItem; context: {$implicit: childPage}"/>
+            <!-- Root-level connections / groups -->
+            @for (childPage of connectionGroupsDataSource.data | async; track childPage) {
+                <div class="list-item">
+                    <ng-container *ngTemplateOutlet="nestedItem; context: {$implicit: childPage}"/>
 
-            <ng-template #nestedItem let-item>
-                <div class="{{item.type}}" *ngIf="isVisible(item.type)"
-                     [ngClass]="{
-                'balancer'   : item.balancing,
-                'expanded'   : item.expanded,
-                'expandable' : item.expandable,
-                'empty'      : !item.children.length
-            }">
+                    <ng-template #nestedItem let-item>
+                        @if (isVisible(item.type)) {
+                            <div class="{{item.type}}"
+                                 [ngClass]="{
+                            'balancer'   : item.balancing,
+                            'expanded'   : item.expanded,
+                            'expandable' : item.expandable,
+                            'empty'      : !item.children.length
+                        }">
 
-                    <!-- Item caption -->
-                    <div class="caption">
+                                <!-- Item caption -->
+                                <div class="caption">
 
-                        <!-- Expand/collapse icon -->
-                        <div class="icon expand" (click)="toggleExpanded(item)"
-                             *ngIf="item.expandable"></div>
+                                    <!-- Expand/collapse icon -->
+                                    @if (item.expandable) {
+                                        <div class="icon expand" (click)="toggleExpanded(item)"></div>
+                                    }
 
-                        <ng-container *ngTemplateOutlet="templates[item.type]; context: {item: item, ctx: context}"/>
+                                    <ng-container *ngTemplateOutlet="templates[item.type]; context: {item: item, ctx: context}"/>
 
-                    </div>
+                                </div>
 
-                    <!-- Children of item (if any) -->
-                    <div class="children" *ngIf="item.expanded">
-                        <div class="list-item" *ngFor="let child of sortService.orderBy(item.children, ['name'])">
-                            <ng-container *ngTemplateOutlet="nestedItem; context: {$implicit: child}"/>
-                        </div>
-                    </div>
+                                <!-- Children of item (if any) -->
+                                @if (item.expanded) {
+                                    <div class="children">
+                                        @for (child of sortService.orderBy(item.children, ['name']); track child) {
+                                            <div class="list-item">
+                                                <ng-container *ngTemplateOutlet="nestedItem; context: {$implicit: child}"/>
+                                            </div>
+                                        }
+                                    </div>
+                                }
 
+                            </div>
+                        }
+                    </ng-template>
                 </div>
-            </ng-template>
+            }
         </div>
-    </div>
+    }
 
     <!-- Pager for connections / groups -->
     <guac-pager [pageSize]="pageSize" [length]="connectionGroupsDataSource?.totalLength | async"></guac-pager>

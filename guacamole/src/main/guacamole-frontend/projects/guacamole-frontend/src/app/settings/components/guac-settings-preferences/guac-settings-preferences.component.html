@@ -150,8 +150,10 @@
 
     <!-- User attributes section -->
     <div class="attributes" [hidden]="!canUpdateSelf && attributes?.length">
-        <guac-form *ngIf="attributes !== null" namespace="USER_ATTRIBUTES" [content]="attributes"
-                   [modelFormGroup]="userAttributesFormGroup"></guac-form>
+        @if (attributes !== null) {
+            <guac-form namespace="USER_ATTRIBUTES" [content]="attributes"
+                       [modelFormGroup]="userAttributesFormGroup"></guac-form>
+        }
 
         <!-- User attributes save button -->
         <button [hidden]="!attributes?.length" (click)="saveUser()"

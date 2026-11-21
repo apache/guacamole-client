@@ -17,12 +17,14 @@
   ~ under the License.
   -->
 
-<div class="connection-select-menu-connection connection" *ngIf="item.getClientIdentifier() as clientIdentifier">
-    <input type="checkbox"
-           [(ngModel)]="context.attachedClients[clientIdentifier]"
-           (ngModelChange)="context.updateAttachedClients(clientIdentifier)">
-    <a [routerLink]="item.getClientURL()">
-        <div class="icon type" [ngClass]="item.protocol"></div>
-        <span class="name">{{ item.name }}</span>
-    </a>
-</div>
+@if (item.getClientIdentifier(); as clientIdentifier) {
+    <div class="connection-select-menu-connection connection">
+        <input type="checkbox"
+               [(ngModel)]="context.attachedClients[clientIdentifier]"
+               (ngModelChange)="context.updateAttachedClients(clientIdentifier)">
+        <a [routerLink]="item.getClientURL()">
+            <div class="icon type" [ngClass]="item.protocol"></div>
+            <span class="name">{{ item.name }}</span>
+        </a>
+    </div>
+}

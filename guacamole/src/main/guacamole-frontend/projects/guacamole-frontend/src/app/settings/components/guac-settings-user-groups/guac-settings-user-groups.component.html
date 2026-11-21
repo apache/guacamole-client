@@ -36,27 +36,31 @@
     </div>
 
     <!-- List of user groups this user has access to -->
-    <table class="sorted user-group-list" *ngIf="isLoaded()">
-        <thead>
-        <tr>
-            <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
-                sortProperty="userGroup.identifier" class="user-group-name">
-                {{ 'SETTINGS_USER_GROUPS.TABLE_HEADER_USER_GROUP_NAME' | transloco }}
-            </th>
-        </tr>
-        </thead>
-        <tbody [ngClass]="{'loading': !isLoaded()}">
-        <tr *ngFor="let manageableUserGroup of dataSourceView?.data | async" class="user-group"
-            [ngClass]="{disabled: manageableUserGroup.userGroup.disabled}">
-            <td class="user-group-name">
-                <a routerLink="/manage/{{manageableUserGroup.dataSource | escape}}/userGroups/{{manageableUserGroup.userGroup.identifier! | escape}}">
-                    <div class="icon user-group"></div>
-                    <span class="name">{{ manageableUserGroup.userGroup.identifier }}</span>
-                </a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+    @if (isLoaded()) {
+        <table class="sorted user-group-list">
+            <thead>
+            <tr>
+                <th [guacSortOrder]="order | async" (sortOrderChange)="order.next($event)"
+                    sortProperty="userGroup.identifier" class="user-group-name">
+                    {{ 'SETTINGS_USER_GROUPS.TABLE_HEADER_USER_GROUP_NAME' | transloco }}
+                </th>
+            </tr>
+            </thead>
+            <tbody [ngClass]="{'loading': !isLoaded()}">
+            @for (manageableUserGroup of dataSourceView?.data | async; track manageableUserGroup) {
+                <tr class="user-group"
+                    [ngClass]="{disabled: manageableUserGroup.userGroup.disabled}">
+                    <td class="user-group-name">
+                        <a routerLink="/manage/{{manageableUserGroup.dataSource | escape}}/userGroups/{{manageableUserGroup.userGroup.identifier! | escape}}">
+                            <div class="icon user-group"></div>
+                            <span class="name">{{ manageableUserGroup.userGroup.identifier }}</span>
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
 
     <!-- Pager controls for user group list -->
     <guac-pager [pageSize]="25" [length]="dataSourceView?.totalLength | async"></guac-pager>

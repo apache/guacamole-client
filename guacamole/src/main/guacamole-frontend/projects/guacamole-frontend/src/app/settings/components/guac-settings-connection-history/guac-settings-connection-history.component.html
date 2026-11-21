@@ -67,31 +67,33 @@
             </tr>
             </thead>
 
-            <ng-template #loading>
+            @if (isLoaded()) {
+                <tbody>
+                @for (historyEntryWrapper of dataSourceView.data | async; track historyEntryWrapper) {
+                    <tr class="history">
+                        <td>
+                            <guac-user-item [username]="historyEntryWrapper.entry.username"></guac-user-item>
+                        </td>
+                        <td>{{ historyEntryWrapper.entry.startDate || 0 | date : dateFormat || undefined }}</td>
+                        <td [transloco]="historyEntryWrapper.readableDurationText"
+                            [translocoParams]="{VALUE: historyEntryWrapper.readableDuration?.value, UNIT: historyEntryWrapper.readableDuration?.unit}"></td>
+                        <td>{{ historyEntryWrapper.entry.connectionName }}</td>
+                        <td>{{ historyEntryWrapper.entry.remoteHost }}</td>
+                        <td>
+                            <a class="history-session-recording"
+                               [hidden]="!historyEntryWrapper.sessionRecording"
+                               [routerLink]="historyEntryWrapper.sessionRecording?.url"
+                               [title]="historyEntryWrapper.sessionRecording?.description | async">
+                                    <span
+                                        class="history-action-description">{{ 'SETTINGS_CONNECTION_HISTORY.ACTION_VIEW_RECORDING' | transloco }}</span>
+                            </a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            } @else {
                 <tbody class="loading"></tbody>
-            </ng-template>
-
-            <tbody *ngIf="isLoaded(); else loading">
-            <tr *ngFor="let historyEntryWrapper of dataSourceView.data | async" class="history">
-                <td>
-                    <guac-user-item [username]="historyEntryWrapper.entry.username"></guac-user-item>
-                </td>
-                <td>{{ historyEntryWrapper.entry.startDate || 0 | date : dateFormat || undefined }}</td>
-                <td [transloco]="historyEntryWrapper.readableDurationText"
-                    [translocoParams]="{VALUE: historyEntryWrapper.readableDuration?.value, UNIT: historyEntryWrapper.readableDuration?.unit}"></td>
-                <td>{{ historyEntryWrapper.entry.connectionName }}</td>
-                <td>{{ historyEntryWrapper.entry.remoteHost }}</td>
-                <td>
-                    <a class="history-session-recording"
-                       [hidden]="!historyEntryWrapper.sessionRecording"
-                       [routerLink]="historyEntryWrapper.sessionRecording?.url"
-                       [title]="historyEntryWrapper.sessionRecording?.description | async">
-                            <span
-                                class="history-action-description">{{ 'SETTINGS_CONNECTION_HISTORY.ACTION_VIEW_RECORDING' | transloco }}</span>
-                    </a>
-                </td>
-            </tr>
-            </tbody>
+            }
         </table>
 
         <!-- Text displayed if no history exists -->

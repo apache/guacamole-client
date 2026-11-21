@@ -34,14 +34,17 @@
          [translocoParams]="{RESULTS: filteredBatches.length}"></div>
 
     <div class="text-batches">
-        <div *ngFor="let batch of filteredBatches" class="text-batch" (click)="seek(batch.events[0].timestamp)">
-            <div class="timestamp">{{ formatTime(batch.events[0].timestamp) }}</div>
-            <div class="text">
-                <span
-                    *ngFor="let event of batch.events"
-                    class="key-event"
-                    [ngClass]="{ 'not-typed' : !event.typed, 'future': event.timestamp >= currentPosition }"
-                >{{ event.text }}</span>
+        @for (batch of filteredBatches; track batch) {
+            <div class="text-batch" (click)="seek(batch.events[0].timestamp)">
+                <div class="timestamp">{{ formatTime(batch.events[0].timestamp) }}</div>
+                <div class="text">
+                    @for (event of batch.events; track event) {
+                        <span
+                            class="key-event"
+                            [ngClass]="{ 'not-typed' : !event.typed, 'future': event.timestamp >= currentPosition }"
+                        >{{ event.text }}</span>
+                    }
+                </div>
             </div>
-        </div>
+        }
     </div>

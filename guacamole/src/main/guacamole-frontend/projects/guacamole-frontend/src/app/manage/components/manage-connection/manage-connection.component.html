@@ -19,9 +19,7 @@
 
 <div class="manage-connection view" [ngClass]="{'loading' : !isLoaded()}">
 
-    <ng-container *ngIf="isLoaded()">
-
-
+    @if (isLoaded()) {
         <!-- Main property editor -->
         <div class="header">
             <h2>{{ 'MANAGE_CONNECTION.SECTION_HEADER_EDIT_CONNECTION' | transloco }}</h2>
@@ -54,10 +52,12 @@
                     <th>{{ 'MANAGE_CONNECTION.FIELD_HEADER_PROTOCOL' | transloco }}</th>
                     <td>
                         <select [(ngModel)]="selectedProtocol">
-                            <option *ngFor="let protocol of protocols! | keyvalue | orderBy: 'value.name'"
+                            @for (protocol of protocols! | keyvalue | orderBy: 'value.name'; track protocol) {
+                                <option
                                     [value]="protocol.key"
                                     [transloco]="getProtocolName(protocol.value.name!)"
                                     [translocoParams]="{protocol: protocol.value.name}"></option>
+                            }
                         </select>
                     </td>
                 </tr>
@@ -87,8 +87,7 @@
                             [clone]="cloneConnection.bind(this)"
                             [return]="returnToConnectionList.bind(this)">
         </management-buttons>
-
-    </ng-container>
+    }
 
     <!-- Connection history -->
     <h2 class="header">{{ 'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | transloco }}</h2>
@@ -106,16 +105,18 @@
             </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let wrapper of dataSourceView?.data | async">
-                <td class="username">
-                    <guac-user-item [username]="wrapper.entry.username"></guac-user-item>
-                </td>
-                <td class="start">{{ wrapper.entry.startDate | date:historyDateFormat }}</td>
-                <td class="duration"
-                    [transloco]="wrapper.durationText"
-                    [translocoParams]="{VALUE: wrapper.duration?.value, UNIT: wrapper.duration?.unit}"></td>
-                <td class="remoteHost">{{ wrapper.entry.remoteHost }}</td>
-            </tr>
+            @for (wrapper of dataSourceView?.data | async; track wrapper) {
+                <tr>
+                    <td class="username">
+                        <guac-user-item [username]="wrapper.entry.username"></guac-user-item>
+                    </td>
+                    <td class="start">{{ wrapper.entry.startDate | date:historyDateFormat }}</td>
+                    <td class="duration"
+                        [transloco]="wrapper.durationText"
+                        [translocoParams]="{VALUE: wrapper.duration?.value, UNIT: wrapper.duration?.unit}"></td>
+                    <td class="remoteHost">{{ wrapper.entry.remoteHost }}</td>
+                </tr>
+            }
             </tbody>
         </table>
 

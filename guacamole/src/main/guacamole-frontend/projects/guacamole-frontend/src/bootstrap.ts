@@ -17,13 +17,14 @@
  * under the License.
  */
 
-import { ViewEncapsulation } from '@angular/core';
+import { ViewEncapsulation, provideZoneChangeDetection } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
 
 
 platformBrowserDynamic().bootstrapModule(AppModule, {
+    applicationProviders: [provideZoneChangeDetection()],
     defaultEncapsulation: ViewEncapsulation.None
 })
     .catch(err => console.error(err));

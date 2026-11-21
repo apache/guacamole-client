@@ -19,11 +19,13 @@
 
 <div class="section-tabs" [hidden]="!tabs?.length">
     <ul>
-        <li *ngFor="let name of tabs">
-            <a (click)="selectTab(name)"
-               [ngClass]="{ 'current' : isSelected(name) }">
-                {{ getSectionHeader(name) | transloco }}
-            </a>
-        </li>
+        @for (name of tabs; track name) {
+            <li>
+                <a (click)="selectTab(name)"
+                   [ngClass]="{ 'current' : isSelected(name) }">
+                    {{ getSectionHeader(name) | transloco }}
+                </a>
+            </li>
+        }
     </ul>
 </div>

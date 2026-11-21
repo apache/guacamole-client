@@ -61,7 +61,9 @@ module.exports = tseslint.config(
             ...angular.configs.templateAccessibility,
         ],
         'rules': {
-            '@angular-eslint/template/elements-content': 'off'
+            '@angular-eslint/template/elements-content': 'off',
+            // Only flags the misused [ngSwitch] binding in guac-notification, which is fixed separately
+            '@angular-eslint/template/prefer-control-flow': 'off'
         }
     }
 );

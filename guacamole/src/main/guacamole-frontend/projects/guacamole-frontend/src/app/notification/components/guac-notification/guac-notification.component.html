@@ -60,9 +60,11 @@
 
     <!-- Buttons -->
     <div [hidden]="!notification?.actions?.length" class="buttons">
-        <button *ngFor="let action of notification.actions" (click)="action.callback()"
-                [ngClass]="action.className">{{ action.name | transloco }}
-        </button>
+        @for (action of notification.actions; track action) {
+            <button (click)="action.callback()"
+                    [ngClass]="action.className">{{ action.name | transloco }}
+            </button>
+        }
     </div>
 
 </form>

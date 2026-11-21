@@ -55,17 +55,19 @@
         </tr>
         </thead>
         <tbody>
-        <tr *ngFor="let wrapper of dataSourceView?.data | async" class="session">
-            <td class="select-session">
-                <input [(ngModel)]="wrapper.checked" (ngModelChange)="wrapperSelectionChange(wrapper)" type="checkbox">
-            </td>
-            <td>
-                <guac-user-item [username]="wrapper.activeConnection.username"></guac-user-item>
-            </td>
-            <td>{{ wrapper.startDate }}</td>
-            <td>{{ wrapper.activeConnection.remoteHost }}</td>
-            <td><a [routerLink]="getClientURL(wrapper.dataSource, wrapper.activeConnection)">{{ wrapper.name }}</a></td>
-        </tr>
+        @for (wrapper of dataSourceView?.data | async; track wrapper) {
+            <tr class="session">
+                <td class="select-session">
+                    <input [(ngModel)]="wrapper.checked" (ngModelChange)="wrapperSelectionChange(wrapper)" type="checkbox">
+                </td>
+                <td>
+                    <guac-user-item [username]="wrapper.activeConnection.username"></guac-user-item>
+                </td>
+                <td>{{ wrapper.startDate }}</td>
+                <td>{{ wrapper.activeConnection.remoteHost }}</td>
+                <td><a [routerLink]="getClientURL(wrapper.dataSource, wrapper.activeConnection)">{{ wrapper.name }}</a></td>
+            </tr>
+        }
         </tbody>
     </table>
 

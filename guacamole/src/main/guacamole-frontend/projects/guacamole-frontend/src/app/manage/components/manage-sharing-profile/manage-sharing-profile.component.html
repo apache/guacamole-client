@@ -19,8 +19,7 @@
 
 <div class="manage-sharing-profile view" [ngClass]="{loading: !isLoaded()}">
 
-    <ng-container *ngIf="isLoaded()">
-
+    @if (isLoaded()) {
         <!-- Main property editor -->
         <div class="header">
             <h2>{{ 'MANAGE_SHARING_PROFILE.SECTION_HEADER_EDIT_SHARING_PROFILE' | transloco }}</h2>
@@ -63,7 +62,6 @@
                             [clone]="cloneSharingProfile.bind(this)"
                             [return]="returnToConnectionList.bind(this)">
         </management-buttons>
-
-    </ng-container>
+    }
 
 </div>

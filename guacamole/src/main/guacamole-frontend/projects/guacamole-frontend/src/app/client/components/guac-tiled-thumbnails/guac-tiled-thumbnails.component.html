@@ -21,13 +21,19 @@
         'width' : width + 'px',
         'height' : height + 'px',
     }">
-    <div class="tiled-client-row" *ngFor="let clientRow of getClientGrid(clientGroup)">
-        <div class="tiled-client-cell" *ngFor="let client of clientRow">
+    @for (clientRow of getClientGrid(clientGroup); track clientRow) {
+        <div class="tiled-client-row">
+            @for (client of clientRow; track client) {
+                <div class="tiled-client-cell">
 
-            <div class="client-tile" *ngIf="client">
-                <guac-thumbnail [client]="client" class="thumbnail-main"></guac-thumbnail>
-            </div>
+                    @if (client) {
+                        <div class="client-tile">
+                            <guac-thumbnail [client]="client" class="thumbnail-main"></guac-thumbnail>
+                        </div>
+                    }
 
+                </div>
+            }
         </div>
-    </div>
+    }
 </div>
