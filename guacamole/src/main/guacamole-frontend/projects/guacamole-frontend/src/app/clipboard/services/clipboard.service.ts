@@ -89,6 +89,11 @@ export class ClipboardService {
         if (this.pendingRead)
             return this.pendingRead;
 
+        // The Asynchronous Clipboard API is unavailable outside of secure
+        // contexts, and in browsers that do not implement it
+        if (!navigator.clipboard || !navigator.clipboard.readText)
+            return Promise.reject();
+
         // Create and store the pending promise
         this.pendingRead = navigator.clipboard.readText()
             .then(text => new ClipboardData({ type: 'text/plain', data: text }))
@@ -136,7 +141,11 @@ export class ClipboardService {
      *     set. This promise is always resolved.
      */
     setClipboard(data: ClipboardData): Promise<void> {
-        return this.setLocalClipboard(data).finally(() => {
+        return this.setLocalClipboard(data).catch(() => {
+            // Only the internal clipboard is updated if the local clipboard
+            // cannot be written, for example because the Clipboard API is
+            // unavailable
+        }).finally(() => {
 
             // Update internal clipboard and broadcast event notifying of
             // updated contents
@@ -154,7 +163,10 @@ export class ClipboardService {
      * components like the "guacClient" directive.
      */
     resyncClipboard = () => {
-        this.getLocalClipboard().then(data => this.setClipboard(data));
+        this.getLocalClipboard().then(data => this.setClipboard(data), () => {
+            // Nothing to synchronize if the local clipboard cannot be read,
+            // for example because the user denied the permission
+        });
     };
 
 }
