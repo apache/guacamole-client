@@ -18,7 +18,7 @@
  */
 
 import { HttpClient, HttpContext } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { DOCUMENT, Inject, Injectable } from '@angular/core';
 import { Translation, TranslocoLoader, TranslocoLoaderData } from '@jsverse/transloco';
 import { LanguageService } from '../../rest/service/language.service';
 import { SKIP_ALL_INTERCEPTORS } from '../../util/interceptor.service';
@@ -32,9 +32,19 @@ import { SKIP_ALL_INTERCEPTORS } from '../../util/interceptor.service';
 export class TranslationLoaderService implements TranslocoLoader {
 
     /**
+     * The meta element which provides the current build identifier, if
+     * available. The identifier is used for cache-busting translation file
+     * requests between deployments.
+     */
+    private readonly buildMeta: HTMLMetaElement | null;
+
+    /**
      * Inject required services.
      */
-    constructor(private languageService: LanguageService, private http: HttpClient) {
+    constructor(private languageService: LanguageService,
+                private http: HttpClient,
+                @Inject(DOCUMENT) document: Document) {
+        this.buildMeta = document.querySelector<HTMLMetaElement>('meta[name="build"]');
     }
 
     /**
@@ -118,11 +128,17 @@ export class TranslationLoaderService implements TranslocoLoader {
                         return;
                     }
 
+                    // Construct translation URL; append ?b=<build>
+                    // when meta is present to avoid stale cached JSON after deploy.
+                    const translationURL = 'translations/' + encodeURIComponent(currentKey) + '.json'
+                        + ((this.buildMeta && this.buildMeta.content) ? ('?b='
+                        + encodeURIComponent(this.buildMeta.content)) : '');
+
                     // Attempt to retrieve language
                     const httpContext: HttpContext = new HttpContext();
                     httpContext.set(SKIP_ALL_INTERCEPTORS, true);
                     this.http.get<Translation>(
-                        'translations/' + encodeURIComponent(currentKey) + '.json',
+                        translationURL,
                         { context: httpContext }
                     ).subscribe({
                         next: (translationData) => {

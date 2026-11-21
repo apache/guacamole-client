@@ -28,6 +28,7 @@ import { catchError, filter } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { TranslationLoaderService } from '../../../locale/service/translation-loader.service';
+import { CacheService } from '../../../rest/service/cache.service';
 import { RequestService } from '../../../rest/service/request.service';
 import { Error } from '../../../rest/types/Error';
 import { Field } from '../../../rest/types/Field';
@@ -106,6 +107,7 @@ export class LoginComponent implements OnInit, OnChanges {
      * Inject required services.
      */
     constructor(private authenticationService: AuthenticationService,
+                private cacheService: CacheService,
                 private requestService: RequestService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private router: Router,
@@ -255,6 +257,7 @@ export class LoginComponent implements OnInit, OnChanges {
         this.guacEventService.on('guacLogin')
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
+                this.cacheService.languages.clear();
                 this.router.navigateByUrl(this.location.path(), { onSameUrlNavigation: 'reload' });
                 this.reloadTranslations();
             });

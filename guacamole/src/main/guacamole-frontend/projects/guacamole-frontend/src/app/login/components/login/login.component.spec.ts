@@ -17,16 +17,17 @@
  * under the License.
  */
 
-import { provideHttpClient } from '@angular/common/http';
+import { HttpResponse, provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { provideTranslocoInterceptor, TranslocoService, TranslocoTestingModule } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, of } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { TranslationReferenceInterceptor } from '../../../locale/locale.module';
 import { TranslationLoaderService } from '../../../locale/service/translation-loader.service';
+import { CacheService } from '../../../rest/service/cache.service';
 import { Error as RestError } from '../../../rest/types/Error';
 import { LoginComponent } from './login.component';
 
@@ -34,6 +35,7 @@ describe('LoginComponent', () => {
     let fixture: ComponentFixture<LoginComponent>;
     let guacEventService: GuacEventService<GuacFrontendEventArguments>;
     let translocoService: TranslocoService;
+    let cacheService: CacheService;
 
     /**
      * The translations the backend delivers after the login, by language key.
@@ -89,6 +91,7 @@ describe('LoginComponent', () => {
 
         guacEventService = TestBed.inject(GuacEventService<GuacFrontendEventArguments>);
         translocoService = TestBed.inject(TranslocoService);
+        cacheService = TestBed.inject(CacheService);
 
         // Load the translations which exist before the login
         await firstValueFrom(translocoService.load('de'));
@@ -143,6 +146,47 @@ describe('LoginComponent', () => {
             expect(translocoService.translate('LOGIN.ERROR_PASSWORD_MISMATCH', {}, 'de')).toBe('Die Passwörter stimmen nicht überein.');
             expect(translocoService.translate('LOGIN.ERROR_PASSWORD_MISMATCH', {}, 'en')).toBe('The provided passwords do not match.');
         });
+    });
+
+    it('should clear the cache of languages after a successful login', () => {
+        cacheService.languages.set('api/languages', of(new HttpResponse({ body: { en: 'English' } })));
+
+        login();
+
+        expect(cacheService.languages.size).toBe(0);
+    });
+
+    it('should clear the cache of languages before it reloads the translations', async () => {
+        cacheService.languages.set('api/languages', of(new HttpResponse({ body: { en: 'English' } })));
+        const cacheSizesAtReload: number[] = [];
+        loader.getTranslation.mockImplementation((lang: string) => {
+            cacheSizesAtReload.push(cacheService.languages.size);
+            return Promise.resolve(translationsAfterLogin[lang]);
+        });
+
+        login();
+
+        await vi.waitFor(() => expect(cacheSizesAtReload).toEqual([0, 0]));
+    });
+
+    it('should leave the other caches untouched after a successful login', () => {
+        cacheService.connections.set('api/session/data/postgresql/connectionGroups/ROOT/tree', of(new HttpResponse({ body: {} })));
+
+        login();
+
+        expect(cacheService.connections.size).toBe(1);
+    });
+
+    it('should not clear the cache of languages if the login failed', async () => {
+        cacheService.languages.set('api/languages', of(new HttpResponse({ body: { en: 'English' } })));
+
+        guacEventService.broadcast('guacLoginFailed', {
+            parameters: Promise.resolve({}),
+            error: new RestError({ type: RestError.Type.INVALID_CREDENTIALS })
+        });
+        await fixture.whenStable();
+
+        expect(cacheService.languages.size).toBe(1);
     });
 
     it('should not reload the translations if the login failed', async () => {
