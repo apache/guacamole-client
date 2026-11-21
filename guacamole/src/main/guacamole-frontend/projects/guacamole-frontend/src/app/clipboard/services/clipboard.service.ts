@@ -151,6 +151,7 @@ export class ClipboardService {
             // updated contents
             this.storedClipboardData(data);
             this.guacEventService.broadcast('guacClipboard', { data });
+            this.guacEventService.broadcast('clipboardSyncInProgress', { status: false });
 
         });
     }
@@ -163,9 +164,14 @@ export class ClipboardService {
      * components like the "guacClient" directive.
      */
     resyncClipboard = () => {
+        this.guacEventService.broadcast('clipboardSyncInProgress', { status: true });
         this.getLocalClipboard().then(data => this.setClipboard(data), () => {
+
             // Nothing to synchronize if the local clipboard cannot be read,
-            // for example because the user denied the permission
+            // for example because the user denied the permission, but mouse
+            // events must not keep waiting for the synchronization
+            this.guacEventService.broadcast('clipboardSyncInProgress', { status: false });
+
         });
     };
 

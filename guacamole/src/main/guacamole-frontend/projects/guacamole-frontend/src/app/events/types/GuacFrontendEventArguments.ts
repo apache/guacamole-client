@@ -64,6 +64,7 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
 
     // Clipboard events
     guacClipboard: { data: ClipboardData };
+    clipboardSyncInProgress: { status: boolean };
 
     // Player events
     guacPlayerLoading: {};

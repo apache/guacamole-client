@@ -135,6 +135,11 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
     private touch!: Guacamole.Touch;
 
     /**
+     * Whether clipboard synchronization is currently in progress.
+     */
+    private clipboardSyncInProgress = false;
+
+    /**
      * The last known horizontal scroll position of the client view.
      */
     private lastScrollLeft?: number;
@@ -250,6 +255,13 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
             .subscribe(({ keysym }) => {
                 if (this.managedClient.clientProperties.focused)
                     this.guacamoleClient?.sendKeyEvent(0, keysym);
+            });
+
+        // Track clipboard synchronization status
+        this.guacEventService.on('clipboardSyncInProgress')
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(({ status }) => {
+                this.clipboardSyncInProgress = status;
             });
 
         this.main.addEventListener('dragenter', this.notifyDragStart.bind(this), false);
@@ -385,13 +397,45 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         event.stopPropagation();
         event.preventDefault();
 
-        // Send mouse state, show cursor if necessary
-        this.display.showCursor(!this.localCursor);
-        this.guacamoleClient.sendMouseState(event.state, true);
+        // Wait for any in-progress clipboard synchronization to complete.
+        // This avoids the pasting of outdated clipboard content when guacamole
+        // window regains focus.
+        this.waitForClipboardSync().then(() => {
 
-        // Broadcast the mouse event
-        this.guacEventService.broadcast(this.getMouseEventName(event), { event, client: this.managedClient });
+            // Send mouse state, show cursor if necessary
+            this.display!.showCursor(!this.localCursor);
+            this.guacamoleClient!.sendMouseState(event.state, true);
 
+            // Broadcast the mouse event
+            this.guacEventService.broadcast(this.getMouseEventName(event), { event, client: this.managedClient });
+
+        });
+
+    }
+
+    /**
+     * Returns a promise which resolves once any in-progress clipboard
+     * synchronization has completed.
+     *
+     * @returns
+     *     A promise which resolves once any in-progress clipboard
+     *     synchronization has completed.
+     */
+    private waitForClipboardSync(): Promise<void> {
+        return new Promise((resolve) => {
+            const checkClipboardSync = () => {
+                if (!this.clipboardSyncInProgress) {
+                    resolve();
+                    return;
+                }
+
+                // Synchronization can take 8-10ms, so check again shortly
+                // to not add slight latency in fast environments.
+                setTimeout(checkClipboardSync, 10);
+            };
+
+            checkClipboardSync();
+        });
     }
 
     /**

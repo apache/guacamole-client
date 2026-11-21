@@ -148,5 +148,48 @@ describe('ClipboardService', () => {
             expect(setClipboard).not.toHaveBeenCalled();
         });
 
+        it('should report the synchronization as in progress until the local clipboard has been stored', async () => {
+            stubClipboard({
+                readText: vi.fn().mockResolvedValue('local'),
+                writeText: vi.fn().mockResolvedValue(undefined)
+            });
+            const broadcast = vi.spyOn(guacEventService, 'broadcast');
+
+            service.resyncClipboard();
+            expect(broadcast.mock.calls).toEqual([['clipboardSyncInProgress', { status: true }]]);
+
+            await vi.waitFor(() => expect(broadcast).toHaveBeenCalledTimes(3));
+            expect(broadcast.mock.calls).toEqual([
+                ['clipboardSyncInProgress', { status: true }],
+                ['guacClipboard', { data: new ClipboardData({ type: 'text/plain', data: 'local' }) }],
+                ['clipboardSyncInProgress', { status: false }]
+            ]);
+        });
+
+        it('should end the synchronization if reading the local clipboard is rejected', async () => {
+            stubClipboard({ readText: vi.fn().mockRejectedValue(new DOMException('Read permission denied.', 'NotAllowedError')) });
+            const broadcast = vi.spyOn(guacEventService, 'broadcast');
+
+            service.resyncClipboard();
+
+            await vi.waitFor(() => expect(broadcast).toHaveBeenCalledTimes(2));
+            expect(broadcast.mock.calls).toEqual([
+                ['clipboardSyncInProgress', { status: true }],
+                ['clipboardSyncInProgress', { status: false }]
+            ]);
+        });
+
+        it('should end the synchronization if the Clipboard API is unavailable', async () => {
+            const broadcast = vi.spyOn(guacEventService, 'broadcast');
+
+            service.resyncClipboard();
+
+            await vi.waitFor(() => expect(broadcast).toHaveBeenCalledTimes(2));
+            expect(broadcast.mock.calls).toEqual([
+                ['clipboardSyncInProgress', { status: true }],
+                ['clipboardSyncInProgress', { status: false }]
+            ]);
+        });
+
     });
 });
