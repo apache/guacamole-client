@@ -101,7 +101,7 @@ export class PreferenceService {
             this.preferences = { ...this.preferences, ...storedPreferences };
 
         // Persist settings when window is unloaded
-        window.addEventListener('unload', this.save);
+        window.addEventListener('unload', () => this.save());
 
 
         // Persist settings upon navigation

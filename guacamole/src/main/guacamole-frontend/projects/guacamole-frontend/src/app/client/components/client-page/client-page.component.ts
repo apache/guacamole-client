@@ -461,12 +461,13 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
     /**
      * Reloads the client group when the identifier of the group changes
-     * without the route being reloaded.
+     * without the route being reloaded. The first value of the identifier is
+     * not a change of the route: ngOnInit() has already parsed it.
      */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Re-initialize the client group if the group id has changed without reloading the route
-        if (changes['groupId'])
+        if (changes['groupId'] && !changes['groupId'].firstChange)
             this.reparseRoute();
 
     }

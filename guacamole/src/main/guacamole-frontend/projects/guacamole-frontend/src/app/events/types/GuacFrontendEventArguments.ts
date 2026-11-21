@@ -29,7 +29,7 @@ import { Error } from '../../rest/types/Error';
 export interface GuacFrontendEventArguments extends GuacEventArguments {
 
     // Global events
-    guacFatalPageError: { error: any };
+    guacFatalPageError: { error: Error };
 
     // Auth events
     guacLogin: { authToken: string; };

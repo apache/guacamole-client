@@ -19,8 +19,10 @@
 
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { catchError, throwError } from 'rxjs';
+import { GuacEventService } from 'guacamole-frontend-lib';
+import { catchError, firstValueFrom, of, throwError } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
+import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { getTestScheduler } from '../../util/test-helper';
 import { Error } from '../types/Error';
 import { RequestService } from './request.service';
@@ -67,6 +69,32 @@ describe('RequestService', () => {
                 expectObservable(observable).toBe('#', undefined, otherError);
 
             });
+        });
+    });
+
+    describe('DIE and PROMISE_DIE', () => {
+        let guacEventService: GuacEventService<GuacFrontendEventArguments>;
+
+        beforeEach(() => {
+            guacEventService = TestBed.inject(GuacEventService<GuacFrontendEventArguments>);
+        });
+
+        it('should pass the REST Error to subscribers of guacFatalPageError when DIE handles it', async () => {
+            const restError = new Error({ type: Type.INTERNAL_ERROR, message: 'Failure' });
+            const fatalPageError = firstValueFrom(guacEventService.on('guacFatalPageError'));
+
+            await firstValueFrom(throwError(() => restError).pipe(catchError(service.DIE)));
+
+            expect((await fatalPageError).error).toBe(restError);
+        });
+
+        it('should pass the REST Error to subscribers of guacFatalPageError when PROMISE_DIE handles it', async () => {
+            const restError = new Error({ type: Type.INTERNAL_ERROR, message: 'Failure' });
+            const fatalPageError = firstValueFrom(guacEventService.on('guacFatalPageError'));
+
+            service.PROMISE_DIE(restError);
+
+            expect((await fatalPageError).error).toBe(restError);
         });
     });
 });

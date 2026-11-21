@@ -70,7 +70,15 @@ describe('ClientPageComponent', () => {
      */
     let keyboard: Guacamole.Keyboard;
 
+    /**
+     * Stub of ClipboardService.resyncClipboard(), which reparseRoute() calls
+     * once per run.
+     */
+    let resyncClipboard: ReturnType<typeof vi.fn>;
+
     beforeEach(() => {
+        resyncClipboard = vi.fn();
+
         TestBed.configureTestingModule({
             declarations: [ClientPageComponent],
             providers: [
@@ -83,7 +91,7 @@ describe('ClientPageComponent', () => {
                     provide: GuacClientManagerService,
                     useValue: { getManagedClientGroup: () => new ManagedClientGroup() }
                 },
-                { provide: ClipboardService, useValue: { resyncClipboard: () => undefined } }
+                { provide: ClipboardService, useValue: { resyncClipboard } }
             ]
         });
 
@@ -101,6 +109,17 @@ describe('ClientPageComponent', () => {
 
     afterEach(() => {
         fixture.destroy();
+    });
+
+    it('should reparse the route once when the page is opened', () => {
+        expect(resyncClipboard).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reparse the route again when the group id changes without a new route', () => {
+        fixture.componentRef.setInput('id', 'c2lnbmFs.c2lnbmFs2');
+        fixture.detectChanges();
+
+        expect(resyncClipboard).toHaveBeenCalledTimes(2);
     });
 
     it.each(ALT_KEYSYMS)('should open the menu when Ctrl, Shift and %s are pressed', (name, altKeysym) => {

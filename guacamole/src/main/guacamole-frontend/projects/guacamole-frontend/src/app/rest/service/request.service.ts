@@ -180,14 +180,14 @@ export class RequestService {
      *
      * @constant
      */
-    readonly DIE: (error: any) => Observable<any> = this.createErrorCallback((error: any): Observable<any> => {
-        this.guacEventService.broadcast('guacFatalPageError', error);
+    readonly DIE: (error: any) => Observable<any> = this.createErrorCallback((error: Error): Observable<any> => {
+        this.guacEventService.broadcast('guacFatalPageError', { error });
         this.log.error(error.type, error.message || error.translatableMessage);
         return of(void (0));
     });
 
-    readonly PROMISE_DIE: ((reason: any) => (PromiseLike<never>) | null | undefined) = this.createPromiseErrorCallback((error: any) => {
-        this.guacEventService.broadcast('guacFatalPageError', error);
+    readonly PROMISE_DIE: ((reason: any) => (PromiseLike<never>) | null | undefined) = this.createPromiseErrorCallback((error: Error) => {
+        this.guacEventService.broadcast('guacFatalPageError', { error });
         this.log.error(error.type, error.message || error.translatableMessage);
     });
 
