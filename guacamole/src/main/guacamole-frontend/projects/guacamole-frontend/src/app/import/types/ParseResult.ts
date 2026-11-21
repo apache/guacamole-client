@@ -17,27 +17,28 @@
  * under the License.
  */
 
-import { Connection } from '../../rest/types/Connection';
-import { DirectoryPatch } from '../../rest/types/DirectoryPatch';
+import { ImportConnection } from './ImportConnection';
 import { ParseError } from './ParseError';
 
 /**
- * The result of parsing a connection import file - containing a list of
- * API patches ready to be submitted to the PATCH REST API for batch
- * connection creation/replacement, a set of users and user groups to grant
- * access to each connection, a group path for every connection, and any
- * errors that may have occurred while parsing each connection.
+ * The result of parsing a connection import file: parsed connection entries
+ * (ImportConnection objects that the import component turns into REST
+ * patches), maps of users and user groups to grant access (keyed by patch
+ * index), a group path per connection index, per-connection parse errors,
+ * and aggregate flags.
  */
 export class ParseResult {
 
     /**
-     * An array of patches, ready to be submitted to the PATCH REST API for
-     * batch connection creation / replacement. Note that this array may
-     * contain more patches than connections from the original file - in the
-     * case that connections are being fully replaced, there will be a
-     * remove and a create patch for each replaced connection.
+     * An array of all connection data successfully parsed from the user-provided
+     * import file. Each entry is an ImportConnection object that has been
+     * processed by the field and tree transformers, but has not yet been
+     * converted into a DirectoryPatch.
+     * These objects act as the "blueprints" used by the import component to
+     * determine which groups need to be created before the final
+     * connection import occurs.
      */
-    patches: DirectoryPatch<Connection>[];
+    connectionObjects: ImportConnection[];
 
     /**
      * An object whose keys are the user identifiers of users specified
@@ -49,8 +50,8 @@ export class ParseResult {
 
     /**
      * An object whose keys are the user group identifiers of every user
-     * group specified in the batch import. i.e. a set of all user group
-     * identifiers.
+     * group specified in the batch import, and whose values are arrays of
+     * connection indices (within the patch array) to grant that group access.
      */
     groups: Record<string, number[]>;
 
@@ -77,9 +78,10 @@ export class ParseResult {
     hasErrors: boolean;
 
     /**
-     * The integer number of unique connections present in the parse result.
-     * This may be less than the length of the patches array, if any REMOVE
-     * patches are present.
+     * The number of connections in this parse result (equal to
+     * connectionObjects.length). The number of DirectoryPatch operations
+     * built from this result may be larger when some connections are
+     * replaced with permissions reset (REMOVE and ADD per such row).
      */
     connectionCount: number;
 
@@ -88,7 +90,7 @@ export class ParseResult {
      */
     constructor(template: Partial<ParseResult> = {}) {
 
-        this.patches = template.patches || [];
+        this.connectionObjects = template.connectionObjects || [];
         this.users = template.users || {};
         this.groups = template.groups || {};
         this.groupPaths = template.groupPaths || {};

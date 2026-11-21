@@ -22,10 +22,13 @@ import { Router } from '@angular/router';
 import _ from 'lodash';
 import { firstValueFrom } from 'rxjs';
 import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
+import { ConnectionGroupService } from '../../../rest/service/connection-group.service';
 import { ConnectionService } from '../../../rest/service/connection.service';
 import { PermissionService } from '../../../rest/service/permission.service';
 import { UserGroupService } from '../../../rest/service/user-group.service';
 import { UserService } from '../../../rest/service/user.service';
+import { Connection } from '../../../rest/types/Connection';
+import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 import { DirectoryPatch } from '../../../rest/types/DirectoryPatch';
 import { DirectoryPatchResponse } from '../../../rest/types/DirectoryPatchResponse';
 import { Error } from '../../../rest/types/Error';
@@ -35,6 +38,7 @@ import { UserGroup } from '../../../rest/types/UserGroup';
 import { ConnectionCSVService } from '../../services/connection-csv.service';
 import { ConnectionParseService } from '../../services/connection-parse.service';
 import { ConnectionImportConfig } from '../../types/ConnectionImportConfig';
+import { ImportConnection } from '../../types/ImportConnection';
 import { ParseError } from '../../types/ParseError';
 import { ParseResult } from '../../types/ParseResult';
 import Operation = DirectoryPatch.Operation;
@@ -134,6 +138,12 @@ export class ImportConnectionsComponent {
     patchFailure: Error | null = null;
 
     /**
+     * The DirectoryPatch list last sent to patchConnections, kept so
+     * connection-import-errors can map API failures back to file rows.
+     */
+    patches: DirectoryPatch<Connection>[] | null = null;
+
+    /**
      * True if the file is fully uploaded and ready to be processed, or false
      * otherwise.
      */
@@ -183,6 +193,7 @@ export class ImportConnectionsComponent {
                 private userGroupService: UserGroupService,
                 private permissionService: PermissionService,
                 private connectionService: ConnectionService,
+                private connectionGroupService: ConnectionGroupService,
                 private guacNotification: GuacNotificationService,
                 private connectionParseService: ConnectionParseService,
                 private router: Router) {
@@ -201,6 +212,7 @@ export class ImportConnectionsComponent {
         this.fileReader = null;
         this.parseResult = null;
         this.patchFailure = null;
+        this.patches = null;
         this.fileName = null;
 
     }
@@ -343,11 +355,205 @@ export class ImportConnectionsComponent {
     }
 
     /**
+     * When `importConfig.createMissingGroups` is true, loads the
+     * connection group tree for the data source, creates any group path
+     * segments from the import file that do not yet exist (sequentially, so
+     * parents exist before children), and sets `parentIdentifier` on each
+     * connection object that still needs it from the resolved `group` path.
+     * When the option is false, resolves immediately without modifying
+     * `parseResult`.
+     *
+     * Nothing is returned from the resolved promise; connection objects on
+     * `parseResult` are updated in place for use when building patches.
+     *
+     * Each group is created with a separate REST call and is committed
+     * immediately. If creation fails partway through, the import is aborted
+     * but any groups already created remain. They are not rolled back.
+     * Re-importing is safe: the group tree is reloaded and existing paths
+     * are skipped.
+     *
+     * After creation, any connection whose group path still cannot be resolved
+     * is marked with IMPORT.ERROR_INVALID_GROUP and parseResult.hasErrors is
+     * set; the import is aborted rather than placing the connection under ROOT.
+     *
+     * @param dataSource
+     *     The data source in which groups should exist.
+     *
+     * @param parseResult
+     *     Parsed import data; connection objects may be updated in place.
+     *
+     * @returns
+     *     A promise that resolves with no value when finished, or rejects if
+     *     the group tree cannot be loaded or a group cannot be saved.
+     */
+    private ensureConnectionGroups(dataSource: string, parseResult: ParseResult): Promise<void> {
+
+        if (!this.importConfig.createMissingGroups)
+            return Promise.resolve();
+
+        return firstValueFrom(this.connectionGroupService.getConnectionGroupTree(dataSource)).then(rootGroup => {
+
+            const identifierByPath: Record<string, string> = {};
+            const flatten = (group: ConnectionGroup, prefix = '') => {
+                // The first node is always "ROOT"
+                const currentPath = prefix ? (prefix + '/' + group.name) : 'ROOT';
+
+                // Map the path string to the REAL system identifier
+                if (group.identifier) {
+                    identifierByPath[currentPath] = group.identifier;
+                }
+
+                if (group.childConnectionGroups) {
+                    group.childConnectionGroups.forEach(c => flatten(c, currentPath));
+                }
+            };
+
+            flatten(rootGroup);
+
+            let sequence: Promise<void> = Promise.resolve();
+
+            // Iterate through connections
+            _.forEach(parseResult.connectionObjects, (connectionObject) => {
+                const fullPath = connectionObject.group; // e.g., "ROOT/Folder/Subfolder"
+                if (!fullPath) return;
+
+                const segments = fullPath.split('/');
+                let currentPath = 'ROOT';
+
+                segments.forEach(segment => {
+                    // Ignore empty segments and the literal "ROOT" segment in the path string
+                    if (!segment || segment === 'ROOT') return;
+
+                    const parentPath = currentPath;
+                    const nextPath = parentPath + '/' + segment;
+                    currentPath = nextPath;
+
+                    sequence = sequence.then(() => {
+                        // If this absolute path already exists, skip creation
+                        if (identifierByPath[nextPath]) return;
+
+                        // Create the new group under the parent's REAL identifier
+                        const newGroup = new ConnectionGroup({
+                            name: segment,
+                            parentIdentifier: identifierByPath[parentPath],
+                            activeConnections: 0
+                        });
+
+                        return firstValueFrom(this.connectionGroupService.saveConnectionGroup(dataSource, newGroup))
+                            .then(() => {
+                                identifierByPath[nextPath] = newGroup.identifier!;
+                            });
+                    });
+                });
+            });
+
+            return sequence.then(() => {
+                parseResult.connectionObjects.forEach((connectionObject, index) => {
+                    if (connectionObject.parentIdentifier)
+                        return;
+
+                    const resolvedParentIdentifier =
+                        identifierByPath[connectionObject.group];
+
+                    // Do not fall back to ROOT: an unresolved path after group
+                    // creation indicates a mismatch and would silently misplace
+                    // the connection. Treat it like a parse-time invalid group.
+                    if (resolvedParentIdentifier)
+                        connectionObject.parentIdentifier = resolvedParentIdentifier;
+                    else {
+                        connectionObject.errors.push(new ParseError({
+                            message  : 'No group matching: ' + connectionObject.group,
+                            key      : 'IMPORT.ERROR_INVALID_GROUP',
+                            variables: { GROUP: connectionObject.group }
+                        }));
+                        parseResult.errors[index] = connectionObject.errors;
+                        parseResult.hasErrors = true;
+                    }
+                });
+            });
+        });
+    }
+
+    /**
+     * Converts the parsed connection data into a set of administrative
+     * patches. Each patch represents an atomic operation to create or
+     * update a connection, including its attributes, parameters, and
+     * its placement within the connection group hierarchy.
+     *
+     * @param importConfig
+     *     The configuration object defining how the import should be
+     *     processed and which fields should be prioritized.
+     *
+     * @param parseResult
+     *     The result of parsing the user-supplied import file, used as
+     *     the source data for the generated patches.
+     *
+     * @returns
+     *     Patches to apply via the connection directory PATCH API.
+     */
+    private createConnectionPatches(importConfig: ConnectionImportConfig,
+                                    parseResult: ParseResult): DirectoryPatch<Connection>[] {
+
+        const patches: DirectoryPatch<Connection>[] = [];
+
+        parseResult.connectionObjects.forEach(connectionObject => {
+
+            // The value for the patch is a full-fledged Connection
+            const value = new Connection(connectionObject);
+
+            // If a new connection is being created
+            if (connectionObject.importMode
+                === ImportConnection.ImportMode.CREATE)
+
+                // Add a patch for creating the connection
+                patches.push(new DirectoryPatch({
+                    op  : DirectoryPatch.Operation.ADD,
+                    path: '/',
+                    value
+                }));
+
+                // The connection is being replaced, and permissions are only being
+            // added, not replaced
+            else if (importConfig.existingPermissionMode ===
+                ConnectionImportConfig.ExistingPermissionMode.PRESERVE)
+
+                // Add a patch for replacing the connection
+                patches.push(new DirectoryPatch({
+                    op  : DirectoryPatch.Operation.REPLACE,
+                    path: '/' + connectionObject.identifier,
+                    value
+                }));
+
+                // The connection is being replaced, and permissions are also being
+            // replaced
+            else {
+
+                // Add a patch for removing the existing connection
+                patches.push(new DirectoryPatch({
+                    op  : DirectoryPatch.Operation.REMOVE,
+                    path: '/' + connectionObject.identifier
+                }));
+
+                // Add a second patch for creating the replacement connection
+                patches.push(new DirectoryPatch({
+                    op  : DirectoryPatch.Operation.ADD,
+                    path: '/',
+                    value
+                }));
+
+            }
+        });
+        return patches;
+    }
+
+    /**
      * Process a successfully parsed import file, creating any specified
      * connections, creating and granting permissions to any specified users
      * and user groups. If successful, the user will be shown a success message.
-     * If not, any errors will be displayed and any already-created entities
-     * will be rolled back.
+     * If not, errors are displayed. A failed connection PATCH is atomic (no
+     * connection changes from that request are applied), but connection groups
+     * created earlier and any users, groups, or permissions created in later
+     * steps are not rolled back.
      *
      * @param parseResult
      *     The result of parsing the user-supplied import file.
@@ -363,57 +569,73 @@ export class ImportConnectionsComponent {
         if (parseResult.hasErrors)
             return;
 
-        // First, attempt to create the connections
-        firstValueFrom(this.connectionService.patchConnections(this.dataSource, parseResult.patches))
-            .then(connectionResponse =>
+        const dataSource = this.dataSource;
 
-                // If connection creation is successful, create users and groups
-                this.createUsersAndGroups(parseResult).then(() =>
+        this.patches = null;
+        this.patchFailure = null;
+        this.processing = true;
 
-                    // Grant any new permissions to users and groups. NOTE: Any
-                    // existing permissions for updated connections will NOT be
-                    // removed - only new permissions will be added.
-                    this.grantConnectionPermissions(parseResult, connectionResponse)
-                        .then(() => {
+        // 1. Create missing groups (updates parentIdentifier on connection objects)
+        this.ensureConnectionGroups(dataSource, parseResult)
+            .then(() => {
 
-                            this.processing = false;
+                // Abort if any connection's group path could not be resolved
+                if (parseResult.hasErrors) {
+                    this.processing = false;
+                    return;
+                }
 
-                            // Display a success message if everything worked
-                            this.guacNotification.showStatus({
-                                className: 'success',
-                                title    : 'IMPORT.DIALOG_HEADER_SUCCESS',
-                                text     : {
-                                    key      : 'IMPORT.INFO_CONNECTIONS_IMPORTED_SUCCESS',
-                                    variables: { NUMBER: parseResult.connectionCount }
-                                },
+                // 2. Build patches from connection objects (includes resolved parent IDs)
+                const patches = this.createConnectionPatches(this.importConfig,
+                    parseResult);
+                this.patches = patches;
 
-                                // Add a button to acknowledge and redirect to
-                                // the connection listing page
-                                actions: [{
-                                    name    : 'IMPORT.ACTION_ACKNOWLEDGE',
-                                    callback: () => {
+                // 3. Import the connections
+                return firstValueFrom(this.connectionService.patchConnections(dataSource, patches))
+                    .then(connectionResponse => {
 
-                                        // Close the notification
-                                        this.guacNotification.showStatus(false);
+                        // 4. Create Users/Groups and Grant Permissions
+                        return this.createUsersAndGroups(parseResult).then(() => {
 
-                                        // Redirect to connection list page
-                                        this.router.navigate(['/settings', this.dataSource, 'connections']);
-                                    }
-                                }]
+                            // 5. Grant permissions
+                            return this.grantConnectionPermissions(parseResult, connectionResponse)
+                                .then(() => {
+
+                                    this.processing = false;
+                                    this.guacNotification.showStatus({
+                                        className: 'success',
+                                        title    : 'IMPORT.DIALOG_HEADER_SUCCESS',
+                                        text     : {
+                                            key      : 'IMPORT.INFO_CONNECTIONS_IMPORTED_SUCCESS',
+                                            variables: { NUMBER: parseResult.connectionCount }
+                                        },
+                                        actions: [{
+                                            name    : 'IMPORT.ACTION_ACKNOWLEDGE',
+                                            callback: () => {
+                                                this.guacNotification.showStatus(false);
+                                                this.router.navigate(['/settings', dataSource, 'connections']);
+                                            }
+                                        }]
+                                    });
+                                });
+                        })
+                            // If an error occurs while trying to create users or groups,
+                            // display the error to the user.
+                            .catch(error => {
+                                this.processing = false;
+                                this.handleError(error);
                             });
-                        }))
-
-                    // If an error occurs while trying to create users or groups,
-                    // display the error to the user.
-                    .catch(this.handleError)
-            )
-
-            // If an error occurred when the call to create the connections was made,
-            // skip any further processing - the user will have a chance to fix the
-            // problems and try again
+                    });
+            })
+            // Use handleError if errors before patches exist (e.g. group tree load/save),
+            // because they cannot be shown in the per-connection table. Otherwise, keep
+            // parse state and surface API errors in the table via patchFailure.
             .catch(patchFailure => {
                 this.processing = false;
-                this.patchFailure = patchFailure;
+                if (this.patches == null)
+                    this.handleError(patchFailure);
+                else
+                    this.patchFailure = patchFailure;
             });
     };
 
@@ -424,6 +646,11 @@ export class ImportConnectionsComponent {
      *     The error to display.
      */
     private handleError = (error: ParseError | Error): void => {
+
+        // Log unexpected failures for debugging. ParseErrors are expected
+        // user-facing validation issues and are not logged here.
+        if (!(error instanceof ParseError))
+            console.error('Connection import failed:', error);
 
         // Any error indicates that processing of the file has failed, so clear
         // all upload state to allow for a fresh retry
@@ -501,8 +728,8 @@ export class ImportConnectionsComponent {
         // Data processing has begun
         this.processing = true;
 
-        // The function that will process all the raw data and return a list of
-        // patches to be submitted to the API
+        // The parse function for this file type; resolves with a ParseResult
+        // (connection objects and related metadata).
         let processDataCallback;
 
         // Choose the appropriate parse function based on the mimetype

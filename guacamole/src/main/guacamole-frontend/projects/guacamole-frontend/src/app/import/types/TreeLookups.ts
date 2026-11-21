@@ -24,17 +24,16 @@
 export class TreeLookups {
 
     /**
-     * A map of all known group paths to the corresponding identifier for
-     * that group. The is that a user-provided import file might directly
-     * specify a named group path like "ROOT", "ROOT/parent", or
-     * "ROOT/parent/child". This field field will map all of the above to
-     * the identifier of the appropriate group, if defined.
+     * A map of group identifier to the path of that group, keyed by
+     * identifier. Paths are of the form "ROOT", "ROOT/parent", or
+     * "ROOT/parent/child".
      */
     groupPathsByIdentifier: Record<string, string>;
 
     /**
-     * A map of all known group identifiers to the path of the corresponding
-     * group. These paths are all of the form "ROOT/parent/child".
+     * A map of group path to the identifier of that group, keyed by path.
+     * Used when the import file specifies a group path rather than a
+     * parentIdentifier.
      */
     groupIdentifiersByPath: Record<string, string>;
 

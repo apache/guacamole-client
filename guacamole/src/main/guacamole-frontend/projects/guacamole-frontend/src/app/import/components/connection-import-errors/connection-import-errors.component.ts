@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, DoCheck, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import _ from 'lodash';
 import { firstValueFrom, of } from 'rxjs';
@@ -26,6 +26,7 @@ import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pag
 import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
 import { DataSource } from '../../../list/types/DataSource';
 import { SortOrder } from '../../../list/types/SortOrder';
+import { Connection } from '../../../rest/types/Connection';
 import { DirectoryPatch } from '../../../rest/types/DirectoryPatch';
 import { Error } from '../../../rest/types/Error';
 import { TranslatableMessage } from '../../../rest/types/TranslatableMessage';
@@ -45,7 +46,7 @@ import { ParseResult } from '../../types/ParseResult';
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
-export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
+export class ConnectionImportErrorsComponent implements OnInit, OnChanges, DoCheck {
 
     /**
      * The result of parsing the import file. Any errors in this file
@@ -61,6 +62,24 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
      * ignored.
      */
     @Input() patchFailure: Error | null = null;
+
+    /**
+     * The DirectoryPatch list sent to patchConnections. It is used to
+     * map API errors back to import file rows.
+     */
+    @Input() patches: DirectoryPatch<Connection>[] | null = null;
+
+    /**
+     * The parse result as of the last change detection run, used to detect
+     * a new parse result.
+     */
+    private lastParseResult?: ParseResult | null;
+
+    /**
+     * Whether the parse result had errors as of the last change detection
+     * run, used to detect errors that are added to the same parse result.
+     */
+    private lastParseResultHasErrors?: boolean;
 
     /**
      * Reference to the instance of the filter component.
@@ -135,10 +154,13 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
 
     /**
      * Generate a ImportConnectionError representing any errors associated
-     * with the row at the given index within the given parse result.
+     * with the row at the given index within the given patch result.
      *
      * @param parseResult
      *     The result of parsing the connection import file.
+     *
+     * @param patches
+     *     The patches sent to the API for the given parse result.
      *
      * @param index
      *     The current row within the patches array, 0-indexed.
@@ -152,13 +174,14 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
      *     The connection error object associated with the given row in the
      *     given parse result.
      */
-    private generateConnectionError = (parseResult: ParseResult, index: number, row: number): ImportConnectionError => {
+    private generatePatchConnectionError = (parseResult: ParseResult, patches: DirectoryPatch<Connection>[],
+                                            index: number, row: number): ImportConnectionError => {
 
         // Get the patch associated with the current row
-        const patch = parseResult.patches[index];
+        const patch = patches[index];
 
         // The value of a patch is just the Connection object
-        const connection = patch.value!;
+        const connectionObject = patch.value!;
 
         return new ImportConnectionError({
 
@@ -166,30 +189,43 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
             rowNumber: row + 1,
 
             // Basic connection information - name, group, and protocol.
-            name    : connection.name!,
+            name    : connectionObject.name!,
             group   : parseResult.groupPaths[index],
-            protocol: connection.protocol,
+            protocol: connectionObject.protocol,
 
             // The human-readable error messages
-            // The human-readable error messages
-            errors: new DisplayErrorList(
-                [...(parseResult.errors[index] || [])])
+            errors: new DisplayErrorList([])
         });
     };
 
     ngOnChanges(changes: SimpleChanges): void {
 
-        if (changes['parseResult']) {
-
-            const parseResult: ParseResult | null = changes['parseResult'].currentValue;
-            this.parseResultChanged(parseResult);
-
-        }
-
         if (changes['patchFailure']) {
             const patchFailure: Error | null = changes['patchFailure'].currentValue;
             this.patchFailureChanged(patchFailure);
         }
+    }
+
+    /**
+     * Custom change detection logic for the component.
+     */
+    ngDoCheck(): void {
+
+        // If a new parse result with errors is seen, update the display list.
+        // Watch hasErrors as well: it may be set after parseResult is assigned
+        // (e.g. when ensureConnectionGroups fails to resolve a group path).
+        const parseResult = this.parseResult;
+        const hasErrors = parseResult?.hasErrors;
+
+        if (parseResult !== this.lastParseResult || hasErrors !== this.lastParseResultHasErrors) {
+
+            this.lastParseResult = parseResult;
+            this.lastParseResultHasErrors = hasErrors;
+
+            this.parseResultChanged(parseResult);
+
+        }
+
     }
 
     /**
@@ -200,8 +236,10 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
      */
     private patchFailureChanged(patchFailure: Error | null): void {
 
+        const { parseResult, patches } = this;
+
         // Do not attempt to process anything before the data has loaded
-        if (!patchFailure || !this.parseResult)
+        if (!patchFailure || !parseResult || !patches)
             return;
 
         // All promises from all translation requests. The scope will not be
@@ -223,7 +261,7 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
 
         // Set up the list of connection errors based on the existing parse
         // result, with error messages fetched from the patch failure
-        const connectionErrors = this.parseResult.patches.reduce(
+        const connectionErrors = patches.reduce(
             (errors: ImportConnectionError[], patch, index) => {
 
                 // Do not process display REMOVE patches - they are always
@@ -244,8 +282,8 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
                 }
 
                 // Generate a connection error for display
-                const connectionError = this.generateConnectionError(
-                    this.parseResult!, index, row++);
+                const connectionError = this.generatePatchConnectionError(
+                    parseResult, patches, index, row++);
 
                 // Add the error associated with the previous REMOVE patch, if
                 // any, to the error associated with the current patch, if any
@@ -281,6 +319,45 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
     }
 
     /**
+     * Generate a ImportConnectionError representing any errors associated
+     * with the row at the given index within the given parse result.
+     *
+     * @param parseResult
+     *     The result of parsing the connection import file.
+     *
+     * @param index
+     *     The current row within the patches array, 0-indexed.
+     *
+     * @param row
+     *     The current row within the original connection, 0-indexed.
+     *     If any REMOVE patches are present, this may be greater than
+     *     the index.
+     *
+     * @returns
+     *     The connection error object associated with the given row in the
+     *     given parse result.
+     */
+    private generateParseConnectionError = (parseResult: ParseResult, index: number, row: number): ImportConnectionError => {
+
+        // Get the connection details
+        const connectionObject = parseResult.connectionObjects[index];
+
+        return new ImportConnectionError({
+
+            // Physical position in the file
+            rowNumber: row + 1,
+
+            // Basic connection information - name, group, and protocol.
+            name    : connectionObject.name,
+            group   : connectionObject.group,
+            protocol: connectionObject.protocol,
+
+            // Pull parse-time errors from the ImportConnection object
+            errors: new DisplayErrorList([...(connectionObject.errors || [])])
+        });
+    };
+
+    /**
      * If a new parse result with errors is seen, update the display list.
      *
      * @param parseResult
@@ -301,34 +378,22 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
         // entirely - if set, they will be from the previous file and no
         // longer relevant.
 
-        // The row number for display. Unlike the index, this number will
-        // skip any REMOVE patches. In other words, this is the index of
-        // connections within the original import file.
-        let row = 0;
-
         // Set up the list of connection errors based on the updated parse
-        // result
-        const connectionErrors = parseResult.patches.reduce(
-            (errors: ImportConnectionError[], patch, index) => {
+        // result using connectionObjects.
+        const connectionErrors = parseResult.connectionObjects.map(
+            (connectionObject, index) => {
 
-                // Do not process display REMOVE patches - they are always
-                // followed by ADD patches containing the actual content
-                // (and errors, if any)
-                if (patch.op === DirectoryPatch.Operation.REMOVE)
-                    return errors;
+                // Generate a connection error for display.
+                // In this new architecture, index and row are identical.
+                const connectionError = this.generateParseConnectionError(
+                    parseResult, index, index);
 
-                // Generate a connection error for display
-                const connectionError = this.generateConnectionError(
-                    parseResult, index, row++);
-
-                // Go through the errors and check if any are translateable
+                // Go through the errors and check if any are translateable.
+                // We access the underlying array from the DisplayErrorList.
                 connectionError.errors.getArray().forEach(
                     (error: any, errorIndex) => {
 
                         // If this error is a ParseError, it can be translated.
-                        // NOTE: Generally one would translate error messages in the
-                        // template, but in this case, the connection errors need to
-                        // be raw strings in order to enable sorting and filtering.
                         if (error instanceof ParseError)
 
                             // Fetch the translation and update it when it's ready
@@ -346,10 +411,8 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
 
                     });
 
-                errors.push(connectionError);
-                return errors;
-
-            }, []);
+                return connectionError;
+            });
 
         // Once all the translations have been completed, update the
         // connectionErrors all in one go, to ensure no excessive reloading

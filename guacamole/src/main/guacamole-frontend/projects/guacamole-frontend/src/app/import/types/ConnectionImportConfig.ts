@@ -36,6 +36,13 @@ export class ConnectionImportConfig {
     existingPermissionMode: ConnectionImportConfig.ExistingPermissionMode;
 
     /**
+     * Whether to create connection groups referenced by the import file when
+     * they do not already exist. When false, unknown group paths are treated
+     * as parse errors (unless a valid parentIdentifier is set).
+     */
+    createMissingGroups: boolean;
+
+    /**
      * Creates a new ConnectionImportConfig.
      *
      * @param [template={}]
@@ -49,6 +56,8 @@ export class ConnectionImportConfig {
 
         this.existingPermissionMode = template.existingPermissionMode
             || ConnectionImportConfig.ExistingPermissionMode.PRESERVE;
+
+        this.createMissingGroups = template.createMissingGroups === true;
 
     }
 

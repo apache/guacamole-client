@@ -83,6 +83,14 @@
                     </label>
                     <span [attr.title]="'IMPORT.HELP_EXISTING_PERMISSION_MODE' | transloco" class="help"></span>
                 </li>
+                <li>
+                    <input type="checkbox"
+                           id="create-missing-groups" [(ngModel)]="importConfig.createMissingGroups"/>
+                    <label for="create-missing-groups">
+                        {{ 'IMPORT.FIELD_HEADER_CREATE_MISSING_GROUPS' | transloco }}
+                    </label>
+                    <span [attr.title]="'IMPORT.HELP_CREATE_MISSING_GROUPS' | transloco" class="help"></span>
+                </li>
             </ul>
 
         </div>
@@ -103,7 +111,7 @@
 
     <!-- Connection specific errors, if there are any -->
     @if (hasErrors()) {
-        <connection-import-errors [parseResult]="parseResult" [patchFailure]="patchFailure"/>
+        <connection-import-errors [parseResult]="parseResult" [patchFailure]="patchFailure" [patches]="patches"/>
     }
 
 
