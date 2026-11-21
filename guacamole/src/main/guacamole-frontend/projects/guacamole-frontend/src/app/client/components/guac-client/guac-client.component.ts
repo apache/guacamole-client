@@ -17,7 +17,6 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
 import {
     Component,
     DestroyRef,
@@ -29,7 +28,8 @@ import {
     OnInit,
     SimpleChanges,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    DOCUMENT
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';

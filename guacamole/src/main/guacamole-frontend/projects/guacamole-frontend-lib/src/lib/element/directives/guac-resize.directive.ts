@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { Directive, ElementRef, EventEmitter, Inject, Output } from '@angular/core';
+import { Directive, ElementRef, EventEmitter, Inject, Output, DOCUMENT } from '@angular/core';
 
 /**
  * A directive which calls a given callback when its associated element is

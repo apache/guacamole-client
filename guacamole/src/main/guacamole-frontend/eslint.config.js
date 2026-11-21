@@ -49,7 +49,9 @@ module.exports = tseslint.config(
                     style: 'kebab-case',
                 },
             ],
-            '@angular-eslint/prefer-standalone': 'off'
+            '@angular-eslint/prefer-standalone': 'off',
+            // Constructor injection is kept; moving to inject() is follow-up work
+            '@angular-eslint/prefer-inject': 'off'
         }
     },
     {

@@ -18,8 +18,7 @@
  */
 
 import { loadRemoteModule } from '@angular-architects/native-federation';
-import { DOCUMENT } from '@angular/common';
-import { ApplicationRef, EnvironmentInjector, Inject, Injectable, Injector, ViewContainerRef } from '@angular/core';
+import { ApplicationRef, EnvironmentInjector, Inject, Injectable, Injector, ViewContainerRef, DOCUMENT } from '@angular/core';
 import $ from 'jquery';
 import { PatchService } from '../../rest/service/patch.service';
 import { PatchOperation } from '../types/PatchOperation';

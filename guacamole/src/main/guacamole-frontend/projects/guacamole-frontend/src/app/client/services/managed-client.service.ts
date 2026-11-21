@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, DOCUMENT } from '@angular/core';
 
 import { GuacAudioService, GuacImageService, GuacVideoService, } from 'guacamole-frontend-lib';
 import _ from 'lodash';

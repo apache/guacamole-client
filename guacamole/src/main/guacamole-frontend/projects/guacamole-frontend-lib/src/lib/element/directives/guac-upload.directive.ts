@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { ChangeDetectorRef, Directive, ElementRef, Inject, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, Inject, Input, OnInit, DOCUMENT } from '@angular/core';
 
 /**
  * A directive which allows files to be uploaded. Clicking on the associated

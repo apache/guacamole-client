@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { DOCUMENT } from '@angular/common';
-import { Inject, Injectable } from '@angular/core';
+import { Inject, Injectable, DOCUMENT } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import Pickr from '@simonwep/pickr';
 import { forkJoin, take } from 'rxjs';

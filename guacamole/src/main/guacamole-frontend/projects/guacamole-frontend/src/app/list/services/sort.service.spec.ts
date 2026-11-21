@@ -29,7 +29,7 @@ describe('orderByPredicate', () => {
             providers: [SortService]
         });
 
-        service = TestBed.get(SortService);
+        service = TestBed.inject(SortService);
     });
 
 
