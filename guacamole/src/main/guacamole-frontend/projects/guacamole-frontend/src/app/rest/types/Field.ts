@@ -59,6 +59,13 @@ export class Field implements FormField {
     redirectUrl?: string;
 
     /**
+     * Conditionally overrides the label of this field with an alternate
+     * label based on the value of another field. If undefined, the label
+     * of this field is unconditional.
+     */
+    conditionalLabel?: Field.ConditionalLabel;
+
+    /**
      * Creates a new Field instance.
      *
      * @param template
@@ -74,6 +81,48 @@ export class Field implements FormField {
 }
 
 export namespace Field {
+
+    /**
+     * The definition of an alternate label for a field, used in place of the
+     * usual label of that field if the value of another field meets a
+     * condition. For example:
+     *
+     * <pre>
+     * {
+     *     "field"    : "exec-command",
+     *     "equals"   : "",
+     *     "labelKey" : "FIELD_HEADER_TERMINAL_TYPE_ATTACH"
+     * }
+     * </pre>
+     *
+     * Exactly one of equals or notEquals should be specified. If both are
+     * specified, equals takes precedence and notEquals is ignored.
+     */
+    export interface ConditionalLabel {
+
+        /**
+         * The name of the field to evaluate.
+         */
+        field: string;
+
+        /**
+         * The value the field must equal for the alternate label to be used.
+         */
+        equals?: unknown;
+
+        /**
+         * The value the field must not equal for the alternate label to be
+         * used.
+         */
+        notEquals?: unknown;
+
+        /**
+         * The label key to use if the condition matches, relative to the
+         * translation namespace of the field.
+         */
+        labelKey: string;
+
+    }
 
     /**
      * All valid field types.

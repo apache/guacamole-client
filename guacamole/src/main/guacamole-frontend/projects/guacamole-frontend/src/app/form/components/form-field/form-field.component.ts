@@ -23,6 +23,7 @@ import {
     Component,
     ComponentRef,
     ElementRef,
+    Input,
     OnChanges,
     SimpleChanges,
     ViewChild,
@@ -30,6 +31,7 @@ import {
     ViewEncapsulation,
     ChangeDetectionStrategy
 } from '@angular/core';
+import { FormGroup } from '@angular/forms';
 import { canonicalize } from '../../../locale/service/translation.service';
 import { LogService } from '../../../util/log.service';
 import { FormService } from '../../service/form.service';
@@ -69,6 +71,11 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
      */
     fieldComponent: ComponentRef<any> | undefined;
 
+    /**
+     * All current field values in the form, keyed by field name.
+     * Required to evaluate conditionalLabel conditions.
+     */
+    @Input() values?: FormGroup;
 
     /**
      * An ID value which is reasonably likely to be unique relative to
@@ -110,18 +117,13 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
     }
 
     /**
-     * Produces the translation string for the header of the current
-     * field. The translation string will be of the form:
-     *
-     * <code>NAMESPACE.FIELD_HEADER_NAME<code>
-     *
-     * where <code>NAMESPACE</code> is the namespace provided to the
-     * directive and <code>NAME</code> is the field name transformed
-     * via canonicalize().
+     * Returns the translation key for this field's label, of the form
+     * NAMESPACE.FIELD_HEADER_NAME. If the field defines a
+     * conditionalLabel and its condition is met, returns the alternate
+     * key instead.
      *
      * @returns
-     *     The translation string which produces the translated header
-     *     of the field.
+     *     The translation key for this field's label.
      */
     getFieldHeader(): string {
 
@@ -129,8 +131,34 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
         if (!this.field || !this.field.name)
             return '';
 
-        return canonicalize(this.namespace || 'MISSING_NAMESPACE')
-            + '.FIELD_HEADER_' + canonicalize(this.field.name);
+        const ns = canonicalize(this.namespace || 'MISSING_NAMESPACE');
+
+        const conditionalLabel = this.field.conditionalLabel;
+        if (conditionalLabel && conditionalLabel.labelKey && this.values) {
+
+            let depValue: unknown = this.values.get(conditionalLabel.field)?.value;
+            if (depValue == null)
+                depValue = '';
+
+            // equals and notEquals are mutually exclusive; equals wins if both are set
+            const hasEquals    = 'equals'    in conditionalLabel;
+            const hasNotEquals = 'notEquals' in conditionalLabel;
+            let conditionMet: boolean;
+            if (hasEquals)
+                conditionMet = depValue === conditionalLabel.equals;
+            else if (hasNotEquals)
+                conditionMet = depValue !== conditionalLabel.notEquals;
+            else {
+                this.log.warn('conditionalLabel for field "' + this.field.name
+                    + '" specifies neither "equals" nor "notEquals"; ignoring.');
+                conditionMet = false;
+            }
+
+            if (conditionMet)
+                return ns + '.' + conditionalLabel.labelKey;
+        }
+
+        return ns + '.FIELD_HEADER_' + canonicalize(this.field.name);
 
     }
 
