@@ -92,6 +92,39 @@ describe('TextInputComponent', () => {
         target.dispatchEvent(new Event('input'));
     }
 
+    /**
+     * Broadcasts the given key event as AppComponent does before passing a
+     * key of the local keyboard to the remote desktop.
+     *
+     * @param eventName
+     *     The name of the event, for a key press or a key release.
+     *
+     * @param keysym
+     *     The X11 keysym of the key.
+     *
+     * @returns
+     *     true if a listener prevented the key from reaching the remote
+     *     desktop, false otherwise.
+     */
+    function isKeyBlocked(eventName: 'guacBeforeKeydown' | 'guacBeforeKeyup', keysym: number): boolean {
+        return TestBed.inject(GuacEventService<GuacFrontendEventArguments>)
+            .broadcast(eventName, { keysym, keyboard: {} as Guacamole.Keyboard })
+            .defaultPrevented;
+    }
+
+    it('should block a printable key of the local keyboard while the text input has focus', () => {
+        expect(isKeyBlocked('guacBeforeKeydown', 0x61)).toBe(true);
+        expect(isKeyBlocked('guacBeforeKeyup', 0x61)).toBe(true);
+    });
+
+    it.each([
+        ['left', 0xFFED],
+        ['right', 0xFFEE]
+    ])('should let the %s Option key of a Mac through while the text input has focus', (side, keysym) => {
+        expect(isKeyBlocked('guacBeforeKeydown', keysym)).toBe(false);
+        expect(isKeyBlocked('guacBeforeKeyup', keysym)).toBe(false);
+    });
+
     it('should label the key buttons with the translated key names', () => {
         const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('guac-key button'));
 

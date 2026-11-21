@@ -118,7 +118,8 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
     };
     private readonly ALT_KEYS: Record<number, boolean> = {
         0xFFE9: true, 0xFFEA: true, 0xFE03: true,
-        0xFFE7: true, 0xFFE8: true
+        0xFFE7: true, 0xFFE8: true,
+        0xFFED: true, 0xFFEE: true
     };
     private readonly CTRL_KEYS: Record<number, boolean> = {
         0xFFE3: true,

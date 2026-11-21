@@ -147,13 +147,22 @@ export class AppComponent implements OnInit, AfterViewChecked {
         const keyboard = new Guacamole.Keyboard(this.document);
         keyboard.listenTo(sink.getElement());
 
-        // Update keyboard modifiers based on mouse click and touch contact
-        // events. Note that mousedown must be handled before the mouse state
-        // is sent, to resolve deferred Meta key events to enable Cmd+Click.
+        /**
+         * Resynchronizes keyboard modifier state against the modifier flags
+         * reported by the given mouse or touch event. Note that mousedown events
+         * must be handled before the mouse state is sent so that modifiers
+         * inferred from the event's flags (such as a Command key held
+         * while the window lacked keyboard focus) are processed before the click
+         * that depends on them.
+         *
+         * @param inputEvent
+         *     The mouse or touch event to sync modifier state against.
+         */
         const updateKeyboardModifiers = ({ inputEvent }: {
             inputEvent: Guacamole.Mouse.Event | Guacamole.Touch.Event
         }) => keyboard.updateModifiers(inputEvent);
 
+        // Update keyboard modifiers based on mouse/touch events
         for (const eventName of ['guacBeforeClientMouseDown', 'guacClientMouseUp',
             'guacClientTouchStart', 'guacClientTouchEnd'] as const) {
             this.guacEventService

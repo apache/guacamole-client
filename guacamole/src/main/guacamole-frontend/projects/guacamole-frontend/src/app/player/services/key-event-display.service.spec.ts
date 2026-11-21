@@ -36,6 +36,11 @@ describe('KeyEventDisplayService', () => {
     const CONTROL_LEFT = 0xFFE3;
 
     /**
+     * The X11 keysym of the Caps Lock key, a lock key that is not a modifier.
+     */
+    const CAPS_LOCK = 0xFFE5;
+
+    /**
      * Returns a raw key event as produced by KeyEventInterpreter.
      *
      * @param keysym
@@ -167,6 +172,33 @@ describe('KeyEventDisplayService', () => {
         const batches = service.parseEventsWithClipboard(events, []);
 
         expect(batches.map(batch => batch.simpleValue)).toEqual(['a<Ctrl+c>']);
+    });
+
+    it.each([
+        ['Command', 0xFFE7, '<Command+c>'],
+        ['Option', 0xFFED, '<Option+c>']
+    ])('should print a shortcut with the %s key of a Mac', (name, keysym, shortcut) => {
+        const events = [
+            keyEvent(keysym, name, true, 0),
+            ...typeKey('c', 100),
+            keyEvent(keysym, name, false, 300)
+        ];
+
+        const batches = service.parseEventsWithClipboard(events, []);
+
+        expect(batches.map(batch => batch.simpleValue)).toEqual([shortcut]);
+    });
+
+    it('should print a lock key instead of treating it as a modifier', () => {
+        const events = [
+            keyEvent(CAPS_LOCK, 'Caps', true, 0),
+            keyEvent(CAPS_LOCK, 'Caps', false, 50),
+            ...typeKey('A', 100)
+        ];
+
+        const batches = service.parseEventsWithClipboard(events, []);
+
+        expect(batches.map(batch => batch.simpleValue)).toEqual(['<Caps>A']);
     });
 
     it('should use the time a key was pressed as the time of its event', () => {

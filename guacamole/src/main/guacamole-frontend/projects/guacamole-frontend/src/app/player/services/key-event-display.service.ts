@@ -48,26 +48,6 @@ import { Injectable } from '@angular/core';
 import _ from 'lodash';
 
 /**
- * A set of all keysyms corresponding to modifier keys.
- * @type{Object.<Number, Boolean>}
- */
-const MODIFIER_KEYS: Record<number, boolean> = {
-    0xFE03: true, // AltGr
-    0xFFE1: true, // Left Shift
-    0xFFE2: true, // Right Shift
-    0xFFE3: true, // Left Control
-    0xFFE4: true, // Right Control,
-    0xFFE7: true, // Left Meta
-    0xFFE8: true, // Right Meta
-    0xFFE9: true, // Left Alt
-    0xFFEA: true, // Right Alt
-    0xFFEB: true, // Left Super
-    0xFFEC: true, // Right Super
-    0xFFED: true, // Left Hyper
-    0xFFEE: true  // Right Super
-};
-
-/**
  * A set of all keysyms for which the name should be printed alongside the
  * value of the key itself.
  */
@@ -83,14 +63,14 @@ const PRINT_NAME_TOO_KEYS: Record<number, boolean> = {
 const SHORTCUT_KEYS: Record<number, boolean> = {
     0xFFE3: true, // Left Control
     0xFFE4: true, // Right Control,
-    0xFFE7: true, // Left Meta
-    0xFFE8: true, // Right Meta
+    0xFFE7: true, // Left Command (Mac)
+    0xFFE8: true, // Right Command (Mac)
     0xFFE9: true, // Left Alt
     0xFFEA: true, // Right Alt
     0xFFEB: true, // Left Super
     0xFFEC: true, // Right Super
-    0xFFED: true, // Left Hyper
-    0xFFEE: true  // Right Super
+    0xFFED: true, // Left Option (Mac)
+    0xFFEE: true  // Right Option (Mac)
 };
 
 /**
@@ -305,7 +285,7 @@ export class KeyEventDisplayService {
                 const { keysym, name, value } = definition;
 
                 // Track modifier state
-                if (MODIFIER_KEYS[keysym]) {
+                if (Guacamole.Keyboard.Keysym.isModifier(keysym)) {
                     if (pressed)
                         pressedKeys[keysym] = definition;
                     else

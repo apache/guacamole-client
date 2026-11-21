@@ -47,8 +47,9 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
 
     /**
      * Broadcast when a mouse button is pressed, before the mouse state is
-     * sent, so that the keyboard can resolve deferred modifier keys
-     * (especially for Cmd+Click) first.
+     * sent, so that modifiers inferred from the flags of the mouse event
+     * (especially Cmd+Click) are processed before the click that depends on
+     * them.
      */
     guacBeforeClientMouseDown: { inputEvent: Guacamole.Mouse.Event, client: ManagedClient };
     guacClientMouseDown: { inputEvent: Guacamole.Mouse.Event, client: ManagedClient };
