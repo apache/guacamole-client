@@ -32,6 +32,7 @@ import { AppComponent } from './app.component';
 import { appRoutes } from './app-routing.module';
 import { AuthenticationService } from './auth/service/authentication.service';
 import { GuacClientManagerService } from './client/services/guac-client-manager.service';
+import { ManagedClient } from './client/types/ManagedClient';
 import { ClipboardService } from './clipboard/services/clipboard.service';
 import { GuacFrontendEventArguments } from './events/types/GuacFrontendEventArguments';
 import { ApplyPatchesService } from './index/services/apply-patches.service';
@@ -102,7 +103,22 @@ describe('AppComponent', () => {
     let fixture: ComponentFixture<AppComponent>;
     let eventService: GuacEventService<GuacFrontendEventArguments>;
 
+    /**
+     * The keyboard created by AppComponent, whose updateModifiers() is
+     * replaced by a mock.
+     */
+    let keyboard: Guacamole.Keyboard;
+
     beforeEach(() => {
+
+        // Capture the keyboard that AppComponent creates for itself
+        const RealKeyboard = Guacamole.Keyboard;
+        vi.spyOn(Guacamole, 'Keyboard').mockImplementation(function (element: HTMLElement | Document) {
+            keyboard = new RealKeyboard(element);
+            vi.spyOn(keyboard, 'updateModifiers').mockImplementation(() => undefined);
+            return keyboard;
+        } as unknown as typeof Guacamole.Keyboard);
+
         TestBed.configureTestingModule({
             declarations: [AppComponent, LoginComponent, GuacFormStubComponent, RouteStubComponent],
             // Ignores the components of the other application states, which
@@ -139,6 +155,7 @@ describe('AppComponent', () => {
     afterEach(() => {
         fixture.destroy();
         document.body.className = '';
+        vi.restoreAllMocks();
     });
 
     /**
@@ -227,6 +244,42 @@ describe('AppComponent', () => {
         expect(fixture.nativeElement.querySelector('.logged-out-modal')).not.toBeNull();
         expect(document.body.classList).toContain('client');
         expect(title.getTitle()).toBe('ssh-target');
+    });
+
+    it.each(['guacClientMouseDown', 'guacClientMouseUp'] as const)(
+        'should update the keyboard modifiers from the mouse event of %s', (eventName) => {
+            const inputEvent = { type: 'mouse' } as unknown as Guacamole.Mouse.Event;
+
+            eventService.broadcast(eventName, { inputEvent, client: {} as ManagedClient });
+
+            expect(keyboard.updateModifiers).toHaveBeenCalledExactlyOnceWith(inputEvent);
+        });
+
+    it.each(['guacClientTouchStart', 'guacClientTouchEnd'] as const)(
+        'should update the keyboard modifiers from the touch event of %s', (eventName) => {
+            const inputEvent = { type: 'touch' } as unknown as Guacamole.Touch.Event;
+
+            eventService.broadcast(eventName, { inputEvent, client: {} as ManagedClient });
+
+            expect(keyboard.updateModifiers).toHaveBeenCalledExactlyOnceWith(inputEvent);
+        });
+
+    it('should not update the keyboard modifiers when the mouse moves', () => {
+        eventService.broadcast('guacClientMouseMove', {
+            inputEvent: { type: 'mousemove' } as unknown as Guacamole.Mouse.Event,
+            client: {} as ManagedClient
+        });
+
+        expect(keyboard.updateModifiers).not.toHaveBeenCalled();
+    });
+
+    it('should not update the keyboard modifiers when a touch moves', () => {
+        eventService.broadcast('guacClientTouchMove', {
+            inputEvent: { type: 'touchmove' } as unknown as Guacamole.Touch.Event,
+            client: {} as ManagedClient
+        });
+
+        expect(keyboard.updateModifiers).not.toHaveBeenCalled();
     });
 
 });

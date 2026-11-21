@@ -147,6 +147,20 @@ export class AppComponent implements OnInit, AfterViewChecked {
         const keyboard = new Guacamole.Keyboard(this.document);
         keyboard.listenTo(sink.getElement());
 
+        // Update keyboard modifiers based on mouse click and touch contact
+        // events
+        const updateKeyboardModifiers = ({ inputEvent }: {
+            inputEvent: Guacamole.Mouse.Event | Guacamole.Touch.Event
+        }) => keyboard.updateModifiers(inputEvent);
+
+        for (const eventName of ['guacClientMouseDown', 'guacClientMouseUp',
+            'guacClientTouchStart', 'guacClientTouchEnd'] as const) {
+            this.guacEventService
+                .on(eventName)
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(updateKeyboardModifiers);
+        }
+
         // Broadcast keydown events
         keyboard.onkeydown = keysym => {
 
