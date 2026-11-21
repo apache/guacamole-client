@@ -20,6 +20,13 @@
 import { initFederation } from '@angular-architects/native-federation';
 
 initFederation('native-federation-manifest.json')
-  .catch(err => console.error(err))
-  .then(_ => import('./bootstrap'))
-  .catch(err => console.error(err));
+    .catch(err => {
+        console.error(err);
+
+        // Start without extensions; the shared packages of the application
+        // itself are only resolvable once Native Federation is initialized
+        return initFederation({});
+    })
+    .then(({ loadRemoteModule }) => import('./bootstrap')
+        .then(({ bootstrap }) => bootstrap(loadRemoteModule)))
+    .catch(err => console.error(err));

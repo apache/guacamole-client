@@ -21,10 +21,22 @@ import { ViewEncapsulation, provideZoneChangeDetection } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 import { AppModule } from './app/app.module';
+import { LOAD_REMOTE_MODULE, LoadRemoteModule } from './app/index/types/LoadRemoteModule';
 
-
-platformBrowserDynamic().bootstrapModule(AppModule, {
-    applicationProviders: [provideZoneChangeDetection()],
-    defaultEncapsulation: ViewEncapsulation.None
-})
-    .catch(err => console.error(err));
+/**
+ * Bootstraps the application once Native Federation has been initialized.
+ *
+ * @param loadRemoteModule
+ *     The function which loads modules exposed by extensions. The application
+ *     receives it through the LOAD_REMOTE_MODULE injection token.
+ */
+export function bootstrap(loadRemoteModule: LoadRemoteModule): void {
+    platformBrowserDynamic().bootstrapModule(AppModule, {
+        applicationProviders: [
+            provideZoneChangeDetection(),
+            { provide: LOAD_REMOTE_MODULE, useValue: loadRemoteModule }
+        ],
+        defaultEncapsulation: ViewEncapsulation.None
+    })
+        .catch(err => console.error(err));
+}

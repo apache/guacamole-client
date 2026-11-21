@@ -17,10 +17,10 @@
  * under the License.
  */
 
-import { loadRemoteModule } from '@angular-architects/native-federation';
-import { ApplicationRef, EnvironmentInjector, Inject, Injectable, Injector, ViewContainerRef, DOCUMENT } from '@angular/core';
+import { ApplicationRef, EnvironmentInjector, Inject, Injectable, Injector, Type, ViewContainerRef, DOCUMENT } from '@angular/core';
 import $ from 'jquery';
 import { PatchService } from '../../rest/service/patch.service';
+import { LOAD_REMOTE_MODULE, LoadRemoteModule } from '../types/LoadRemoteModule';
 import { PatchOperation } from '../types/PatchOperation';
 
 /**
@@ -42,7 +42,8 @@ export class ApplyPatchesService {
     constructor(@Inject(DOCUMENT) private document: Document,
                 private patchService: PatchService,
                 private injector: Injector,
-                private _appRef: ApplicationRef) {
+                private _appRef: ApplicationRef,
+                @Inject(LOAD_REMOTE_MODULE) private loadRemoteModule: LoadRemoteModule) {
 
         // Retrieve all patches
         this.patchService.getPatches().subscribe(async patches => {
@@ -122,10 +123,9 @@ export class ApplyPatchesService {
      */
     public async createNativeFederationAngularComponent(nativeFederationModule: string, nativeFederationElement: string): Promise<Element> {
 
-        const module = await loadRemoteModule({
-            remoteName: nativeFederationModule,
-            exposedModule: nativeFederationElement
-        });
+        const module = await this.loadRemoteModule<Record<string, Type<unknown>>>(
+            nativeFederationModule, nativeFederationElement
+        );
 
         // Locate a DOM node that would be used as a host.
         const hostElement = document.createElement('div');

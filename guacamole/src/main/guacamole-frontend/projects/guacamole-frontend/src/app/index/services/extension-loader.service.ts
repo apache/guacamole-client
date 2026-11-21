@@ -17,15 +17,15 @@
  * under the License.
  */
 
-import { loadRemoteModule } from '@angular-architects/native-federation';
 import { HttpClient } from '@angular/common/http';
-import { Injectable, Injector } from '@angular/core';
+import { Inject, Injectable, Injector } from '@angular/core';
 import { Route, Router, Routes } from '@angular/router';
 import { BootsrapExtensionFunction } from 'guacamole-frontend-ext-lib';
 import _ from 'lodash';
 import { lastValueFrom } from 'rxjs';
 import { appRoutes, fallbackRoute, titleResolver } from '../../app-routing.module';
 import { DEFAULT_BOOTSTRAP_FUNCTION_NAME, FederationRouteConfig } from '../types/FederationRouteConfig';
+import { LOAD_REMOTE_MODULE, LoadRemoteModule } from '../types/LoadRemoteModule';
 
 /**
  * A service which dynamically loads all extensions defined in the
@@ -42,7 +42,8 @@ export class ExtensionLoaderService {
      */
     constructor(private router: Router,
                 private injector: Injector,
-                private http: HttpClient) {
+                private http: HttpClient,
+                @Inject(LOAD_REMOTE_MODULE) private loadRemoteModule: LoadRemoteModule) {
     }
 
     /**
@@ -80,10 +81,9 @@ export class ExtensionLoaderService {
         for (const key of keys) {
             const entry = config[key];
             const bootstrapFunctionName = entry.bootstrapFunctionName || DEFAULT_BOOTSTRAP_FUNCTION_NAME;
-            const module = await loadRemoteModule({
-                remoteName: key,
-                exposedModule: bootstrapFunctionName
-            });
+            const module = await this.loadRemoteModule<Record<string, BootsrapExtensionFunction>>(
+                key, bootstrapFunctionName
+            );
 
             // Bootstrap the extension
             const bootstrapFunction: BootsrapExtensionFunction = module[bootstrapFunctionName];
