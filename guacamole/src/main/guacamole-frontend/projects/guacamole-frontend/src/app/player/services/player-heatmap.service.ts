@@ -217,7 +217,7 @@ export class PlayerHeatmapService {
         const bucketDuration = duration / NUM_BUCKETS;
 
         // The rate-limited maximum number of events that any bucket can have,
-        const maxPossibleBucketValue = Math.floor(bucketDuration * maxRate);
+        const maxPossibleBucketValue = Math.max(Math.floor(bucketDuration * maxRate), 1);
 
         // If the duration is invalid, return the still-empty array
         if (duration <= 0)
