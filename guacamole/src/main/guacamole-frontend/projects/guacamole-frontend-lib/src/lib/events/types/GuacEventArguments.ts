@@ -18,7 +18,9 @@
  */
 
 /**
- * TODO
+ * Defines the events broadcast by guacamole-frontend-lib, mapping the name of
+ * each event to the type of its arguments. Events without arguments map to an
+ * empty object. Applications extend this interface with their own events.
  */
 export interface GuacEventArguments {
 

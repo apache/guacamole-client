@@ -86,7 +86,9 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
     searchString = '';
 
     /**
-     * TODO: Document
+     * Sorted and paginated view of historyEntryWrappers, or null if the view
+     * has not yet been built. The search string is not applied here, as it
+     * is evaluated by the REST API (see search()).
      */
     dataSourceView: DataSource<ConnectionHistoryEntryWrapper> | null = null;
 

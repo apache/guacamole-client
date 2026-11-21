@@ -33,8 +33,9 @@ import { BehaviorSubject } from 'rxjs';
 export class GuacFilterComponent {
 
     /**
-     * The property to which a subset of the provided array will be
-     * assigned.
+     * The filter search string to use to restrict the displayed items.
+     * This subject will emit a new value whenever the search string
+     * changes.
      */
     searchStringChange: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
@@ -50,7 +51,11 @@ export class GuacFilterComponent {
     protected searchString: string | null = null;
 
     /**
-     * TODO: Document
+     * Emits the given search string through searchStringChange, so that
+     * the displayed items are refiltered whenever the pattern is changed.
+     *
+     * @param searchString
+     *     The current content of the filter input field.
      */
     searchStringChanged(searchString: string) {
         this.searchStringChange.next(searchString);

@@ -56,7 +56,8 @@ export class HomeComponent implements OnInit {
     @ViewChild(GuacGroupListFilterComponent, { static: true }) filter!: GuacGroupListFilterComponent;
 
     /**
-     * TODO
+     * Filtered view of the root connection groups which satisfy the current
+     * search string, or null if the view has not yet been built.
      */
     rootConnectionGroupsDataSource: ConnectionGroupDataSource | null = null;
 

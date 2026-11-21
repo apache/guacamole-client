@@ -61,20 +61,20 @@ export class GuacTiledClientsComponent implements DoCheck {
     @Input({ required: true }) emulateAbsoluteMouse!: boolean;
 
     /**
-     * TODO
-     * @private
+     * The client that was focused when change detection last ran, used to
+     * detect changes of the focused client.
      */
     private lastFocusedClient?: ManagedClient | null;
 
     /**
-     * TODO
-     * @private
+     * A copy of the arguments of the focused client as of the last change
+     * detection run, used to detect changes to them.
      */
     private lastFocusedClientArguments?: Record<string, ManagedArgument>;
 
     /**
-     * TODO
-     * @private
+     * The protocol of the focused client as of the last change detection
+     * run, used to detect changes of it.
      */
     private lastProtocol: string | undefined | null;
 

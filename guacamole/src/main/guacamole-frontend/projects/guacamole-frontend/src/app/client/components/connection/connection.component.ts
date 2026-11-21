@@ -22,7 +22,9 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
 import { ConnectionListContext } from '../../types/ConnectionListContext';
 
 /**
- * TODO
+ * A component which displays a single connection within the list of
+ * available connections in the Guacamole menu and allows it to be added
+ * to or removed from the current view.
  */
 @Component({
     selector: 'guac-connection',
@@ -34,12 +36,14 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
 export class ConnectionComponent {
 
     /**
-     * TODO
+     * The context provided by guac-group-list, exposing the set of clients
+     * attached to the current view and a function to update it.
      */
     @Input({ required: true }) context!: ConnectionListContext;
 
     /**
-     * TODO
+     * The GroupListItem representing the connection to display, as provided
+     * by guac-group-list for items of this type.
      */
     @Input({ required: true }) item!: GroupListItem;
 

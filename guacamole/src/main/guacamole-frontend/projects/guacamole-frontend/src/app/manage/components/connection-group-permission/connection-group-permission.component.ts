@@ -35,12 +35,14 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
 export class ConnectionGroupPermissionComponent {
 
     /**
-     * TODO
+     * The context provided by guac-group-list, exposing the permission query
+     * and modification functions of the permission set being edited.
      */
     @Input({ required: true }) context!: ConnectionListContext;
 
     /**
-     * TODO
+     * The GroupListItem representing the connection group to display, as
+     * provided by guac-group-list for items of this type.
      */
     @Input({ required: true }) item!: GroupListItem;
 

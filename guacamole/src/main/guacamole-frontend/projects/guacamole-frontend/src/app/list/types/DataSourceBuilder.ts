@@ -64,10 +64,13 @@ export class DataSourceBuilder<T> {
     }
 
     /**
-     * An Observable of TODO
+     * Sets an Observable of the filter search string, along with the
+     * properties to filter against. Each time the search string changes, the
+     * source will be filtered accordingly.
      *
      * @param searchString
-     *     The filter search string to use to restrict the displayed items.
+     *     An Observable of the filter search string to use to restrict the
+     *     displayed items.
      *
      * @param filterProperties
      *     An array of expressions to filter against for each object in the
@@ -103,7 +106,8 @@ export class DataSourceBuilder<T> {
      * time a page event is emitted, the source will be updated accordingly.
      *
      * @param pagerEvent
-     *     The sort order that should be applied.
+     *     An Observable of pager events which describe the page that should
+     *     be extracted.
      *
      * @returns
      *     The current builder instance for further chaining.

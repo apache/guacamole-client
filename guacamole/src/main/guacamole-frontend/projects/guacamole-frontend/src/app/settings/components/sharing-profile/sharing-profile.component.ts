@@ -34,7 +34,8 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
 export class SharingProfileComponent {
 
     /**
-     * TODO
+     * The GroupListItem representing the sharing profile to display, as
+     * provided by guac-group-list for items of this type.
      */
     @Input({ required: true }) item!: GroupListItem;
 

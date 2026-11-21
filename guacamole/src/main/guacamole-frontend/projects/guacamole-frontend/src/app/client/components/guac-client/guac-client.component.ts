@@ -100,7 +100,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
     private displayContainer!: HTMLDivElement;
 
     /**
-     * TODO
+     * A reference to the main containing element for the entire component.
      */
     @ViewChild('main', { static: true })
     private readonly mainRef!: ElementRef<HTMLDivElement>;

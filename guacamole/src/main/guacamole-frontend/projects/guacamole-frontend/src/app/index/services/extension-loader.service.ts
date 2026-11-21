@@ -49,7 +49,18 @@ export class ExtensionLoaderService {
     }
 
     /**
-     * TODO
+     * Loads the native federation configuration of the installed extensions,
+     * bootstraps each extension and replaces the router configuration with
+     * the routes of the main application and all extensions. Does nothing if
+     * no extensions are installed. If an extension cannot be loaded, the
+     * error is logged and the application keeps its own routes.
+     *
+     * This function runs as an app initializer, such that the routes of all
+     * extensions are known before the first navigation.
+     *
+     * @returns
+     *     A promise which resolves once all extensions have been bootstrapped
+     *     and the routes have been set.
      */
     async loadExtensionAndSetRouterConfig(): Promise<void> {
 

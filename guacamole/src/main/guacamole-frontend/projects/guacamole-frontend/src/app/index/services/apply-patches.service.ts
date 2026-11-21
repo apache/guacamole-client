@@ -96,9 +96,17 @@ export class ApplyPatchesService {
     }
 
     /**
-     * TODO
+     * Returns the element which should be inserted into the DOM for the given
+     * patch element. If the element has the attributes nativeFederationModule
+     * and nativeFederationElement, it is replaced by the host element of the
+     * Angular component exposed under that name by the given native
+     * federation module. Otherwise the element itself is returned.
+     *
      * @param element
-     * @private
+     *     The element of the patch.
+     *
+     * @returns
+     *     A promise which resolves with the element to insert into the DOM.
      */
     public async getPatchElement(element: Element): Promise<Element> {
 

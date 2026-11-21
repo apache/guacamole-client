@@ -110,7 +110,7 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges {
     ];
 
     /**
-     * TODO
+     * Inject required services.
      */
     constructor(private dataSourceBuilderService: DataSourceBuilderService,
                 private translocoService: TranslocoService) {

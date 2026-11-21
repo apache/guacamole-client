@@ -18,11 +18,20 @@
  */
 
 /**
- * TODO: Document
+ * Dispatches a bubbling, cancelable mouse event of the given type on the
+ * given element.
+ *
  * @param element
+ *     The element on which to dispatch the event.
+ *
  * @param eventName
+ *     The type of the mouse event, such as "mousedown".
+ *
  * @param coordX
+ *     The horizontal client coordinate of the event.
+ *
  * @param coordY
+ *     The vertical client coordinate of the event.
  */
 const dispatchEvent = (element: any, eventName: string, coordX: any, coordY: any) => {
     element.dispatchEvent(new MouseEvent(eventName, {
@@ -35,8 +44,12 @@ const dispatchEvent = (element: any, eventName: string, coordX: any, coordY: any
 };
 
 /**
- * TODO: Document
+ * Simulates a click with the primary mouse button in the center of the given
+ * element by dispatching the events mousedown, mouseup and click in that
+ * order.
+ *
  * @param element
+ *     The element to click.
  */
 export const simulateMouseClick = (element: any) => {
     const box = element.getBoundingClientRect();

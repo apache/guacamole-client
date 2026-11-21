@@ -71,7 +71,8 @@ export class GuacSettingsUsersComponent implements OnInit {
     private readonly dataSources: string[] = this.authenticationService.getAvailableDataSources();
 
     /**
-     * TODO: document
+     * Filtered, sorted, and paginated view of the ManageableUsers to
+     * display, or null if the view has not yet been built.
      */
     dataSourceView: DataSource<ManageableUser> | null = null;
 

@@ -34,7 +34,8 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
 export class ConnectionGroupComponent {
 
     /**
-     * TODO
+     * The GroupListItem representing the connection group to display, as
+     * provided by guac-group-list for items of this type.
      */
     @Input({ required: true }) item!: GroupListItem;
 

@@ -59,9 +59,9 @@ export class ConnectionGroupDataSource {
      *     filtered map.
      *
      * @param searchString
-     *     The connection groups to filter, as a map of data source
-     *     identifier to corresponding root group. The filtered subset
-     *     of this map will be exposed as filteredConnectionGroups.
+     *     An Observable of the filter search string to use to restrict the
+     *     displayed connection groups, or null if the connection groups
+     *     should not be filtered.
      *
      * @param connectionProperties
      *     An array of expressions to filter against for each connection in
@@ -88,7 +88,10 @@ export class ConnectionGroupDataSource {
     }
 
     /**
-     * TODO: Document
+     * (Re)creates the filteredConnectionGroups observable from the current
+     * source and search string. Called by the constructor and whenever the
+     * source or the search string is replaced. If there is no search string
+     * observable, the source is emitted unfiltered.
      */
     private computeData(): void {
 
@@ -126,9 +129,18 @@ export class ConnectionGroupDataSource {
     }
 
     /**
-     * Applies the current filter predicate, filtering all provided
-     * connection groups.
-     * TODO: Document
+     * Applies the filter predicate compiled from the given search string,
+     * filtering all provided connection groups. If the search string is
+     * empty, the source is returned as-is, neither flattened nor filtered.
+     *
+     * @param searchString
+     *     The filter search string to use to restrict the displayed
+     *     connection groups.
+     *
+     * @returns
+     *     The filtered connection groups, as a map of data source
+     *     identifier to corresponding root group. The type of each item
+     *     within the source is preserved.
      */
     applyFilter(searchString: string): Record<string, ConnectionGroup | GroupListItem> {
 

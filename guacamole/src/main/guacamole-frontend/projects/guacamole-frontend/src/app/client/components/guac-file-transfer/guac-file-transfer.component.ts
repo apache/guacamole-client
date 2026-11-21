@@ -47,8 +47,8 @@ export class GuacFileTransferComponent implements DoCheck {
     translatedErrorMessage?: string = '';
 
     /**
-     * TODO
-     * @private
+     * The status code of the transfer as of the last change detection run,
+     * used to update translatedErrorMessage only when the code changes.
      */
     private lastTransferStatusCode?: number;
 

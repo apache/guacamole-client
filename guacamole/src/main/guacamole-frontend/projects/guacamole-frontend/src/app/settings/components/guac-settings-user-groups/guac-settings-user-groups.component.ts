@@ -70,7 +70,8 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
     private dataSources: string[] = this.authenticationService.getAvailableDataSources();
 
     /**
-     * TODO: document
+     * Filtered, sorted, and paginated view of the ManageableUserGroups to
+     * display, or null if the view has not yet been built.
      */
     dataSourceView: DataSource<ManageableUserGroup> | null = null;
 

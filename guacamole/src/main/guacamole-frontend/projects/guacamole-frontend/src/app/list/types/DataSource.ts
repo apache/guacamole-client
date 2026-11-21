@@ -73,7 +73,10 @@ export class DataSource<T> {
     }
 
     /**
-     * TODO: Document
+     * (Re)creates the data and totalLength observables from the current
+     * source and the configured operations. Called by the constructor and
+     * whenever the source is replaced. The totalLength observable completes
+     * when the data observable completes.
      */
     private computeData(): void {
         this.dataComplete = new Subject<void>();
@@ -127,10 +130,20 @@ export class DataSource<T> {
     }
 
     /**
-     * TODO: Document
-     * Applies the given filter to the given data.
+     * Applies the filter predicate compiled from the given search string,
+     * filtering all provided data. The data is returned unchanged if the
+     * search string is null or empty, or if no filter properties were
+     * provided to this data source.
+     *
      * @param data
+     *     The data to filter.
+     *
      * @param searchString
+     *     The filter search string to use to restrict the data, or null if
+     *     the data should not be filtered.
+     *
+     * @returns
+     *     The elements of the data which match the search string.
      */
     private applyFilter(data: T[], searchString: string | null): T[] {
         if (searchString === null || searchString === '' || this.filterPattern === null)
@@ -141,9 +154,18 @@ export class DataSource<T> {
     }
 
     /**
-     * TODO: Document
+     * Sorts the given data according to the predicate of the given sort
+     * order.
+     *
      * @param data
+     *     The data to sort.
+     *
      * @param sortOrder
+     *     The sort order to apply, or null if the data should not be sorted.
+     *
+     * @returns
+     *     The sorted data, or the given data itself if there is no sort
+     *     order.
      */
     private orderByPredicate(data: T[], sortOrder: SortOrder | null): T[] {
         if (sortOrder === null)
@@ -153,9 +175,20 @@ export class DataSource<T> {
     }
 
     /**
-     * TODO: Document
+     * Extracts the page described by the given pager event from the given
+     * data.
+     *
      * @param data
+     *     The data to paginate.
+     *
      * @param pagination
+     *     The pager event describing the page to extract, or null if the
+     *     data should not be paginated. A page size of zero also disables
+     *     pagination.
+     *
+     * @returns
+     *     The elements of the selected page, or the given data itself if
+     *     pagination is disabled.
      */
     private applyPagination(data: T[], pagination: PagerEvent | null): T[] {
         if (pagination === null || pagination.pageSize === 0)

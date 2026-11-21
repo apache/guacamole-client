@@ -27,14 +27,13 @@ import { IPv6Network } from './IPv6Network';
  * Handles compilation of filtering predicates as used by
  * the {@link FilterService}. Predicates are compiled from a user-
  * specified search string.
- * TODO: Rewrite documentation
  */
 export class FilterPattern {
 
     /**
      * Array of getters corresponding to the Angular expressions provided
-     * to the constructor of this class. The functions returns are those
-     * produced by the $parse service.
+     * to the constructor of this class. The functions returned are those
+     * produced by AngularExpression.compile().
      */
     private readonly getters: Function[];
 

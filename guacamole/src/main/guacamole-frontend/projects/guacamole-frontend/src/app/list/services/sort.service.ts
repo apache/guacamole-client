@@ -22,7 +22,8 @@ import AngularExpression from 'angular-expressions';
 import _ from 'lodash';
 
 /**
- * TODO: Document
+ * Service for sorting arrays. Replacement for the AngularJS orderBy filter
+ * https://docs.angularjs.org/api/ng/filter/orderBy.
  */
 @Injectable({
     providedIn: 'root'

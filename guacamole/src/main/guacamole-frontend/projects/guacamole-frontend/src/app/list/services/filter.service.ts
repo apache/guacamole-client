@@ -20,8 +20,9 @@
 import { Injectable } from '@angular/core';
 
 /**
- * TODO: Document
- * Replacement for AngularJS filter function https://docs.angularjs.org/api/ng/filter/filter
+ * Service for filtering arrays by a predicate function. Replacement for the
+ * AngularJS filter function https://docs.angularjs.org/api/ng/filter/filter,
+ * restricted to function predicates.
  */
 @Injectable({
     providedIn: 'root'
@@ -29,13 +30,22 @@ import { Injectable } from '@angular/core';
 export class FilterService {
 
     /**
-     * TODO: Document
+     * Returns the elements of the given array for which the given predicate
+     * returns true. A null or undefined array yields an empty array.
      *
      * @template T
      *     The type of the elements in the target array.
      *
      * @param target
+     *     The array to filter.
+     *
      * @param predicate
+     *     The function to test each element with, called with the element,
+     *     its index and the array.
+     *
+     * @returns
+     *     A new array containing all elements for which the predicate
+     *     returned true.
      */
     filterByPredicate<T>(target: T[] | null | undefined, predicate: (value: T, index: number, array: T[]) => boolean): T[] {
         if (!target)

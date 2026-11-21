@@ -40,13 +40,23 @@ export class GuacEventService<Args extends GuacEventArguments> {
     private events = new Subject<any>();
 
     /**
-     * TODO: Document
+     * Broadcasts the event with the given name to all subscribers registered
+     * via on(). Subscribers receive the given arguments together with the
+     * created GuacEvent.
      *
      * @template T
      *     Union type of all possible event names.
      *
      * @param eventName
+     *     The name of the event to broadcast.
+     *
      * @param args
+     *     The arguments of the event, if the event has any.
+     *
+     * @returns
+     *     The broadcast event. Subscribers are called synchronously, so the
+     *     caller can check whether any of them called preventDefault() on
+     *     the event.
      */
     broadcast<T extends GuacEventName<Args>>(eventName: T, args?: Args[T]): GuacEvent<Args> {
         const guacEvent = { event: new GuacEvent<Args>(eventName) };
@@ -56,13 +66,18 @@ export class GuacEventService<Args extends GuacEventArguments> {
     }
 
     /**
-     * TODO: Document
+     * Returns an Observable which emits each time an event with the given
+     * name is broadcast.
      *
      * @template T
      *     Union type of all possible event names.
      *
      * @param eventName
+     *     The name of the event to subscribe to.
+     *
      * @returns
+     *     An Observable which emits the arguments of each matching event
+     *     together with the GuacEvent itself, as the property event.
      */
     on<T extends GuacEventName<Args>>(eventName: T): Observable<{
         event: GuacEvent<Args>

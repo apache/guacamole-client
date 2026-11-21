@@ -84,7 +84,9 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
 export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestroy {
 
     /**
-     * TODO
+     * The identifier of the ManagedClientGroup to display, as given by the
+     * "id" parameter of the route. It consists of the identifiers of all
+     * clients within the group, separated by periods.
      */
     @Input({ required: true, alias: 'id' }) groupId!: string;
 
@@ -217,14 +219,14 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
     private substituteKeysPressed: Record<number, number> = {};
 
     /**
-     * TODO
-     * @private
+     * The thumbnail canvas of the focused client as of the last change
+     * detection run, used to update the page icon only when it changes.
      */
     private lastThumbnailCanvas?: HTMLCanvasElement;
 
     /**
-     * TODO
-     * @private
+     * The tunnel UUID of the focused client as of the last change detection
+     * run, used to retrieve the sharing profiles only when it changes.
      */
     private lastTunnelUuid?: string | null;
 
@@ -457,7 +459,8 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
     }
 
     /**
-     * TODO: Document
+     * Reloads the client group when the identifier of the group changes
+     * without the route being reloaded.
      */
     ngOnChanges(changes: SimpleChanges): void {
 

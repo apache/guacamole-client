@@ -71,7 +71,8 @@ export class GuacSettingsSessionsComponent implements OnInit {
     private dataSources: string[] = this.authenticationService.getAvailableDataSources();
 
     /**
-     * TODO: document
+     * Filtered, sorted, and paginated view of the ActiveConnectionWrappers
+     * to display, or null if the view has not yet been built.
      */
     dataSourceView: DataSource<ActiveConnectionWrapper> | null = null;
 

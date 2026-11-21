@@ -52,7 +52,12 @@ export class GuacGroupListFilterComponent {
     protected searchString: string | null = null;
 
     /**
-     * TODO: Document
+     * Emits the given search string through searchStringChange, so that
+     * the displayed connection groups are refiltered whenever the pattern
+     * is changed.
+     *
+     * @param searchString
+     *     The current content of the filter input field.
      */
     protected searchStringChanged(searchString: string) {
         this.searchStringChange.next(searchString);

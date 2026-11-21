@@ -67,7 +67,8 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
     private interval: number | null = null;
 
     /**
-     * TODO
+     * Form group holding the values of the form fields of the notification.
+     * Any change is written back to the formModel of the notification.
      */
     notificationFormGroup: FormGroup = new FormGroup({});
 

@@ -18,12 +18,16 @@
  */
 
 /**
- * TODO
+ * The name of the function exposed by an extension which the shell calls to
+ * bootstrap the extension, if the native federation configuration of the
+ * extension does not define a bootstrapFunctionName.
  */
 export const DEFAULT_BOOTSTRAP_FUNCTION_NAME = 'bootstrapExtension';
 
 /**
- * TODO
+ * The native federation configuration of a single extension, as served within
+ * native-federation-config.json. It defines how the shell bootstraps the
+ * extension and where the routes of the extension are mounted.
  */
 export interface FederationRouteConfigEntry {
 

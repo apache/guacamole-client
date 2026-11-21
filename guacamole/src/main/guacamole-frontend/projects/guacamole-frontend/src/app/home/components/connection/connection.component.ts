@@ -21,7 +21,8 @@ import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@a
 import { GroupListItem } from '../../../group-list/types/GroupListItem';
 
 /**
- * TODO
+ * A component which displays a single connection within the list of
+ * accessible connections and groups on the home page.
  */
 @Component({
     selector: 'guac-connection',
@@ -33,7 +34,8 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
 export class ConnectionComponent {
 
     /**
-     * TODO
+     * The GroupListItem representing the connection to display, as provided
+     * by guac-group-list for items of this type.
      */
     @Input({ required: true }) item!: GroupListItem;
 }
