@@ -34,7 +34,7 @@ import {
     ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { GuacEventService } from 'guacamole-frontend-lib';
@@ -44,7 +44,6 @@ import { ScrollState } from '../../../../../../guacamole-frontend-lib/src/lib/el
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { ClipboardService } from '../../../clipboard/services/clipboard.service';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
-import { FormService } from '../../../form/service/form.service';
 import {
     GuacGroupListFilterComponent
 } from '../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component';
@@ -250,7 +249,6 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
                 private destroyRef: DestroyRef,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private managedFilesystemService: ManagedFilesystemService,
-                private formService: FormService,
                 private filterService: FilterService,
                 private title: Title) {
 
@@ -273,8 +271,8 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
             // client (parameter information may not have been available at the
             // time focus changed)
             if (menuShown)
-                this.menu.connectionParameters = this.focusedClient ?
-                    this.managedClientService.getArgumentModel(this.focusedClient) : {};
+                this.setConnectionParameters(this.focusedClient ?
+                    this.managedClientService.getArgumentModel(this.focusedClient) : {});
 
             // Send any argument value data once menu is hidden
             else if (menuShownPreviousState)
@@ -284,6 +282,10 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
             this.guacEventService.broadcast('guacMenuShown', { menuShown });
 
         });
+
+        // Mirror the values of the parameter form into the menu
+        this.connectionParameters.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => this.menu.connectionParameters = this.connectionParameters.getRawValue());
 
         // Automatically refresh display when filesystem menu is shown
         toObservable(this.menu.shown).pipe(takeUntilDestroyed()).subscribe(() => {
@@ -333,8 +335,8 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
                 // Update available connection parameters, if there is a focused
                 // client
-                this.menu.connectionParameters = newFocusedClient ?
-                    this.managedClientService.getArgumentModel(newFocusedClient) : {};
+                this.setConnectionParameters(newFocusedClient ?
+                    this.managedClientService.getArgumentModel(newFocusedClient) : {});
 
             });
 
@@ -371,7 +373,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
                 // Ignore any updated arguments not for the current focused client
                 if (this.focusedClient && this.focusedClient === focusedClient)
-                    this.menu.connectionParameters = this.managedClientService.getArgumentModel(focusedClient);
+                    this.setConnectionParameters(this.managedClientService.getArgumentModel(focusedClient));
 
             });
 
@@ -463,22 +465,6 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
         if (changes['groupId'])
             this.reparseRoute();
 
-
-        if (changes['focusedClient']) {
-
-            /**
-             * TODO: Document
-             */
-            if (this.focusedClient) {
-                this.connectionParameters = this.formService.getFormGroup(this.focusedClient.forms);
-                this.connectionParameters.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
-                    .subscribe(value => this.menu.connectionParameters = value);
-            } else {
-                this.connectionParameters = new FormGroup({});
-            }
-
-        }
-
     }
 
 
@@ -503,6 +489,36 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
             if (client)
                 this.managedClientService.setArgument(client, name, value);
         }
+    }
+
+    /**
+     * Replaces the connection parameters within the Guacamole menu with the
+     * given name/value pairs, updating the parameter form to contain exactly
+     * these parameters.
+     *
+     * @param parameters
+     *     The current values of all connection parameters of the focused
+     *     client which may be modified while the connection is open.
+     */
+    private setConnectionParameters(parameters: Record<string, string>): void {
+
+        this.menu.connectionParameters = parameters;
+
+        // Provide a form control for exactly the parameters of the focused
+        // client, without mirroring these values back into the menu
+        for (const name of Object.keys(this.connectionParameters.controls)) {
+            if (!(name in parameters))
+                this.connectionParameters.removeControl(name, { emitEvent: false });
+        }
+
+        for (const [name, value] of Object.entries(parameters)) {
+            const control = this.connectionParameters.get(name);
+            if (control)
+                control.setValue(value, { emitEvent: false });
+            else
+                this.connectionParameters.addControl(name, new FormControl(value), { emitEvent: false });
+        }
+
     }
 
     /**

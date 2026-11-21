@@ -30,6 +30,7 @@ import {
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { FormService } from '../../../form/service/form.service';
 import { Notification } from '../../types/Notification';
 
@@ -70,6 +71,12 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
      */
     notificationFormGroup: FormGroup = new FormGroup({});
 
+    /**
+     * The subscription which writes the values of notificationFormGroup back
+     * into the current notification, if any.
+     */
+    private formValueSubscription: Subscription | null = null;
+
     constructor(private formService: FormService,
                 private destroyRef: DestroyRef) {
     }
@@ -91,7 +98,10 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
             const forms = this.formService.asFormArray(this.notification.forms);
             this.notificationFormGroup = this.formService.getFormGroup(forms);
             this.notificationFormGroup.patchValue(this.notification.formModel || {});
-            this.notificationFormGroup.valueChanges
+
+            // Stop writing the values of the previous form group
+            this.formValueSubscription?.unsubscribe();
+            this.formValueSubscription = this.notificationFormGroup.valueChanges
                 .pipe(takeUntilDestroyed(this.destroyRef))
                 .subscribe((value) => {
                     this.notification.formModel = value;

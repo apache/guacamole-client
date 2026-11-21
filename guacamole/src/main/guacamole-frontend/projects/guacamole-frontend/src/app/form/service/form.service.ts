@@ -58,13 +58,6 @@ import { UsernameFieldComponent } from '../components/username-field/username-fi
 })
 export class FormService {
 
-    /**
-     * Reference to the view container that should be used to create the field component.
-     */
-    private viewContainer: ViewContainerRef | undefined;
-
-    private cdr: ChangeDetectorRef | undefined;
-
     private renderer: Renderer2;
 
     constructor(private fieldTypeService: FieldTypeService, rendererFactory: RendererFactory2) {
@@ -220,8 +213,8 @@ export class FormService {
      *     The Field object that is being rendered, representing a field of
      *     this type.
      *
-     * model:
-     *     The current String value of the field, if any.
+     * control:
+     *     The FormControl which contains the current value of the field.
      *
      * disabled:
      *     A boolean value which is true if the field should be disabled.
@@ -241,54 +234,72 @@ export class FormService {
      * @param scope
      *     The scope from which the properties of the field will be copied.
      *
+     * @param viewContainer
+     *     The view container of the calling guac-form-field, which will hold
+     *     the created component. Any component previously created within
+     *     this view container is destroyed.
+     *
+     * @param cdr
+     *     The ChangeDetectorRef of the calling guac-form-field.
+     *
      * @return
      *     A Promise which resolves to the compiled Element. If an error occurs
      *     while retrieving the field type, this Promise will be rejected.
      */
-    insertFieldElement(fieldContainer: Element, fieldType: string, scope: FormFieldComponent): Promise<ComponentRef<any>> {
-
-        // TODO: Add some comments
+    insertFieldElement(fieldContainer: Element, fieldType: string, scope: FormFieldComponent,
+                       viewContainer: ViewContainerRef, cdr: ChangeDetectorRef): Promise<ComponentRef<any>> {
 
         return new Promise((resolve, reject) => {
 
-            // Ensure field type is defined
+            // Ensure field type is defined, rejecting like $q.reject() in the
+            // AngularJS frontend otherwise
             const componentToInject: Type<FormFieldComponentData> | null = this.fieldTypeService.getComponent(fieldType);
-            if (!(componentToInject && this.viewContainer)) {
+            if (!componentToInject) {
                 reject();
                 return;
             }
 
-            const componentRef = this.insertFieldElementInternal(componentToInject, fieldContainer, scope);
+            // Create the component and add its element to the field container
+            const componentRef = this.createFieldComponent(componentToInject, fieldContainer, scope, viewContainer);
 
-            if (!componentRef) {
-                reject();
-                return;
-            }
-
-            this.cdr?.detectChanges();
+            // Render the new component immediately, such that the calling
+            // guac-form-field sees its content
+            cdr.detectChanges();
             resolve(componentRef);
 
         });
     }
 
     /**
-     * TODO: Document/rename
+     * Creates the component of a field type within the given view container,
+     * copies the properties of the given guac-form-field to the component and
+     * appends the element of the component to the given field container.
+     *
      * @param componentType
+     *     The component implementing the field type.
+     *
      * @param fieldContainer
+     *     The DOM Element to which the field component should be added as a child.
+     *
      * @param scope
-     * @private
+     *     The guac-form-field whose properties will be copied to the component.
+     *
+     * @param viewContainer
+     *     The view container of the guac-form-field, which will hold the
+     *     component. Any component previously created within this view
+     *     container is destroyed.
+     *
+     * @returns
+     *     The created component.
      */
-    private insertFieldElementInternal(componentType: Type<FormFieldComponentData>, fieldContainer: Element, scope: FormFieldComponent): ComponentRef<any> | null {
-
-        if (!this.viewContainer) {
-            return null;
-        }
+    private createFieldComponent(componentType: Type<FormFieldComponentData>, fieldContainer: Element,
+                                 scope: FormFieldComponent, viewContainer: ViewContainerRef): ComponentRef<FormFieldComponentData> {
 
         // Clear the container first
-        this.viewContainer.clear();
+        viewContainer.clear();
 
         // Create a component using the factory and add it to the container
-        const componentRef = this.viewContainer.createComponent(componentType);
+        const componentRef = viewContainer.createComponent(componentType);
 
         // Copy properties from scope to the component instance
         componentRef.instance.namespace = scope.namespace;
@@ -305,14 +316,6 @@ export class FormService {
         this.renderer.appendChild(fieldContainer, nativeElement);
 
         return componentRef;
-    }
-
-    setViewContainer(viewContainer: ViewContainerRef) {
-        this.viewContainer = viewContainer;
-    }
-
-    setChangeDetectorRef(cdr: ChangeDetectorRef) {
-        this.cdr = cdr;
     }
 
     /**

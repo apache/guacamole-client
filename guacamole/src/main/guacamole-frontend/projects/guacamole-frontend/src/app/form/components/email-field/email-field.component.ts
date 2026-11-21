@@ -37,7 +37,8 @@ export class EmailFieldComponent extends FormFieldBaseComponent implements OnCha
     @Input() fieldId?: string;
 
     /**
-     * TODO: To which value is this a reference in the AngularJS code?
+     * Whether the email address is shown as a mailto link instead of an
+     * input field. As in the AngularJS template, nothing sets this value.
      */
     readOnly = false;
 

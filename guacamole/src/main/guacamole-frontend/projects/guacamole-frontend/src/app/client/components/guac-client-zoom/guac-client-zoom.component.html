@@ -21,7 +21,6 @@
     <div class="client-zoom-editor">
         <div (click)="zoomOut()" class="client-zoom-out"><img src="images/settings/zoom-out.svg" alt="-"></div>
         <div class="client-zoom-state">
-            <!-- TODO: "Expression has changed after it was checked: client.clientProperties.scale()" when a new client is added to the view -->
             <input type="number" guacZoomCtrl
                    [(ngModel)]="client.clientProperties.scale"
                    [ngModelOptions]="{updateOn: 'blur' }">%

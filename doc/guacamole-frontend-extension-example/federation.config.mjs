@@ -27,7 +27,7 @@ export default withNativeFederation({
   name: 'guacamole-angular-example',
 
   exposes: {
-    'bootsrapExtension': './src/app/extension.config.ts',
+    'bootstrapExtension': './src/app/extension.config.ts',
     'AboutExtensionButtonComponent': './src/app/components/about-extension-button.component.ts'
   },
 

@@ -232,7 +232,7 @@ export class GroupListItem {
         if (connection.sharingProfiles && includeSharingProfiles !== false) {
             connection.sharingProfiles.forEach(function addSharingProfile(child) {
                 children.push(GroupListItem.fromSharingProfile(dataSource,
-                    child)); // TODO additional third parameter 'countActiveConnections'?
+                    child));
             });
         }
 

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { ApplicationRef, EnvironmentInjector, Inject, Injectable, Injector, Type, ViewContainerRef, DOCUMENT } from '@angular/core';
+import { ApplicationRef, createComponent, EnvironmentInjector, Inject, Injectable, Injector, Type, DOCUMENT } from '@angular/core';
 import $ from 'jquery';
 import { PatchService } from '../../rest/service/patch.service';
 import { LOAD_REMOTE_MODULE, LoadRemoteModule } from '../types/LoadRemoteModule';
@@ -116,10 +116,22 @@ export class ApplyPatchesService {
     }
 
     /**
-     * FIXME
+     * Creates the Angular component exposed under the given name by the given
+     * native federation module and returns its host element, which the patch
+     * operations then insert into the DOM. The component takes part in the
+     * change detection of the application.
+     *
      * @param nativeFederationModule
+     *     The name of the native federation module (the remote) exposing the
+     *     component.
+     *
      * @param nativeFederationElement
-     * @private
+     *     The name under which the native federation module exposes the
+     *     component.
+     *
+     * @returns
+     *     A promise which resolves with the host element of the created
+     *     component.
      */
     public async createNativeFederationAngularComponent(nativeFederationModule: string, nativeFederationElement: string): Promise<Element> {
 
@@ -127,21 +139,14 @@ export class ApplyPatchesService {
             nativeFederationModule, nativeFederationElement
         );
 
-        // Locate a DOM node that would be used as a host.
-        const hostElement = document.createElement('div');
-
-        const viewContainerRef = this._appRef.components[0].injector.get(ViewContainerRef);
-
-        const componentRef = viewContainerRef.createComponent(module[nativeFederationElement], {
-            environmentInjector: this.injector.get(EnvironmentInjector),
-            injector: this.injector
+        // Create the component with its own host element, outside any view
+        // container, and check it along with the views of the application
+        const componentRef = createComponent(module[nativeFederationElement], {
+            environmentInjector: this.injector.get(EnvironmentInjector)
         });
-        componentRef.changeDetectorRef.detectChanges();
-        componentRef.changeDetectorRef.markForCheck();
+        this._appRef.attachView(componentRef.hostView);
 
-        // this.renderer.appendChild(ref.nativeElement, modalElement);
-
-        return hostElement;
+        return componentRef.location.nativeElement;
 
     }
 

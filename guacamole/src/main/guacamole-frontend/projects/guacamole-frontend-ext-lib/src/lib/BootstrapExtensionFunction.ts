@@ -30,7 +30,7 @@ import { Routes } from '@angular/router';
  * array.
  *
  * @example
- * export const extensionConfig: BootsrapExtensionFunction = (injector: Injector): Routes => {
+ * export const extensionConfig: BootstrapExtensionFunction = (injector: Injector): Routes => {
  *     runInInjectionContext(injector, () => {
  *         // Register a new field type
  *         const fieldTypeService = inject(FieldTypeService);
@@ -42,4 +42,4 @@ import { Routes } from '@angular/router';
  * }
  *
  */
-export type BootsrapExtensionFunction = (injector: Injector) => Routes;
+export type BootstrapExtensionFunction = (injector: Injector) => Routes;

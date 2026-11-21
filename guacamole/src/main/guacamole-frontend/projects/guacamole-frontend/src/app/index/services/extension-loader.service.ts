@@ -20,10 +20,11 @@
 import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, Injector } from '@angular/core';
 import { Route, Router, Routes } from '@angular/router';
-import { BootsrapExtensionFunction } from 'guacamole-frontend-ext-lib';
+import { BootstrapExtensionFunction } from 'guacamole-frontend-ext-lib';
 import _ from 'lodash';
 import { lastValueFrom } from 'rxjs';
 import { appRoutes, fallbackRoute, titleResolver } from '../../app-routing.module';
+import { LogService } from '../../util/log.service';
 import { DEFAULT_BOOTSTRAP_FUNCTION_NAME, FederationRouteConfig } from '../types/FederationRouteConfig';
 import { LOAD_REMOTE_MODULE, LoadRemoteModule } from '../types/LoadRemoteModule';
 
@@ -43,6 +44,7 @@ export class ExtensionLoaderService {
     constructor(private router: Router,
                 private injector: Injector,
                 private http: HttpClient,
+                private log: LogService,
                 @Inject(LOAD_REMOTE_MODULE) private loadRemoteModule: LoadRemoteModule) {
     }
 
@@ -59,8 +61,14 @@ export class ExtensionLoaderService {
         if (_.isEmpty(routeConfig))
             return;
 
-        this.buildRoutes(routeConfig)
-            .then(routes => this.router.resetConfig(routes));
+        // Keep the routes of the main application if any extension cannot be
+        // loaded, such that the application still starts
+        try {
+            this.router.resetConfig(await this.buildRoutes(routeConfig));
+        }
+        catch (error) {
+            this.log.error('Extensions could not be loaded:', error);
+        }
 
     }
 
@@ -81,12 +89,12 @@ export class ExtensionLoaderService {
         for (const key of keys) {
             const entry = config[key];
             const bootstrapFunctionName = entry.bootstrapFunctionName || DEFAULT_BOOTSTRAP_FUNCTION_NAME;
-            const module = await this.loadRemoteModule<Record<string, BootsrapExtensionFunction>>(
+            const module = await this.loadRemoteModule<Record<string, BootstrapExtensionFunction>>(
                 key, bootstrapFunctionName
             );
 
             // Bootstrap the extension
-            const bootstrapFunction: BootsrapExtensionFunction = module[bootstrapFunctionName];
+            const bootstrapFunction: BootstrapExtensionFunction = module[bootstrapFunctionName];
             const moduleRoutes = bootstrapFunction(this.injector);
 
             // Add the routes of the extension to the routes of the main application

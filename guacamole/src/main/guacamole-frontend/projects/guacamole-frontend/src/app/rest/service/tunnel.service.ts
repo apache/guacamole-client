@@ -348,8 +348,7 @@ export class TunnelService {
                 else
                     reject(new Error({
                         type      : Error.Type.STREAM_ERROR,
-                        statusCode: Guacamole.Status.Code.SERVER_ERROR, // TODO: Guacamole.Status.Code.INTERNAL_ERROR
-                                                                        // does not exist
+                        statusCode: Guacamole.Status.Code.SERVER_ERROR, // Guacamole.Status.Code has no INTERNAL_ERROR
                         message   : 'HTTP ' + xhr.status
                     }));
 

@@ -28,7 +28,7 @@ const CONFIG = {
     outputFile: 'guacamole-angular-extension.jar',
     manifestFile: 'guac-manifest.json',
     nativeFederationConfiguration: {
-        bootstrapFunctionName: 'bootsrapExtension',
+        bootstrapFunctionName: 'bootstrapExtension',
         pageTitle: 'Angular Extension',
         routePath: 'angular-extension'
     },

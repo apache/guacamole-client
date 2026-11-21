@@ -20,7 +20,7 @@
 /**
  * TODO
  */
-export const DEFAULT_BOOTSTRAP_FUNCTION_NAME = 'bootsrapExtension';
+export const DEFAULT_BOOTSTRAP_FUNCTION_NAME = 'bootstrapExtension';
 
 /**
  * TODO

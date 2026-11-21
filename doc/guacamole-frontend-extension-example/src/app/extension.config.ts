@@ -18,7 +18,7 @@
  */
 
 import {
-    BootsrapExtensionFunction,
+    BootstrapExtensionFunction,
     FieldTypeService
 } from "guacamole-frontend-ext-lib";
 import { inject, Injector, runInInjectionContext } from "@angular/core";
@@ -32,7 +32,7 @@ import { PLANET_CHOOSER_FIELD_TYPE, PlanetChooserFieldComponent } from "./compon
 /**
  * Called by the frontend to initialize the extension.
  */
-export const bootsrapExtension: BootsrapExtensionFunction = (injector: Injector): Routes => {
+export const bootstrapExtension: BootstrapExtensionFunction = (injector: Injector): Routes => {
 
     runInInjectionContext(injector, () => {
 

@@ -17,7 +17,11 @@
  * under the License.
  */
 
+import { HTTP_INTERCEPTORS, HttpClient, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
+import { Error } from '../types/Error';
 import { ErrorHandlingInterceptor } from './error-handling.interceptor';
 
 describe('ErrorHandlingInterceptor', () => {
@@ -25,7 +29,10 @@ describe('ErrorHandlingInterceptor', () => {
     beforeEach(() => {
             TestBed.configureTestingModule({
                 providers: [
-                    ErrorHandlingInterceptor
+                    ErrorHandlingInterceptor,
+                    { provide: HTTP_INTERCEPTORS, useExisting: ErrorHandlingInterceptor, multi: true },
+                    provideHttpClient(withXhr(), withInterceptorsFromDi()),
+                    provideHttpClientTesting()
                 ],
             });
 
@@ -36,6 +43,18 @@ describe('ErrorHandlingInterceptor', () => {
     it('should be created', () => {
         const interceptor: ErrorHandlingInterceptor = TestBed.inject(ErrorHandlingInterceptor);
         expect(interceptor).toBeTruthy();
+    });
+
+    it('should reject with the generic error if an error response has no body', async () => {
+        const response = firstValueFrom(TestBed.inject(HttpClient).get('api/languages'));
+        TestBed.inject(HttpTestingController).expectOne('api/languages')
+            .flush(null, { status: 502, statusText: 'Bad Gateway' });
+
+        await expect(response).rejects.toBeInstanceOf(Error);
+        await expect(response).rejects.toMatchObject({
+            message: 'Unknown failure sending HTTP request',
+            type: Error.Type.INTERNAL_ERROR
+        });
     });
 
 });

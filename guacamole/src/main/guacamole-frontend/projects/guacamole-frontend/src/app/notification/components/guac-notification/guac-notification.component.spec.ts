@@ -20,6 +20,8 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TranslocoTestingModule } from '@jsverse/transloco';
+import { Field } from '../../../rest/types/Field';
+import { Form } from '../../../rest/types/Form';
 import { Notification } from '../../types/Notification';
 import { NotificationProgress } from '../../types/NotificationProgress';
 import { GuacNotificationComponent } from './guac-notification.component';
@@ -87,5 +89,27 @@ describe('GuacNotificationComponent', () => {
         showProgress(new NotificationProgress('TEXT', 5, 'MB'));
 
         expect(getBar().hidden).toBe(true);
+    });
+
+    it('should write form values only into the notification currently displayed', () => {
+        const forms = [new Form({ fields: [new Field({ name: 'password', type: Field.Type.PASSWORD })] })];
+
+        const first = new Notification({ forms, formModel: { password: '' } });
+        fixture.componentRef.setInput('notification', first);
+        fixture.detectChanges();
+        const firstFormGroup = fixture.componentInstance.notificationFormGroup;
+
+        const second = new Notification({ forms, formModel: { password: '' } });
+        fixture.componentRef.setInput('notification', second);
+        fixture.detectChanges();
+
+        firstFormGroup.setValue({ password: 'outdated' });
+        fixture.componentInstance.notificationFormGroup.setValue({ password: 'secret' });
+
+        expect(second.formModel).toEqual({ password: 'secret' });
+
+        // Changes to the form of the first notification no longer have an effect
+        firstFormGroup.setValue({ password: 'outdated again' });
+        expect(second.formModel).toEqual({ password: 'secret' });
     });
 });

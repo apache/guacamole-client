@@ -588,12 +588,14 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         }
 
 
-        // Adjust scale if modified externally
+        // Adjust scale if modified externally. This and the auto-fit handler
+        // below may change the scale after the zoom controls of the Guacamole
+        // menu have been checked, so both are deferred like updateDisplayScale().
         const scale = this.managedClient.clientProperties.scale;
 
         if (this.lastScale !== scale) {
 
-            this.changeScale(scale);
+            Promise.resolve().then(() => this.changeScale(scale));
             this.lastScale = scale;
 
         }
@@ -604,7 +606,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
 
         if (this.lastAutoFit !== autoFit) {
 
-            this.changeAutoFit(autoFit);
+            Promise.resolve().then(() => this.changeAutoFit(autoFit));
             this.lastAutoFit = autoFit;
 
         }
@@ -728,7 +730,9 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
 
         }
 
-        this.updateDisplayScale();
+        // Deferred like in ngDoCheck(), as attaching a client invokes this
+        // function during change detection
+        Promise.resolve().then(() => this.updateDisplayScale());
 
     }
 

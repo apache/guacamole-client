@@ -21,7 +21,7 @@
  * Public API Surface of guacamole-frontend-ext-lib
  */
 
-export * from './lib/BootsrapExtensionFunction';
+export * from './lib/BootstrapExtensionFunction';
 
 export * from './lib/form/FormField';
 export * from './lib/form/FormFieldComponentData';

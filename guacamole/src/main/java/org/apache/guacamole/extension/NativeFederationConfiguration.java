@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class NativeFederationConfiguration {
 
-    public static final String DEFAULT_BOOTSTRAP_FUNCTION_NAME = "bootsrapExtension";
+    public static final String DEFAULT_BOOTSTRAP_FUNCTION_NAME = "bootstrapExtension";
 
     /**
      * The name of the function that will be called by the shell to bootstrap the extension.

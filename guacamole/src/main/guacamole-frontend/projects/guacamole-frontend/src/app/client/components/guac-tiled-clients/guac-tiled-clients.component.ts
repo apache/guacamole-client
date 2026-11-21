@@ -130,8 +130,9 @@ export class GuacTiledClientsComponent implements DoCheck {
 
             this.guacEventService.broadcast('guacClientArgumentsUpdated', { focusedClient: newFocusedClient });
 
-            // Remember the new arguments
-            this.lastFocusedClientArguments = newArguments;
+            // Remember a copy of the new arguments, as ManagedClientService
+            // adds new arguments to the same object
+            this.lastFocusedClientArguments = newArguments && { ...newArguments };
         }
 
         // Notify whenever protocol of currently-focused client changes

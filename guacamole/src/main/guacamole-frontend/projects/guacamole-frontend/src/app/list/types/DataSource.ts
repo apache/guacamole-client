@@ -132,7 +132,7 @@ export class DataSource<T> {
      * @param data
      * @param searchString
      */
-    private applyFilter<T>(data: T[], searchString: string | null): T[] {
+    private applyFilter(data: T[], searchString: string | null): T[] {
         if (searchString === null || searchString === '' || this.filterPattern === null)
             return data;
 
@@ -145,7 +145,7 @@ export class DataSource<T> {
      * @param data
      * @param sortOrder
      */
-    private orderByPredicate<T>(data: T[], sortOrder: SortOrder | null): T[] {
+    private orderByPredicate(data: T[], sortOrder: SortOrder | null): T[] {
         if (sortOrder === null)
             return data;
 
@@ -157,7 +157,7 @@ export class DataSource<T> {
      * @param data
      * @param pagination
      */
-    private applyPagination<T>(data: T[], pagination: PagerEvent | null): T[] {
+    private applyPagination(data: T[], pagination: PagerEvent | null): T[] {
         if (pagination === null || pagination.pageSize === 0)
             return data;
 

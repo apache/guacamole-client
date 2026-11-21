@@ -19,12 +19,13 @@
 
 import { AfterViewChecked, Component, DestroyRef, Inject, OnInit, Renderer2, ViewEncapsulation, DOCUMENT, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { NavigationEnd, NavigationStart, Router, RoutesRecognized } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import { distinctUntilChanged, filter, map, pairwise, startWith, take } from 'rxjs';
+import _ from 'lodash';
+import { filter, take } from 'rxjs';
 import { AuthenticationService } from './auth/service/authentication.service';
 import { GuacClientManagerService } from './client/services/guac-client-manager.service';
 import { ManagedClientGroup } from './client/types/ManagedClientGroup';
@@ -106,6 +107,12 @@ export class AppComponent implements OnInit, AfterViewChecked {
      * Provide access to the ApplicationState enum within the template.
      */
     readonly ApplicationState = ApplicationState;
+
+    /**
+     * The name of the CSS class which is applied to the body element for the
+     * current page, if any.
+     */
+    private bodyClassName: string | null = null;
 
     /**
      * Inject required services.
@@ -240,12 +247,15 @@ export class AppComponent implements OnInit, AfterViewChecked {
         this.guacEventService
             .on('guacInsufficientCredentials')
             .pipe(takeUntilDestroyed(this.destroyRef))
-            .subscribe(({ parameters, error }) => {
+            .subscribe(async ({ parameters, error }) => {
+
+                // The parameters of the previous attempt are provided as a promise
+                const submitted: Record<string, string> = await parameters;
 
                 this.setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
                 this.loginHelpText = error.translatableMessage;
-                this.acceptedCredentials = parameters as any; // TODO: Map to FormGroup
+                this.acceptedCredentials = new FormGroup(_.mapValues(submitted, value => new FormControl(value)));
                 this.expectedCredentials = error.expected;
 
             });
@@ -282,7 +292,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
         this.guacEventService.on('guacLogout')
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
-                this.setApplicationState(ApplicationState.LOGGED_OUT);
+                this.applicationState = ApplicationState.LOGGED_OUT;
                 this.reAuthenticating = false;
             });
 
@@ -297,30 +307,19 @@ export class AppComponent implements OnInit, AfterViewChecked {
             .subscribe(() => keyboard.reset());
 
 
-        // Clear login screen if route change was successful (and thus
-        // login was either successful or not required)
+        // Update CSS class upon navigation
         this.router.events
             .pipe(filter(event => event instanceof NavigationEnd))
-            .subscribe(() => this.setApplicationState(ApplicationState.READY));
+            .subscribe(() => {
 
-        // Set body CSS class based on current route
-        this.router.events.pipe(
-            // Check if a new class needs to be applied every time the route changes
-            filter((event): event is RoutesRecognized => event instanceof RoutesRecognized),
-            // Get the current route data
-            map((event) => event.state.root.firstChild?.data || {}),
-            // Extract the bodyClassName property
-            filter((data) => !!data['bodyClassName']),
-            map((data) => data['bodyClassName']),
-            // Only proceed if the class has changed
-            distinctUntilChanged(),
-            // Start with null so that the first class is always applied
-            startWith(null),
-            // Emit previous and current class name as a pair
-            pairwise()
-        )
-            .subscribe(([previousClass, nextClass]) => {
-                this.updateBodyClass(previousClass, nextClass);
+                // Clear login screen if route change was successful (and thus
+                // login was either successful or not required)
+                this.applicationState = ApplicationState.READY;
+
+                // Set body CSS class
+                const route = this.router.routerState.snapshot.root.firstChild;
+                this.setBodyClass(route?.data['bodyClassName'] || null);
+
             });
 
     }
@@ -355,21 +354,19 @@ export class AppComponent implements OnInit, AfterViewChecked {
     /**
      * Sets the current overall state of the client side of the
      * application to the given value. Possible values are defined by
-     * {@link ApplicationState}.
+     * {@link ApplicationState}. The title and class associated with the
+     * current page are automatically reset to the standard values applicable
+     * to the application as a whole (rather than any specific page).
      *
      * @param state
      *     The state to assign, as defined by {@link ApplicationState}.
      */
     private setApplicationState(state: ApplicationState): void {
         this.applicationState = state;
-
-
-        // TODO: In which cases is this necessary?
-        // The title and class associated with the
-        // current page are automatically reset to the standard values applicable
-        // to the application as a whole (rather than any specific page).
-        // this.page.bodyClassName = '';
-        // this.title.setTitle('APP.NAME');
+        this.translocoService.selectTranslate('APP.NAME')
+            .pipe(take(1))
+            .subscribe((title) => this.title.setTitle(title));
+        this.setBodyClass(null);
     }
 
     /**
@@ -388,23 +385,24 @@ export class AppComponent implements OnInit, AfterViewChecked {
     }
 
     /**
-     * Updates the classes of the body element. The previous class is removed
-     * and the next class is added.
+     * Replaces the CSS class of the body element which is associated with the
+     * current page.
      *
-     * @param previousClass
-     *     The class to remove from the body element.
-     *
-     * @param nextClass
-     *     The class to add to the body element.
+     * @param className
+     *     The class to add to the body element, or null if the body element
+     *     should have no such class.
      */
-    private updateBodyClass(previousClass?: string | null, nextClass?: string | null): void {
+    private setBodyClass(className: string | null): void {
+
         // Remove previous class
-        if (previousClass)
-            this.renderer.removeClass(this.document.body, previousClass);
+        if (this.bodyClassName)
+            this.renderer.removeClass(this.document.body, this.bodyClassName);
 
         // Add the new class
-        if (nextClass)
-            this.renderer.addClass(this.document.body, nextClass);
+        if (className)
+            this.renderer.addClass(this.document.body, className);
+
+        this.bodyClassName = className;
 
     }
 

@@ -105,10 +105,6 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
     async ngAfterViewInit(): Promise<void> {
         this.fieldContent = this.fieldContentRef.nativeElement;
 
-        // Set up form service
-        this.formService.setChangeDetectorRef(this.cdr);
-        this.formService.setViewContainer(this.viewContainer);
-
         // Initially insert field element
         await this.insertFieldElement();
     }
@@ -179,7 +175,8 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
         // Append field content
         if (this.field) {
 
-            await this.formService.insertFieldElement(this.fieldContent, this.field.type, this)
+            await this.formService.insertFieldElement(this.fieldContent, this.field.type, this,
+                this.viewContainer, this.cdr)
                 // Store reference to the created field component
                 .then((fieldElement) => this.fieldComponent = fieldElement)
                 .catch(() => {

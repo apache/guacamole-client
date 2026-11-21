@@ -24,7 +24,10 @@ import { InterceptorService } from '../../util/interceptor.service';
 import { Error } from '../types/Error';
 
 /**
- * TODO
+ * An HTTP interceptor which converts failed responses of the REST API into
+ * REST {@link Error} objects, like the failure handler of requestService in
+ * the AngularJS frontend. Requests having the SKIP_ERROR_HANDLING_INTERCEPTOR
+ * or SKIP_ALL_INTERCEPTORS context token set are passed through unchanged.
  */
 @Injectable()
 export class ErrorHandlingInterceptor implements HttpInterceptor {
@@ -67,7 +70,7 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
     private handleError(error: HttpErrorResponse) {
 
         // Wrap true error responses within REST Error objects
-        if (error.status !== 0) {
+        if (error.status !== 0 && error.error) {
             return throwError(() => new Error(error.error));
         }
 
