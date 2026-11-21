@@ -66,6 +66,11 @@
 
         <div class="guac-player-buttons">
 
+            <!-- Close button -->
+            <button class="guac-player-close"
+                    [attr.title]="'PLAYER.ACTION_CLOSE' | transloco"
+                    (click)="closePlayer()"><span class="close-icon"></span></button>
+
             <!-- Play button -->
             <button class="guac-player-play"
                     [attr.title]="'PLAYER.ACTION_PLAY' | transloco"

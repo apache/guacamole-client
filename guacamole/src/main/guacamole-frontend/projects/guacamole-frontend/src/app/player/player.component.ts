@@ -55,6 +55,7 @@ import {
     ViewEncapsulation,
     ChangeDetectionStrategy
 } from '@angular/core';
+import { Router } from '@angular/router';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import _ from 'lodash';
 import { GuacFrontendEventArguments } from '../events/types/GuacFrontendEventArguments';
@@ -127,6 +128,13 @@ export class PlayerComponent implements OnChanges, OnDestroy {
      * A Blob containing the Guacamole session recording to load.
      */
     @Input('guacSrc') src?: Blob | Guacamole.Tunnel;
+
+    /**
+     * The identifier of the data source of the session recording being
+     * played. Closing the player returns to the connection history of this
+     * data source.
+     */
+    @Input({ required: true }) dataSource!: string;
 
     /**
      * Guacamole.SessionRecording instance to be used to playback the
@@ -272,7 +280,8 @@ export class PlayerComponent implements OnChanges, OnDestroy {
     constructor(private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private keyEventDisplayService: KeyEventDisplayService,
                 private playerHeatmapService: PlayerHeatmapService,
-                private playerTimeService: PlayerTimeService) {
+                private playerTimeService: PlayerTimeService,
+                private router: Router) {
     }
 
     /**
@@ -389,6 +398,13 @@ export class PlayerComponent implements OnChanges, OnDestroy {
             else
                 this.recording.play();
         }
+    }
+
+    /**
+     * Close recording player and return to history.
+     */
+    closePlayer(): void {
+        this.router.navigate(['/settings', this.dataSource, 'history']);
     }
 
     ngOnChanges(changes: SimpleChanges) {
