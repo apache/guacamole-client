@@ -252,7 +252,7 @@ export class UserService {
         return this.http.patch<DirectoryPatchResponse>('api/session/data/' + encodeURIComponent(dataSource) + '/users', patches)
 
             // Clear the cache
-            .pipe(tap(patchResponse => {
+            .pipe(tap(() => {
                 this.cacheService.users.clear();
             }));
 

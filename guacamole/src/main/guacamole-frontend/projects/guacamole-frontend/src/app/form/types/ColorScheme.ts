@@ -178,10 +178,9 @@ export class ColorScheme {
 
         // For each semicolon-separated statement in the provided color scheme
         const statements = str.split(/;/);
-        for (let i = 0; i < statements.length; i++) {
+        for (const statement of statements) {
 
             // Skip any statements which cannot be parsed
-            const statement = statements[i];
             const groups = /^\s*(background|foreground|color([0-9]+))\s*:\s*(\S*)\s*$/.exec(statement);
             if (!groups)
                 continue;

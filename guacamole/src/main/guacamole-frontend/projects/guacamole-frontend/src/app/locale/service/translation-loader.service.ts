@@ -19,7 +19,7 @@
 
 import { HttpClient, HttpContext } from '@angular/common/http';
 import { DOCUMENT, Inject, Injectable } from '@angular/core';
-import { Translation, TranslocoLoader, TranslocoLoaderData } from '@jsverse/transloco';
+import { Translation, TranslocoLoader } from '@jsverse/transloco';
 import { LanguageService } from '../../rest/service/language.service';
 import { SKIP_ALL_INTERCEPTORS } from '../../util/interceptor.service';
 
@@ -55,13 +55,10 @@ export class TranslationLoaderService implements TranslocoLoader {
      * @param languageKey
      *     The requested language key.
      *
-     * @param data
-     *     Optional data to be passed to the loader.
-     *
      * @returns
      *     A promise which resolves to the requested translation object.
      */
-    getTranslation(languageKey: string, data?: TranslocoLoaderData): Promise<Translation> {
+    getTranslation(languageKey: string): Promise<Translation> {
 
         // Return promise which is resolved only after the translation file is loaded
         return new Promise<Translation>((resolve, reject) => {

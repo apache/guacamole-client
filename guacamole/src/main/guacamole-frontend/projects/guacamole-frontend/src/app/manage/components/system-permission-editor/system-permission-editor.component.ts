@@ -33,6 +33,7 @@ import { PermissionSet } from '../../../rest/types/PermissionSet';
  * password/attributes) may also be manipulated.
  */
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector -- element name of the AngularJS directive
     selector: 'system-permission-editor',
     templateUrl: './system-permission-editor.component.html',
     encapsulation: ViewEncapsulation.None,

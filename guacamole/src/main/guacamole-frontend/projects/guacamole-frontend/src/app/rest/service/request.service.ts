@@ -83,7 +83,7 @@ export class RequestService {
      *     A function which can be provided as the error callback for a
      *     promise.
      */
-    createPromiseErrorCallback(callback: Function): ((reason: any) => (PromiseLike<never>) | null | undefined) {
+    createPromiseErrorCallback(callback: (error: Error) => undefined): ((reason: any) => (PromiseLike<never>) | null | undefined) {
         return ((error: any) => {
 
             // Invoke given callback ONLY if due to a legitimate REST error
@@ -136,7 +136,7 @@ export class RequestService {
      *     A function which can be provided as the error callback for a
      *     promise.
      */
-    defaultPromiseValue(value: any): Function {
+    defaultPromiseValue(value: any): (error: unknown) => Observable<unknown> {
         return this.createErrorCallback(function resolveIfNotFound(error: any) {
 
             // Return default value only if not found
@@ -157,7 +157,7 @@ export class RequestService {
      *
      * @constant
      */
-    readonly IGNORE: (error: any) => Observable<any> = this.createErrorCallback((error: any): Observable<any> => {
+    readonly IGNORE: (error: any) => Observable<any> = this.createErrorCallback((): Observable<any> => {
         return of(void (0));
     });
 

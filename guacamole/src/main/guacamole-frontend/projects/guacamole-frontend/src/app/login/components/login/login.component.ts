@@ -239,8 +239,7 @@ export class LoginComponent implements OnInit, OnChanges {
      */
     private getRelevantField(): Field | null {
 
-        for (let i = 0; i < this.remainingFields.length; i++) {
-            const field = this.remainingFields[i];
+        for (const field of this.remainingFields) {
             if (!this.enteredValues.get(field.name))
                 return field;
         }

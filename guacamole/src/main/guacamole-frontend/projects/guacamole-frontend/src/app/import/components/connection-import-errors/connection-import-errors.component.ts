@@ -41,6 +41,7 @@ import { ParseResult } from '../../types/ParseResult';
  * batch creation attempt.
  */
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector -- element name of the AngularJS directive
     selector: 'connection-import-errors',
     templateUrl: './connection-import-errors.component.html',
     changeDetection: ChangeDetectionStrategy.Eager,

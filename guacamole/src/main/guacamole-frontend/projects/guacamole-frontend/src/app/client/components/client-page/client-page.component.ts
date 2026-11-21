@@ -861,11 +861,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
             return 0;
 
         // Count total number of links within the ManagedClient's share link map
-        let linkCount = 0;
-        for (const dummy in this.focusedClient.shareLinks)
-            linkCount++;
-
-        return linkCount;
+        return Object.keys(this.focusedClient.shareLinks).length;
 
     }
 
@@ -1038,8 +1034,8 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
     uploadFiles(files: FileList): void {
 
         // Upload each file
-        for (let i = 0; i < files.length; i++)
-            this.managedClientService.uploadFile(this.filesystemMenuContents!.client, files[i], this.filesystemMenuContents!);
+        for (const file of files)
+            this.managedClientService.uploadFile(this.filesystemMenuContents!.client, file, this.filesystemMenuContents!);
 
     }
 

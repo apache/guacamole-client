@@ -196,7 +196,7 @@ export class ConnectionService {
 
             // Clear the cache
             .pipe(
-                tap(patchResponse => {
+                tap(() => {
                     this.cacheService.connections.clear();
 
                     // Clear users cache to force reload of permissions for any

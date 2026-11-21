@@ -231,7 +231,7 @@ export class ColorPickerService {
             this.pickr.on('init', () => {
                 this.pickrInitComplete = true;
             });
-        } catch (e) {
+        } catch {
             // If the "Pickr" color picker cannot be loaded (Internet Explorer),
             // the available flag will remain set to false
         }
@@ -303,6 +303,7 @@ export class ColorPickerService {
 
             // Replace all color swatches with the palette of colors given
             while (this.pickr.removeSwatch(0)) {
+                // Remove the first swatch until none is left
             }
             for (const color of palette) {
                 this.pickr.addSwatch(color);

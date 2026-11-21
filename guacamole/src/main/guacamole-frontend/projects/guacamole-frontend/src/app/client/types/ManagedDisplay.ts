@@ -24,7 +24,7 @@ import { signal, WritableSignal } from '@angular/core';
  * Type definition for the template parameter accepted by the ManagedDisplay
  * constructor. All properties are optional.
  */
-export type ManagedDisplayTemplate = {
+export interface ManagedDisplayTemplate {
 
     /**
      * The underlying Guacamole display.

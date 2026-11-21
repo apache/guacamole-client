@@ -146,7 +146,7 @@ export class TunnelService {
      *     The sanitized filename.
      */
     sanitizeFilename(filename: string): string {
-        return filename.replace(/[\\\/]+/g, '_');
+        return filename.replace(/[\\/]+/g, '_');
     }
 
     /**

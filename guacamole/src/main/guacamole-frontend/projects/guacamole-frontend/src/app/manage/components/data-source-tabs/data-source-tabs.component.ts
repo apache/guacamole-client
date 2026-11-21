@@ -29,6 +29,7 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
  * sources.
  */
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector -- element name of the AngularJS directive
     selector: 'data-source-tabs',
     templateUrl: './data-source-tabs.component.html',
     encapsulation: ViewEncapsulation.None,

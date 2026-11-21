@@ -37,7 +37,7 @@ export class MenuAction {
     /**
      * The callback to call when this action is performed.
      */
-    callback: Function;
+    callback: () => void;
 
     /**
      * Creates a new MenuAction.
@@ -51,7 +51,7 @@ export class MenuAction {
      * @param className
      *     The CSS class to associate with this action, if any.
      */
-    constructor(name: string, callback: Function, className?: string) {
+    constructor(name: string, callback: () => void, className?: string) {
         this.name = name;
         this.callback = callback;
         this.className = className;

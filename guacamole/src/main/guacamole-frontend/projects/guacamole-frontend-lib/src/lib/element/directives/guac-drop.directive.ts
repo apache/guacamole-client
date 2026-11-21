@@ -52,7 +52,7 @@ export class GuacDropDirective {
      * the restriction, otherwise any number of files may be dragged.
      * Defaults to true if not set.
      */
-    @Input() guacMultiple: boolean = true;
+    @Input() guacMultiple = true;
 
     /**
      * The function to call whenever an error occurs during the drop
@@ -60,6 +60,7 @@ export class GuacDropDirective {
      * key of the error message to display.
      */
     @Input() guacDropError: (errorTextKey: string) => void = () => {
+        // Errors are ignored unless a callback is bound
     };
 
     /**

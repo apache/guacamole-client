@@ -98,7 +98,7 @@ export class GuacSettingsSessionsComponent implements OnInit {
      * Observable of the current SortOrder instance which stores the sort order of the
      * visible connection wrappers. The value is updated by the GuacSortOrderDirective.
      */
-    order: BehaviorSubject<SortOrder> = new BehaviorSubject(this.initialOrder);
+    order = new BehaviorSubject<SortOrder>(this.initialOrder);
 
     /**
      * Array of all wrapper properties that are filterable.
@@ -367,7 +367,7 @@ export class GuacSettingsSessionsComponent implements OnInit {
                 next : () => {
                     // Remove deleted connections from wrapper array and update view
                     this.wrappers = this.wrappers!.filter(wrapper => {
-                        return !(wrapper.activeConnection.identifier! in (this.allSelectedWrappers[wrapper.dataSource] || {}));
+                        return !((wrapper.activeConnection.identifier!) in (this.allSelectedWrappers[wrapper.dataSource] || {}));
                     });
                     this.dataSourceView?.updateSource(this.wrappers);
 

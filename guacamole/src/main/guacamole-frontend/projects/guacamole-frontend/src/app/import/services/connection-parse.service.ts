@@ -46,7 +46,7 @@ const BINARY_CSV_ERROR_MESSAGE = 'Argument must be a Buffer'.toLowerCase();
  * The identifier of the root connection group, under which all other groups
  * and connections exist.
  */
-const ROOT_GROUP_IDENTIFIER: string = 'ROOT';
+const ROOT_GROUP_IDENTIFIER = 'ROOT';
 
 /**
  * A service for parsing user-provided JSON, YAML, or JSON connection data into
@@ -288,7 +288,7 @@ export class ConnectionParseService {
 
             // Error out if this is a duplicate of a connection already in the
             // file
-            if (!!_.get(connectionsInFile, path))
+            if (_.get(connectionsInFile, path))
                 connection.errors.push(new ParseError({
                     message  : 'Duplicate connection in file: ' + path,
                     key      : 'IMPORT.ERROR_DUPLICATE_CONNECTION_IN_FILE',
@@ -527,7 +527,7 @@ export class ConnectionParseService {
      *     parsing all provided connection data.
      */
     private parseConnectionData(
-        importConfig: ConnectionImportConfig, connectionData: any[], transformFunctions: Function[]): Promise<ParseResult> {
+        importConfig: ConnectionImportConfig, connectionData: any[], transformFunctions: ((connection: any) => ImportConnection)[]): Promise<ParseResult> {
 
         // Check that the provided connection data array is not empty
         const checkError = this.performBasicChecks(connectionData);

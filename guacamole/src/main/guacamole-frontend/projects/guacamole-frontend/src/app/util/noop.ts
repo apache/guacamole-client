@@ -22,4 +22,5 @@
  * such as a rejection handler that ignores the rejection.
  */
 export const NOOP = () => {
+    // Intentionally empty
 };

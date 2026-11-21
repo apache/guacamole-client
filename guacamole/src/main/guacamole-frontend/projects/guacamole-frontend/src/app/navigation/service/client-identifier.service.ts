@@ -159,7 +159,7 @@ export class ClientIdentifierService {
         }
 
             // If the provided string is invalid, transform into a reasonable guess
-        catch (e) {
+        catch {
             return new ClientIdentifier({
                 id        : str,
                 type      : ClientIdentifier.Types.CONNECTION,

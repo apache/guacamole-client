@@ -208,7 +208,7 @@ export class ManageConnectionComponent implements OnInit {
             this.connectionGroupService.getConnectionGroupTree(this.selectedDataSource, ConnectionGroup.ROOT_IDENTIFIER, [PermissionSet.ObjectPermissionType.ADMINISTER])
         ])
             .subscribe({
-                next    : ([connectionData, attributes, permissions, protocols, rootGroup]) => {
+                next    : ([, attributes, permissions, protocols, rootGroup]) => {
 
                     this.dataSourceView?.updateSource(this.historyEntryWrappers!);
 

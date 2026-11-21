@@ -29,6 +29,7 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
  * context of the object being edited/created.
  */
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector -- element name of the AngularJS directive
     selector: 'management-buttons',
     templateUrl: './management-buttons.component.html',
     encapsulation: ViewEncapsulation.None,

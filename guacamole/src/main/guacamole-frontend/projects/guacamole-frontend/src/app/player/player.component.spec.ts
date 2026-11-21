@@ -130,7 +130,7 @@ describe('PlayerComponent', () => {
             } as unknown as typeof Guacamole.SessionRecording);
 
             fixture.componentRef.setInput('dataSource', 'postgresql');
-            fixture.componentRef.setInput('guacSrc', new Blob());
+            fixture.componentRef.setInput('src', new Blob());
             fixture.detectChanges();
         });
 

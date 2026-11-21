@@ -46,26 +46,26 @@ import Operation = DirectoryPatch.Operation;
 /**
  * The allowed MIME type for CSV files.
  */
-const CSV_MIME_TYPE: string = 'text/csv';
+const CSV_MIME_TYPE = 'text/csv';
 
 /**
  * A fallback regular expression for CSV filenames, if no MIME type is provided
  * by the browser. Any file that matches this regex will be considered to be a
  * CSV file.
  */
-const CSV_FILENAME_REGEX: RegExp = /\.csv$/i;
+const CSV_FILENAME_REGEX = /\.csv$/i;
 
 /**
  * The allowed MIME type for JSON files.
  */
-const JSON_MIME_TYPE: string = 'application/json';
+const JSON_MIME_TYPE = 'application/json';
 
 /**
  * A fallback regular expression for JSON filenames, if no MIME type is provided
  * by the browser. Any file that matches this regex will be considered to be a
  * JSON file.
  */
-const JSON_FILENAME_REGEX: RegExp = /\.json$/i;
+const JSON_FILENAME_REGEX = /\.json$/i;
 
 /**
  * The allowed MIME types for YAML files.
@@ -87,7 +87,7 @@ const YAML_MIME_TYPES: string[] = [
  * by the browser. Any file that matches this regex will be considered to be a
  * YAML file.
  */
-const YAML_FILENAME_REGEX: RegExp = /\.ya?ml$/i;
+const YAML_FILENAME_REGEX = /\.ya?ml$/i;
 
 /**
  * Possible signatures for zip files (which include most modern Microsoft office
@@ -124,7 +124,7 @@ export class ImportConnectionsComponent {
      * The unique identifier of the data source to which connections are being
      * imported.
      */
-    @Input('dataSource') dataSource!: string;
+    @Input() dataSource!: string;
 
     /**
      * The result of parsing the current upload, if successful.
@@ -147,17 +147,17 @@ export class ImportConnectionsComponent {
      * True if the file is fully uploaded and ready to be processed, or false
      * otherwise.
      */
-    dataReady: boolean = false;
+    dataReady = false;
 
     /**
      * True if the file upload has been aborted mid-upload, or false otherwise.
      */
-    aborted: boolean = false;
+    aborted = false;
 
     /**
      * True if fully-uploaded data is being processed, or false otherwise.
      */
-    processing: boolean = false;
+    processing = false;
 
     /**
      * The MIME type of the uploaded file, if any.
@@ -852,7 +852,7 @@ export class ImportConnectionsComponent {
         const file = files[0];
 
         // The name and MIME type of the file as provided by the browser
-        let fileName = file.name;
+        const fileName = file.name;
         let mimeType = file.type;
 
         // If no MIME type was provided by the browser at all, use REGEXes as a

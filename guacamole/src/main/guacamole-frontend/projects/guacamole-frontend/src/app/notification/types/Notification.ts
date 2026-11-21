@@ -69,7 +69,7 @@ export class Notification {
      * The function to invoke when the form is submitted, if form fields
      * are present within the notification.
      */
-    formSubmitCallback?: Function;
+    formSubmitCallback?: () => void;
 
     /**
      * An array of all actions available to the user in response to this

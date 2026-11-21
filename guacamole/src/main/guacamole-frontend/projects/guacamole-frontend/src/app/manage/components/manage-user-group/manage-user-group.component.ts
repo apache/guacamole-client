@@ -255,7 +255,7 @@ export class ManageUserGroupComponent implements OnInit {
             this.schemaService.getUserGroupAttributes(this.dataSource)
         ])
             .subscribe({
-                next    : ([userGroupData, permissions, userGroups, users, attributes]) => {
+                next    : ([, permissions, userGroups, users, attributes]) => {
 
                     this.attributes = attributes;
 

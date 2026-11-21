@@ -232,8 +232,8 @@ export class FormComponent implements OnChanges {
 
         // If fields are defined, check whether at least one is visible
         if (fields) {
-            for (let i = 0; i < fields.length; i++) {
-                if (this.isVisible(fields[i]))
+            for (const field of fields) {
+                if (this.isVisible(field))
                     return true;
             }
         }

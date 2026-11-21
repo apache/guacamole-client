@@ -413,6 +413,7 @@ export class ManagedClientService {
                 ManagedArgument.getInstance(managedClient, name, value).then(argument => {
                     managedClient.arguments[name] = argument;
                 }, function ignoreImmutableArguments() {
+                    // Immutable arguments are not stored
                 });
             };
 
@@ -676,7 +677,8 @@ export class ManagedClientService {
      */
     setArgument(managedClient: ManagedClient, name: string, value: string): void {
         const managedArgument = managedClient.arguments[name];
-        managedArgument && ManagedArgument.setValue(managedArgument, value);
+        if (managedArgument)
+            ManagedArgument.setValue(managedArgument, value);
     }
 
     /**

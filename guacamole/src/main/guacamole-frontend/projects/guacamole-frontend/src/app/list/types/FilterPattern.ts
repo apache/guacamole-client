@@ -35,12 +35,12 @@ export class FilterPattern {
      * to the constructor of this class. The functions returned are those
      * produced by AngularExpression.compile().
      */
-    private readonly getters: Function[];
+    private readonly getters: ((object: object) => unknown)[];
 
     /**
      * The current filtering predicate.
      */
-    predicate: Function;
+    predicate: (object: object) => boolean;
 
     /**
      * Creates a new FilterPattern.
@@ -119,12 +119,12 @@ export class FilterPattern {
     private matchesString(object: object, str: string): boolean {
 
         // For each defined getter
-        for (let i = 0; i < this.getters.length; i++) {
+        for (const getter of this.getters) {
 
             // Retrieve value of current getter
             let value: any;
             if (_.isObjectLike(object))
-                value = (this.getters)[i](object);
+                value = getter(object);
             // If the given object is a primitive value use the value directly
             else
                 value = object;
@@ -156,13 +156,13 @@ export class FilterPattern {
     private matchesIPv4(object: object, network: IPv4Network): boolean {
 
         // For each defined getter
-        for (let i = 0; i < this.getters.length; i++) {
+        for (const getter of this.getters) {
 
             // Test each possible IPv4 address within the string against
             // the given IPv4 network
-            const addresses = String((this.getters)[i](object)).split(/[^0-9.]+/);
-            for (let j = 0; j < addresses.length; j++) {
-                const value = IPv4Network.parse(addresses[j]);
+            const addresses = String(getter(object)).split(/[^0-9.]+/);
+            for (const address of addresses) {
+                const value = IPv4Network.parse(address);
                 if (value && network.contains(value))
                     return true;
             }
@@ -190,13 +190,13 @@ export class FilterPattern {
     matchesIPv6(object: object, network: IPv6Network): boolean {
 
         // For each defined getter
-        for (let i = 0; i < this.getters.length; i++) {
+        for (const getter of this.getters) {
 
             // Test each possible IPv6 address within the string against
             // the given IPv6 network
-            const addresses = String((this.getters)[i](object)).split(/[^0-9A-Fa-f:]+/);
-            for (let j = 0; j < addresses.length; j++) {
-                const value = IPv6Network.parse(addresses[j]);
+            const addresses = String(getter(object)).split(/[^0-9A-Fa-f:]+/);
+            for (const address of addresses) {
+                const value = IPv6Network.parse(address);
                 if (value && network.contains(value))
                     return true;
             }
@@ -231,8 +231,8 @@ export class FilterPattern {
         this.predicate = (object: object) => {
 
             // False if any token does not match
-            for (let i = 0; i < tokens.length; i++) {
-                if (!this.matchesToken(object, tokens[i]))
+            for (const token of tokens) {
+                if (!this.matchesToken(object, token))
                     return false;
             }
 

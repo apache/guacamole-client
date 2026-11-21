@@ -224,7 +224,7 @@ export class ManageUserComponent implements OnInit {
         forkJoin([userData, permissions, userGroups, attributes])
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
-                next    : ([userData, permissions, userGroups, attributes]) => {
+                next    : ([, permissions, userGroups, attributes]) => {
 
                     this.attributes = attributes;
 
@@ -306,17 +306,13 @@ export class ManageUserComponent implements OnInit {
 
     /**
      * Returns whether the current user can edit the username of the user being
-     * edited within the given data source.
-     *
-     * @param dataSource
-     *     The identifier of the data source to check. If omitted, this will
-     *     default to the currently-selected data source.
+     * edited.
      *
      * @returns
      *     true if the current user can edit the username of the user being
      *     edited, false otherwise.
      */
-    canEditUsername(dataSource?: string): boolean {
+    canEditUsername(): boolean {
         return !this.username;
     }
 

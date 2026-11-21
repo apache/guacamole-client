@@ -38,19 +38,19 @@ export class ImportConnectionError {
      * The human-readable name of this connection, which is not necessarily
      * unique.
      */
-    name: String;
+    name: string;
 
     /**
      * The human-readable connection group path for this connection, of the
      * form "ROOT/Parent/Child".
      */
-    group: String;
+    group: string;
 
     /**
      * The name of the protocol associated with this connection, such as
      * "vnc" or "rdp".
      */
-    protocol: String;
+    protocol: string;
 
     /**
      * The error messages associated with this particular connection, if any.

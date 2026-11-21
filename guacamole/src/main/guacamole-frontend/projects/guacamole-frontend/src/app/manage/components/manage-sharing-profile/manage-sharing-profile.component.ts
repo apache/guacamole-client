@@ -140,7 +140,7 @@ export class ManageSharingProfileComponent implements OnInit {
             this.schemaService.getProtocols(this.selectedDataSource),
             this.permissionService.getEffectivePermissions(this.selectedDataSource, this.authenticationService.getCurrentUsername()!)
         ]).subscribe({
-            next : ([_, attributes, protocols, permissions]) => {
+            next : ([, attributes, protocols, permissions]) => {
 
                 this.attributes = attributes;
                 this.protocols = protocols;

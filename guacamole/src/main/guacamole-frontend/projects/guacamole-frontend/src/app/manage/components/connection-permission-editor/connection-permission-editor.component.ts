@@ -38,6 +38,7 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
  * removed within a separate pair of {@link PermissionSet} objects.
  */
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector -- element name of the AngularJS directive
     selector: 'connection-permission-editor',
     templateUrl: './connection-permission-editor.component.html',
     encapsulation: ViewEncapsulation.None,
@@ -222,7 +223,7 @@ export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
         this.allRootGroups = {};
         this.readableRootGroups = {};
 
-        for (let dataSource in this.administeredRootGroups) {
+        for (const dataSource in this.administeredRootGroups) {
             const rootGroup = this.administeredRootGroups[dataSource];
 
             // Convert all received ConnectionGroup objects into GroupListItems
@@ -241,7 +242,7 @@ export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
 
         // Display only readable connections by default if at least one
         // readable connection exists
-        this.currentTab = !!this.readableRootGroups[this.dataSource]?.children.length ? this.CURRENT_CONNECTIONS : this.ALL_CONNECTIONS;
+        this.currentTab = this.readableRootGroups[this.dataSource]?.children.length ? this.CURRENT_CONNECTIONS : this.ALL_CONNECTIONS;
 
     }
 
@@ -332,7 +333,7 @@ export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
         // If the current item is expandable and has defined children,
         // determine whether it should be expanded
         if (item.expandable && item.children) {
-            for (let child of item.children) {
+            for (const child of item.children) {
 
                 // The parent should be expanded by default if the child is
                 // expanded by default OR the permission set contains READ

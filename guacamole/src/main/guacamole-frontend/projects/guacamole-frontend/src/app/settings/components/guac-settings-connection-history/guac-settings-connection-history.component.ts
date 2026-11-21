@@ -78,7 +78,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
      * Observable of the current SortOrder instance which stores the sort order of the history
      * records. The value is updated by the GuacSortOrderDirective.
      */
-    order: BehaviorSubject<SortOrder> = new BehaviorSubject(this.initialOrder);
+    order = new BehaviorSubject<SortOrder>(this.initialOrder);
 
     /**
      * The search terms to use when filtering the history records.

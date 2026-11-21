@@ -127,7 +127,7 @@ export class PlayerComponent implements OnChanges, OnDestroy {
     /**
      * A Blob containing the Guacamole session recording to load.
      */
-    @Input('guacSrc') src?: Blob | Guacamole.Tunnel;
+    @Input() src?: Blob | Guacamole.Tunnel;
 
     /**
      * The identifier of the data source of the session recording being
@@ -284,6 +284,7 @@ export class PlayerComponent implements OnChanges, OnDestroy {
      * clicked.
      */
     cancelOperation: () => void = () => {
+        // No operation is in progress yet
     };
 
     /**
@@ -390,7 +391,8 @@ export class PlayerComponent implements OnChanges, OnDestroy {
             this.playbackPosition = this.seekPosition || this.playbackPosition;
         };
 
-        this.resumeAfterSeekRequest && this.recording!.play();
+        if (this.resumeAfterSeekRequest)
+            this.recording!.play();
         this.recording!.seek(this.playbackPosition, () => {
             this.seekPosition = null;
             this.operationMessage = null;
@@ -555,7 +557,8 @@ export class PlayerComponent implements OnChanges, OnDestroy {
     ngOnDestroy() {
         this.recording?.pause();
         this.recording?.abort();
-        this.mouseActivityTimer !== null && window.clearTimeout(this.mouseActivityTimer);
+        if (this.mouseActivityTimer !== null)
+            window.clearTimeout(this.mouseActivityTimer);
     }
 
     /**

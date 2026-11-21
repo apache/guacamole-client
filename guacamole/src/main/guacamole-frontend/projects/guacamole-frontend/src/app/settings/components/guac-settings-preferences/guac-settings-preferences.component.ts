@@ -182,7 +182,7 @@ export class GuacSettingsPreferencesComponent implements OnInit {
                             PermissionSet.SystemPermissionType.ADMINISTER));
 
                 },
-                error: this.requestService.createErrorCallback(error => {
+                error: this.requestService.createErrorCallback(() => {
                     this.canUpdateSelf = false;
                     return EMPTY;
                 })

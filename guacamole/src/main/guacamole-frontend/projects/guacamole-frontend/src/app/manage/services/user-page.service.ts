@@ -445,7 +445,7 @@ export class UserPageService {
      */
     getMainPages(): Observable<PageDefinition[]> {
 
-        const promise: Promise<PageDefinition[]> = new Promise<PageDefinition[]>((resolve, reject) => {
+        const promise: Promise<PageDefinition[]> = new Promise<PageDefinition[]>((resolve) => {
 
             let rootGroups: Record<string, ConnectionGroup> | null = null;
             let permissions: Record<string, PermissionSet> | null = null;

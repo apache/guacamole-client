@@ -242,18 +242,8 @@ export class GuacPageListComponent implements OnInit, OnChanges {
             // Filter to only relevant levels
             this.levels = this.levels.filter(function isRelevant(level) {
 
-                // Determine relevancy by counting the number of pages
-                let pageCount = 0;
-                for (const name in level) {
-
-                    // Level is relevant if it has two or more pages
-                    if (++pageCount === 2)
-                        return true;
-
-                }
-
-                // Otherwise, the level is not relevant
-                return false;
+                // Level is relevant if it has two or more pages
+                return Object.keys(level).length >= 2;
 
             });
         }

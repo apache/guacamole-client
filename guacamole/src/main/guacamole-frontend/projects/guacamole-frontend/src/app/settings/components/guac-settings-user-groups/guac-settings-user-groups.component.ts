@@ -100,7 +100,7 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
      * Observable of the current SortOrder instance which stores the sort order of the listed
      * user groups. The value is updated by the GuacSortOrderDirective.
      */
-    order: BehaviorSubject<SortOrder> = new BehaviorSubject(this.initialOrder);
+    order = new BehaviorSubject<SortOrder>(this.initialOrder);
 
     /**
      * Map of data source identifiers to all permissions associated
@@ -207,10 +207,9 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
 
         // For each data source
         const dataSources = _.keys(this.permissions).sort();
-        for (let i = 0; i < dataSources.length; i++) {
+        for (const dataSource of dataSources) {
 
             // Retrieve corresponding permission set
-            const dataSource = dataSources[i];
             const permissionSet = (this.permissions)[dataSource];
 
             // Can create user groups if adminstrator or have explicit permission

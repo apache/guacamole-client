@@ -69,8 +69,8 @@ export class GuacImageService {
      * image format tests.
      *
      */
-    private deferredSupportedMimetypes: Promise<string[]> =
-        new Promise((resolve) => {
+    private deferredSupportedMimetypes =
+        new Promise<string[]>((resolve) => {
             return this.deferredSupportedMimetypesResolve = resolve;
         });
 

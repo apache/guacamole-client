@@ -48,7 +48,7 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
      * The name of the region currently selected. The selected region narrows
      * which time zones are selectable.
      */
-    region: FormControl<string> = new FormControl('', { nonNullable: true });
+    region = new FormControl<string>('', { nonNullable: true });
 
     /**
      * All selectable regions.

@@ -221,12 +221,12 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
     /**
      * A new recording has been selected in PlayerComponent and is now loading.
      */
-    guacPlayerLoading: {};
+    guacPlayerLoading: Record<string, never>;
 
     /**
      * The current recording of PlayerComponent has finished loading.
      */
-    guacPlayerLoaded: {};
+    guacPlayerLoaded: Record<string, never>;
 
     /**
      * The current recording of PlayerComponent cannot be loaded or played due
@@ -248,12 +248,12 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
      * Playback of the current recording of PlayerComponent has started or has
      * been resumed.
      */
-    guacPlayerPlay: {};
+    guacPlayerPlay: Record<string, never>;
 
     /**
      * Playback of the current recording of PlayerComponent has been paused.
      */
-    guacPlayerPause: {};
+    guacPlayerPause: Record<string, never>;
 
     /**
      * The playback position of the current recording of PlayerComponent has

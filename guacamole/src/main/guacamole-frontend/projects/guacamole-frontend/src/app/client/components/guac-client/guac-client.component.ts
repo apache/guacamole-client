@@ -286,8 +286,8 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
             const files = (e as DragEvent).dataTransfer?.files;
             if (!files) return;
 
-            for (let i = 0; i < files.length; i++)
-                this.managedClientService.uploadFile(this.managedClient, files[i]);
+            for (const file of files)
+                this.managedClientService.uploadFile(this.managedClient, file);
 
         }, false);
 

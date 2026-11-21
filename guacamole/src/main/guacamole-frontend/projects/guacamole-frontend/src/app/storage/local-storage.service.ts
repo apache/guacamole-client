@@ -62,7 +62,8 @@ export class LocalStorageService {
         try {
             if (window.localStorage)
                 localStorage.setItem(key, data);
-        } catch (ignore) {
+        } catch {
+            // Keep the value in internal storage only
         }
     }
 
@@ -84,7 +85,8 @@ export class LocalStorageService {
         try {
             if (window.localStorage)
                 localStorage.removeItem(key);
-        } catch (ignore) {
+        } catch {
+            // The value is already gone from internal storage
         }
 
     }
@@ -113,7 +115,8 @@ export class LocalStorageService {
                 if (data)
                     this.storedItems[key] = data;
             }
-        } catch (ignore) {
+        } catch {
+            // Fall back to the value in internal storage
         }
 
         // Pull and parse value from internal storage, if present

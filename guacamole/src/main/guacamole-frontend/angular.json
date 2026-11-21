@@ -263,7 +263,7 @@
 							"projects/guacamole-frontend-ext-lib/**/*.ts",
 							"projects/guacamole-frontend-ext-lib/**/*.html"
 						],
-						"eslintConfig": "projects/guacamole-frontend-lib/eslint.config.js"
+						"eslintConfig": "projects/guacamole-frontend-ext-lib/eslint.config.js"
 					}
 				}
 			}

@@ -20,7 +20,7 @@
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import { catchError, firstValueFrom, of, throwError } from 'rxjs';
+import { catchError, firstValueFrom, throwError } from 'rxjs';
 import { TestScheduler } from 'rxjs/testing';
 import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { getTestScheduler } from '../../util/test-helper';

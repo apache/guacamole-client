@@ -33,6 +33,7 @@ import { DataSource } from '../../../list/types/DataSource';
  * identifiers.
  */
 @Component({
+    // eslint-disable-next-line @angular-eslint/component-selector -- element name of the AngularJS directive
     selector: 'identifier-set-editor',
     templateUrl: './identifier-set-editor.component.html',
     encapsulation: ViewEncapsulation.None,

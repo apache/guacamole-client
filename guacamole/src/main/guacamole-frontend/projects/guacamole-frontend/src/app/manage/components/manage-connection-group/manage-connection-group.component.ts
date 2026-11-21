@@ -140,7 +140,7 @@ export class ManageConnectionGroupComponent implements OnInit {
         forkJoin([connectionGroupData, attributes, permissions, rootGroup])
             .subscribe({
 
-                next    : ([_, attributes, permissions, rootGroup]) => {
+                next    : ([, attributes, permissions, rootGroup]) => {
 
                     this.attributes = attributes;
                     this.rootGroup = rootGroup;

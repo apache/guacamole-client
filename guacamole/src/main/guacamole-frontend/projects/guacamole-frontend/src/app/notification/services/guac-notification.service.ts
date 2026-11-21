@@ -37,8 +37,8 @@ export class GuacNotificationService {
      * Getter/setter which retrieves or sets the current status notification,
      * which may simply be false if no status is currently shown.
      */
-    private storedStatus: SessionStorageEntry<Notification | boolean | Object>
-        = this.sessionStorageFactory.create<Notification | boolean | Object>(false);
+    private storedStatus: SessionStorageEntry<Notification | boolean | object>
+        = this.sessionStorageFactory.create<Notification | boolean | object>(false);
 
     /**
      * Inject required services.
@@ -69,7 +69,7 @@ export class GuacNotificationService {
      * Retrieves the current status notification, which may simply be false if
      * no status is currently shown.
      */
-    getStatus(): Notification | boolean | Object {
+    getStatus(): Notification | boolean | object {
         return this.storedStatus();
     }
 
@@ -100,7 +100,7 @@ export class GuacNotificationService {
      * // To hide the status message
      * guacNotification.showStatus(false);
      */
-    showStatus(status: Notification | boolean | Object): void {
+    showStatus(status: Notification | boolean | object): void {
         if (!this.storedStatus() || !status)
             this.storedStatus(status);
     }
