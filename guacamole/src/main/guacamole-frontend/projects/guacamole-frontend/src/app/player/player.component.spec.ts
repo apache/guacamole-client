@@ -90,4 +90,74 @@ describe('PlayerComponent', () => {
         expect(router.url).toBe('/settings/a%20b%2Fc/history');
     });
 
+    describe('key log', () => {
+
+        /**
+         * The recording the player loads, standing in for a
+         * Guacamole.SessionRecording, whose display needs a canvas that
+         * jsdom does not provide.
+         */
+        let recording: Guacamole.SessionRecording;
+
+        /**
+         * The key events of the recording: "a" pressed and released.
+         */
+        const keyEvents: Guacamole.KeyEventInterpreter.KeyEvent[] = [
+            { definition: { keysym: 0x61, name: 'a', value: 'a' }, pressed: true, timestamp: 0 },
+            { definition: { keysym: 0x61, name: 'a', value: 'a' }, pressed: false, timestamp: 10 }
+        ];
+
+        /**
+         * The clipboard events of the recording: "x" placed on the
+         * clipboard after "a" was typed.
+         */
+        const clipboardEvents: Guacamole.ClipboardEventInterpreter.ClipboardEvent[] = [
+            { mimetype: 'text/plain', data: 'x', timestamp: 1000 }
+        ];
+
+        beforeEach(() => {
+            recording = {
+                connect    : () => undefined,
+                isPlaying  : () => false,
+                getDuration: () => 0,
+                getDisplay : () => undefined,
+                pause      : () => undefined,
+                abort      : () => undefined
+            } as unknown as Guacamole.SessionRecording;
+
+            vi.spyOn(Guacamole, 'SessionRecording').mockImplementation(function () {
+                return recording;
+            } as unknown as typeof Guacamole.SessionRecording);
+
+            fixture.componentRef.setInput('dataSource', 'postgresql');
+            fixture.componentRef.setInput('guacSrc', new Blob());
+            fixture.detectChanges();
+        });
+
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        /**
+         * Returns the text of each batch of the key log.
+         */
+        const keyLog = (): string[] => fixture.componentInstance.textBatches.map(batch => batch.simpleValue);
+
+        it('should show the clipboard events of the recording among its key events', () => {
+            // SessionRecording reports key events before clipboard events
+            recording.onkeyevents!(keyEvents);
+            recording.onclipboardevents!(clipboardEvents);
+
+            expect(keyLog()).toEqual(['a[Clipboard: x]']);
+        });
+
+        it('should keep the clipboard events if the key events are reported last', () => {
+            recording.onclipboardevents!(clipboardEvents);
+            recording.onkeyevents!(keyEvents);
+
+            expect(keyLog()).toEqual(['a[Clipboard: x]']);
+        });
+
+    });
+
 });

@@ -263,6 +263,18 @@ export class PlayerComponent implements OnChanges, OnDestroy {
     private keyTimestamps: number[] = [];
 
     /**
+     * Clipboard events extracted from the recording, stored for merging
+     * with key events.
+     */
+    private clipboardEvents: Guacamole.ClipboardEventInterpreter.ClipboardEvent[] = [];
+
+    /**
+     * Key events extracted from the recording, stored for merging
+     * with clipboard events.
+     */
+    private keyEvents: Guacamole.KeyEventInterpreter.KeyEvent[] = [];
+
+    /**
      * Whether the mouse has moved recently.
      */
     recentMouseMovement = signal(false);
@@ -480,11 +492,25 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                 // Extract key events from the recording
                 this.recording.onkeyevents = (events) => {
 
-                    // Convert to a display-optimized format
-                    this.textBatches = (
-                        this.keyEventDisplayService.parseEvents(events));
-
+                    this.keyEvents = events;
                     this.keyTimestamps = events.map(event => event.timestamp);
+
+                    // Convert to a display-optimized format
+                    this.textBatches = this.keyEventDisplayService.parseEventsWithClipboard(
+                        this.keyEvents, this.clipboardEvents
+                    );
+
+                };
+
+                // Extract clipboard events from the recording
+                this.recording.onclipboardevents = (events) => {
+
+                    this.clipboardEvents = events;
+
+                    // Convert to a display-optimized format
+                    this.textBatches = this.keyEventDisplayService.parseEventsWithClipboard(
+                        this.keyEvents, this.clipboardEvents
+                    );
 
                 };
 

@@ -77,24 +77,39 @@ describe('KeyEventDisplayService', () => {
         keyEvent(character.charCodeAt(0), character, false, timestamp + 10, character)
     ];
 
+    /**
+     * Returns a clipboard event as produced by ClipboardEventInterpreter.
+     *
+     * @param data
+     *     The text that was placed on the clipboard.
+     *
+     * @param timestamp
+     *     The time of the event in milliseconds.
+     *
+     * @returns
+     *     The clipboard event.
+     */
+    const clipboardEvent = (data: string, timestamp: number): Guacamole.ClipboardEventInterpreter.ClipboardEvent =>
+        ({ mimetype: 'text/plain', data, timestamp });
+
     beforeEach(() => {
         service = TestBed.inject(KeyEventDisplayService);
     });
 
-    it('should return no batches if there are no key events', () => {
-        expect(service.parseEvents([])).toEqual([]);
+    it('should return no batches if there are no key or clipboard events', () => {
+        expect(service.parseEventsWithClipboard([], [])).toEqual([]);
     });
 
     it('should return no batches if the key events produce no text', () => {
         const events = [keyEvent(SHIFT_LEFT, 'Shift_L', true, 0), keyEvent(SHIFT_LEFT, 'Shift_L', false, 100)];
 
-        expect(service.parseEvents(events)).toEqual([]);
+        expect(service.parseEventsWithClipboard(events, [])).toEqual([]);
     });
 
     it('should collect the typed text of close key events in a single batch', () => {
         const events = [...typeKey('a', 0), ...typeKey('b', 1000)];
 
-        const batches = service.parseEvents(events);
+        const batches = service.parseEventsWithClipboard(events, []);
 
         expect(batches.length).toBe(1);
         expect(batches[0].simpleValue).toBe('ab');
@@ -104,7 +119,7 @@ describe('KeyEventDisplayService', () => {
     it('should split the key events into batches separated by the batch separation', () => {
         const events = [...typeKey('a', 0), ...typeKey('b', 6000)];
 
-        const batches = service.parseEvents(events, 5000);
+        const batches = service.parseEventsWithClipboard(events, [], 5000);
 
         expect(batches.map(batch => batch.simpleValue)).toEqual(['a', 'b']);
     });
@@ -113,7 +128,7 @@ describe('KeyEventDisplayService', () => {
         // Pressing Shift after the pause starts a new batch, but produces no text
         const events = [...typeKey('a', 0), keyEvent(SHIFT_LEFT, 'Shift_L', true, 10000)];
 
-        const batches = service.parseEvents(events, 5000);
+        const batches = service.parseEventsWithClipboard(events, [], 5000);
 
         expect(batches.map(batch => batch.simpleValue)).toEqual(['a']);
     });
@@ -121,7 +136,7 @@ describe('KeyEventDisplayService', () => {
     it('should consolidate consecutive typed events if requested', () => {
         const events = [...typeKey('a', 0), ...typeKey('b', 1000)];
 
-        const batches = service.parseEvents(events, 5000, true);
+        const batches = service.parseEventsWithClipboard(events, [], 5000, true);
 
         expect(batches[0].events.length).toBe(1);
         expect(batches[0].events[0].text).toBe('ab');
@@ -136,7 +151,7 @@ describe('KeyEventDisplayService', () => {
             keyEvent(0x61, 'a', false, 150, 'a')
         ];
 
-        const batches = service.parseEvents(events);
+        const batches = service.parseEventsWithClipboard(events, []);
 
         expect(batches.map(batch => batch.simpleValue)).toEqual(['ab']);
     });
@@ -149,7 +164,7 @@ describe('KeyEventDisplayService', () => {
             keyEvent(CONTROL_LEFT, 'Ctrl', false, 1300)
         ];
 
-        const batches = service.parseEvents(events);
+        const batches = service.parseEventsWithClipboard(events, []);
 
         expect(batches.map(batch => batch.simpleValue)).toEqual(['a<Ctrl+c>']);
     });
@@ -157,9 +172,48 @@ describe('KeyEventDisplayService', () => {
     it('should use the time a key was pressed as the time of its event', () => {
         const events = [keyEvent(0x61, 'a', true, 1000, 'a'), keyEvent(0x61, 'a', false, 1500, 'a')];
 
-        const batches = service.parseEvents(events);
+        const batches = service.parseEventsWithClipboard(events, []);
 
         expect(batches[0].events.map(event => event.timestamp)).toEqual([1000]);
+    });
+
+    it('should show a clipboard event as an entry of the key log', () => {
+        const batches = service.parseEventsWithClipboard([], [clipboardEvent('hello', 2000)]);
+
+        expect(batches.length).toBe(1);
+        expect(batches[0].simpleValue).toBe('[Clipboard: hello]');
+        expect(batches[0].events).toEqual([{ text: '[Clipboard: hello]', typed: false, timestamp: 2000 }]);
+    });
+
+    it('should merge clipboard events and key events in the order they occurred', () => {
+        const events = [...typeKey('a', 0), ...typeKey('b', 2000)];
+
+        const batches = service.parseEventsWithClipboard(events, [clipboardEvent('x', 1000)]);
+
+        expect(batches.map(batch => batch.simpleValue)).toEqual(['a[Clipboard: x]b']);
+    });
+
+    it('should show only the first 50 characters of the clipboard contents', () => {
+        const contents = '0123456789'.repeat(6);
+
+        const batches = service.parseEventsWithClipboard([], [clipboardEvent(contents, 0)]);
+
+        expect(batches[0].simpleValue).toBe('[Clipboard: 01234567890123456789012345678901234567890123456789]');
+    });
+
+    it('should show an entry for empty clipboard contents', () => {
+        const batches = service.parseEventsWithClipboard([], [clipboardEvent('', 0)]);
+
+        expect(batches.map(batch => batch.simpleValue)).toEqual(['[Clipboard: ]']);
+    });
+
+    it('should count clipboard events when splitting events into batches', () => {
+        // "b" follows the clipboard event closely, but "a" only after a pause
+        const events = [...typeKey('a', 0), ...typeKey('b', 7000)];
+
+        const batches = service.parseEventsWithClipboard(events, [clipboardEvent('x', 6000)], 5000);
+
+        expect(batches.map(batch => batch.simpleValue)).toEqual(['a', '[Clipboard: x]b']);
     });
 
 });
