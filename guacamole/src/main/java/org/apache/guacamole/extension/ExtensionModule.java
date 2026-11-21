@@ -41,7 +41,6 @@ import org.apache.guacamole.properties.StringSetProperty;
 import org.apache.guacamole.resource.Resource;
 import org.apache.guacamole.resource.ResourceServlet;
 import org.apache.guacamole.resource.SequenceResource;
-import org.apache.guacamole.resource.WebApplicationResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -144,7 +143,8 @@ public class ExtensionModule extends ServletModule {
     private final PatchResourceService patchResourceService;
 
     /**
-     * TODO
+     * Service for adding the Native Federation configurations of extensions
+     * and generating the Native Federation manifest and configuration.
      */
     private final NativeFederationService nativeFederationService;
     
@@ -580,12 +580,9 @@ public class ExtensionModule extends ServletModule {
             if(extension.getLargeIcon()!= null)
                 serve("/images/logo-144.png").with(new ResourceServlet(extension.getLargeIcon()));
 
-            // TODO
+            // Add Native Federation configuration, if provided
             nativeFederationService.addNativeFederationConfigurationResource(
-                    extension.getNamespace(),
-                    extension.getNativeFederationConfiguration()
-            );
-
+                    extension.getNamespace(), extension.getNativeFederationConfiguration());
 
             // Log successful loading of extension by name
             logger.info("Extension \"{}\" ({}) loaded.", extension.getName(), extension.getNamespace());
@@ -608,9 +605,6 @@ public class ExtensionModule extends ServletModule {
         Collection<Resource> javaScriptResources = new ArrayList<Resource>();
         Collection<Resource> cssResources = new ArrayList<Resource>();
 
-        // Veriffy that the possibly-cached index.html matches the current build
-        javaScriptResources.add(new WebApplicationResource(getServletContext(), "/verifyCachedVersion.js"));
-
         // Load all extensions
         final Set<String> toleratedAuthProviders = getToleratedAuthenticationProviders();
         loadExtensions(javaScriptResources, cssResources, toleratedAuthProviders);
@@ -622,7 +616,9 @@ public class ExtensionModule extends ServletModule {
         // Dynamically generate app.js and app.css from extensions
         serve("/app.js").with(new ResourceServlet(new SequenceResource(javaScriptResources)));
         serve("/app.css").with(new ResourceServlet(new SequenceResource(cssResources)));
-        // TODO
+
+        // Dynamically generate Native Federation manifest and configuration
+        // from extensions
         serve("/native-federation-manifest.json").with(new ResourceServlet(nativeFederationService.getNativeFederationManifest()));
         serve("/native-federation-config.json").with(new ResourceServlet(nativeFederationService.getNativeFederationConfiguration()));
 

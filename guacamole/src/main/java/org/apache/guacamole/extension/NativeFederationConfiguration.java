@@ -19,61 +19,115 @@
 
 package org.apache.guacamole.extension;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 /**
- * TODO
+ * Java representation of the JSON Native Federation configuration contained
+ * within an extension, describing how the web application bootstraps the
+ * Angular part of that extension and where it adds the routes of the
+ * extension.
  */
 public class NativeFederationConfiguration {
 
+    /**
+     * The name of the bootstrap function of an extension whose Native
+     * Federation configuration does not define one.
+     */
     public static final String DEFAULT_BOOTSTRAP_FUNCTION_NAME = "bootstrapExtension";
 
     /**
-     * The name of the function that will be called by the shell to bootstrap the extension.
-     * Defaults to {@link NativeFederationConfiguration#DEFAULT_BOOTSTRAP_FUNCTION_NAME}.
+     * The name under which the extension exposes its bootstrap function
+     * through Native Federation. The web application calls this function on
+     * startup to obtain the routes of the extension.
      */
     private String bootstrapFunctionName = DEFAULT_BOOTSTRAP_FUNCTION_NAME;
 
     /**
-     * The title of the page to be displayed in the browser tab when the route is active.
-     * If not set, the title of the main application will be used. Specific routes can
-     * override this value by setting the title property on the route.
+     * The title of the browser tab while a route of the extension is active,
+     * or null if the title of the web application should be used. Routes of
+     * the extension may define their own title instead.
      */
     private String pageTitle;
 
     /**
-     * The path where the routes of the extension should be mounted.
+     * The path below which the web application adds the routes of the
+     * extension, such as "angular-extension".
      */
     private String routePath;
 
-
+    /**
+     * Returns the name under which the extension exposes its bootstrap
+     * function through Native Federation. It is defined within the
+     * configuration by the "bootstrapFunctionName" property and is
+     * "bootstrapExtension" if that property is absent.
+     *
+     * @return
+     *     The name of the bootstrap function of the extension.
+     */
     public String getBootstrapFunctionName() {
         return bootstrapFunctionName;
     }
 
-    @JsonProperty(value = "bootstrapFunctionName", defaultValue = DEFAULT_BOOTSTRAP_FUNCTION_NAME)
+    /**
+     * Sets the name under which the extension exposes its bootstrap function
+     * through Native Federation. It is defined within the configuration by
+     * the "bootstrapFunctionName" property.
+     *
+     * @param bootstrapFunctionName
+     *     The name of the bootstrap function of the extension.
+     */
     public void setBootstrapFunctionName(String bootstrapFunctionName) {
         this.bootstrapFunctionName = bootstrapFunctionName;
     }
 
-    @JsonProperty("pageTitle")
-    public void setPageTitle(String pageTitle) {
-        this.pageTitle = pageTitle;
-    }
-
-    @JsonProperty("routePath")
-    public void setRoutePath(String routePath) {
-        this.routePath = routePath;
-    }
-
+    /**
+     * Returns the title of the browser tab while a route of the extension is
+     * active. It is defined within the configuration by the "pageTitle"
+     * property.
+     *
+     * @return
+     *     The title of the browser tab while a route of the extension is
+     *     active, or null if the title of the web application should be used.
+     */
     public String getPageTitle() {
         return pageTitle;
     }
 
+    /**
+     * Sets the title of the browser tab while a route of the extension is
+     * active. It is defined within the configuration by the "pageTitle"
+     * property.
+     *
+     * @param pageTitle
+     *     The title of the browser tab while a route of the extension is
+     *     active, or null if the title of the web application should be used.
+     */
+    public void setPageTitle(String pageTitle) {
+        this.pageTitle = pageTitle;
+    }
 
+    /**
+     * Returns the path below which the web application adds the routes of
+     * the extension. It is defined within the configuration by the
+     * "routePath" property.
+     *
+     * @return
+     *     The path below which the web application adds the routes of the
+     *     extension.
+     */
     public String getRoutePath() {
         return routePath;
     }
 
+    /**
+     * Sets the path below which the web application adds the routes of the
+     * extension. It is defined within the configuration by the "routePath"
+     * property.
+     *
+     * @param routePath
+     *     The path below which the web application adds the routes of the
+     *     extension.
+     */
+    public void setRoutePath(String routePath) {
+        this.routePath = routePath;
+    }
 
 }

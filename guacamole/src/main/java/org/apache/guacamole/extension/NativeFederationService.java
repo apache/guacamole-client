@@ -21,18 +21,21 @@ package org.apache.guacamole.extension;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.apache.guacamole.resource.ByteArrayResource;
 import org.apache.guacamole.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * TODO
+ * Service which collects the Native Federation configurations of all
+ * extensions and generates from them the Native Federation manifest and
+ * configuration, which the web application reads on startup to load the
+ * Angular part of each extension.
  */
 public class NativeFederationService {
 
@@ -41,78 +44,134 @@ public class NativeFederationService {
      */
     private final Logger logger = LoggerFactory.getLogger(NativeFederationService.class);
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
     /**
-     * TODO
+     * The Jackson parser for parsing Native Federation configurations and
+     * generating the Native Federation manifest and configuration.
      */
-    private final Map<String, NativeFederationConfiguration> nativeFederationConfiguration = new HashMap<>();
-    private final Map<String, String> nativeFederationManifest = new HashMap<>();
-
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     /**
-     * TODO
+     * Map of the Native Federation configurations of all extensions added to
+     * this service, where the key of each entry is the namespace of the
+     * extension. Entries are kept in the order the extensions were added.
+     */
+    private final Map<String, NativeFederationConfiguration> nativeFederationConfiguration = new LinkedHashMap<>();
+
+    /**
+     * Map of the URLs of the remoteEntry.json files of all extensions added
+     * to this service, relative to the root of the web application, where the
+     * key of each entry is the namespace of the extension. Entries are kept
+     * in the order the extensions were added.
+     */
+    private final Map<String, String> nativeFederationManifest = new LinkedHashMap<>();
+
+    /**
+     * Adds the given Native Federation configuration of the extension having
+     * the given namespace, such that the web application loads that
+     * extension through Native Federation. If no configuration is given,
+     * nothing is added. If the configuration does not exist or cannot be
+     * parsed, an error is logged and nothing is added.
+     *
+     * @param namespace
+     *     The namespace of the extension. The extension must provide its
+     *     remoteEntry.json as a static resource at the root of its .jar, with
+     *     this namespace as the name of the remote.
      *
      * @param resource
+     *     The Native Federation configuration of the extension, or null if
+     *     the extension does not provide one. This resource must have the
+     *     mimetype "application/json".
      */
     public void addNativeFederationConfigurationResource(String namespace, Resource resource) {
 
-        if (resource == null) {
+        // Nothing to add for extensions without Native Federation
+        if (resource == null)
             return;
+
+        // Read configuration from the extension .jar
+        try (InputStream stream = resource.asStream()) {
+
+            // Omit extension if its configuration does not exist
+            if (stream == null) {
+                logger.error("Native Federation configuration of extension \"{}\" does not exist.", namespace);
+                return;
+            }
+
+            // Parse configuration
+            NativeFederationConfiguration config = mapper.readValue(stream, NativeFederationConfiguration.class);
+            nativeFederationConfiguration.put(namespace, config);
+
+            // Point to the remoteEntry.json among the static resources of the
+            // extension, relative to the root of the web application
+            nativeFederationManifest.put(namespace, "./app/ext/" + namespace + "/remoteEntry.json");
+
         }
 
-        NativeFederationConfiguration config = null;
-        try {
-            config = objectMapper.readValue(resource.asStream(), NativeFederationConfiguration.class);
-            this.nativeFederationConfiguration.put(namespace, config);
-            String staticResourcePrefix = "./app/ext/" + namespace + "/";
-            this.nativeFederationManifest.put(namespace, staticResourcePrefix + "remoteEntry.json");
-        } catch (IOException e) {
-
-            logger.error("Unable to parse native federation configuration for extension in namespace {}: {}", namespace, e.getMessage());
-            logger.debug("Error parsing serialize native federation configuration.", e);
-
+        // Omit extension if its configuration cannot be read
+        catch (IOException e) {
+            logger.error("Unable to parse Native Federation configuration of extension \"{}\": {}",
+                    namespace, e.getMessage(), e);
         }
 
     }
 
-
     /**
-     * TODO
+     * Returns the Native Federation configuration of all extensions added so
+     * far, as a JSON object mapping the namespace of each extension to its
+     * configuration. The web application reads this configuration on
+     * startup, calls the bootstrap function of each extension and adds the
+     * returned routes below the route path of that extension. If the
+     * configuration cannot be generated, an error is logged and the resource
+     * contains an empty JSON object, such that the web application starts
+     * without extensions.
      *
      * @return
+     *     A resource containing the Native Federation configuration of all
+     *     extensions added so far, with the mimetype "application/json".
+     *     Extensions added later are not included.
      */
     public Resource getNativeFederationConfiguration() {
 
+        // Generate configuration from those of all extensions
         try {
-            return new ByteArrayResource("application/json", objectMapper.writeValueAsBytes(this.nativeFederationConfiguration));
-        } catch (JsonProcessingException e) {
+            return new ByteArrayResource("application/json", mapper.writeValueAsBytes(nativeFederationConfiguration));
+        }
 
-            logger.error("Unable to serialize native federation configuration: {}", e.getMessage());
-            logger.debug("Error serializing serialize native federation configuration.", e);
-
-            // TODO: Fallback -  Empty configuration
+        // Fall back to a configuration without extensions
+        catch (JsonProcessingException e) {
+            logger.error("Unable to generate Native Federation configuration: {}", e.getMessage(), e);
             return new ByteArrayResource("application/json", "{}".getBytes(StandardCharsets.UTF_8));
         }
 
     }
 
     /**
-     * TODO
+     * Returns the Native Federation manifest of all extensions added so far,
+     * as a JSON object mapping the namespace of each extension to the URL of
+     * its remoteEntry.json. When the web application starts, Native
+     * Federation reads this manifest and loads the remoteEntry.json of each
+     * extension. If the manifest cannot be generated, an error is logged and
+     * the resource contains an empty JSON object, such that the web
+     * application starts without extensions.
      *
      * @return
+     *     A resource containing the Native Federation manifest of all
+     *     extensions added so far, with the mimetype "application/json".
+     *     Extensions added later are not included.
      */
     public Resource getNativeFederationManifest() {
+
+        // Generate manifest from the remoteEntry.json URLs of all extensions
         try {
-            return new ByteArrayResource("application/json", objectMapper.writeValueAsBytes(this.nativeFederationManifest));
-        } catch (JsonProcessingException e) {
+            return new ByteArrayResource("application/json", mapper.writeValueAsBytes(nativeFederationManifest));
+        }
 
-            logger.error("Unable to serialize native federation manifest: {}", e.getMessage());
-            logger.debug("Error serializing serialize native federation manifest.", e);
-
-            // TODO: Fallback -  Empty configuration
+        // Fall back to a manifest without extensions
+        catch (JsonProcessingException e) {
+            logger.error("Unable to generate Native Federation manifest: {}", e.getMessage(), e);
             return new ByteArrayResource("application/json", "{}".getBytes(StandardCharsets.UTF_8));
         }
+
     }
 
 }

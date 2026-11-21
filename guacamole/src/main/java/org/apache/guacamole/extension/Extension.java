@@ -38,19 +38,12 @@ import org.apache.guacamole.GuacamoleServerException;
 import org.apache.guacamole.net.auth.AuthenticationProvider;
 import org.apache.guacamole.resource.ClassPathResource;
 import org.apache.guacamole.resource.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A Guacamole extension, which may provide custom authentication, static
  * files, theming/branding, etc.
  */
 public class Extension {
-
-    /**
-     * TODO
-     */
-    private static final Logger log = LoggerFactory.getLogger(Extension.class);
 
     /**
      * The Jackson parser for parsing the language JSON files.
@@ -135,7 +128,8 @@ public class Extension {
     private final Resource largeIcon;
 
     /**
-     * TODO
+     * The resource for the Native Federation configuration of the extension,
+     * or null if the extension does not provide one.
      */
     private final Resource nativeFederationConfiguration;
 
@@ -453,14 +447,11 @@ public class Extension {
         else
             largeIcon = null;
 
-        // TODO
-        if (manifest.getNativeFederationConfiguration() != null) {
-            log.info("getNativeFederationConfiguration(): {}", manifest.getNativeFederationConfiguration());
+        // Get Native Federation configuration resource if provided
+        if (manifest.getNativeFederationConfiguration() != null)
             nativeFederationConfiguration = new ClassPathResource(classLoader, "application/json", manifest.getNativeFederationConfiguration());
-        } else {
+        else
             nativeFederationConfiguration = null;
-        }
-
     }
 
     /**
@@ -618,12 +609,18 @@ public class Extension {
         return largeIcon;
     }
 
-
     /**
-     * TODO
+     * Returns the resource for the Native Federation configuration of the
+     * extension, which describes how the web application loads the Angular
+     * part of the extension. The Native Federation configuration is declared
+     * within the extension manifest.
+     *
      * @return
+     *     The resource for the Native Federation configuration, or null if
+     *     the extension does not provide one.
      */
     public Resource getNativeFederationConfiguration() {
         return nativeFederationConfiguration;
     }
+
 }

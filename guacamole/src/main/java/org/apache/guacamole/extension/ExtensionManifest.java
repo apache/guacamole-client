@@ -105,7 +105,9 @@ public class ExtensionManifest {
     private String largeIcon;
 
     /**
-     * TODO
+     * The path to the Native Federation configuration of this extension, if
+     * any. The configuration describes how the web application loads the
+     * Angular part of the extension.
      */
     private String nativeFederationConfiguration;
 
@@ -436,18 +438,28 @@ public class ExtensionManifest {
     }
 
     /**
-     * TODO
+     * Returns the path to the Native Federation configuration of the
+     * extension, relative to the root of the extension .jar. It is defined
+     * within the manifest by the "nativeFederationConfiguration" property.
+     *
      * @return
+     *     The path to the Native Federation configuration, or null if the
+     *     extension does not provide one.
      */
     public String getNativeFederationConfiguration() {
         return nativeFederationConfiguration;
     }
 
     /**
-     * TODO
+     * Sets the path to the Native Federation configuration of the extension,
+     * relative to the root of the extension .jar. It is defined within the
+     * manifest by the "nativeFederationConfiguration" property.
+     *
      * @param nativeFederationConfiguration
+     *     The path to the Native Federation configuration.
      */
     public void setNativeFederationConfiguration(String nativeFederationConfiguration) {
         this.nativeFederationConfiguration = nativeFederationConfiguration;
     }
+
 }
