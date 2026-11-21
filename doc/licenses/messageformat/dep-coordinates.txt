@@ -1,1 +1,5 @@
-messageformat:*
+@messageformat/core:*
+@messageformat/date-skeleton:*
+@messageformat/number-skeleton:*
+@messageformat/parser:*
+@messageformat/runtime:*

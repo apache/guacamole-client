@@ -1,0 +1,3 @@
+@jsverse/transloco:*
+@jsverse/transloco-messageformat:*
+@jsverse/utils:*

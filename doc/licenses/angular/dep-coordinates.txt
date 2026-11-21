@@ -1,2 +1,5 @@
-angular-route:*
-angular:*
+@angular/common:*
+@angular/core:*
+@angular/forms:*
+@angular/platform-browser:*
+@angular/router:*

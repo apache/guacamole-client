@@ -1,0 +1,1 @@
+@angular-architects/native-federation:*

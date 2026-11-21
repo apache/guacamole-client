@@ -180,32 +180,32 @@
                 </executions>
             </plugin>
 
-            <!-- TODO: Copy automatically-generated set of NPM module dependencies for
+            <!-- Copy automatically-generated set of NPM module dependencies for
                 later use by LICENSE generator -->
-            <!--            <plugin>-->
-            <!--                <groupId>org.apache.maven.plugins</groupId>-->
-            <!--                <artifactId>maven-resources-plugin</artifactId>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <id>copy-npm-dependency-list</id>-->
-            <!--                        <phase>generate-resources</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>copy-resources</goal>-->
-            <!--                        </goals>-->
-            <!--                        <configuration>-->
-            <!--                            <outputDirectory>${dependency.list.directory}</outputDirectory>-->
-            <!--                            <resources>-->
-            <!--                                <resource>-->
-            <!--                                    <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>-->
-            <!--                                    <includes>-->
-            <!--                                        <include>npm-dependencies.txt</include>-->
-            <!--                                    </includes>-->
-            <!--                                </resource>-->
-            <!--                            </resources>-->
-            <!--                        </configuration>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-npm-dependency-list</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${dependency.list.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/guacamole-frontend/dist/guacamole-frontend</directory>
+                                    <includes>
+                                        <include>npm-dependencies.txt</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- Automatically generate LICENSE and NOTICE -->
             <plugin>

@@ -82,6 +82,11 @@ const CHUNK_PREFIX = '@nf-internal/';
  * the package providing the bundle is listed. Recheck on each update of one
  * of these packages.
  *
+ * Code inlined from packages that are not installed, such as the Buffer
+ * polyfill of csv-parse and the lexer of es-module-shims, has no version to
+ * read. Its licenses are in guacamole/src/licenses/bundled/ and need the same
+ * recheck on each update of csv-parse or es-module-shims.
+ *
  * @type {Object.<string, string[]>}
  */
 const INLINED = {
