@@ -36,6 +36,7 @@ npm run build:app
 ```
 
 The application is written to `dist/guacamole-frontend/`.
+`npm run build:app` then lists the npm packages bundled into the application in `dist/guacamole-frontend/npm-dependencies.txt`, the input for generating LICENSE and NOTICE.
 Extensions build against `dist/guacamole-frontend-ext-lib/`, while the application compiles that library from its sources.
 
 ## Development server

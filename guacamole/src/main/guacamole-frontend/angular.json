@@ -132,6 +132,8 @@
 								}
 							],
 							"outputHashing": "all",
+							"extractLicenses": false,
+							"statsJson": true,
 							"externalDependencies": [
 								"images/*",
 								"fonts/*"
