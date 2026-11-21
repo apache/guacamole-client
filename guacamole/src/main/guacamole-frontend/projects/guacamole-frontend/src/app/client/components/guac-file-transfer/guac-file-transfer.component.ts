@@ -175,7 +175,7 @@ export class GuacFileTransferComponent implements DoCheck {
      *     saved, false otherwise.
      */
     isSavable(): boolean {
-        return !!(this.transfer as any).blob;
+        return !!(this.transfer as { blob?: Blob }).blob;
     }
 
     /**
@@ -186,11 +186,11 @@ export class GuacFileTransferComponent implements DoCheck {
     save(): void {
 
         // Ignore if no blob exists
-        if (!(this.transfer as any).blob)
+        if (!(this.transfer as { blob?: Blob }).blob)
             return;
 
         // Save file
-        FileSaver.saveAs((this.transfer as any).blob, this.transfer.filename);
+        FileSaver.saveAs((this.transfer as { blob?: Blob }).blob!, this.transfer.filename);
 
     }
 

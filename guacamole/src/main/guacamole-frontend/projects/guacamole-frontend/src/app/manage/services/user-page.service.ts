@@ -190,7 +190,7 @@ export class UserPageService {
         const permissionsSets = this.dataSourceService.apply(
             (dataSource: string, userID: string) => this.permissionService.getEffectivePermissions(dataSource, userID),
             this.authenticationService.getAvailableDataSources(),
-            this.authenticationService.getCurrentUsername()
+            this.authenticationService.getCurrentUsername()!
         );
 
         return forkJoin([rootGroups, permissionsSets])
@@ -199,7 +199,7 @@ export class UserPageService {
                     return this.generateHomePage(rootGroups, permissionsSets);
                 }),
                 catchError(this.requestService.DIE)
-            );
+            ) as Observable<PageDefinition>;
 
     }
 
@@ -381,7 +381,7 @@ export class UserPageService {
         return from(this.dataSourceService.apply(
             (dataSource: string, userID: string) => this.permissionService.getEffectivePermissions(dataSource, userID),
             this.authenticationService.getAvailableDataSources(),
-            this.authenticationService.getCurrentUsername()
+            this.authenticationService.getCurrentUsername()!
         ))
 
             // Resolve promise using settings pages derived from permissions
@@ -389,7 +389,7 @@ export class UserPageService {
                     return this.generateSettingsPages(permissions);
                 }),
                 catchError(this.requestService.DIE)
-            );
+            ) as Observable<PageDefinition[]>;
 
     }
 
@@ -475,7 +475,7 @@ export class UserPageService {
             this.dataSourceService.apply(
                 (dataSource: string, userID: string) => this.permissionService.getEffectivePermissions(dataSource, userID),
                 this.authenticationService.getAvailableDataSources(),
-                this.authenticationService.getCurrentUsername()
+                this.authenticationService.getCurrentUsername()!
             )
 
                 // Resolving main pages if possible

@@ -61,7 +61,7 @@ export class InterceptorService {
      * @returns
      *     true if the request should skip all interceptors, false otherwise.
      */
-    skipAllInterceptors(request: HttpRequest<any>): boolean {
+    skipAllInterceptors(request: HttpRequest<unknown>): boolean {
         return request.context.get(SKIP_ALL_INTERCEPTORS);
     }
 
@@ -74,7 +74,7 @@ export class InterceptorService {
      * @returns
      *     true if the request should skip all interceptors, false otherwise.
      */
-    skipErrorHandlingInterceptor(request: HttpRequest<any>): boolean {
+    skipErrorHandlingInterceptor(request: HttpRequest<unknown>): boolean {
         return request.context.get(SKIP_ERROR_HANDLING_INTERCEPTOR) || this.skipAllInterceptors(request);
     }
 
@@ -87,7 +87,7 @@ export class InterceptorService {
      * @returns
      *     true if the request should skip all interceptors, false otherwise.
      */
-    skipAuthenticationInterceptor(request: HttpRequest<any>): boolean {
+    skipAuthenticationInterceptor(request: HttpRequest<unknown>): boolean {
         return request.context.get(SKIP_AUTHENTICATION_INTERCEPTOR) || this.skipAllInterceptors(request);
     }
 
@@ -101,7 +101,7 @@ export class InterceptorService {
      * @returns
      *     The authentication token if set, null otherwise.
      */
-    getAuthenticationToken(request: HttpRequest<any>): string | null {
+    getAuthenticationToken(request: HttpRequest<unknown>): string | null {
         return request.context.get(AUTHENTICATION_TOKEN);
     }
 

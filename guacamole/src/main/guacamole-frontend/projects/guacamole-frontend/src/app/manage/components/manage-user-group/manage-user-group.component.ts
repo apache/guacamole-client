@@ -249,7 +249,7 @@ export class ManageUserGroupComponent implements OnInit {
         // Populate interface with requested data
         forkJoin([
             this.loadRequestedUserGroup(),
-            this.dataSourceService.apply((dataSource: string, userID: string) => this.permissionService.getEffectivePermissions(dataSource, userID), this.dataSources, this.currentUsername),
+            this.dataSourceService.apply((dataSource: string, userID: string) => this.permissionService.getEffectivePermissions(dataSource, userID), this.dataSources, this.currentUsername!),
             this.userGroupService.getUserGroups(this.dataSource, [PermissionSet.ObjectPermissionType.UPDATE]),
             this.userService.getUsers(this.dataSource, [PermissionSet.ObjectPermissionType.UPDATE]),
             this.schemaService.getUserGroupAttributes(this.dataSource)

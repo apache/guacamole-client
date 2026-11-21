@@ -43,7 +43,7 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
      * map the response to an Observable that will throw an error strictly with an
      * instance of an {@link Error} object.
      */
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 
         // Skip this interceptor if the corresponding HttpContextToken is set
         if (this.interceptorService.skipErrorHandlingInterceptor(request)) {

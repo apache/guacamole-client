@@ -193,7 +193,7 @@ export class AuthenticationService {
      * @returns
      *     An Observable which emits the authentication result only if the login operation was successful.
      */
-    authenticate(parameters: object | Promise<any>): Observable<AuthenticationResult> {
+    authenticate(parameters: Record<string, string> | Promise<Record<string, string>>): Observable<AuthenticationResult> {
 
         // Coerce received parameters object into a Promise, if it isn't
         // already a Promise
@@ -204,7 +204,7 @@ export class AuthenticationService {
 
         // Attempt authentication after auth parameters are available ...
         return from(parametersPromise).pipe(
-            switchMap((requestParams: any) => {
+            switchMap((requestParams: Record<string, string>) => {
                     return this.http.post<AuthenticationResult>(
                         'api/tokens',
                         this.toHttpParams(requestParams),
@@ -292,7 +292,7 @@ export class AuthenticationService {
      *     An HttpParams object containing a parameter for each property of the
      *     given object.
      */
-    private toHttpParams(object: any): HttpParams {
+    private toHttpParams(object: Record<string, string>): HttpParams {
         return Object.getOwnPropertyNames(object)
             .reduce((p, key) => p.set(key, object[key]), new HttpParams());
     }
@@ -317,12 +317,12 @@ export class AuthenticationService {
     updateCurrentToken(parameters: object): Observable<AuthenticationResult> {
 
         // HTTP parameters for the authentication request
-        let httpParameters: any = {};
+        let httpParameters: Record<string, string> = {};
 
         // Add token parameter if current token is known
         const token = this.getCurrentToken();
         if (token)
-            httpParameters.token = this.getCurrentToken();
+            httpParameters['token'] = this.getCurrentToken()!;
 
         // Add any additional parameters
         if (parameters)

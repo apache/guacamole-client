@@ -172,7 +172,7 @@ export class ConnectionHistoryEntryWrapper {
          *     The object whose properties should be copied within the new
          *     ConnectionHistoryEntryWrapper.Log.
          */
-        constructor(template: ConnectionHistoryEntryWrapper.Log | any = {}) {
+        constructor(template: ConnectionHistoryEntryWrapper.Log) {
             this.url = template.url;
             this.description = template.description;
         }

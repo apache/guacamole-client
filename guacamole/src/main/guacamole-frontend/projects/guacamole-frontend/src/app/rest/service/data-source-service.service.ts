@@ -68,19 +68,19 @@ export class DataSourceService {
      *     provided as the resolution to the Promise returned by calls to the
      *     given function.
      */
-    apply<TData>(fn: (dataSource: string, ...args: any[]) => Observable<TData>, dataSources: string[], ...args: any[]): Promise<Record<string, TData>> {
+    apply<TData, TArgs extends unknown[]>(fn: (dataSource: string, ...args: TArgs) => Observable<TData>, dataSources: string[], ...args: TArgs): Promise<Record<string, TData>> {
 
         return new Promise((resolve, reject) => {
 
             const requests: Promise<void>[] = [];
-            const results: Record<string, any> = {};
+            const results: Record<string, TData> = {};
 
             // Retrieve the root group from all data sources
             dataSources.forEach(dataSource => {
 
                 // Add promise to list of pending requests
                 let deferredRequestResolve: () => void;
-                let deferredRequestReject: (reason: any) => void;
+                let deferredRequestReject: (reason: Error) => void;
                 const deferredRequest = new Promise<void>((resolve, reject) => {
                     deferredRequestResolve = resolve;
                     deferredRequestReject = reject;
@@ -99,7 +99,7 @@ export class DataSourceService {
                         },
 
                         // Fail on any errors (except "NOT FOUND")
-                        error: this.requestService.createPromiseErrorCallback(function immediateRequestFailed(error: any) {
+                        error: this.requestService.createPromiseErrorCallback(function immediateRequestFailed(error: Error) {
 
                             if (error.type === Error.Type.NOT_FOUND)
                                 deferredRequestResolve();
@@ -119,7 +119,7 @@ export class DataSourceService {
                 },
 
                 // Reject if at least one request fails
-                this.requestService.createPromiseErrorCallback((error: any) => {
+                this.requestService.createPromiseErrorCallback((error: Error) => {
                     reject(error);
                 }));
 

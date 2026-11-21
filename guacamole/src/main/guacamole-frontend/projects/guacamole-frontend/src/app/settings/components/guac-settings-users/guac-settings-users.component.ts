@@ -177,7 +177,7 @@ export class GuacSettingsUsersComponent implements OnInit {
         this.dataSourceService.apply(
             (ds: string, username: string) => this.permissionService.getEffectivePermissions(ds, username),
             this.dataSources,
-            this.currentUsername
+            this.currentUsername!
         )
             .then(permissions => {
 

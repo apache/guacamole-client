@@ -26,6 +26,6 @@
  * @returns
  *     True if `value` is defined.
  */
-export function isDefined(value: any): boolean {
+export function isDefined(value: unknown): boolean {
     return typeof value !== 'undefined';
 }

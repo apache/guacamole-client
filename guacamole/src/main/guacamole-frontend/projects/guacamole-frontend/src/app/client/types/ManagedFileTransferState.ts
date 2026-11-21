@@ -72,7 +72,7 @@ export class ManagedFileTransferState {
      *     specified, the status code of the ManagedFileTransferState is not
      *     touched.
      */
-    static setStreamState(transferState: ManagedFileTransferState, streamState: ManagedFileTransferState.StreamState, statusCode?: number): void {
+    static setStreamState(transferState: ManagedFileTransferState, streamState: ManagedFileTransferState.StreamState, statusCode?: number | null): void {
 
         // Do not set state after an error is registered
         if (transferState.streamState === ManagedFileTransferState.StreamState.ERROR)

@@ -142,7 +142,7 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
         this.dataSourceService.apply(
             (dataSource: string, userID: string) => this.permissionService.getEffectivePermissions(dataSource, userID),
             this.dataSources,
-            this.currentUsername
+            this.currentUsername!
         )
             .then(retrievedPermissions => {
 

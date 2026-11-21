@@ -67,7 +67,7 @@ export const VALUE_IF_MISSING_PROPERTY = 'valueIfMissing';
  * @param value
  *     The value to return if the requested translation is not available.
  */
-export const translationValueIfMissing = (value: any): Record<string, unknown> => {
+export const translationValueIfMissing = (value: unknown): Record<string, unknown> => {
     return { [VALUE_IF_MISSING_PROPERTY]: value };
 };
 

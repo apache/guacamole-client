@@ -53,7 +53,7 @@ export class LocalStorageService {
      *     can be serialized as JSON, and will automatically be serialized as
      *     JSON prior to storage.
      */
-    setItem(key: string, value: any): void {
+    setItem(key: string, value: unknown): void {
         // Store given value internally
         const data = JSON.stringify(value);
         (this.storedItems)[key] = data;

@@ -68,5 +68,6 @@ export interface FormFieldComponentData {
     /**
      * The managed client associated with this form field, if any.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- ManagedClient belongs to the application, which this library cannot import
     client?: any;
 }

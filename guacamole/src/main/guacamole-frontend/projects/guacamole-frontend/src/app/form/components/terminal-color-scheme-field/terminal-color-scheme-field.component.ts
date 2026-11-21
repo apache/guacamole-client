@@ -135,7 +135,7 @@ export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent im
         super();
 
         // Initialize empty form group for custom color scheme colors
-        const colorFormControls: Record<TerminalColorIndex, FormControl<string | null>> = {} as any;
+        const colorFormControls = {} as Record<TerminalColorIndex, FormControl<string | null>>;
 
         // Create form controls for each color
         terminalColorIndices.forEach((index: TerminalColorIndex) => {

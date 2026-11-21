@@ -755,7 +755,7 @@ export class ManagedClientService {
             // Add a new share link once the credentials are ready
             .subscribe(sharingCredentials => {
                 client.shareLinks[sharingProfile.identifier!] =
-                    ManagedShareLink.getInstance(sharingProfile, sharingCredentials);
+                    ManagedShareLink.getInstance(sharingProfile, sharingCredentials!);
             });
 
     }

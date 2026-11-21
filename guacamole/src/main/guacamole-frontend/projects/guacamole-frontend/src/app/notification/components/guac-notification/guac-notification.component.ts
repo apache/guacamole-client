@@ -49,6 +49,7 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
     /**
      * The notification to display.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- guac-client-notification also passes false and plain objects as its status
     @Input({ required: true }) notification!: Notification | any;
 
     /**

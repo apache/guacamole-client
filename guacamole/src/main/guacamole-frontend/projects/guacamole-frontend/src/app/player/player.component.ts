@@ -478,7 +478,7 @@ export class PlayerComponent implements OnChanges, OnDestroy {
                 // Notify listeners when additional recording data has been
                 // loaded
                 this.recording.onprogress = (duration, current) => {
-                    this.operationProgress = (this.src as unknown as any)?.size ? current / (this.src as unknown as any).size : 0;
+                    this.operationProgress = (this.src as { size?: number } | undefined)?.size ? current / (this.src as Blob).size : 0;
                     this.guacEventService.broadcast('guacPlayerProgress', { duration, current });
 
                     // Store the timestamp of the just-received frame

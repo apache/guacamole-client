@@ -40,7 +40,7 @@ export class ParseError {
      * object will be substituted for the variable of the same name within
      * the translation string.
      */
-    variables: any;
+    variables: Record<string, unknown> | undefined;
 
     /**
      * Creates a new ParseError.

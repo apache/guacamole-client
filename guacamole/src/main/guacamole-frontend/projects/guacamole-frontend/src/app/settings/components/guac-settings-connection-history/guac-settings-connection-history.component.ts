@@ -209,7 +209,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
         const tokens = FilterToken.tokenize(this.searchString);
 
         // Transform tokens into list of required string contents
-        const requiredContents: any[] = [];
+        const requiredContents: string[] = [];
 
         tokens.forEach(token => {
 
@@ -218,7 +218,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
 
                 // For string literals, use parsed token value
                 case 'LITERAL':
-                    requiredContents.push(token.value);
+                    requiredContents.push(token.value as string);
                     break;
 
                 // Ignore whitespace
@@ -277,7 +277,7 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
             .subscribe(([tableHeaderSessionUsername, tableHeaderSessionStartdate, tableHeaderSessionDuration, tableHeaderSessionConnectionName, tableHeaderSessionRemotehost, filenameHistoryCsv]) => {
 
                 // Initialize records with translated header row
-                const records: any[][] = [[
+                const records: unknown[][] = [[
                     tableHeaderSessionUsername,
                     tableHeaderSessionStartdate,
                     tableHeaderSessionDuration,

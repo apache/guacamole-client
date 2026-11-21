@@ -21,6 +21,7 @@ import {
     ChangeDetectorRef,
     ComponentRef,
     Injectable,
+    OnChanges,
     Renderer2,
     RendererFactory2,
     Type,
@@ -254,7 +255,7 @@ export class FormService {
      *     while retrieving the field type, this Promise will be rejected.
      */
     insertFieldElement(fieldContainer: Element, fieldType: string, scope: FormFieldComponent,
-                       viewContainer: ViewContainerRef, cdr: ChangeDetectorRef): Promise<ComponentRef<any>> {
+                       viewContainer: ViewContainerRef, cdr: ChangeDetectorRef): Promise<ComponentRef<FormFieldComponentData & Partial<OnChanges>>> {
 
         return new Promise((resolve, reject) => {
 

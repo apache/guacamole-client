@@ -113,7 +113,7 @@ export class GuacNotificationService {
      * JavaScript errors, are logged to the browser console without displaying
      * any notification.
      */
-    readonly SHOW_REQUEST_ERROR: (error: any) => Observable<any> = this.requestService.createErrorCallback(error => {
+    readonly SHOW_REQUEST_ERROR: (error: unknown) => Observable<never> = this.requestService.createErrorCallback(error => {
         this.showStatus({
             className: 'error',
             title    : 'APP.DIALOG_HEADER_ERROR',

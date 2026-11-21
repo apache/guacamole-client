@@ -35,12 +35,12 @@ export class FilterPattern {
      * to the constructor of this class. The functions returned are those
      * produced by AngularExpression.compile().
      */
-    private readonly getters: ((object: object) => unknown)[];
+    private readonly getters: ((object: unknown) => unknown)[];
 
     /**
      * The current filtering predicate.
      */
-    predicate: (object: object) => boolean;
+    predicate: (object: unknown) => boolean;
 
     /**
      * Creates a new FilterPattern.
@@ -78,22 +78,22 @@ export class FilterPattern {
      * @returns
      *     true if the object matches the token, false otherwise.
      */
-    private matchesToken(object: object, token: FilterToken): boolean {
+    private matchesToken(object: unknown, token: FilterToken): boolean {
 
         // Match depending on token type
         switch (token.type) {
 
             // Simple string literal
             case 'LITERAL':
-                return this.matchesString(object, token.value);
+                return this.matchesString(object, token.value as string);
 
             // IPv4 network address / subnet
             case 'IPV4_NETWORK':
-                return this.matchesIPv4(object, token.value);
+                return this.matchesIPv4(object, token.value as IPv4Network);
 
             // IPv6 network address / subnet
             case 'IPV6_NETWORK':
-                return this.matchesIPv6(object, token.value);
+                return this.matchesIPv6(object, token.value as IPv6Network);
 
             // Unsupported token type
             default:
@@ -116,13 +116,13 @@ export class FilterPattern {
      * @returns
      *     true if the object matches the given string, false otherwise.
      */
-    private matchesString(object: object, str: string): boolean {
+    private matchesString(object: unknown, str: string): boolean {
 
         // For each defined getter
         for (const getter of this.getters) {
 
             // Retrieve value of current getter
-            let value: any;
+            let value: unknown;
             if (_.isObjectLike(object))
                 value = getter(object);
             // If the given object is a primitive value use the value directly
@@ -153,7 +153,7 @@ export class FilterPattern {
      * @returns
      *     true if the object matches the given network, false otherwise.
      */
-    private matchesIPv4(object: object, network: IPv4Network): boolean {
+    private matchesIPv4(object: unknown, network: IPv4Network): boolean {
 
         // For each defined getter
         for (const getter of this.getters) {
@@ -187,7 +187,7 @@ export class FilterPattern {
      * @returns
      *     true if the object matches the given network, false otherwise.
      */
-    matchesIPv6(object: object, network: IPv6Network): boolean {
+    matchesIPv6(object: unknown, network: IPv6Network): boolean {
 
         // For each defined getter
         for (const getter of this.getters) {
@@ -228,7 +228,7 @@ export class FilterPattern {
         const tokens = FilterToken.tokenize(pattern.toLowerCase());
 
         // Return predicate which matches against the value of any getter in the getters array
-        this.predicate = (object: object) => {
+        this.predicate = (object: unknown) => {
 
             // False if any token does not match
             for (const token of tokens) {

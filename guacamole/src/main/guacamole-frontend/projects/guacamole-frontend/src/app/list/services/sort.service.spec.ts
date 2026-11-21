@@ -100,7 +100,7 @@ describe('orderByPredicate', () => {
     });
 
     it('should return an empty collection if the input collection is empty', () => {
-        const collection: any[] = [];
+        const collection: unknown[] = [];
         const predicates = ['age'];
 
         const result = service.orderByPredicate(collection, predicates);

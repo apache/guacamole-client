@@ -42,7 +42,7 @@ export class AuthenticationInterceptor implements HttpInterceptor {
      * If no token is provided, the user's current authentication token is used instead.
      * If the user is not logged in, the "Guacamole-Token" header is simply omitted.
      */
-    intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 
         if (this.interceptorService.skipAuthenticationInterceptor(request)) {
             return next.handle(request);

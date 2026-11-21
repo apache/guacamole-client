@@ -90,7 +90,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
      * been accepted, this will contain a form control for each of
      * the parameters submitted in a previous authentication attempt.
      */
-    acceptedCredentials: FormGroup = new FormGroup<any>({});
+    acceptedCredentials: FormGroup = new FormGroup({});
 
     /**
      * The credentials that the authentication service is currently expecting,
@@ -272,8 +272,8 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 this.setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
                 this.loginHelpText = null;
-                this.acceptedCredentials = new FormGroup<any>({});
-                this.expectedCredentials = error.expected;
+                this.acceptedCredentials = new FormGroup({});
+                this.expectedCredentials = error.expected!;
 
             });
 
@@ -288,9 +288,9 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
                 this.setApplicationState(ApplicationState.AWAITING_CREDENTIALS);
 
-                this.loginHelpText = error.translatableMessage;
+                this.loginHelpText = error.translatableMessage!;
                 this.acceptedCredentials = new FormGroup(_.mapValues(submitted, value => new FormControl(value)));
-                this.expectedCredentials = error.expected;
+                this.expectedCredentials = error.expected!;
 
             });
 

@@ -348,7 +348,7 @@ export class GuacSettingsSessionsComponent implements OnInit {
      */
     private deleteAllSessionsImmediately(): void {
 
-        const deletionRequests: Observable<any>[] = [];
+        const deletionRequests: Observable<void>[] = [];
 
         // Perform deletion for each relevant data source
         for (const dataSource in this.allSelectedWrappers) {

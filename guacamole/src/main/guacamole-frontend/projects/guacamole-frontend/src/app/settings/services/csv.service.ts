@@ -38,7 +38,7 @@ export class CsvService {
      * @returns
      *     A new Blob containing each provided record in CSV format.
      */
-    toBlob(records: any[][]): Blob {
+    toBlob(records: unknown[][]): Blob {
         return new Blob([this.encodeCSV(records)], { type: 'text/csv' });
     }
 
@@ -53,7 +53,7 @@ export class CsvService {
      *     An entire CSV containing each provided record, separated by CR+LF
      *     line terminators.
      */
-    encodeCSV(records: any[][]): string {
+    encodeCSV(records: unknown[][]): string {
         return records.map(record => this.encodeRecord(record)).join('\r\n');
     }
 
@@ -68,7 +68,7 @@ export class CsvService {
      * @return
      *     A CSV record containing the each value in the given array.
      */
-    private encodeRecord(fields: any[]): string {
+    private encodeRecord(fields: unknown[]): string {
         return fields.map(field => this.encodeField(field)).join(',');
     }
 
@@ -87,7 +87,7 @@ export class CsvService {
      *     The provided value, coerced to a string and properly escaped for
      *     CSV.
      */
-    private encodeField(field: any): string {
+    private encodeField(field: unknown): string {
 
         // Coerce field to string
         if (field === null || field === undefined)
@@ -96,11 +96,11 @@ export class CsvService {
             field = '' + field;
 
         // Do not quote numeric fields
-        if (/^[0-9.]*$/.test(field))
-            return field;
+        if (/^[0-9.]*$/.test(field as string))
+            return field as string;
 
         // Enclose all other fields in quotes, escaping any quotes therein
-        return '"' + field.replace(/"/g, '""') + '"';
+        return '"' + (field as string).replace(/"/g, '""') + '"';
 
     }
 

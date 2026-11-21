@@ -418,9 +418,9 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
                 // If one of the End keys is pressed, and we have a one keysym from each
                 // of Ctrl and Alt groups, send Ctrl-Alt-Delete.
-                if (this.END_KEYS[keysym as any]
-                    && _.findKey(this.ALT_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
-                    && _.findKey(this.CTRL_KEYS, (val, keysym) => keyboard.pressed[keysym as any])
+                if (this.END_KEYS[keysym]
+                    && _.findKey(this.ALT_KEYS, (val, keysym) => keyboard.pressed[Number(keysym)])
+                    && _.findKey(this.CTRL_KEYS, (val, keysym) => keyboard.pressed[Number(keysym)])
                 ) {
 
                     // Don't send this event through to the client.
@@ -688,9 +688,9 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
         // Verify that one of each required key is held, regardless of
         // left/right location on the keyboard
         return !!(
-            _.findKey(this.SHIFT_KEYS, (val, keysym: any) => keyboard.pressed[keysym])
-            && _.findKey(this.ALT_KEYS, (val, keysym: any) => keyboard.pressed[keysym])
-            && _.findKey(this.CTRL_KEYS, (val, keysym: any) => keyboard.pressed[keysym])
+            _.findKey(this.SHIFT_KEYS, (val, keysym) => keyboard.pressed[Number(keysym)])
+            && _.findKey(this.ALT_KEYS, (val, keysym) => keyboard.pressed[Number(keysym)])
+            && _.findKey(this.CTRL_KEYS, (val, keysym) => keyboard.pressed[Number(keysym)])
         );
 
     }
@@ -799,7 +799,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
                         catchError(this.requestService.WARN)
                     )
                     .subscribe(sharingProfiles => {
-                        this.sharingProfiles = sharingProfiles;
+                        this.sharingProfiles = sharingProfiles!;
                     });
 
             }

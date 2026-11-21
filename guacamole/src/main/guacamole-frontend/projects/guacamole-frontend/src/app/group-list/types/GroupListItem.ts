@@ -142,6 +142,7 @@ export class GroupListItem {
      * is not one of the types defined by GroupListItem.Type, then this
      * value may be anything.
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- items of other types may wrap any value
     wrappedItem: Connection | ConnectionGroup | SharingProfile | any;
 
     /**

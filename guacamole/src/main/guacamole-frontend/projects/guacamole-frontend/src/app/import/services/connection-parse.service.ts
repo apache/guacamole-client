@@ -73,7 +73,7 @@ export class ConnectionParseService {
      *     An error describing the parsing failure, if one of the basic checks
      *     fails.
      */
-    private performBasicChecks(parsedData: any): ParseError | undefined {
+    private performBasicChecks(parsedData: unknown): ParseError | undefined {
 
         // Make sure that the file data parses to an array (connection list)
         if (!(parsedData instanceof Array))
@@ -526,8 +526,8 @@ export class ConnectionParseService {
      *     A promise resolving to ParseResult object representing the result of
      *     parsing all provided connection data.
      */
-    private parseConnectionData(
-        importConfig: ConnectionImportConfig, connectionData: any[], transformFunctions: ((connection: any) => ImportConnection)[]): Promise<ParseResult> {
+    private parseConnectionData<T>(
+        importConfig: ConnectionImportConfig, connectionData: T[], transformFunctions: ((connection: T) => ImportConnection)[]): Promise<ParseResult> {
 
         // Check that the provided connection data array is not empty
         const checkError = this.performBasicChecks(connectionData);
@@ -548,13 +548,13 @@ export class ConnectionParseService {
                     const { connectionObjects, users, groups, groupPaths } = parseResult;
 
                     // Run the array data through each provided transform
-                    let connectionObject = data;
+                    let connectionObject: T | ImportConnection = data;
                     _.forEach(transformFunctions, transform => {
-                        connectionObject = transform(connectionObject);
+                        connectionObject = transform(connectionObject as T);
                     });
 
                     // Apply the field level transforms
-                    connectionObject = fieldTransformer(connectionObject);
+                    connectionObject = fieldTransformer(connectionObject as ImportConnection);
 
                     // Apply the connection group hierarchy transforms
                     connectionObject = treeTransformer(connectionObject);
@@ -638,9 +638,9 @@ export class ConnectionParseService {
         }
 
             // If the CSV parser throws an error, reject with that error
-        catch (error: any) {
+        catch (error: unknown) {
 
-            const message = error.message;
+            const message = (error as Error).message;
             console.error(error);
 
             let deferred: Promise<ParseResult>;
@@ -650,7 +650,7 @@ export class ConnectionParseService {
             // friendly error.
             if (_.trim(message).toLowerCase() == BINARY_CSV_ERROR_MESSAGE)
                 deferred = Promise.reject(new ParseError({
-                    message  : 'CSV binary parse attempt error: ' + error.message,
+                    message  : 'CSV binary parse attempt error: ' + (error as Error).message,
                     key      : 'IMPORT.ERROR_DETECTED_INVALID_TYPE',
                     variables: undefined
                 }));
@@ -658,9 +658,9 @@ export class ConnectionParseService {
             // Otherwise, pass the error from the library through to the user
             else
                 deferred = Promise.reject(new ParseError({
-                    message  : 'CSV Parse Failure: ' + error.message,
+                    message  : 'CSV Parse Failure: ' + (error as Error).message,
                     key      : 'IMPORT.ERROR_PARSE_FAILURE_CSV',
-                    variables: { ERROR: error.message }
+                    variables: { ERROR: (error as Error).message }
                 }));
 
             return deferred;
@@ -708,19 +708,19 @@ export class ConnectionParseService {
         }
 
             // If the YAML parser throws an error, reject with that error
-        catch (error: any) {
+        catch (error: unknown) {
             console.error(error);
             return Promise.reject(new ParseError({
-                message  : 'YAML Parse Failure: ' + error.message,
+                message  : 'YAML Parse Failure: ' + (error as Error).message,
                 key      : 'IMPORT.ERROR_PARSE_FAILURE_YAML',
-                variables: { ERROR: error.message }
+                variables: { ERROR: (error as Error).message }
             }));
         }
 
         // Produce a ParseResult, making sure that each record is converted to
         // the ImportConnection type before further parsing
         return this.parseConnectionData(importConfig, connectionData,
-            [(connection: any) => new ImportConnection(connection)]);
+            [(connection: ImportConnection) => new ImportConnection(connection)]);
     }
 
     /**
@@ -748,19 +748,19 @@ export class ConnectionParseService {
         }
 
             // If the JSON parse attempt throws an error, reject with that error
-        catch (error: any) {
+        catch (error: unknown) {
             console.error(error);
             return Promise.reject(new ParseError({
-                message  : 'JSON Parse Failure: ' + error.message,
+                message  : 'JSON Parse Failure: ' + (error as Error).message,
                 key      : 'IMPORT.ERROR_PARSE_FAILURE_JSON',
-                variables: { ERROR: error.message }
+                variables: { ERROR: (error as Error).message }
             }));
         }
 
         // Produce a ParseResult, making sure that each record is converted to
         // the ImportConnection type before further parsing
         return this.parseConnectionData(importConfig, connectionData,
-            [(connection: any) => new ImportConnection(connection)]);
+            [(connection: ImportConnection) => new ImportConnection(connection)]);
 
     }
 

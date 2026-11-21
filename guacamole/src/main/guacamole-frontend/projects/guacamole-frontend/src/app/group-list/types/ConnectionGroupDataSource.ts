@@ -222,10 +222,10 @@ export class ConnectionGroupDataSource {
      */
     private filterConnectionGroup(connectionGroup: ConnectionGroup): void {
         connectionGroup.childConnections = this.filterService
-            .filterByPredicate(connectionGroup.childConnections, this.connectionFilterPattern.predicate as any);
+            .filterByPredicate(connectionGroup.childConnections, this.connectionFilterPattern.predicate);
 
         connectionGroup.childConnectionGroups = this.filterService
-            .filterByPredicate(connectionGroup.childConnectionGroups, this.connectionGroupFilterPattern.predicate as any);
+            .filterByPredicate(connectionGroup.childConnectionGroups, this.connectionGroupFilterPattern.predicate);
     }
 
     /**

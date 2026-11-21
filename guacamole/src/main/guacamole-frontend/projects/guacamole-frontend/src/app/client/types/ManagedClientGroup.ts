@@ -93,6 +93,12 @@ export class ManagedClientGroup {
     columns: number;
 
     /**
+     * The grid most recently returned by getClientGrid(), whose arrays that
+     * function reuses on its next call.
+     */
+    private _grid?: ManagedClient[][];
+
+    /**
      * Creates a new ManagedClientGroup. This constructor initializes the properties of the
      * new ManagedClientGroup with the corresponding properties of the given template.
      *
@@ -324,7 +330,7 @@ export class ManagedClientGroup {
         let index = 0;
 
         // Operate on cached copy of grid
-        const clientGrid = (group as any)._grid || ((group as any)._grid = []);
+        const clientGrid = group._grid || (group._grid = []);
 
         // Delete any rows in excess of the required size
         clientGrid.splice(group.rows);

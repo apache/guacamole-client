@@ -65,7 +65,7 @@ export class ManagedFileUploadService {
      *     A new ManagedFileUpload object which can be used to track the
      *     progress of the upload.
      */
-    getInstance(managedClient: ManagedClient, file: File, object?: any, streamName: string | null = null): ManagedFileUpload {
+    getInstance(managedClient: ManagedClient, file: File, object?: Guacamole.Object | null, streamName: string | null = null): ManagedFileUpload {
 
         const managedFileUpload = new ManagedFileUpload();
 
@@ -81,7 +81,7 @@ export class ManagedFileUploadService {
             // If object/streamName specified, upload to that instead of a file
         // stream
         else
-            stream = object.createOutputStream(file.type, streamName);
+            stream = object.createOutputStream(file.type, streamName!);
 
         // Notify that the file transfer is pending
 
@@ -127,7 +127,7 @@ export class ManagedFileUploadService {
                     },
 
                     // Notify if upload fails
-                    this.requestService.createPromiseErrorCallback((error: any) => {
+                    this.requestService.createPromiseErrorCallback((error: Error) => {
 
                         // Use provide status code if the error is coming from the stream
                         if (error.type === Error.Type.STREAM_ERROR)

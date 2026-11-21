@@ -37,7 +37,7 @@ export class LogService {
      * @param optionalParams
      *     Further values to write after the message.
      */
-    info(message: any, ...optionalParams: any[]) {
+    info(message: unknown, ...optionalParams: unknown[]) {
         console.info(message, ...optionalParams);
     }
 
@@ -50,7 +50,7 @@ export class LogService {
      * @param optionalParams
      *     Further values to write after the message.
      */
-    error(message: any, ...optionalParams: any[]) {
+    error(message: unknown, ...optionalParams: unknown[]) {
         console.error(message, ...optionalParams);
     }
 
@@ -63,7 +63,7 @@ export class LogService {
      * @param optionalParams
      *     Further values to write after the message.
      */
-    warn(message: any, ...optionalParams: any[]) {
+    warn(message: unknown, ...optionalParams: unknown[]) {
         console.warn(message, ...optionalParams);
     }
 
@@ -76,7 +76,7 @@ export class LogService {
      * @param optionalParams
      *     Further values to write after the message.
      */
-    debug(message: any, ...optionalParams: any[]) {
+    debug(message: unknown, ...optionalParams: unknown[]) {
         console.debug(message, ...optionalParams);
     }
 }

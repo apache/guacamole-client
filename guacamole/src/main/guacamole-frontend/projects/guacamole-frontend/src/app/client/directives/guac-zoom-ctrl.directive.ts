@@ -42,7 +42,7 @@ export class GuacZoomCtrlDirective implements ControlValueAccessor {
      * Callback registered by the forms API which passes the display scale to
      * the form control. Called on each input.
      */
-    private onChange!: (value: any) => void;
+    private onChange!: (value: number) => void;
 
     /**
      * Callback registered by the forms API which marks the form control as
@@ -63,7 +63,7 @@ export class GuacZoomCtrlDirective implements ControlValueAccessor {
      * @param fn
      *     The callback to call with the display scale.
      */
-    registerOnChange(fn: any): void {
+    registerOnChange(fn: (value: number) => void): void {
         this.onChange = fn;
     }
 
@@ -74,7 +74,7 @@ export class GuacZoomCtrlDirective implements ControlValueAccessor {
      * @param fn
      *     The callback to call on each input.
      */
-    registerOnTouched(fn: any): void {
+    registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
     }
 
@@ -96,7 +96,7 @@ export class GuacZoomCtrlDirective implements ControlValueAccessor {
      * @param value
      *     The new value for the input element.
      */
-    writeValue(value: any): void {
+    writeValue(value: number): void {
         const newValue = Math.round(value * 100);
         this.renderer.setProperty(this.el.nativeElement, 'value', newValue);
     }

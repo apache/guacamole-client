@@ -45,7 +45,7 @@ export class GuacLenientDateDirective implements ControlValueAccessor {
      * the input field to the form control. Called when the input field loses
      * focus.
      */
-    private onChange!: (value: any) => void;
+    private onChange!: (value: Date | null) => void;
 
     /**
      * Callback registered by the forms API which marks the form control as
@@ -66,7 +66,7 @@ export class GuacLenientDateDirective implements ControlValueAccessor {
      * @param value
      *     The new value for the input element.
      */
-    writeValue(value: any): void {
+    writeValue(value: Date | null): void {
         const formattedValue = value ? this.format(value) : '';
         this.renderer.setProperty(this.el.nativeElement, 'value', formattedValue);
     }
@@ -79,7 +79,7 @@ export class GuacLenientDateDirective implements ControlValueAccessor {
      * @param fn
      *     The callback to call with the parsed value.
      */
-    registerOnChange(fn: any): void {
+    registerOnChange(fn: (value: Date | null) => void): void {
         this.onChange = fn;
     }
 
@@ -90,7 +90,7 @@ export class GuacLenientDateDirective implements ControlValueAccessor {
      * @param fn
      *     The callback to call when the input field loses focus.
      */
-    registerOnTouched(fn: any): void {
+    registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
     }
 

@@ -51,7 +51,7 @@ export class RedirectFieldComponent extends FormFieldBaseComponent implements On
      * Redirect the user to the provided URL.
      */
     ngOnInit(): void {
-        this.document.location.href = (this.field as any).redirectUrl;
+        this.document.location.href = this.field.redirectUrl!;
     }
 
 }

@@ -53,7 +53,7 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
      * for that request are not ready. parameters is a promise that resolves
      * with the HTTP parameters that are ultimately submitted.
      */
-    guacLoginPending: { parameters: Promise<any> };
+    guacLoginPending: { parameters: Promise<Record<string, string>> };
 
     /**
      * An authentication request of AuthenticationService has failed with an
@@ -63,14 +63,14 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
      * the promise of the HTTP parameters submitted, and error is the Error
      * received from the REST endpoint.
      */
-    guacLoginFailed: { parameters: Promise<any>; error: Error; };
+    guacLoginFailed: { parameters: Promise<Record<string, string>>; error: Error; };
 
     /**
      * An authentication request failed because the credentials provided are
      * invalid. parameters is the promise of the HTTP parameters submitted, and
      * error is the Error received from the REST endpoint.
      */
-    guacInvalidCredentials: { parameters: Promise<any>; error: any; };
+    guacInvalidCredentials: { parameters: Promise<Record<string, string>>; error: Error; };
 
     /**
      * An authentication request failed because additional credentials are
@@ -78,7 +78,7 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
      * the HTTP parameters submitted, and error is the Error received from the
      * REST endpoint.
      */
-    guacInsufficientCredentials: { parameters: Promise<any>; error: any; };
+    guacInsufficientCredentials: { parameters: Promise<Record<string, string>>; error: Error; };
 
     /**
      * An existing token is being destroyed by AuthenticationService.logout().

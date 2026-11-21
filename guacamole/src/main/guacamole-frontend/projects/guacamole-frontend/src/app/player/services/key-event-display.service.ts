@@ -76,13 +76,13 @@ const SHORTCUT_KEYS: Record<number, boolean> = {
 /**
  * Format and return a key name for display.
  *
- * @param {*} name
+ * @param name
  *     The name of the key
  *
  * @returns
  *     The formatted key name.
  */
-const formatKeyName = (name: any) => ('<' + name + '>');
+const formatKeyName = (name: string) => ('<' + name + '>');
 
 /**
  * A batch of text associated with a recording. The batch consists of a

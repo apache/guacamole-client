@@ -37,7 +37,7 @@ export class GuacFocusDirective implements OnInit, OnChanges {
     /**
      * The element which will be focused / blurred.
      */
-    element: any;
+    element: HTMLElement;
 
     /**
      * Inject required services.

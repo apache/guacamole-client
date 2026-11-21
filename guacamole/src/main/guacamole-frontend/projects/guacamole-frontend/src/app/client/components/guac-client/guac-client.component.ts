@@ -565,7 +565,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         this.displayContainer.appendChild(this.displayElement!);
 
         // Do nothing when the display element is clicked on
-        this.display.getElement().onclick = (e: any) => {
+        this.display.getElement().onclick = (e: MouseEvent) => {
             e.preventDefault();
             return false;
         };

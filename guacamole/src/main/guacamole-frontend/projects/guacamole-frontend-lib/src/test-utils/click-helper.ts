@@ -33,7 +33,7 @@
  * @param coordY
  *     The vertical client coordinate of the event.
  */
-const dispatchEvent = (element: any, eventName: string, coordX: any, coordY: any) => {
+const dispatchEvent = (element: Element, eventName: string, coordX: number, coordY: number) => {
     element.dispatchEvent(new MouseEvent(eventName, {
         bubbles   : true,
         cancelable: true,
@@ -51,7 +51,7 @@ const dispatchEvent = (element: any, eventName: string, coordX: any, coordY: any
  * @param element
  *     The element to click.
  */
-export const simulateMouseClick = (element: any) => {
+export const simulateMouseClick = (element: Element) => {
     const box = element.getBoundingClientRect();
     const coordX = box.left + (box.right - box.left) / 2;
     const coordY = box.top + (box.bottom - box.top) / 2;

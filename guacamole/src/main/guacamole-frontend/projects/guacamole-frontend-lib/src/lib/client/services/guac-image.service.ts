@@ -78,7 +78,7 @@ export class GuacImageService {
      * Array of all promises associated with pending image tests. Each image
      * test promise MUST be guaranteed to resolve and MUST NOT be rejected.
      */
-    private pendingTests: Promise<any>[] = [];
+    private pendingTests: Promise<void>[] = [];
 
     /**
      * The array of supported image formats. This will be gradually populated

@@ -40,7 +40,7 @@ export class GuacResizeDirective {
     /**
      * The element which will monitored for size changes.
      */
-    element: any;
+    element: HTMLElement;
 
     /**
      * The resize sensor - an HTML object element.

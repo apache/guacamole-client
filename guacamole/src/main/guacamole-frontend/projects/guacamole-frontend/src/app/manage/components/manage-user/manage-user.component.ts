@@ -216,7 +216,7 @@ export class ManageUserComponent implements OnInit {
         const permissions = this.dataSourceService.apply(
             (ds: string, username: string) => this.permissionService.getEffectivePermissions(ds, username),
             this.dataSources,
-            this.currentUsername
+            this.currentUsername!
         );
         const userGroups = this.userGroupService.getUserGroups(this.dataSource, [PermissionSet.ObjectPermissionType.UPDATE]);
         const attributes = this.schemaService.getUserAttributes(this.dataSource);

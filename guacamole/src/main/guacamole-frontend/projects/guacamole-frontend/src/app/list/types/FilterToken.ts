@@ -39,7 +39,7 @@ export class FilterToken {
     /**
      * The value of this token.
      */
-    value: any;
+    value: string | IPv4Network | IPv6Network;
 
     /**
      * Creates a new FilterToken.
@@ -55,7 +55,7 @@ export class FilterToken {
      *     The value of this token. The type of this value is determined by
      *     the token type.
      */
-    constructor(consumed: string, type: string, value: any) {
+    constructor(consumed: string, type: string, value: string | IPv4Network | IPv6Network) {
 
         this.consumed = consumed;
         this.type = type;

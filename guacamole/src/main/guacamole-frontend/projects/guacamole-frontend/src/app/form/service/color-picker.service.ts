@@ -69,7 +69,7 @@ export class ColorPickerService {
     /**
      * Reject function of the {@link activeRequest} promise.
      */
-    private activeRequestReject?: (reason?: any) => void = undefined;
+    private activeRequestReject?: () => void = undefined;
 
     /**
      * The translated label of the save button of Pickr (APP.ACTION_SAVE).

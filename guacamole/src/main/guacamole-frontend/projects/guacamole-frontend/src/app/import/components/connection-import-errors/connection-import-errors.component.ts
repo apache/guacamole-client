@@ -400,6 +400,7 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges, DoChe
                 // Go through the errors and check if any are translateable.
                 // We access the underlying array from the DisplayErrorList.
                 connectionError.errors.getArray().forEach(
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- like the AngularJS frontend, the fallback below reads message from errors which are not a ParseError
                     (error: any, errorIndex) => {
 
                         // If this error is a ParseError, it can be translated.

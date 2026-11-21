@@ -66,7 +66,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
      * and connection group templates within the template context as
      * <code>ctx</code>.
      */
-    @Input() context: any = {};
+    @Input() context: object = {};
 
     /**
      * The map of @link{GroupListItem} type to the TemplateRef to use
@@ -78,7 +78,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
      * not be rendered. All standard types are defined by
      * @link{GroupListItem.Type}, but use of custom types is legal.
      */
-    @Input({ required: true }) templates!: Record<string, TemplateRef<any>>;
+    @Input({ required: true }) templates!: Record<string, TemplateRef<unknown>>;
 
     /**
      * Whether the root of the connection group hierarchy given should

@@ -115,7 +115,7 @@ export class ActiveConnectionService {
     deleteActiveConnections(dataSource: string, identifiers: string[]): Observable<void> {
 
         // Convert provided array of identifiers to a patch
-        const activeConnectionPatch: any[] = [];
+        const activeConnectionPatch: { op: string; path: string }[] = [];
         identifiers.forEach(function addActiveConnectionPatch(identifier) {
             activeConnectionPatch.push({
                 op  : 'remove',

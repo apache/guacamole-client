@@ -37,7 +37,7 @@ export class GuacEventService<Args extends GuacEventArguments> {
     /**
      * Subject for all Guacamole frontend events.
      */
-    private events = new Subject<any>();
+    private events = new Subject<{ event: GuacEvent<Args> }>();
 
     /**
      * Broadcasts the event with the given name to all subscribers registered
@@ -84,8 +84,9 @@ export class GuacEventService<Args extends GuacEventArguments> {
     on<T extends GuacEventName<Args>>(eventName: T): Observable<{
         event: GuacEvent<Args>
     } & Args[T]> {
+        // The name of an event determines its arguments, which TypeScript cannot infer from the filter
         return this.events.pipe(
             filter(({ event }) => eventName === event.name)
-        );
+        ) as Observable<{ event: GuacEvent<Args> } & Args[T]>;
     }
 }

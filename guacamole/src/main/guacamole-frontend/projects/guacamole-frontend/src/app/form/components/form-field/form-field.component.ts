@@ -32,6 +32,7 @@ import {
     ChangeDetectionStrategy
 } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { FormFieldComponentData } from 'guacamole-frontend-ext-lib';
 import { canonicalize } from '../../../locale/service/translation.service';
 import { LogService } from '../../../util/log.service';
 import { FormService } from '../../service/form.service';
@@ -69,7 +70,7 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
     /**
      * Reference to the dynamically created field component.
      */
-    fieldComponent: ComponentRef<any> | undefined;
+    fieldComponent: ComponentRef<FormFieldComponentData & Partial<OnChanges>> | undefined;
 
     /**
      * All current field values in the form, keyed by field name.

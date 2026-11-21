@@ -55,8 +55,8 @@ export class RequestService {
      *     A function which can be provided as the catchError callback for an
      *     Observable.
      */
-    createErrorCallback(callback: (error: any) => Observable<any>): (error: any) => Observable<any> {
-        return (error: any): Observable<any> => {
+    createErrorCallback<T>(callback: (error: Error) => Observable<T>): (error: unknown) => Observable<T> {
+        return (error: unknown): Observable<T> => {
 
             // Invoke given callback ONLY if due to a legitimate REST error
             if (error instanceof Error)
@@ -83,8 +83,8 @@ export class RequestService {
      *     A function which can be provided as the error callback for a
      *     promise.
      */
-    createPromiseErrorCallback(callback: (error: Error) => undefined): ((reason: any) => (PromiseLike<never>) | null | undefined) {
-        return ((error: any) => {
+    createPromiseErrorCallback(callback: (error: Error) => void): (reason: unknown) => void {
+        return ((error: unknown) => {
 
             // Invoke given callback ONLY if due to a legitimate REST error
             if (error instanceof Error)
@@ -109,8 +109,8 @@ export class RequestService {
      *     A function which can be provided as the error callback for an
      *     observable.
      */
-    defaultValue<T>(value: T): (error: any) => Observable<T> {
-        return this.createErrorCallback((error: any) => {
+    defaultValue<T>(value: T): (error: unknown) => Observable<T> {
+        return this.createErrorCallback((error: Error) => {
 
             // Return default value only if not found
             if (error.type === Error.Type.NOT_FOUND)
@@ -130,7 +130,7 @@ export class RequestService {
      *
      * @constant
      */
-    readonly IGNORE: (error: any) => Observable<any> = this.createErrorCallback((): Observable<any> => {
+    readonly IGNORE: (error: unknown) => Observable<undefined> = this.createErrorCallback((): Observable<undefined> => {
         return of(void (0));
     });
 
@@ -142,7 +142,7 @@ export class RequestService {
      *
      * @constant
      */
-    readonly WARN: (error: any) => Observable<any> = this.createErrorCallback((error: any): Observable<any> => {
+    readonly WARN: (error: unknown) => Observable<undefined> = this.createErrorCallback((error: Error): Observable<undefined> => {
         this.log.warn(error.type, error.message || error.translatableMessage);
         return of(void (0));
     });
@@ -156,7 +156,7 @@ export class RequestService {
      *
      * @constant
      */
-    readonly DIE: (error: any) => Observable<any> = this.createErrorCallback((error: Error): Observable<any> => {
+    readonly DIE: (error: unknown) => Observable<undefined> = this.createErrorCallback((error: Error): Observable<undefined> => {
         this.guacEventService.broadcast('guacFatalPageError', { error });
         this.log.error(error.type, error.message || error.translatableMessage);
         return of(void (0));
@@ -172,7 +172,7 @@ export class RequestService {
      *
      * @constant
      */
-    readonly PROMISE_DIE: ((reason: any) => (PromiseLike<never>) | null | undefined) = this.createPromiseErrorCallback((error: Error) => {
+    readonly PROMISE_DIE: (reason: unknown) => void = this.createPromiseErrorCallback((error: Error) => {
         this.guacEventService.broadcast('guacFatalPageError', { error });
         this.log.error(error.type, error.message || error.translatableMessage);
     });
@@ -185,7 +185,7 @@ export class RequestService {
      *
      * @constant
      */
-    readonly PROMISE_WARN: ((reason: any) => (PromiseLike<never>) | null | undefined) = this.createPromiseErrorCallback((error: any) => {
+    readonly PROMISE_WARN: (reason: unknown) => void = this.createPromiseErrorCallback((error: Error) => {
         this.log.warn(error.type, error.message || error.translatableMessage);
     });
 

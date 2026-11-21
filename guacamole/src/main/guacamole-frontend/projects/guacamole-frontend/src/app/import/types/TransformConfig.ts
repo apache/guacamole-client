@@ -29,25 +29,25 @@ export interface TransformConfig {
      * Returns the connection name from a CSV row. Set if the CSV has a
      * "name" column; the file cannot be imported without it.
      */
-    nameGetter?: (row: string[]) => any;
+    nameGetter?: (row: string[]) => string;
 
     /**
      * Returns the connection protocol from a CSV row. Set if the CSV has a
      * "protocol" column; the file cannot be imported without it.
      */
-    protocolGetter?: (row: string[]) => any;
+    protocolGetter?: (row: string[]) => string;
 
     /**
      * Returns the path of the parent connection group from a CSV row. Set if
      * the CSV has a "group" column.
      */
-    groupGetter?: (row: string[]) => any;
+    groupGetter?: (row: string[]) => string;
 
     /**
      * Returns the identifier of the parent connection group from a CSV row.
      * Set if the CSV has a "parentIdentifier" column.
      */
-    parentIdentifierGetter?: (row: string[]) => any;
+    parentIdentifierGetter?: (row: string[]) => string;
 
     /**
      * Returns the identifiers of the users who should be granted access to
@@ -77,7 +77,7 @@ export interface TransformConfig {
     parameterOrAttributeGetters: ((row: string[]) => {
         type?: string;
         name?: string;
-        value?: any;
+        value?: string;
         errors?: ParseError[]
     })[];
 

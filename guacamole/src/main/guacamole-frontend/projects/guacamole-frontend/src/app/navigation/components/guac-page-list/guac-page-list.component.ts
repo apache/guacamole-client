@@ -194,7 +194,7 @@ export class GuacPageListComponent implements OnInit, OnChanges {
      *     An array of all PageDefinitions in the given map, sorted by
      *     weight.
      */
-    getPages(level: Record<any, PageDefinition>): PageDefinition[] {
+    getPages(level: Record<string, PageDefinition>): PageDefinition[] {
 
         const pages: PageDefinition[] = [];
 
