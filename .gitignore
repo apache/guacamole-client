@@ -1,9 +1,3 @@
 *~
 target/
-
-# IntelliJ IDEA
-.idea
-
-# MacOS
-.DS_Store
 .flattened-pom.xml

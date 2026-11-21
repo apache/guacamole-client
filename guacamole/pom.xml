@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Licensed to the Apache Software Foundation (ASF) under one
-  ~ or more contributor license agreements.  See the NOTICE file
-  ~ distributed with this work for additional information
-  ~ regarding copyright ownership.  The ASF licenses this file
-  ~ to you under the Apache License, Version 2.0 (the
-  ~ "License"); you may not use this file except in compliance
-  ~ with the License.  You may obtain a copy of the License at
-  ~
-  ~   http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing,
-  ~ software distributed under the License is distributed on an
-  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  ~ KIND, either express or implied.  See the License for the
-  ~ specific language governing permissions and limitations
-  ~ under the License.
-  -->
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+    KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
@@ -84,17 +84,16 @@
                 </executions>
             </plugin>
 
-            <!-- Build Angular lib and application with NPM -->
+            <!-- Build Angular portion of application using NPM -->
             <plugin>
                 <groupId>com.github.eirslett</groupId>
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>1.12.1</version>
                 <configuration>
-                    <installDirectory>${project.build.directory}</installDirectory>
                     <workingDirectory>src/main/guacamole-frontend</workingDirectory>
+                    <installDirectory>${project.build.directory}</installDirectory>
                 </configuration>
                 <executions>
-                    <!-- Install Node-->
                     <execution>
                         <id>install-node-and-npm</id>
                         <goals>
@@ -105,10 +104,8 @@
                             <npmVersion>11.19.1</npmVersion>
                         </configuration>
                     </execution>
-
-                    <!-- guacamole-frontend: npm ci-->
                     <execution>
-                        <id>npm-ci-lib</id>
+                        <id>npm-ci</id>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -116,67 +113,26 @@
                             <arguments>ci</arguments>
                         </configuration>
                     </execution>
-
-                    <!-- guacamole-frontend-lib: npm run build-->
                     <execution>
-                        <id>npm-build-lib</id>
+                        <id>npm-build</id>
                         <phase>generate-resources</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run build guacamole-frontend-lib</arguments>
+                            <arguments>run build</arguments>
                         </configuration>
                     </execution>
-
-                    <!-- guacamole-frontend-lib: run tests-->
                     <execution>
-                        <id>npm-test-lib</id>
+                        <id>npm-test</id>
                         <phase>test</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
                         <configuration>
-                            <arguments>run test-guacamole-frontend-lib:ci</arguments>
+                            <arguments>test</arguments>
                         </configuration>
                     </execution>
-
-                    <!-- guacamole-frontend-ext-lib: npm run build-->
-                    <execution>
-                        <id>npm-build-ext-lib</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run build guacamole-frontend-ext-lib</arguments>
-                        </configuration>
-                    </execution>
-
-                    <!-- guacamole-frontend: npm run build-->
-                    <execution>
-                        <id>npm-build-app</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run build:app</arguments>
-                        </configuration>
-                    </execution>
-
-                    <!-- guacamole-frontend: run tests-->
-                    <execution>
-                        <id>npm-test-app</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run test-guacamole-frontend:ci</arguments>
-                        </configuration>
-                    </execution>
-
                 </executions>
             </plugin>
 
@@ -253,13 +209,6 @@
                         </resource>
 
                     </webResources>
-
-                    <delimiters>
-                        <!-- Maven default delimiter -->
-                        <delimiter>${*}</delimiter>
-                        <!-- Alternative delimiter for the index.html of the Angular application -->
-                        <delimiter>#{*}</delimiter>
-                    </delimiters>
 
                 </configuration>
                 <executions>
@@ -390,7 +339,7 @@
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
         </dependency>
-
+        
         <!-- Jersey - JAX-RS Implementation -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>
@@ -415,7 +364,7 @@
             <artifactId>jsr250-api</artifactId>
             <version>1.0</version>
         </dependency>
-
+        
         <!-- Guava Base Libraries -->
         <dependency>
             <groupId>com.google.guava</groupId>

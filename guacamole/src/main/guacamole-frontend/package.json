@@ -4,11 +4,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build guacamole-frontend-lib && ng build guacamole-frontend-ext-lib && npm run build:app",
     "build:app": "ng build guacamole-frontend && node tools/npm-dependency-list.mjs",
     "test": "ng test --watch=false",
-    "test-guacamole-frontend-lib:ci": "ng test guacamole-frontend-lib --watch=false",
-    "test-guacamole-frontend:ci": "ng test guacamole-frontend --watch=false",
     "lint": "ng lint"
   },
   "private": true,

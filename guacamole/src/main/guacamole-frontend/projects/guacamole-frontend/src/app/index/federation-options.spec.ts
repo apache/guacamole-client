@@ -47,9 +47,9 @@ describe('getFederationOptions', () => {
     });
 
     it('encodes the build identifier for use within a URL', () => {
-        setBuildIdentifier('#{guacamole.build.identifier}');
+        setBuildIdentifier('${guacamole.build.identifier}');
         expect(getFederationOptions(document)).toEqual({
-            hostRemoteEntry: { url: './remoteEntry.json', cacheTag: '%23%7Bguacamole.build.identifier%7D' }
+            hostRemoteEntry: { url: './remoteEntry.json', cacheTag: '%24%7Bguacamole.build.identifier%7D' }
         });
     });
 

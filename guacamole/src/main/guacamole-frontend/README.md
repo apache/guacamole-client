@@ -27,7 +27,8 @@ The Maven build installs both into `guacamole/target/node/`; add that directory 
 
 ## Build
 
-To build the frontend without Maven, build the libraries first, because the application imports `guacamole-frontend-lib` from `dist/`:
+To build the frontend without Maven, run `npm run build`, the script the Maven build runs.
+It builds the libraries first, because the application imports `guacamole-frontend-lib` from `dist/`:
 
 ```bash
 npx ng build guacamole-frontend-lib
