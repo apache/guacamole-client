@@ -63,6 +63,9 @@ export class GuacClientManagerService {
         // Disconnect all clients when window is unloaded
         window.addEventListener('unload', () => this.clear());
 
+        // Prompt user to confirm leaving the page if any client is active
+        window.addEventListener('beforeunload', e => this.beforeUnload(e));
+
     }
 
     /**
@@ -325,6 +328,26 @@ export class GuacClientManagerService {
         // Clear managed clients and client groups
         this.storedManagedClients({});
         this.storedManagedClientGroups([]);
+
+    }
+
+    /**
+     * Handles the beforeunload event. If any managed clients are active, the
+     * user is prompted to confirm leaving the page.
+     *
+     * @param e
+     *     The beforeunload event.
+     */
+    beforeUnload(e: BeforeUnloadEvent): void {
+
+        const managedClients: Record<string, ManagedClient> = this.storedManagedClients();
+
+        if (Object.keys(managedClients).length > 0) {
+            e.preventDefault();
+
+            // For older browsers
+            e.returnValue = true;
+        }
 
     }
 
