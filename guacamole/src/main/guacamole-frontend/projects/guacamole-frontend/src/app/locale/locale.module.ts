@@ -20,13 +20,14 @@
 import { NgModule, inject, provideAppInitializer } from '@angular/core';
 import {
     DefaultFallbackStrategy,
-    DefaultInterceptor,
     provideTranslocoFallbackStrategy,
     provideTranslocoInterceptor,
     TRANSLOCO_CONFIG,
     TRANSLOCO_LOADER,
     TRANSLOCO_MISSING_HANDLER,
+    Translation,
     TranslocoConfig,
+    TranslocoInterceptor,
     TranslocoMissingHandler,
     TranslocoModule
 } from '@jsverse/transloco';
@@ -96,6 +97,55 @@ export class GuacMissingHandler implements TranslocoMissingHandler {
 }
 
 /**
+ * Pattern which matches a reference to another translation key, with or
+ * without the closing delimiter ":@". The key is matched as a whole, so a
+ * closed reference is never matched at a shorter prefix of its key.
+ */
+const TRANSLATION_REFERENCE = /@:([A-Za-z0-9_.]+)(?::@)?/g;
+
+/**
+ * Interceptor which rewrites references to other translation keys into the
+ * interpolation syntax of Transloco ("@:KEY:@", see TranslationService).
+ * Translations of extensions still use the syntax of angular-translate
+ * ("@:KEY"), which Transloco would display as is. Transloco calls this
+ * interceptor whenever it stores a translation, including the translations
+ * which are reloaded after login.
+ */
+export class TranslationReferenceInterceptor implements TranslocoInterceptor {
+
+    /**
+     * Rewrites the references within all values of the given flattened
+     * translation.
+     *
+     * @param translation
+     *     The flattened translation which is about to be stored.
+     *
+     * @returns
+     *     The translation with all references in the syntax "@:KEY:@".
+     */
+    preSaveTranslation(translation: Translation): Translation {
+        return Object.fromEntries(Object.entries(translation)
+            .map(([key, value]) => [key, this.preSaveTranslationKey(key, value)]));
+    }
+
+    /**
+     * Rewrites the references within the given translation value.
+     *
+     * @param key
+     *     The translation key of the value.
+     *
+     * @param value
+     *     The translation value which is about to be stored.
+     *
+     * @returns
+     *     The value with all references in the syntax "@:KEY:@".
+     */
+    preSaveTranslationKey(key: string, value: string): string {
+        return typeof value === 'string' ? value.replace(TRANSLATION_REFERENCE, '@:$1:@') : value;
+    }
+}
+
+/**
  * Module for handling common localization-related tasks.
  */
 @NgModule({
@@ -122,7 +172,7 @@ export class GuacMissingHandler implements TranslocoMissingHandler {
         provideTranslocoMessageformat(),
 
         // Required by TranslocoService; TranslocoModule does not provide them
-        provideTranslocoInterceptor(DefaultInterceptor),
+        provideTranslocoInterceptor(TranslationReferenceInterceptor),
         provideTranslocoFallbackStrategy(DefaultFallbackStrategy)
     ]
 })

@@ -20,11 +20,12 @@
 import { provideHttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { TranslocoService, TranslocoTestingModule } from '@jsverse/transloco';
+import { provideTranslocoInterceptor, TranslocoService, TranslocoTestingModule } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { firstValueFrom } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
+import { TranslationReferenceInterceptor } from '../../../locale/locale.module';
 import { TranslationLoaderService } from '../../../locale/service/translation-loader.service';
 import { Error as RestError } from '../../../rest/types/Error';
 import { LoginComponent } from './login.component';
@@ -69,11 +70,15 @@ describe('LoginComponent', () => {
                     translocoConfig: {
                         availableLangs: ['de', 'en'],
                         defaultLang: 'de',
-                        fallbackLang: 'en'
+                        fallbackLang: 'en',
+
+                        // Interpolation of the application, see TranslationService
+                        interpolation: ['@:', ':@']
                     }
                 })
             ],
             providers: [
+                provideTranslocoInterceptor(TranslationReferenceInterceptor),
                 provideHttpClient(),
                 provideRouter([]),
                 { provide: AuthenticationService, useValue: { authenticate: vi.fn() } },
@@ -124,6 +129,20 @@ describe('LoginComponent', () => {
         });
         expect(loader.getTranslation).toHaveBeenCalledTimes(1);
         expect(loader.getTranslation).toHaveBeenCalledWith('en');
+    });
+
+    it('should resolve references of extensions within the reloaded translations', async () => {
+        loader.getTranslation.mockImplementation((lang: string) => Promise.resolve({
+            APP: { ERROR_PASSWORD_MISMATCH: lang === 'de' ? 'Die Passwörter stimmen nicht überein.' : 'The provided passwords do not match.' },
+            LOGIN: { ERROR_PASSWORD_MISMATCH: '@:APP.ERROR_PASSWORD_MISMATCH' }
+        }));
+
+        login();
+
+        await vi.waitFor(() => {
+            expect(translocoService.translate('LOGIN.ERROR_PASSWORD_MISMATCH', {}, 'de')).toBe('Die Passwörter stimmen nicht überein.');
+            expect(translocoService.translate('LOGIN.ERROR_PASSWORD_MISMATCH', {}, 'en')).toBe('The provided passwords do not match.');
+        });
     });
 
     it('should not reload the translations if the login failed', async () => {
