@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
@@ -36,6 +36,7 @@ import { DataSource } from '../../../list/types/DataSource';
     selector: 'identifier-set-editor',
     templateUrl: './identifier-set-editor.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class IdentifierSetEditorComponent implements OnInit, OnChanges {

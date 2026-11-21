@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MenuAction } from '../../../navigation/types/MenuAction';
 import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
@@ -32,6 +32,7 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
     selector: 'management-buttons',
     templateUrl: './management-buttons.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ManagementButtonsComponent implements OnInit {

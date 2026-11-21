@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { UserPageService } from '../../../manage/services/user-page.service';
 import { PageDefinition } from '../../../navigation/types/PageDefinition';
 
@@ -28,6 +28,7 @@ import { PageDefinition } from '../../../navigation/types/PageDefinition';
     selector: 'guac-settings',
     templateUrl: './settings.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SettingsComponent implements OnInit {

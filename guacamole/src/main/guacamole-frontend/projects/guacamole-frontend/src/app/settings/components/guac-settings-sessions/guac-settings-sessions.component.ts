@@ -18,7 +18,7 @@
  */
 
 import { formatDate } from '@angular/common';
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { BehaviorSubject, forkJoin, Observable, take } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
@@ -49,6 +49,7 @@ import { ActiveConnectionWrapper } from '../../types/ActiveConnectionWrapper';
     selector: 'guac-guac-settings-sessions',
     templateUrl: './guac-settings-sessions.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacSettingsSessionsComponent implements OnInit {

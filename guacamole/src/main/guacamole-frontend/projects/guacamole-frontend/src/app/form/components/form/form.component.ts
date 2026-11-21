@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import _ from 'lodash';
 import { ManagedClient } from '../../../client/types/ManagedClient';
@@ -33,6 +33,7 @@ import { FormService } from '../../service/form.service';
     selector: 'guac-form',
     templateUrl: './form.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FormComponent implements OnChanges {

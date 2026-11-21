@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { GuacHistoryService } from '../../../history/guac-history.service';
 import { ClientIdentifierService } from '../../../navigation/service/client-identifier.service';
 import { ClientIdentifier } from '../../../navigation/types/ClientIdentifier';
@@ -33,6 +33,7 @@ import { RecentConnection } from '../../types/RecentConnection';
     selector: 'guac-recent-connections',
     templateUrl: './guac-recent-connections.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacRecentConnectionsComponent implements OnChanges {

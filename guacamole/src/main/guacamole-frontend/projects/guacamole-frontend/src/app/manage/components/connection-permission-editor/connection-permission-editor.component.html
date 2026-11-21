@@ -28,7 +28,7 @@
     <div class="section">
         <guac-group-list
             [context]="groupListContext"
-            [connectionGroups]="rootGroupsDataSource?.filteredConnectionGroups | async"
+            [connectionGroups]="$safeNavigationMigration(rootGroupsDataSource?.filteredConnectionGroups) | async"
             [templates]="{
                 'connection'       : connectionPermission,
                 'sharing-profile'  : sharingProfilePermission,

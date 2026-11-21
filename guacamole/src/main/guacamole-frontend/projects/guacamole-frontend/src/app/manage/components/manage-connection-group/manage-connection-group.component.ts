@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, map, Observable, of } from 'rxjs';
@@ -40,6 +40,7 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
     selector: 'guac-manage-connection-group',
     templateUrl: './manage-connection-group.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ManageConnectionGroupComponent implements OnInit {

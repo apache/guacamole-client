@@ -53,7 +53,7 @@
     <div class="connection-list">
         <guac-group-list
             [pageSize]="25"
-            [connectionGroups]="rootGroupsDataSource?.filteredConnectionGroups | async"
+            [connectionGroups]="$safeNavigationMigration(rootGroupsDataSource?.filteredConnectionGroups) | async"
             [decorator]="rootItemDecorator.bind(this)"
             [templates]="{
 

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import _ from 'lodash';
 import { BehaviorSubject } from 'rxjs';
@@ -43,6 +43,7 @@ import { NonNullableProperties } from '../../../util/utility-types';
     selector: 'guac-settings-user-groups',
     templateUrl: './guac-settings-user-groups.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacSettingsUserGroupsComponent implements OnInit {

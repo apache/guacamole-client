@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import { take } from 'rxjs';
 import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
@@ -29,6 +29,7 @@ import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
     selector: 'guac-user-item',
     templateUrl: './guac-user-item.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacUserItemComponent implements OnChanges {

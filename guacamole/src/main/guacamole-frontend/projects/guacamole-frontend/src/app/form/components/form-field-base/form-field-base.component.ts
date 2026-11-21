@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { FormFieldComponentData } from 'guacamole-frontend-ext-lib';
 import { ManagedClient } from '../../../client/types/ManagedClient';
@@ -67,6 +67,7 @@ export const getFieldOption = (field: Field | undefined, namespace?: string, val
  */
 @Component({
     'template': '',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export abstract class FormFieldBaseComponent implements FormFieldComponentData {

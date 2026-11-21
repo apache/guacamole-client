@@ -52,7 +52,8 @@ import {
     OnDestroy,
     signal,
     SimpleChanges,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import _ from 'lodash';
@@ -117,6 +118,7 @@ const MOUSE_CLEANUP_TIMER_DELAY = MOUSE_CLEANUP_DELAY - MOUSE_DEBOUNCE_DELAY;
     host: {
         '[class.recent-mouse-movement]': 'recentMouseMovement()'
     },
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PlayerComponent implements OnChanges, OnDestroy {

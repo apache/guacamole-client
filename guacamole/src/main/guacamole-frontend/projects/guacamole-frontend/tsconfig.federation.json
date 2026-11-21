@@ -6,9 +6,6 @@
       "global"
     ]
   },
-  "files": [
-    "src/main.ts"
-  ],
   "include": [
     "src/**/*.d.ts"
   ]

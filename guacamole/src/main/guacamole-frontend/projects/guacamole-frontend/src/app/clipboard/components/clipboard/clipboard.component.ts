@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { AfterViewInit, Component, DestroyRef, ElementRef, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, OnInit, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
@@ -28,6 +28,7 @@ import { ClipboardData } from '../../types/ClipboardData';
     selector: 'guac-clipboard',
     templateUrl: './clipboard.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ClipboardComponent implements OnInit, AfterViewInit {

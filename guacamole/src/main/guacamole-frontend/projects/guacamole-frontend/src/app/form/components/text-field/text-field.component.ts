@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormFieldBaseComponent, getFieldOption } from '../form-field-base/form-field-base.component';
 
 /**
@@ -27,6 +27,7 @@ import { FormFieldBaseComponent, getFieldOption } from '../form-field-base/form-
     selector: 'guac-text-field',
     templateUrl: './text-field.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TextFieldComponent extends FormFieldBaseComponent implements OnChanges, OnInit {

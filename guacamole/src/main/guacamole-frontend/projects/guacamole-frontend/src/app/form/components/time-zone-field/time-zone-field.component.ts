@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { SortService } from '../../../list/services/sort.service';
@@ -32,6 +32,7 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
     selector: 'guac-time-zone-field',
     templateUrl: './time-zone-field.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TimeZoneFieldComponent extends FormFieldBaseComponent implements OnChanges, OnInit {

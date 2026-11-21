@@ -18,7 +18,7 @@
  */
 
 import { formatDate } from '@angular/common';
-import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import FileSaver from 'file-saver';
 import { BehaviorSubject, combineLatest, take } from 'rxjs';
@@ -41,6 +41,7 @@ import { ConnectionHistoryEntryWrapper } from '../../types/ConnectionHistoryEntr
     selector: 'guac-settings-connection-history',
     templateUrl: './guac-settings-connection-history.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacSettingsConnectionHistoryComponent implements OnInit {

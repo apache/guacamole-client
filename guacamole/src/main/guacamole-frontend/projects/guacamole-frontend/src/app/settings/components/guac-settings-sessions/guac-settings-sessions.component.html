@@ -55,7 +55,7 @@
         </tr>
         </thead>
         <tbody>
-        @for (wrapper of dataSourceView?.data | async; track wrapper) {
+        @for (wrapper of $safeNavigationMigration(dataSourceView?.data) | async; track wrapper) {
             <tr class="session">
                 <td class="select-session">
                     <input [(ngModel)]="wrapper.checked" (ngModelChange)="wrapperSelectionChange(wrapper)" type="checkbox">
@@ -72,10 +72,10 @@
     </table>
 
     <!-- Text displayed if no sessions exist -->
-    <p class="placeholder" [hidden]="dataSourceView?.totalLength | async">
+    <p class="placeholder" [hidden]="$safeNavigationMigration(dataSourceView?.totalLength) | async">
         {{ 'SETTINGS_SESSIONS.INFO_NO_SESSIONS' | transloco }}
     </p>
 
     <!-- Pager for session list -->
-    <guac-pager [pageSize]="25" [length]="dataSourceView?.totalLength | async"></guac-pager>
+    <guac-pager [pageSize]="25" [length]="$safeNavigationMigration(dataSourceView?.totalLength) | async"></guac-pager>
 </div>

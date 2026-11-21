@@ -26,7 +26,7 @@ import { ElementModule } from '../../../element/element.module';
 import { GuacEventService } from '../../../events/services/guac-event.service';
 import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
 import { OskComponent } from './osk.component';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 describe('OskComponent', () => {
     let component: OskComponent;
@@ -41,7 +41,7 @@ describe('OskComponent', () => {
         await TestBed.configureTestingModule({
     declarations: [OskComponent],
     imports: [ElementModule],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
 })
             .compileComponents();
 

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { ManagedClient } from '../../types/ManagedClient';
 
 /**
@@ -28,6 +28,7 @@ import { ManagedClient } from '../../types/ManagedClient';
     selector: 'guac-client-zoom',
     templateUrl: './guac-client-zoom.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacClientZoomComponent {

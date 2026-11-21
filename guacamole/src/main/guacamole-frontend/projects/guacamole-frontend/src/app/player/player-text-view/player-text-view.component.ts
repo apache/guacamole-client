@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, signal, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, signal, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import fuzzysort from 'fuzzysort';
 import { TextBatch } from '../services/key-event-display.service';
 import { PlayerTimeService } from '../services/player-time.service';
@@ -32,6 +32,7 @@ import { PlayerTimeService } from '../services/player-time.service';
     host: {
         '[class.fullscreen]': 'fullscreenKeyLog()'
     },
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PlayerTextViewComponent implements OnChanges {

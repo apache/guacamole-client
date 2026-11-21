@@ -17,12 +17,13 @@
  * under the License.
  */
 
-import { Component, ElementRef, Inject, Input, OnInit, ViewEncapsulation, DOCUMENT } from '@angular/core';
+import { Component, ElementRef, Inject, Input, OnInit, ViewEncapsulation, DOCUMENT, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
     selector: 'guac-menu',
     templateUrl: './guac-menu.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacMenuComponent implements OnInit {

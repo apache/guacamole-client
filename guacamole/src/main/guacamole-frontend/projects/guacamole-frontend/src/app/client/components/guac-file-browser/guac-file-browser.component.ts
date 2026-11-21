@@ -26,7 +26,8 @@ import {
     OnInit,
     Signal,
     SimpleChanges,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
@@ -42,6 +43,7 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
     selector: 'guac-file-browser',
     templateUrl: './guac-file-browser.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacFileBrowserComponent implements OnInit, OnChanges {

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import {
@@ -42,6 +42,7 @@ import { NonNullableProperties } from '../../../util/utility-types';
     selector: 'guac-settings-connections',
     templateUrl: './guac-settings-connections.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacSettingsConnectionsComponent implements OnInit {

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { AfterViewChecked, Component, DestroyRef, Inject, OnInit, Renderer2, ViewEncapsulation, DOCUMENT } from '@angular/core';
+import { AfterViewChecked, Component, DestroyRef, Inject, OnInit, Renderer2, ViewEncapsulation, DOCUMENT, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
@@ -60,6 +60,7 @@ const EXTENSION_STYLES_FILENAME = 'app.css';
     selector: 'guac-root',
     templateUrl: './app.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class AppComponent implements OnInit, AfterViewChecked {

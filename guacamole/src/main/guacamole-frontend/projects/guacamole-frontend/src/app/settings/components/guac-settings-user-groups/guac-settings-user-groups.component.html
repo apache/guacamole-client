@@ -47,7 +47,7 @@
             </tr>
             </thead>
             <tbody [ngClass]="{'loading': !isLoaded()}">
-            @for (manageableUserGroup of dataSourceView?.data | async; track manageableUserGroup) {
+            @for (manageableUserGroup of $safeNavigationMigration(dataSourceView?.data) | async; track manageableUserGroup) {
                 <tr class="user-group"
                     [ngClass]="{disabled: manageableUserGroup.userGroup.disabled}">
                     <td class="user-group-name">
@@ -63,6 +63,6 @@
     }
 
     <!-- Pager controls for user group list -->
-    <guac-pager [pageSize]="25" [length]="dataSourceView?.totalLength | async"></guac-pager>
+    <guac-pager [pageSize]="25" [length]="$safeNavigationMigration(dataSourceView?.totalLength) | async"></guac-pager>
 
 </div>

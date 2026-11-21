@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 
 /**
@@ -27,6 +27,7 @@ import { BehaviorSubject } from 'rxjs';
     selector: 'guac-filter',
     templateUrl: './guac-filter.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacFilterComponent {

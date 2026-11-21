@@ -27,7 +27,8 @@ import {
     SimpleChanges,
     ViewChild,
     ViewContainerRef,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { canonicalize } from '../../../locale/service/translation.service';
 import { LogService } from '../../../util/log.service';
@@ -41,6 +42,7 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
     selector: 'guac-form-field',
     templateUrl: './form-field.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FormFieldComponent extends FormFieldBaseComponent implements AfterViewInit, OnChanges {

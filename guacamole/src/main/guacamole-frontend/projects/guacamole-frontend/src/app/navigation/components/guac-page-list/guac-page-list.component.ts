@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs';
 import { isArray } from '../../../util/is-array';
@@ -30,6 +30,7 @@ import { PageDefinition } from '../../types/PageDefinition';
     selector: 'guac-page-list',
     templateUrl: './guac-page-list.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacPageListComponent implements OnInit, OnChanges {

@@ -51,7 +51,7 @@
             <div class="automatic-login-rejected-modal">
                 <guac-modal>
                     <div class="notification">
-                        <p [transloco]="fatalError?.translatableMessage?.key"
+                        <p [transloco]="$safeNavigationMigration(fatalError?.translatableMessage?.key)"
                            [translocoParams]="fatalError?.translatableMessage?.variables || {}"></p>
                         <p>
                             <button transloco="APP.ACTION_LOGIN_AGAIN" [disabled]="reAuthenticating"

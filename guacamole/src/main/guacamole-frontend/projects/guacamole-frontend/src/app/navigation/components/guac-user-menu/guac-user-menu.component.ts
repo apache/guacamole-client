@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { UserPageService } from '../../../manage/services/user-page.service';
 import { RequestService } from '../../../rest/service/request.service';
@@ -34,6 +34,7 @@ import { PageDefinition } from '../../types/PageDefinition';
     selector: 'guac-user-menu',
     templateUrl: './guac-user-menu.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacUserMenuComponent implements OnInit {

@@ -30,7 +30,8 @@ import {
     signal,
     SimpleChanges,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
@@ -78,6 +79,7 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
     selector: 'guac-client-page',
     templateUrl: './client-page.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestroy {

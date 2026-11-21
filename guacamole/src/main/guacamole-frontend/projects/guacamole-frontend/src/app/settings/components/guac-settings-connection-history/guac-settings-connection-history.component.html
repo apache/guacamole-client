@@ -76,14 +76,14 @@
                         </td>
                         <td>{{ historyEntryWrapper.entry.startDate || 0 | date : dateFormat || undefined }}</td>
                         <td [transloco]="historyEntryWrapper.readableDurationText"
-                            [translocoParams]="{VALUE: historyEntryWrapper.readableDuration?.value, UNIT: historyEntryWrapper.readableDuration?.unit}"></td>
+                            [translocoParams]="{VALUE: $safeNavigationMigration(historyEntryWrapper.readableDuration?.value), UNIT: $safeNavigationMigration(historyEntryWrapper.readableDuration?.unit)}"></td>
                         <td>{{ historyEntryWrapper.entry.connectionName }}</td>
                         <td>{{ historyEntryWrapper.entry.remoteHost }}</td>
                         <td>
                             <a class="history-session-recording"
                                [hidden]="!historyEntryWrapper.sessionRecording"
-                               [routerLink]="historyEntryWrapper.sessionRecording?.url"
-                               [title]="historyEntryWrapper.sessionRecording?.description | async">
+                               [routerLink]="$safeNavigationMigration(historyEntryWrapper.sessionRecording?.url)"
+                               [title]="$safeNavigationMigration(historyEntryWrapper.sessionRecording?.description) | async">
                                     <span
                                         class="history-action-description">{{ 'SETTINGS_CONNECTION_HISTORY.ACTION_VIEW_RECORDING' | transloco }}</span>
                             </a>
@@ -102,7 +102,7 @@
         </p>
 
         <!-- Pager for history list -->
-        <guac-pager [pageSize]="25" [length]="dataSourceView?.totalLength | async"></guac-pager>
+        <guac-pager [pageSize]="25" [length]="$safeNavigationMigration(dataSourceView?.totalLength) | async"></guac-pager>
     </div>
 
 </div>

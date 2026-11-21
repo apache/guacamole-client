@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 
 /**
@@ -27,6 +27,7 @@ import { AuthenticationService } from '../../../auth/service/authentication.serv
     selector: 'guac-connection-history-player',
     templateUrl: './connection-history-player.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ConnectionHistoryPlayerComponent {

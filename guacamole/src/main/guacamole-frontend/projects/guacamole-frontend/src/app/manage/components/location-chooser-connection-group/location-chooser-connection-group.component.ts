@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { GroupListItem } from '../../../group-list/types/GroupListItem';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 
@@ -25,6 +25,7 @@ import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
     selector: 'guac-location-chooser-connection-group',
     templateUrl: './location-chooser-connection-group.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class LocationChooserConnectionGroupComponent {

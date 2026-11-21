@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { GroupListItem } from '../../../group-list/types/GroupListItem';
 
 /**
@@ -28,6 +28,7 @@ import { GroupListItem } from '../../../group-list/types/GroupListItem';
     selector: 'guac-new-sharing-profile',
     templateUrl: './new-sharing-profile.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class NewSharingProfileComponent {

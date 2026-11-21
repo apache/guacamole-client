@@ -36,11 +36,11 @@
                  (click)="expand()" height="64" width="64">
             <img ngSrc="images/arrows/down.svg" alt="Collapse" class="collapse" [hidden]="!expanded"
                  (click)="collapse()" height="64" width="64">
-            @if (!(identifiersDataSourceView?.totalLength | async)) {
+            @if (!($safeNavigationMigration(identifiersDataSourceView?.totalLength) | async)) {
                 <p class="no-related-objects">{{ emptyPlaceholder | transloco }}</p>
             }
             <ul>
-                @for (identifier of identifiersDataSourceView?.data | async; track identifier) {
+                @for (identifier of $safeNavigationMigration(identifiersDataSourceView?.data) | async; track identifier) {
                     <li>
                         <label><img ngSrc="images/x-red.svg" alt="Remove" class="remove"
                                     (click)="removeIdentifierFromScope(identifier)"
@@ -54,7 +54,7 @@
 
         <!-- Exhaustive, paginated list of all objects -->
         <div class="all-related-objects" [hidden]="!expanded">
-            <p [hidden]="identifiersAvailableDataSourceView?.totalLength | async"
+            <p [hidden]="$safeNavigationMigration(identifiersAvailableDataSourceView?.totalLength) | async"
                class="no-objects-available">{{ unavailablePlaceholder | transloco }}</p>
             @if (identifiersAvailableDataSourceView !== null) {
                 <ul>
@@ -71,7 +71,7 @@
             }
 
             <!-- Pager controls for user list-->
-            <guac-pager [pageSize]="25" [length]="identifiersAvailableDataSourceView?.totalLength | async"></guac-pager>
+            <guac-pager [pageSize]="25" [length]="$safeNavigationMigration(identifiersAvailableDataSourceView?.totalLength) | async"></guac-pager>
         </div>
 
     </div>

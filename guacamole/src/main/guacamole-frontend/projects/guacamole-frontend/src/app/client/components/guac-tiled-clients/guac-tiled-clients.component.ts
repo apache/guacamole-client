@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DoCheck, Input, ViewEncapsulation } from '@angular/core';
+import { Component, DoCheck, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 
 import { GuacClickCallback, GuacEventService } from 'guacamole-frontend-lib';
 import _ from 'lodash';
@@ -36,6 +36,7 @@ import { ManagedClientGroup } from '../../types/ManagedClientGroup';
     selector: 'guac-tiled-clients',
     templateUrl: './guac-tiled-clients.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacTiledClientsComponent implements DoCheck {

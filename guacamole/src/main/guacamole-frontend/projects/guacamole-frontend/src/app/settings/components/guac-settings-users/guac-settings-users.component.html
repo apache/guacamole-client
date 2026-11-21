@@ -62,7 +62,7 @@
         </tr>
         </thead>
         <tbody [ngClass]="{'loading': !isLoaded()}">
-        @for (manageableUser of dataSourceView?.data | async; track trackByUsername($index, manageableUser)) {
+        @for (manageableUser of $safeNavigationMigration(dataSourceView?.data) | async; track trackByUsername($index, manageableUser)) {
             <tr class="user"
                 [ngClass]="{disabled: manageableUser.user.disabled}">
                 <td class="username">
@@ -85,6 +85,6 @@
     </table>
 
     <!-- Pager controls for user list -->
-    <guac-pager [pageSize]="25" [length]="dataSourceView?.totalLength | async"></guac-pager>
+    <guac-pager [pageSize]="25" [length]="$safeNavigationMigration(dataSourceView?.totalLength) | async"></guac-pager>
 
 </div>

@@ -92,10 +92,10 @@
     <!-- Connection history -->
     <h2 class="header">{{ 'MANAGE_CONNECTION.SECTION_HEADER_HISTORY' | transloco }}</h2>
     <div class="history section" [ngClass]="{'loading': !historyEntryWrappers || dataSourceView === null}">
-        <p [hidden]="dataSourceView?.totalLength | async">{{ 'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | transloco }}</p>
+        <p [hidden]="$safeNavigationMigration(dataSourceView?.totalLength) | async">{{ 'MANAGE_CONNECTION.INFO_CONNECTION_NOT_USED' | transloco }}</p>
 
         <!-- History list -->
-        <table [hidden]="!(dataSourceView?.totalLength | async)">
+        <table [hidden]="!($safeNavigationMigration(dataSourceView?.totalLength) | async)">
             <thead>
             <tr>
                 <th>{{ 'MANAGE_CONNECTION.TABLE_HEADER_HISTORY_USERNAME' | transloco }}</th>
@@ -105,7 +105,7 @@
             </tr>
             </thead>
             <tbody>
-            @for (wrapper of dataSourceView?.data | async; track wrapper) {
+            @for (wrapper of $safeNavigationMigration(dataSourceView?.data) | async; track wrapper) {
                 <tr>
                     <td class="username">
                         <guac-user-item [username]="wrapper.entry.username"></guac-user-item>
@@ -113,7 +113,7 @@
                     <td class="start">{{ wrapper.entry.startDate | date:historyDateFormat }}</td>
                     <td class="duration"
                         [transloco]="wrapper.durationText"
-                        [translocoParams]="{VALUE: wrapper.duration?.value, UNIT: wrapper.duration?.unit}"></td>
+                        [translocoParams]="{VALUE: $safeNavigationMigration(wrapper.duration?.value), UNIT: $safeNavigationMigration(wrapper.duration?.unit)}"></td>
                     <td class="remoteHost">{{ wrapper.entry.remoteHost }}</td>
                 </tr>
             }
@@ -121,7 +121,7 @@
         </table>
 
         <!-- Pager controls for history list -->
-        <guac-pager [length]="dataSourceView?.totalLength | async"></guac-pager>
+        <guac-pager [length]="$safeNavigationMigration(dataSourceView?.totalLength) | async"></guac-pager>
 
     </div>
 

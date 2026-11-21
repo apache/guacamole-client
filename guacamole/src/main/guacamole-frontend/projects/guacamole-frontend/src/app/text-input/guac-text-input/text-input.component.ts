@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { AfterViewInit, Component, DestroyRef, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
@@ -80,6 +80,7 @@ const ALLOWED_KEYS: Record<number, boolean> = {
     selector: 'guac-text-input',
     templateUrl: './text-input.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TextInputComponent implements AfterViewInit {

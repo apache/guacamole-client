@@ -35,7 +35,7 @@
             </data-source-tabs>
 
             <!-- Warn if user is read-only -->
-            <div class="section" [hidden]="managementPermissions?.[dataSource]?.canSaveObject">
+            <div class="section" [hidden]="$safeNavigationMigration(managementPermissions?.[dataSource]?.canSaveObject)">
                 <p class="notice read-only">{{ 'MANAGE_USER.INFO_READ_ONLY' | transloco }}</p>
             </div>
 

@@ -24,7 +24,7 @@ import { TranslocoTestingModule } from '@jsverse/transloco';
 import { LocaleModule } from '../../../locale/locale.module';
 
 import { GuacSectionTabsComponent } from './guac-section-tabs.component';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 describe('SectionTabsComponent', () => {
     let component: GuacSectionTabsComponent;
@@ -43,7 +43,7 @@ describe('SectionTabsComponent', () => {
                 }
             }
         })],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
 });
         fixture = TestBed.createComponent(GuacSectionTabsComponent);
         component = fixture.componentInstance;

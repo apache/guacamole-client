@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import _ from 'lodash';
@@ -57,6 +57,7 @@ type TerminalColorIndex = typeof terminalColorIndices[number];
     selector: 'guac-terminal-color-scheme-field',
     templateUrl: './terminal-color-scheme-field.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TerminalColorSchemeFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {

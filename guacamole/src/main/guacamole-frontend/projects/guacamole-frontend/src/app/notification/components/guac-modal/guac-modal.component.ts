@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * A component for displaying arbitrary modal content.
@@ -26,6 +26,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
     selector: 'guac-modal',
     templateUrl: './guac-modal.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacModalComponent {

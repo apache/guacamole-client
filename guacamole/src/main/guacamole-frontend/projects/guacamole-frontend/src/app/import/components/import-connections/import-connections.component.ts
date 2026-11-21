@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import _ from 'lodash';
 import { firstValueFrom } from 'rxjs';
@@ -111,6 +111,7 @@ const LEGAL_MIME_TYPES: string[] = [CSV_MIME_TYPE, JSON_MIME_TYPE, ...YAML_MIME_
     templateUrl: './import-connections.component.html',
     encapsulation: ViewEncapsulation.None,
     providers: [ConnectionParseService, ConnectionCSVService],
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ImportConnectionsComponent {

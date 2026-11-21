@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { AuthenticationInterceptor } from '../interceptor/authentication.interceptor';
@@ -33,7 +33,7 @@ describe('AuthenticationService', () => {
     imports: [],
     providers: [
         { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
-        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClient(withXhr(), withInterceptorsFromDi()),
         provideHttpClientTesting()
     ]
 });

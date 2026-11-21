@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ColorPickerService } from '../../service/color-picker.service';
 
@@ -32,6 +32,7 @@ import { ColorPickerService } from '../../service/color-picker.service';
     selector: 'guac-input-color',
     templateUrl: './guac-input-color.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacInputColorComponent {

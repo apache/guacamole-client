@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import {
     GuacGroupListFilterComponent
@@ -38,6 +38,7 @@ import { NonNullableProperties } from '../../../util/utility-types';
     selector: 'guac-home',
     templateUrl: './home.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class HomeComponent implements OnInit {

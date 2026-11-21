@@ -44,7 +44,7 @@
  * THE SOFTWARE.
  */
 
-import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Component which displays an indicator showing the current progress of an
@@ -54,6 +54,7 @@ import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@
     selector: 'guac-player-progress-indicator',
     templateUrl: './progress-indicator.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ProgressIndicatorComponent implements OnChanges {

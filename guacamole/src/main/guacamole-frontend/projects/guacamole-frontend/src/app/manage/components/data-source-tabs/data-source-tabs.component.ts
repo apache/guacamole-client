@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import _ from 'lodash';
 import { canonicalize } from '../../../locale/service/translation.service';
 import { PageDefinition } from '../../../navigation/types/PageDefinition';
@@ -32,6 +32,7 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
     selector: 'data-source-tabs',
     templateUrl: './data-source-tabs.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class DataSourceTabsComponent implements OnChanges {

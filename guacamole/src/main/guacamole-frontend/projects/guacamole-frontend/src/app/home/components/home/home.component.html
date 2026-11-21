@@ -41,7 +41,7 @@
         </div>
         <div class="all-connections">
             <guac-group-list
-                [connectionGroups]="rootConnectionGroupsDataSource?.filteredConnectionGroups | async"
+                [connectionGroups]="$safeNavigationMigration(rootConnectionGroupsDataSource?.filteredConnectionGroups) | async"
                 [templates]="{
                     'connection'       : connection,
                     'connection-group' : connectionGroup

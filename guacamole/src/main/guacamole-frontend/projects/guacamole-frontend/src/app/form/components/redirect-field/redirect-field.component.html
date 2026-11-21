@@ -20,7 +20,7 @@
 <div class="redirect-field-container">
     <div class="redirect-field">
         <p [hidden]="!field.translatableMessage">
-            {{ field.translatableMessage?.key | transloco: { value: field.translatableMessage?.variables } }}
+            {{ $safeNavigationMigration(field.translatableMessage?.key) | transloco: { value: $safeNavigationMigration(field.translatableMessage?.variables) } }}
         </p>
     </div>
 </div>

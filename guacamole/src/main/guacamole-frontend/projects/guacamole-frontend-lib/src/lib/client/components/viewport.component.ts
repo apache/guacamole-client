@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * A component which provides a fullscreen environment for its content.
@@ -26,6 +26,7 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsu
     selector: 'guac-viewport',
     templateUrl: './viewport.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ViewportComponent implements AfterViewInit, OnDestroy {

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DestroyRef, DoCheck, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, DoCheck, Input, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 
@@ -81,6 +81,7 @@ type ClientState = [string, Record<string, string> | null, string | null, Form[]
     selector: 'guac-client-notification',
     templateUrl: './guac-client-notification.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacClientNotificationComponent implements OnInit, DoCheck {

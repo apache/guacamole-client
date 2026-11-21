@@ -18,7 +18,7 @@
  */
 
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { GuacEventService } from '../../../events/services/guac-event.service';
 import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
 
@@ -29,6 +29,7 @@ import { GuacEventArguments } from '../../../events/types/GuacEventArguments';
     selector: 'guac-osk',
     templateUrl: './osk.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class OskComponent implements OnChanges {

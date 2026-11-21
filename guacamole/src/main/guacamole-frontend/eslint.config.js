@@ -51,7 +51,9 @@ module.exports = tseslint.config(
             ],
             '@angular-eslint/prefer-standalone': 'off',
             // Constructor injection is kept; moving to inject() is follow-up work
-            '@angular-eslint/prefer-inject': 'off'
+            '@angular-eslint/prefer-inject': 'off',
+            // ChangeDetectionStrategy.Eager keeps the pre-v22 behavior; moving to OnPush is follow-up work
+            '@angular-eslint/prefer-on-push-component-change-detection': 'off'
         }
     },
     {

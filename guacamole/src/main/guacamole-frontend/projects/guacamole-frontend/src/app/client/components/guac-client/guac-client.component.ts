@@ -29,7 +29,8 @@ import {
     SimpleChanges,
     ViewChild,
     ViewEncapsulation,
-    DOCUMENT
+    DOCUMENT,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
@@ -50,6 +51,7 @@ import { ManagedDisplayCursor, ManagedDisplayDimensions } from '../../types/Mana
     selector: 'guac-client',
     templateUrl: './guac-client.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacClientComponent implements OnInit, OnChanges, DoCheck {

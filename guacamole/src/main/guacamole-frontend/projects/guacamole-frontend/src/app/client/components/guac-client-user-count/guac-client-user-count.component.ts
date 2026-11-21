@@ -25,7 +25,8 @@ import {
     Input,
     Renderer2,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 
@@ -44,6 +45,7 @@ import { ManagedClient } from '../../types/ManagedClient';
     selector: 'guac-client-user-count',
     templateUrl: './guac-client-user-count.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import _ from 'lodash';
 import { firstValueFrom, of } from 'rxjs';
@@ -42,6 +42,7 @@ import { ParseResult } from '../../types/ParseResult';
 @Component({
     selector: 'connection-import-errors',
     templateUrl: './connection-import-errors.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ConnectionImportErrorsComponent implements OnInit, OnChanges {

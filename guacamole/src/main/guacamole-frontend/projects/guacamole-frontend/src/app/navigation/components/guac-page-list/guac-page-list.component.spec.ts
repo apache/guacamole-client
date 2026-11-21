@@ -24,7 +24,7 @@ import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { LocaleModule } from '../../../locale/locale.module';
 import { GuacPageListComponent } from './guac-page-list.component';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 describe('PageListComponent', () => {
     let component: GuacPageListComponent;
@@ -35,7 +35,7 @@ describe('PageListComponent', () => {
     declarations: [GuacPageListComponent],
     imports: [RouterTestingModule,
         LocaleModule],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
 });
         fixture = TestBed.createComponent(GuacPageListComponent);
         component = fixture.componentInstance;

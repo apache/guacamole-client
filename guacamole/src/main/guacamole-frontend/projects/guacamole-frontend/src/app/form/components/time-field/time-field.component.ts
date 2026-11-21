@@ -18,7 +18,7 @@
  */
 
 import { formatDate } from '@angular/common';
-import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl } from '@angular/forms';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
@@ -30,6 +30,7 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
     selector: 'guac-time-field',
     templateUrl: './time-field.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TimeFieldComponent extends FormFieldBaseComponent implements OnInit, OnChanges {

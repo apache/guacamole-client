@@ -24,7 +24,7 @@ import { TestScheduler } from 'rxjs/testing';
 import { getTestScheduler } from '../../util/test-helper';
 import { Error } from '../types/Error';
 import { RequestService } from './request.service';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import Type = Error.Type;
 
 describe('RequestService', () => {
@@ -35,7 +35,7 @@ describe('RequestService', () => {
         testScheduler = getTestScheduler();
         TestBed.configureTestingModule({
     imports: [],
-    providers: [provideHttpClient(withInterceptorsFromDi()), provideHttpClientTesting()]
+    providers: [provideHttpClient(withXhr(), withInterceptorsFromDi()), provideHttpClientTesting()]
 });
         service = TestBed.inject(RequestService);
     });

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { DataSourceService } from '../../../rest/service/data-source-service.service';
 import { PermissionService } from '../../../rest/service/permission.service';
@@ -36,6 +36,7 @@ import { PermissionSet } from '../../../rest/types/PermissionSet';
     selector: 'system-permission-editor',
     templateUrl: './system-permission-editor.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SystemPermissionEditorComponent implements OnInit {

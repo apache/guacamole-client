@@ -26,7 +26,8 @@ import {
     Renderer2,
     SimpleChanges,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { ManagedClient } from '../../types/ManagedClient';
 
@@ -38,6 +39,7 @@ import { ManagedClient } from '../../types/ManagedClient';
     selector: 'guac-thumbnail',
     templateUrl: './guac-thumbnail.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacThumbnailComponent implements AfterViewInit, OnChanges {

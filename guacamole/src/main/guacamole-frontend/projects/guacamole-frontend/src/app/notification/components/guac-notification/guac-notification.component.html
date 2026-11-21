@@ -29,7 +29,7 @@
 
         <!-- Notification text -->
         <p [hidden]="!notification.text" class="text"
-           [transloco]="notification.text?.key"
+           [transloco]="$safeNavigationMigration(notification.text?.key)"
            [translocoParams]="notification.text?.variables || {}"></p>
 
         <!-- Arbitrary parameters -->
@@ -46,14 +46,14 @@
             <div class="bar" [hidden]="!progressPercent" [ngSwitch]="{'width': progressPercent + '%'}"></div>
             <div
                 [hidden]="!notification.progress?.text"
-                [transloco]="notification.progress?.text"
-                [translocoParams]="{PROGRESS: notification.progress?.value, UNIT: notification.progress?.unit}"></div>
+                [transloco]="$safeNavigationMigration(notification.progress?.text)"
+                [translocoParams]="{PROGRESS: $safeNavigationMigration(notification.progress?.value), UNIT: $safeNavigationMigration(notification.progress?.unit)}"></div>
         </div>
 
         <!-- Default action countdown text -->
         <p class="countdown-text"
            [hidden]="!notification.countdown?.text"
-           [transloco]="notification.countdown?.text"
+           [transloco]="$safeNavigationMigration(notification.countdown?.text)"
            [translocoParams]="{REMAINING: timeRemaining}"></p>
 
     </div>

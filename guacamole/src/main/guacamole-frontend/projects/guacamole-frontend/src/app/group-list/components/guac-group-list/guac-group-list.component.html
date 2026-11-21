@@ -69,6 +69,6 @@
     }
 
     <!-- Pager for connections / groups -->
-    <guac-pager [pageSize]="pageSize" [length]="connectionGroupsDataSource?.totalLength | async"></guac-pager>
+    <guac-pager [pageSize]="pageSize" [length]="$safeNavigationMigration(connectionGroupsDataSource?.totalLength) | async"></guac-pager>
 
 </div>

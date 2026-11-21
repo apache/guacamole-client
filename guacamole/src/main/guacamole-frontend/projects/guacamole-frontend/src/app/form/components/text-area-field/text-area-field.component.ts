@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 /**
@@ -27,6 +27,7 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
     selector: 'guac-text-area-field',
     templateUrl: './text-area-field.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class TextAreaFieldComponent extends FormFieldBaseComponent implements OnChanges {

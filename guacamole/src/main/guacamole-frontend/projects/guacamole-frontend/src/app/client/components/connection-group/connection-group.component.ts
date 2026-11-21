@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { GroupListItem } from '../../../group-list/types/GroupListItem';
 import { ConnectionListContext } from '../../types/ConnectionListContext';
 
@@ -29,6 +29,7 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
     templateUrl: './connection-group.component.html',
     styles: [],
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ConnectionGroupComponent {

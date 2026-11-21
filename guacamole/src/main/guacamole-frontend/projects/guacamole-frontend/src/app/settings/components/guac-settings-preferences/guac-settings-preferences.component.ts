@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DestroyRef, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { TranslocoService } from '@jsverse/transloco';
@@ -43,6 +43,7 @@ import { PreferenceService } from '../../services/preference.service';
     selector: 'guac-settings-preferences',
     templateUrl: './guac-settings-preferences.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacSettingsPreferencesComponent implements OnInit {

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Inject, Input, OnInit, ViewEncapsulation, DOCUMENT } from '@angular/core';
+import { Component, Inject, Input, OnInit, ViewEncapsulation, DOCUMENT, ChangeDetectionStrategy } from '@angular/core';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 /**
@@ -28,6 +28,7 @@ import { FormFieldBaseComponent } from '../form-field-base/form-field-base.compo
     selector: 'guac-redirect-field',
     templateUrl: './redirect-field.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class RedirectFieldComponent extends FormFieldBaseComponent implements OnInit {

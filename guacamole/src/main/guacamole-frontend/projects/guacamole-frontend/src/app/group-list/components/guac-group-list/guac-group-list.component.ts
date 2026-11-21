@@ -25,7 +25,8 @@ import {
     SimpleChanges,
     TemplateRef,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { of } from 'rxjs';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
@@ -48,6 +49,7 @@ import { GroupListItem } from '../../types/GroupListItem';
     selector: 'guac-group-list',
     templateUrl: './guac-group-list.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacGroupListComponent implements OnInit, OnChanges {

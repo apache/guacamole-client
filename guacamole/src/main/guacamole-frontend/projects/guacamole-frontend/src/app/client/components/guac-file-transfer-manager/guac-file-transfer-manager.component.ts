@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { ManagedClientService } from '../../services/managed-client.service';
 import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedClientGroup } from '../../types/ManagedClientGroup';
@@ -30,6 +30,7 @@ import { ManagedFileTransferState } from '../../types/ManagedFileTransferState';
     selector: 'guac-file-transfer-manager',
     templateUrl: './guac-file-transfer-manager.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacFileTransferManagerComponent {

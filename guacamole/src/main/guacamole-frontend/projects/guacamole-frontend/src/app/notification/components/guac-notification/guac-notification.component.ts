@@ -25,7 +25,8 @@ import {
     OnChanges,
     OnDestroy,
     SimpleChanges,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
@@ -39,6 +40,7 @@ import { Notification } from '../../types/Notification';
     selector: 'guac-notification',
     templateUrl: './guac-notification.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy {

@@ -17,9 +17,9 @@
  * under the License.
  */
 
-const {withNativeFederation, shareAll} = require('@angular-architects/native-federation/config');
+import {withNativeFederation, shareAll} from '@angular-architects/native-federation/config';
 
-module.exports = withNativeFederation({
+export default withNativeFederation({
 
     name: 'guacamole-frontend',
 

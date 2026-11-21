@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import _ from 'lodash';
 import { SortService } from '../../../list/services/sort.service';
 import { SessionStorageEntry, SessionStorageFactory } from '../../../storage/session-storage-factory.service';
@@ -34,6 +34,7 @@ import { ManagedClientState } from '../../types/ManagedClientState';
     selector: 'guac-client-panel',
     templateUrl: './guac-client-panel.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacClientPanelComponent implements AfterViewInit {

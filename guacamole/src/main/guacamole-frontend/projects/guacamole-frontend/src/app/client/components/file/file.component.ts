@@ -27,7 +27,8 @@ import {
     Output,
     SimpleChanges,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 import { ManagedFilesystem } from '../../types/ManagedFilesystem';
 
@@ -44,6 +45,7 @@ import { ManagedFilesystem } from '../../types/ManagedFilesystem';
     selector: 'guac-file',
     templateUrl: './file.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class FileComponent implements OnInit, OnChanges {

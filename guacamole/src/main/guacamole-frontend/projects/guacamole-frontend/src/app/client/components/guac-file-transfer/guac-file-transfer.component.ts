@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DoCheck, Input, ViewEncapsulation } from '@angular/core';
+import { Component, DoCheck, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import FileSaver from 'file-saver';
 import { GuacTranslateService } from '../../services/guac-translate.service';
 import { ManagedFileTransferState } from '../../types/ManagedFileTransferState';
@@ -31,6 +31,7 @@ import { ManagedFileUpload } from '../../types/ManagedFileUpload';
     selector: 'guac-file-transfer',
     templateUrl: './guac-file-transfer.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacFileTransferComponent implements DoCheck {

@@ -17,13 +17,14 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormFieldBaseComponent } from '../form-field-base/form-field-base.component';
 
 @Component({
     selector: 'guac-username-field',
     templateUrl: './username-field.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class UsernameFieldComponent extends FormFieldBaseComponent implements OnChanges {

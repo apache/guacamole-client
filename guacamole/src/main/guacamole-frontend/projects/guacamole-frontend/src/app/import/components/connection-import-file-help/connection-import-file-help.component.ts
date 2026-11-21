@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * A component which displays help text for the connection import.
@@ -25,6 +25,7 @@ import { Component } from '@angular/core';
 @Component({
     selector: 'guac-connection-import-file-help',
     templateUrl: './connection-import-file-help.component.html',
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ConnectionImportFileHelpComponent {

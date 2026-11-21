@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import {
     GuacGroupListFilterComponent
 } from '../../../group-list/components/guac-group-list-filter/guac-group-list-filter.component';
@@ -41,6 +41,7 @@ import { ConnectionListContext } from '../../types/ConnectionListContext';
     selector: 'connection-permission-editor',
     templateUrl: './connection-permission-editor.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DestroyRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -48,6 +48,7 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
     selector: 'guac-manage-connection',
     templateUrl: './manage-connection.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ManageConnectionComponent implements OnInit {

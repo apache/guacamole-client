@@ -44,7 +44,7 @@
         </tr>
         </thead>
         <tbody>
-        @for (error of connectionErrorsDataSource?.data | async; track error) {
+        @for (error of $safeNavigationMigration(connectionErrorsDataSource?.data) | async; track error) {
             <tr>
                 <td>{{ error.rowNumber }}</td>
                 <td>{{ error.name }}</td>
@@ -66,5 +66,5 @@
 
     <!-- Pager for connection error list -->
     <guac-pager [pageSize]="25"
-                [length]="connectionErrorsDataSource?.totalLength | async"></guac-pager>
+                [length]="$safeNavigationMigration(connectionErrorsDataSource?.totalLength) | async"></guac-pager>
 </div>

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { canonicalize } from '../../../locale/service/translation.service';
 
 /**
@@ -30,6 +30,7 @@ import { canonicalize } from '../../../locale/service/translation.service';
     selector: 'guac-section-tabs',
     templateUrl: './guac-section-tabs.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class GuacSectionTabsComponent {

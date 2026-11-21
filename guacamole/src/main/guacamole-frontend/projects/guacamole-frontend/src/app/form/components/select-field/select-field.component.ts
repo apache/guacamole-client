@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormFieldBaseComponent, getFieldOption } from '../form-field-base/form-field-base.component';
 
 /**
@@ -27,6 +27,7 @@ import { FormFieldBaseComponent, getFieldOption } from '../form-field-base/form-
     selector: 'guac-select-field',
     templateUrl: './select-field.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class SelectFieldComponent extends FormFieldBaseComponent implements OnChanges {

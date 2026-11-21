@@ -52,7 +52,8 @@ import {
     OnChanges,
     SimpleChanges,
     ViewChild,
-    ViewEncapsulation
+    ViewEncapsulation,
+    ChangeDetectionStrategy
 } from '@angular/core';
 
 /**
@@ -63,6 +64,7 @@ import {
     selector: 'guac-player-display',
     templateUrl: './player-display.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class PlayerDisplayComponent implements AfterViewInit, OnChanges {

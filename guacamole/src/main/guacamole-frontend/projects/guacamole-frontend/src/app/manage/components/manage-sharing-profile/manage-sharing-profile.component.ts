@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DestroyRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -44,6 +44,7 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
     selector: 'guac-manage-sharing-profile',
     templateUrl: './manage-sharing-profile.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ManageSharingProfileComponent implements OnInit {

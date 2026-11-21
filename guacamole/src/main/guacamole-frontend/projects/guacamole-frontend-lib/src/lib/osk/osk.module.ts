@@ -18,7 +18,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { ElementModule } from '../element/element.module';
 import { OskComponent } from './components/osk/osk.component';
@@ -37,7 +37,7 @@ import { OskComponent } from './components/osk/osk.component';
         CommonModule,
         ElementModule
     ],
-    providers: [provideHttpClient(withInterceptorsFromDi())]
+    providers: [provideHttpClient(withXhr(), withInterceptorsFromDi())]
 })
 export class OskModule {
 }

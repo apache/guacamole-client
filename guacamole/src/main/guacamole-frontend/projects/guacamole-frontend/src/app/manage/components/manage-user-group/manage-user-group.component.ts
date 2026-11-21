@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, DestroyRef, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, DestroyRef, Input, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -45,6 +45,7 @@ import { ManagementPermissions } from '../../types/ManagementPermissions';
     selector: 'guac-manage-user-group',
     templateUrl: './manage-user-group.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class ManageUserGroupComponent implements OnInit {

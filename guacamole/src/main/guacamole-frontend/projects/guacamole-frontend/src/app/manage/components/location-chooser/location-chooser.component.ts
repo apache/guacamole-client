@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 
 /**
@@ -27,6 +27,7 @@ import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
     selector: 'guac-location-chooser',
     templateUrl: './location-chooser.component.html',
     encapsulation: ViewEncapsulation.None,
+    changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
 export class LocationChooserComponent implements OnInit, OnChanges {

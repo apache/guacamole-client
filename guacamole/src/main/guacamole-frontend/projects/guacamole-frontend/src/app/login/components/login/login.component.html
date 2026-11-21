@@ -20,7 +20,7 @@
 <div class="login-ui" [ngClass]="{'error': loginError, 'continuation': isContinuation(), 'initial': !isContinuation()}">
 
     <!-- Login error message -->
-    <p class="login-error" [transloco]="loginError?.key" [translocoParams]="loginError?.variables || {}"></p>
+    <p class="login-error" [transloco]="$safeNavigationMigration(loginError?.key)" [translocoParams]="loginError?.variables || {}"></p>
 
     <div class="login-dialog-middle">
 
@@ -36,7 +36,7 @@
                 </div>
 
                 <!-- Login message/instructions -->
-                <p [hidden]="!helpText" [transloco]="helpText?.key" [translocoParams]="helpText?.variables || {}"></p>
+                <p [hidden]="!helpText" [transloco]="$safeNavigationMigration(helpText?.key)" [translocoParams]="helpText?.variables || {}"></p>
 
                 <!-- Login fields -->
                 <div class="login-fields">
@@ -44,7 +44,7 @@
                         namespace="LOGIN"
                         [content]="remainingFields"
                         [modelFormGroup]="enteredValues"
-                        [focusedField]="relevantField?.name"
+                        [focusedField]="$safeNavigationMigration(relevantField?.name)"
                         [attr.data-disabled]="submitted"></guac-form>
                 </div>
 

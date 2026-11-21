@@ -8,7 +8,6 @@
             "node_modules/@types",
             "typings"
         ],
-        "baseUrl": "./",
         "outDir": "./dist/out-tsc",
         "forceConsistentCasingInFileNames": true,
         "strict": true,
@@ -21,10 +20,10 @@
         "allowUmdGlobalAccess": true,
         "paths": {
             "guacamole-frontend-ext-lib": [
-                "dist/guacamole-frontend-ext-lib"
+                "./dist/guacamole-frontend-ext-lib"
             ],
             "guacamole-frontend-lib": [
-                "dist/guacamole-frontend-lib"
+                "./dist/guacamole-frontend-lib"
             ]
         },
         "declaration": false,
