@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 
 /**
  * Displays a button to navigate to the about page.
@@ -28,6 +28,7 @@ import { Component, ViewEncapsulation } from '@angular/core';
         <a routerLink="angular-extension">Goto Extension Page</a>
     `,
     imports: [],
+    changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None
 })
 export class AboutExtensionButtonComponent {

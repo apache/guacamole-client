@@ -17,11 +17,14 @@
  * under the License.
  */
 
-const { withNativeFederation, shareAll } = require('@angular-architects/native-federation/config');
+import { withNativeFederation, shareAll } from '@angular-architects/native-federation/config';
+import extLib from 'guacamole-frontend-ext-lib/package.json' with { type: 'json' };
 
-module.exports = withNativeFederation({
+export default withNativeFederation({
 
-  name: 'guacamole-frontend-extension-example',
+  // Must equal the namespace in the extension manifest, as Guacamole lists
+  // each extension under its namespace in native-federation-manifest.json
+  name: 'guacamole-angular-example',
 
   exposes: {
     'bootsrapExtension': './src/app/extension.config.ts',
@@ -30,6 +33,10 @@ module.exports = withNativeFederation({
 
   shared: {
     ...shareAll({ singleton: true, strictVersion: true, requiredVersion: 'auto' }),
+
+    // 'auto' would take the file: path from package.json as version range;
+    // require the installed version instead, as the host does
+    'guacamole-frontend-ext-lib': { singleton: true, strictVersion: true, requiredVersion: `~${extLib.version}` }
   },
 
   // Packages that should not be shared or are not needed at runtime

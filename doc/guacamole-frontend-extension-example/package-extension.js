@@ -149,8 +149,10 @@ async function createJarFile(files, manifest) {
         throw error;
     } finally {
         process.chdir(currentDir);
-        // Clean up manifest file
-        // TODO fs.unlinkSync(manifestPath);
+
+        // The generated files are needed only inside the JAR
+        fs.unlinkSync(manifestPath);
+        fs.unlinkSync(nativeFederationConfigurationPath);
     }
 }
 

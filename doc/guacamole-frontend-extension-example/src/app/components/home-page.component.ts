@@ -17,13 +17,12 @@
  * under the License.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { AboutExtensionButtonComponent } from "./about-extension-button.component";
 import { FormControl } from "@angular/forms";
 import {
     FormField
-} from "guacamole-frontend-ext-lib/lib/form/FormField";
+} from "guacamole-frontend-ext-lib";
 import { RouterLink } from "@angular/router";
 import { PlanetChooserFieldComponent } from "./planet-chooser-field.component";
 
@@ -32,7 +31,7 @@ import { PlanetChooserFieldComponent } from "./planet-chooser-field.component";
  */
 @Component({
     selector: 'guac-home-page',
-    imports: [CommonModule, AboutExtensionButtonComponent, PlanetChooserFieldComponent, RouterLink, PlanetChooserFieldComponent],
+    imports: [AboutExtensionButtonComponent, PlanetChooserFieldComponent, RouterLink, PlanetChooserFieldComponent],
     template: `
         <p>
             guacamole-frontend-extension-example works!
@@ -51,6 +50,7 @@ import { PlanetChooserFieldComponent } from "./planet-chooser-field.component";
         <a routerLink="/">Home</a>
         <guac-about-extension-button/>
     `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None
 })
 export class HomePageComponent {

@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { Component, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from "@angular/router";
 
 /**
@@ -26,7 +25,7 @@ import { RouterLink } from "@angular/router";
  */
 @Component({
     selector: 'guac-about-extension-page',
-    imports: [CommonModule, RouterLink],
+    imports: [RouterLink],
     template: `
         <p>
             This is the about extension page.
@@ -34,6 +33,7 @@ import { RouterLink } from "@angular/router";
             <a routerLink="../">Go back to the extension page</a>
         </p>
     `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None
 })
 export class AboutExtensionPageComponent {

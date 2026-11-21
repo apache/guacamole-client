@@ -17,8 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, ViewEncapsulation } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, Input, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import {
     FormField,
     FormFieldComponentData
@@ -29,14 +28,17 @@ export const PLANET_CHOOSER_FIELD_TYPE = 'planet-chooser';
 
 @Component({
     selector: 'app-planet-chooser-field',
-    imports: [CommonModule, ReactiveFormsModule],
+    imports: [ReactiveFormsModule],
     template: `
-        <ng-container *ngIf="control">
+        @if (control) {
             <select [formControl]="control">
-                <option *ngFor="let planet of planets" [value]="planet">{{planet}}</option>
+                @for (planet of planets; track planet) {
+                    <option [value]="planet">{{planet}}</option>
+                }
             </select>
-        </ng-container>
+        }
     `,
+    changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None
 })
 export class PlanetChooserFieldComponent implements FormFieldComponentData {

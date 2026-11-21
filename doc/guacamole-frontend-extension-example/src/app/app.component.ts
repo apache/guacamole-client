@@ -17,13 +17,13 @@
  * under the License.
  */
 
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
     selector: 'guac-root',
-    imports: [CommonModule, RouterOutlet],
+    imports: [RouterOutlet],
+    changeDetection: ChangeDetectionStrategy.Eager,
     template: `
         <router-outlet></router-outlet>
     `
