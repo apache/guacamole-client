@@ -18,7 +18,7 @@
  */
 
 import { ViewEncapsulation, provideZoneChangeDetection } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { platformBrowser } from '@angular/platform-browser';
 
 import { AppModule } from './app/app.module';
 import { LOAD_REMOTE_MODULE, LoadRemoteModule } from './app/index/types/LoadRemoteModule';
@@ -31,7 +31,7 @@ import { LOAD_REMOTE_MODULE, LoadRemoteModule } from './app/index/types/LoadRemo
  *     receives it through the LOAD_REMOTE_MODULE injection token.
  */
 export function bootstrap(loadRemoteModule: LoadRemoteModule): void {
-    platformBrowserDynamic().bootstrapModule(AppModule, {
+    platformBrowser().bootstrapModule(AppModule, {
         applicationProviders: [
             provideZoneChangeDetection(),
             { provide: LOAD_REMOTE_MODULE, useValue: loadRemoteModule }

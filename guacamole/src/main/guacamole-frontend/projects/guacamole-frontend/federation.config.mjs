@@ -33,7 +33,7 @@ export default withNativeFederation({
         'rxjs/fetch',
         'rxjs/testing',
         'rxjs/webSocket',
-        'csv'
+        'csv-parse/browser/esm/sync'
     ]
 
     // Please read our FAQ about sharing libs:

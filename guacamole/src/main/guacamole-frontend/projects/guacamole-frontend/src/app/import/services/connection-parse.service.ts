@@ -673,7 +673,7 @@ export class ConnectionParseService {
         // NOTE: skip_empty_lines is required, or a trailing newline will error
         let parsedData;
         try {
-            parsedData = parseCSVData(csvData, { skip_empty_lines: true } as any);
+            parsedData = parseCSVData(csvData, { skip_empty_lines: true });
         }
 
             // If the CSV parser throws an error, reject with that error

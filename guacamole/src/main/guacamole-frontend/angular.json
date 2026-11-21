@@ -114,7 +114,6 @@
 							"fuzzysort",
 							"@simonwep/pickr",
 							"angular-expressions",
-							"jstz",
 							"file-saver"
 						]
 					},
