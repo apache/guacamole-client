@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { ApplicationRef, createComponent, EnvironmentInjector, Inject, Injectable, Injector, Type, DOCUMENT } from '@angular/core';
+import { ApplicationRef, ComponentRef, createComponent, EnvironmentInjector, Inject, Injectable, Injector, Type, DOCUMENT } from '@angular/core';
 import $ from 'jquery';
 import { PatchService } from '../../rest/service/patch.service';
 import { LOAD_REMOTE_MODULE, LoadRemoteModule } from '../types/LoadRemoteModule';
@@ -32,9 +32,16 @@ import { PatchOperation } from '../types/PatchOperation';
 export class ApplyPatchesService {
 
     /**
-     * All available HTML patches.
+     * All available HTML patches, each with its operations and a function
+     * which returns a new copy of its elements each time it is called.
      */
-    private patches: { operations: PatchOperation[]; elements: Element[] }[] = [];
+    private patches: { operations: PatchOperation[]; createElements: () => Element[] }[] = [];
+
+    /**
+     * The Angular components which HTML patches inserted into the DOM and
+     * which have not been destroyed yet.
+     */
+    private components: ComponentRef<unknown>[] = [];
 
     /**
      * Inject required services.
@@ -57,7 +64,7 @@ export class ApplyPatchesService {
 
                 // Filter out and parse all applicable meta tags
                 const operations: PatchOperation[] = [];
-                let elements = await Promise.all([...metaElements, ...otherElements].filter((element) => {
+                const elementFactories = await Promise.all([...metaElements, ...otherElements].filter((element) => {
 
                         // Leave non-meta tags untouched
                         if (element.tagName !== 'META')
@@ -81,14 +88,14 @@ export class ApplyPatchesService {
 
                     })
                         .map(async (element) =>
-                            await this.getPatchElement(element)
+                            await this.getPatchElementFactory(element)
                         ))
                 ;
 
                 // Add patch to list of available patches
                 this.patches.push({
                     operations,
-                    elements
+                    createElements: () => elementFactories.map(createElement => createElement())
                 });
 
             }
@@ -96,78 +103,91 @@ export class ApplyPatchesService {
     }
 
     /**
-     * Returns the element which should be inserted into the DOM for the given
-     * patch element. If the element has the attributes nativeFederationModule
-     * and nativeFederationElement, it is replaced by the host element of the
-     * Angular component exposed under that name by the given native
-     * federation module. Otherwise the element itself is returned.
+     * Returns a function which creates a new copy of the given patch element
+     * each time it is called, so that each element matched by a patch
+     * operation receives its own copy. If the element has the attributes
+     * nativeFederationModule and nativeFederationElement, each copy is the
+     * host element of a new instance of the Angular component exposed under
+     * that name by the given native federation module. Otherwise each copy
+     * is a deep clone of the element itself.
      *
      * @param element
      *     The element of the patch.
      *
      * @returns
-     *     A promise which resolves with the element to insert into the DOM.
+     *     A promise which resolves with a function returning a new copy of
+     *     the element to insert into the DOM.
      */
-    public async getPatchElement(element: Element): Promise<Element> {
+    public async getPatchElementFactory(element: Element): Promise<() => Element> {
 
         // Check if the element should be replaced by an angular component via nativ federation
         const nativeFederationModule = element.getAttribute('nativeFederationModule');
         const nativeFederationElement = element.getAttribute('nativeFederationElement');
 
         if (nativeFederationModule && nativeFederationElement) {
-            return this.createNativeFederationAngularComponent(nativeFederationModule, nativeFederationElement)
+            const module = await this.loadRemoteModule<Record<string, Type<unknown>>>(
+                nativeFederationModule, nativeFederationElement
+            );
+            return () => this.createNativeFederationAngularComponent(module[nativeFederationElement]);
         }
 
-        // Just return the element itself if native federation is not required
-        return element;
+        // Just copy the element itself if native federation is not required
+        return () => element.cloneNode(true) as Element;
 
     }
 
     /**
-     * Creates the Angular component exposed under the given name by the given
-     * native federation module and returns its host element, which the patch
-     * operations then insert into the DOM. The component takes part in the
-     * change detection of the application.
+     * Creates a new instance of the given Angular component, which a native
+     * federation module exposes, and returns its host element, which the
+     * patch operations then insert into the DOM. The component takes part
+     * in the change detection of the application until its host element
+     * leaves the DOM.
      *
-     * @param nativeFederationModule
-     *     The name of the native federation module (the remote) exposing the
-     *     component.
-     *
-     * @param nativeFederationElement
-     *     The name under which the native federation module exposes the
-     *     component.
+     * @param component
+     *     The Angular component exposed by the native federation module.
      *
      * @returns
-     *     A promise which resolves with the host element of the created
-     *     component.
+     *     The host element of the created component.
      */
-    public async createNativeFederationAngularComponent(nativeFederationModule: string, nativeFederationElement: string): Promise<Element> {
-
-        const module = await this.loadRemoteModule<Record<string, Type<unknown>>>(
-            nativeFederationModule, nativeFederationElement
-        );
+    public createNativeFederationAngularComponent(component: Type<unknown>): Element {
 
         // Create the component with its own host element, outside any view
         // container, and check it along with the views of the application
-        const componentRef = createComponent(module[nativeFederationElement], {
+        const componentRef = createComponent(component, {
             environmentInjector: this.injector.get(EnvironmentInjector)
         });
         this._appRef.attachView(componentRef.hostView);
+        this.components.push(componentRef);
 
         return componentRef.location.nativeElement;
 
     }
 
     /**
-     * Applies each available HTML patch to the DOM.
+     * Applies each available HTML patch to the elements of the DOM which it
+     * has not been applied to yet, and destroys the Angular components
+     * inserted by HTML patches which have since left the DOM.
      */
     applyPatches(): void {
 
         // Apply each operation implied by the meta tags
-        this.patches.forEach(({ operations, elements }) => {
+        const root = $(this.document.body);
+        this.patches.forEach(({ operations, createElements }) => {
             operations.forEach(operation => {
-                operation.apply($(this.document.body), elements);
+                operation.apply(root, createElements);
             });
+        });
+
+        // Destroy the components which Angular removed from the DOM along
+        // with the elements they were inserted at
+        this.components = this.components.filter(componentRef => {
+
+            if (componentRef.location.nativeElement.isConnected)
+                return true;
+
+            componentRef.destroy();
+            return false;
+
         });
 
     }

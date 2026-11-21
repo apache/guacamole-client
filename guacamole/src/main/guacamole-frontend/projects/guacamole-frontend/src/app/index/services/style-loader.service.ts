@@ -37,10 +37,11 @@ export class StyleLoaderService {
     private renderer: Renderer2;
 
     /**
-     * The build identifier of the Guacamole build that produced
-     * the index.html.
+     * The meta element which provides the build identifier of the Guacamole
+     * build that produced the index.html, if available. The identifier is
+     * used for cache-busting requests of CSS files between deployments.
      */
-    private buildMeta: string;
+    private readonly buildMeta: HTMLMetaElement | null;
 
     /**
      * Inject required Services.
@@ -48,7 +49,7 @@ export class StyleLoaderService {
     constructor(@Inject(DOCUMENT) private document: Document,
                 private rendererFactory: RendererFactory2) {
         this.renderer = this.rendererFactory.createRenderer(null, null);
-        this.buildMeta = this.renderer.selectRootElement('meta[name=build]')?.content;
+        this.buildMeta = document.querySelector<HTMLMetaElement>('meta[name="build"]');
     }
 
     /**
@@ -75,7 +76,32 @@ export class StyleLoaderService {
         // Set type of the link item and path to the css file
         this.renderer.setProperty(styleElement, 'rel', 'stylesheet');
         this.renderer.setProperty(styleElement, 'id', elementId);
-        this.renderer.setProperty(styleElement, 'href', `${styleName}?b=${this.buildMeta}`);
+        this.renderer.setProperty(styleElement, 'href', this.getStyleURL(styleName));
+
+    }
+
+    /**
+     * Returns the URL of the given CSS file. The build identifier is appended
+     * as the "b" parameter when it is known, so that browsers do not reuse a
+     * cached copy of the file after Guacamole has been updated. The
+     * identifier is URL-encoded because the development server serves the
+     * index.html without filtering, leaving the placeholder
+     * "${guacamole.build.identifier}" in place, and servers reject the
+     * unencoded braces in a query string.
+     *
+     * @param styleName
+     *     The name of the CSS file.
+     *
+     * @returns
+     *     The URL to request the CSS file from.
+     */
+    private getStyleURL(styleName: string): string {
+
+        // Append ?b=<build> only when the build identifier is known
+        if (!this.buildMeta?.content)
+            return styleName;
+
+        return styleName + '?b=' + encodeURIComponent(this.buildMeta.content);
 
     }
 

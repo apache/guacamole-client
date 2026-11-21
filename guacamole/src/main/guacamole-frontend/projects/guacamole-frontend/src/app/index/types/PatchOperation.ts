@@ -17,13 +17,31 @@
  * under the License.
  */
 
+import $ from 'jquery';
+
 /**
  * Represents a single HTML patching operation which will be applied
- * to the raw HTML of a template. The name of the patching operation
- * MUST be one of the valid names defined within
+ * to the elements of the DOM matched by a CSS selector. The name of the
+ * patching operation MUST be one of the valid names defined within
  * PatchOperation.Operations.
  */
 export class PatchOperation {
+
+    /**
+     * The elements this patch operation has been applied to, along with
+     * all elements it inserted itself. HTML patches are applied to the DOM
+     * after each change detection, so this patch operation must be applied
+     * to each element only once.
+     */
+    private readonly patchedElements = new WeakSet<Element>();
+
+    /**
+     * Each element this patch operation inserted elements next to, along
+     * with those elements, if the patch operation is "before" or "after".
+     * Angular does not know of the inserted elements and leaves them in
+     * place when it removes the element they were inserted next to.
+     */
+    private insertedSiblings: { target: Element; elements: Element[] }[] = [];
 
     /**
      * Creates a new PatchOperation.
@@ -33,85 +51,120 @@ export class PatchOperation {
      *     names are defined within PatchOperation.Operations.
      *
      * @param selector
-     *     The CSS selector which determines which elements within a
-     *     template will be affected by the patch operation.
+     *     The CSS selector which determines which elements will be
+     *     affected by the patch operation.
      */
     constructor(private name: string, private selector: string) {
     }
 
     /**
-     * Applies this patch operation to the template defined by the
-     * given root element, which must be a single element wrapped by
-     * JQuery.
+     * Applies this patch operation to each element within the DOM tree
+     * defined by the given root element which matches the selector of this
+     * patch operation and has not been patched by it before. Each such
+     * element receives its own copy of the elements of the patch, as each
+     * rendered instance of a patched template did in the AngularJS
+     * frontend. Elements inserted next to an element which has since left
+     * the DOM are removed.
      *
      * @param root
-     *     The JQuery-wrapped root element of the template to which
-     *     this patch operation should be applied.
+     *     The JQuery-wrapped root element of the DOM tree to which this
+     *     patch operation should be applied.
      *
-     * @param elements
-     *     The elements which should be applied by the patch
-     *     operation. For example, if the patch operation is inserting
-     *     elements, these are the elements that will be inserted.
+     * @param createElements
+     *     A function which returns a new copy of the elements which should
+     *     be applied by the patch operation each time it is called. For
+     *     example, if the patch operation is inserting elements, these are
+     *     the elements that will be inserted.
      */
-    apply(root: JQuery, elements: Element[]): void {
-        PatchOperation.Operations[this.name](root, this.selector, elements);
+    apply(root: JQuery, createElements: () => Element[]): void {
+
+        // Remove elements which were inserted next to an element that has
+        // been removed from the DOM
+        this.insertedSiblings = this.insertedSiblings.filter(({ target, elements }) => {
+
+            if (target.isConnected)
+                return true;
+
+            elements.forEach(element => element.remove());
+            return false;
+
+        });
+
+        // Apply this operation to each matched element only once
+        for (const target of root.find(this.selector).toArray()) {
+
+            if (this.patchedElements.has(target))
+                continue;
+
+            const elements = createElements();
+            PatchOperation.Operations[this.name]($(target), elements);
+
+            // Never apply this operation again to the same element or to
+            // the elements it inserted itself
+            this.patchedElements.add(target);
+            elements.forEach(element => {
+                this.patchedElements.add(element);
+                element.querySelectorAll('*').forEach(child => this.patchedElements.add(child));
+            });
+
+            if (this.name === 'before' || this.name === 'after')
+                this.insertedSiblings.push({ target, elements });
+
+        }
+
     }
 
     /**
      * Mapping of all valid patch operation names to their corresponding
-     * implementations. Each implementation accepts the same three
-     * parameters: the root element of the template being patched, the CSS
-     * selector determining which elements within the template are patched,
-     * and an array of elements which make up the body of the patch.
+     * implementations. Each implementation accepts the same two
+     * parameters: the elements being patched and an array of elements
+     * which make up the body of the patch.
      */
     static Operations: Record<string, PatchOperation.PatchOperationFunction> = {
 
         /**
-         * Inserts the given elements before the elements matched by the
-         * provided CSS selector.
+         * Inserts the given elements before the matched elements.
          */
-        'before': (root, selector, elements) => {
-            root.find(selector).before(elements);
+        'before': (targets, elements) => {
+            targets.before(elements);
         },
 
         /**
-         * Inserts the given elements after the elements matched by the
-         * provided CSS selector.
+         * Inserts the given elements after the matched elements.
          */
-        'after': (root, selector, elements) => {
-            root.find(selector).after(elements);
+        'after': (targets, elements) => {
+            targets.after(elements);
         },
 
         /**
-         * Replaces the elements matched by the provided CSS selector with
-         * the given elements.
+         * Replaces the matched elements with the given elements.
          */
-        'replace': (root, selector, elements) => {
-            root.find(selector).replaceWith(elements);
+        'replace': (targets, elements) => {
+            targets.replaceWith(elements);
         },
 
         /**
-         * Inserts the given elements within the elements matched by the
-         * provided CSS selector, before any existing children.
+         * Inserts the given elements within the matched elements, before
+         * any existing children.
          */
-        'before-children': (root, selector, elements) => {
-            root.find(selector).prepend(elements);
+        'before-children': (targets, elements) => {
+            targets.prepend(elements);
         },
 
         /**
-         * Inserts the given elements within the elements matched by the
-         * provided CSS selector, after any existing children.
+         * Inserts the given elements within the matched elements, after
+         * any existing children.
          */
-        'after-children': (root, selector, elements) => {
-            root.find(selector).append(elements);
+        'after-children': (targets, elements) => {
+            targets.append(elements);
         },
 
         /**
-         * Inserts the given elements within the elements matched by the
-         * provided CSS selector, replacing any existing children.
+         * Inserts the given elements within the matched elements,
+         * replacing any existing children.
          */
-        'replace-children': (root, selector, elements) => {
-            root.find(selector).empty().append(elements);
+        'replace-children': (targets, elements) => {
+            targets.empty().append(elements);
         }
 
     };
@@ -122,21 +175,14 @@ export namespace PatchOperation {
 
     /**
      * A function which applies a specific patch operation to the
-     * given element.
+     * given elements.
      *
-     * @param root
-     *    The JQuery-wrapped root element of the template being
-     *     patched.
-     *
-     * @param selector
-     *     The CSS selector which determines where this patch operation
-     *     should be applied within the template defined by root.
+     * @param targets
+     *     The JQuery-wrapped elements being patched.
      *
      * @param elements
      *     The contents of the patch which should be applied to the
-     *     template defined by root at the locations selected by the
-     *     given CSS selector.
+     *     elements being patched.
      */
-    export type PatchOperationFunction = (root: JQuery, selector: string, elements: Element[]) => void;
+    export type PatchOperationFunction = (targets: JQuery, elements: Element[]) => void;
 }
-

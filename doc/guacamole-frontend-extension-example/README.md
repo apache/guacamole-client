@@ -231,4 +231,4 @@ On every change, it rebuilds the example and updates the open page.
 Without Guacamole, the bootstrap function and the HTML patch do not run, the styles of Guacamole are missing, and the link to `/angular-extension` leads back to `/`.
 
 To try a change within Guacamole, build, package and install the extension again, and restart Tomcat.
-The development server of the frontend loads the routes, form field types and HTML patches of the extensions installed in its backend as well; see [Development server](../../guacamole/src/main/guacamole-frontend/README.md#development-server) in the README of the frontend.
+The development server of the frontend loads the extensions installed in its backend as well; see [Development server](../../guacamole/src/main/guacamole-frontend/README.md#development-server) in the README of the frontend.
