@@ -276,9 +276,14 @@ export class TextInputComponent implements AfterViewInit {
 
         // Send each codepoint within the string
         for (let i = 0; i < content.length; i++) {
-            const codepoint = content.charCodeAt(i);
+            const codepoint = content.codePointAt(i)!;
+
+            // For surrogate pairs, skip the second 16 bits.
+            if (content.charCodeAt(i) !== codepoint) {
+                i++;
+            }
             if (codepoint !== TEXT_INPUT_PADDING_CODEPOINT) {
-                sentText += String.fromCharCode(codepoint);
+                sentText += String.fromCodePoint(codepoint);
                 this.sendCodepoint(codepoint);
             }
         }
