@@ -46,7 +46,7 @@ describe('KeyComponent', () => {
     });
 
     it('should toggle pressed state for sticky keys', () => {
-        spyOn(component.pressedChange, 'emit');
+        vi.spyOn(component.pressedChange, 'emit');
 
         component.sticky = true;
         component.pressed = false;
@@ -54,24 +54,24 @@ describe('KeyComponent', () => {
 
         component.updateKey(new MouseEvent('click'));
 
-        expect(component.pressed).toBeTrue();
+        expect(component.pressed).toBe(true);
         expect(component.pressedChange.emit).toHaveBeenCalledWith(true);
     });
 
     it('should not toggle pressed state for non-sticky keys', () => {
-        spyOn(component.pressedChange, 'emit');
+        vi.spyOn(component.pressedChange, 'emit');
 
         component.sticky = false;
         fixture.detectChanges();
 
         component.updateKey(new MouseEvent('click'));
 
-        expect(component.pressed).toBeFalse();
+        expect(component.pressed).toBe(false);
         expect(component.pressedChange.emit).not.toHaveBeenCalled();
     });
 
     it('should broadcast keydown and keyup events for non-sticky keys', () => {
-        spyOn(guacEventService, 'broadcast');
+        vi.spyOn(guacEventService, 'broadcast');
 
         component.sticky = false;
         component.keysym = 65; // Example keysym

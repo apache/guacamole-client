@@ -20,6 +20,7 @@
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom } from 'rxjs';
 import { AuthenticationInterceptor } from '../interceptor/authentication.interceptor';
 
 import { AuthenticationService } from './authentication.service';
@@ -46,19 +47,19 @@ describe('AuthenticationService', () => {
     });
 
     describe('revokeToken()', () => {
-        it('request should contain the authentication token as a HTTP header', (done) => {
+        it('request should contain the authentication token as a HTTP header', async () => {
             const AUTHENTICATION_TOKEN = 'Guacamole-Token';
             const token = 'test-token';
 
-            service.revokeToken(token).subscribe(() => {
-                done();
-            });
+            const revoked = firstValueFrom(service.revokeToken(token));
 
             const req = httpMock.expectOne('api/session');
             expect(req.request.method).toEqual('DELETE');
             expect(req.request.headers.has(AUTHENTICATION_TOKEN)).toBeTruthy();
             expect(req.request.headers.get(AUTHENTICATION_TOKEN)).toEqual(token);
             req.flush(null);
+
+            await revoked;
         });
 
     });

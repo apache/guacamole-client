@@ -26,7 +26,6 @@
  */
 const dispatchEvent = (element: any, eventName: string, coordX: any, coordY: any) => {
     element.dispatchEvent(new MouseEvent(eventName, {
-        view      : window,
         bubbles   : true,
         cancelable: true,
         clientX   : coordX,

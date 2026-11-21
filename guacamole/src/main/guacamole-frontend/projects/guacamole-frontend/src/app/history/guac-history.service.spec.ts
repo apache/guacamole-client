@@ -25,14 +25,11 @@ import { GuacHistoryService } from './guac-history.service';
 describe('GuacHistoryService Unit-Test', () => {
     let service: GuacHistoryService;
 
-    const fakeLocalStorageService = jasmine.createSpyObj<LocalStorageService>(
-        'LocalStorageService',
-        {
-            getItem   : null,
-            setItem   : undefined,
-            removeItem: undefined,
-        }
-    );
+    const fakeLocalStorageService = {
+        getItem   : vi.fn().mockReturnValue(null),
+        setItem   : vi.fn(),
+        removeItem: vi.fn(),
+    };
 
     beforeEach(() => {
         TestBed.configureTestingModule({

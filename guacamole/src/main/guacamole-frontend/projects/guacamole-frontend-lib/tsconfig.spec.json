@@ -3,8 +3,14 @@
     "extends": "../../tsconfig.json",
     "compilerOptions": {
         "outDir": "../../out-tsc/spec",
+        "typeRoots": [
+            "../../node_modules/@types",
+            "../../typings",
+            "../../node_modules"
+        ],
         "types": [
-            "jasmine",
+            "vitest/globals",
+            "node",
             "global"
         ]
     },

@@ -70,7 +70,7 @@ describe('OskComponent', () => {
     });
 
     it('outputs emit events', () => {
-        spyOn(guacEventService, 'broadcast');
+        vi.spyOn(guacEventService, 'broadcast');
 
         component.layout = layout;
         fixture.detectChanges();

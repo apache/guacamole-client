@@ -20,12 +20,57 @@
 import { TestBed } from '@angular/core/testing';
 import { GuacImageService } from './guac-image.service';
 
+/**
+ * Test double for the Image constructor, which decodes every image as a 1x1
+ * image. The DOM environment of the tests does not decode images and never
+ * fires their load or error events.
+ */
+class DecodingImage {
+
+    /**
+     * The width of the decoded image, in pixels.
+     */
+    width = 0;
+
+    /**
+     * The height of the decoded image, in pixels.
+     */
+    height = 0;
+
+    /**
+     * Invoked once the image has been decoded.
+     */
+    onload: (() => void) | null = null;
+
+    /**
+     * Invoked if the image cannot be decoded. Never invoked by this double.
+     */
+    onerror: (() => void) | null = null;
+
+    /**
+     * Decodes the image asynchronously, like a browser, once its source is set.
+     */
+    set src(value: string) {
+        setTimeout(() => {
+            this.width = 1;
+            this.height = 1;
+            this.onload?.();
+        });
+    }
+
+}
+
 describe('GuacImageService', () => {
     let service: GuacImageService;
 
     beforeEach(() => {
+        vi.stubGlobal('Image', DecodingImage);
         TestBed.configureTestingModule({});
         service = TestBed.inject(GuacImageService);
+    });
+
+    afterEach(() => {
+        vi.unstubAllGlobals();
     });
 
     it('should be created', () => {

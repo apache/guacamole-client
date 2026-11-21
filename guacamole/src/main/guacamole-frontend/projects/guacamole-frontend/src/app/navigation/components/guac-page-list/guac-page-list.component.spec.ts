@@ -80,14 +80,14 @@ describe('PageListComponent', () => {
         const page0 = elements[0].nativeElement;
         const page1 = elements[1].nativeElement;
 
-        expect(page0).toHaveClass('current');
-        expect(page1).not.toHaveClass('current');
+        expect(page0.classList).toContain('current');
+        expect(page1.classList).not.toContain('current');
 
         component.currentURL = '/page1';
         fixture.detectChanges();
 
-        expect(page0).not.toHaveClass('current');
-        expect(page1).toHaveClass('current');
+        expect(page0.classList).not.toContain('current');
+        expect(page1.classList).toContain('current');
     });
 
 });

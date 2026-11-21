@@ -92,12 +92,6 @@
                 <configuration>
                     <installDirectory>${project.build.directory}</installDirectory>
                     <workingDirectory>src/main/guacamole-frontend</workingDirectory>
-
-                    <!--
-                    Skip tests unless requested otherwise with -DskipTests=false.
-                    Skipped by default because these tests require firefox to be installed.
-                    -->
-                    <skipTests>true</skipTests>
                 </configuration>
                 <executions>
                     <!-- Install Node-->

@@ -45,23 +45,13 @@
 					}
 				},
 				"test": {
-					"builder": "@angular/build:karma",
+					"builder": "@angular/build:unit-test",
 					"options": {
-						"polyfills": [
-							"zone.js",
-							"zone.js/testing"
-						],
+						"buildTarget": "guacamole-frontend:esbuild:development,testing",
 						"tsConfig": "projects/guacamole-frontend/tsconfig.spec.json",
-						"assets": [
-							"projects/guacamole-frontend/src/assets"
-						],
-						"styles": [
-							"projects/guacamole-frontend/src/styles.css"
-						],
-						"scripts": [
-							"dist/guacamole-frontend-lib/assets/guacamole-common-js/all.min.js"
-						],
-						"karmaConfig": "projects/guacamole-frontend/karma.conf.js"
+						"setupFiles": [
+							"projects/guacamole-frontend/src/test-setup.ts"
+						]
 					}
 				},
 				"lint": {
@@ -157,6 +147,9 @@
 								"images/*",
 								"fonts/*"
 							]
+						},
+						"testing": {
+							"aot": false
 						}
 					},
 					"defaultConfiguration": "production"
@@ -200,17 +193,12 @@
 					"defaultConfiguration": "production"
 				},
 				"test": {
-					"builder": "@angular/build:karma",
+					"builder": "@angular/build:unit-test",
 					"options": {
 						"tsConfig": "projects/guacamole-frontend-lib/tsconfig.spec.json",
-						"polyfills": [
-							"zone.js",
-							"zone.js/testing"
-						],
-						"scripts": [
-							"projects/guacamole-frontend-lib/src/assets/guacamole-common-js/all.min.js"
-						],
-						"karmaConfig": "projects/guacamole-frontend-lib/karma.conf.js"
+						"setupFiles": [
+							"projects/guacamole-frontend-lib/src/test-setup.ts"
+						]
 					}
 				},
 				"lint": {
@@ -245,16 +233,6 @@
 						}
 					},
 					"defaultConfiguration": "production"
-				},
-				"test": {
-					"builder": "@angular/build:karma",
-					"options": {
-						"tsConfig": "projects/guacamole-frontend-ext-lib/tsconfig.spec.json",
-						"polyfills": [
-							"zone.js",
-							"zone.js/testing"
-						]
-					}
 				},
 				"lint": {
 					"builder": "@angular-eslint/builder:lint",

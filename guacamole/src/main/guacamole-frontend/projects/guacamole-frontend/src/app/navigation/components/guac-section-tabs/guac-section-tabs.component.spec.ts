@@ -63,7 +63,7 @@ describe('SectionTabsComponent', () => {
     it('should emit the current tab name when a tab is selected', () => {
         component.tabs = ['Tab 1', 'Tab 2', 'Tab 3'];
         component.current = 'Tab 1';
-        spyOn(component.currentChange, 'emit');
+        vi.spyOn(component.currentChange, 'emit');
         component.selectTab('Tab 2');
         expect(component.current).toBe('Tab 2');
         expect(component.currentChange.emit).toHaveBeenCalledWith('Tab 2');
@@ -85,8 +85,8 @@ describe('SectionTabsComponent', () => {
         fixture.detectChanges();
         const tabElements = fixture.debugElement.queryAll(By.css('a'));
         expect(tabElements.length).toBe(3);
-        expect(tabElements[0].nativeElement).not.toHaveClass('current');
-        expect(tabElements[1].nativeElement).toHaveClass('current');
-        expect(tabElements[2].nativeElement).not.toHaveClass('current');
+        expect(tabElements[0].nativeElement.classList).not.toContain('current');
+        expect(tabElements[1].nativeElement.classList).toContain('current');
+        expect(tabElements[2].nativeElement.classList).not.toContain('current');
     });
 });
