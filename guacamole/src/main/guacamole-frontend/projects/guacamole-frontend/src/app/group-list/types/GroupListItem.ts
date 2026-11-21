@@ -94,6 +94,15 @@ export class GroupListItem {
     getActiveConnections: () => number | null;
 
     /**
+     * Returns the number of available connections for this connection
+     * group.
+     *
+     * @returns
+     *     The number of available connections for this connection group.
+     */
+    getAvailableConnections: () => number | null;
+
+    /**
      * Returns the unique string identifier that must be used when
      * connecting to a connection or connection group represented by this
      * GroupListItem.
@@ -116,6 +125,16 @@ export class GroupListItem {
      *     or null if this GroupListItem cannot be connected to.
      */
     getClientURL: () => string | null;
+
+    /**
+     * Returns the unique maximum number of connections that can be active
+     * for this connection group, if known. If unknown, null may be returned.
+     *
+     * @returns
+     *     The unique maximum number of connections that can be active for
+     *     this connection group.
+     */
+    getEffectiveMaxConnections: () => number | null;
 
     /**
      * The connection, connection group, or sharing profile whose data is
@@ -143,7 +162,8 @@ export class GroupListItem {
      *     GroupListItem.
      */
     constructor(template: Optional<GroupListItem, 'name' | 'identifier' | 'protocol' | 'children' | 'expandable'
-        | 'balancing' | 'expanded' | 'getActiveConnections' | 'getClientIdentifier' | 'getClientURL' | 'weight'>) {
+        | 'balancing' | 'expanded' | 'getActiveConnections' | 'getAvailableConnections' | 'getClientIdentifier'
+        | 'getClientURL' | 'getEffectiveMaxConnections' | 'weight'>) {
 
         this.dataSource = template.dataSource;
         this.identifier = template.identifier;
@@ -156,6 +176,8 @@ export class GroupListItem {
         this.expanded = template.expanded || false;
 
         this.getActiveConnections = template.getActiveConnections || (() => null);
+
+        this.getAvailableConnections = template.getAvailableConnections || (() => null);
 
         this.getClientIdentifier = template.getClientIdentifier || (() => {
 
@@ -191,6 +213,8 @@ export class GroupListItem {
             return null;
 
         });
+
+        this.getEffectiveMaxConnections = template.getEffectiveMaxConnections || (() => null);
 
         this.wrappedItem = template.wrappedItem;
         this.weight = template.weight || 0;
@@ -304,6 +328,15 @@ export class GroupListItem {
      *     instead. This function will be passed, in order, the data source
      *     identifier and the connection group in question.
      *
+     * @param countUserActiveConnectionGroups
+     *     A getter which returns the current number of active connections of
+     *     the current user through the given connection group, including all
+     *     of its descendants. If omitted, getAvailableConnections() of the new
+     *     GroupListItem returns the number of active connections through the
+     *     child connections of the given connection group instead. This
+     *     function will be passed, in order, the data source identifier and
+     *     the connection group in question.
+     *
      * @returns
      *     A new GroupListItem which represents the given connection group,
      *     including all descendants.
@@ -313,7 +346,8 @@ export class GroupListItem {
                                includeConnections     = true,
                                includeSharingProfiles = true,
                                countActiveConnections?: (dataSource: string, connection: Connection) => number,
-                               countActiveConnectionGroups?: (dataSource: string, connectionGroup: ConnectionGroup) => number): GroupListItem {
+                               countActiveConnectionGroups?: (dataSource: string, connectionGroup: ConnectionGroup) => number,
+                               countUserActiveConnectionGroups?: (dataSource: string, connectionGroup: ConnectionGroup) => number): GroupListItem {
 
         const children: GroupListItem[] = [];
 
@@ -330,7 +364,8 @@ export class GroupListItem {
             connectionGroup.childConnectionGroups.forEach(child => {
                 children.push(GroupListItem.fromConnectionGroup(dataSource,
                     child, includeConnections, includeSharingProfiles,
-                    countActiveConnections, countActiveConnectionGroups));
+                    countActiveConnections, countActiveConnectionGroups,
+                    countUserActiveConnectionGroups));
             });
         }
 
@@ -361,6 +396,82 @@ export class GroupListItem {
 
             },
 
+            // Available slots considering both global and per-user limits
+            getAvailableConnections: function getAvailableConnections(this: GroupListItem) {
+                // Get total active connections across all children
+                let totalActive = 0;
+                connectionGroup.childConnections?.forEach(child => {
+                    if (!countActiveConnections)
+                        return;
+
+                    totalActive += countActiveConnections(dataSource, child) ?? 0;
+                });
+
+                // Get current user's active connections across all children
+                if (!countUserActiveConnectionGroups)
+                    return totalActive;
+                const userActive = countUserActiveConnectionGroups(dataSource, connectionGroup) ?? 0;
+
+                // Without effective limits, no number of available connections can be given
+                const maxConnections = this.getEffectiveMaxConnections();
+                if (maxConnections === null)
+                    return null;
+
+                return maxConnections - Math.max(totalActive, userActive);
+            },
+
+            // Effective max slots from this user's perspective
+            getEffectiveMaxConnections: function getEffectiveMaxConnections() {
+
+                /**
+                 * Parses the given value as an integer, returning Infinity if the
+                 * value is not a valid integer.
+                 *
+                 * @param value
+                 *     The value to parse as an integer.
+                 *
+                 * @returns
+                 *     The parsed integer, or Infinity if the given value is not a
+                 *     valid integer.
+                 */
+                const parseIntOrInfinity = (value: string): number => {
+                    const parsed = Number.parseInt(value, 10);
+                    return Number.isNaN(parsed) ? Infinity : parsed;
+                };
+
+                // If the child connections are unknown, so are their limits
+                if (!connectionGroup.childConnections)
+                    return null;
+
+                // Group limits
+                const attrs = connectionGroup.attributes ?? {};
+                const maxGlobal  = parseIntOrInfinity(attrs['max-connections']);
+                const maxPerUser = parseIntOrInfinity(attrs['max-connections-per-user']);
+
+                // Per-connection limits are summed across all children
+                let maxPerConnection = Infinity;
+                connectionGroup.childConnections.forEach(child => {
+                    const childAttrs = child.attributes ?? {};
+                    const childMaxGlobal  = parseIntOrInfinity(childAttrs['max-connections']);
+                    const childMaxPerUser = parseIntOrInfinity(childAttrs['max-connections-per-user']);
+
+                    // If neither limit is set, this child does not affect the effective max
+                    if (childMaxGlobal === Infinity && childMaxPerUser === Infinity)
+                        return;
+
+                    maxPerConnection = maxPerConnection === Infinity ? 0 : maxPerConnection;
+                    maxPerConnection += Math.min(childMaxGlobal, childMaxPerUser);
+                });
+
+                const minValue = Math.min(maxGlobal, maxPerUser, maxPerConnection);
+
+                // If the minimum value is Infinity, it means there are no effective
+                // limits, so return null
+                if (minValue === Infinity)
+                    return null;
+
+                return minValue;
+            },
 
             // Wrapped item
             wrappedItem: connectionGroup

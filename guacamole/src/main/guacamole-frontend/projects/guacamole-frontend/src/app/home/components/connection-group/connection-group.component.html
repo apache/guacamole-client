@@ -26,4 +26,11 @@
     <!-- Connection group name -->
     <span class="name">{{ item.name }}</span>
 
+    <!-- Available vs. total connection slots (respects global and per-user limits) -->
+    @if (item.balancing && item.getEffectiveMaxConnections() !== null) {
+        <span class="activeUserCount"
+              transloco="HOME.INFO_AVAILABLE_CONNECTIONS"
+              [translocoParams]="{AVAILABLE: item.getAvailableConnections(), TOTAL: item.getEffectiveMaxConnections()}"></span>
+    }
+
 </a>

@@ -29,6 +29,7 @@ import {
     ChangeDetectionStrategy
 } from '@angular/core';
 import { of } from 'rxjs';
+import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
 import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
 import { SortService } from '../../../list/services/sort.service';
@@ -114,6 +115,12 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
     private connectionCount: Record<string, Record<string, number>> = {};
 
     /**
+     * Like connectionCount, but restricted to the connections owned
+     * by the currently-authenticated user.
+     */
+    private userConnectionCount: Record<string, Record<string, number>> = {};
+
+    /**
      * A list of all items which should appear at the root level. As
      * connections and connection groups from multiple data sources may
      * be included in a guacGroupList, there may be multiple root
@@ -136,6 +143,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
      * Inject required services.
      */
     constructor(private activeConnectionService: ActiveConnectionService,
+                private authenticationService: AuthenticationService,
                 private dataSourceService: DataSourceService,
                 private requestService: RequestService,
                 private dataSourceBuilderService: DataSourceBuilderService,
@@ -183,6 +191,47 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
     }
 
     /**
+     * Returns the number of connections by the current user through
+     * the given connection group, by summing across all descendants.
+     *
+     * @param dataSource
+     *     The identifier of the data source containing the given
+     *     connection group.
+     *
+     * @param connectionGroup
+     *     The connection group whose active connections by the current
+     *     user should be counted.
+     *
+     * @returns
+     *     The number of currently-active connections by the current user
+     *     through the given connection group and its descendants.
+     */
+    private countUserActiveConnectionGroups(dataSource: string, connectionGroup: ConnectionGroup): number {
+        let count = 0;
+        const userConnections = this.userConnectionCount[dataSource];
+
+        if (!userConnections)
+            return 0;
+
+        // Count active connections through child connections
+        if (connectionGroup.childConnections) {
+            connectionGroup.childConnections.forEach(child => {
+                if (child.identifier !== undefined)
+                    count += userConnections[child.identifier] ?? 0;
+            });
+        }
+
+        // Recursively count active connections through child connection groups
+        if (connectionGroup.childConnectionGroups) {
+            connectionGroup.childConnectionGroups.forEach(child => {
+                count += this.countUserActiveConnectionGroups(dataSource, child);
+            });
+        }
+
+        return count;
+    }
+
+    /**
      * Returns whether a {@link GroupListItem} of the given type can be
      * displayed. If there is no template associated with the given
      * type, then a {@link GroupListItem} of that type cannot be
@@ -221,6 +270,7 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
         const dataSources: string[] = [];
         this.rootItems = [];
         this.connectionCount = {};
+        this.userConnectionCount = {};
 
         // If connection groups are given, add them to the interface
         if (this.connectionGroups) {
@@ -245,7 +295,8 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
                     rootItem = GroupListItem.fromConnectionGroup(dataSource, connectionGroup,
                         this.isVisible(GroupListItem.Type.CONNECTION),
                         this.isVisible(GroupListItem.Type.SHARING_PROFILE),
-                        this.countActiveConnections.bind(this));
+                        this.countActiveConnections.bind(this), undefined,
+                        this.countUserActiveConnectionGroups.bind(this));
 
                 // If root group is to be shown, add it as a root item
                 if (this.showRootGroup)
@@ -267,9 +318,13 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
             )
                 .then((activeConnectionMap) => {
 
+                    const currentUsername = this.authenticationService.getCurrentUsername();
+
                     // Within each data source, count each active connection by identifier
                     for (const dataSource in activeConnectionMap) {
                         const activeConnections = activeConnectionMap[dataSource];
+
+                        this.userConnectionCount[dataSource] ??= {};
 
                         for (const connectionID in activeConnections) {
                             const activeConnection = activeConnections[connectionID];
@@ -282,6 +337,12 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
                             // Otherwise, initialize counter to 1
                             else
                                 this.connectionCount[dataSource][identifier] = 1;
+
+                            // Track connections belonging to the current user
+                            if (activeConnection.username === currentUsername) {
+                                this.userConnectionCount[dataSource][identifier] ??= 0;
+                                this.userConnectionCount[dataSource][identifier]++;
+                            }
 
                         }
                     }
