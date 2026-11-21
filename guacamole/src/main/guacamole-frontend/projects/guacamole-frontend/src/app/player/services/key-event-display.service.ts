@@ -355,8 +355,8 @@ export class KeyEventDisplayService {
 
         });
 
-        // All processed batches
-        return batches;
+        // All processed batches with events
+        return batches.filter(batch => batch.events.length > 0);
 
     }
 
