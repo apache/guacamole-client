@@ -26,6 +26,7 @@ import { GuacEventService } from './guac-event.service';
 
 interface TestEventArgs extends GuacEventArguments {
     test: { age: number; };
+    collision: { event: string; };
 }
 
 describe('GuacEventService', () => {
@@ -85,6 +86,16 @@ describe('GuacEventService', () => {
             expectObservable(events2).toBe('-a', expected);
 
         });
+    });
+
+    it('should reserve the argument name event for the GuacEvent', () => {
+        const received: unknown[] = [];
+        service.on('collision').subscribe(({ event }) => received.push(event));
+
+        // @ts-expect-error: subscribers would receive the GuacEvent instead of this argument
+        service.broadcast('collision', { event: 'argument' });
+
+        expect(received).toEqual([new GuacEvent<TestEventArgs>('collision')]);
     });
 
 });

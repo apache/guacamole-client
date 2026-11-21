@@ -407,7 +407,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
             this.guacamoleClient!.sendMouseState(event.state, true);
 
             // Broadcast the mouse event
-            this.guacEventService.broadcast(this.getMouseEventName(event), { event, client: this.managedClient });
+            this.guacEventService.broadcast(this.getMouseEventName(event), { inputEvent: event, client: this.managedClient });
 
         });
 
@@ -467,7 +467,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         this.guacamoleClient.sendMouseState(mouseEvent.state, true);
 
         // Broadcast the mouse event
-        this.guacEventService.broadcast(this.getMouseEventName(event), { event, client: this.managedClient });
+        this.guacEventService.broadcast(this.getMouseEventName(event), { inputEvent: mouseEvent, client: this.managedClient });
 
     };
 
@@ -514,7 +514,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         this.guacamoleClient.sendTouchState(touchEvent.state, true);
 
         // Broadcast the touch event
-        this.guacEventService.broadcast(this.getTouchEventName(event), { event, client: this.managedClient });
+        this.guacEventService.broadcast(this.getTouchEventName(event), { inputEvent: touchEvent, client: this.managedClient });
 
     };
 

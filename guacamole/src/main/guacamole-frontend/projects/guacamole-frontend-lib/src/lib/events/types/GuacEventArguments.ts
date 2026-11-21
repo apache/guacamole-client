@@ -20,7 +20,9 @@
 /**
  * Defines the events broadcast by guacamole-frontend-lib, mapping the name of
  * each event to the type of its arguments. Events without arguments map to an
- * empty object. Applications extend this interface with their own events.
+ * empty object. Applications extend this interface with their own events. No
+ * argument may be named "event", as subscribers receive the GuacEvent under
+ * that name.
  */
 export interface GuacEventArguments {
 

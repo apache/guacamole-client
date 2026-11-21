@@ -44,14 +44,14 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
     guacBeforeKeyup: { keysym: number; keyboard: Guacamole.Keyboard; };
 
     // Mouse events
-    guacClientMouseDown: { event: Guacamole.Event, client: ManagedClient };
-    guacClientMouseUp: { event: Guacamole.Event, client: ManagedClient };
-    guacClientMouseMove: { event: Guacamole.Event, client: ManagedClient };
+    guacClientMouseDown: { inputEvent: Guacamole.Mouse.Event, client: ManagedClient };
+    guacClientMouseUp: { inputEvent: Guacamole.Mouse.Event, client: ManagedClient };
+    guacClientMouseMove: { inputEvent: Guacamole.Mouse.Event, client: ManagedClient };
 
     // Touch events
-    guacClientTouchStart: { event: Guacamole.Event, client: ManagedClient };
-    guacClientTouchEnd: { event: Guacamole.Event, client: ManagedClient };
-    guacClientTouchMove: { event: Guacamole.Event, client: ManagedClient };
+    guacClientTouchStart: { inputEvent: Guacamole.Touch.Event, client: ManagedClient };
+    guacClientTouchEnd: { inputEvent: Guacamole.Touch.Event, client: ManagedClient };
+    guacClientTouchMove: { inputEvent: Guacamole.Touch.Event, client: ManagedClient };
 
     // File browser events
     guacUploadComplete: { filename: string; };

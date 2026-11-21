@@ -51,14 +51,16 @@ export class GuacEventService<Args extends GuacEventArguments> {
      *     The name of the event to broadcast.
      *
      * @param args
-     *     The arguments of the event, if the event has any.
+     *     The arguments of the event, if the event has any. No argument may
+     *     be named "event", as subscribers receive the GuacEvent under that
+     *     name.
      *
      * @returns
      *     The broadcast event. Subscribers are called synchronously, so the
      *     caller can check whether any of them called preventDefault() on
      *     the event.
      */
-    broadcast<T extends GuacEventName<Args>>(eventName: T, args?: Args[T]): GuacEvent<Args> {
+    broadcast<T extends GuacEventName<Args>>(eventName: T, args?: Args[T] & { event?: never }): GuacEvent<Args> {
         const guacEvent = { event: new GuacEvent<Args>(eventName) };
         const eventArgs = args ? { ...args, ...guacEvent } : guacEvent;
         this.events.next(eventArgs);

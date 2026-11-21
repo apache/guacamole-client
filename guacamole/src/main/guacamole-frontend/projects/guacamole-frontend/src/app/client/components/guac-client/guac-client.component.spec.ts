@@ -123,4 +123,16 @@ describe('GuacClientComponent', () => {
         expect(broadcast).toHaveBeenCalledWith('guacClientMouseUp', expect.objectContaining({ client }));
     });
 
+    it('should pass the mouse event and the client to subscribers of guacClientMouseDown', async () => {
+        const subscriber = vi.fn();
+        guacEventService.on('guacClientMouseDown')
+            .subscribe(({ inputEvent, client }) => subscriber(inputEvent, client));
+
+        dispatchMiddleButton('mousedown');
+        await vi.advanceTimersByTimeAsync(0);
+
+        expect(subscriber).toHaveBeenCalledExactlyOnceWith(expect.any(Guacamole.Mouse.Event), client);
+        expect(subscriber.mock.calls[0][0].state.middle).toBe(true);
+    });
+
 });
