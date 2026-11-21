@@ -119,7 +119,6 @@ export class TranslationLoaderService implements TranslocoLoader {
                     }
 
                     // Attempt to retrieve language
-                    //     TODO: cache: cacheService.languages,
                     const httpContext: HttpContext = new HttpContext();
                     httpContext.set(SKIP_ALL_INTERCEPTORS, true);
                     this.http.get<Translation>(

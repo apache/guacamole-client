@@ -17,13 +17,14 @@
  * under the License.
  */
 
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { DirectoryPatch } from '../types/DirectoryPatch';
 import { DirectoryPatchResponse } from '../types/DirectoryPatchResponse';
 import { User } from '../types/User';
 import { UserPasswordUpdate } from '../types/UserPasswordUpdate';
+import { CACHE, CacheService } from './cache.service';
 
 /**
  * Service for operating on users via the REST API.
@@ -36,7 +37,7 @@ export class UserService {
     /**
      * Inject required services.
      */
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private cacheService: CacheService) {
     }
 
     /**
@@ -67,8 +68,10 @@ export class UserService {
         }
 
         // Retrieve users
-        // TODO:  cache   : cacheService.users,
-        return this.http.get<Record<string, User>>(`api/session/data/${encodeURIComponent(dataSource)}/users`, { params: httpParameters });
+        return this.http.get<Record<string, User>>(
+            `api/session/data/${encodeURIComponent(dataSource)}/users`,
+            { params: httpParameters, context: new HttpContext().set(CACHE, 'users') }
+        );
     }
 
 
@@ -91,8 +94,10 @@ export class UserService {
     getUser(dataSource: string, username: string): Observable<User> {
 
         // Retrieve user
-        // TODO: cache: cacheService.users,
-        return this.http.get<User>('api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username));
+        return this.http.get<User>(
+            'api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(username),
+            { context: new HttpContext().set(CACHE, 'users') }
+        );
 
     }
 
@@ -115,7 +120,12 @@ export class UserService {
     deleteUser(dataSource: string, user: User): Observable<void> {
 
         // Delete user
-        return this.http.delete<void>('api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username));
+        return this.http.delete<void>('api/session/data/' + encodeURIComponent(dataSource) + '/users/' + encodeURIComponent(user.username))
+
+            // Clear the cache
+            .pipe(tap(() => {
+                this.cacheService.users.clear();
+            }));
 
     }
 
@@ -142,7 +152,7 @@ export class UserService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
     }
@@ -170,7 +180,7 @@ export class UserService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
     }
@@ -210,7 +220,7 @@ export class UserService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
     }
@@ -243,7 +253,7 @@ export class UserService {
 
             // Clear the cache
             .pipe(tap(patchResponse => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
     }

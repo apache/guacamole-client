@@ -17,12 +17,13 @@
  * under the License.
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { AuthenticationService } from '../../auth/service/authentication.service';
 import { PermissionPatch } from '../types/PermissionPatch';
 import { PermissionSet } from '../types/PermissionSet';
+import { CACHE, CacheService } from './cache.service';
 
 /**
  * Service for operating on user permissions via the REST API.
@@ -35,7 +36,9 @@ export class PermissionService {
     /**
      * Inject required services.
      */
-    constructor(private http: HttpClient, private authenticationService: AuthenticationService) {
+    constructor(private http: HttpClient,
+                private authenticationService: AuthenticationService,
+                private cacheService: CacheService) {
     }
 
     /**
@@ -64,7 +67,10 @@ export class PermissionService {
     getEffectivePermissions(dataSource: string, userID: string): Observable<PermissionSet> {
 
         // Retrieve user permissions
-        return this.http.get<PermissionSet>(this.getEffectivePermissionsResourceURL(dataSource, userID));
+        return this.http.get<PermissionSet>(
+            this.getEffectivePermissionsResourceURL(dataSource, userID),
+            { context: new HttpContext().set(CACHE, 'users') }
+        );
 
     }
 
@@ -143,8 +149,10 @@ export class PermissionService {
     getPermissions(dataSource: string, identifier: string, group = false): Observable<PermissionSet> {
 
         // Retrieve user/group permissions
-        // TODO: cache   : cacheService.users,
-        return this.http.get<PermissionSet>(this.getPermissionsResourceURL(dataSource, identifier, group));
+        return this.http.get<PermissionSet>(
+            this.getPermissionsResourceURL(dataSource, identifier, group),
+            { context: new HttpContext().set(CACHE, 'users') }
+        );
 
     }
 
@@ -329,7 +337,7 @@ export class PermissionService {
 
             // Clear the cache
             .pipe(tap(() => {
-                    // TODO: this.cacheService.users.removeAll();
+                    this.cacheService.users.clear();
                 })
             );
     }

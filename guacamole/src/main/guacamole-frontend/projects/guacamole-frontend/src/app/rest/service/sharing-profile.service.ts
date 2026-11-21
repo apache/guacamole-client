@@ -17,10 +17,11 @@
  * under the License.
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { SharingProfile } from '../types/SharingProfile';
+import { CACHE, CacheService } from './cache.service';
 
 /**
  * Service for operating on sharing profiles via the REST API.
@@ -33,7 +34,7 @@ export class SharingProfileService {
     /**
      * Inject required services.
      */
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private cacheService: CacheService) {
 
     }
 
@@ -58,9 +59,9 @@ export class SharingProfileService {
     getSharingProfile(dataSource: string, id: string): Observable<SharingProfile> {
 
         // Retrieve sharing profile
-        // TODO: cache   : cacheService.connections,
         return this.http.get<SharingProfile>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(id)
+            'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(id),
+            { context: new HttpContext().set(CACHE, 'connections') }
         );
 
     }
@@ -80,9 +81,9 @@ export class SharingProfileService {
     getSharingProfileParameters(dataSource: string, id: string): Observable<Record<string, string>> {
 
         // Retrieve sharing profile parameters
-        // TODO: cache: cacheService.connections,
         return this.http.get<Record<string, string>>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(id) + '/parameters'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/sharingProfiles/' + encodeURIComponent(id) + '/parameters',
+            { context: new HttpContext().set(CACHE, 'connections') }
         );
 
     }
@@ -112,11 +113,11 @@ export class SharingProfileService {
 
                 // Set the identifier on the new sharing profile and clear the cache
                 sharingProfile.identifier = newSharingProfile.identifier;
-                // TODO: cacheService.connections.removeAll();
+                this.cacheService.connections.clear();
 
                 // Clear users cache to force reload of permissions for this
                 // newly created sharing profile
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
         }
 
@@ -129,11 +130,11 @@ export class SharingProfileService {
 
                 // Clear the cache
                 .pipe(tap(() => {
-                    // TODO: cacheService.connections.removeAll();
+                    this.cacheService.connections.clear();
 
                     // Clear users cache to force reload of permissions for this
                     // newly updated sharing profile
-                    // TODO: cacheService.users.removeAll();
+                    this.cacheService.users.clear();
                 }));
         }
 
@@ -159,7 +160,7 @@ export class SharingProfileService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO: cacheService.connections.removeAll();
+                this.cacheService.connections.clear();
             }));
 
     }

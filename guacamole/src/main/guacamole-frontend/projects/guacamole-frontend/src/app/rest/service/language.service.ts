@@ -17,9 +17,10 @@
  * under the License.
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CACHE } from './cache.service';
 
 /**
  * Service for operating on language metadata via the REST API.
@@ -47,8 +48,10 @@ export class LanguageService {
     getLanguages(): Observable<Record<string, string>> {
 
         // Retrieve available languages
-        // TODO     cache   : cacheService.languages,
-        return this.http.get<Record<string, string>>('api/languages');
+        return this.http.get<Record<string, string>>(
+            'api/languages',
+            { context: new HttpContext().set(CACHE, 'languages') }
+        );
 
     }
 }

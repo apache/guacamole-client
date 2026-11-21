@@ -36,6 +36,7 @@ import { LoginModule } from './login/login.module';
 import { ManageModule } from './manage/manage.module';
 import { NavigationModule } from './navigation/navigation.module';
 import { NotificationModule } from './notification/notification.module';
+import { CacheInterceptor } from './rest/interceptor/cache.interceptor';
 import { ErrorHandlingInterceptor } from './rest/interceptor/error-handling.interceptor';
 import { SettingsModule } from './settings/settings.module';
 
@@ -62,6 +63,8 @@ import { SettingsModule } from './settings/settings.module';
         const initializerFn = ((extensionLoaderService: ExtensionLoaderService) => () => extensionLoaderService.loadExtensionAndSetRouterConfig())(inject(ExtensionLoaderService));
         return initializerFn();
       }),
+        // Cached responses bypass all other interceptors
+        { provide: HTTP_INTERCEPTORS, useClass: CacheInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: DefaultHeadersInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: AuthenticationInterceptor, multi: true },
         { provide: HTTP_INTERCEPTORS, useClass: ErrorHandlingInterceptor, multi: true },

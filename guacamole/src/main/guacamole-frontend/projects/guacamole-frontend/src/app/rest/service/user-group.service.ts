@@ -17,12 +17,13 @@
  * under the License.
  */
 
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { DirectoryPatch } from '../types/DirectoryPatch';
 import { DirectoryPatchResponse } from '../types/DirectoryPatchResponse';
 import { UserGroup } from '../types/UserGroup';
+import { CACHE, CacheService } from './cache.service';
 
 /**
  * Service for operating on user groups via the REST API.
@@ -35,7 +36,7 @@ export class UserGroupService {
     /**
      * Inject required services.
      */
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private cacheService: CacheService) {
     }
 
     /**
@@ -66,10 +67,9 @@ export class UserGroupService {
             httpParameters = httpParameters.appendAll({ permission: permissionTypes });
 
         // Retrieve user groups
-        // TODO: cache: cacheService.users,
         return this.http.get<Record<string, UserGroup>>(
             'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups',
-            { params: httpParameters }
+            { params: httpParameters, context: new HttpContext().set(CACHE, 'users') }
         );
 
     }
@@ -93,9 +93,9 @@ export class UserGroupService {
     getUserGroup(dataSource: string, identifier: string): Observable<UserGroup> {
 
         // Retrieve user group
-        // TODO  cache   : cacheService.users,
         return this.http.get<UserGroup>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier)
+            'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier),
+            { context: new HttpContext().set(CACHE, 'users') }
         );
 
     }
@@ -125,7 +125,7 @@ export class UserGroupService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
 
@@ -157,7 +157,7 @@ export class UserGroupService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
     }
@@ -188,7 +188,7 @@ export class UserGroupService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
     }
@@ -223,7 +223,7 @@ export class UserGroupService {
 
             // Clear the cache
             .pipe(tap(patchResponse => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
                 return patchResponse;
             }));
 

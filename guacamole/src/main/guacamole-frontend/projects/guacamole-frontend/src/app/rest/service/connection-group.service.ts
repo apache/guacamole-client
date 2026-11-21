@@ -17,10 +17,11 @@
  * under the License.
  */
 
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { ConnectionGroup } from '../types/ConnectionGroup';
+import { CACHE, CacheService } from './cache.service';
 
 /**
  * Service for operating on connection groups via the REST API.
@@ -33,7 +34,7 @@ export class ConnectionGroupService {
     /**
      * Inject required services.
      */
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private cacheService: CacheService) {
     }
 
     /**
@@ -67,7 +68,8 @@ export class ConnectionGroupService {
         // Retrieve connection group
         return this.http.get<ConnectionGroup>('api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID) + '/tree',
             {
-                params: httpParameters
+                params : httpParameters,
+                context: new HttpContext().set(CACHE, 'connections')
             });
 
     }
@@ -88,7 +90,10 @@ export class ConnectionGroupService {
     getConnectionGroup(dataSource: string, connectionGroupID: string = ConnectionGroup.ROOT_IDENTIFIER): Observable<ConnectionGroup> {
 
         // Retrieve connection group
-        return this.http.get<ConnectionGroup>('api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID));
+        return this.http.get<ConnectionGroup>(
+            'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroupID),
+            { context: new HttpContext().set(CACHE, 'connections') }
+        );
 
     }
 
@@ -115,10 +120,15 @@ export class ConnectionGroupService {
                 connectionGroup
             )
 
-                // Set the identifier on the new connection group
+                // Set the identifier on the new connection group and clear the cache
                 .pipe(
                     map((newConnectionGroup: ConnectionGroup) => {
                         connectionGroup.identifier = newConnectionGroup.identifier;
+                        this.cacheService.connections.clear();
+
+                        // Clear users cache to force reload of permissions for this
+                        // newly created connection group
+                        this.cacheService.users.clear();
                     })
                 );
         }
@@ -128,7 +138,18 @@ export class ConnectionGroupService {
             return this.http.put<void>(
                 'api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier),
                 connectionGroup
-            );
+            )
+
+                // Clear the cache
+                .pipe(
+                    tap(() => {
+                        this.cacheService.connections.clear();
+
+                        // Clear users cache to force reload of permissions for this
+                        // newly updated connection group
+                        this.cacheService.users.clear();
+                    })
+                );
         }
 
     }
@@ -147,7 +168,14 @@ export class ConnectionGroupService {
     deleteConnectionGroup(dataSource: string, connectionGroup: ConnectionGroup): Observable<void> {
 
         // Delete connection group
-        return this.http.delete<void>('api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier || ''));
+        return this.http.delete<void>('api/session/data/' + encodeURIComponent(dataSource) + '/connectionGroups/' + encodeURIComponent(connectionGroup.identifier || ''))
+
+            // Clear the cache
+            .pipe(
+                tap(() => {
+                    this.cacheService.connections.clear();
+                })
+            );
 
     }
 

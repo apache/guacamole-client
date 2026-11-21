@@ -17,11 +17,12 @@
  * under the License.
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { AuthenticationService } from '../../auth/service/authentication.service';
 import { RelatedObjectPatch } from '../types/RelatedObjectPatch';
+import { CACHE, CacheService } from './cache.service';
 
 /**
  * Service for operating on user group memberships via the REST API.
@@ -34,7 +35,9 @@ export class MembershipService {
     /**
      * Inject required services.
      */
-    constructor(private http: HttpClient, private authenticationService: AuthenticationService) {
+    constructor(private http: HttpClient,
+                private authenticationService: AuthenticationService,
+                private cacheService: CacheService) {
     }
 
     /**
@@ -149,8 +152,10 @@ export class MembershipService {
     getUserGroups(dataSource: string, identifier: string, group?: boolean): Observable<string[]> {
 
         // Retrieve parent groups
-        // TODO: cache   : cacheService.users,
-        return this.http.get<string[]>(this.getUserGroupsResourceURL(dataSource, identifier, group));
+        return this.http.get<string[]>(
+            this.getUserGroupsResourceURL(dataSource, identifier, group),
+            { context: new HttpContext().set(CACHE, 'users') }
+        );
 
     }
 
@@ -195,7 +200,7 @@ export class MembershipService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
     }
@@ -220,9 +225,9 @@ export class MembershipService {
     getMemberUsers(dataSource: string, identifier: string): Observable<string[]> {
 
         // Retrieve member users
-        // TODO: cache   : cacheService.users,
         return this.http.get<string[]>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUsers'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUsers',
+            { context: new HttpContext().set(CACHE, 'users') }
         );
 
     }
@@ -262,7 +267,7 @@ export class MembershipService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO:  cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
     }
@@ -289,9 +294,9 @@ export class MembershipService {
     getMemberUserGroups(dataSource: string, identifier: string): Observable<string[]> {
 
         // Retrieve member user groups
-        // TODO: cache: cacheService.users,
         return this.http.get<string[]>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUserGroups'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/userGroups/' + encodeURIComponent(identifier) + '/memberUserGroups',
+            { context: new HttpContext().set(CACHE, 'users') }
         );
 
     }
@@ -332,7 +337,7 @@ export class MembershipService {
 
             // Clear the cache
             .pipe(tap(() => {
-                // TODO: cacheService.users.removeAll();
+                this.cacheService.users.clear();
             }));
 
     }

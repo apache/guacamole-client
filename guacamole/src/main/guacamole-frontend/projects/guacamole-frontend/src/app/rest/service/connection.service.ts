@@ -17,13 +17,14 @@
  * under the License.
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable, tap } from 'rxjs';
 import { Connection } from '../types/Connection';
 import { ConnectionHistoryEntry } from '../types/ConnectionHistoryEntry';
 import { DirectoryPatch } from '../types/DirectoryPatch';
 import { DirectoryPatchResponse } from '../types/DirectoryPatchResponse';
+import { CACHE, CacheService } from './cache.service';
 
 /**
  * Service for operating on connections via the REST API.
@@ -36,7 +37,7 @@ export class ConnectionService {
     /**
      * Inject required services.
      */
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private cacheService: CacheService) {
     }
 
     /**
@@ -58,9 +59,9 @@ export class ConnectionService {
     getConnection(dataSource: string, id: string): Observable<Connection> {
 
         // Retrieve connection
-        // TODO: cache   : cacheService.connections,
         return this.http.get<Connection>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id)
+            'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id),
+            { context: new HttpContext().set(CACHE, 'connections') }
         );
 
     }
@@ -101,9 +102,9 @@ export class ConnectionService {
     getConnectionParameters(dataSource: string, id: string): Observable<Record<string, string>> {
 
         // Retrieve connection parameters
-        // TODO: cache: cacheService.connections,
         return this.http.get<Record<string, string>>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/parameters'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/connections/' + encodeURIComponent(id) + '/parameters',
+            { context: new HttpContext().set(CACHE, 'connections') }
         );
 
     }
@@ -135,11 +136,11 @@ export class ConnectionService {
                 .pipe(
                     map(newConnection => {
                         connection.identifier = newConnection.identifier;
-                        // TODO: cacheService.connections.removeAll();
+                        this.cacheService.connections.clear();
 
                         // Clear users cache to force reload of permissions for this
                         // newly created connection
-                        // TODO: cacheService.users.removeAll();
+                        this.cacheService.users.clear();
                     })
                 );
         }
@@ -154,11 +155,11 @@ export class ConnectionService {
                 // Clear the cache
                 .pipe(
                     tap(() => {
-                        // TODO:  cacheService.connections.removeAll();
+                        this.cacheService.connections.clear();
 
                         // Clear users cache to force reload of permissions for this
                         // newly updated connection
-                        // TODO:   cacheService.users.removeAll();
+                        this.cacheService.users.clear();
                     })
                 );
         }
@@ -196,11 +197,11 @@ export class ConnectionService {
             // Clear the cache
             .pipe(
                 tap(patchResponse => {
-                    // TODO: cacheService.connections.removeAll();
+                    this.cacheService.connections.clear();
 
                     // Clear users cache to force reload of permissions for any
                     // newly created or replaced connections
-                    // TODO: cacheService.users.removeAll();
+                    this.cacheService.users.clear();
 
                 })
             );
@@ -228,7 +229,7 @@ export class ConnectionService {
             // Clear the cache
             .pipe(
                 tap(() => {
-                    // TODO: cacheService.connections.removeAll();
+                    this.cacheService.connections.clear();
                 })
             );
 

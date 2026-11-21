@@ -17,11 +17,12 @@
  * under the License.
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Form } from '../types/Form';
 import { Protocol } from '../types/Protocol';
+import { CACHE } from './cache.service';
 
 /**
  * Service for operating on metadata via the REST API.
@@ -57,8 +58,10 @@ export class SchemaService {
     getUserAttributes(dataSource: string): Observable<Form[]> {
 
         // Retrieve available user attributes
-        // TODO: cache   : cacheService.schema,
-        return this.http.get<Form[]>('api/session/data/' + encodeURIComponent(dataSource) + '/schema/userAttributes');
+        return this.http.get<Form[]>(
+            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userAttributes',
+            { context: new HttpContext().set(CACHE, 'schema') }
+        );
 
     }
 
@@ -82,9 +85,9 @@ export class SchemaService {
     getUserPreferenceAttributes(dataSource: string): Observable<Form[]> {
 
         // Retrieve available user attributes
-        // TODO: cache   : cacheService.schema,
         return this.http.get<Form[]>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userPreferenceAttributes'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userPreferenceAttributes',
+            { context: new HttpContext().set(CACHE, 'schema') }
         );
 
     }
@@ -109,9 +112,9 @@ export class SchemaService {
     getUserGroupAttributes(dataSource: string): Observable<Form[]> {
 
         // Retrieve available user group attributes
-        // TODO: cache   : cacheService.schema,
         return this.http.get<Form[]>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userGroupAttributes'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/userGroupAttributes',
+            { context: new HttpContext().set(CACHE, 'schema') }
         );
 
     }
@@ -136,9 +139,9 @@ export class SchemaService {
     getConnectionAttributes(dataSource: string): Observable<Form[]> {
 
         // Retrieve available connection attributes
-        // TODO: cache   : cacheService.schema,
         return this.http.get<Form[]>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionAttributes'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionAttributes',
+            { context: new HttpContext().set(CACHE, 'schema') }
         );
 
     }
@@ -163,9 +166,9 @@ export class SchemaService {
     getSharingProfileAttributes(dataSource: string): Observable<Form[]> {
 
         // Retrieve available sharing profile attributes
-        // TODO: cache   : cacheService.schema,
         return this.http.get<Form[]>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/sharingProfileAttributes'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/sharingProfileAttributes',
+            { context: new HttpContext().set(CACHE, 'schema') }
         );
 
     }
@@ -190,9 +193,9 @@ export class SchemaService {
     getConnectionGroupAttributes(dataSource: string): Observable<Form[]> {
 
         // Retrieve available connection group attributes
-        // TODO: cache   : cacheService.schema,
         return this.http.get<Form[]>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionGroupAttributes'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/connectionGroupAttributes',
+            { context: new HttpContext().set(CACHE, 'schema') }
         );
 
     }
@@ -214,9 +217,9 @@ export class SchemaService {
     getProtocols(dataSource: string): Observable<Record<string, Protocol>> {
 
         // Retrieve available protocols
-        // TODO: cache   : cacheService.schema,
         return this.http.get<Record<string, Protocol>>(
-            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/protocols'
+            'api/session/data/' + encodeURIComponent(dataSource) + '/schema/protocols',
+            { context: new HttpContext().set(CACHE, 'schema') }
         );
 
     }

@@ -17,9 +17,10 @@
  * under the License.
  */
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { CACHE } from './cache.service';
 
 /**
  * Service for operating on HTML patches via the REST API.
@@ -48,7 +49,10 @@ export class PatchService {
     getPatches(): Observable<string[]> {
 
         // Retrieve all applicable HTML patches
-        return this.http.get<string[]>('api/patches');
+        return this.http.get<string[]>(
+            'api/patches',
+            { context: new HttpContext().set(CACHE, 'patches') }
+        );
 
     }
 

@@ -23,7 +23,8 @@ import { Error } from '../types/Error';
 import { RequestService } from './request.service';
 
 /**
- * Service which contains all REST API response caches.
+ * Service which invokes a REST API function once for each of several data
+ * sources, aggregating the results by data source identifier.
  */
 @Injectable({
     providedIn: 'root'
