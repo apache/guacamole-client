@@ -394,6 +394,11 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
         if (!this.guacamoleClient || !this.display)
             return;
 
+        // Broadcast mousedown event before sending to allow keyboard to resolve
+        // deferred modifier keys (especially CMD+click)
+        if (event.type === 'mousedown')
+            this.guacEventService.broadcast('guacBeforeClientMouseDown', { inputEvent: event, client: this.managedClient });
+
         event.stopPropagation();
         event.preventDefault();
 
@@ -455,6 +460,11 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
             return;
 
         const mouseEvent = event as Guacamole.Mouse.Event;
+
+        // Broadcast mousedown event before sending to allow keyboard to resolve
+        // deferred modifier keys (especially CMD+click)
+        if (mouseEvent.type === 'mousedown')
+            this.guacEventService.broadcast('guacBeforeClientMouseDown', { inputEvent: mouseEvent, client: this.managedClient });
 
         mouseEvent.stopPropagation();
         mouseEvent.preventDefault();

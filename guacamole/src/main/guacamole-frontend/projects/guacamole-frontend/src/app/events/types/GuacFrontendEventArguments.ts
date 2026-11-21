@@ -44,6 +44,13 @@ export interface GuacFrontendEventArguments extends GuacEventArguments {
     guacBeforeKeyup: { keysym: number; keyboard: Guacamole.Keyboard; };
 
     // Mouse events
+
+    /**
+     * Broadcast when a mouse button is pressed, before the mouse state is
+     * sent, so that the keyboard can resolve deferred modifier keys
+     * (especially for Cmd+Click) first.
+     */
+    guacBeforeClientMouseDown: { inputEvent: Guacamole.Mouse.Event, client: ManagedClient };
     guacClientMouseDown: { inputEvent: Guacamole.Mouse.Event, client: ManagedClient };
     guacClientMouseUp: { inputEvent: Guacamole.Mouse.Event, client: ManagedClient };
     guacClientMouseMove: { inputEvent: Guacamole.Mouse.Event, client: ManagedClient };

@@ -246,7 +246,7 @@ describe('AppComponent', () => {
         expect(title.getTitle()).toBe('ssh-target');
     });
 
-    it.each(['guacClientMouseDown', 'guacClientMouseUp'] as const)(
+    it.each(['guacBeforeClientMouseDown', 'guacClientMouseUp'] as const)(
         'should update the keyboard modifiers from the mouse event of %s', (eventName) => {
             const inputEvent = { type: 'mouse' } as unknown as Guacamole.Mouse.Event;
 
@@ -254,6 +254,15 @@ describe('AppComponent', () => {
 
             expect(keyboard.updateModifiers).toHaveBeenCalledExactlyOnceWith(inputEvent);
         });
+
+    it('should not update the keyboard modifiers after the mouse button has been pressed', () => {
+        eventService.broadcast('guacClientMouseDown', {
+            inputEvent: { type: 'mousedown' } as unknown as Guacamole.Mouse.Event,
+            client: {} as ManagedClient
+        });
+
+        expect(keyboard.updateModifiers).not.toHaveBeenCalled();
+    });
 
     it.each(['guacClientTouchStart', 'guacClientTouchEnd'] as const)(
         'should update the keyboard modifiers from the touch event of %s', (eventName) => {

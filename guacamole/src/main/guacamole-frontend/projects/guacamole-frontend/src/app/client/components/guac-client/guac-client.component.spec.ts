@@ -87,6 +87,27 @@ describe('GuacClientComponent', () => {
     }
 
     /**
+     * Dispatches a mouse event as if the touchpad that emulates the mouse for
+     * touch devices without multi-touch support had produced it, and returns
+     * that event.
+     *
+     * @param type
+     *     The type of the mouse event, such as "mousedown".
+     *
+     * @param pressed
+     *     Whether the left mouse button is pressed.
+     *
+     * @returns
+     *     The mouse event that was dispatched.
+     */
+    function dispatchEmulatedMouseEvent(type: 'mousedown' | 'mouseup', pressed: boolean): Guacamole.Mouse.Event {
+        const touchPad = (fixture.componentInstance as unknown as { touchPad: { dispatch(event: Guacamole.Event): void } }).touchPad;
+        const emulatedEvent = new Guacamole.Mouse.Event(type, new Guacamole.Mouse.State(5, 6, pressed, false, false, false, false));
+        touchPad.dispatch(emulatedEvent);
+        return emulatedEvent;
+    }
+
+    /**
      * Returns, for each mouse state sent to the Guacamole client so far,
      * whether the middle button was pressed.
      */
@@ -133,6 +154,85 @@ describe('GuacClientComponent', () => {
 
         expect(subscriber).toHaveBeenCalledExactlyOnceWith(expect.any(Guacamole.Mouse.Event), client);
         expect(subscriber.mock.calls[0][0].state.middle).toBe(true);
+    });
+
+    it('should broadcast guacBeforeClientMouseDown with the mouse event before the clipboard synchronization and before the event is stopped', async () => {
+        const subscriber = vi.fn();
+        const stopPropagation = vi.fn();
+        const preventDefault = vi.fn();
+
+        // The spies replace the methods only while the event is broadcast, so
+        // they record just the calls that follow the broadcast
+        guacEventService.on('guacBeforeClientMouseDown').subscribe(({ inputEvent, client }) => {
+            vi.spyOn(inputEvent, 'stopPropagation').mockImplementation(stopPropagation);
+            vi.spyOn(inputEvent, 'preventDefault').mockImplementation(preventDefault);
+            subscriber(inputEvent, client, sendMouseState.mock.calls.length);
+        });
+
+        // The broadcast must not wait for the synchronization, or the
+        // keyboard could not resolve its deferred modifier keys in time
+        guacEventService.broadcast('clipboardSyncInProgress', { status: true });
+        dispatchMiddleButton('mousedown');
+
+        expect(subscriber).toHaveBeenCalledExactlyOnceWith(expect.any(Guacamole.Mouse.Event), client, 0);
+        expect(subscriber.mock.calls[0][0].state.middle).toBe(true);
+
+        // The event is stopped only afterwards, and the state is sent last
+        expect(stopPropagation).toHaveBeenCalledOnce();
+        expect(preventDefault).toHaveBeenCalledOnce();
+        expect(sendMouseState).not.toHaveBeenCalled();
+
+        guacEventService.broadcast('clipboardSyncInProgress', { status: false });
+        await vi.advanceTimersByTimeAsync(10);
+        expect(sentMiddleButtonStates()).toEqual([false, true]);
+    });
+
+    it('should broadcast guacBeforeClientMouseDown before the mouse state is sent', async () => {
+        let sentBefore: number | undefined;
+        guacEventService.on('guacBeforeClientMouseDown')
+            .subscribe(() => sentBefore = sendMouseState.mock.calls.length);
+
+        dispatchMiddleButton('mousedown');
+        await vi.advanceTimersByTimeAsync(0);
+
+        expect(sentBefore).toBe(0);
+        expect(sendMouseState).toHaveBeenCalled();
+    });
+
+    it('should not broadcast guacBeforeClientMouseDown for other mouse events', async () => {
+        const subscriber = vi.fn();
+        guacEventService.on('guacBeforeClientMouseDown').subscribe(subscriber);
+
+        dispatchMiddleButton('mouseup');
+        await vi.advanceTimersByTimeAsync(0);
+
+        expect(sendMouseState).toHaveBeenCalled();
+        expect(subscriber).not.toHaveBeenCalled();
+    });
+
+    it('should broadcast guacBeforeClientMouseDown for the mousedown of an emulated mouse before sending it', () => {
+        let sentBefore: number | undefined;
+        const subscriber = vi.fn();
+        guacEventService.on('guacBeforeClientMouseDown').subscribe(({ inputEvent, client }) => {
+            sentBefore = sendMouseState.mock.calls.length;
+            subscriber(inputEvent, client);
+        });
+
+        const emulatedMouseDown = dispatchEmulatedMouseEvent('mousedown', true);
+
+        expect(subscriber).toHaveBeenCalledExactlyOnceWith(emulatedMouseDown, client);
+        expect(sentBefore).toBe(0);
+        expect(sendMouseState).toHaveBeenCalledExactlyOnceWith(emulatedMouseDown.state, true);
+    });
+
+    it('should not broadcast guacBeforeClientMouseDown for other events of an emulated mouse', () => {
+        const subscriber = vi.fn();
+        guacEventService.on('guacBeforeClientMouseDown').subscribe(subscriber);
+
+        dispatchEmulatedMouseEvent('mouseup', false);
+
+        expect(sendMouseState).toHaveBeenCalled();
+        expect(subscriber).not.toHaveBeenCalled();
     });
 
 });
