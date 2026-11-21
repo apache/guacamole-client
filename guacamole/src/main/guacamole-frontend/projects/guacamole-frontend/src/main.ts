@@ -20,6 +20,11 @@
 import { initFederation } from '@angular-architects/native-federation';
 
 import { getFederationOptions } from './app/index/federation-options';
+import { relocateParameters } from './app/index/relocate-parameters';
+
+// Make query parameters before the fragment visible to the router, which
+// reads only those within the fragment (hash-based routing)
+relocateParameters(window.location, window.history, document.title);
 
 /**
  * The options for both attempts to initialize Native Federation below.

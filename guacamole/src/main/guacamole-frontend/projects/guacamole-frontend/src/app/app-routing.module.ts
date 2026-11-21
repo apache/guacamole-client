@@ -18,7 +18,7 @@
  */
 
 import { inject, NgModule } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivateFn, ResolveFn, Route, Router, RouterModule, Routes } from '@angular/router';
+import { ActivatedRouteSnapshot, CanActivateFn, ResolveFn, Route, Router, RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { catchError, map, Observable, of, switchMap, take } from 'rxjs';
 import { AuthenticationService } from './auth/service/authentication.service';
@@ -29,6 +29,7 @@ import {
     ConnectionImportFileHelpComponent
 } from './import/components/connection-import-file-help/connection-import-file-help.component';
 import { ImportConnectionsComponent } from './import/components/import-connections/import-connections.component';
+import { ReloadOnUrlRouteReuseStrategy } from './index/config/reload-on-url-route-reuse-strategy';
 import {
     ManageConnectionGroupComponent
 } from './manage/components/manage-connection-group/manage-connection-group.component';
@@ -325,7 +326,8 @@ export const appRoutes: Routes = [
     {
         path       : 'client/:id',
         component  : ClientPageComponent,
-        data       : { titleKey: 'APP.NAME', bodyClassName: 'client' },
+        // Keep the client page and its connections when the URL changes
+        data       : { titleKey: 'APP.NAME', bodyClassName: 'client', reloadOnUrl: false },
         canActivate: [authGuard]
     }
 
@@ -347,6 +349,10 @@ export const fallbackRoute: Route = {
         // Disable HTML5 mode (use # for routing)
         useHash: true
     })],
+    providers: [
+        // Reload routes upon changes to their parameters, like ngRoute
+        { provide: RouteReuseStrategy, useClass: ReloadOnUrlRouteReuseStrategy }
+    ],
     exports: [RouterModule]
 })
 export class AppRoutingModule {

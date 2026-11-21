@@ -17,11 +17,12 @@
  * under the License.
  */
 
+import { Location } from '@angular/common';
 import { AfterViewChecked, Component, DestroyRef, Inject, OnInit, Renderer2, ViewEncapsulation, DOCUMENT, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { NavigationEnd, NavigationStart, Router } from '@angular/router';
+import { NavigationCancel, NavigationCancellationCode, NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import _ from 'lodash';
@@ -126,6 +127,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 private styleLoaderService: StyleLoaderService,
                 private translocoService: TranslocoService,
                 private router: Router,
+                private location: Location,
                 private title: Title,
                 @Inject(DOCUMENT) private document: Document,
                 private renderer: Renderer2,
@@ -319,6 +321,22 @@ export class AppComponent implements OnInit, AfterViewChecked {
                 // Set body CSS class
                 const route = this.router.routerState.snapshot.root.firstChild;
                 this.setBodyClass(route?.data['bodyClassName'] || null);
+
+            });
+
+        // Keep the requested URL if a guard rejected the navigation, such as
+        // for lack of a valid session, so that logging in opens the requested
+        // page. The router has already reset the URL to the current page.
+        this.router.events
+            .pipe(filter((event): event is NavigationCancel => event instanceof NavigationCancel
+                && event.code === NavigationCancellationCode.GuardRejected))
+            .subscribe(event => {
+
+                // Replace or add a history entry as for a successful navigation
+                if (this.router.currentNavigation()?.extras.replaceUrl || this.location.isCurrentPathEqualTo(event.url))
+                    this.location.replaceState(event.url);
+                else
+                    this.location.go(event.url);
 
             });
 

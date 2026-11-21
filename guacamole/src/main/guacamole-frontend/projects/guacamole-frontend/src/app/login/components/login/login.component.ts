@@ -17,10 +17,11 @@
  * under the License.
  */
 
+import { Location } from '@angular/common';
 import { Component, DestroyRef, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup } from '@angular/forms';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { catchError, filter } from 'rxjs';
@@ -108,7 +109,7 @@ export class LoginComponent implements OnInit, OnChanges {
                 private requestService: RequestService,
                 private guacEventService: GuacEventService<GuacFrontendEventArguments>,
                 private router: Router,
-                private route: ActivatedRoute,
+                private location: Location,
                 private translocoService: TranslocoService,
                 private translationLoaderService: TranslationLoaderService,
                 private destroyRef: DestroyRef) {
@@ -175,8 +176,9 @@ export class LoginComponent implements OnInit, OnChanges {
      */
     login(): void {
 
-        // Any values from URL paramters
-        const urlValues = this.route.snapshot.queryParams;
+        // Any values from URL paramters (of the requested URL, which differs
+        // from the current route if the router rejected it)
+        const urlValues = this.router.parseUrl(this.location.path()).queryParams;
 
         // Values from the fields
         const fieldValues = this.enteredValues.value;
@@ -247,13 +249,13 @@ export class LoginComponent implements OnInit, OnChanges {
                 this.loginError = null;
             });
 
-        // Retry route upon success (entered values will be cleared only
-        // after route change has succeeded as this can take time)
+        // Retry requested route upon success (entered values will be cleared
+        // only after route change has succeeded as this can take time)
         // and refresh the translation
         this.guacEventService.on('guacLogin')
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe(() => {
-                this.router.navigate([this.router.url], { onSameUrlNavigation: 'reload' });
+                this.router.navigateByUrl(this.location.path(), { onSameUrlNavigation: 'reload' });
                 this.reloadTranslations();
             });
 
