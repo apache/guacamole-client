@@ -122,6 +122,7 @@ export class LocalStorageService {
             try {
                 return JSON.parse(data);
             } catch {
+                console.error('Ignoring invalid JSON from localStorage key "' + key + '":', data);
                 return null;
             }
         }

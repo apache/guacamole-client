@@ -23,14 +23,17 @@ import { LocalStorageService } from './local-storage.service';
 
 describe('LocalStorageService', () => {
     let service: LocalStorageService;
+    let consoleError: ReturnType<typeof vi.spyOn>;
 
     beforeEach(() => {
+        consoleError = vi.spyOn(console, 'error').mockReturnValue(undefined);
         TestBed.configureTestingModule({});
         service = TestBed.inject(LocalStorageService);
     });
 
     afterEach(() => {
         localStorage.clear();
+        vi.restoreAllMocks();
     });
 
     it('should be created', () => {
@@ -39,17 +42,28 @@ describe('LocalStorageService', () => {
 
     it('should return null for a key that is not set', () => {
         expect(service.getItem('missing')).toBeNull();
+        expect(consoleError).not.toHaveBeenCalled();
     });
 
     it('should return the deserialized value of a valid JSON entry', () => {
         localStorage.setItem('valid', '{"name":"value"}');
 
         expect(service.getItem('valid')).toEqual({ name: 'value' });
+        expect(consoleError).not.toHaveBeenCalled();
     });
 
     it('should treat invalid JSON in localStorage as missing', () => {
         localStorage.setItem('invalid', '{not valid json');
 
         expect(service.getItem('invalid')).toBeNull();
+    });
+
+    it('should log the key and the raw value of invalid JSON in localStorage', () => {
+        localStorage.setItem('invalid', '{not valid json');
+
+        service.getItem('invalid');
+
+        expect(consoleError).toHaveBeenCalledWith(
+            'Ignoring invalid JSON from localStorage key "invalid":', '{not valid json');
     });
 });
