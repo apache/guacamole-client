@@ -105,7 +105,10 @@ export class GuacClientPanelComponent implements AfterViewInit {
      *     panel, false otherwise.
      */
     hasClientGroups(): boolean {
-        return this.clientGroups && this.clientGroups.length > 0;
+        return this.clientGroups && this.clientGroups.some(group => {
+            // Check if there is any group that is not attached
+            return !group.attached;
+        });
     }
 
     /**
