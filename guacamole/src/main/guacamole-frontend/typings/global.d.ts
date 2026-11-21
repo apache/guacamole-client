@@ -22,3 +22,20 @@
  */
 import 'guacamole-common-js';
 import './guacamole-common-js-1.6';
+
+declare global {
+
+    interface Navigator {
+
+        /**
+         * The Keyboard Lock API, which lib.dom does not declare because
+         * only Chromium-based browsers implement it.
+         */
+        readonly keyboard?: {
+            lock(keyCodes?: string[]): Promise<void>;
+            unlock(): void;
+        };
+
+    }
+
+}

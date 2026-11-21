@@ -30,6 +30,23 @@ import { Injectable } from '@angular/core';
 export class GuacFullscreenService {
 
     /**
+     * If the browser supports keyboard lock, lock the keyboard when entering
+     * fullscreen mode and unlock it when exiting fullscreen mode.
+     */
+    constructor() {
+        if (navigator.keyboard?.lock) {
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    navigator.keyboard?.lock();
+                    return;
+                }
+
+                navigator.keyboard?.unlock();
+            });
+        }
+    }
+
+    /**
      * Check is browser in true fullscreen mode
      */
     isInFullscreenMode(): Element | null {
@@ -42,11 +59,9 @@ export class GuacFullscreenService {
     setFullscreenMode(state: boolean): void {
         if (document.fullscreenEnabled) {
             if (state && !this.isInFullscreenMode())
-                // @ts-ignore navigator.keyboard limited availability
-                document.documentElement.requestFullscreen().then(navigator.keyboard.lock());
+                document.documentElement.requestFullscreen();
             else if (!state && this.isInFullscreenMode())
-                // @ts-ignore navigator.keyboard limited availability
-                document.exitFullscreen().then(navigator.keyboard.unlock());
+                document.exitFullscreen();
         }
     }
 
