@@ -18,6 +18,7 @@
  */
 
 import { Component, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 /**
  * Displays a button to navigate to the about page.
@@ -25,9 +26,9 @@ import { Component, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/
 @Component({
     selector: 'guac-about-extension-button',
     template: `
-        <a routerLink="angular-extension">Goto Extension Page</a>
+        <a routerLink="/angular-extension">Goto Extension Page</a>
     `,
-    imports: [],
+    imports: [RouterLink],
     changeDetection: ChangeDetectionStrategy.Eager,
     encapsulation: ViewEncapsulation.None
 })

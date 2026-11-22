@@ -139,10 +139,13 @@ async function createJarFile(files, manifest) {
 
     // Create zip file using zip command (available on macOS and Linux)
     const currentDir = process.cwd();
+    const outputPath = path.join(currentDir, CONFIG.outputFile);
     process.chdir(CONFIG.sourceDir);
 
     try {
-        await execAsync(`zip -r "${path.join(currentDir, CONFIG.outputFile)}" ./*`);
+        // zip adds to an existing archive and would keep the files of an earlier build
+        fs.rmSync(outputPath, {force: true});
+        await execAsync(`zip -r "${outputPath}" ./*`);
         console.log(`Successfully created ${CONFIG.outputFile}`);
     } catch (error) {
         console.error('Error creating zip file:', error);
