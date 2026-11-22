@@ -21,7 +21,7 @@
     <div class="connection-select-menu-connection connection">
         <input type="checkbox"
                [(ngModel)]="context.attachedClients[clientIdentifier]"
-               (ngModelChange)="context.updateAttachedClients(clientIdentifier)">
+               (ngModelChange)="context.updateAttachedClients(clientIdentifier)">&ngsp;
         <a [routerLink]="item.getClientURL()">
             <div class="icon type" [ngClass]="item.protocol"></div>
             <span class="name">{{ item.name }}</span>

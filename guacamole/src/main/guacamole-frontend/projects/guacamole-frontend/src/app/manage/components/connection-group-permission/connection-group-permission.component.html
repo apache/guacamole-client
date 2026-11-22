@@ -20,12 +20,12 @@
 <div class="connection-group-permission choice">
 
     <!-- Connection group icon -->
-    <div class="icon type"></div>
+    <div class="icon type"></div>&ngsp;
 
     <!-- Permission checkbox -->
     <input type="checkbox"
            [(ngModel)]="context.getPermissionFlags().connectionGroupPermissions['READ'][item.identifier!]"
-           (ngModelChange)="context.connectionGroupPermissionChanged(item.identifier!)">
+           (ngModelChange)="context.connectionGroupPermissionChanged(item.identifier!)">&ngsp;
 
     <!-- Connection group name -->
     <span class="name">{{ item.name }}</span>

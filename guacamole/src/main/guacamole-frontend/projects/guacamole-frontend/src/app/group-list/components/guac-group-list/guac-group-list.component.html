@@ -42,7 +42,7 @@
 
                                     <!-- Expand/collapse icon -->
                                     @if (item.expandable) {
-                                        <div class="icon expand" (click)="toggleExpanded(item)"></div>
+                                        <div class="icon expand" (click)="toggleExpanded(item)"></div>&ngsp;
                                     }
 
                                     <ng-container *ngTemplateOutlet="templates[item.type]; context: {item: item, ctx: context}"/>

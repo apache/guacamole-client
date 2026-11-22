@@ -23,7 +23,7 @@
             type="checkbox"
             [hidden]="!item.balancing"
             [(ngModel)]="context.attachedClients[clientIdentifier]"
-            (ngModelChange)="context.updateAttachedClients(clientIdentifier)">
+            (ngModelChange)="context.updateAttachedClients(clientIdentifier)">&ngsp;
     }
     <a [routerLink]="item.getClientURL()">
         <div [hidden]="!item.balancing" class="icon type balancer"></div>

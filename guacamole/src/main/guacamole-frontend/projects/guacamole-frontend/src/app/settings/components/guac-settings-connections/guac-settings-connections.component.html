@@ -30,11 +30,11 @@
 
             <a class="add-connection button"
                [hidden]="!canCreateConnections()"
-               routerLink="/manage/{{dataSource | escape}}/connections/">{{ 'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | transloco }}</a>
+               routerLink="/manage/{{dataSource | escape}}/connections/">{{ 'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION' | transloco }}</a>&ngsp;
 
             <a class="add-connection-group button"
                [hidden]="!canCreateConnectionGroups()"
-               routerLink="/manage/{{dataSource | escape}}/connectionGroups/">{{ 'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | transloco }}</a>
+               routerLink="/manage/{{dataSource | escape}}/connectionGroups/">{{ 'SETTINGS_CONNECTIONS.ACTION_NEW_CONNECTION_GROUP' | transloco }}</a>&ngsp;
 
             <a class="import-connections button"
                [hidden]="!canAdminister()"
