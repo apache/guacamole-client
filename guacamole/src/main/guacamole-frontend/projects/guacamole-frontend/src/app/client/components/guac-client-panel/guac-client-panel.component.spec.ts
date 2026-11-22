@@ -77,3 +77,96 @@ describe('GuacClientPanelComponent', () => {
     });
 
 });
+
+describe('GuacClientPanelComponent wheel handling', () => {
+    let component: GuacClientPanelComponent;
+    let fixture: ComponentFixture<GuacClientPanelComponent>;
+
+    /**
+     * The scrollable list of the panel, whose wheel events are redirected
+     * to horizontal scrolling.
+     */
+    let scrollableArea: HTMLUListElement;
+
+    /**
+     * Dispatches a cancelable wheel event with the given vertical delta on
+     * the scrollable area of the panel.
+     *
+     * @param deltaY
+     *     The vertical delta of the wheel event.
+     *
+     * @param deltaMode
+     *     The unit of the delta, as defined by the DOM (0x00 for pixels,
+     *     0x01 for lines, 0x02 for pages).
+     *
+     * @returns
+     *     The dispatched event.
+     */
+    const wheel = (deltaY: number, deltaMode: number): WheelEvent => {
+        const event = new WheelEvent('wheel', { deltaY, deltaMode, cancelable: true });
+        scrollableArea.dispatchEvent(event);
+        return event;
+    };
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            declarations: [GuacClientPanelComponent]
+        });
+
+        // Only the wheel handling of the scrollable list is under test
+        TestBed.overrideTemplate(GuacClientPanelComponent, '<ul #clientPanelConnectionList></ul>');
+        fixture = TestBed.createComponent(GuacClientPanelComponent);
+        component = fixture.componentInstance;
+        component.clientGroups = [];
+        fixture.detectChanges();
+
+        scrollableArea = component.scrollableArea!;
+        scrollableArea.scrollLeft = 0;
+    });
+
+    it('should scroll horizontally by the number of pixels for pixel deltas', () => {
+        const event = wheel(10, 0x00);
+
+        expect(scrollableArea.scrollLeft).toBe(10);
+        expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should scroll horizontally by 15 pixels per line for line deltas', () => {
+        wheel(2, 0x01);
+
+        expect(scrollableArea.scrollLeft).toBe(30);
+    });
+
+    it('should scroll horizontally by the width of the panel for page deltas', () => {
+        vi.spyOn(scrollableArea, 'offsetWidth', 'get').mockReturnValue(200);
+
+        wheel(1, 0x02);
+
+        expect(scrollableArea.scrollLeft).toBe(200);
+    });
+
+    it('should scroll by the line multiplier for page deltas if the panel has no width', () => {
+        // jsdom reports an offsetWidth of 0, as an unlaid-out panel would
+        expect(scrollableArea.offsetWidth).toBe(0);
+
+        const event = wheel(2, 0x02);
+
+        expect(scrollableArea.scrollLeft).toBe(30);
+        expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should scroll by the line multiplier for an unknown delta mode', () => {
+        const event = wheel(2, 0x03);
+
+        expect(scrollableArea.scrollLeft).toBe(30);
+        expect(event.defaultPrevented).toBe(true);
+    });
+
+    it('should ignore wheel events without a vertical delta', () => {
+        const event = wheel(0, 0x00);
+
+        expect(scrollableArea.scrollLeft).toBe(0);
+        expect(event.defaultPrevented).toBe(false);
+    });
+
+});

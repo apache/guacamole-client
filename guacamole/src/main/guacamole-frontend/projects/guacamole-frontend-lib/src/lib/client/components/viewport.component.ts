@@ -62,6 +62,12 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
      */
     private pollArea?: number;
 
+    /**
+     * The listener for the scroll event of the window, which calls
+     * fitVisibleArea() with this component as its context. The same function
+     * is added and removed, so that removing it takes effect.
+     */
+    private readonly onScroll = () => this.fitVisibleArea();
 
     /**
      * Fit the container element within the visible area whenever the window
@@ -72,7 +78,7 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
         this.element = this.elementRef.nativeElement;
 
         // Fit container within visible region when window scrolls
-        window.addEventListener('scroll', this.fitVisibleArea);
+        window.addEventListener('scroll', this.onScroll);
 
         // Poll every 10ms, in case scroll event does not fire
         this.pollArea = window.setInterval(() => this.fitVisibleArea(), 10);
@@ -82,7 +88,7 @@ export class ViewportComponent implements AfterViewInit, OnDestroy {
      * Clean up on destruction
      */
     ngOnDestroy(): void {
-        window.removeEventListener('scroll', this.fitVisibleArea);
+        window.removeEventListener('scroll', this.onScroll);
         window.clearInterval(this.pollArea);
     }
 

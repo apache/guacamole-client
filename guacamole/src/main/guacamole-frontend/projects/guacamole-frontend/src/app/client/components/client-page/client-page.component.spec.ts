@@ -19,8 +19,11 @@
 
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
 import { provideRouter } from '@angular/router';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { Observable, of, throwError } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
@@ -30,9 +33,12 @@ import { DataSourceService } from '../../../rest/service/data-source-service.ser
 import { TunnelService } from '../../../rest/service/tunnel.service';
 import { Error } from '../../../rest/types/Error';
 import { SharingProfile } from '../../../rest/types/SharingProfile';
+import { UserCredentials } from '../../../rest/types/UserCredentials';
+import { OrderByPipe } from '../../../util/order-by.pipe';
 import { GuacClientManagerService } from '../../services/guac-client-manager.service';
 import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedClientGroup } from '../../types/ManagedClientGroup';
+import { ManagedShareLink } from '../../types/ManagedShareLink';
 import { ClientPageComponent } from './client-page.component';
 
 /**
@@ -196,6 +202,107 @@ describe('ClientPageComponent', () => {
 
         focusClient('tunnel-2');
         expect(fixture.componentInstance.canShareConnection()).toBe(true);
+    });
+
+});
+
+/**
+ * Stand-in for the guac-tiled-clients component, whose input onClose the
+ * template of ClientPageComponent binds; the schema of the spec does not
+ * allow binding unknown inputs that look like event handlers.
+ */
+@Component({
+    selector  : 'guac-tiled-clients',
+    template  : '',
+    standalone: false
+})
+class GuacTiledClientsStubComponent {
+
+    /**
+     * The callback passed by the template for closing a client tile.
+     */
+    @Input() onClose?: (client: ManagedClient) => void;
+
+    /**
+     * The client group passed by the template.
+     */
+    @Input() clientGroup?: ManagedClientGroup | null;
+
+    /**
+     * The mouse mode passed by the template.
+     */
+    @Input() emulateAbsoluteMouse?: boolean;
+
+}
+
+describe('ClientPageComponent share links', () => {
+    let fixture: ComponentFixture<ClientPageComponent>;
+    let eventService: GuacEventService<GuacFrontendEventArguments>;
+
+    /**
+     * The link which a sharing profile generated for the focused connection,
+     * as UserCredentials.getLink() builds it.
+     */
+    const SHARE_LINK = 'http://guacamole.example.com/guacamole/#/?key=abc123';
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            declarations: [ClientPageComponent, GuacTiledClientsStubComponent],
+            imports: [
+                FormsModule,
+                OrderByPipe,
+                TranslocoTestingModule.forRoot({})
+            ],
+            // Ignores the components of the menu, which this spec does not
+            // exercise
+            schemas: [NO_ERRORS_SCHEMA],
+            providers: [
+                provideHttpClient(),
+                provideHttpClientTesting(),
+                provideRouter([]),
+                { provide: AuthenticationService, useValue: { getAvailableDataSources: () => [] } },
+                { provide: DataSourceService, useValue: { apply: () => new Promise(() => undefined) } },
+                {
+                    provide : GuacClientManagerService,
+                    useValue: { getManagedClientGroup: () => new ManagedClientGroup() }
+                },
+                { provide: ClipboardService, useValue: { resyncClipboard: vi.fn() } },
+                { provide: TunnelService, useValue: { getSharingProfiles: () => of({}) } }
+            ]
+        });
+
+        eventService = TestBed.inject(GuacEventService<GuacFrontendEventArguments>);
+        fixture = TestBed.createComponent(ClientPageComponent);
+        fixture.componentRef.setInput('id', 'c2lnbmFs');
+        fixture.detectChanges();
+    });
+
+    afterEach(() => {
+        fixture.destroy();
+    });
+
+    it('should link each share link of the focused connection to its URL', () => {
+        const newFocusedClient = new ManagedClient({
+            id        : 'c2lnbmFs',
+            client    : {} as Guacamole.Client,
+            tunnel    : { uuid: 'tunnel-1' } as Guacamole.Tunnel,
+            shareLinks: {
+                42: new ManagedShareLink({
+                    name              : 'Watch',
+                    href              : SHARE_LINK,
+                    sharingProfile    : new SharingProfile({ identifier: '42', name: 'Watch' }),
+                    sharingCredentials: new UserCredentials({ expected: [], values: { key: 'abc123' } })
+                })
+            }
+        });
+        eventService.broadcast('guacClientFocused', { newFocusedClient });
+        eventService.broadcast('guacShowMenu');
+        fixture.detectChanges();
+
+        const link: HTMLAnchorElement = fixture.nativeElement.querySelector('#share-links a');
+        expect(link.textContent?.trim()).toBe(SHARE_LINK);
+        expect(link.getAttribute('href')).toBe(SHARE_LINK);
+        expect(link.target).toBe('_blank');
     });
 
 });

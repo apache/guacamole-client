@@ -22,7 +22,7 @@
 
         <!-- User profile view -->
         <div class="profile" [hidden]="!fullName">
-            <div class="full-name"><a [routerLink]="userURL">{{ fullName }}</a></div>
+            <div class="full-name"><a [attr.href]="userURL">{{ fullName }}</a></div>
             <div class="organizational-role" [hidden]="!role">{{ role }}</div>
             <div class="organization" [hidden]="!organization">{{ organization }}</div>
         </div>

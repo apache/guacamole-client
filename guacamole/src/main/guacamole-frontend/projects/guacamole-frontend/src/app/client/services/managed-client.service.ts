@@ -341,6 +341,8 @@ export class ManagedClientService {
             managedClient.userCount++;
             connections[id] = true;
 
+            managedClient.usersChanged.next();
+
         };
 
         // Update user count when a user leaves
@@ -355,6 +357,8 @@ export class ManagedClientService {
             // Delete user entry after no connections remain
             if (_.isEmpty(connections))
                 delete managedClient.users[username];
+
+            managedClient.usersChanged.next();
 
         };
 

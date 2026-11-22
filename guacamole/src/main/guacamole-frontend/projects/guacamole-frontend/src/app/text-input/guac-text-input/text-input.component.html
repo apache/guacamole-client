@@ -28,8 +28,8 @@
         </div>
         <textarea rows="1" class="target" autocorrect="off" autocapitalize="off" autofocus #target></textarea></div>
     <div class="text-input-buttons">
-        <guac-key [keysym]="65507" [sticky]="true" text="CLIENT.NAME_KEY_CTRL" [pressed]="ctrlPressed"></guac-key>
-        <guac-key [keysym]="65513" [sticky]="true" text="CLIENT.NAME_KEY_ALT" [pressed]="altPressed"></guac-key>
+        <guac-key [keysym]="65507" [sticky]="true" text="CLIENT.NAME_KEY_CTRL" [(pressed)]="ctrlPressed"></guac-key>
+        <guac-key [keysym]="65513" [sticky]="true" text="CLIENT.NAME_KEY_ALT" [(pressed)]="altPressed"></guac-key>
         <guac-key [keysym]="65307" text="CLIENT.NAME_KEY_ESC"></guac-key>
         <guac-key [keysym]="65289" text="CLIENT.NAME_KEY_TAB"></guac-key>
     </div>

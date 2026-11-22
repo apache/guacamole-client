@@ -20,17 +20,20 @@
 import {
     AfterViewInit,
     Component,
-    DoCheck,
+    DestroyRef,
     ElementRef,
     Input,
+    OnChanges,
     Renderer2,
+    SimpleChanges,
     ViewChild,
     ViewEncapsulation,
     ChangeDetectionStrategy
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { TranslocoService } from '@jsverse/transloco';
 
-import { take } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { AuthenticationResult } from '../../../auth/types/AuthenticationResult';
 import { ManagedClient } from '../../types/ManagedClient';
 
@@ -48,7 +51,7 @@ import { ManagedClient } from '../../types/ManagedClient';
     changeDetection: ChangeDetectionStrategy.Eager,
     standalone: false
 })
-export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {
+export class GuacClientUserCountComponent implements AfterViewInit, OnChanges {
 
     /**
      * The client whose current users should be displayed.
@@ -83,22 +86,23 @@ export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {
     userCounts: Record<string, number> = {};
 
     /**
-     * The ManagedClient attached to this component at the last change
-     * detection run.
+     * The ManagedClient attached to this component at the time
+     * usersChanged() was last invoked.
      */
     private oldClient: ManagedClient | null = null;
 
     /**
-     * The user count of the ManagedClient attached to this component
-     * at the last change detection run.
+     * The subscription to the joins and leaves of the attached
+     * ManagedClient.
      */
-    private oldUserCount: number | null = null;
+    private usersChangedSubscription?: Subscription;
 
     /**
      * Inject required services.
      */
     constructor(private translocoService: TranslocoService,
-                private renderer: Renderer2) {
+                private renderer: Renderer2,
+                private destroyRef: DestroyRef) {
     }
 
     /**
@@ -207,12 +211,18 @@ export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {
     }
 
     /**
-     * Custom change detection logic for the component.
+     * Resynchronize with the users of the attached client whenever the
+     * client changes, and update the notifications each time a user joins
+     * or leaves that client.
      */
-    ngDoCheck(): void {
+    ngOnChanges(changes: SimpleChanges): void {
 
+        if (changes['client']) {
 
-        if (this.client !== this.oldClient || this.client.userCount !== this.oldUserCount) {
+            this.usersChangedSubscription?.unsubscribe();
+            this.usersChangedSubscription = this.client.usersChanged
+                .pipe(takeUntilDestroyed(this.destroyRef))
+                .subscribe(() => this.usersChanged());
 
             this.usersChanged();
 

@@ -86,15 +86,14 @@ export class GuacClientPanelComponent implements AfterViewInit {
         // Override vertical scrolling, scrolling horizontally instead
         scrollableArea?.addEventListener('wheel', function reorientVerticalScroll(e) {
 
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the fallback deltaMultiplier(0x01) calls this object as a function, as the AngularJS frontend does
-            const deltaMultiplier: any = {
+            const deltaMultiplier: Record<number, number> = {
                 /* DOM_DELTA_PIXEL */ 0x00: 1,
                 /* DOM_DELTA_LINE  */ 0x01: 15,
                 /* DOM_DELTA_PAGE  */ 0x02: scrollableArea.offsetWidth
             };
 
             if (e.deltaY) {
-                this.scrollLeft += e.deltaY * (deltaMultiplier[e.deltaMode] || deltaMultiplier(0x01));
+                this.scrollLeft += e.deltaY * (deltaMultiplier[e.deltaMode] || deltaMultiplier[0x01]);
                 e.preventDefault();
             }
 

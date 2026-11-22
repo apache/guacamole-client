@@ -152,7 +152,7 @@ export class PlayerDisplayComponent implements AfterViewInit, OnChanges {
     private addDisplayToContainer(display: Guacamole.Display | undefined) {
         if (display && this.container?.nativeElement) {
             this.container.nativeElement.appendChild(display.getElement());
-            display.onresize = this.fitDisplay;
+            display.onresize = () => this.fitDisplay();
             this.fitDisplay();
         }
     }

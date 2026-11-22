@@ -128,7 +128,7 @@
                                 @for (link of (focusedClient?.shareLinks || {}) | keyvalue | orderBy: 'value.name'; track link) {
                                     <tr>
                                         <th>{{ link.value.name }}</th>
-                                        <td><a [routerLink]="link.value.href" target="_blank">{{ link.value.href }}</a></td>
+                                        <td><a [href]="link.value.href" target="_blank">{{ link.value.href }}</a></td>
                                     </tr>
                                 }
                             </table>

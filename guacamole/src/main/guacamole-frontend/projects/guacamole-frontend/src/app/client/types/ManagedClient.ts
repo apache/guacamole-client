@@ -17,6 +17,7 @@
  * under the License.
  */
 
+import { Subject } from 'rxjs';
 import { Form } from '../../rest/types/Form';
 import { Optional } from '../../util/utility-types';
 import { ClientProperties } from './ClientProperties';
@@ -87,6 +88,7 @@ export type ManagedClientTemplate = Optional<ManagedClient,
     | 'filesystems'
     | 'userCount'
     | 'users'
+    | 'usersChanged'
     | 'shareLinks'
     | 'multiTouchSupport'
     | 'clientState'
@@ -196,6 +198,15 @@ export class ManagedClient {
     users: Record<string, Record<string, boolean>>;
 
     /**
+     * Emits once for each user joining or leaving this connection, after
+     * users and userCount have been updated. A leave and a join which
+     * arrive in the same message of the tunnel, as when a user reloads the
+     * page, thus emit separately, while change detection would only see
+     * the state after both.
+     */
+    usersChanged: Subject<void>;
+
+    /**
      * All available share links generated for the this ManagedClient via
      * ManagedClient.createShareLink(). Each resulting share link is stored
      * under the identifier of its corresponding SharingProfile.
@@ -271,6 +282,7 @@ export class ManagedClient {
         this.filesystems = template.filesystems || [];
         this.userCount = template.userCount || 0;
         this.users = template.users || {};
+        this.usersChanged = template.usersChanged || new Subject<void>();
         this.shareLinks = template.shareLinks || {};
         this.multiTouchSupport = template.multiTouchSupport || 0;
         this.clientState = template.clientState || new ManagedClientState();

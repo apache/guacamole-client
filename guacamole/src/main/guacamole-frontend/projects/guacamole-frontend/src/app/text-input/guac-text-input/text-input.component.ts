@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { AfterViewInit, Component, DestroyRef, ElementRef, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, DestroyRef, ElementRef, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
@@ -131,14 +131,15 @@ export class TextInputComponent implements AfterViewInit {
      * Inject required services.
      */
     constructor(private guacEventService: GuacEventService<GuacFrontendEventArguments>,
+                private changeDetectorRef: ChangeDetectorRef,
                 private destroyRef: DestroyRef) {
     }
 
     /**
      * Set up the text input target, now that it is available: track its
-     * focus, send typed text and deletions as keystrokes, prevent keydown and
-     * keyup events of all keys except ALLOWED_KEYS while it has focus, and
-     * focus it initially.
+     * focus and any IME composition, send typed text and deletions as
+     * keystrokes, prevent keydown and keyup events of all keys except
+     * ALLOWED_KEYS while it has focus, and focus it initially.
      */
     ngAfterViewInit(): void {
         this.target = this.targetRef.nativeElement;
@@ -150,6 +151,14 @@ export class TextInputComponent implements AfterViewInit {
         this.target.onblur = () => {
             this.hasFocus = false;
         };
+
+        this.target.addEventListener('compositionstart', () => {
+            this.composingText = true;
+        }, false);
+
+        this.target.addEventListener('compositionend', () => {
+            this.composingText = false;
+        }, false);
 
         this.target.addEventListener('input', (e: Event) => {
             // Ignore input events during text composition
@@ -314,6 +323,9 @@ export class TextInputComponent implements AfterViewInit {
         // Reset all sticky keys
         this.altPressed = false;
         this.ctrlPressed = false;
+
+        // Let the keys send their keyup before any further character is sent
+        this.changeDetectorRef.detectChanges();
 
     }
 

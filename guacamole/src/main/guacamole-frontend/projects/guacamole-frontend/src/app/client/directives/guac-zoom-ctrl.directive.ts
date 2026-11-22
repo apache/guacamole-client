@@ -46,7 +46,7 @@ export class GuacZoomCtrlDirective implements ControlValueAccessor {
 
     /**
      * Callback registered by the forms API which marks the form control as
-     * touched. Called on each input.
+     * touched. Called when the input field loses focus.
      */
     private onTouched!: () => void;
 
@@ -69,10 +69,10 @@ export class GuacZoomCtrlDirective implements ControlValueAccessor {
 
     /**
      * Stores the callback which marks the form control as touched. The
-     * directive calls it on each input.
+     * directive calls it when the input field loses focus.
      *
      * @param fn
-     *     The callback to call on each input.
+     *     The callback to call when the input field loses focus.
      */
     registerOnTouched(fn: () => void): void {
         this.onTouched = fn;
@@ -103,13 +103,22 @@ export class GuacZoomCtrlDirective implements ControlValueAccessor {
 
 
     /**
-     * Form control will be updated on input.
-     * The value is divided by 100.
+     * Passes the value of the input field, divided by 100, to the form
+     * control on each input.
      */
     @HostListener('input', ['$any($event.target).value'])
     onInput(value: string): void {
         const parsedValue = Math.round(Number(value)) / 100;
         this.onChange(parsedValue);
+    }
+
+    /**
+     * Marks the form control as touched when the input field loses focus.
+     * With the update strategy 'blur', the form control applies the pending
+     * value only then, so the scale does not change while the user types.
+     */
+    @HostListener('blur')
+    onBlur(): void {
         this.onTouched();
     }
 

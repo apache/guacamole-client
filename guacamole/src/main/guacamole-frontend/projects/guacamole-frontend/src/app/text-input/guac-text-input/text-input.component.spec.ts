@@ -19,6 +19,7 @@
 
 
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
 import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
@@ -31,6 +32,16 @@ import { TextInputComponent } from './text-input.component';
  */
 const PADDING = '\u200B';
 
+/**
+ * The keysym of the sticky Ctrl key of the text input.
+ */
+const CTRL = 0xFFE3;
+
+/**
+ * The keysym of the sticky Alt key of the text input.
+ */
+const ALT = 0xFFE9;
+
 describe('TextInputComponent', () => {
     let fixture: ComponentFixture<TextInputComponent>;
     let component: TextInputComponent;
@@ -40,6 +51,12 @@ describe('TextInputComponent', () => {
      * in the order of their broadcast.
      */
     let pressedKeysyms: number[];
+
+    /**
+     * All synthetic key presses and releases broadcast by the component, in
+     * the order of their broadcast.
+     */
+    let keyEvents: ['keydown' | 'keyup', number][];
 
     beforeEach(() => {
         TestBed.configureTestingModule({
@@ -65,9 +82,14 @@ describe('TextInputComponent', () => {
         });
 
         pressedKeysyms = [];
-        TestBed.inject(GuacEventService<GuacFrontendEventArguments>)
-            .on('guacSyntheticKeydown')
-            .subscribe(({ keysym }) => pressedKeysyms.push(keysym));
+        keyEvents = [];
+        const guacEventService = TestBed.inject(GuacEventService<GuacFrontendEventArguments>);
+        guacEventService.on('guacSyntheticKeydown').subscribe(({ keysym }) => {
+            pressedKeysyms.push(keysym);
+            keyEvents.push(['keydown', keysym]);
+        });
+        guacEventService.on('guacSyntheticKeyup')
+            .subscribe(({ keysym }) => keyEvents.push(['keyup', keysym]));
 
         fixture = TestBed.createComponent(TextInputComponent);
         component = fixture.componentInstance;
@@ -81,7 +103,8 @@ describe('TextInputComponent', () => {
     /**
      * Types the given text into the text area as the browser would, by
      * placing it between the padding characters and dispatching an input
-     * event.
+     * event. Like Zone.js in the application, the change detection runs
+     * after the event.
      *
      * @param text
      *     The text typed by the user.
@@ -90,6 +113,35 @@ describe('TextInputComponent', () => {
         const target = component.target;
         target.value = PADDING.repeat(4) + text + PADDING.repeat(4);
         target.dispatchEvent(new Event('input'));
+        fixture.detectChanges();
+    }
+
+    /**
+     * Returns the button of the key with the given keysym.
+     *
+     * @param keysym
+     *     The keysym of the key.
+     *
+     * @returns
+     *     The button which presses or releases the key.
+     */
+    function keyButton(keysym: number): HTMLButtonElement {
+        return fixture.debugElement.queryAll(By.directive(KeyComponent))
+            .find(key => key.componentInstance.keysym === keysym)!
+            .query(By.css('button')).nativeElement;
+    }
+
+    /**
+     * Clicks the button of the key with the given keysym as the user would.
+     * Like Zone.js in the application, the change detection runs after the
+     * event.
+     *
+     * @param keysym
+     *     The keysym of the key.
+     */
+    function clickKey(keysym: number): void {
+        keyButton(keysym).dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+        fixture.detectChanges();
     }
 
     /**
@@ -129,6 +181,66 @@ describe('TextInputComponent', () => {
         const buttons: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('guac-key button'));
 
         expect(buttons.map(button => button.textContent!.trim())).toEqual(['Ctrl', 'Alt', 'Esc', 'Tab']);
+    });
+
+    it.each([
+        ['Ctrl', CTRL],
+        ['Alt', ALT]
+    ])('should press the sticky %s key when its button is clicked', (name, keysym) => {
+        clickKey(keysym);
+
+        expect(keyEvents).toEqual([['keydown', keysym]]);
+        expect(keyButton(keysym).classList).toContain('pressed');
+    });
+
+    it.each([
+        ['Ctrl', CTRL],
+        ['Alt', ALT]
+    ])('should release the sticky %s key when its button is clicked again', (name, keysym) => {
+        clickKey(keysym);
+        clickKey(keysym);
+
+        expect(keyEvents).toEqual([['keydown', keysym], ['keyup', keysym]]);
+        expect(keyButton(keysym).classList).not.toContain('pressed');
+    });
+
+    it.each([
+        ['Ctrl', CTRL],
+        ['Alt', ALT]
+    ])('should release the sticky %s key after the next typed character', (name, keysym) => {
+        clickKey(keysym);
+        type('c');
+
+        expect(keyEvents).toEqual([['keydown', keysym], ['keydown', 0x63], ['keyup', 0x63], ['keyup', keysym]]);
+        expect(keyButton(keysym).classList).not.toContain('pressed');
+    });
+
+    it('should release the sticky Ctrl key before the second of two characters typed at once', () => {
+        clickKey(CTRL);
+        type('xy');
+
+        expect(keyEvents).toEqual([
+            ['keydown', CTRL], ['keydown', 0x78], ['keyup', 0x78], ['keyup', CTRL],
+            ['keydown', 0x79], ['keyup', 0x79]
+        ]);
+    });
+
+    it('should not send keys while text is being composed', () => {
+        component.target.dispatchEvent(new CompositionEvent('compositionstart'));
+        type('k');
+
+        expect(keyEvents).toEqual([]);
+        expect(component.target.value).toBe(PADDING.repeat(4) + 'k' + PADDING.repeat(4));
+    });
+
+    it('should send the composed text with the next input after the composition has ended', () => {
+        component.target.dispatchEvent(new CompositionEvent('compositionstart'));
+        type('に');
+        component.target.dispatchEvent(new CompositionEvent('compositionend', { data: 'に' }));
+        type('にz');
+
+        expect(pressedKeysyms).toEqual([0x0100306B, 0x7A]);
+        expect(component.target.value).toBe(PADDING.repeat(8));
     });
 
     it('should send a character outside the Basic Multilingual Plane as a single key', () => {
