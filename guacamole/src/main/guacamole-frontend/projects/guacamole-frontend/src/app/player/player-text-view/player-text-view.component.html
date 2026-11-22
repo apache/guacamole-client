@@ -23,7 +23,7 @@
         <div class="filter">
             <input class="search-string"
                    placeholder="{{'PLAYER.FIELD_PLACEHOLDER_TEXT_BATCH_FILTER' | transloco}}"
-                   type="text" [ngModel]="searchPhrase">
+                   type="text" [(ngModel)]="searchPhrase" (ngModelChange)="applyFilter($event)">
         </div>
         <span class="fullscreen-button" (click)="toggleKeyLogFullscreen()"></span>
     </div>

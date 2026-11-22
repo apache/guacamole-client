@@ -54,4 +54,60 @@ describe('PlayerTextViewComponent', () => {
         expect(timestamps).toEqual(['0:01', '1:01']);
     });
 
+    describe('search phrase', () => {
+
+        /**
+         * Types the given text into the search field like a user and renders
+         * the result.
+         *
+         * @param text
+         *     The new content of the search field.
+         */
+        const typeSearchPhrase = (text: string): void => {
+            const input: HTMLInputElement = fixture.nativeElement.querySelector('.search-string');
+            input.value = text;
+            input.dispatchEvent(new Event('input'));
+            fixture.detectChanges();
+        };
+
+        /**
+         * Returns the text of each rendered text batch.
+         *
+         * @returns
+         *     The text of each rendered text batch, in order.
+         */
+        const renderedBatches = (): (string | null)[] =>
+            Array.from<Element>(fixture.nativeElement.querySelectorAll('.text-batch .text'))
+                .map(element => element.textContent);
+
+        /**
+         * Returns whether the number of matching batches is shown.
+         *
+         * @returns
+         *     true if the result count is visible, false otherwise.
+         */
+        const resultCountShown = (): boolean =>
+            !fixture.nativeElement.querySelector('.result-count').hidden;
+
+        it('should show only the text batches which match the typed search phrase', () => {
+            fixture.detectChanges();
+
+            typeSearchPhrase('pwd');
+
+            expect(renderedBatches()).toEqual(['pwd']);
+            expect(resultCountShown()).toBe(true);
+        });
+
+        it('should show all text batches again once the search phrase is cleared', () => {
+            fixture.detectChanges();
+            typeSearchPhrase('pwd');
+
+            typeSearchPhrase('');
+
+            expect(renderedBatches()).toEqual(['ls', 'pwd']);
+            expect(resultCountShown()).toBe(false);
+        });
+
+    });
+
 });

@@ -98,7 +98,7 @@ export class PlayerTextViewComponent implements OnChanges {
      *     The phrase to search the text batches for. If no phrase is
      *     provided, the list of batches will not be filtered.
      */
-    private applyFilter(searchPhrase: string): void {
+    applyFilter(searchPhrase: string): void {
 
         // If there's search phrase entered, search the text within the
         // batches for it
@@ -114,18 +114,15 @@ export class PlayerTextViewComponent implements OnChanges {
     }
 
     /**
-     * React to changes to the search phrase and the text batches.
+     * React to changes to the text batches. Changes to the search phrase
+     * reapply the filter through the ngModelChange binding of the search
+     * field, as searchPhrase is not an input.
      */
     ngOnChanges(changes: SimpleChanges): void {
 
         // Reapply the current filter to the updated text batches
         if (changes['textBatches']) {
             this.applyFilter(this.searchPhrase);
-        }
-
-        // Reapply the filter whenever the search phrase is updated
-        if (changes['searchPhrase']) {
-            this.applyFilter(changes['searchPhrase'].currentValue);
         }
 
     }
