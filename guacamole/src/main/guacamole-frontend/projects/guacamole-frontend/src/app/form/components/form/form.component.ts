@@ -106,7 +106,7 @@ export class FormComponent implements OnChanges {
      * <code>NAMESPACE.SECTION_HEADER_NAME<code>
      *
      * where <code>NAMESPACE</code> is the namespace provided to the
-     * directive and <code>NAME</code> is the form name transformed
+     * component and <code>NAME</code> is the form name transformed
      * via canonicalize().
      *
      * @param form
@@ -210,7 +210,7 @@ export class FormComponent implements OnChanges {
 
         /*
          * The field is disabled if either the form as a whole is disabled,
-         * or if a client is provided to the directive, and the field is
+         * or if a client is provided to the component, and the field is
          * marked as pending.
          */
         return !!(this.disabled ||

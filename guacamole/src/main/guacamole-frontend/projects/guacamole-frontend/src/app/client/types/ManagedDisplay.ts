@@ -132,7 +132,7 @@ export class ManagedDisplayDimensions {
     width: number;
 
     /**
-     * The current width of the Guacamole display, in pixels.
+     * The current height of the Guacamole display, in pixels.
      */
     height: number;
 

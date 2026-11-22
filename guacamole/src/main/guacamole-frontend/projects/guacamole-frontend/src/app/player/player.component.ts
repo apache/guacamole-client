@@ -82,7 +82,7 @@ const MOUSE_DEBOUNCE_DELAY = 250;
 const MOUSE_CLEANUP_TIMER_DELAY = MOUSE_CLEANUP_DELAY - MOUSE_DEBOUNCE_DELAY;
 
 /**
- * Component which plays back session recordings. This directive emits the
+ * Component which plays back session recordings. This component emits the
  * following events based on state changes within the current recording:
  *
  *     "guacPlayerLoading":
@@ -138,7 +138,7 @@ export class PlayerComponent implements OnChanges, OnDestroy {
 
     /**
      * Guacamole.SessionRecording instance to be used to playback the
-     * session recording given via $scope.src. If the recording has not
+     * session recording given via the src input. If the recording has not
      * yet been loaded, this will be null.
      */
     recording: Guacamole.SessionRecording | null = null;

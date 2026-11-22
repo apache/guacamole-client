@@ -57,7 +57,7 @@ import { ManagedDisplayCursor, ManagedDisplayDimensions } from '../../types/Mana
 export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
 
     /**
-     * The client to display within this guacClient directive.
+     * The client to display within this component.
      */
     @Input({ required: true, alias: 'client' }) managedClient!: ManagedClient;
 
@@ -106,7 +106,7 @@ export class GuacClientComponent implements OnInit, OnChanges, DoCheck {
     private readonly mainRef!: ElementRef<HTMLDivElement>;
 
     /**
-     * The main containing element for the entire directive.
+     * The main containing element for the entire component.
      */
     private main!: HTMLDivElement;
 

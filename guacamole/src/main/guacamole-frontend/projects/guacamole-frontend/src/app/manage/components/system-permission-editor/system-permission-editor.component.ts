@@ -26,7 +26,7 @@ import { PermissionFlagSet } from '../../../rest/types/PermissionFlagSet';
 import { PermissionSet } from '../../../rest/types/PermissionSet';
 
 /**
- * A directive for manipulating the system permissions granted within a given
+ * A component for manipulating the system permissions granted within a given
  * {@link PermissionFlagSet}, tracking the specific permissions added or
  * removed within a separate pair of {@link PermissionSet} objects. Optionally,
  * the permission for a particular user to update themselves (change their own
@@ -219,7 +219,7 @@ export class SystemPermissionEditorComponent implements OnInit {
     }
 
     /**
-     * Notifies the controller that a change has been made to the given
+     * Handles a change that has been made to the given
      * system permission for the permission set being edited.
      *
      * @param type
@@ -287,7 +287,7 @@ export class SystemPermissionEditorComponent implements OnInit {
     }
 
     /**
-     * Notifies the controller that a change has been made to the given user
+     * Handles a change that has been made to the given user
      * permission for the permission set being edited.
      *
      * @param type

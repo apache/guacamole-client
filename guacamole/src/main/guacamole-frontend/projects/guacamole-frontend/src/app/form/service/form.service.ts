@@ -51,7 +51,7 @@ import { UsernameFieldComponent } from '../components/username-field/username-fi
 
 /**
  * A service for maintaining form-related metadata and linking that data to
- * corresponding controllers and templates.
+ * corresponding components.
  */
 @Injectable({
     providedIn: 'root'

@@ -24,7 +24,7 @@ import { isArray } from '../../../util/is-array';
 import { PageDefinition } from '../../types/PageDefinition';
 
 /**
- * A directive which provides a list of links to specific pages.
+ * A component which provides a list of links to specific pages.
  */
 @Component({
     selector: 'guac-page-list',

@@ -24,7 +24,7 @@ import { translationValueIfMissing } from '../../locale/locale.module';
 import { TranslationResult } from '../types/TranslationResult';
 
 /**
- * A wrapper around the angular-translate $translate service that offers a
+ * A wrapper around the TranslocoService that offers a
  * convenient way to fall back to a default translation if the requested
  * translation is not available.
  */

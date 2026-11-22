@@ -20,7 +20,7 @@
 @if (!isLoaded()) {
     <div class="manage-user view" [ngClass]="{'loading': !isLoaded()}"></div>
 } @else {
-    <!-- User is always present. The @if is just make the type checker happy -->
+    <!-- User is always present. The @if is just to make the type checker happy -->
     @if (user) {
         <div class="manage-user view">
 

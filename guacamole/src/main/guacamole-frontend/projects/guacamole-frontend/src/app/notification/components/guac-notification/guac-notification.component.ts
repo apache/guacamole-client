@@ -35,7 +35,7 @@ import { FormService } from '../../../form/service/form.service';
 import { Notification } from '../../types/Notification';
 
 /**
- * A directive for displaying notifications.
+ * A component for displaying notifications.
  */
 @Component({
     selector: 'guac-notification',

@@ -45,7 +45,7 @@ import { ManagedClient } from '../../types/ManagedClient';
 export class GuacThumbnailComponent implements AfterViewInit, OnChanges {
 
     /**
-     * The client to display within this guacThumbnail directive.
+     * The client to display within this component.
      */
     @Input() client?: ManagedClient;
 

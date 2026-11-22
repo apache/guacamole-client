@@ -426,7 +426,7 @@ export class AppComponent implements OnInit, AfterViewChecked {
 
     /**
      * Navigates the user back to the root of the application (or reloads the
-     * current route and controller if the user is already there), effectively
+     * current route if the user is already there), effectively
      * forcing reauthentication. If the user is not logged in, this will result
      * in the login screen appearing.
      */

@@ -39,15 +39,14 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class GuacZoomCtrlDirective implements ControlValueAccessor {
 
     /**
-     * Callback function that has to be called when the control's value changes in the UI.
-     *
-     * @param value
-     *    The new value of the control.
+     * Callback registered by the forms API which passes the display scale to
+     * the form control. Called on each input.
      */
     private onChange!: (value: any) => void;
 
     /**
-     * Callback function that has to be called when the control's value changes in the UI.
+     * Callback registered by the forms API which marks the form control as
+     * touched. Called on each input.
      */
     private onTouched!: () => void;
 

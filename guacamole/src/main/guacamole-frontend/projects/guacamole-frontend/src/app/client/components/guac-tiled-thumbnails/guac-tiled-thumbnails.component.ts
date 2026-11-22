@@ -44,7 +44,7 @@ export class GuacTiledThumbnailsComponent {
      * The overall height of the thumbnail view of the tiled grid of
      * clients within the client group, in pixels. This value is
      * intentionally based off a snapshot of the current browser size at
-     * the time the directive comes into existence to ensure the contents
+     * the time the component comes into existence to ensure the contents
      * of the thumbnail are familiar in appearance and aspect ratio.
      */
     height = Math.min(window.innerHeight, 128);
@@ -53,7 +53,7 @@ export class GuacTiledThumbnailsComponent {
      * The overall width of the thumbnail view of the tiled grid of
      * clients within the client group, in pixels. This value is
      * intentionally based off a snapshot of the current browser size at
-     * the time the directive comes into existence to ensure the contents
+     * the time the component comes into existence to ensure the contents
      * of the thumbnail are familiar in appearance and aspect ratio.
      */
     width = window.innerWidth / window.innerHeight * this.height;

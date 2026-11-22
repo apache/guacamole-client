@@ -306,7 +306,8 @@ export class ManagedClientGroup {
      * corresponding client (because the number of clients does not divide
      * evenly into a grid), that cell will be null.
      *
-     * For the sake of AngularJS scope watches, the results of calling this
+     * To keep the references stable between change detection runs of the
+     * templates that iterate over the grid, the results of calling this
      * function are cached and will always favor modifying an existing array
      * over creating a new array, even for nested arrays.
      *

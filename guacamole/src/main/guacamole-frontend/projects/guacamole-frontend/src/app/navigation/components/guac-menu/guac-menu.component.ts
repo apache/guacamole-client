@@ -45,7 +45,7 @@ export class GuacMenuComponent implements OnInit {
     @Input() interactive = false;
 
     /**
-     * The outermost element of the guacMenu directive.
+     * The outermost element of the guacMenu component.
      */
     element?: Element;
 

@@ -455,7 +455,7 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
     }
 
     /**
-     * Prevents the default behavior of the given AngularJS event if a
+     * Prevents the default behavior of the given GuacEvent if a
      * notification is currently shown and the client is focused.
      *
      * @param e

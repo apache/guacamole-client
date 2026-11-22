@@ -99,8 +99,8 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
 
     /**
      * The names of sortable properties supported by the REST API that
-     * correspond to the properties that may be stored within
-     * $scope.order.
+     * correspond to the properties that may be stored within the
+     * predicate of order.
      */
     private readonly apiSortProperties: Record<string, string> = {
         'entry.startDate' : 'startDate',

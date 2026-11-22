@@ -41,7 +41,7 @@ export class ClipboardComponent implements OnInit, AfterViewInit {
 
     /**
      * The DOM element which will contain the clipboard contents within the
-     * user interface provided by this directive. We populate the clipboard
+     * user interface provided by this component. We populate the clipboard
      * editor via this DOM element rather than updating a model so that we
      * are prepared for future support of rich text contents.
      */
@@ -73,10 +73,8 @@ export class ClipboardComponent implements OnInit, AfterViewInit {
     }
 
     /**
-     * Rereads the contents of the clipboard field, updating the
-     * ClipboardData object on the scope as necessary. The type of data
-     * stored within the ClipboardData object will be heuristically
-     * determined from the HTML contents of the clipboard field.
+     * Rereads the contents of the clipboard field and stores them within the
+     * ClipboardService as ClipboardData of type text/plain.
      */
     updateClipboardData() {
         // Read contents of clipboard textarea

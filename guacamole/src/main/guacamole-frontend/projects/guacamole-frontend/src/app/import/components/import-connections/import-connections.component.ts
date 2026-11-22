@@ -836,14 +836,14 @@ export class ImportConnectionsComponent {
         !(this.fileReader || this.dataReady);
 
     /**
-     * Handle a provided File upload, reading all data onto the scope for
+     * Handle a provided File upload, reading all data into the component for
      * import processing, should the user request an import. Note that this
      * function is used as a callback for directives that invoke it with a file
      * list, but directive-level checking should ensure that there is only ever
      * one file provided at a time.
      *
      * @param files
-     *     The files to upload onto the scope for further processing. There
+     *     The files to upload for further processing. There
      *     should only ever be a single file in the array.
      */
     handleFiles = (files: FileList): void => {
@@ -904,7 +904,7 @@ export class ImportConnectionsComponent {
 
         }
 
-        // Save the name and type to the scope
+        // Save the name and type to the component
         this.fileName = fileName;
         this.mimeType = mimeType;
 
@@ -913,7 +913,7 @@ export class ImportConnectionsComponent {
         this.dataReady = false;
         this.processing = false;
 
-        // Save the file to the scope when ready
+        // Save the file to the component when ready
         this.fileReader = new FileReader();
         this.fileReader.onloadend = (e => {
 
@@ -946,7 +946,7 @@ export class ImportConnectionsComponent {
                 // Mark the data as ready
                 this.dataReady = true;
 
-                // Clear the file reader from the scope now that this file is
+                // Clear the file reader from the component now that this file is
                 // fully uploaded
                 this.fileReader = null;
 

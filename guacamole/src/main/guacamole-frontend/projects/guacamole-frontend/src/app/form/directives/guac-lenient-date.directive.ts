@@ -41,15 +41,15 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class GuacLenientDateDirective implements ControlValueAccessor {
 
     /**
-     * Callback function that has to be called when the control's value changes in the UI.
-     *
-     * @param value
-     *    The new value of the control.
+     * Callback registered by the forms API which passes the parsed value of
+     * the input field to the form control. Called when the input field loses
+     * focus.
      */
     private onChange!: (value: any) => void;
 
     /**
-     * Callback function that has to be called when the control's value changes in the UI.
+     * Callback registered by the forms API which marks the form control as
+     * touched. Called when the input field loses focus.
      */
     private onTouched!: () => void;
 
@@ -147,7 +147,7 @@ export class GuacLenientDateDirective implements ControlValueAccessor {
     }
 
     /**
-     *  Format date strings as "yyyy-MM-dd".
+     * Format date strings as "yyyy-MM-dd".
      *
      * @param modelValue
      *     The date to format.

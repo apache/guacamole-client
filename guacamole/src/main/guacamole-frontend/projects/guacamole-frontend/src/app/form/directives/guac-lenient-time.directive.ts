@@ -23,7 +23,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 /**
  * A directive which modifies the parsing and formatting of a form control value when used
- * on an HTML5 date input field, relaxing the otherwise strict parsing and
+ * on an HTML5 time input field, relaxing the otherwise strict parsing and
  * validation behavior. The behavior of this directive for other input elements
  * is undefined.
  */
@@ -41,15 +41,15 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class GuacLenientTimeDirective implements ControlValueAccessor {
 
     /**
-     * Callback function that has to be called when the control's value changes in the UI.
-     *
-     * @param value
-     *    The new value of the control.
+     * Callback registered by the forms API which passes the parsed value of
+     * the input field to the form control. Called when the input field loses
+     * focus.
      */
     private onChange!: (value: any) => void;
 
     /**
-     * Callback function that has to be called when the control's value changes in the UI.
+     * Callback registered by the forms API which marks the form control as
+     * touched. Called when the input field loses focus.
      */
     private onTouched!: () => void;
 
@@ -61,7 +61,7 @@ export class GuacLenientTimeDirective implements ControlValueAccessor {
 
     /**
      * Called by the forms API to write to the view when programmatic changes from model to view are requested.
-     * Formats the date value as "yyyy-MM-dd" and sets the value of the input element.
+     * Formats the time value as "HH:mm:ss" and sets the value of the input element.
      *
      * @param value
      *     The new value for the input element.
@@ -169,10 +169,10 @@ export class GuacLenientTimeDirective implements ControlValueAccessor {
     }
 
     /**
-     *  Format date strings as "yyyy-MM-dd".
+     * Format time strings as "HH:mm:ss".
      *
      * @param modelValue
-     *     The date to format.
+     *     The time to format.
      */
     format(modelValue: Date | null): string {
         return modelValue ? formatDate(modelValue, 'HH:mm:ss', 'en-US', 'UTC') : '';

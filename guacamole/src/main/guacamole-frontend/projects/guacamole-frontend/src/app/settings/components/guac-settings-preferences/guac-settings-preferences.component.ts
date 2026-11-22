@@ -73,8 +73,8 @@ export class GuacSettingsPreferencesComponent implements OnInit {
 
     /**
      * The fields which should be displayed for choosing locale
-     * preferences. Each field name must be a property on
-     * $scope.preferences.
+     * preferences. Each field name must be a property of the preferences
+     * of the PreferenceService.
      */
     localeFields: Field[] = [
         { type: Field.Type.LANGUAGE, name: 'language' },
@@ -88,7 +88,7 @@ export class GuacSettingsPreferencesComponent implements OnInit {
 
     /**
      * The password match for the user. The update password action will
-     * fail if $scope.newPassword !== $scope.passwordMatch.
+     * fail if newPassword !== newPasswordMatch.
      */
     newPasswordMatch: string | null = null;
 

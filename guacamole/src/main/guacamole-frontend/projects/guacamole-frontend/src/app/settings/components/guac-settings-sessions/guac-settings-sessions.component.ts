@@ -266,7 +266,7 @@ export class GuacSettingsSessionsComponent implements OnInit {
 
     /**
      * Wraps all loaded active connections, storing the resulting array
-     * within the scope. If required data has not yet finished loading,
+     * within wrappers. If required data has not yet finished loading,
      * this function has no effect.
      */
     private wrapAllActiveConnections(): void {

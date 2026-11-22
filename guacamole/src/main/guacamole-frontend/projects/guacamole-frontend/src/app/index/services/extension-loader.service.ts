@@ -84,11 +84,13 @@ export class ExtensionLoaderService {
     }
 
     /**
-     * Iterates over all extensions defined in the module federation manifest
-     * to bootstrap them and add their routes to the main application.
+     * Iterates over all extensions defined in the native federation
+     * configuration to bootstrap them and add their routes to the main
+     * application.
      *
      * @param config
-     *     The module federation manifest.
+     *     The native federation configuration of all extensions, as loaded
+     *     from native-federation-config.json.
      *
      * @returns
      *     The routes of the main application and all extensions.

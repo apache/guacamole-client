@@ -56,7 +56,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {
     @Input({ required: true }) client!: ManagedClient;
 
     /**
-     * The maximum number of messages displayed by this directive at any
+     * The maximum number of messages displayed by this component at any
      * given time. Old messages will be discarded as necessary to ensure
      * the number of messages displayed never exceeds this value.
      */
@@ -83,13 +83,13 @@ export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {
     userCounts: Record<string, number> = {};
 
     /**
-     * The ManagedClient attached to this directive at the last change
+     * The ManagedClient attached to this component at the last change
      * detection run.
      */
     private oldClient: ManagedClient | null = null;
 
     /**
-     * The user count of the ManagedClient attached to this directive
+     * The user count of the ManagedClient attached to this component
      * at the last change detection run.
      */
     private oldUserCount: number | null = null;
@@ -225,7 +225,7 @@ export class GuacClientUserCountComponent implements AfterViewInit, DoCheck {
      */
     private usersChanged(): void {
 
-        // Resynchronize directive with state of any attached client when
+        // Resynchronize component with state of any attached client when
         // the client changes, to ensure notifications are only shown for
         // future changes in users present
         if (this.oldClient !== this.client) {

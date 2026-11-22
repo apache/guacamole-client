@@ -33,10 +33,9 @@ export class GuacTouchDragDirective {
      * the element, moves, and is lifted from the element.
      *
      * @param inProgress
-     *     Whether the gesture is currently in progress. This will
-     *     always be true except when the gesture has ended, at which
-     *     point one final call will occur with this parameter set to
-     *     false.
+     *     Whether the gesture is currently in progress. This is always
+     *     true, including the one final call which occurs when the
+     *     gesture has ended.
      *
      * @param startX
      *     The X location at which the drag gesture began.
@@ -51,12 +50,12 @@ export class GuacTouchDragDirective {
      *     The current Y location of the user's finger.
      *
      * @param deltaX
-     *     The difference in X location relative to the start of the
-     *     gesture.
+     *     The difference in X location caused by the last movement of the
+     *     user's finger. This is 0 for the first call of the gesture.
      *
      * @param deltaY
-     *     The difference in Y location relative to the start of the
-     *     gesture.
+     *     The difference in Y location caused by the last movement of the
+     *     user's finger. This is 0 for the first call of the gesture.
      *
      * @return {boolean}
      *     false if the default action of the touch event should be
@@ -96,12 +95,12 @@ export class GuacTouchDragDirective {
     currentY?: number = undefined;
 
     /**
-     * The change in X relative to drag start.
+     * The change in X caused by the last movement of the user's finger.
      */
     deltaX = 0;
 
     /**
-     * The change in X relative to drag start.
+     * The change in Y caused by the last movement of the user's finger.
      */
     deltaY = 0;
 

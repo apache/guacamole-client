@@ -37,7 +37,7 @@ export class GuacFileTransferManagerComponent {
 
     /**
      * The client group whose file transfers should be managed by this
-     * directive.
+     * component.
      */
     @Input({ required: true }) clientGroup!: ManagedClientGroup | null;
 

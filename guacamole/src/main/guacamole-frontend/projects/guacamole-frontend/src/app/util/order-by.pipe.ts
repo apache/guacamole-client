@@ -30,7 +30,7 @@ import { SortService } from '../list/services/sort.service';
 export class OrderByPipe implements PipeTransform {
 
     /**
-     * Inject required service.
+     * Inject required services.
      */
     constructor(private sortService: SortService) {
     }

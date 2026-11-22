@@ -24,7 +24,7 @@ import { ColorPickerService } from '../../service/color-picker.service';
 /**
  * A component which implements a color input field. If the underlying color
  * picker implementation cannot be used due to a lack of browser support, this
- * directive will become read-only, functioning essentially as a color preview.
+ * component will become read-only, functioning essentially as a color preview.
  *
  * @see colorPickerService
  */
@@ -40,7 +40,7 @@ export class GuacInputColorComponent {
     /**
      * The current selected color value, in standard 6-digit hexadecimal
      * RGB notation. When the user selects a different color using this
-     * directive, this value will be updated accordingly.
+     * component, this value will be updated accordingly.
      */
     @Input({ required: true }) control!: FormControl<string | null>;
 
@@ -105,8 +105,8 @@ export class GuacInputColorComponent {
 
     /**
      * Prompts the user to choose a color by displaying a color selection
-     * dialog. If the user chooses a color, this directive's model is
-     * automatically updated. If the user cancels the dialog, the model is
+     * dialog. If the user chooses a color, the value of the control is
+     * automatically updated. If the user cancels the dialog, the control is
      * left untouched.
      */
     selectColor(): void {

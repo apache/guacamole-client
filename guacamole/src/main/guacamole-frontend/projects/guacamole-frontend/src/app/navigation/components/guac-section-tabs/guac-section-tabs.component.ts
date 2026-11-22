@@ -52,7 +52,7 @@ export class GuacSectionTabsComponent {
     /**
      * The name of the currently selected tab. This name MUST be one of
      * the names present in the array given via the <code>tabs</code>
-     * attribute. This directive will not automatically choose an
+     * attribute. This component will not automatically choose an
      * initially selected tab, and a default value should be manually
      * assigned to <code>current</code> to ensure a tab is initially
      * selected.
@@ -62,7 +62,7 @@ export class GuacSectionTabsComponent {
     /**
      * The name of the currently selected tab. This name MUST be one of
      * the names present in the array given via the <code>tabs</code>
-     * attribute. This directive will not automatically choose an
+     * attribute. This component will not automatically choose an
      * initially selected tab, and a default value should be manually
      * assigned to <code>current</code> to ensure a tab is initially
      * selected.
@@ -88,7 +88,7 @@ export class GuacSectionTabsComponent {
      * <code>NAMESPACE.SECTION_HEADER_NAME<code>
      *
      * where <code>NAMESPACE</code> is the namespace provided to the
-     * directive and <code>NAME</code> is the given name transformed
+     * component and <code>NAME</code> is the given name transformed
      * via canonicalize().
      *
      * @param name
@@ -111,7 +111,7 @@ export class GuacSectionTabsComponent {
 
     /**
      * Selects the tab having the given name. The name of the currently
-     * selected tab will be communicated outside the directive through
+     * selected tab will be communicated outside the component through
      * this.current.
      *
      * @param name

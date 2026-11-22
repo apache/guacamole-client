@@ -32,7 +32,7 @@ import { UserCredentials } from '../types/UserCredentials';
 export class ActiveConnectionService {
 
     /**
-     * Required services
+     * Inject required services.
      */
     constructor(private http: HttpClient) {
     }

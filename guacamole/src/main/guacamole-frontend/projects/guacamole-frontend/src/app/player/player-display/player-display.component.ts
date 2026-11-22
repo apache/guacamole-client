@@ -70,20 +70,19 @@ import {
 export class PlayerDisplayComponent implements AfterViewInit, OnChanges {
 
     /**
-     * The Guacamole.Display instance which should be displayed within the
-     * directive.
+     * The Guacamole.Display instance which should be displayed within this
+     * component.
      */
     @Input() display?: Guacamole.Display;
 
     /**
-     * The root element of this instance of the guacPlayerDisplay
-     * directive.
+     * The root element of this component.
      */
     @ViewChild('guacPlayerDisplay') element!: ElementRef<HTMLDivElement>;
 
     /**
      * The element which serves as a container for the root element of the
-     * Guacamole.Display assigned to $scope.display.
+     * Guacamole.Display assigned to the display input.
      */
     @ViewChild('guacPlayerDisplayContainer') container!: ElementRef<HTMLDivElement>;
 

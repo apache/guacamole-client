@@ -251,8 +251,8 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges, DoChe
         if (!patchFailure || !parseResult || !patches)
             return;
 
-        // All promises from all translation requests. The scope will not be
-        // updated until all translations are ready.
+        // All promises from all translation requests. The connection errors
+        // will not be updated until all translations are ready.
         const translationPromises: Promise<void>[] = [];
 
         // Any error returned from the API specifically associated with the
@@ -378,8 +378,8 @@ export class ConnectionImportErrorsComponent implements OnInit, OnChanges, DoChe
         if (!parseResult || !parseResult.hasErrors)
             return;
 
-        // All promises from all translation requests. The scope will not be
-        // updated until all translations are ready.
+        // All promises from all translation requests. The connection errors
+        // will not be updated until all translations are ready.
         const translationPromises: Promise<void>[] = [];
 
         // The parse result should only be updated on a fresh file import;

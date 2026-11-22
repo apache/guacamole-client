@@ -27,7 +27,7 @@ import { MenuAction } from '../../types/MenuAction';
 import { PageDefinition } from '../../types/PageDefinition';
 
 /**
- * A directive which provides a user-oriented menu containing options for
+ * A component which provides a user-oriented menu containing options for
  * navigation and configuration.
  */
 @Component({

@@ -48,7 +48,7 @@ export class StyleLoaderService {
     private readonly buildMeta: HTMLMetaElement | null;
 
     /**
-     * Inject required Services.
+     * Inject required services.
      */
     constructor(@Inject(DOCUMENT) private document: Document,
                 private rendererFactory: RendererFactory2) {

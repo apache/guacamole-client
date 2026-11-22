@@ -40,7 +40,7 @@ export class ManagementButtonsComponent implements OnInit {
 
     /**
      * The translation namespace associated with all applicable
-     * translation strings. This directive requires at least the
+     * translation strings. This component requires at least the
      * following translation strings within the given namespace:
      *
      *     - ACTION_CANCEL

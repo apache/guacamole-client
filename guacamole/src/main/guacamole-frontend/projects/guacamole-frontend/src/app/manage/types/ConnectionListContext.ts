@@ -35,7 +35,7 @@ export interface ConnectionListContext {
     getPermissionFlags(): PermissionFlagSet;
 
     /**
-     * Notifies the controller that a change has been made to the given
+     * Notifies the permission editor that a change has been made to the given
      * connection permission for the permission set being edited. This
      * only applies to READ permissions.
      *
@@ -46,7 +46,7 @@ export interface ConnectionListContext {
     connectionPermissionChanged(identifier: string): void;
 
     /**
-     * Notifies the controller that a change has been made to the given
+     * Notifies the permission editor that a change has been made to the given
      * connection group permission for the permission set being edited.
      * This only applies to READ permissions.
      *
@@ -57,7 +57,7 @@ export interface ConnectionListContext {
     connectionGroupPermissionChanged(identifier: string): void;
 
     /**
-     * Notifies the controller that a change has been made to the given
+     * Notifies the permission editor that a change has been made to the given
      * sharing profile permission for the permission set being edited.
      * This only applies to READ permissions.
      *

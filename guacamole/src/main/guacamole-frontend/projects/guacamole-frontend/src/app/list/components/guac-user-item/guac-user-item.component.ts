@@ -55,7 +55,7 @@ export class GuacUserItemComponent implements OnChanges {
     }
 
     /**
-     * Returns whether the username provided to this directive denotes
+     * Returns whether the username provided to this component denotes
      * a user that authenticated anonymously.
      *
      * @returns {Boolean}

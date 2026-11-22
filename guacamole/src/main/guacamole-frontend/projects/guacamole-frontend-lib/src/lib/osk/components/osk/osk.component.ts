@@ -45,7 +45,7 @@ export class OskComponent implements OnChanges {
     private keyboard: Guacamole.OnScreenKeyboard | null = null;
 
     /**
-     * The main containing element for the entire directive.
+     * The main containing element for the entire component.
      */
     @ViewChild('osk') main!: ElementRef<HTMLDivElement>;
 

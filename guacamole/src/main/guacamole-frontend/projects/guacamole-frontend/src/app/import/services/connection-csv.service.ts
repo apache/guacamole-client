@@ -220,7 +220,7 @@ export class ConnectionCSVService {
 
                     // Callbacks that will generate either connection attributes or
                     // parameters. These callbacks will return a {type, name, value}
-                    // object containing the type ("parameter" or "attribute"),
+                    // object containing the type ("parameters" or "attributes"),
                     // the name of the attribute or parameter, and the corresponding
                     // value.
                     parameterOrAttributeGetters: []
@@ -301,7 +301,7 @@ export class ConnectionCSVService {
                         );
                     }
 
-                    // A field may be explicitly specified as a parameter
+                    // A field may be explicitly specified as an attribute
                     else if (header.endsWith(ATTRIBUTE_SUFFIX)) {
 
                         // Push as an explicit attribute getter
@@ -315,7 +315,7 @@ export class ConnectionCSVService {
                         );
                     }
 
-                        // The field is ambiguous, either an attribute or parameter,
+                    // The field is ambiguous, either an attribute or parameter,
                     // so the getter will have to determine this for every row
                     else
                         transformConfig.parameterOrAttributeGetters.push(row => {

@@ -63,17 +63,17 @@ export class GuacGroupListComponent implements OnInit, OnChanges {
 
     /**
      * Arbitrary object which shall be made available to the connection
-     * and connection group templates within the scope as
-     * <code>context</code>.
+     * and connection group templates within the template context as
+     * <code>ctx</code>.
      */
     @Input() context: any = {};
 
     /**
-     * The map of @link{GroupListItem} type to the URL or ID of the
-     * Angular template to use when rendering a @link{GroupListItem} of
-     * that type. The @link{GroupListItem} itself will be within the
-     * scope of the template as <code>item</code>, and the arbitrary
-     * context object, if any, will be exposed as <code>context</code>.
+     * The map of @link{GroupListItem} type to the TemplateRef to use
+     * when rendering a @link{GroupListItem} of that type. The
+     * @link{GroupListItem} itself will be within the context of the
+     * template as <code>item</code>, and the arbitrary context object, if
+     * any, will be exposed as <code>ctx</code>.
      * If the template for a type is omitted, items of that type will
      * not be rendered. All standard types are defined by
      * @link{GroupListItem.Type}, but use of custom types is legal.

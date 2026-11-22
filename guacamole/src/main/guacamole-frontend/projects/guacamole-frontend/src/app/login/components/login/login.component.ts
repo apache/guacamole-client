@@ -148,7 +148,6 @@ export class LoginComponent implements OnInit, OnChanges {
         if (changes['values']) {
             const values = changes['values'].currentValue as FormGroup;
             this.enteredValues = new FormGroup({ ...this.enteredValues.controls, ...values.controls });
-            // angular.extend($scope.enteredValues, values || {});
         }
 
         // Update field information when form is changed

@@ -261,7 +261,7 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
     }
 
     /**
-     * Notifies the controller that a change has been made to the flag
+     * Handles a change that has been made to the flag
      * denoting presence/absence of a particular identifier within the
      * <code>identifierFlags</code> map. The <code>identifiers</code>,
      * <code>identifiersAdded</code>, and <code>identifiersRemoved</code>

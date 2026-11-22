@@ -39,43 +39,46 @@ const AUTH_TOKEN_STORAGE_KEY = 'GUAC_AUTH_TOKEN';
  * authenticate() or login() functions of this service will automatically
  * affect the login dialog, if visible.
  *
- * This service broadcasts events on $rootScope depending on the status and
- * result of authentication operations:
+ * This service broadcasts events through the GuacEventService depending on
+ * the status and result of authentication operations. The arguments of each
+ * event are properties of its argument object, as declared in
+ * GuacFrontendEventArguments:
  *
  *  "guacLoginPending"
  *      An authentication request is being submitted and we are awaiting the
  *      result. The request may not yet have been submitted if the parameters
- *      for that request are not ready. This event receives a promise that
- *      resolves with the HTTP parameters that were ultimately submitted as its
- *      sole parameter.
+ *      for that request are not ready. Its argument parameters is a promise
+ *      that resolves with the HTTP parameters that were ultimately submitted.
  *
  *  "guacLogin"
- *      Authentication was successful and a new token was created. This event
- *      receives the authentication token as its sole parameter.
+ *      Authentication was successful and a new token was created. Its
+ *      argument authToken is the new authentication token.
  *
  *  "guacLogout"
- *      An existing token is being destroyed. This event receives the
- *      authentication token as its sole parameter. If the existing token for
- *      the current session is being replaced without destroying that session,
- *      this event is not fired.
+ *      An existing token is being destroyed. Its argument token is the
+ *      authentication token being destroyed, or null if there was none. If the
+ *      existing token for the current session is being replaced without
+ *      destroying that session, this event is not fired.
  *
  *  "guacLoginFailed"
  *      An authentication request has failed for any reason. This event is
  *      broadcast before any other events that are specific to the nature of
  *      the failure, and may be used to detect login failures in lieu of those
- *      events. This event receives two parameters: the HTTP parameters
- *      submitted and the Error object received from the REST endpoint.
+ *      events. Its arguments are parameters, the promise of the HTTP
+ *      parameters submitted, and error, the Error object received from the
+ *      REST endpoint.
  *
  *  "guacInsufficientCredentials"
  *      An authentication request failed because additional credentials are
- *      needed before the request can be processed. This event receives two
- *      parameters: the HTTP parameters submitted and the Error object received
- *      from the REST endpoint.
+ *      needed before the request can be processed. Its arguments are
+ *      parameters, the promise of the HTTP parameters submitted, and error, the
+ *      Error object received from the REST endpoint.
  *
  *  "guacInvalidCredentials"
  *      An authentication request failed because the credentials provided are
- *      invalid. This event receives two parameters: the HTTP parameters
- *      submitted and the Error object received from the REST endpoint.
+ *      invalid. Its arguments are parameters, the promise of the HTTP
+ *      parameters submitted, and error, the Error object received from the
+ *      REST endpoint.
  */
 @Injectable({
     providedIn: 'root'

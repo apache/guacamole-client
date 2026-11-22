@@ -557,7 +557,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
     }
 
     /**
-     * Arbitrary context that should be exposed to the guacGroupList directive
+     * Arbitrary context that should be exposed to the guacGroupList component
      * displaying the dropdown list of available connections within the
      * Guacamole menu.
      */
@@ -627,7 +627,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
 
     /**
      * Replaces the ManagedClientGroup currently attached to the client
-     * interface via $scope.clientGroup with the given ManagedClientGroup,
+     * interface via clientGroup with the given ManagedClientGroup,
      * safely cleaning up after the previous group. If no ManagedClientGroup is
      * provided, the existing group is simply removed.
      *

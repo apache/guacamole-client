@@ -193,7 +193,7 @@ export class ManageConnectionComponent implements OnInit {
     ngOnInit(): void {
         this.cloneSourceIdentifier = this.route.snapshot.queryParamMap.get('clone');
 
-        // Build the data source for the user group list entries.
+        // Build the data source for the usage history entries of the connection.
         this.dataSourceView = this.dataSourceBuilderService.getBuilder<HistoryEntryWrapper>()
             .source([])
             .paginate(this.pager.page)

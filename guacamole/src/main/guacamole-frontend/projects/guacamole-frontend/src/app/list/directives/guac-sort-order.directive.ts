@@ -32,7 +32,7 @@ import {
 import { SortOrder } from '../types/SortOrder';
 
 /**
- * Updates the priority of the sorting property given by "guacSortProperty"
+ * Updates the priority of the sorting property given by "sortProperty"
  * within the SortOrder object given by "guacSortOrder". The CSS classes
  * "sort-primary" and "sort-descending" will be applied to the associated
  * element depending on the priority and sort direction of the given property.
@@ -97,12 +97,12 @@ export class GuacSortOrderDirective implements OnInit, OnChanges {
 
     /**
      * Returns whether the sort property defined via the
-     * "guacSortProperty" attribute is the primary sort property of
+     * "sortProperty" input is the primary sort property of
      * the associated sort order.
      *
      * @returns
      *     true if the sort property defined via the
-     *     "guacSortProperty" attribute is the primary sort property,
+     *     "sortProperty" input is the primary sort property,
      *     false otherwise.
      */
     private isPrimary(): boolean {

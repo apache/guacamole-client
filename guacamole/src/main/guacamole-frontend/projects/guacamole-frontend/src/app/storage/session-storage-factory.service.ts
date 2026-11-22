@@ -83,14 +83,14 @@ export class SessionStorageFactory {
         if (typeof template === 'function')
             getter = template as () => T;
 
-            // Otherwise, create and maintain a deep copy (automatically cached to
-        // avoid "infdig" errors)
+            // Otherwise, create and maintain a deep copy (automatically cached, so
+        // that repeated reads return the same instance)
         else {
             let cached = _.cloneDeep(template);
             getter = function getIndependentCopy() {
 
                 // Reset to template only if changed externally, such that
-                // session storage values can be safely used in scope watches
+                // session storage values can be safely used in template expressions
                 // even if not logged in
                 if (!_.isEqual(cached, template))
                     cached = _.cloneDeep(template);
