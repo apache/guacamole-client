@@ -103,8 +103,11 @@ export class TranslationService {
 
         return translocoConfig({
 
-            // Provide the list of all available languages retrieved from the REST API
-            availableLangs: this.availableLanguages,
+            // Provide the list of all available languages retrieved from the REST API, plus the
+            // preferred language, which Transloco would otherwise treat as a scope. The preferred
+            // language may lack a translation file of its own, so that all texts come from the
+            // fallback language, or contain a region ("de_DE") which the loader removes if needed.
+            availableLangs: [...new Set([...this.availableLanguages, this.preferredLanguage])],
 
             // Set the default language according to the user's preferences
             defaultLang: this.preferredLanguage,
