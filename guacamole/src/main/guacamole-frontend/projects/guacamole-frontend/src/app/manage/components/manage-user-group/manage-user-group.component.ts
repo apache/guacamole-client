@@ -259,16 +259,6 @@ export class ManageUserGroupComponent implements OnInit {
 
                     this.attributes = attributes;
 
-                    // Populate the form group with the attributes of the user group
-                    this.attributesFormGroup = this.formService.getFormGroup(this.attributes);
-                    this.attributesFormGroup.patchValue(this.userGroup!.attributes);
-
-                    // Update the attributes of the user group when the form group is updated
-                    this.attributesFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
-                        .subscribe((value) => {
-                            this.userGroup!.attributes = value;
-                        });
-
                     this.managementPermissions = {};
                     this.dataSources.forEach(dataSource => {
 
@@ -297,6 +287,20 @@ export class ManageUserGroupComponent implements OnInit {
                             exists ? this.identifier : undefined);
 
                     });
+
+                    // Populate the form group with the attributes of the user group,
+                    // only with those the user group defines if the form is
+                    // restricted to them (modelOnly)
+                    const modelOnly = !this.managementPermissions[this.dataSource].canChangeAllAttributes;
+                    this.attributesFormGroup = this.formService.getFormGroup(this.attributes,
+                        modelOnly ? this.userGroup!.attributes : undefined);
+                    this.attributesFormGroup.patchValue(this.userGroup!.attributes);
+
+                    // Update the attributes of the user group when the form group is updated
+                    this.attributesFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+                        .subscribe((value) => {
+                            this.userGroup!.attributes = value;
+                        });
 
                 }, error: this.requestService.WARN
             });

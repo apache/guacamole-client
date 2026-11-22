@@ -145,8 +145,18 @@ export class ManageSharingProfileComponent implements OnInit {
                 this.attributes = attributes;
                 this.protocols = protocols;
 
-                // Create form group for editing sharing profile attributes
-                this.sharingProfileAttributesFormGroup = this.formService.getFormGroup(attributes);
+                this.managementPermissions = ManagementPermissions.fromPermissionSet(
+                    permissions,
+                    PermissionSet.SystemPermissionType.CREATE_CONNECTION,
+                    PermissionSet.hasConnectionPermission,
+                    this.identifier);
+
+                // Create form group for editing sharing profile attributes, only
+                // with the attributes of the sharing profile if the form is
+                // restricted to them (modelOnly)
+                const modelOnly = !this.managementPermissions.canChangeAllAttributes;
+                this.sharingProfileAttributesFormGroup = this.formService.getFormGroup(attributes,
+                    modelOnly ? this.sharingProfile?.attributes || {} : undefined);
                 this.sharingProfileAttributesFormGroup.patchValue(this.sharingProfile?.attributes || {});
                 this.sharingProfileAttributesFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
                     this.sharingProfile!.attributes = value;
@@ -158,12 +168,6 @@ export class ManageSharingProfileComponent implements OnInit {
                 this.parametersFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
                     this.parameters = value;
                 });
-
-                this.managementPermissions = ManagementPermissions.fromPermissionSet(
-                    permissions,
-                    PermissionSet.SystemPermissionType.CREATE_CONNECTION,
-                    PermissionSet.hasConnectionPermission,
-                    this.identifier);
 
             },
             error: this.requestService.DIE

@@ -20,7 +20,7 @@
 import { Inject, Injectable, DOCUMENT } from '@angular/core';
 import { TranslocoService } from '@jsverse/transloco';
 import Pickr from '@simonwep/pickr';
-import { forkJoin, take } from 'rxjs';
+import { firstValueFrom, forkJoin, take } from 'rxjs';
 import HSVaColor = Pickr.HSVaColor;
 
 /**
@@ -95,25 +95,31 @@ export class ColorPickerService {
         const saveString = this.translocoService.selectTranslate('APP.ACTION_SAVE').pipe(take(1));
         const cancelString = this.translocoService.selectTranslate('APP.ACTION_CANCEL').pipe(take(1));
 
-        forkJoin({
+        // Pickr can be used once the strings are available and it has been
+        // created and initialized
+        this.pickrPromise = firstValueFrom(forkJoin({
             saveString,
             cancelString
-        }).subscribe(({ saveString, cancelString }) => {
+        })).then(({ saveString, cancelString }) => {
             this.saveString = saveString;
             this.cancelString = cancelString;
 
             this.createPickr();
-            this.createPickrPromise();
+            return this.createPickrPromise();
         });
 
     }
 
     /**
-     * Creates pickrPromise, which is resolved when Pickr initialization has
+     * Creates a promise which is resolved when Pickr initialization has
      * completed and rejected if Pickr cannot be used.
+     *
+     * @returns
+     *     A promise which is resolved when Pickr initialization has completed
+     *     and rejected if Pickr cannot be used.
      */
-    private createPickrPromise(): void {
-        this.pickrPromise = new Promise<void>((resolve, reject) => {
+    private createPickrPromise(): Promise<void> {
+        return new Promise<void>((resolve, reject) => {
 
             // Resolve promise when Pickr has completed initialization
             if (this.pickrInitComplete)
@@ -238,10 +244,11 @@ export class ColorPickerService {
     }
 
     /**
-     * Promise which is resolved when Pickr initialization has completed
-     * and rejected if Pickr cannot be used.
+     * Promise which is resolved when the translation strings have been
+     * retrieved and Pickr initialization has completed, and rejected if Pickr
+     * cannot be used.
      */
-    pickrPromise!: Promise<void>;
+    pickrPromise: Promise<void>;
 
     /**
      * Returns whether the underlying color picker (Pickr) can be used by
@@ -281,11 +288,6 @@ export class ColorPickerService {
      */
     selectColor(element: Element, current: string | null, palette: string[] = []): Promise<string> {
 
-        const newRequest = new Promise<string>((resolve, reject) => {
-            this.activeRequestResolve = resolve;
-            this.activeRequestReject = reject;
-        });
-
         // Show picker once Pickr is ready for use
         return this.pickrPromise.then(() => {
             if (!this.pickr) {
@@ -309,7 +311,13 @@ export class ColorPickerService {
                 this.pickr.addSwatch(color);
             }
 
-            // Show color picker and wait for user to complete selection
+            // Show color picker and wait for user to complete selection. The
+            // request is created only now, as canceling the previous request
+            // above would otherwise reject it as well.
+            const newRequest = new Promise<string>((resolve, reject) => {
+                this.activeRequestResolve = resolve;
+                this.activeRequestReject = reject;
+            });
             this.activeRequest = newRequest;
             this.pickr.show();
 

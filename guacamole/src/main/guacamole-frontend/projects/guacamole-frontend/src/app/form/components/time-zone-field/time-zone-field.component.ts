@@ -51,6 +51,15 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
     region = new FormControl<string>('', { nonNullable: true });
 
     /**
+     * The time zone selected within the list of time zones. Like the typed
+     * controls of the other field components, the list is bound to this
+     * control rather than to the model control, so that disabling the list
+     * while no region is selected keeps the time zone in the value of the
+     * form, like the model of the AngularJS field.
+     */
+    typedControl = new FormControl<string | null>(null);
+
+    /**
      * All selectable regions.
      */
     regions: string[] = [];
@@ -89,6 +98,7 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
 
         // Set initial value of typed control
         const initialTimeZoneID: string | null | undefined = this.control?.value;
+        this.typedControl.setValue(initialTimeZoneID ?? null, { emitEvent: false });
         if (initialTimeZoneID) {
             this.region.setValue(this.timeZoneRegions[initialTimeZoneID] || '', { emitEvent: false });
             this.selectedTimeZone[this.region.value] = initialTimeZoneID;
@@ -98,6 +108,7 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
         this.control?.valueChanges
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((timeZoneID) => {
+                this.typedControl.setValue(timeZoneID, { emitEvent: false });
                 if (timeZoneID === null)
                     return;
 
@@ -105,11 +116,18 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
                 this.selectedTimeZone[this.region.value] = timeZoneID;
             });
 
+        // Update model when a time zone is selected
+        this.typedControl.valueChanges
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((timeZoneID) => {
+                this.control?.setValue(timeZoneID);
+            });
+
         // Restore time zone selection when region changes
         this.region.valueChanges
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe((region) => {
-                this.control?.setValue(this.selectedTimeZone[region] || null, { emitEvent: false });
+                this.control?.setValue(this.selectedTimeZone[region] || null);
                 this.updateDisabledState(this.disabled);
             });
 
@@ -118,7 +136,7 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
     }
 
     /**
-     * Apply disabled state to both control and region
+     * Apply disabled state to both lists
      */
     ngOnChanges(changes: SimpleChanges): void {
 
@@ -130,29 +148,19 @@ export class TimeZoneFieldComponent extends FormFieldBaseComponent implements On
     }
 
     /**
-     * Updates the disabled and enabled state of the region and control form controls
-     * based on the disabled parameter and the region value.
+     * Updates the disabled and enabled state of the region and time zone
+     * lists based on the disabled parameter and the region value.
      *
-     * If no region is selected, the control will be disabled regardless of the
-     * disabled parameter.
+     * If no region is selected, the list of time zones will be disabled
+     * regardless of the disabled parameter. The model control stays enabled,
+     * as in the other field components with a typed control.
      *
      * @param disabled
-     *     Whether the controls should be disabled.
+     *     Whether the lists should be disabled.
      */
     private updateDisabledState(disabled: boolean): void {
-
-        const regionEnabled = !disabled;
-        const controlEnabled = !disabled && !!this.region.value;
-
-        // First disable both controls
-        this.region.disable({ emitEvent: false });
-        this.control?.disable({ emitEvent: false });
-
-        if (regionEnabled)
-            this.region.enable({ emitEvent: false });
-
-        if (controlEnabled)
-            this.control?.enable({ emitEvent: false });
+        this.setDisabledState(this.region, disabled);
+        this.setDisabledState(this.typedControl, disabled || !this.region.value);
     }
 
     /**

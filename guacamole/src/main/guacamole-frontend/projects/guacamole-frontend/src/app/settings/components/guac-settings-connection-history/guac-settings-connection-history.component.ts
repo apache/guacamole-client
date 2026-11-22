@@ -202,8 +202,9 @@ export class GuacSettingsConnectionHistoryComponent implements OnInit {
      */
     search(): void {
 
-        // Clear current results
+        // Clear current results, which also returns the pager to the first page
         this.historyEntryWrappers = null;
+        this.dataSourceView?.updateSource([]);
 
         // Tokenize search string
         const tokens = FilterToken.tokenize(this.searchString);

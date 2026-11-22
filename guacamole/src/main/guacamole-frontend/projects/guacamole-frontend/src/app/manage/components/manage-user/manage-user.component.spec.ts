@@ -18,16 +18,16 @@
  */
 
 import { HttpClient } from '@angular/common/http';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormGroup, FormsModule } from '@angular/forms';
+import { By } from '@angular/platform-browser';
 import { provideRouter, Router, RouterLink, withComponentInputBinding } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { TranslocoTestingModule } from '@jsverse/transloco';
 import { Observable, of, throwError } from 'rxjs';
 import type { Mock } from 'vitest';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
-import { FormService } from '../../../form/service/form.service';
 import { GuacPageListComponent } from '../../../navigation/components/guac-page-list/guac-page-list.component';
 import { GuacNotificationService } from '../../../notification/services/guac-notification.service';
 import { MembershipService } from '../../../rest/service/membership.service';
@@ -36,11 +36,57 @@ import { SchemaService } from '../../../rest/service/schema.service';
 import { UserGroupService } from '../../../rest/service/user-group.service';
 import { UserService } from '../../../rest/service/user.service';
 import { Error } from '../../../rest/types/Error';
+import { Field } from '../../../rest/types/Field';
+import { Form } from '../../../rest/types/Form';
 import { PermissionSet } from '../../../rest/types/PermissionSet';
 import { User } from '../../../rest/types/User';
 import { DataSourceTabsComponent } from '../data-source-tabs/data-source-tabs.component';
 import { ManagementButtonsComponent } from '../management-buttons/management-buttons.component';
 import { ManageUserComponent } from './manage-user.component';
+
+/**
+ * Stand-in for the guac-form component which exposes the inputs the template
+ * of ManageUserComponent binds.
+ */
+@Component({
+    selector: 'guac-form',
+    template: '',
+    standalone: false
+})
+class GuacFormStubComponent {
+
+    /**
+     * The translation namespace passed by the template.
+     */
+    @Input() namespace?: string;
+
+    /**
+     * The form definitions passed by the template.
+     */
+    @Input() content?: Form[];
+
+    /**
+     * The form group passed by the template.
+     */
+    @Input() modelFormGroup?: FormGroup;
+
+    /**
+     * Whether only model attributes are passed by the template.
+     */
+    @Input() modelOnly = false;
+}
+
+/**
+ * Attribute definitions with a checkbox and a text field, for the specs
+ * which exercise the attributes of a user.
+ */
+const ATTRIBUTES: Form[] = [new Form({
+    name: 'user-attributes',
+    fields: [
+        new Field({ name: 'flag', type: Field.Type.BOOLEAN, options: ['true'] }),
+        new Field({ name: 'note', type: Field.Type.TEXT })
+    ]
+})];
 
 /**
  * The user service of the editor; only "postgresql" contains a user, which
@@ -66,21 +112,30 @@ let showRequestError: Mock<(error: unknown) => void>;
  * @param url
  *     The URL of the editor, as the router would receive it.
  *
+ * @param attributes
+ *     The attribute definitions which the data source offers for users.
+ *
+ * @param storedAttributes
+ *     The attributes stored for the existing user. A value of null stands for
+ *     an attribute which is defined but not set, as JDBC returns it.
+ *
  * @returns
  *     The harness of the router, showing the editor once all requested data
  *     has been loaded.
  */
-const openEditor = async (url: string): Promise<RouterTestingHarness> => {
+const openEditor = async (url: string, attributes: Form[] = [],
+                          storedAttributes: Record<string, string | null> = {}): Promise<RouterTestingHarness> => {
     userService = {
         getUser: (dataSource: string, username: string) => dataSource === 'postgresql'
-            ? of({ username, disabled: false, attributes: {} } as User)
+            ? of({ username, disabled: false, attributes: { ...storedAttributes } } as User)
             : throwError(() => new Error({ type: Error.Type.NOT_FOUND })),
         createUser: vi.fn((dataSource: string, user: User) => of(user)),
         saveUser: vi.fn((dataSource: string, user: User) => of(user))
     };
     showRequestError = vi.fn();
     TestBed.configureTestingModule({
-        declarations: [ManageUserComponent, DataSourceTabsComponent, GuacPageListComponent, ManagementButtonsComponent],
+        declarations: [ManageUserComponent, DataSourceTabsComponent, GuacPageListComponent, ManagementButtonsComponent,
+            GuacFormStubComponent],
         // Ignores the user menu and the editors below the password section, which this spec does not exercise
         schemas: [NO_ERRORS_SCHEMA],
         imports: [
@@ -118,8 +173,7 @@ const openEditor = async (url: string): Promise<RouterTestingHarness> => {
             },
             { provide: MembershipService, useValue: { getUserGroups: () => of([]), patchUserGroups: () => of(void 0) } },
             { provide: UserGroupService, useValue: { getUserGroups: () => of({}) } },
-            { provide: SchemaService, useValue: { getUserAttributes: () => of([]) } },
-            { provide: FormService, useValue: { getFormGroup: () => new FormGroup({}) } },
+            { provide: SchemaService, useValue: { getUserAttributes: () => of(attributes) } },
             {
                 provide: GuacNotificationService,
                 useValue: { showStatus: vi.fn(), SHOW_REQUEST_ERROR: (error: unknown) => showRequestError(error) }
@@ -195,6 +249,18 @@ const save = async (harness: RouterTestingHarness): Promise<void> => {
  */
 const asJson = (user: User): object => JSON.parse(JSON.stringify(user));
 
+/**
+ * Returns the form which the editor shows for the attributes of the user.
+ *
+ * @param harness
+ *     The harness showing the editor.
+ *
+ * @returns
+ *     The attribute form.
+ */
+const getAttributeForm = (harness: RouterTestingHarness): GuacFormStubComponent =>
+    harness.routeDebugElement!.query(By.directive(GuacFormStubComponent)).componentInstance;
+
 describe('ManageUserComponent', () => {
 
     it('should link each data source tab to the same user within that data source', async () => {
@@ -251,6 +317,33 @@ describe('ManageUserComponent', () => {
         expect(showRequestError).not.toHaveBeenCalled();
         expect(asJson(userService.saveUser.mock.calls[0][1]))
             .toEqual({ username: 't92user', disabled: false, attributes: {} });
+    });
+
+    describe('attributes', () => {
+
+        it('should provide a control for each attribute while creating a new user', async () => {
+            const form = getAttributeForm(await openEditor('/manage/postgresql/users', ATTRIBUTES));
+
+            expect(form.modelOnly).toBe(false);
+            expect(Object.keys(form.modelFormGroup?.controls ?? {})).toEqual(['flag', 'note']);
+        });
+
+        it('should provide controls only for the attributes of an existing user, even those without a value', async () => {
+            const form = getAttributeForm(await openEditor('/manage/postgresql/users/t92user', ATTRIBUTES, { flag: null }));
+
+            expect(form.modelOnly).toBe(true);
+            expect(Object.keys(form.modelFormGroup?.controls ?? {})).toEqual(['flag']);
+        });
+
+        it('should save only the attributes of an existing user', async () => {
+            const harness = await openEditor('/manage/postgresql/users/t92user', ATTRIBUTES, { flag: null });
+            getAttributeForm(harness).modelFormGroup?.get('flag')?.setValue('true');
+            await save(harness);
+
+            expect(asJson(userService.saveUser.mock.calls[0][1]))
+                .toEqual({ username: 't92user', disabled: false, attributes: { flag: 'true' } });
+        });
+
     });
 
 });

@@ -145,18 +145,22 @@ export class ManageConnectionGroupComponent implements OnInit {
                     this.attributes = attributes;
                     this.rootGroup = rootGroup;
 
-                    this.connectionGroupAttributesFormGroup = this.formService.getFormGroup(attributes);
-                    this.connectionGroupAttributesFormGroup.patchValue(this.connectionGroup?.attributes || {});
-                    this.connectionGroupAttributesFormGroup.valueChanges.subscribe((value) => {
-                        if (this.connectionGroup)
-                            this.connectionGroup.attributes = value;
-                    });
-
                     this.managementPermissions = ManagementPermissions.fromPermissionSet(
                         permissions,
                         PermissionSet.SystemPermissionType.CREATE_CONNECTION,
                         PermissionSet.hasConnectionGroupPermission,
                         this.identifier);
+
+                    // Provide only the attributes of the connection group if the
+                    // form is restricted to them (modelOnly)
+                    const modelOnly = !this.managementPermissions.canChangeAllAttributes;
+                    this.connectionGroupAttributesFormGroup = this.formService.getFormGroup(attributes,
+                        modelOnly ? this.connectionGroup?.attributes || {} : undefined);
+                    this.connectionGroupAttributesFormGroup.patchValue(this.connectionGroup?.attributes || {});
+                    this.connectionGroupAttributesFormGroup.valueChanges.subscribe((value) => {
+                        if (this.connectionGroup)
+                            this.connectionGroup.attributes = value;
+                    });
 
                 }, error: this.requestService.DIE
 

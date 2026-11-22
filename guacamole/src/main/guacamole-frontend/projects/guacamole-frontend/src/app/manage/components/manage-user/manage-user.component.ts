@@ -228,9 +228,6 @@ export class ManageUserComponent implements OnInit {
 
                     this.attributes = attributes;
 
-                    // Populate form with user attributes
-                    this.createUserAttributesFormGroup();
-
                     this.managementPermissions = {};
 
                     // add account page
@@ -257,6 +254,9 @@ export class ManageUserComponent implements OnInit {
 
                     });
 
+                    // Populate form with user attributes
+                    this.createUserAttributesFormGroup();
+
                 }, error: this.requestService.DIE
             });
     }
@@ -265,14 +265,16 @@ export class ManageUserComponent implements OnInit {
      * Creates the form group that is passed to the guac-form component to allow the
      * editing of the user's attributes. This form group is populated with the user's
      * current attribute values. The user's attributes are updated when the form group
-     * values change.
+     * values change. If the form is restricted to the attributes of the user
+     * (modelOnly), the form group contains only those attributes.
      */
     private createUserAttributesFormGroup() {
         if (!this.attributes)
             return;
 
         // Get a form group which allows editing of the user's attributes
-        this.userAttributes = this.formService.getFormGroup(this.attributes);
+        this.userAttributes = this.formService.getFormGroup(this.attributes,
+            this.modelOnly() ? this.user!.attributes : undefined);
 
         // Populate the form group with the user's current attribute values
         this.userAttributes.patchValue(this.user!.attributes);

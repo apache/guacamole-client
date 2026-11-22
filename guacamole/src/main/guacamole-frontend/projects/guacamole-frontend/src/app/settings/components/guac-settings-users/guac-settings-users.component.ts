@@ -198,10 +198,14 @@ export class GuacSettingsUsersComponent implements OnInit {
 
                 // Otherwise, list only updatable/deletable users
                 else
-                    userPromise = this.dataSourceService.apply(this.userService.getUsers, this.dataSources, [
-                        PermissionSet.ObjectPermissionType.UPDATE,
-                        PermissionSet.ObjectPermissionType.DELETE
-                    ]);
+                    userPromise = this.dataSourceService.apply(
+                        (ds: string, permissionTypes: string[]) => this.userService.getUsers(ds, permissionTypes),
+                        this.dataSources,
+                        [
+                            PermissionSet.ObjectPermissionType.UPDATE,
+                            PermissionSet.ObjectPermissionType.DELETE
+                        ]
+                    );
 
                 userPromise.then((allUsers) => {
 
@@ -215,7 +219,7 @@ export class GuacSettingsUsersComponent implements OnInit {
 
                             // Do not add the same user twice
                             if (addedUsers[user.username])
-                                return;
+                                continue;
 
                             // Link to default creation data source if we cannot manage this user
                             if (!PermissionSet.hasSystemPermission(permissions[dataSource], PermissionSet.SystemPermissionType.ADMINISTER)

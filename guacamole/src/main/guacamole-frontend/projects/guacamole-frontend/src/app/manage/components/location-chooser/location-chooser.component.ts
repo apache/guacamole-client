@@ -17,7 +17,7 @@
  * under the License.
  */
 
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { ConnectionGroup } from '../../../rest/types/ConnectionGroup';
 
 /**
@@ -49,6 +49,13 @@ export class LocationChooserComponent implements OnInit, OnChanges {
      * group. If not specified, the root group will be used.
      */
     @Input() value?: string;
+
+    /**
+     * Emits the identifier of the connection group chosen by the user, so
+     * that the value can be bound two-way like the AngularJS binding
+     * "value: '='".
+     */
+    @Output() valueChange = new EventEmitter<string | undefined>();
 
     /**
      * Map of unique identifiers to their corresponding connection
@@ -172,6 +179,7 @@ export class LocationChooserComponent implements OnInit, OnChanges {
             // Record new parent
             this.value = item.identifier;
             this.chosenConnectionGroupName = item.name;
+            this.valueChange.emit(this.value);
 
             // Close menu
             this.menuOpen = false;

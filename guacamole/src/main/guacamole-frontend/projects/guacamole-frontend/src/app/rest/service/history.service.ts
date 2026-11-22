@@ -74,7 +74,7 @@ export class HistoryService {
 
         // Sort according to provided predicates, if any
         if (sortPredicates)
-            httpParameters = httpParameters.appendAll({ sort: sortPredicates });
+            httpParameters = httpParameters.appendAll({ order: sortPredicates });
 
         // Retrieve connection history
         return this.http.get<ConnectionHistoryEntry[]>(

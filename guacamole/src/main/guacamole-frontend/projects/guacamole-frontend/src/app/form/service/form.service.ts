@@ -330,18 +330,26 @@ export class FormService {
      * Creates a FormGroup object based on the given forms.
      * The FormGroup object will contain a FormControl for each field in each form.
      * The name of each FormControl will be the name of the corresponding field.
+     * If a model is given, only fields whose names are properties of that
+     * model receive a FormControl, as guac-form displays only those fields
+     * when restricted to its model (modelOnly).
      *
      * @param forms
      *    The forms to be included in the form group.
+     *
+     * @param model
+     *    The object whose properties restrict the fields included in the form
+     *    group, if any. A property counts even if its value is null.
      */
-    getFormGroup(forms: Form[]): FormGroup {
+    getFormGroup(forms: Form[], model?: Record<string, unknown>): FormGroup {
 
         const formGroup = new FormGroup({});
 
         for (const form of forms) {
 
             for (const field of form.fields) {
-                formGroup.addControl(field.name, new FormControl(''));
+                if (!model || field.name in model)
+                    formGroup.addControl(field.name, new FormControl(''));
             }
 
         }

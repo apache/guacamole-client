@@ -127,6 +127,16 @@ const ADMINISTRATOR = new PermissionSet({
 });
 
 /**
+ * Effective permissions of a user who may read and update the user group
+ * "t92group", but is no administrator.
+ */
+const UPDATER = new PermissionSet({
+    userGroupPermissions: {
+        t92group: [PermissionSet.ObjectPermissionType.READ, PermissionSet.ObjectPermissionType.UPDATE]
+    }
+});
+
+/**
  * Opens the user group editor at the given URL within the data sources
  * "postgresql" and "postgresql-shared". The user group "t92group" exists only
  * within "postgresql".
@@ -137,13 +147,19 @@ const ADMINISTRATOR = new PermissionSet({
  * @param permissions
  *     The effective permissions of the current user within each data source.
  *
+ * @param storedAttributes
+ *     The attributes stored for every existing user group. A value of null
+ *     stands for an attribute which is defined but not set, as JDBC returns
+ *     it.
+ *
  * @returns
  *     The editor once all requested data has been loaded.
  */
-const openEditor = async (url: string, permissions: PermissionSet): Promise<OpenedEditor> => {
+const openEditor = async (url: string, permissions: PermissionSet,
+                          storedAttributes: Record<string, string | null> = STORED_ATTRIBUTES): Promise<OpenedEditor> => {
     const userGroupService = {
         getUserGroup: (dataSource: string, identifier: string) => dataSource === 'postgresql'
-            ? of(new UserGroup({ identifier, attributes: { ...STORED_ATTRIBUTES } }))
+            ? of(new UserGroup({ identifier, attributes: { ...storedAttributes } as Record<string, string> }))
             : throwError(() => new Error({ type: Error.Type.NOT_FOUND })),
         getUserGroups: () => of({}),
         saveUserGroup: vi.fn(() => of(undefined)),
@@ -326,6 +342,32 @@ describe('ManageUserGroupComponent', () => {
 
             expect(userGroupService.createUserGroup).toHaveBeenCalledWith('postgresql', expect.objectContaining({
                 attributes: { flag: '', note: 'hello' }
+            }));
+        });
+
+        it('should provide a control for each attribute while creating a new user group', async () => {
+            const { attributeForm } = await openEditor('/manage/postgresql/userGroups', ADMINISTRATOR);
+
+            expect(attributeForm.modelOnly).toBe(false);
+            expect(Object.keys(attributeForm.modelFormGroup?.controls ?? {})).toEqual(['flag', 'note']);
+        });
+
+        it('should provide controls only for the attributes of an existing user group, even those without a value', async () => {
+            const { attributeForm } = await openEditor('/manage/postgresql/userGroups/t92group', UPDATER, { flag: null });
+
+            expect(attributeForm.modelOnly).toBe(true);
+            expect(Object.keys(attributeForm.modelFormGroup?.controls ?? {})).toEqual(['flag']);
+        });
+
+        it('should save only the attributes of an existing user group', async () => {
+            const { component, attributeForm, userGroupService } =
+                await openEditor('/manage/postgresql/userGroups/t92group', UPDATER, { flag: null });
+
+            attributeForm.modelFormGroup?.get('flag')?.setValue('true');
+            await firstValueFrom(component.saveUserGroup());
+
+            expect(userGroupService.saveUserGroup).toHaveBeenCalledWith('postgresql', expect.objectContaining({
+                attributes: { flag: 'true' }
             }));
         });
 

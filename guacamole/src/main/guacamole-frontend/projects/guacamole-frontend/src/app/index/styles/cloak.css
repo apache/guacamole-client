@@ -25,3 +25,13 @@
 *[ng-cloak], .translate-cloak {
     display: none !important;
 }
+
+/*
+ * Keep elements hidden with the hidden attribute hidden even if another rule
+ * sets their display, such as "a.button", like the ng-hide class which
+ * ng-show and ng-hide of AngularJS set.
+ */
+
+[hidden] {
+    display: none !important;
+}

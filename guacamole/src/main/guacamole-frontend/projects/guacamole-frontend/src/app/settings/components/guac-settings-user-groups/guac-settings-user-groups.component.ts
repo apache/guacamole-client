@@ -302,7 +302,7 @@ export class GuacSettingsUserGroupsComponent implements OnInit {
 
                 // Do not add the same user group twice
                 if (addedUserGroups[userGroup.identifier!])
-                    return;
+                    continue;
 
                 // Link to default creation data source if we cannot manage this user
                 if (!PermissionSet.hasSystemPermission(permissions[dataSource], PermissionSet.SystemPermissionType.ADMINISTER)

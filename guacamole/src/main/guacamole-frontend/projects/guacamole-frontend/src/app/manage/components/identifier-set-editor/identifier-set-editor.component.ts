@@ -19,12 +19,13 @@
 
 import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import _ from 'lodash';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
 import { GuacPagerComponent } from '../../../list/components/guac-pager/guac-pager.component';
 import { DataSourceBuilderService } from '../../../list/services/data-source-builder.service';
 import { FilterService } from '../../../list/services/filter.service';
 import { SortService } from '../../../list/services/sort.service';
 import { DataSource } from '../../../list/types/DataSource';
+import { SortOrder } from '../../../list/types/SortOrder';
 
 /**
  * A component for manipulating a set of objects sharing some common relation
@@ -91,10 +92,17 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
     @ViewChild(GuacPagerComponent, { static: true }) pager!: GuacPagerComponent;
 
     /**
-     * Filtered and paginated view of all identifiers which are available
-     * to be added to or removed from the identifier set being edited.
+     * Sorted, filtered and paginated view of all identifiers which are
+     * available to be added to or removed from the identifier set being
+     * edited.
      */
     identifiersAvailableDataSourceView: DataSource<string> | null = null;
+
+    /**
+     * The sort order of the available identifiers: the identifier itself,
+     * ignoring case, like the orderBy filter of the AngularJS template.
+     */
+    private readonly availableSortOrder = new SortOrder(['this']);
 
     /**
      * Filtered view of the current state of the identifier set being
@@ -138,15 +146,16 @@ export class IdentifierSetEditorComponent implements OnInit, OnChanges {
     }
 
     /**
-     * Build the data sources for the available identifiers, filtered by
-     * filterString and paginated, and for the identifiers currently present
-     * in the set, filtered by filterString.
+     * Build the data sources for the available identifiers, sorted,
+     * filtered by filterString and paginated, and for the identifiers
+     * currently present in the set, filtered by filterString.
      */
     ngOnInit(): void {
         // Build the data source for the available identifiers.
         this.identifiersAvailableDataSourceView = this.dataSourceBuilderService.getBuilder<string>()
             .source(this.identifiersAvailable || [])
             .filter(this.filterString, [''])
+            .sort(of(this.availableSortOrder))
             .paginate(this.pager.page)
             .build();
 

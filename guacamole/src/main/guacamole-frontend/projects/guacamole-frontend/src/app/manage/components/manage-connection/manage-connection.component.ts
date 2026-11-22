@@ -212,6 +212,12 @@ export class ManageConnectionComponent implements OnInit {
 
                     this.dataSourceView?.updateSource(this.historyEntryWrappers!);
 
+                    this.managementPermissions = ManagementPermissions.fromPermissionSet(
+                        permissions,
+                        PermissionSet.SystemPermissionType.CREATE_CONNECTION,
+                        PermissionSet.hasConnectionPermission,
+                        this.identifier);
+
                     this.attributes = attributes;
                     this.updateAttributesFormGroup();
 
@@ -219,12 +225,6 @@ export class ManageConnectionComponent implements OnInit {
                     this.updateParametersFormGroup();
 
                     this.rootGroup = rootGroup;
-
-                    this.managementPermissions = ManagementPermissions.fromPermissionSet(
-                        permissions,
-                        PermissionSet.SystemPermissionType.CREATE_CONNECTION,
-                        PermissionSet.hasConnectionPermission,
-                        this.identifier);
 
                 }, error: this.requestService.DIE
             });
@@ -236,11 +236,15 @@ export class ManageConnectionComponent implements OnInit {
     }
 
     /**
-     * Updates the form group for editing connection attributes.
+     * Updates the form group for editing connection attributes. If the form
+     * is restricted to the attributes of the connection (modelOnly), the form
+     * group contains only those attributes.
      */
     private updateAttributesFormGroup(): void {
 
-        this.connectionAttributesFormGroup = this.formService.getFormGroup(this.attributes!);
+        const modelOnly = !this.managementPermissions!.canChangeAllAttributes;
+        this.connectionAttributesFormGroup = this.formService.getFormGroup(this.attributes!,
+            modelOnly ? this.connection?.attributes || {} : undefined);
         this.connectionAttributesFormGroup.patchValue(this.connection?.attributes || {});
         this.connectionAttributesFormGroup.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((value) => {
             this.connection!.attributes = value;

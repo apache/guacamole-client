@@ -36,7 +36,7 @@
         <select
             class="time-zone"
             [attr.name]="field.name"
-            [formControl]="control">
+            [formControl]="typedControl">
             @for (timeZone of timeZones[region.value] | keyvalue; track timeZone) {
                 <option [value]="timeZone.value">{{ timeZone.key }}
                 </option>
