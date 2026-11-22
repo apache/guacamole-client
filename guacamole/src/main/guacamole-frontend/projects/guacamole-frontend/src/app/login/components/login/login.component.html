@@ -19,8 +19,9 @@
 
 <div class="login-ui" [ngClass]="{'error': loginError, 'continuation': isContinuation(), 'initial': !isContinuation()}">
 
-    <!-- Login error message -->
-    <p class="login-error" [transloco]="$safeNavigationMigration(loginError?.key)" [translocoParams]="loginError?.variables || {}"></p>
+    <!-- Login error message, as a text node so that line breaks within
+         variables render as spaces, like in the AngularJS dialog -->
+    <p class="login-error">{{ $safeNavigationMigration(loginError?.key) | transloco: (loginError?.variables || {}) }}</p>
 
     <div class="login-dialog-middle">
 
@@ -35,8 +36,8 @@
                     <div class="version-number">{{ 'APP.VERSION' | transloco }}</div>
                 </div>
 
-                <!-- Login message/instructions -->
-                <p [hidden]="!helpText" [transloco]="$safeNavigationMigration(helpText?.key)" [translocoParams]="helpText?.variables || {}"></p>
+                <!-- Login message/instructions, as a text node like the error message -->
+                <p [hidden]="!helpText">{{ $safeNavigationMigration(helpText?.key) | transloco: (helpText?.variables || {}) }}</p>
 
                 <!-- Login fields -->
                 <div class="login-fields">
@@ -45,7 +46,7 @@
                         [content]="remainingFields"
                         [modelFormGroup]="enteredValues"
                         [focusedField]="$safeNavigationMigration(relevantField?.name)"
-                        [attr.data-disabled]="submitted"></guac-form>
+                        [disabled]="submitted"></guac-form>
                 </div>
 
                 <!-- Login/continue button -->

@@ -19,7 +19,7 @@
 
 import { Injectable } from '@angular/core';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import { Observable, of, throwError } from 'rxjs';
+import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { GuacFrontendEventArguments } from '../../events/types/GuacFrontendEventArguments';
 import { LogService } from '../../util/log.service';
 import { Error } from '../types/Error';
@@ -127,24 +127,28 @@ export class RequestService {
      * but logs all other rejections, such as those due to JavaScript errors.
      * This callback should be used in cases where
      * a REST response is being handled but REST errors should be ignored.
+     * As a catchError() callback, it completes the Observable without a value
+     * after a REST error.
      *
      * @constant
      */
-    readonly IGNORE: (error: unknown) => Observable<undefined> = this.createErrorCallback((): Observable<undefined> => {
-        return of(void (0));
+    readonly IGNORE: (error: unknown) => Observable<never> = this.createErrorCallback((): Observable<never> => {
+        return EMPTY;
     });
 
     /**
      * Promise error callback which logs all rejections due to REST errors as
      * warnings to the browser console, and logs all other rejections as
      * errors. This callback should be used in favor of
-     * @link{IGNORE} if REST errors are simply not expected.
+     * @link{IGNORE} if REST errors are simply not expected. As a catchError()
+     * callback, it completes the Observable without a value after a REST
+     * error.
      *
      * @constant
      */
-    readonly WARN: (error: unknown) => Observable<undefined> = this.createErrorCallback((error: Error): Observable<undefined> => {
+    readonly WARN: (error: unknown) => Observable<never> = this.createErrorCallback((error: Error): Observable<never> => {
         this.log.warn(error.type, error.message || error.translatableMessage);
-        return of(void (0));
+        return EMPTY;
     });
 
     /**
@@ -152,14 +156,15 @@ export class RequestService {
      * generic error message warning that the page could not be displayed. All
      * rejections are logged to the browser console as errors. This callback
      * should be used in favor of @link{WARN} if REST errors will result in the
-     * page being unusable.
+     * page being unusable. As a catchError() callback, it completes the
+     * Observable without a value after a REST error.
      *
      * @constant
      */
-    readonly DIE: (error: unknown) => Observable<undefined> = this.createErrorCallback((error: Error): Observable<undefined> => {
+    readonly DIE: (error: unknown) => Observable<never> = this.createErrorCallback((error: Error): Observable<never> => {
         this.guacEventService.broadcast('guacFatalPageError', { error });
         this.log.error(error.type, error.message || error.translatableMessage);
-        return of(void (0));
+        return EMPTY;
     });
 
     /**

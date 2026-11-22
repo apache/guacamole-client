@@ -25,6 +25,7 @@ import {
     ElementRef,
     Input,
     OnChanges,
+    SimpleChange,
     SimpleChanges,
     ViewChild,
     ViewContainerRef,
@@ -214,8 +215,19 @@ export class FormFieldComponent extends FormFieldBaseComponent implements AfterV
 
             await this.formService.insertFieldElement(this.fieldContent, this.field.type, this,
                 this.viewContainer, this.cdr)
-                // Store reference to the created field component
-                .then((fieldElement) => this.fieldComponent = fieldElement)
+                .then((fieldElement) => {
+
+                    // Store reference to the created field component
+                    this.fieldComponent = fieldElement;
+
+                    // The component copied disabled, but ngOnChanges() is not
+                    // called for the initial value: apply it to the control,
+                    // which may still be disabled by a previous field
+                    fieldElement.instance.ngOnChanges?.({
+                        disabled: new SimpleChange(undefined, this.disabled, true)
+                    });
+
+                })
                 .catch(() => {
                     // fieldCreationFailed
                     this.log.warn('Failed to retrieve field with type "' + this.field.type + '"');

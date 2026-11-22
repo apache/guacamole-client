@@ -22,11 +22,16 @@ import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { GuacEventService } from 'guacamole-frontend-lib';
+import { Observable, of, throwError } from 'rxjs';
 import { AuthenticationService } from '../../../auth/service/authentication.service';
 import { ClipboardService } from '../../../clipboard/services/clipboard.service';
 import { GuacFrontendEventArguments } from '../../../events/types/GuacFrontendEventArguments';
 import { DataSourceService } from '../../../rest/service/data-source-service.service';
+import { TunnelService } from '../../../rest/service/tunnel.service';
+import { Error } from '../../../rest/types/Error';
+import { SharingProfile } from '../../../rest/types/SharingProfile';
 import { GuacClientManagerService } from '../../services/guac-client-manager.service';
+import { ManagedClient } from '../../types/ManagedClient';
 import { ManagedClientGroup } from '../../types/ManagedClientGroup';
 import { ClientPageComponent } from './client-page.component';
 
@@ -76,8 +81,15 @@ describe('ClientPageComponent', () => {
      */
     let resyncClipboard: ReturnType<typeof vi.fn>;
 
+    /**
+     * The responses of the stub of TunnelService.getSharingProfiles(), by
+     * the UUID of the tunnel.
+     */
+    let sharingProfileResponses: Record<string, Observable<Record<string, SharingProfile>>>;
+
     beforeEach(() => {
         resyncClipboard = vi.fn();
+        sharingProfileResponses = {};
 
         TestBed.configureTestingModule({
             declarations: [ClientPageComponent],
@@ -91,7 +103,11 @@ describe('ClientPageComponent', () => {
                     provide: GuacClientManagerService,
                     useValue: { getManagedClientGroup: () => new ManagedClientGroup() }
                 },
-                { provide: ClipboardService, useValue: { resyncClipboard } }
+                { provide: ClipboardService, useValue: { resyncClipboard } },
+                {
+                    provide : TunnelService,
+                    useValue: { getSharingProfiles: (tunnel: string) => sharingProfileResponses[tunnel] }
+                }
             ]
         });
 
@@ -109,7 +125,26 @@ describe('ClientPageComponent', () => {
 
     afterEach(() => {
         fixture.destroy();
+        vi.restoreAllMocks();
     });
+
+    /**
+     * Focuses a new client of a connection whose tunnel has the given UUID,
+     * as the tiled clients do when the user clicks a client, and runs the
+     * change detection of the page.
+     *
+     * @param uuid
+     *     The UUID of the tunnel of the new client.
+     */
+    const focusClient = (uuid: string): void => {
+        const newFocusedClient = new ManagedClient({
+            id    : uuid,
+            client: {} as Guacamole.Client,
+            tunnel: { uuid } as Guacamole.Tunnel
+        });
+        eventService.broadcast('guacClientFocused', { newFocusedClient });
+        fixture.detectChanges();
+    };
 
     it('should reparse the route once when the page is opened', () => {
         expect(resyncClipboard).toHaveBeenCalledTimes(1);
@@ -147,6 +182,20 @@ describe('ClientPageComponent', () => {
 
         expect(keydown.defaultPrevented).toBe(true);
         expect(sentKeysyms).toEqual([DELETE]);
+    });
+
+    it('should keep the sharing profiles if those of the newly focused connection cannot be retrieved', () => {
+        vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+        sharingProfileResponses = {
+            'tunnel-1': of({ 42: new SharingProfile({ identifier: '42', name: 'Watch' }) }),
+            'tunnel-2': throwError(() => new Error({ type: Error.Type.INTERNAL_ERROR, message: 'Simulated failure' }))
+        };
+
+        focusClient('tunnel-1');
+        expect(fixture.componentInstance.canShareConnection()).toBe(true);
+
+        focusClient('tunnel-2');
+        expect(fixture.componentInstance.canShareConnection()).toBe(true);
     });
 
 });

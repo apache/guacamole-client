@@ -51,8 +51,9 @@
             <div class="automatic-login-rejected-modal">
                 <guac-modal>
                     <div class="notification">
-                        <p [transloco]="$safeNavigationMigration(fatalError?.translatableMessage?.key)"
-                           [translocoParams]="fatalError?.translatableMessage?.variables || {}"></p>
+                        <!-- Message as a text node so that line breaks within variables
+                             render as spaces, like in the AngularJS frontend -->
+                        <p>{{ $safeNavigationMigration(fatalError?.translatableMessage?.key) | transloco: (fatalError?.translatableMessage?.variables || {}) }}</p>
                         <p>
                             <button transloco="APP.ACTION_LOGIN_AGAIN" [disabled]="reAuthenticating"
                                     (click)="reAuthenticate()"></button>

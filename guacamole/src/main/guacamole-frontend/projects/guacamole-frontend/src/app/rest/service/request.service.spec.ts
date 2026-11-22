@@ -72,6 +72,42 @@ describe('RequestService', () => {
         });
     });
 
+    describe('IGNORE, WARN and DIE', () => {
+
+        beforeEach(() => {
+            vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+            vi.spyOn(console, 'error').mockImplementation(() => undefined);
+        });
+
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it.each(['IGNORE', 'WARN', 'DIE'] as const)('should complete without a value when %s handles a REST Error', (callback) => {
+            testScheduler.run(({ expectObservable }) => {
+                const restError = new Error({ type: Type.INTERNAL_ERROR, message: 'Failure' });
+
+                const observable = throwError(() => restError).pipe(
+                    catchError(service[callback])
+                );
+
+                expectObservable(observable).toBe('|');
+            });
+        });
+
+        it.each(['IGNORE', 'WARN', 'DIE'] as const)('should rethrow other errors when %s handles them', (callback) => {
+            testScheduler.run(({ expectObservable }) => {
+                const otherError = new TypeError('Failure');
+
+                const observable = throwError(() => otherError).pipe(
+                    catchError(service[callback])
+                );
+
+                expectObservable(observable).toBe('#', undefined, otherError);
+            });
+        });
+    });
+
     describe('DIE and PROMISE_DIE', () => {
         let guacEventService: GuacEventService<GuacFrontendEventArguments>;
 
@@ -83,7 +119,7 @@ describe('RequestService', () => {
             const restError = new Error({ type: Type.INTERNAL_ERROR, message: 'Failure' });
             const fatalPageError = firstValueFrom(guacEventService.on('guacFatalPageError'));
 
-            await firstValueFrom(throwError(() => restError).pipe(catchError(service.DIE)));
+            throwError(() => restError).pipe(catchError(service.DIE)).subscribe();
 
             expect((await fatalPageError).error).toBe(restError);
         });

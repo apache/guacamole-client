@@ -344,7 +344,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
                     this.rootConnectionGroupsDataSource.updateSource(this.rootConnectionGroups);
                 }
 
-            }, this.requestService.WARN);
+            }, this.requestService.PROMISE_WARN);
 
 
         // Automatically track and cache the currently-focused client
@@ -799,7 +799,7 @@ export class ClientPageComponent implements OnInit, OnChanges, DoCheck, OnDestro
                         catchError(this.requestService.WARN)
                     )
                     .subscribe(sharingProfiles => {
-                        this.sharingProfiles = sharingProfiles!;
+                        this.sharingProfiles = sharingProfiles;
                     });
 
             }

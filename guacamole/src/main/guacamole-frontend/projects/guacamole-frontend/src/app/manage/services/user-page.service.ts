@@ -199,7 +199,7 @@ export class UserPageService {
                     return this.generateHomePage(rootGroups, permissionsSets);
                 }),
                 catchError(this.requestService.DIE)
-            ) as Observable<PageDefinition>;
+            );
 
     }
 
@@ -389,7 +389,7 @@ export class UserPageService {
                     return this.generateSettingsPages(permissions);
                 }),
                 catchError(this.requestService.DIE)
-            ) as Observable<PageDefinition[]>;
+            );
 
     }
 

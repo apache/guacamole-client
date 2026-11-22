@@ -61,6 +61,35 @@ class TwoFieldsComponent {
 }
 
 /**
+ * Displays a text field which may be disabled.
+ */
+@Component({
+    template: `
+        <guac-form-field namespace="TEST" [field]="field" [control]="control" [disabled]="disabled"></guac-form-field>
+    `,
+    changeDetection: ChangeDetectionStrategy.Eager,
+    standalone: false
+})
+class DisableableFieldComponent {
+
+    /**
+     * The field displayed by the guac-form-field.
+     */
+    field = new Field({ name: 'disableable' });
+
+    /**
+     * The value of the field.
+     */
+    control = new FormControl('');
+
+    /**
+     * Whether the guac-form-field is disabled.
+     */
+    disabled = false;
+
+}
+
+/**
  * Displays the fields "exec-command" and "terminal-type" of a Kubernetes
  * connection within a form, where the label of "terminal-type" may depend on
  * the value of "exec-command".
@@ -124,6 +153,69 @@ describe('FormFieldComponent', () => {
         const containers: HTMLElement[] = Array.from(fixture.nativeElement.querySelectorAll('.form-field'));
         expect(containers.map(container => container.querySelector('input')?.name))
             .toEqual(['replaced', 'second']);
+    });
+
+});
+
+describe('FormFieldComponent disabled', () => {
+
+    beforeEach(() => {
+        TestBed.configureTestingModule({
+            declarations: [DisableableFieldComponent],
+            imports: [FormModule, TranslocoTestingModule.forRoot({ langs: { en: {} } })]
+        });
+    });
+
+    /**
+     * Renders the field and waits until the component of its field type exists.
+     *
+     * @param disabled
+     *     Whether the guac-form-field is disabled when it is created.
+     *
+     * @param controlDisabled
+     *     Whether the control is disabled when the guac-form-field is created.
+     *
+     * @returns
+     *     The fixture of the rendered field.
+     */
+    async function renderField(disabled: boolean, controlDisabled: boolean): Promise<ComponentFixture<DisableableFieldComponent>> {
+        const fixture = TestBed.createComponent(DisableableFieldComponent);
+        fixture.componentInstance.disabled = disabled;
+        if (controlDisabled)
+            fixture.componentInstance.control.disable();
+        fixture.detectChanges();
+        await fixture.whenStable();
+        fixture.detectChanges();
+        return fixture;
+    }
+
+    it('should disable the control if the field is created disabled', async () => {
+        const fixture = await renderField(true, false);
+
+        expect(fixture.componentInstance.control.disabled).toBe(true);
+        expect(fixture.nativeElement.querySelector('input').disabled).toBe(true);
+    });
+
+    it('should enable the control if the field is created enabled', async () => {
+
+        // As after a failed login: the control was disabled by the previous
+        // field, which a new field with the same control replaces
+        const fixture = await renderField(false, true);
+
+        expect(fixture.componentInstance.control.disabled).toBe(false);
+        expect(fixture.nativeElement.querySelector('input').disabled).toBe(false);
+    });
+
+    it('should follow later changes of disabled', async () => {
+        const fixture = await renderField(false, false);
+
+        fixture.componentInstance.disabled = true;
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('input').disabled).toBe(true);
+
+        fixture.componentInstance.disabled = false;
+        fixture.detectChanges();
+        expect(fixture.nativeElement.querySelector('input').disabled).toBe(false);
     });
 
 });

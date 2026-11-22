@@ -24,10 +24,10 @@ import { Component, Input, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { By, Title } from '@angular/platform-browser';
-import { provideRouter, Router, RouterOutlet, Routes, withHashLocation } from '@angular/router';
+import { NavigationError, provideRouter, Router, RouterOutlet, Routes, withHashLocation } from '@angular/router';
 import { provideTransloco, TRANSLOCO_LOADER, Translation, TranslocoTestingModule } from '@jsverse/transloco';
 import { GuacEventService } from 'guacamole-frontend-lib';
-import { of, Subject } from 'rxjs';
+import { catchError, defer, Observable, of, Subject, throwError } from 'rxjs';
 import { AppComponent } from './app.component';
 import { appRoutes } from './app-routing.module';
 import { AuthenticationService } from './auth/service/authentication.service';
@@ -78,6 +78,11 @@ class GuacFormStubComponent {
      */
     @Input() focusedField?: string;
 
+    /**
+     * Whether the template disabled the fields of the form.
+     */
+    @Input() disabled = false;
+
 }
 
 /**
@@ -126,7 +131,7 @@ describe('AppComponent', () => {
             schemas: [NO_ERRORS_SCHEMA],
             imports: [
                 TranslocoTestingModule.forRoot({
-                    langs: { en: { APP: { NAME: 'Guacamole' } } },
+                    langs: { en: { APP: { NAME: 'Guacamole', TEXT_UNTRANSLATED: '{{MESSAGE}}' } } },
                     translocoConfig: { availableLangs: ['en'], defaultLang: 'en' }
                 })
             ],
@@ -218,6 +223,181 @@ describe('AppComponent', () => {
         const form = fixture.debugElement.query(By.directive(GuacFormStubComponent)).componentInstance as GuacFormStubComponent;
         expect(form.content).toEqual([username, password, newPassword]);
         expect(form.modelFormGroup?.value).toEqual({ username: 'alice', password: 'secret', 'new-password': '' });
+    });
+
+    /**
+     * Returns the stand-in of the guac-form within the login dialog.
+     *
+     * @returns
+     *     The GuacFormStubComponent rendered by LoginComponent.
+     */
+    const getLoginForm = (): GuacFormStubComponent =>
+        fixture.debugElement.query(By.directive(GuacFormStubComponent)).componentInstance as GuacFormStubComponent;
+
+    it('should focus the first field of a new login form', () => {
+        eventService.broadcast('guacInvalidCredentials', {
+            parameters: Promise.resolve({}),
+            error: new Error({
+                type    : Error.Type.INVALID_CREDENTIALS,
+                expected: [
+                    new Field({ name: 'username', type: Field.Type.USERNAME }),
+                    new Field({ name: 'password', type: Field.Type.PASSWORD })
+                ]
+            })
+        });
+        fixture.detectChanges();
+
+        expect(getLoginForm().focusedField).toBe('username');
+    });
+
+    it('should focus the first empty field when the login continues', async () => {
+
+        // The password has expired: username and password are filled with
+        // the submitted values, the new password is still empty
+        eventService.broadcast('guacInsufficientCredentials', {
+            parameters: Promise.resolve({ username: 'alice', password: 'secret' }),
+            error: new Error({
+                type               : Error.Type.INSUFFICIENT_CREDENTIALS,
+                translatableMessage: { key: 'LOGIN.INFO_PASSWORD_EXPIRED' },
+                expected           : [
+                    new Field({ name: 'username', type: Field.Type.USERNAME }),
+                    new Field({ name: 'password', type: Field.Type.PASSWORD }),
+                    new Field({ name: 'new-password', type: Field.Type.PASSWORD }),
+                    new Field({ name: 'confirm-new-password', type: Field.Type.PASSWORD })
+                ]
+            })
+        });
+        await settle();
+        fixture.detectChanges();
+
+        expect(getLoginForm().focusedField).toBe('new-password');
+    });
+
+    it('should focus the password field after the credentials were rejected', () => {
+        const expected = (): Field[] => [
+            new Field({ name: 'username', type: Field.Type.USERNAME }),
+            new Field({ name: 'password', type: Field.Type.PASSWORD })
+        ];
+        const invalid = new Error({ type: Error.Type.INVALID_CREDENTIALS, expected: expected() });
+
+        eventService.broadcast('guacInvalidCredentials', { parameters: Promise.resolve({}), error: invalid });
+        fixture.detectChanges();
+
+        // The user enters a wrong password
+        getLoginForm().modelFormGroup!.setValue({ username: 'alice', password: 'wrong' });
+
+        // The server rejects the credentials and asks for them again
+        const rejected = new Error({ type: Error.Type.INVALID_CREDENTIALS, expected: expected() });
+        eventService.broadcast('guacLoginFailed', { parameters: Promise.resolve({}), error: rejected });
+        eventService.broadcast('guacInvalidCredentials', { parameters: Promise.resolve({}), error: rejected });
+        fixture.detectChanges();
+
+        expect(getLoginForm().modelFormGroup?.value).toEqual({ username: 'alice', password: '' });
+        expect(getLoginForm().focusedField).toBe('password');
+    });
+
+    it('should disable the fields of the login form while the login attempt is pending', () => {
+        const rejected = new Error({
+            type    : Error.Type.INVALID_CREDENTIALS,
+            expected: [
+                new Field({ name: 'username', type: Field.Type.USERNAME }),
+                new Field({ name: 'password', type: Field.Type.PASSWORD })
+            ]
+        });
+
+        eventService.broadcast('guacInvalidCredentials', { parameters: Promise.resolve({}), error: rejected });
+        fixture.detectChanges();
+        expect(getLoginForm().disabled).toBe(false);
+
+        // The attempt is submitted: the fields and the buttons are disabled
+        eventService.broadcast('guacLoginPending', { parameters: Promise.resolve({}) });
+        fixture.detectChanges();
+        expect(getLoginForm().disabled).toBe(true);
+        expect(fixture.nativeElement.querySelector('input.login').disabled).toBe(true);
+
+        // The credentials are rejected: the fields and the buttons are enabled again
+        eventService.broadcast('guacLoginFailed', { parameters: Promise.resolve({}), error: rejected });
+        fixture.detectChanges();
+        expect(getLoginForm().disabled).toBe(false);
+        expect(fixture.nativeElement.querySelector('input.login').disabled).toBe(false);
+    });
+
+    /**
+     * A message of the server which spans two lines.
+     */
+    const MULTI_LINE_MESSAGE = 'First line of the message\nSecond line of the message';
+
+    /**
+     * Creates an error of the REST API with the given type and a message
+     * which spans two lines.
+     *
+     * @param type
+     *     The type of the error.
+     *
+     * @param expected
+     *     The fields the server expects, if any.
+     *
+     * @returns
+     *     The error.
+     */
+    const createMultiLineError = (type: Error.Type, expected?: Field[]): Error => new Error({
+        type,
+        expected,
+        translatableMessage: { key: 'APP.TEXT_UNTRANSLATED', variables: { MESSAGE: MULTI_LINE_MESSAGE } }
+    });
+
+    /**
+     * Verifies that the given paragraph holds the multi-line message as
+     * plain text, without line break elements, so that the line breaks
+     * render as spaces like in the AngularJS frontend.
+     *
+     * @param paragraph
+     *     The paragraph which displays the message.
+     */
+    const expectPlainMessage = (paragraph: HTMLElement): void => {
+        expect(paragraph.querySelector('br')).toBeNull();
+        expect(paragraph.textContent!.trim()).toBe(MULTI_LINE_MESSAGE);
+    };
+
+    it('should show a login error with line breaks as one paragraph of plain text', () => {
+        const expected = [new Field({ name: 'username', type: Field.Type.USERNAME })];
+        eventService.broadcast('guacInvalidCredentials', {
+            parameters: Promise.resolve({}),
+            error: new Error({ type: Error.Type.INVALID_CREDENTIALS, expected })
+        });
+        fixture.detectChanges();
+
+        eventService.broadcast('guacLoginFailed', {
+            parameters: Promise.resolve({}),
+            error: createMultiLineError(Error.Type.PERMISSION_DENIED, expected)
+        });
+        fixture.detectChanges();
+
+        expectPlainMessage(fixture.nativeElement.querySelector('.login-ui .login-error'));
+    });
+
+    it('should show a help text with line breaks as one paragraph of plain text', async () => {
+        eventService.broadcast('guacInsufficientCredentials', {
+            parameters: Promise.resolve({ username: 'alice' }),
+            error: createMultiLineError(Error.Type.INSUFFICIENT_CREDENTIALS, [
+                new Field({ name: 'username', type: Field.Type.USERNAME }),
+                new Field({ name: 'code', type: Field.Type.TEXT })
+            ])
+        });
+        await settle();
+        fixture.detectChanges();
+
+        expectPlainMessage(fixture.nativeElement.querySelector('.login-ui .login-form > p'));
+    });
+
+    it('should show the rejection of an automatic login with line breaks as one paragraph of plain text', () => {
+        eventService.broadcast('guacLoginFailed', {
+            parameters: Promise.resolve({}),
+            error: createMultiLineError(Error.Type.PERMISSION_DENIED)
+        });
+        fixture.detectChanges();
+
+        expectPlainMessage(fixture.nativeElement.querySelector('.automatic-login-rejected-modal .notification > p'));
     });
 
     it('should reset the title and the body class when the login screen is shown', async () => {
@@ -342,6 +522,12 @@ describe('AppComponent with the routes of the app', () => {
     let httpMock: HttpTestingController;
 
     /**
+     * The observable which the stub of UserPageService.getHomePage()
+     * returns.
+     */
+    let homePage: Observable<PageDefinition>;
+
+    /**
      * The response of the REST API to a successful authentication.
      */
     const session = {
@@ -352,6 +538,8 @@ describe('AppComponent with the routes of the app', () => {
     };
 
     beforeEach(() => {
+        homePage = of(new PageDefinition({ name: 'APP.NAME', url: '/' }));
+
         TestBed.configureTestingModule({
             declarations: [AppComponent, LoginComponent, GuacFormStubComponent, RouteStubComponent],
             // Ignores the components of the other application states, which
@@ -372,7 +560,7 @@ describe('AppComponent with the routes of the app', () => {
                 provideHttpClientTesting(),
                 {
                     provide : UserPageService,
-                    useValue: { getHomePage: () => of(new PageDefinition({ name: 'APP.NAME', url: '/' })) }
+                    useValue: { getHomePage: () => homePage }
                 },
                 { provide: GuacNotificationService, useValue: { getStatus: () => false } },
                 {
@@ -550,6 +738,68 @@ describe('AppComponent with the routes of the app', () => {
         expect(reauthentication.get('token')).toBe('TOKEN');
         expect(isPageShown()).toBe(true);
         expect(router.url).toBe('/?foo=bar');
+    });
+
+    it('should keep the error of the page instead of opening the home page if the home page cannot be determined', async () => {
+        vi.spyOn(console, 'error').mockImplementation(() => undefined);
+        const navigationErrors: NavigationError[] = [];
+        router.events.subscribe(event => event instanceof NavigationError && navigationErrors.push(event));
+
+        // UserPageService handles a failed request with RequestService.DIE
+        const requestService = TestBed.inject(RequestService);
+        homePage = defer(() => throwError(() => new Error({ type: Error.Type.INTERNAL_ERROR, message: 'Simulated failure' })))
+            .pipe(catchError(requestService.DIE));
+
+        open('/');
+        await respondToTokenRequest(session);
+
+        expect(fixture.nativeElement.querySelector('.fatal-page-error')).not.toBeNull();
+        expect(isPageShown()).toBe(false);
+        expect(navigationErrors).toEqual([]);
+    });
+
+    it('should open the home page if it is the page at the root path', async () => {
+        homePage = of(new PageDefinition({ name: 'APP.NAME', url: '/' }));
+
+        open('/');
+        await respondToTokenRequest(session);
+
+        expect(isPageShown()).toBe(true);
+        expect(router.url).toBe('/');
+    });
+
+    it('should open the home page at the root path although the URL has query parameters', async () => {
+        homePage = of(new PageDefinition({ name: 'APP.NAME', url: '/' }));
+
+        open('/?foo=bar');
+        const request = await respondToTokenRequest(session);
+
+        expect(request.get('foo')).toBe('bar');
+        expect(isPageShown()).toBe(true);
+        expect(router.url).toBe('/?foo=bar');
+    });
+
+    it('should open the only connection of the user instead of the root path', async () => {
+        homePage = of(new PageDefinition({ name: 'connection', url: '/client/c2lnbmFs' }));
+
+        open('/');
+        await respondToTokenRequest(session);
+        await respondToTokenRequest(session);
+
+        expect(isPageShown()).toBe(true);
+        expect(router.url).toBe('/client/c2lnbmFs');
+    });
+
+    it('should open the only connection of the user instead of the root path with query parameters', async () => {
+        homePage = of(new PageDefinition({ name: 'connection', url: '/client/c2lnbmFs' }));
+
+        open('/?foo=bar');
+        await respondToTokenRequest(session);
+        const request = await respondToTokenRequest(session);
+
+        expect(request.get('foo')).toBe('bar');
+        expect(isPageShown()).toBe(true);
+        expect(router.url).toBe('/client/c2lnbmFs?foo=bar');
     });
 
 });

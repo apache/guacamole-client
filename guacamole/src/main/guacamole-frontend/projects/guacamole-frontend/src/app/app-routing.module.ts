@@ -20,7 +20,7 @@
 import { inject, NgModule } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateFn, ResolveFn, Route, Router, RouteReuseStrategy, RouterModule, Routes } from '@angular/router';
 import { TranslocoService } from '@jsverse/transloco';
-import { catchError, map, Observable, of, switchMap, take } from 'rxjs';
+import { catchError, defaultIfEmpty, map, Observable, of, switchMap, take } from 'rxjs';
 import { AuthenticationService } from './auth/service/authentication.service';
 import { AuthenticationResult } from './auth/types/AuthenticationResult';
 import { ClientPageComponent } from './client/components/client-page/client-page.component';
@@ -93,18 +93,27 @@ const routeToUserHomePage: CanActivateFn = (route: ActivatedRouteSnapshot) => {
                     .pipe(
                         map(homePage => {
                                 // If home page is the requested location, allow through
-                                if (route.root.url.join('/') || '/' === homePage.url)
+                                // (this guard only protects the root route, whose path is '/')
+                                if ('/' === homePage.url)
                                     return true;
 
-                                // Otherwise, reject and reroute
+                                // Otherwise, reject and reroute, keeping the query
+                                // parameters of the requested location
                                 else {
-                                    return router.parseUrl(homePage.url);
+                                    const urlTree = router.parseUrl(homePage.url);
+                                    urlTree.queryParams = route.queryParams;
+                                    return urlTree;
                                 }
                             }
                         ),
 
                         // If retrieval of home page fails, assume requested page is OK
-                        catchError(() => of(true))
+                        catchError(() => of(true)),
+
+                        // If no home page arrives because a REST error has
+                        // replaced the page with an error message (DIE), open no
+                        // page; the AngularJS route never resolves in that case
+                        defaultIfEmpty(false)
                     )
             ),
             catchError(() => of(false)),

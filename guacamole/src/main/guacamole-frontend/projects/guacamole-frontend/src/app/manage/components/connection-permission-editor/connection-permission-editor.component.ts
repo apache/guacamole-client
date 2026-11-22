@@ -194,7 +194,7 @@ export class ConnectionPermissionEditorComponent implements OnInit, OnChanges {
                 this.updateDefaultExpandedStates();
                 this.rootGroupsDataSource?.updateSource(this.getRootGroups());
 
-            }, this.requestService.DIE);
+            }, this.requestService.PROMISE_DIE);
 
     }
 

@@ -240,7 +240,7 @@ export class LoginComponent implements OnInit, OnChanges {
     private getRelevantField(): Field | null {
 
         for (const field of this.remainingFields) {
-            if (!this.enteredValues.get(field.name))
+            if (!this.enteredValues.get(field.name)?.value)
                 return field;
         }
 
