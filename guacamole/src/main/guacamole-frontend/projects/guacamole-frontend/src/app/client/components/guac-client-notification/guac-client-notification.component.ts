@@ -167,7 +167,8 @@ export class GuacClientNotificationComponent implements OnInit, DoCheck {
                 next    : homePage => {
 
                     // Define home action only if different from current location
-                    if (this.route.snapshot.root.url.join('/') || '/' === homePage.url) {
+                    // (the path of the current URL, without query and fragment)
+                    if (this.router.url.split(/[?#]/, 1)[0] !== homePage.url) {
                         this.NAVIGATE_HOME_ACTION = {
                             name     : 'CLIENT.ACTION_NAVIGATE_HOME',
                             className: 'home button',

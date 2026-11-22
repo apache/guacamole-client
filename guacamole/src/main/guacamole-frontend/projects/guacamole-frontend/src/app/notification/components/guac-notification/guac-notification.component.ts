@@ -29,9 +29,7 @@ import {
     ChangeDetectionStrategy
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormGroup } from '@angular/forms';
-import { Subscription } from 'rxjs';
-import { FormService } from '../../../form/service/form.service';
+import { FormControl, FormGroup } from '@angular/forms';
 import { Notification } from '../../types/Notification';
 
 /**
@@ -68,22 +66,23 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
     private interval: number | null = null;
 
     /**
-     * Form group holding the values of the form fields of the notification.
-     * Any change is written back to the formModel of the notification.
+     * Form group holding the values of the form fields of the notification,
+     * with a control for exactly each property of the formModel of the
+     * notification. Any change is written back into that same formModel.
+     * The form group and its controls remain the same instances when the
+     * notification changes, as each field receives its control only once,
+     * when the field is created.
      */
-    notificationFormGroup: FormGroup = new FormGroup({});
+    readonly notificationFormGroup: FormGroup = new FormGroup({});
 
     /**
-     * The subscription which writes the values of notificationFormGroup back
-     * into the current notification, if any.
+     * Inject required services, and write the values of the form fields
+     * into the formModel of the current notification as they change.
      */
-    private formValueSubscription: Subscription | null = null;
-
-    /**
-     * Inject required services.
-     */
-    constructor(private formService: FormService,
-                private destroyRef: DestroyRef) {
+    constructor(private destroyRef: DestroyRef) {
+        this.notificationFormGroup.valueChanges
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(() => Object.assign(this.notification.formModel, this.notificationFormGroup.getRawValue()));
     }
 
     /**
@@ -92,29 +91,33 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
     ngDoCheck(): void {
 
         // Update progress bar if end known
-        if (this.notification?.progress?.ratio) {
-            this.progressPercent = this.notification.progress.ratio * 100;
-        }
+        this.progressPercent = this.notification?.progress?.ratio * 100;
 
     }
 
     /**
-     * Build the form group for the fields of the notification and restart
+     * Update the form group to the formModel of the notification and restart
      * the countdown, if any, whenever the notification input changes.
      */
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['notification']) {
-            const forms = this.formService.asFormArray(this.notification.forms);
-            this.notificationFormGroup = this.formService.getFormGroup(forms);
-            this.notificationFormGroup.patchValue(this.notification.formModel || {});
 
-            // Stop writing the values of the previous form group
-            this.formValueSubscription?.unsubscribe();
-            this.formValueSubscription = this.notificationFormGroup.valueChanges
-                .pipe(takeUntilDestroyed(this.destroyRef))
-                .subscribe((value) => {
-                    this.notification.formModel = value;
-                });
+            // Provide a form control for exactly the properties of the model,
+            // such that only the corresponding fields are shown, without
+            // writing these values back into the model
+            const formModel: Record<string, string> = this.notification.formModel || {};
+            for (const name of Object.keys(this.notificationFormGroup.controls)) {
+                if (!(name in formModel))
+                    this.notificationFormGroup.removeControl(name, { emitEvent: false });
+            }
+
+            for (const [name, value] of Object.entries(formModel)) {
+                const control = this.notificationFormGroup.get(name);
+                if (control)
+                    control.setValue(value, { emitEvent: false });
+                else
+                    this.notificationFormGroup.addControl(name, new FormControl(value), { emitEvent: false });
+            }
 
             const countdown = this.notification.countdown;
 
@@ -132,11 +135,15 @@ export class GuacNotificationComponent implements OnChanges, DoCheck, OnDestroy 
                     // Update time remaining
                     this.timeRemaining!--;
 
-                    // Call countdown callback when time remaining expires
-                    if (this.timeRemaining === 0 && countdown.callback)
-                        countdown.callback();
+                    // Stop counting and call countdown callback when time
+                    // remaining expires
+                    if (this.timeRemaining === 0) {
+                        window.clearInterval(this.interval!);
+                        this.interval = null;
+                        countdown.callback?.();
+                    }
 
-                }, 1000, this.timeRemaining);
+                }, 1000);
 
             }
 

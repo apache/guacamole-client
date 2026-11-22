@@ -27,10 +27,9 @@
 
     <div class="body">
 
-        <!-- Notification text -->
-        <p [hidden]="!notification.text" class="text"
-           [transloco]="$safeNavigationMigration(notification.text?.key)"
-           [translocoParams]="notification.text?.variables || {}"></p>
+        <!-- Notification text, as a text node so that line breaks within
+             variables render as spaces, like in the AngularJS dialog -->
+        <p [hidden]="!notification.text" class="text">{{ $safeNavigationMigration(notification.text?.key) | transloco: (notification.text?.variables || {}) }}</p>
 
         <!-- Arbitrary parameters -->
         <div class="parameters" [hidden]="!notification.forms">
